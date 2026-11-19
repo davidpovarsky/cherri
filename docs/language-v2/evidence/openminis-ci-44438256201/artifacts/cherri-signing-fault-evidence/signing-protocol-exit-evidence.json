@@ -1,0 +1,1533 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-19T01:40:44Z",
+  "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+  "appleCryptographicValidation": "NOT_TESTED",
+  "privateCorpusUsed": false,
+  "provenance": {
+    "compilerSha256": "4c509fdfb620d03fa97fac1d3f9d1d8f3a9c3d2c79666dcd1d6c3b5fb9a55018",
+    "capabilities": {
+      "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+      "compilerMacros": [
+        {
+          "id": "debugAssert",
+          "callableName": "debugAssert",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.conditional",
+          "primaryParameterId": "condition",
+          "parameters": [
+            {
+              "id": "condition",
+              "label": "condition",
+              "displayName": "Condition",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": false,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFInput",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "message",
+              "label": "message",
+              "displayName": "Message",
+              "type": "text",
+              "rawType": "string",
+              "optional": true,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "default": "Assertion failed",
+              "omissionPolicy": "omit",
+              "wireKey": "WFAlertActionMessage",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFAlertActionMessage",
+            "WFInput"
+          ],
+          "docs": {
+            "title": "Assert Condition",
+            "description": "Stop the Shortcut with a message when the condition is false.",
+            "category": "debug",
+            "insertionSnippet": "debugAssert(condition: <#bool#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugClearLogs",
+          "callableName": "debugClearLogs",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.setvariable",
+          "parameters": null,
+          "docs": {
+            "title": "Clear Debug Logs",
+            "description": "Reset the execution-local debug log to an empty value.",
+            "category": "debug",
+            "insertionSnippet": "debugClearLogs()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugExport",
+          "callableName": "debugExport",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.setitemname",
+          "primaryParameterId": "format",
+          "parameters": [
+            {
+              "id": "format",
+              "label": "format",
+              "displayName": "Format",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "json",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportFormat",
+              "enumValues": [
+                "json",
+                "text"
+              ],
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "includeDates",
+              "label": "includeDates",
+              "displayName": "Include Dates (unsupported)",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "includeTypes",
+              "label": "includeTypes",
+              "displayName": "Include Native Types",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "true",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportTypes",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "redactSensitive",
+              "label": "redactSensitive",
+              "displayName": "Redact All Payloads",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "true",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportRedact",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "File",
+          "rawOutputType": "variable",
+          "docs": {
+            "title": "Export Local Debug File",
+            "description": "Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. Dates/labels are not collected; includeDates:true is rejected. Options are compile-time literals. Native runtime acceptance remains required.",
+            "category": "debug",
+            "insertionSnippet": "debugExport()"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugExportTrace",
+          "callableName": "debugExportTrace",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.gettext",
+          "primaryParameterId": "runId",
+          "parameters": [
+            {
+              "id": "runId",
+              "label": "runId",
+              "displayName": "Run ID",
+              "type": "text",
+              "rawType": "string",
+              "optional": true,
+              "acceptedForms": [
+                "string"
+              ],
+              "default": "cherri-qa-run",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugTraceRunID",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTraceRunID"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Export QA Structured Trace Snapshot",
+            "description": "Combine the execution-local QA trace buffer into a deterministic JSON envelope for QA inspection or callback export without mutating __cherri_debug_log.",
+            "category": "debug",
+            "insertionSnippet": "debugExportTrace(runId: \"qa-run-1\")"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugFinish",
+          "callableName": "debugFinish",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.previewdocument",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates"
+          ],
+          "docs": {
+            "title": "Finish Debug Session",
+            "description": "Preview native objects with optional Creation Date names or display text with showLogsAsText.",
+            "category": "debug",
+            "insertionSnippet": "debugFinish()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugLog",
+          "callableName": "debugLog",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogs",
+              "label": "showLogs",
+              "displayName": "Show Logs",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogs",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogs",
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates",
+            "WFVariableName"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Debug Log",
+            "description": "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.",
+            "category": "debug",
+            "insertionSnippet": "debugLog()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugLogPrevious",
+          "callableName": "debugLogPrevious",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogs",
+              "label": "showLogs",
+              "displayName": "Show Logs",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogs",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogs",
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Log Previous Result",
+            "description": "Alias for debugLog with optional withDates/showLogs/showLogsAsText.",
+            "category": "debug",
+            "insertionSnippet": "debugLogPrevious()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugShowLogs",
+          "callableName": "debugShowLogs",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.previewdocument",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates"
+          ],
+          "docs": {
+            "title": "Show Debug Logs",
+            "description": "Preview native objects, naming items by Creation Date when enabled; use showLogsAsText for text formatting.",
+            "category": "debug",
+            "insertionSnippet": "debugShowLogs()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugStartTimer",
+          "callableName": "debugStartTimer",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.date",
+          "primaryParameterId": "label",
+          "parameters": [
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFDebugTimerLabel",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTimerLabel"
+          ],
+          "docs": {
+            "title": "Start Debug Timer",
+            "description": "Remember the current time under a compile-time label.",
+            "category": "debug",
+            "insertionSnippet": "debugStartTimer(label: <#text#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugStopTimer",
+          "callableName": "debugStopTimer",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.gettimebetweendates",
+          "primaryParameterId": "label",
+          "parameters": [
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFDebugTimerLabel",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTimerLabel"
+          ],
+          "outputType": "number",
+          "rawOutputType": "float",
+          "docs": {
+            "title": "Stop Debug Timer",
+            "description": "Measure elapsed seconds and append the result to the execution-local log.",
+            "category": "debug",
+            "insertionSnippet": "debugStopTimer(label: <#text#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugTrace",
+          "callableName": "debugTrace",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "value",
+          "parameters": [
+            {
+              "id": "value",
+              "label": "value",
+              "displayName": "Value",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFInput",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFInput"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Trace Value and Time",
+            "description": "Append current time followed by a value to the execution-local debug log.",
+            "category": "debug",
+            "insertionSnippet": "debugTrace(value: <#text#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugTraceEvent",
+          "callableName": "debugTraceEvent",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "stage",
+          "parameters": [
+            {
+              "id": "stage",
+              "label": "stage",
+              "displayName": "Stage",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFDebugTraceStage",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": true,
+              "acceptedForms": [
+                "string"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugTraceLabel",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTraceLabel",
+            "WFDebugTraceStage"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Record QA Structured Trace Event",
+            "description": "Append a structured JSONL trace record (stage, label, step sequence, and CurrentDate timestamp) to the execution-local QA trace buffer without mutating __cherri_debug_log.",
+            "category": "debug",
+            "insertionSnippet": "debugTraceEvent(stage: \"after\", label: \"step-1\")"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "measure",
+          "callableName": "measure",
+          "module": "debug",
+          "appleIdentifier": "",
+          "primaryParameterId": "label",
+          "parameters": [
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "AnyContent",
+          "docs": {
+            "title": "Measure Block",
+            "description": "V2 scoped value block. Evaluate once, log elapsed seconds through existing native timers, and return the original typed value. Runtime timing accuracy remains platform-dependent.",
+            "category": "debug",
+            "insertionSnippet": "measure(\"label\") { <#expression#> }"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "scopedBlock": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "paginate",
+          "callableName": "paginate",
+          "module": "web",
+          "appleIdentifier": "is.workflow.actions.getvariable",
+          "primaryParameterId": "startURL",
+          "parameters": [
+            {
+              "id": "startURL",
+              "label": "startURL",
+              "displayName": "Initial HTTP(S) URL",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": false,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateStartURL",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "itemsKey",
+              "label": "itemsKey",
+              "displayName": "Dictionary items key",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "items",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateItemsKey",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "nextKey",
+              "label": "nextKey",
+              "displayName": "Next URL or sibling filename key",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "next",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateNextKey",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "maxPages",
+              "label": "maxPages",
+              "displayName": "Maximum native GET invocations (0..100)",
+              "type": "Number",
+              "rawType": "number",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "20",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateMaxPages",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "maxItems",
+              "label": "maxItems",
+              "displayName": "Maximum returned Dictionary items (0..10000)",
+              "type": "Number",
+              "rawType": "number",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "1000",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateMaxItems",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "List<Map<Text, AnyContent>>",
+          "rawOutputType": "array",
+          "docs": {
+            "title": "Paginate Bounded Dictionary Pages",
+            "description": "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+            "category": "web",
+            "insertionSnippet": "paginate(\"https://example.invalid/pages/one.json\")"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "require",
+          "callableName": "require",
+          "module": "control",
+          "appleIdentifier": "is.workflow.actions.getvariable",
+          "primaryParameterId": "value",
+          "parameters": [
+            {
+              "id": "value",
+              "label": "value",
+              "displayName": "Value",
+              "type": "AnyContent",
+              "rawType": "variable",
+              "optional": false,
+              "omissionPolicy": "emit",
+              "wireKey": "WFInput",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "type",
+              "label": "type",
+              "displayName": "Native Category",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFRequireType",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "nonEmpty",
+              "label": "nonEmpty",
+              "displayName": "Nonempty",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFRequireNonEmpty",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "message",
+              "label": "message",
+              "displayName": "Failure Message",
+              "type": "Text",
+              "rawType": "string",
+              "optional": true,
+              "omissionPolicy": "omit",
+              "wireKey": "WFAlertActionMessage",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "AnyContent",
+          "rawOutputType": "variable",
+          "docs": {
+            "title": "Require Typed Value",
+            "description": "Validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.",
+            "category": "control",
+            "insertionSnippet": "require(<#value#>, nonEmpty: true)"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "protocolVersion": "1.0",
+      "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "actionCount": 505,
+      "features": [
+        "let_var_bindings",
+        "named_call_arguments",
+        "f_strings",
+        "raw_strings",
+        "typed_collections",
+        "value_producing_blocks",
+        "ast_functions",
+        "native_preservation",
+        "shared_analysis_service",
+        "zero_based_indexing",
+        "compiler_macro_metadata",
+        "compile_time_build_profiles"
+      ]
+    },
+    "skillManifest": {
+      "skillVersion": "2.0.0",
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+      "compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6",
+      "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+      "docsCommit": "7f4c65d274548cb2c563626781de2a07a456638e",
+      "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+    },
+    "skillBuildSha256": "7bbb35317afd8b85edd33e8ac5a6a035058f2541570d56e578f21549b009f887"
+  },
+  "results": [
+    {
+      "surface": "cli_v2",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.015,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=d139176463de320a74e0ff1f72a89111312c97512347adb3ef7777cd09e6"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=d89e925791a900b781e2a270a450d2c2f3f10b1ab3254cfa8a630d6ff9d6"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=6b757268f1bc90787503796af72adba0df375b1f43d1aed83fc6dafc7221"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=3effbc1107cd13d84ab1900bb78e37d19ade13b06284e0ea34e64c5eaec6"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.015,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=48574bf8284bef74a024d7759d2a6eb87a40180320610436c3844d0b1c63"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned empty response\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.018,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=36378a3ee79c350c48fec1a32f707c63e9e0b805db56b91d2c9558e382f8"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.017,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=480aec9dea9211d52124c9999d87c05157d440f1edc65bc27d49fe86757d"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.014,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=4fd95467d75d5877dad30503abce3f7c2ce78610c0f2aec62f04183d1760"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.018,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=5e35c11e6afe2594abc7b724f54195766df5e0f433ec86ec7aabcb99958d"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=b7bfb03ff3e01020aec11d9730005b0e6c39e40673dc6e955253ef6beffc"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=718e213aa10b14a5f89562c4cd833d77c76f1b39f17a6d969babd4154eb5"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing request timeout: Post \"http://127.0.0.1:45133/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.019,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 1964,
+          "magicHex": "3c3f786d",
+          "sha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.02,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=b66c0baf94b8065e82f16a39b9eb06cd7a9acd37a6fbeb5a4fa935388e51"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=8553cb7bec6bd8b515b86b635308c12bf2e0d09e18e9889057501ab26210"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=28ffef4cf7e44ae48aa370e6a0bf3ffed0355f6d37e512e1beb9113046eb"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing server error: synthetic fault (TEST)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.02,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=16bf4c1eb7e1d103303fe78504fe9fc257fd56c324ba619641539c354db2"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=def850879cc5d0ba15fae0f41e9f2dfb135a457504357132a51943f5b6c0"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned empty response\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=dd6d54306218059c47b981ef1a88d0c313f1406d259006517ea441782f7c"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=a8e58b8f2f79ea3e4127ba5776bb893b48b20fc0770bbeba1740c475eba2"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted base64 signed payload: illegal base64 data at input byte 0\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.02,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=41ffc6d8c9f76228754cc610a0ca211aa5dcacfd29b6dc546cf34d8d3b42"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=657bd35afa238c5e9f98dd36bc7f7158bcaf4d36d026eb2061f0fe406e8c"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=777985a279a9192f5951c82ea2eaa00827465f12bed0bfc7e2be5f694043"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.106,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "<isolated-audit>/skill_copy/unsigned_control/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=2b8cfd21de3db0e649991ed3e30c078394456a182eed84790b9ace0d31fc"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.112,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=998f2676692fd0b1c7a5441a5765f43eff982db7e1eb645f3a0bfeceb23c"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=0cefdc8638489219682018c895b454d7bddbfb284e87ebd3bf4c31356e57"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=cea376108f6825b6f3e4d284531bc71c848e169f03f5de96b57b84b2534e"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.112,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=8856c85de047b9cd67e2d69407c8d33d5dc96ac9eac216e92e693d432c58"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned empty response\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.11,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=051d34b866f8f47d7597a7e25d82ccf47dc8b93a1b3a4a5d5a3b57c60fa2"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=39e32ab3275085dbd2123009c2a05058992dbc8f9a4190a52aa6b97fb662"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.109,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=5778e6d5aa2f8b4cc6bb6eca3e97c38900ce24e31ea7f5d7e8732d7c005a"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=ffccead0c438ef324a1c8ffccf647e90b7f455b15f10428492a9650b19d2"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.109,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=9cf0319ec71a99d6abb17cbaa03ecb56ec4a027ee34e92624820a2eafb64"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    }
+  ],
+  "summary": {
+    "checks": 34,
+    "controlsPassed": 3,
+    "negativesRejected": 31,
+    "failures": 0
+  }
+}

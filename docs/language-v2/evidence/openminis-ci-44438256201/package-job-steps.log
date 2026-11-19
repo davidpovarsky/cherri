@@ -1,0 +1,97 @@
+build-test-package	Package immutable source and pinned runtime	﻿2026-11-19T01:40:52.2185835Z ##[group]Run PIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2186429Z ^[[36;1mPIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2186792Z ^[[36;1mPINNED_SOURCE="$RUNNER_TEMP/cherri-skill-pinned-source"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2186997Z ^[[36;1mtest ! -e "$PINNED_SOURCE"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2187161Z ^[[36;1mgit init --quiet "$PINNED_SOURCE"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2187349Z ^[[36;1mgit -C "$PINNED_SOURCE" config core.autocrlf false^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2187623Z ^[[36;1mgit -C "$PINNED_SOURCE" remote add origin https://github.com/davidpovarsky/cherri.git^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2187934Z ^[[36;1mgit -C "$PINNED_SOURCE" fetch --quiet --no-tags --depth=1 origin "$PIN"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2188320Z ^[[36;1mgit -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2188534Z ^[[36;1mgit -C "$PINNED_SOURCE" cat-file -e "$PIN^{tree}"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2188773Z ^[[36;1mtest "$(git -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2188995Z ^[[36;1mtest -z "$(git -C "$PINNED_SOURCE" status --porcelain)"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2189378Z ^[[36;1mCGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-pinned-linux-arm64" .^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2189756Z ^[[36;1mtest -z "$(git -C "$PINNED_SOURCE" status --porcelain)"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2190216Z ^[[36;1mpython3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind source --archive dist/cherri-shortcuts-skill-source.zip --report dist/skill-source-integrity.json^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2190989Z ^[[36;1mpython3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --report dist/skill-runtime-integrity.json^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2191898Z ^[[36;1mpython3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --unpack dist/unpacked-arm64 --report dist/skill-unpacked-integrity.json^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2244346Z shell: /usr/bin/bash -e {0}
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2244493Z env:
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2244611Z   GOTOOLCHAIN: local
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:52.2244736Z ##[endgroup]
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:55.5820898Z {"archiveSha256": "16e6f4d9f5d6d0afb5ac03db6db34ac50c557c525dfb091b165567f1ecdee712", "compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6", "docsCommit": "7f4c65d274548cb2c563626781de2a07a456638e", "kind": "source", "runtime": null, "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.", "skillCommit": "0e577e2476b7097479f5d2f50d8e3ee2ce7d2571", "status": "PASS_PACKAGE_INTEGRITY", "unpacked": false, "verifiedFiles": 20}
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:56.2711362Z {"archiveSha256": "8a070bd7c3fa2863506d518a1e06c1d9dee96ce87fafe863d21a42183eb5cb38", "compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6", "docsCommit": "7f4c65d274548cb2c563626781de2a07a456638e", "kind": "runtime", "runtime": {"compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6", "goarch": "arm64", "goos": "linux", "sha256": "4d97bfe1cd7092a65615705a5821525d4ad601efd70de3e10e682e6507a27d6f", "vcsModified": false}, "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.", "skillCommit": "0e577e2476b7097479f5d2f50d8e3ee2ce7d2571", "status": "PASS_PACKAGE_INTEGRITY", "unpacked": false, "verifiedFiles": 23}
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:40:56.4408619Z {"archiveSha256": "8a070bd7c3fa2863506d518a1e06c1d9dee96ce87fafe863d21a42183eb5cb38", "compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6", "docsCommit": "7f4c65d274548cb2c563626781de2a07a456638e", "kind": "runtime", "runtime": {"compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6", "goarch": "arm64", "goos": "linux", "sha256": "4d97bfe1cd7092a65615705a5821525d4ad601efd70de3e10e682e6507a27d6f", "vcsModified": false}, "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.", "skillCommit": "0e577e2476b7097479f5d2f50d8e3ee2ce7d2571", "status": "PASS_PACKAGE_INTEGRITY", "unpacked": true, "verifiedFiles": 23}
+build-test-package	Test unpacked pinned ARM64 package in Alpine	﻿2026-11-19T01:40:56.4510448Z ##[group]Run docker run --rm --platform linux/arm64 \
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4510702Z ^[[36;1mdocker run --rm --platform linux/arm64 \^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4510885Z ^[[36;1m  -v "$PWD:/repo" \^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4511027Z ^[[36;1m  alpine:3.22 \^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4511154Z ^[[36;1m  sh -c '^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4511298Z ^[[36;1m    apk add --no-cache git >/dev/null &&^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4511614Z ^[[36;1m    CHERRI_HOME=/tmp/cherri-package-empty-home \^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4511837Z ^[[36;1m    SKILL_DIR=/repo/dist/unpacked-arm64/cherri-shortcuts \^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4512227Z ^[[36;1m    sh /repo/dist/unpacked-arm64/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out /repo/dist/skill-package-arm64-observations.json^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4512573Z ^[[36;1m  '^[[0m
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4551753Z shell: /usr/bin/bash -e {0}
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4551895Z env:
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4552015Z   GOTOOLCHAIN: local
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4552141Z ##[endgroup]
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.4715212Z Unable to find image 'alpine:3.22' locally
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:56.9548456Z 3.22: Pulling from library/alpine
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.1558413Z fea5b91588ca: Pulling fs layer
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.3740850Z fea5b91588ca: Download complete
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.4545967Z 95d2a6fd92cc: Download complete
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.4547416Z 4e709acd85f9: Download complete
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.4557586Z fea5b91588ca: Pull complete
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.4558030Z Digest: sha256:49340b346798875b5592e5d420241f2f9cfba5f47e62ebb1446a1b34734e898f
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:40:57.4558441Z Status: Downloaded newer image for alpine:3.22
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:01.6268312Z Testing compiler...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:01.7435000Z Testing action discovery wrapper...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:03.3449292Z Testing machine-readable catalog wrapper...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:05.4058249Z Testing unsigned compile wrapper...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:07.4084069Z Testing decompile wrapper...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:09.2875482Z Testing decompiled-source recompilation (self-contained invariant)...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:15.2331691Z Testing existing-Shortcut prepare/edit workflow...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:20.8502271Z Testing AEA1 signed-input rejection...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:21.1784048Z Testing 10 Skill Pinning, Compatibility, Offline, and Atomic Update Scenarios...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:22.2588083Z Cloning into '/tmp/cherri-skill-test-17/home-s1/src'...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:22.3197226Z done.
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:23.2278400Z Cloning into '/tmp/cherri-skill-test-17/home-s1/.cherri-docs.ogPkdD/candidate'...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:23.2905962Z done.
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:26.4290820Z   [PASS] Scenario 1: fresh install from immutable refs
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:30.4065306Z   [PASS] Scenario 2: compatible cached compiler offline
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:30.9138876Z   [PASS] Scenario 3: incompatible cached compiler rejected offline
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:31.9582174Z   [PASS] Scenario 4: compatible cached compiler wins over stale bundled binary
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:32.5668281Z   [PASS] Scenario 5: explicit incompatible CHERRI_BIN rejected without silent fallback
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:33.1711956Z   [PASS] Scenario 6: same languageVersion with wrong schemaFingerprint rejected
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:34.2225326Z   [PASS] Scenario 7: missing/malformed schemaFingerprint and broken JSON rejected
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:36.0681017Z   [PASS] Scenario 8: docs SHA/fingerprint mismatch rejected
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:38.1758288Z   [PASS] Scenario 9: failed download preserved existing working binary
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:39.9845184Z Cloning into '/tmp/cherri-skill-test-17/home-s1/.cherri-docs.adnckC/candidate'...
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:40.0457708Z done.
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:43.1850306Z   [PASS] Scenario 10: branch advance did not alter pinned installed version
+build-test-package	Test unpacked pinned ARM64 package in Alpine	2026-11-19T01:41:43.2123279Z Cherri Shortcuts skill self-test passed.
+build-test-package	Execute actual package acceptance and retain scoped evidence	﻿2026-11-19T01:41:43.3267025Z ##[group]Run go test ./tools/language-acceptance -run '^TestSkillPackageProductionEvidence$' -count=1 -json -timeout=12m > dist/skill-package-producer.jsonl
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3267890Z ^[[36;1mgo test ./tools/language-acceptance -run '^TestSkillPackageProductionEvidence$' -count=1 -json -timeout=12m > dist/skill-package-producer.jsonl^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3268427Z ^[[36;1mpython3 - <<'PY'^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3268642Z ^[[36;1mimport json, os^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3268863Z ^[[36;1mfrom pathlib import Path^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3269331Z ^[[36;1mevents = [json.loads(line) for line in Path("dist/skill-package-producer.jsonl").read_text().splitlines() if line.strip()]^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3270061Z ^[[36;1mtest = "TestSkillPackageProductionEvidence"^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3270358Z ^[[36;1mmarker = "P15_SKILL_PACKAGE_RECEIPT:"^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3270712Z ^[[36;1m# Go test2json can split one long logical line across Output events.^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3271175Z ^[[36;1moutput = "".join(event.get("Output", "") for event in events if event.get("Test") == test)^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3271753Z ^[[36;1mreceipts = [json.loads(line.split(marker, 1)[1]) for line in output.splitlines() if marker in line]^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3272258Z ^[[36;1massert len(receipts) == 1, "missing or duplicate actual package receipt"^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3272755Z ^[[36;1massert sum(event.get("Action") == "pass" and event.get("Test") == test for event in events) == 1^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3273245Z ^[[36;1massert not any(event.get("Action") == "fail" for event in events)^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3273571Z ^[[36;1mreceipt = receipts[0]^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3274119Z ^[[36;1massert receipt["source_tree_clean"] and receipt["report"]["passed_cases"] == 1^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3274563Z ^[[36;1massert receipt["source_sha"] == os.environ["GITHUB_SHA"]^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3274889Z ^[[36;1massert len(receipt["records"]) == 1 and receipt["records"][0]["requirements"] == ["K01"]^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3275207Z ^[[36;1mPath("dist/skill-evidence.json").write_text(json.dumps(receipt, indent=2) + "\n")^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3275442Z ^[[36;1mPY^[[0m
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3315732Z shell: /usr/bin/bash -e {0}
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3315876Z env:
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3315992Z   GOTOOLCHAIN: local
+build-test-package	Execute actual package acceptance and retain scoped evidence	2026-11-19T01:41:43.3316119Z ##[endgroup]

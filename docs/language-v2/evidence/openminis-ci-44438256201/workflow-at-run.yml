@@ -1,0 +1,336 @@
+name: OpenMinis Skill
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'skills/cherri-shortcuts/**'
+      - '.github/workflows/openminis-skill.yml'
+      - '*.go'
+      - 'tools/p10r15/**'
+      - 'actions/**'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+
+concurrency:
+  group: openminis-skill-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  build-test-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Test Cherri core
+        run: |
+          go test -run TestCherriNoSign -v ./...
+          go test -run TestDecomp -v ./...
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Build Linux CLIs
+        run: |
+          mkdir -p dist
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags='-s -w' -o dist/cherri-linux-arm64 .
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o dist/cherri-linux-amd64 .
+          chmod +x dist/cherri-linux-arm64 dist/cherri-linux-amd64
+          ls -lh dist/cherri-linux-*
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Validate skill structure
+        run: |
+          test -f skills/cherri-shortcuts/SKILL.md
+          test -f skills/cherri-shortcuts/scripts/setup.sh
+          test -f skills/cherri-shortcuts/scripts/build.sh
+          test -f skills/cherri-shortcuts/references/openminis.md
+          grep -q '^name: cherri-shortcuts$' skills/cherri-shortcuts/SKILL.md
+          grep -q '^description:' skills/cherri-shortcuts/SKILL.md
+          for script in skills/cherri-shortcuts/scripts/*.sh; do sh -n "$script"; done
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Test skill wrappers on Linux
+        env:
+          CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
+          SKILL_DIR: ${{ github.workspace }}/skills/cherri-shortcuts
+        run: sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-wrapper-observations.json
+
+      - name: Verify isolated compiler and docs drift diagnostics
+        env:
+          CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
+        run: sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
+
+      - name: Verify actual pinned installs, checksum and rollback
+        run: >-
+          go test -count=1 -timeout=15m
+          -run '^(TestP15SkillFreshPinnedInstall|TestP15K02|TestP15K03)' .
+
+      - name: Verify optional compiler macro compatibility
+        run: |
+          go run ./tools/language-docs dist/macro-actions-reference.md
+          dist/cherri-linux-amd64 --capabilities-json > dist/macro-capabilities.json
+          MACRO_FP=$(python3 -c 'import json; print(json.load(open("dist/macro-capabilities.json"))["macroFingerprint"])')
+          python3 tools/p10r15/verify_macro_compatibility.py \
+            --compiler dist/cherri-linux-amd64 \
+            --compiler-commit "$GITHUB_SHA" \
+            --skill skills/cherri-shortcuts \
+            --docs-reference dist/macro-actions-reference.md \
+            --expected-macro-fingerprint "$MACRO_FP" \
+            --report dist/macro-compatibility-isolation.json
+
+      - name: Execute source-bound macro contract coverage
+        run: |
+          python3 tools/p10r15/generate_macro_contract_coverage.py --refresh --out-dir dist/macro-contracts
+          python3 tools/p10r15/generate_macro_contract_coverage.py --verify --out-dir dist/macro-contracts
+          python3 tools/p10r15/verify_macro_ledger_evidence.py --repo . --ledger-dir dist/macro-contracts --report dist/macro-contracts/verifier-audit.json
+
+      - name: Validate bounded local debug export
+        run: |
+          go test -count=1 -timeout=5m -run '^TestP15DebugExport' .
+          python3 tools/p10r15/verify_debug_export.py --report dist/debug-export-validation.json
+
+      - name: Validate bounded GET pagination
+        run: |
+          go test -count=1 -timeout=5m -run '^TestP15Paginate' .
+          python3 tools/p10r15/verify_paginate.py --report dist/paginate-validation.json
+
+      - name: Validate native storage probe contracts
+        run: python3 tools/p10r15/verify_storage_probes.py dist/cherri-linux-amd64 --output dist/storage-probe-validation.json
+
+      - name: Validate continuation probe graphs and strict two-run policy
+        run: python3 tools/p10r15/verify_native_continuation_probes.py dist/cherri-linux-amd64 --output dist/native-continuation-validation.json
+
+      - name: Verify real CLI signing failures leave no artifact
+        run: >-
+          python3 tools/p10r15/verify_installed_signing.py
+          --compiler dist/cherri-linux-amd64
+          --skill skills/cherri-shortcuts
+          --include-timeout
+          --report dist/signing-protocol-exit-evidence.json
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Enable ARM64 emulation
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Package immutable source and pinned runtime
+        run: |
+          PIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')
+          PINNED_SOURCE="$RUNNER_TEMP/cherri-skill-pinned-source"
+          test ! -e "$PINNED_SOURCE"
+          git init --quiet "$PINNED_SOURCE"
+          git -C "$PINNED_SOURCE" config core.autocrlf false
+          git -C "$PINNED_SOURCE" remote add origin https://github.com/davidpovarsky/cherri.git
+          git -C "$PINNED_SOURCE" fetch --quiet --no-tags --depth=1 origin "$PIN"
+          git -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"
+          git -C "$PINNED_SOURCE" cat-file -e "$PIN^{tree}"
+          test "$(git -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"
+          test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-pinned-linux-arm64" .
+          test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
+          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind source --archive dist/cherri-shortcuts-skill-source.zip --report dist/skill-source-integrity.json
+          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --report dist/skill-runtime-integrity.json
+          python3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --unpack dist/unpacked-arm64 --report dist/skill-unpacked-integrity.json
+
+      - name: Test unpacked pinned ARM64 package in Alpine
+        run: |
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD:/repo" \
+            alpine:3.22 \
+            sh -c '
+              apk add --no-cache git >/dev/null &&
+              CHERRI_HOME=/tmp/cherri-package-empty-home \
+              SKILL_DIR=/repo/dist/unpacked-arm64/cherri-shortcuts \
+              sh /repo/dist/unpacked-arm64/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out /repo/dist/skill-package-arm64-observations.json
+            '
+
+      - name: Execute actual package acceptance and retain scoped evidence
+        run: |
+          go test ./tools/language-acceptance -run '^TestSkillPackageProductionEvidence$' -count=1 -json -timeout=12m > dist/skill-package-producer.jsonl
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          events = [json.loads(line) for line in Path("dist/skill-package-producer.jsonl").read_text().splitlines() if line.strip()]
+          test = "TestSkillPackageProductionEvidence"
+          marker = "P15_SKILL_PACKAGE_RECEIPT:"
+          # Go test2json can split one long logical line across Output events.
+          output = "".join(event.get("Output", "") for event in events if event.get("Test") == test)
+          receipts = [json.loads(line.split(marker, 1)[1]) for line in output.splitlines() if marker in line]
+          assert len(receipts) == 1, "missing or duplicate actual package receipt"
+          assert sum(event.get("Action") == "pass" and event.get("Test") == test for event in events) == 1
+          assert not any(event.get("Action") == "fail" for event in events)
+          receipt = receipts[0]
+          assert receipt["source_tree_clean"] and receipt["report"]["passed_cases"] == 1
+          assert receipt["source_sha"] == os.environ["GITHUB_SHA"]
+          assert len(receipt["records"]) == 1 and receipt["records"][0]["requirements"] == ["K01"]
+          Path("dist/skill-evidence.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Upload signing fault evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-signing-fault-evidence
+          path: dist/signing-protocol-exit-evidence.json
+          if-no-files-found: ignore
+
+      - name: Upload compiler macro compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-macro-compatibility-evidence
+          path: dist/macro-compatibility-isolation.json
+          if-no-files-found: ignore
+
+      - name: Upload macro contract evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-macro-contract-evidence
+          path: dist/macro-contracts/
+          if-no-files-found: ignore
+
+      - name: Upload local debug export evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-debug-export-evidence
+          path: dist/debug-export-validation.json
+          if-no-files-found: warn
+
+      - name: Upload bounded GET pagination evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-paginate-evidence
+          path: dist/paginate-validation.json
+          if-no-files-found: warn
+
+      - name: Upload storage probe source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-storage-probe-evidence
+          path: dist/storage-probe-validation.json
+          if-no-files-found: warn
+
+      - name: Upload continuation probe source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-native-continuation-evidence
+          path: |
+            dist/native-continuation-validation.json
+            dist/continuation-python.log
+          if-no-files-found: warn
+
+      - name: Upload OpenMinis skill artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cherri-OpenMinis-Skill
+          path: |
+            dist/cherri-shortcuts-openminis-arm64.zip
+            dist/cherri-shortcuts-skill-source.zip
+            dist/cherri-linux-arm64
+            dist/cherri-linux-amd64
+            dist/skill-evidence.json
+            dist/skill-wrapper-observations.json
+            dist/skill-package-arm64-observations.json
+            dist/skill-source-integrity.json
+            dist/skill-runtime-integrity.json
+            dist/skill-unpacked-integrity.json
+            dist/skill-package-producer.jsonl
+          if-no-files-found: error
+          retention-days: 30
