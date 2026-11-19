@@ -1,0 +1,97 @@
+{
+  "head": "194f7ae440922fd1b32105b590f073f4dfd0f0d8",
+  "mode": "baseline",
+  "runs": [
+    {
+      "head": "194f7ae440922fd1b32105b590f073f4dfd0f0d8",
+      "mode": "baseline",
+      "status_before": "M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M language_backend_adapter.go\n M language_value_adapter.go\n D native_aggrandizement_fields.go\n M shared_codec.go\n M shortcut.go",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-count=1",
+        "-json",
+        "-p=1",
+        "-timeout=5m",
+        ".",
+        "-run",
+        "^(TestP15BRG07DirectReferenceKindsRoundTrip|TestP15BRG07ReferenceMutationControls|TestP15BRG07SharedReferencePaths)$"
+      ],
+      "started_utc": "2026-11-19T02:10:59.391746+00:00",
+      "source_files_sha256": {
+        "internal/language/backend/contracts.go": "a52402740a5459d3f35c01971bfae65f99045233a704664b726d1099019e3b70",
+        "internal/language/lower/lower.go": "0772e4eed9776169fba7798ee156551f69c71440f4f10dd46d94f9155109e940",
+        "language_backend_adapter.go": "bebfb5c46441182e29cb8527e46ba75c5c29449d8b9cb61638234e584519de41",
+        "language_value_adapter.go": "75f0296aef73267d54dfa555513e19f61eb5f19136b1fd6a631d920768766de7",
+        "shared_codec.go": "400db0c068bab109b3988dc2ef073e9b93c64e6e037be28e81cf0ff5836afb8a",
+        "shortcut.go": "40d8e539f6eed88910f5a2291cbd208cce0796edadb5e6b671230be47a4060ba",
+        "native_aggrandizement_fields.go": null,
+        "p15_direct_reference_recovery_test.go": "c1e70070085fe5cf0a6d6150a09ce6fdd296eaba6f042d5c14ac38273ca5f8b7",
+        "tests/language-v2/v2-direct-reference-chains.cherri": "a3ffe48ee49e698057f7ae7d97cf18a1f69e1249b216a4bbda89169d36c0063b",
+        "tools/language-acceptance/supplemental_execution.go": "eabf37e4ac7a0728b5066ba6e9efa1d621b3b721621985d8a34961c1d7388550",
+        "tools/language-acceptance/supplemental_execution_test.go": "a4cd4ecef8303b70553f79781733916fae84ba666939cb8ab3c826731ec093a7"
+      },
+      "exit_code": 1,
+      "elapsed_seconds": 17.598,
+      "discovered_unique_tests": 52,
+      "counts": {
+        "pass": 41,
+        "fail": 11,
+        "skip": 0
+      },
+      "missing_required_tests": [],
+      "unfinished_tests": [],
+      "failures_or_skips": {
+        "TestP15BRG07DirectReferenceKindsRoundTrip/direct_Action": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07DirectReferenceKindsRoundTrip/direct_Action\n    p15_direct_reference_recovery_test.go:90: direct kind, producer, ordered chain or extension changed at Action.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07DirectReferenceKindsRoundTrip/direct_Action (0.00s)\n"
+        },
+        "TestP15BRG07DirectReferenceKindsRoundTrip/direct_Variable": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07DirectReferenceKindsRoundTrip/direct_Variable\n    p15_direct_reference_recovery_test.go:90: direct kind, producer, ordered chain or extension changed at Variable.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07DirectReferenceKindsRoundTrip/direct_Variable (0.00s)\n"
+        },
+        "TestP15BRG07DirectReferenceKindsRoundTrip/direct_System": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07DirectReferenceKindsRoundTrip/direct_System\n    p15_direct_reference_recovery_test.go:90: direct kind, producer, ordered chain or extension changed at System.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07DirectReferenceKindsRoundTrip/direct_System (0.00s)\n"
+        },
+        "TestP15BRG07DirectReferenceKindsRoundTrip": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07DirectReferenceKindsRoundTrip\n    p15_direct_reference_recovery_test.go:95: direct references changed their explicit producer/variable graph at actions[2].WFWorkflowActionParameters.Action.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07DirectReferenceKindsRoundTrip (0.62s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths/ActionOutput/typed_call": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths/ActionOutput/typed_call\n    p15_direct_reference_recovery_test.go:215: shared typed_call native reference lost typed/opaque fields at ActionOutput.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07SharedReferencePaths/ActionOutput/typed_call (0.01s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths/ActionOutput/inline_text": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths/ActionOutput/inline_text\n    p15_direct_reference_recovery_test.go:215: shared inline_text native reference lost typed/opaque fields at ActionOutput.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07SharedReferencePaths/ActionOutput/inline_text (0.01s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths/Variable/typed_call": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths/Variable/typed_call\n    p15_direct_reference_recovery_test.go:215: shared typed_call native reference lost typed/opaque fields at Variable.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07SharedReferencePaths/Variable/typed_call (0.01s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths/Variable/inline_text": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths/Variable/inline_text\n    p15_direct_reference_recovery_test.go:215: shared inline_text native reference lost typed/opaque fields at Variable.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07SharedReferencePaths/Variable/inline_text (0.01s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths/ExtensionInput/typed_call": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths/ExtensionInput/typed_call\n    p15_direct_reference_recovery_test.go:215: shared typed_call native reference lost typed/opaque fields at ExtensionInput.Value.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07SharedReferencePaths/ExtensionInput/typed_call (0.01s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths/ExtensionInput/inline_text": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths/ExtensionInput/inline_text\n    p15_direct_reference_recovery_test.go:215: shared inline_text native reference lost typed/opaque fields at ExtensionInput.Aggrandizements[0].P15Extra: missing in rebuilt\n--- FAIL: TestP15BRG07SharedReferencePaths/ExtensionInput/inline_text (0.01s)\n"
+        },
+        "TestP15BRG07SharedReferencePaths": {
+          "status": "fail",
+          "detail": "=== RUN   TestP15BRG07SharedReferencePaths\n--- FAIL: TestP15BRG07SharedReferencePaths (0.07s)\n"
+        }
+      },
+      "non_json_output": [],
+      "raw_jsonl_sha256": "52be80f0929cb578d944740a78036987ea2fa109d7f52d5bcb95389e0042fcb1",
+      "raw_jsonl_bytes": 61617,
+      "status_after": "M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M language_backend_adapter.go\n M language_value_adapter.go\n D native_aggrandizement_fields.go\n M shared_codec.go\n M shortcut.go"
+    }
+  ],
+  "restored_status": ""
+}
