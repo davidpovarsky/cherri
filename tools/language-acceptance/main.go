@@ -1242,7 +1242,8 @@ func main() {
 	if buildEvidenceMapPath == "" {
 		switch strings.ToLower(filepath.Base(outPath)) {
 		case "requirements-evidence-map.json", "acceptance-local-evidence.json",
-			"acceptance-local-observations.json", "acceptance-execution-audit.json":
+			"acceptance-local-observations.json", "acceptance-execution-audit.json",
+			"local-runner-evidence.json":
 			fmt.Fprintf(os.Stderr, "Output filename is reserved for generated evidence: %s; choose another report filename or use --build-evidence-map explicitly.\n", outPath)
 			os.Exit(1)
 		}
@@ -1340,10 +1341,25 @@ func main() {
 		runner.runRecoveryGates(contracts.Gates)
 		runner.runCIVerification()
 
-		evidenceDir := filepath.Join("artifacts", "backend-recovery", "evidence")
-		_ = os.MkdirAll(evidenceDir, 0755)
-		evBytes, _ := json.MarshalIndent(runner.records, "", "  ")
-		_ = os.WriteFile(filepath.Join(evidenceDir, "local-runner-evidence.json"), evBytes, 0644)
+		// Explicit report destinations include every local evidence artifact.
+		// Keep the historical path for default manifest discovery only.
+		var evidenceDir = filepath.Join("artifacts", "backend-recovery", "evidence")
+		if explicitOut != "" {
+			evidenceDir = filepath.Dir(outPath)
+		}
+		if err := os.MkdirAll(evidenceDir, 0755); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write local runner evidence: %v\n", err)
+			os.Exit(1)
+		}
+		var evBytes, evidenceErr = json.MarshalIndent(runner.records, "", "  ")
+		if evidenceErr != nil {
+			fmt.Fprintf(os.Stderr, "Failed to marshal local runner evidence: %v\n", evidenceErr)
+			os.Exit(1)
+		}
+		if err := os.WriteFile(filepath.Join(evidenceDir, "local-runner-evidence.json"), evBytes, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write local runner evidence: %v\n", err)
+			os.Exit(1)
+		}
 
 		report, valErr = ValidateAndAggregateWithPhase(allLocalContracts(contracts), runner.results, runner.reg.Fingerprint(), phase)
 	}
