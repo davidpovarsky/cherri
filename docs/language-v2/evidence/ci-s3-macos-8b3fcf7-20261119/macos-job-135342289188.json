@@ -1,0 +1,212 @@
+{
+  "id": 135342289188,
+  "run_id": 44459420585,
+  "workflow_name": "Build & Test",
+  "head_branch": "staging/cherri-p10r15-compiler-8b3fcf7-20261119",
+  "run_url": "https://api.github.com/repos/davidpovarsky/cherri/actions/runs/44459420585",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOT8isB88AAAAfgwdxJA",
+  "head_sha": "8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46",
+  "url": "https://api.github.com/repos/davidpovarsky/cherri/actions/jobs/135342289188",
+  "html_url": "https://github.com/davidpovarsky/cherri/actions/runs/44459420585/job/135342289188",
+  "status": "completed",
+  "conclusion": "failure",
+  "created_at": "2026-11-19T04:35:56Z",
+  "started_at": "2026-11-19T04:48:21Z",
+  "completed_at": "2026-11-19T05:02:07Z",
+  "name": "build-test-macos",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-19T04:48:23Z",
+      "completed_at": "2026-11-19T04:48:25Z"
+    },
+    {
+      "name": "Run actions/checkout@v6",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-19T04:48:25Z",
+      "completed_at": "2026-11-19T04:48:31Z"
+    },
+    {
+      "name": "Set up Python",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-19T04:48:31Z",
+      "completed_at": "2026-11-19T04:48:32Z"
+    },
+    {
+      "name": "Set up Node for encoding gate process controls",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-19T04:48:32Z",
+      "completed_at": "2026-11-19T04:48:34Z"
+    },
+    {
+      "name": "Required Encoding Gate Process Controls",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-19T04:48:34Z",
+      "completed_at": "2026-11-19T04:48:36Z"
+    },
+    {
+      "name": "Mandatory WorkflowKit REQUIRED Encoding Gate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-19T04:48:36Z",
+      "completed_at": "2026-11-19T04:48:42Z"
+    },
+    {
+      "name": "Upload Required Encoding Gate Observations",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-19T04:48:42Z",
+      "completed_at": "2026-11-19T04:48:44Z"
+    },
+    {
+      "name": "Set up Go",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-19T04:48:44Z",
+      "completed_at": "2026-11-19T04:48:48Z"
+    },
+    {
+      "name": "Build",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-19T04:48:48Z",
+      "completed_at": "2026-11-19T04:49:35Z"
+    },
+    {
+      "name": "Full Go Test Suite",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 10,
+      "started_at": "2026-11-19T04:49:35Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Full Matrix Regression Tests",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 11,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Machine-Checked Test Discovery Gate",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 12,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Decompilation Test",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 13,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Package Manager Test",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 14,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Differential Legacy Parity Gate",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 15,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "P10R8 Independent Oracle Mutation Suite & Sanitized Report Integrity",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 16,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "P10 SSoT, Coverage Ledgers, Pack & Release Gates",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 17,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Upload P10R4 Release Gate Attestation (macOS)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Post Set up Go",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 33,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Post Set up Node for encoding gate process controls",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 34,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Post Set up Python",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 35,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:02Z"
+    },
+    {
+      "name": "Post Run actions/checkout@v6",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 36,
+      "started_at": "2026-11-19T05:02:02Z",
+      "completed_at": "2026-11-19T05:02:03Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 37,
+      "started_at": "2026-11-19T05:02:03Z",
+      "completed_at": "2026-11-19T05:02:05Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/davidpovarsky/cherri/check-runs/135342289188",
+  "labels": [
+    "macos-latest"
+  ],
+  "runner_id": 1000021839,
+  "runner_name": "GitHub Actions 1000021839",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}
