@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "4b9daa22126e4b57ec8d0b10d04f6bae89382b39",
+  "workingTreeDirtyBefore": false,
+  "workingTreeDirtyAfter": false,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    ".",
+    "-run",
+    "^(TestLANG002.*|TestP15C04EnumResolutionProduction)$",
+    "-count=1",
+    "-json",
+    "-timeout=110s"
+  ],
+  "env": {
+    "GOMAXPROCS": "1",
+    "GOFLAGS": "-p=1"
+  },
+  "availableMemoryBeforeBytes": 2746376192,
+  "exitCode": 124,
+  "durationSeconds": 135.36,
+  "completedAt": "2026-11-19T04:09:16.499996+00:00",
+  "pass": [
+    "TestLANG002_EnumAndTypeAliases/LiteralReferenceControl"
+  ],
+  "fail": [
+    null
+  ],
+  "skip": [],
+  "logSha256": "2b045d18f94b9a4f7fefa31437180820fe75d5ac51f3eac77cbd249ab5c71f11",
+  "appleRuntime": "NOT_RUN"
+}
