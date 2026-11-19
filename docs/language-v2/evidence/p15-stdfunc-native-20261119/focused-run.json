@@ -1,0 +1,32 @@
+{
+  "source_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+  "end_source_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "go_test_terminal_event": {
+    "Time": "2026-11-19T23:03:44.9136625+02:00",
+    "Action": "pass",
+    "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+    "Elapsed": 117.733
+  },
+  "passed_named": 31,
+  "passed_top_level": 5,
+  "failed_named": [],
+  "skipped_named": [],
+  "receipts": [
+    "im03-clean.json",
+    "rp28-brg20-clean.json"
+  ],
+  "log_sha256": "bc9fb5df9440131eed87b22c104ba048966300228af27d2c58405ef637ea4bb4",
+  "wrapper_status": "post-test extraction initially failed on split Output events; recovered by concatenating each test Output stream, without rerunning tests; original wrapper exit1 is not Go test failure",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=12m",
+    "-run",
+    "^(TestModuleStandardLibraryNativeEvidence|TestModuleEvidenceRejectsDetachedAndCrossTierRecords|TestModuleProductionPathsExist|TestStdfuncSupplementalProductionEvidence|TestSupplementalProductionScenarioInventory)$",
+    "./tools/language-acceptance"
+  ]
+}

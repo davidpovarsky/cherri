@@ -1,0 +1,34 @@
+{
+  "source_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+  "end_source_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "elapsed_seconds": 522.328,
+  "passed_named": 13,
+  "passed_top_level": 9,
+  "failed_named": [
+    "TestBindingCaptureProductionEvidence"
+  ],
+  "skipped_named": [],
+  "log_sha256": "11d0ac12e99b632fd7688df8c2c839b9b5d8d3268b6b2d5c08c2fdf5c9ad8270",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=20m",
+    "./tools/language-acceptance"
+  ],
+  "status": "CANCELLED_INCOMPLETE",
+  "reason": "Owned broad replay cancelled to serialize nested compiler capacity with root integration gate; observed CLI build failure retained, no pass claimed.",
+  "observed_failure": {
+    "test": "TestP15BindingDefaultsPublicRoutes",
+    "location": "p15_binding_defaults_acceptance_test.go:393",
+    "elapsed_seconds": 91.58,
+    "message": "build current production CLI: exit status 1",
+    "helper_context_seconds": 90,
+    "combined_output_captured": true,
+    "additional_build_output": ""
+  },
+  "claims_full_package_pass": false
+}

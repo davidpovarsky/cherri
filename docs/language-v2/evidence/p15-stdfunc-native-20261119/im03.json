@@ -1,0 +1,99 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestP15IM03PreservedStandardFunctionSource|TestP15IM03DirectServiceWithoutMain|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+  ],
+  "observations": null,
+  "records": [
+    {
+      "evidence_id": "ev-local-IM03-unit",
+      "requirements": [
+        "IM03"
+      ],
+      "tier": "unit",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM03PreservedStandardFunctionSource",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM03PreservedStandardFunctionSource|TestP15IM03DirectServiceWithoutMain|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential; actual generator, preserved-source hash, separate service package and raw native body/argument/return/coercion contracts verified; no Apple runtime claim",
+        "required_production_tests": "TestP15IM03PreservedStandardFunctionSource\nTestP15IM03DirectServiceWithoutMain\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential; actual generator, preserved-source hash, separate service package and raw native body/argument/return/coercion contracts verified; no Apple runtime claim"
+    },
+    {
+      "evidence_id": "ev-local-IM03-native-structure",
+      "requirements": [
+        "IM03"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM03StandardFunctionNativeBehavior",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM03PreservedStandardFunctionSource|TestP15IM03DirectServiceWithoutMain|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential; actual generator, preserved-source hash, separate service package and raw native body/argument/return/coercion contracts verified; no Apple runtime claim",
+        "required_production_tests": "TestP15IM03PreservedStandardFunctionSource\nTestP15IM03DirectServiceWithoutMain\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential; actual generator, preserved-source hash, separate service package and raw native body/argument/return/coercion contracts verified; no Apple runtime claim"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T21:03:12Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "IM03",
+        "group": "modules",
+        "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
+        "test_level": "unit+native",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential; actual generator, preserved-source hash, separate service package and raw native body/argument/return/coercion contracts verified; no Apple runtime claim"
+      }
+    ]
+  },
+  "scope": "Actual preserved-source generator, separate service package, raw native stdfunc semantics and Legacy differential. IM03 unit/native only; no Apple runtime or overall closure.",
+  "source_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+  "source_tree_clean": true
+}

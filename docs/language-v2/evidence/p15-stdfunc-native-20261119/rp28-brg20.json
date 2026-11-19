@@ -1,0 +1,182 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP28-generation",
+      "requirements": [
+        "RP28"
+      ],
+      "tier": "generation",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM03PreservedStandardFunctionSource",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM03PreservedStandardFunctionSource|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential",
+        "required_production_tests": "TestP15IM03PreservedStandardFunctionSource\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential"
+    },
+    {
+      "evidence_id": "ev-local-RP28-native-structure",
+      "requirements": [
+        "RP28"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM03PreservedStandardFunctionSource",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM03PreservedStandardFunctionSource|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential",
+        "required_production_tests": "TestP15IM03PreservedStandardFunctionSource\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential"
+    },
+    {
+      "evidence_id": "ev-local-BRG20-unit",
+      "requirements": [
+        "BRG20"
+      ],
+      "tier": "unit",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM01ModuleNamespaceDispatch|TestP15IM01NestedModuleNamespaceIsolation|TestP15IM01CanonicalRelativeModuleIdentity|TestP15IM01ModuleServiceResolvesActualDependencies|TestP15IM01DuplicateImportAndLocalNamesStayDistinct|TestP15IM01ModuleServiceRefreshAndExports|TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15IM01BuiltinModuleAliasesPreserveNativeParity|TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity|TestP15IM01CyclePathAndDuplicateAliasDiagnostics|TestP15IM02RejectsModuleRuntimeInitialization|TestP15IM02LegacyMigrationDoesNotDropInitialization|TestP15IM03PreservedStandardFunctionSource|TestP15IM03DirectServiceWithoutMain|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedModuleNamespaceIsolation, TestP15IM01CanonicalRelativeModuleIdentity, TestP15IM01ModuleServiceResolvesActualDependencies, TestP15IM01DuplicateImportAndLocalNamesStayDistinct, TestP15IM01ModuleServiceRefreshAndExports, TestP15IM01ModuleAliasCasePreservesNamespace, TestP15IM01UppercaseModuleRejectsUnexportedCallable, TestP15IM01BuiltinModuleAliasesPreserveNativeParity, TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity, TestP15IM01CyclePathAndDuplicateAliasDiagnostics, TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization, TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential",
+        "required_production_tests": "TestP15IM01ModuleNamespaceDispatch\nTestP15IM01NestedModuleNamespaceIsolation\nTestP15IM01CanonicalRelativeModuleIdentity\nTestP15IM01ModuleServiceResolvesActualDependencies\nTestP15IM01DuplicateImportAndLocalNamesStayDistinct\nTestP15IM01ModuleServiceRefreshAndExports\nTestP15IM01ModuleAliasCasePreservesNamespace\nTestP15IM01UppercaseModuleRejectsUnexportedCallable\nTestP15IM01BuiltinModuleAliasesPreserveNativeParity\nTestP15IM01BuiltinModuleAliasesRetainSchemaIdentity\nTestP15IM01CyclePathAndDuplicateAliasDiagnostics\nTestP15IM02RejectsModuleRuntimeInitialization\nTestP15IM02LegacyMigrationDoesNotDropInitialization\nTestP15IM03PreservedStandardFunctionSource\nTestP15IM03DirectServiceWithoutMain\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedModuleNamespaceIsolation, TestP15IM01CanonicalRelativeModuleIdentity, TestP15IM01ModuleServiceResolvesActualDependencies, TestP15IM01DuplicateImportAndLocalNamesStayDistinct, TestP15IM01ModuleServiceRefreshAndExports, TestP15IM01ModuleAliasCasePreservesNamespace, TestP15IM01UppercaseModuleRejectsUnexportedCallable, TestP15IM01BuiltinModuleAliasesPreserveNativeParity, TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity, TestP15IM01CyclePathAndDuplicateAliasDiagnostics, TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization, TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential"
+    },
+    {
+      "evidence_id": "ev-local-BRG20-service",
+      "requirements": [
+        "BRG20"
+      ],
+      "tier": "service",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM01ModuleNamespaceDispatch|TestP15IM01NestedModuleNamespaceIsolation|TestP15IM01CanonicalRelativeModuleIdentity|TestP15IM01ModuleServiceResolvesActualDependencies|TestP15IM01DuplicateImportAndLocalNamesStayDistinct|TestP15IM01ModuleServiceRefreshAndExports|TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15IM01BuiltinModuleAliasesPreserveNativeParity|TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity|TestP15IM01CyclePathAndDuplicateAliasDiagnostics|TestP15IM02RejectsModuleRuntimeInitialization|TestP15IM02LegacyMigrationDoesNotDropInitialization|TestP15IM03PreservedStandardFunctionSource|TestP15IM03DirectServiceWithoutMain|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedModuleNamespaceIsolation, TestP15IM01CanonicalRelativeModuleIdentity, TestP15IM01ModuleServiceResolvesActualDependencies, TestP15IM01DuplicateImportAndLocalNamesStayDistinct, TestP15IM01ModuleServiceRefreshAndExports, TestP15IM01ModuleAliasCasePreservesNamespace, TestP15IM01UppercaseModuleRejectsUnexportedCallable, TestP15IM01BuiltinModuleAliasesPreserveNativeParity, TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity, TestP15IM01CyclePathAndDuplicateAliasDiagnostics, TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization, TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential",
+        "required_production_tests": "TestP15IM01ModuleNamespaceDispatch\nTestP15IM01NestedModuleNamespaceIsolation\nTestP15IM01CanonicalRelativeModuleIdentity\nTestP15IM01ModuleServiceResolvesActualDependencies\nTestP15IM01DuplicateImportAndLocalNamesStayDistinct\nTestP15IM01ModuleServiceRefreshAndExports\nTestP15IM01ModuleAliasCasePreservesNamespace\nTestP15IM01UppercaseModuleRejectsUnexportedCallable\nTestP15IM01BuiltinModuleAliasesPreserveNativeParity\nTestP15IM01BuiltinModuleAliasesRetainSchemaIdentity\nTestP15IM01CyclePathAndDuplicateAliasDiagnostics\nTestP15IM02RejectsModuleRuntimeInitialization\nTestP15IM02LegacyMigrationDoesNotDropInitialization\nTestP15IM03PreservedStandardFunctionSource\nTestP15IM03DirectServiceWithoutMain\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedModuleNamespaceIsolation, TestP15IM01CanonicalRelativeModuleIdentity, TestP15IM01ModuleServiceResolvesActualDependencies, TestP15IM01DuplicateImportAndLocalNamesStayDistinct, TestP15IM01ModuleServiceRefreshAndExports, TestP15IM01ModuleAliasCasePreservesNamespace, TestP15IM01UppercaseModuleRejectsUnexportedCallable, TestP15IM01BuiltinModuleAliasesPreserveNativeParity, TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity, TestP15IM01CyclePathAndDuplicateAliasDiagnostics, TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization, TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential"
+    },
+    {
+      "evidence_id": "ev-local-BRG20-native-structure",
+      "requirements": [
+        "BRG20"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15IM01ModuleNamespaceDispatch|TestP15IM01NestedModuleNamespaceIsolation|TestP15IM01CanonicalRelativeModuleIdentity|TestP15IM01ModuleServiceResolvesActualDependencies|TestP15IM01DuplicateImportAndLocalNamesStayDistinct|TestP15IM01ModuleServiceRefreshAndExports|TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15IM01BuiltinModuleAliasesPreserveNativeParity|TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity|TestP15IM01CyclePathAndDuplicateAliasDiagnostics|TestP15IM02RejectsModuleRuntimeInitialization|TestP15IM02LegacyMigrationDoesNotDropInitialization|TestP15IM03PreservedStandardFunctionSource|TestP15IM03DirectServiceWithoutMain|TestP15RP28StandardLibraryGeneration|TestP15IM03StandardFunctionNativeBehavior|TestP15RP28StandardFunctionLegacyDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedModuleNamespaceIsolation, TestP15IM01CanonicalRelativeModuleIdentity, TestP15IM01ModuleServiceResolvesActualDependencies, TestP15IM01DuplicateImportAndLocalNamesStayDistinct, TestP15IM01ModuleServiceRefreshAndExports, TestP15IM01ModuleAliasCasePreservesNamespace, TestP15IM01UppercaseModuleRejectsUnexportedCallable, TestP15IM01BuiltinModuleAliasesPreserveNativeParity, TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity, TestP15IM01CyclePathAndDuplicateAliasDiagnostics, TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization, TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential",
+        "required_production_tests": "TestP15IM01ModuleNamespaceDispatch\nTestP15IM01NestedModuleNamespaceIsolation\nTestP15IM01CanonicalRelativeModuleIdentity\nTestP15IM01ModuleServiceResolvesActualDependencies\nTestP15IM01DuplicateImportAndLocalNamesStayDistinct\nTestP15IM01ModuleServiceRefreshAndExports\nTestP15IM01ModuleAliasCasePreservesNamespace\nTestP15IM01UppercaseModuleRejectsUnexportedCallable\nTestP15IM01BuiltinModuleAliasesPreserveNativeParity\nTestP15IM01BuiltinModuleAliasesRetainSchemaIdentity\nTestP15IM01CyclePathAndDuplicateAliasDiagnostics\nTestP15IM02RejectsModuleRuntimeInitialization\nTestP15IM02LegacyMigrationDoesNotDropInitialization\nTestP15IM03PreservedStandardFunctionSource\nTestP15IM03DirectServiceWithoutMain\nTestP15RP28StandardLibraryGeneration\nTestP15IM03StandardFunctionNativeBehavior\nTestP15RP28StandardFunctionLegacyDifferential"
+      },
+      "detail": "Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedModuleNamespaceIsolation, TestP15IM01CanonicalRelativeModuleIdentity, TestP15IM01ModuleServiceResolvesActualDependencies, TestP15IM01DuplicateImportAndLocalNamesStayDistinct, TestP15IM01ModuleServiceRefreshAndExports, TestP15IM01ModuleAliasCasePreservesNamespace, TestP15IM01UppercaseModuleRejectsUnexportedCallable, TestP15IM01BuiltinModuleAliasesPreserveNativeParity, TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity, TestP15IM01CyclePathAndDuplicateAliasDiagnostics, TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization, TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain, TestP15RP28StandardLibraryGeneration, TestP15IM03StandardFunctionNativeBehavior, TestP15RP28StandardFunctionLegacyDifferential"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T21:03:44Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 2,
+    "passed_cases": 2,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG20",
+        "group": "gate",
+        "requirement": "Modules and existing standard functions",
+        "test_level": "unit+service+native-structure",
+        "executed_levels": [
+          "unit",
+          "service",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP28",
+        "group": "repair",
+        "requirement": "Generated existing stdfunc",
+        "test_level": "generation+native-structure",
+        "executed_levels": [
+          "generation",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "RP28 actual generator and raw native stdfunc contracts; BRG20 independently executes actual aliases/cycles/runtime-init/include migration/service/native scenarios. Native means serialized structure; no Apple execution, linked-ID inheritance or release closure.",
+  "source_sha": "2e8647ff8b21b163d35b258b697f723b11b28aa5",
+  "source_tree_clean": true
+}
