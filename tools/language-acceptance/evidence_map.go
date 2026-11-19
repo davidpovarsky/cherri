@@ -462,6 +462,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if _, found := stateAcceptanceScenarios[id]; found {
+		return stateAcceptanceTestIDs(id)
+	}
 	if id == "RP29" {
 		return assetAuthorizationScenario.testIDs()
 	}
@@ -521,6 +524,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if _, found := stateAcceptanceScenarios[id]; found {
+		return stateAcceptanceTestIDs(id)
+	}
 	if producer, ok := supplementalProductionScenarios[id]; ok {
 		return producer.testIDs()
 	}

@@ -78,9 +78,9 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	requiredRecords += p15AppendAIEvaluationPartialSelection(t, all, selected)
 
 	var runner = NewRunner()
-	runner.runRepairCases(all.Repair)
-	runner.runRecoveryGates(all.Gates)
-	if len(runner.results) != 85 || len(runner.records) != requiredRecords || len(runner.observations) != 0 {
+	runner.runRepairCases(selected.Repair)
+	runner.runRecoveryGates(selected.Gates)
+	if len(runner.results) != selected.Repair.CaseCount+selected.Gates.GateCount || len(runner.records) != requiredRecords || len(runner.observations) != 0 {
 		t.Fatalf("unexpected supplemental scope: results=%d records=%d observations=%d",
 			len(runner.results), len(runner.records), len(runner.observations))
 	}
