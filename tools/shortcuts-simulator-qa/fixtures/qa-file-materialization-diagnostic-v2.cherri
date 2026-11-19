@@ -1,0 +1,98 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Additive public native characterization. Original export acceptance is unchanged.
+// Each observed type name is data; no expected label is substituted for it.
+debugClearLogs()
+debugTraceEvent("before", "file-materialization")
+let emptyArtifact = debugExport("json", false, false, false)
+let emptyText = getText(emptyArtifact)
+let emptyParsed = getDictionary(emptyText)
+let emptyEntries = getValue(emptyParsed, "entries")
+let emptyCount = count(emptyEntries, "Items")
+let original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+let oneArtifact = debugExport("json", false, false, false)
+let oneText = getText(oneArtifact)
+let oneParsed = getDictionary(oneText)
+let oneEntries = getValue(oneParsed, "entries")
+let oneCount = count(oneEntries, "Items")
+let firstEntry = getFirstItem(oneEntries)
+let oneStatus = getValue(firstEntry, "status")
+let payload = getValue(firstEntry, "payload")
+let payloadValue = getValue(payload, "value")
+let restoredFile = base64Decode(payloadValue)
+let restoredText = getText(restoredFile)
+let jsonText = text("{\"boundary\":\"PUBLIC_JSON_WITNESS\",\"entries\":[]}")
+let jsonEncoded = base64Encode(jsonText, lineBreakMode: "None")
+let jsonDecoded = base64Decode(jsonEncoded)
+let jsonNamed = setName(jsonDecoded, "boundary.json", false)
+let binaryWitness = base64Decode("AQ==")
+let namedStem = getName(jsonNamed)
+let namedExtension = getFileDetail(jsonNamed, "File Extension")
+let fullName = text(f"{namedStem}.{namedExtension}")
+let jsonCount = count(jsonText, "Items")
+let decodedCount = count(jsonDecoded, "Items")
+let namedCount = count(jsonNamed, "Items")
+comment("ANCHOR_CARD_15_MID_CENTER")
+let jsonType64Type = typeOf(jsonText)
+let decodeType64Type = typeOf(jsonDecoded)
+let namedType64Type = typeOf(jsonNamed)
+let emptyType64Type = typeOf(emptyArtifact)
+let oneType64Type = typeOf(oneArtifact)
+let binaryType64Type = typeOf(binaryWitness)
+let jsonType64Raw = base64Encode(jsonType64Type, lineBreakMode: "None")
+let jsonType64Length = count(jsonType64Raw, "Characters")
+var jsonType64 = "OVERSIZE"
+if jsonType64Length.number < 513 { jsonType64 = jsonType64Raw }
+let decodeType64Raw = base64Encode(decodeType64Type, lineBreakMode: "None")
+let decodeType64Length = count(decodeType64Raw, "Characters")
+var decodeType64 = "OVERSIZE"
+if decodeType64Length.number < 513 { decodeType64 = decodeType64Raw }
+let namedType64Raw = base64Encode(namedType64Type, lineBreakMode: "None")
+let namedType64Length = count(namedType64Raw, "Characters")
+var namedType64 = "OVERSIZE"
+if namedType64Length.number < 513 { namedType64 = namedType64Raw }
+let emptyType64Raw = base64Encode(emptyType64Type, lineBreakMode: "None")
+let emptyType64Length = count(emptyType64Raw, "Characters")
+var emptyType64 = "OVERSIZE"
+if emptyType64Length.number < 513 { emptyType64 = emptyType64Raw }
+let oneType64Raw = base64Encode(oneType64Type, lineBreakMode: "None")
+let oneType64Length = count(oneType64Raw, "Characters")
+var oneType64 = "OVERSIZE"
+if oneType64Length.number < 513 { oneType64 = oneType64Raw }
+let binaryType64Raw = base64Encode(binaryType64Type, lineBreakMode: "None")
+let binaryType64Length = count(binaryType64Raw, "Characters")
+var binaryType64 = "OVERSIZE"
+if binaryType64Length.number < 513 { binaryType64 = binaryType64Raw }
+let jsonBytes64Raw = base64Encode(jsonText, lineBreakMode: "None")
+let jsonBytes64Length = count(jsonBytes64Raw, "Characters")
+var jsonBytes64 = "OVERSIZE"
+if jsonBytes64Length.number < 513 { jsonBytes64 = jsonBytes64Raw }
+let decodeBytes64Raw = base64Encode(jsonDecoded, lineBreakMode: "None")
+let decodeBytes64Length = count(decodeBytes64Raw, "Characters")
+var decodeBytes64 = "OVERSIZE"
+if decodeBytes64Length.number < 513 { decodeBytes64 = decodeBytes64Raw }
+let namedBytes64Raw = base64Encode(jsonNamed, lineBreakMode: "None")
+let namedBytes64Length = count(namedBytes64Raw, "Characters")
+var namedBytes64 = "OVERSIZE"
+if namedBytes64Length.number < 513 { namedBytes64 = namedBytes64Raw }
+let payloadText64Raw = base64Encode(payloadValue, lineBreakMode: "None")
+let payloadText64Length = count(payloadText64Raw, "Characters")
+var payloadText64 = "OVERSIZE"
+if payloadText64Length.number < 513 { payloadText64 = payloadText64Raw }
+let restored64Raw = base64Encode(restoredText, lineBreakMode: "None")
+let restored64Length = count(restored64Raw, "Characters")
+var restored64 = "OVERSIZE"
+if restored64Length.number < 513 { restored64 = restored64Raw }
+let name64Raw = base64Encode(fullName, lineBreakMode: "None")
+let name64Length = count(name64Raw, "Characters")
+var name64 = "OVERSIZE"
+if name64Length.number < 513 { name64 = name64Raw }
+let status64Raw = base64Encode(oneStatus, lineBreakMode: "None")
+let status64Length = count(status64Raw, "Characters")
+var status64 = "OVERSIZE"
+if status64Length.number < 513 { status64 = status64Raw }
+debugTraceEvent("after", "file-materialization")
+let traceEnvelope = debugExportTrace(runId: "qa-file-materialization-diagnostic-v2")
+let finalSummary = text(f"CHERRI_QA_FILE_MATERIALIZATION_DIAG:JSON_TYPE64={jsonType64}:DECODE_TYPE64={decodeType64}:NAMED_TYPE64={namedType64}:EMPTY_TYPE64={emptyType64}:ONE_TYPE64={oneType64}:BINARY_TYPE64={binaryType64}:JSON_COUNT={jsonCount}:DECODE_COUNT={decodedCount}:NAMED_COUNT={namedCount}:EMPTY_ENTRIES={emptyCount}:ONE_ENTRIES={oneCount}:JSON_BYTES64={jsonBytes64}:DECODE_BYTES64={decodeBytes64}:NAMED_BYTES64={namedBytes64}:PAYLOAD_TEXT64={payloadText64}:RESTORED64={restored64}:NAME64={name64}:STATUS64={status64}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

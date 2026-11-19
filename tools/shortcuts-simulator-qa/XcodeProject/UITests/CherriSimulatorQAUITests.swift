@@ -154,6 +154,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-f04-yield-list-v2",
         "qa-f04-yield-empty-list-v2",
         "qa-native-boundary-diagnostic-v2",
+        "qa-file-materialization-diagnostic-v2",
         "qa-f04-record-empty-v2",
         "qa-collect-counts-v2",
         "qa-collect-counts-legacy",

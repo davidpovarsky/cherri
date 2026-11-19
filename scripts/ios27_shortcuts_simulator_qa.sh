@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -233,6 +233,13 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="CherriTypedDefaultsPOC"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_TYPED_DEFAULTS_RESULT:Q0hFUlJJX1RZUEVEX0RFRkFVTFRTX09LCkRFRkFVTFRTX0VYUExJQ0lUPTA6MDo6MDowCkRFRkFVTFRTX09NSVRURUQ9MTo5OmRlZjoxOjEKREVGQVVMVFNfTUlYRUQ9MDo5OmRlZjowOjE="
+    ;;
+  qa-file-materialization-diagnostic)
+    # Additive characterization: desired File contract remains independently strict.
+    TARGET_FIXTURE_ID="qa-file-materialization-diagnostic-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-file-materialization-diagnostic-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_FILE_MATERIALIZATION_DIAG:JSON_TYPE64=VGV4dA==:DECODE_TYPE64=RmlsZQ==:NAMED_TYPE64=RmlsZQ==:EMPTY_TYPE64=RmlsZQ==:ONE_TYPE64=RmlsZQ==:BINARY_TYPE64=RmlsZQ==:JSON_COUNT=1:DECODE_COUNT=1:NAMED_COUNT=1:EMPTY_ENTRIES=0:ONE_ENTRIES=1:JSON_BYTES64=eyJib3VuZGFyeSI6IlBVQkxJQ19KU09OX1dJVE5FU1MiLCJlbnRyaWVzIjpbXX0=:DECODE_BYTES64=eyJib3VuZGFyeSI6IlBVQkxJQ19KU09OX1dJVE5FU1MiLCJlbnRyaWVzIjpbXX0=:NAMED_BYTES64=eyJib3VuZGFyeSI6IlBVQkxJQ19KU09OX1dJVE5FU1MiLCJlbnRyaWVzIjpbXX0=:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Ym91bmRhcnkuanNvbg==:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ="
     ;;
   qa-native-boundary-diagnostic)
     # Causal characterization only; original acceptance probes remain unchanged.
@@ -526,6 +533,7 @@ root_dir, artifact_dir, source_sha = sys.argv[1], sys.argv[2], sys.argv[3]
 sys.path.insert(0, os.path.join(root_dir, "tools", "shortcuts-simulator-qa"))
 from retry_http_probe import validate_fixture_graph
 from export_unicode_diagnostic import validate_export_unicode_graph
+from file_materialization_diagnostic import verify_source as verify_file_materialization_source, verify_graph as verify_file_materialization_graph
 from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from native_boundary_diagnostic import verify_source as verify_boundary_source, verify_graph as verify_boundary_graph
@@ -562,6 +570,7 @@ fixture_specs = [
     ("qa-label-file-carrier-v2", "p15-label-probes/qa-label-file-carrier-v2.cherri", "v2"),
     ("qa-label-raw-empty-v2", "p15-label-probes/qa-label-raw-empty-v2.cherri", "v2"),
     ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),
+    ("qa-file-materialization-diagnostic-v2", "qa-file-materialization-diagnostic-v2.cherri", "v2"),
     ("qa-native-boundary-diagnostic-v2", "qa-native-boundary-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-diagnostic-v2", "qa-export-unicode-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-v2", "p15-export-probes/qa-export-unicode-v2.cherri", "v2"),
@@ -680,6 +689,8 @@ for fid, fname, dialect in fixture_specs:
         "runtimeTraceExpectation": trace_expectation,
         "httpProbeGraph": validate_fixture_graph(fid, actions),
         "exportUnicodeDiagnosticGraph": validate_export_unicode_graph(fid, actions),
+        "fileMaterializationSource": verify_file_materialization_source(root_dir, fid, src_bytes),
+        "fileMaterializationGraph": verify_file_materialization_graph(fid, actions),
         "bindingDefaultsSource": verify_adapter_source(root_dir, fid, src_bytes),
         "bindingDefaultsGraph": verify_adapter_graph(fid, actions),
         "recordEmptyFeasibilitySource": verify_record_empty_source(root_dir, fid, src_bytes),

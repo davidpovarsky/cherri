@@ -12,9 +12,11 @@ import unittest
 from test_workflow_input_contract import bash_path
 import test_runtime_callback_contract as callback_contract
 from fixture_compile_contract import EXPECTED_REJECTIONS
+import file_materialization_diagnostic as file_probe
 
 
 CASES = {
+    file_probe.FIXTURE_ID: file_probe.EXPECTED_OUTPUT,
     "qa-export-unicode-diagnostic-v2": "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y:NAME=Y:COUNT=Y:STATUS=Y:PAYLOAD=Y:RESTORED_EQ=Y:RESTORED_NE=N:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:DECODED_FILE64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
     "qa-number-coercion-control-v2": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
     "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
@@ -98,6 +100,28 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                 manifest = self.oracle.manifest(fid)
                 manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
                 self.assertEqual(self.oracle.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
+    def test_file_materialization_type_count_and_byte_fields_are_independent(self):
+        fid, expected = file_probe.FIXTURE_ID, file_probe.EXPECTED_OUTPUT
+        source = (self.root / "tools/shortcuts-simulator-qa/fixtures" / (fid + ".cherri")).read_bytes()
+        self.assertEqual(file_probe.verify_source(self.root, fid, source)["sourceSha256"], file_probe.SOURCE_SHA256)
+        with self.assertRaises(ValueError):
+            file_probe.verify_source(self.root, fid, source + b"\n// mutation\n")
+        for name, digest in (("qa-export-empty-v2", "86a22c60dfa32590012f825c954ad3bba1317d0c8d31e872e2869b06774d7943"),
+                             ("qa-export-unicode-v2", "073c2d4fbbe461f35b17796e4fef814f65f85a71acd0a5efa9ad0f195287b079")):
+            original = self.root / "tools/shortcuts-simulator-qa/fixtures/p15-export-probes" / (name + ".cherri")
+            self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(), digest)
+        event = self.oracle.event()
+        event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+        event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+        self.assertEqual(self.oracle.verify([event], fid, expected)["runGate"], "PASS")
+        self.assertEqual(len(file_probe.EXPECTED_FIELDS), 18)
+        for label, _, correct in file_probe.EXPECTED_FIELDS:
+            for altered in ("WRONG", "OVERSIZE", "A" * 513):
+                with self.subTest(field=label, altered=altered[:10]):
+                    wrong = expected.replace(":" + label + "=" + correct, ":" + label + "=" + altered)
+                    self.assertNotEqual(wrong, expected)
+                    self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"], "FAIL_RUNTIME")
 
     def test_unicode_byte_witnesses_are_independent_and_required(self):
         fid = "qa-export-unicode-diagnostic-v2"

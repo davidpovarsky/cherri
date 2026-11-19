@@ -18,6 +18,7 @@ from fixture_compile_contract import EXPECTED_REJECTIONS
 from native_boundary_diagnostic import FIXTURE_ID as BOUNDARY_ID, verify_source as verify_boundary_source, verify_graph as verify_boundary_graph, verify_causal_mutations as verify_boundary_mutations
 from binding_defaults_probe import CASES as BINDING_CASES, verify_adapter_source, verify_adapter_graph
 from export_unicode_diagnostic import FIXTURE_ID as UNICODE_ID, validate_export_unicode_graph
+from file_materialization_diagnostic import FIXTURE_ID as FILE_MATERIALIZATION_ID, verify_source as verify_file_source, verify_graph as verify_file_graph, verify_causal_mutations as verify_file_mutations
 from f04_record_empty_probe import FIXTURE_ID as RECORD_EMPTY_ID, verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph, verify_causal_mutations as verify_record_empty_mutations
 
 repo = Path(sys.argv[1]).resolve()
@@ -64,6 +65,7 @@ for fid, entry in rejected.items():
     source = repo / "tools/shortcuts-simulator-qa/fixtures" / entry["fileName"]
     assert entry["sourceSha256"] == hashlib.sha256(source.read_bytes()).hexdigest(), fid
 new_probes = {
+    FILE_MATERIALIZATION_ID: '',
     'qa-f04-record-empty-v2': '',
     "CherriBindingCapturePOC": "p15-binding-defaults",
     "CherriTypedDefaultsPOC": "p15-binding-defaults",
@@ -170,6 +172,14 @@ boundary_graph = plistlib.loads((directory / "builds" / (BOUNDARY_ID + ".shortcu
 boundary_result = verify_boundary_graph(BOUNDARY_ID, boundary_graph)
 assert boundary_entry["nativeBoundaryGraph"] == boundary_result
 boundary_mutations = verify_boundary_mutations(boundary_graph)
+
+file_entry = selected[FILE_MATERIALIZATION_ID]
+file_bytes = (repo / "tools/shortcuts-simulator-qa/fixtures" / file_entry["fileName"]).read_bytes()
+assert file_entry["fileMaterializationSource"] == verify_file_source(repo, FILE_MATERIALIZATION_ID, file_bytes)
+file_graph = plistlib.loads((directory / "builds" / (FILE_MATERIALIZATION_ID + ".shortcut")).read_bytes())["WFWorkflowActions"]
+file_result = verify_file_graph(FILE_MATERIALIZATION_ID, file_graph)
+assert file_entry["fileMaterializationGraph"] == file_result
+file_mutations = verify_file_mutations(file_graph)
 
 # Mutate the actual emitted diagnostic graph. This does not simulate Apple:
 # it establishes that a wrong source edge, forged flag or missing output cap
@@ -346,6 +356,7 @@ report = {
     'selectedFixtures': selected, 'newExplicitSignedQASelections': len(new_probes),
     'bindingDefaultsProbes': binding_checks,
     'nativeBoundaryGraph': boundary_result, 'nativeBoundaryCausalMutations': boundary_mutations,
+    'fileMaterializationGraph': file_result, 'fileMaterializationCausalMutations': file_mutations,
     'recordEmptyFeasibility': record_empty_result, 'recordEmptyCausalMutations': record_empty_mutations,
     'unicodeDiagnosticGraph': unicode_result, 'causalUnicodeGraphMutations': unicode_mutations,
     'causalCompileMutations': negatives, 'causalPublicationMutations': publication_negatives,
