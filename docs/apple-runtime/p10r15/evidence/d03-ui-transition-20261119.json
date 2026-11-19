@@ -1,0 +1,65 @@
+{
+  "source_sha": "111a948f8221f0ed927191369a61aca08aa01848",
+  "source_clean_before_after": true,
+  "stages": {
+    "python-evidence": {
+      "exit_code": 0,
+      "seconds": 6.071,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "abdea93b5115a3aaedbf1affbd8f4044146d61e3f90ad41ee7a7ecc6f00af9a3"
+    },
+    "go-documentation-intake": {
+      "exit_code": 0,
+      "seconds": 12.748,
+      "stdout_sha256": "84fb6941d9b25443ff8177078dbdb13d6c93f96692833b0f7f04f02197d77aa4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "swift-syntax-only": {
+      "exit_code": 0,
+      "seconds": 1.168,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "go_passes": [
+    "TestDocumentationFormalScopeRequiresBothConsumers/wrong_producer",
+    "TestDocumentationFormalScopeRequiresBothConsumers/wrong_scope",
+    "TestDocumentationFormalScopeRequiresBothConsumers/missing_artifact",
+    "TestDocumentationFormalScopeRequiresBothConsumers/summary_only",
+    "TestDocumentationFormalScopeRequiresBothConsumers",
+    "TestDocumentationActualCollectorAdapterToFormalIntake/complete_model",
+    "TestDocumentationActualCollectorAdapterToFormalIntake/indented_receipt",
+    "TestDocumentationActualCollectorAdapterToFormalIntake/missing_generation",
+    "TestDocumentationActualCollectorAdapterToFormalIntake/failed_process",
+    "TestDocumentationActualCollectorAdapterToFormalIntake/duplicated_raw_receipt",
+    "TestDocumentationActualCollectorAdapterToFormalIntake/missing_ui_checkpoint",
+    "TestDocumentationActualCollectorAdapterToFormalIntake"
+  ],
+  "go_failures": [],
+  "go_skips": [],
+  "python_test_methods": 48,
+  "swift_verification": "SYNTAX_ONLY_ON_WINDOWS",
+  "native_ui_replay": "NOT_RUN",
+  "production_search_changed": false,
+  "formal_acceptance_granted": false,
+  "original_receipt_sha256": "0b82ae9ca53ba3684147f9cea148dee49f97f1b26a9dcf948fe6df521b986a10",
+  "exact_failed_bundle_model_replay": {
+    "observed_ui_source_sha": "e61e0d306bb363c39ade612ef35ccfc8051ddf3c",
+    "model_source_sha256": "9a82b1f90957798a295cc0b02cb2b70ddb048ca7d5fea1ec498595bf882f68f7",
+    "bundle_sha256": "bd3c9351723a773ddd502bd3e54b1e7735ec82cc049ec4ae452671d9e8d7bd28",
+    "swift_build_exit_code": 0,
+    "model_exit_code": 0,
+    "actual_observation": {
+      "defaultCount": 0,
+      "nativeUIExecuted": false,
+      "optInCount": 1,
+      "optInIdentifiers": [
+        "fork-language/migration.md:46"
+      ],
+      "status": "PASS_EXACT_BUNDLE_SEARCH_MODEL_ONLY"
+    },
+    "full_ios_gate": "FAILED",
+    "native_ui_root_cause": "NOT_YET_DISTINGUISHED"
+  },
+  "original_model_receipt_sha256": "9241e380333be36aeda76d21a3b50a4159c4a55f2f856852f3fba7eedbbebf0b"
+}
