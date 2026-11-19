@@ -211,7 +211,7 @@ final class CherriEditorUITests: XCTestCase {
         let title = app.staticTexts["docsSectionTitle"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
         XCTAssertEqual(title.label, "show")
-        let signature = app.staticTexts.containing(
+        let signature = app.staticTexts.matching(
             NSPredicate(format: "label CONTAINS %@", "show(input: AnyContent)")
         ).firstMatch
         XCTAssertTrue(signature.waitForExistence(timeout: 5),
