@@ -31,6 +31,8 @@ func compileV2Helper(t *testing.T, name, code string) (*CanonicalBackendSession,
 	}
 
 	session := NewCanonicalBackendSession()
+	// Even an unexpected success in a negative test must release state on Fatal.
+	t.Cleanup(session.Close)
 	lowerer := lower.NewLowererWithSession(reg, session)
 	lowerer.WorkflowName = name
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
