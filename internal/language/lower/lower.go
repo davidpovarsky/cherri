@@ -5407,7 +5407,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if b, hasB := actDecl.Bindings[actDecl.PrimaryParam]; hasB && b.WireKey != "" {
 					wireKey = b.WireKey
 				}
-				params[wireKey] = val
+				params[wireKey] = l.lowerCustomCodecValue(actDecl, actDecl.PrimaryParam, val)
 				providedParams[actDecl.PrimaryParam] = true
 			} else if len(actDecl.Parameters) > 0 {
 				param := actDecl.Parameters[0]
@@ -5415,7 +5415,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if err != nil {
 					return nil, err
 				}
-				params[getWireKey(param)] = val
+				params[getWireKey(param)] = l.lowerCustomCodecValue(actDecl, param.Name, val)
 				providedParams[param.Name] = true
 				posIdx = 1
 			}
@@ -5432,7 +5432,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if b, hasB := actDecl.Bindings[arg.Label]; hasB && b.WireKey != "" {
 					wireKey = b.WireKey
 				}
-				params[wireKey] = val
+				params[wireKey] = l.lowerCustomCodecValue(actDecl, arg.Label, val)
 				providedParams[arg.Label] = true
 			} else {
 				// Positional arg
@@ -5443,7 +5443,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					if err != nil {
 						return nil, err
 					}
-					params[getWireKey(param)] = val
+					params[getWireKey(param)] = l.lowerCustomCodecValue(actDecl, param.Name, val)
 					providedParams[param.Name] = true
 				} else {
 					return nil, fmt.Errorf("action %q takes at most %d arguments, but more were provided", actionName, len(actDecl.Parameters))
@@ -5459,7 +5459,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					if err != nil {
 						return nil, err
 					}
-					params[getWireKey(param)] = val
+					params[getWireKey(param)] = l.lowerCustomCodecValue(actDecl, param.Name, val)
 				}
 			}
 		}
@@ -5641,36 +5641,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
 		if call.PrimaryArg != nil {
 			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
-				var primVal backend.SemanticValue
-				acceptsLit := false
-				for _, form := range primParam.AcceptedForms {
-					if form == "literal" {
-						acceptsLit = true
-						break
-					}
-				}
-				if !acceptsLit && ((primParam.WireKey == "WFInput" && primParam.Codec != "text") || primParam.Codec == "token") {
-					if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Type != syntax.TokenNone && lit.Type != syntax.TokenNull {
-						rawVal, err := l.lowerExpression(call.PrimaryArg)
-						if err == nil && rawVal != nil {
-							att := l.materializeToAttachment(rawVal)
-							primVal = backend.SemanticValue{
-								Kind: backend.ValReference,
-								Ref: &backend.Reference{
-									Kind:         backend.RefActionResult,
-									ProducerID:   att.OutputUUID,
-									ProducerName: att.OutputName,
-								},
-							}
-						}
-					}
-				}
-				if primVal.Kind == backend.ValNil {
-					var err error
-					primVal, err = l.lowerSemanticValue(call.PrimaryArg)
-					if err != nil {
-						return nil, err
-					}
+				primVal, err := l.lowerCodecSemanticValue(call.PrimaryArg, primParam.Codec, primParam.WireKey, primParam.AcceptedForms)
+				if err != nil {
+					return nil, err
 				}
 				primVal = l.captureCallSemanticValue(primVal, l.callWritesAfter(call, -1))
 				wireKey := primParam.WireKey
@@ -5746,7 +5719,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				}
 				seenIndices[matchedIdx] = true
 
-				val, err := l.lowerSemanticValue(nArg.Value)
+				val, err := l.lowerCodecSemanticValue(nArg.Value, param.Codec, param.WireKey, param.AcceptedForms)
 				if err != nil {
 					return nil, err
 				}
