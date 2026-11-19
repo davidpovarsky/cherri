@@ -11,7 +11,14 @@ import (
 
 // lookupCanonicalAction maps a backend.ResolvedCall to the authoritative actionDefinition in actions.
 func lookupCanonicalAction(call backend.ResolvedCall) (*actionDefinition, string, bool) {
-	stdActions := EnsureCanonicalStandardActions()
+	compilerSessionMutex.Lock()
+	defer compilerSessionMutex.Unlock()
+	return lookupCanonicalActionLocked(call)
+}
+
+// Canonical emission owns compilerSessionMutex for the complete session.
+func lookupCanonicalActionLocked(call backend.ResolvedCall) (*actionDefinition, string, bool) {
+	stdActions := ensureCanonicalStandardActionsLocked()
 
 	// 1. Direct match by DefinitionID
 	if call.DefinitionID != "" {

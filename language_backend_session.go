@@ -19,6 +19,14 @@ var (
 )
 
 func EnsureCanonicalStandardActions() map[string]*actionDefinition {
+	compilerSessionMutex.Lock()
+	defer compilerSessionMutex.Unlock()
+	return ensureCanonicalStandardActionsLocked()
+}
+
+// Initialization parses standard action source through the shared native
+// compiler globals. Callers already in a transaction use this owned variant.
+func ensureCanonicalStandardActionsLocked() map[string]*actionDefinition {
 	canonicalActionsOnce.Do(func() {
 		resetCompilerStateFully()
 		loadBasicStandardActions()

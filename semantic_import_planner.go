@@ -255,6 +255,11 @@ func buildSemanticImportContext(doc *NativeShortcutDocument, reg *ReverseActionR
 }
 
 func (ctx *semanticImportContext) runDecompilePasses(xmlBytes []byte) (err error) {
+	// The semantic prepass uses the legacy parser/decompiler globals. Copy its
+	// observations into ctx before releasing the same native-state ownership
+	// used by canonical emission and mobile requests.
+	compilerSessionMutex.Lock()
+	defer compilerSessionMutex.Unlock()
 	origEmbedded := embeddedCompilerMode
 	origArgs := args.Args
 	embeddedCompilerMode = true
