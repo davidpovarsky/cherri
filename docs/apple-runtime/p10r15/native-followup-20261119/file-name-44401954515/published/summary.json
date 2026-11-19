@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.4",
+  "runId": "44401954515",
+  "compilerCommitSha": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+  "requireRuntime": true,
+  "targetFixtureId": "qa-file-name-binding-v2",
+  "buildProfile": "debug",
+  "traceExpectation": "REQUIRED_NDJSON",
+  "traceRequirementMet": false,
+  "runtimeContractVerified": false,
+  "releaseReadiness": "PARTIAL_READY",
+  "privacyGatePassed": true,
+  "privacyScope": "SYNTHETIC_TEXT_AND_BYTE_PATTERNS_ONLY",
+  "pixelRedactionVerified": false,
+  "editorInspectorStatus": "NEEDS_REVIEW",
+  "privacyViolations": [],
+  "gates": {
+    "RUNNER_AVAILABLE": "PASS",
+    "SIMULATOR_BOOTED": "PASS",
+    "SHORTCUTS_APP_INSTALLED": "PASS",
+    "SHORTCUTS_LAUNCHED": "PASS",
+    "EDITOR_OPENED": "PASS",
+    "FILE_IMPORT_ATTEMPTED": "PASS",
+    "COMPILER_ARTIFACT_IMPORTED": "PASS",
+    "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+    "ACTION_EDITOR_CAPTURED": "PARTIAL_EDITOR_CAPTURE",
+    "SHORTCUT_RUN_ATTEMPTED": "PASS",
+    "SHORTCUT_RUN_COMPLETED": "FAIL_RUNTIME",
+    "CALLBACK_CAPTURED": "PASS",
+    "TRACE_CAPTURED": "FAIL_RUNTIME",
+    "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "status": "FAIL_RUNTIME_PRESERVED",
+  "sourceCommit": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+  "runId": 44401954515,
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44401954515",
+  "workflowConclusion": "failure",
+  "fixtureId": "qa-file-name-binding-v2",
+  "sourceSha256": "a919a0c8f13dee34af60debd069ede3a0e08ed43b24d2c748e56279fe7748a80",
+  "unsignedPlistSha256": "238f711b54d800fd55497deb30bfebcae1fa5c2e13d08cf89dc65644318f3e43",
+  "signedArtifactSha256": "7417ff4d945dd9bea091c76547653a7a864cdd5c290bedf35eaae730ce7b3028",
+  "nativeActionCount": 120,
+  "observedCallback": {
+    "matchingCallbacks": 1,
+    "identityVerified": true,
+    "status": "SUCCESS",
+    "runId": "qa-file-name-binding-v2-44401954515-35e7cd955ba6266325e6f3699f19c0e3",
+    "timestampISO8601": "2026-11-18T23:34:02.701Z",
+    "resultSummary": "CHERRI_QA_FILE_NAME_BINDING:L=stem:V=stem:I=stem:LT=ok:VT=ok:IT=ok",
+    "resultSummarySha256": "1ad5a9cf4f3925d8e97792c8b1a49c846b9dce06b56bc1f6bc97dbaac8fde150"
+  },
+  "canonicalOracleReplay": {
+    "runGate": "FAIL_RUNTIME",
+    "traceGate": "FAIL_RUNTIME",
+    "reason": "callback result does not exactly match expected output",
+    "targetFixtureId": "qa-file-name-binding-v2",
+    "compilerCommitSha": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+    "buildProfile": "debug",
+    "traceExpectation": "REQUIRED_NDJSON",
+    "releaseBuildVerified": false,
+    "sourceSha256": "a919a0c8f13dee34af60debd069ede3a0e08ed43b24d2c748e56279fe7748a80",
+    "unsignedPlistSha256": "238f711b54d800fd55497deb30bfebcae1fa5c2e13d08cf89dc65644318f3e43"
+  },
+  "runtimeContractVerified": false,
+  "oracleSourceSha256": "6ffda7cc462dbe1543e0a6bf297b17dd1453a5c1c119d10b973316f198b5994c",
+  "publicationPolicySourceSha256": "4b642768ff7ed195ba420954aa3730f7493a0648ace721958e5ba7d82bd41abd",
+  "publicationManifestSha256": "5a29a2d90ff6901a185e1a29812cdb7381dc6a3943e8325033c938723555f9ef",
+  "publishedHashesVerified": 20,
+  "files": [
+    {
+      "path": "compiler-manifest.json",
+      "sha256": "a8a2d91a17ab954a73af2628026223371a55e4fe511fddbf4dade6636dd3aaf9",
+      "bytes": 195810
+    },
+    {
+      "path": "docs/report.md",
+      "sha256": "da590105e0abe8aeef57be29c02425d39b332327fdc7326d1d5c9ae383ac4ca1",
+      "bytes": 849
+    },
+    {
+      "path": "editor/ax-persistence-diagnostics.json",
+      "sha256": "98bb57525b7611d74f0f34045790358a0d2cb7113064a9aa670b1a2850d805b0",
+      "bytes": 225
+    },
+    {
+      "path": "editor/editor-action-coverage.json",
+      "sha256": "dbfacc54a4382a985e815bb0de11138dd73c087563c4e77c51c5dac7fa9a9932",
+      "bytes": 1954
+    },
+    {
+      "path": "editor/editor-actions.json",
+      "sha256": "bb147cc65758bb8b1f5ffc630a34c62310f9c6b429c589884aa97c3e64533d71",
+      "bytes": 4913
+    },
+    {
+      "path": "editor/editor-comparison.json",
+      "sha256": "9a5124eca9fd65380fb001c2deb0deda6860bdb11ef95d87f1340ed3ea05fc22",
+      "bytes": 65469
+    },
+    {
+      "path": "editor/editor-report.md",
+      "sha256": "caaf8f4d1c8b9887943ac64f126b95d8c448bcebf15d10217eb19d85262f84d5",
+      "bytes": 6726
+    },
+    {
+      "path": "editor/editor-tree.json",
+      "sha256": "214608c9cd0ab9c7d891e52235ebef0a80d24ad32534b2ca03d8e5269439192a",
+      "bytes": 203957
+    },
+    {
+      "path": "editor/handshake-status.json",
+      "sha256": "3daacefa536f18df38c69750611089eeca9f0efa2a0d3dd0ac6dd3d93062defe",
+      "bytes": 474
+    },
+    {
+      "path": "editor/plist-vs-editor-comparison.json",
+      "sha256": "9a5124eca9fd65380fb001c2deb0deda6860bdb11ef95d87f1340ed3ea05fc22",
+      "bytes": 65469
+    },
+    {
+      "path": "editor/screenshots-manifest.json",
+      "sha256": "ec0a915a935a7f1cc9189f765dad8f1ebfb84a4ddae1aae3fcc187504c5c453b",
+      "bytes": 527
+    },
+    {
+      "path": "environment.json",
+      "sha256": "c8f0475220069d8082a9766e70536a4177270c23101789bcca42f35a56feabdc",
+      "bytes": 786
+    },
+    {
+      "path": "import-attempts.json",
+      "sha256": "02b3e2de31bb3a8f33b7eeaad22adc5d658ff7830d5eefa4d1e6aed9f60d62fe",
+      "bytes": 1670
+    },
+    {
+      "path": "runtime/callback-events.json",
+      "sha256": "e664cdc351c0b265e60657e2f0cbb0d49b5f5c1e926f0d28d56a61d334b47d8e",
+      "bytes": 2265
+    },
+    {
+      "path": "runtime/instrumentation-vs-original.json",
+      "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+      "bytes": 7446
+    },
+    {
+      "path": "runtime/output-assertions.json",
+      "sha256": "91a70f287f4842b0aa0261ada5a4c1595a0792c7c487f48819f2747efec10905",
+      "bytes": 1489
+    },
+    {
+      "path": "runtime/runtime-trace.jsonl",
+      "sha256": "6e8d5be7b34c326e1ad9024668647292fc7b9d873e1537a43e37238528d17832",
+      "bytes": 215
+    },
+    {
+      "path": "runtime/signing-provenance.json",
+      "sha256": "e9615025b840e4c4c0629e8a1498be583e2d6909d46dbd746b40676f2fd35ad3",
+      "bytes": 2060
+    },
+    {
+      "path": "summary.json",
+      "sha256": "7099c6a64467217b8f3cc107dc8ac5ee6ead541752f42ec952dd714a6ddc4dc0",
+      "bytes": 1126
+    },
+    {
+      "path": "tests/xcresult-summary.json",
+      "sha256": "9a90ff951e2d27318921780da91343e7805d7295a4e2ef7a7c2ecd69fe9bd2b4",
+      "bytes": 984
+    }
+  ],
+  "causalOracleControls": {
+    "status": "NOT_RUN_BASELINE_NOT_PASS",
+    "rejected": []
+  },
+  "editorStatus": "NEEDS_REVIEW",
+  "environment": {
+    "schemaVersion": "1.4",
+    "compilerCommitSha": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+    "uname": "Darwin sat12-bq150-c29eee81-6728-4bb4-9393-f62bc026326a-EA631F7B6D3D.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:00:07 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_VMAPPLE arm64",
+    "swVers": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+    "xcodeSelectPath": "/Applications/Xcode_27.1.app/Contents/Developer",
+    "xcodebuildVersion": "Xcode 27.1\nBuild version 27A9275",
+    "simulator": {
+      "maskedUdid": "8721CBAE-REDACTED",
+      "deviceName": "iPad mini (A17 Pro)",
+      "runtimeName": "iOS 27.0",
+      "runtimeVersion": "27.0",
+      "isIPad": true,
+      "shortcutsAppInstalled": true,
+      "shortcutsBundleId": "com.apple.shortcuts"
+    }
+  },
+  "scope": "This exact source, fixture, synthetic inputs and recorded Simulator run only.",
+  "notProven": [
+    "Physical device",
+    "General typed cache/TTL",
+    "Native failure cause",
+    "Complete per-action typed coverage",
+    "Complete Inspector identity mapping",
+    "HTTP status/error catching or redirect policy",
+    "Original require fixture repair"
+  ],
+  "privacy": {
+    "syntheticOnly": true,
+    "rawOrRasterPublication": false,
+    "privateCorpusUsed": false
+  }
+}
