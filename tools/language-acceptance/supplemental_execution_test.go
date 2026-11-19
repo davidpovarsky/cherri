@@ -32,14 +32,14 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	selected.Repair.CaseCount = len(selected.Repair.Cases)
 	selected.Gates.GateCount = len(selected.Gates.Gates)
-	if selected.Repair.CaseCount != 3 || selected.Gates.GateCount != 2 {
+	if selected.Repair.CaseCount != 6 || selected.Gates.GateCount != 3 {
 		t.Fatal("supplemental scenario selection drifted")
 	}
 
 	var runner = NewRunner()
 	runner.runRepairCases(all.Repair)
 	runner.runRecoveryGates(all.Gates)
-	if len(runner.results) != 85 || len(runner.records) != 8 || len(runner.observations) != 0 {
+	if len(runner.results) != 85 || len(runner.records) != 15 || len(runner.observations) != 0 {
 		t.Fatalf("unexpected supplemental scope: results=%d records=%d observations=%d",
 			len(runner.results), len(runner.records), len(runner.observations))
 	}
@@ -71,7 +71,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	var report, reportErr = ValidateEvidenceManifest(manifest, selected, "local")
-	if reportErr != nil || report.PassedCases != 5 || report.FailedCases != 0 ||
+	if reportErr != nil || report.PassedCases != 9 || report.FailedCases != 0 ||
 		report.SkippedCases != 0 || report.ClosureComplete {
 		t.Fatalf("supplemental evidence rejected or expanded into release closure: %+v err=%v", report, reportErr)
 	}
@@ -170,7 +170,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	var status, statusErr = exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()
 	var receipt, receiptErr = json.Marshal(map[string]any{
 		"source_sha": runner.implSHA, "source_tree_clean": statusErr == nil && len(status) == 0,
-		"scope":  "BRG02/BRG03 strict comparator; RP35 native preservation; RP36 intake; RP37 allowed-edit and failed-signing gates. No linked-ID inheritance, live signing success, or release closure.",
+		"scope":  "RP01/RP02/RP03/BRG04 actual verification contracts; BRG02/BRG03 strict comparator; RP35 native preservation; RP36 intake; RP37 allowed-edit and failed-signing gates. No linked-ID inheritance, live signing success, or release closure.",
 		"report": report, "records": runner.records,
 	})
 	if receiptErr != nil {
@@ -211,4 +211,121 @@ func TestSupplementalAcceptanceCannotChangeRequiredTiers(t *testing.T) {
 	if len(runner.records) != 0 || len(runner.results) != 0 {
 		t.Fatal("unexecuted altered contract minted evidence")
 	}
+}
+
+func TestSupplementalVerificationProductionEvidence(t *testing.T) {
+	var all, err = LoadAllContracts("", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wanted = map[string]bool{"RP01": true, "RP02": true, "RP03": true, "BRG04": true}
+	var selected = &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
+	for _, scenario := range all.Repair.Cases {
+		if wanted[scenario.ID] {
+			selected.Repair.Cases = append(selected.Repair.Cases, scenario)
+		}
+	}
+	for _, scenario := range all.Gates.Gates {
+		if wanted[scenario.ID] {
+			selected.Gates.Gates = append(selected.Gates.Gates, scenario)
+		}
+	}
+	selected.Repair.CaseCount = len(selected.Repair.Cases)
+	selected.Gates.GateCount = len(selected.Gates.Gates)
+	if selected.Repair.CaseCount != 3 || selected.Gates.GateCount != 1 {
+		t.Fatal("independent verification scenario selection drifted")
+	}
+
+	var runner = NewRunner()
+	runner.runRepairCases(selected.Repair)
+	runner.runRecoveryGates(selected.Gates)
+	if len(runner.results) != 4 || len(runner.records) != 7 || len(runner.observations) != 0 {
+		t.Fatalf("unexpected verifier scope: results=%d records=%d observations=%d", len(runner.results), len(runner.records), len(runner.observations))
+	}
+	for id, result := range runner.results {
+		var scenario = supplementalProductionScenarios[id]
+		if !wanted[id] || !result.Passed || result.Status != "PASSED" || !reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
+			t.Fatalf("complete verifier scenario did not pass: %+v", result)
+		}
+	}
+	for _, record := range runner.records {
+		if len(record.Requirements) != 1 || record.Result != "passed" || record.ExitCode != 0 || record.ImplementationSHA != runner.implSHA {
+			t.Fatalf("invalid verifier production receipt: %+v", record)
+		}
+		var id = record.Requirements[0]
+		if err := validateSupplementalProductionRecord(id, record); err != nil {
+			t.Fatal(err)
+		}
+		for _, name := range supplementalProductionScenarios[id].TestNames {
+			if !strings.Contains(record.Detail, name) {
+				t.Fatalf("production discovery receipt missing %s: %+v", name, record)
+			}
+		}
+	}
+	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
+	var report, reportErr = ValidateEvidenceManifest(manifest, selected, "local")
+	if reportErr != nil || report.PassedCases != 4 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
+		t.Fatalf("independent verifier receipts rejected or expanded into release closure: %+v err=%v", report, reportErr)
+	}
+	var encoded, marshalErr = json.Marshal(manifest)
+	if marshalErr != nil {
+		t.Fatal(marshalErr)
+	}
+	for _, id := range []string{"RP01", "RP02", "RP03", "BRG04"} {
+		t.Run("reject_partial_producer_"+id, func(t *testing.T) {
+			var changed EvidenceManifest
+			if err := json.Unmarshal(encoded, &changed); err != nil {
+				t.Fatal(err)
+			}
+			for index := range changed.Records {
+				if changed.Records[index].Requirements[0] == id {
+					delete(changed.Records[index].Assertions, "required_production_tests")
+					break
+				}
+			}
+			var rejected, err = ValidateEvidenceManifest(&changed, selected, "local")
+			if err == nil || p15VerificationResult(t, rejected, id).Passed || rejected.ClosureComplete {
+				t.Fatal("partial producer selection was accepted")
+			}
+		})
+	}
+
+	var auditPath = filepath.Join(t.TempDir(), "execution-audit.json")
+	if err := writeExecutionAudit(runner, all, auditPath); err != nil {
+		t.Fatal(err)
+	}
+	var data, readErr = os.ReadFile(auditPath)
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	var audit struct {
+		ClosureComplete bool                `json:"closure_complete"`
+		Rows            []ExecutionAuditRow `json:"rows"`
+	}
+	if err := json.Unmarshal(data, &audit); err != nil {
+		t.Fatal(err)
+	}
+	if audit.ClosureComplete || len(audit.Rows) != 179 {
+		t.Fatal("bounded verifier execution changed the original 179 obligations")
+	}
+	for _, row := range audit.Rows {
+		if wanted[row.ID] {
+			var scenario = supplementalProductionScenarios[row.ID]
+			if row.Status != "PASS" || !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, scenario.TestNames) || !reflect.DeepEqual(row.ProductionPath, scenario.ProductionPaths) {
+				t.Fatalf("audit lost the actual verifier producer: %+v", row)
+			}
+		} else if row.Status == "PASS" || row.PositiveAndNegative {
+			t.Fatalf("unexecuted obligation inherited verifier success: %+v", row)
+		}
+	}
+	var status, statusErr = exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()
+	var receipt, receiptErr = json.Marshal(map[string]any{
+		"source_sha": runner.implSHA, "source_tree_clean": statusErr == nil && len(status) == 0,
+		"scope":  "RP01/RP02/RP03/BRG04 real verifier, CLI and fresh-clone contract intake. Synthetic validator fixtures are not native/runtime evidence for other requirements. No release closure.",
+		"report": report, "records": runner.records,
+	})
+	if receiptErr != nil {
+		t.Fatal(receiptErr)
+	}
+	t.Log("P15_VERIFICATION_RECEIPT:" + string(receipt))
 }

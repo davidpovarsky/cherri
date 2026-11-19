@@ -164,9 +164,10 @@ func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPa
 		}
 		seenFiles[cleanPath] = true
 		recs, err := ingestEvidenceFile(cleanPath)
-		if err == nil {
-			manifest.Records = append(manifest.Records, recs...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to ingest declared evidence file %s: %w", cleanPath, err)
 		}
+		manifest.Records = append(manifest.Records, recs...)
 	}
 
 	data, err := json.MarshalIndent(manifest, "", "  ")
@@ -185,4 +186,3 @@ func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPa
 
 	return manifest, nil
 }
-
