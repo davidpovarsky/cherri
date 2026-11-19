@@ -519,13 +519,13 @@ jobs:
       - name: Verify encodings
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           mkdir -p out/data
           git clone "$SHORTCUTKIT_REPO" out/shortcutkit
           git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
 
           cat out/shortcutkit/tools/jxa-prelude.js tools/shortcut-runtime/jxa/verify_encodings.js > out/verify.js
-          osascript -l JavaScript out/verify.js out/data/parameter-encodings.json out/data/encoding-table.json out/data/encoding-roundtrips.json
+          osascript -l JavaScript out/verify.js out/data/parameter-encodings.json out/data/encoding-table.json out/data/encoding-roundtrips.json tools/shortcut-runtime/required-encoding-expectations.json
 
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main

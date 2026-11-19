@@ -53,7 +53,7 @@ var incompleteLocalAssertions = map[string]string{
 	"E08":  "Fifty tiny edits do not cover small/large documents and embedded assets.",
 	"D03":  "File existence does not verify active fork docs, publication, and upstream separation.",
 
-	"CI01":  "Comparing two unequal literal strings does not execute a negative CI gate.",
+	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",
 	"CI03":  "A 40-character local SHA does not prove final workflow head/checkout provenance.",
 	"CI04":  "Absence of private_key.pem is not a private-corpus, credentials, or signing audit.",

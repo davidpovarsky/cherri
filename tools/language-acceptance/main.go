@@ -931,6 +931,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				continue
 			}
 
+			if err := validateNativeEncodingRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateSupplementalProductionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1979,11 +1983,7 @@ func (r *Runner) runSkill() {
 
 // Group 20: Verification
 func (r *Runner) runVerification() {
-	// CI01: Encoding EXPECT intentionally broken
-	expectVal := "correct"
-	actualVal := "broken"
-	ci01Passed := expectVal != actualVal
-	r.Record("CI01", "verification", "Encoding EXPECT intentionally broken in test", "negative-CI", []string{"negative-ci"}, ci01Passed, "PASSED", "Negative test assertion confirms detection of expectation divergence")
+	r.runNativeEncodingRequirement()
 
 	// CI02: Selected real iOS language fixtures
 	pocBytes, errPoc := os.ReadFile(resolveRepoPath("tests/runtime_poc/CherriRuntimePOC.cherri"))

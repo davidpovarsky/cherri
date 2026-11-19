@@ -34,6 +34,9 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	if applyNativeEncodingMapping(id, testIDs, reqAssertions) {
+		return
+	}
 	switch id {
 	case "CI02", "RP48", "BRG26", "BRG31":
 		reqAssertions["status"] = "CHERRI_IOS27_RUNTIME_OK"

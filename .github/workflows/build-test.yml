@@ -25,6 +25,14 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Set up Node for encoding gate process controls
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Required Encoding Gate Process Controls
+      run: python3 -B -m unittest discover -s tools/shortcut-runtime/tests -p 'test_required_encoding*.py' -v
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
@@ -99,6 +107,39 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
+
+    - name: Set up Node for encoding gate process controls
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Required Encoding Gate Process Controls
+      run: python3 -B -m unittest discover -s tools/shortcut-runtime/tests -p 'test_required_encoding*.py' -v
+
+    - name: Mandatory WorkflowKit REQUIRED Encoding Gate
+      timeout-minutes: 12
+      run: |
+        set -euo pipefail
+        prelude_repo="$RUNNER_TEMP/required-encoding-shortcutkit"
+        git init "$prelude_repo"
+        git -C "$prelude_repo" remote add origin https://github.com/frontboat/shortcutkit.git
+        git -C "$prelude_repo" fetch --depth=1 origin ee52c32937053268e4a035eba4b372fe77ec6411
+        git -C "$prelude_repo" checkout --detach FETCH_HEAD
+        test "$(git -C "$prelude_repo" rev-parse HEAD)" = ee52c32937053268e4a035eba4b372fe77ec6411
+        python3 -B tools/shortcut-runtime/required_encoding_gate.py \
+          --prelude "$prelude_repo/tools/jxa-prelude.js" \
+          --output "$RUNNER_TEMP/required-encoding-gate" \
+          --source-sha "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+
+    - name: Upload Required Encoding Gate Observations
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: required-encoding-gate
+        if-no-files-found: error
+        path: |
+          ${{ runner.temp }}/required-encoding-gate/*.json
+          ${{ runner.temp }}/required-encoding-gate/*.log
 
     - name: Set up Go
       uses: actions/setup-go@v3
