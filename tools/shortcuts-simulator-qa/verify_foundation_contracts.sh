@@ -9,3 +9,9 @@ swiftc -parse-as-library \
   "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_foundation_contracts.swift" \
   -o "$QA_TEST_DIR/qa-foundation-contracts"
 "$QA_TEST_DIR/qa-foundation-contracts"
+
+swiftc -parse-as-library \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/Shared/LibraryForegroundGate.swift" \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_import_foreground.swift" \
+  -o "$QA_TEST_DIR/qa-import-foreground-contracts"
+"$QA_TEST_DIR/qa-import-foreground-contracts"

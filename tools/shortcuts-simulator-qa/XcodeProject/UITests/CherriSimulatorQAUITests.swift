@@ -42,6 +42,7 @@ struct EditorActionCoverageReport: Codable {
     let axTreePersisted: Bool
     let shortcutLaunched: Bool
     let shortcutForegroundVerified: Bool
+    let libraryForegroundTransition: QALibraryForegroundObservation
     let expectedShortcutName: String
     let importConsentButtonTapped: Bool
     let importSheetSnapshotCaptured: Bool
@@ -399,6 +400,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
             var dismissedAny = false
             for targetApp in [shortcuts, springboard] {
                 for label in dismissOrder {
+                    // An import transition may stop the app before the later
+                    // foreground gate. Do not query an unavailable AX process.
+                    let appState = targetApp.state
+                    guard appState != .notRunning && appState != .unknown else { break }
                     let btn = targetApp.buttons[label].firstMatch
                     if btn.exists && btn.isHittable {
                         btn.tap()
@@ -551,7 +556,42 @@ final class CherriSimulatorQAUITests: XCTestCase {
         }
 
         dismissOnboardingAndStaleAlerts(shortcuts: shortcuts, springboard: springboard)
-        let foregroundVerified = (shortcuts.state == .runningForeground)
+        // Shortcuts may no longer be foreground after the import/consent
+        // transition. The startup wait does not establish this later state.
+        var libraryForegroundTransition = QALibraryForegroundGate.acquire(
+            isForeground: { shortcuts.state == .runningForeground },
+            activate: { shortcuts.activate() },
+            waitForForeground: { shortcuts.wait(for: .runningForeground, timeout: $0) })
+        let foregroundVerified = libraryForegroundTransition.canInspect
+
+        func stopBeforeUnavailableLibraryQuery() {
+            let blocked = EditorActionCoverageReport(
+                schemaVersion: "1.5", runId: execRunNonce, axTreePersisted: false,
+                shortcutLaunched: launched, shortcutForegroundVerified: false,
+                libraryForegroundTransition: libraryForegroundTransition,
+                expectedShortcutName: expectedShortcutName,
+                importConsentButtonTapped: importConsentTapped,
+                importSheetSnapshotCaptured: importSheetCaptured,
+                shortcutExistsInLibrary: false, libraryShortcutCells: [],
+                editorOpened: false, editorIdentityVerified: false, editorHeaderLabels: [],
+                scrollContainerFound: false, scrollContainerType: nil, scrollContainerFrame: nil,
+                totalPagesCaptured: 0, maxEditorPages: maxPages,
+                captureStatus: "BLOCKED_SIMULATOR_APP",
+                detectedActionCards: [], detectedAnchors: [],
+                bottomReachedEvidence: "NOT_INSPECTED_FOREGROUND_UNAVAILABLE",
+                runtimeTriggerDispatched: false, runtimeCallbackObservedInUI: false)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            if let data = try? encoder.encode(blocked) {
+                try? data.write(to: outDir.appendingPathComponent("editor-action-coverage.json"), options: .atomic)
+            }
+            XCTFail("SHORTCUTS_LIBRARY_FOREGROUND_UNAVAILABLE")
+        }
+
+        guard foregroundVerified else {
+            stopBeforeUnavailableLibraryQuery()
+            return
+        }
 
         // Step 2: Inspect All Shortcuts library for expectedShortcutName (with bounded wait after import)
         var shortcutExistsInLibrary = false
@@ -560,7 +600,14 @@ final class CherriSimulatorQAUITests: XCTestCase {
         while Date() < libDeadline {
             libraryCells.removeAll()
             let cellsQuery = shortcuts.collectionViews.cells
-            let cellCount = min(cellsQuery.count, 30)
+            guard let cellCount = QALibraryForegroundGate.inspect(
+                libraryForegroundTransition,
+                isForeground: { shortcuts.state == .runningForeground },
+                query: { min(cellsQuery.count, 30) }) else {
+                libraryForegroundTransition = libraryForegroundTransition.stoppingAfterForegroundLoss()
+                stopBeforeUnavailableLibraryQuery()
+                return
+            }
             for i in 0..<cellCount {
                 let cell = cellsQuery.element(boundBy: i)
                 if cell.exists {
@@ -950,6 +997,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 axTreePersisted: axTreePersisted,
                 shortcutLaunched: launched,
                 shortcutForegroundVerified: foregroundVerified,
+                libraryForegroundTransition: libraryForegroundTransition,
                 expectedShortcutName: expectedShortcutName,
                 importConsentButtonTapped: importConsentTapped,
                 importSheetSnapshotCaptured: importSheetCaptured,
