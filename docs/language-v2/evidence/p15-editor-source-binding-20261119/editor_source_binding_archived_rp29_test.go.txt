@@ -1,0 +1,40 @@
+package main
+
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+// One-off intake replay of the unchanged Windows 5b9 production artifacts.
+// This control does not rerun the benchmark or rebind its source/result.
+func TestEditorArchivedRP29SourceDigestBinding(t *testing.T) {
+	directory := os.Getenv("CHERRI_ARCHIVED_RP29_CONTROL")
+	if directory == "" {
+		t.Fatal("explicit original artifact directory is required")
+	}
+	record := EvidenceRecord{
+		EvidenceID: "actual-historical-rp29-intake-replay", Requirements: []string{"RP29"}, Tier: "benchmark",
+		ImplementationSHA: "5b9c3dd2b6211de39ae071979bc0cf7b1db6f0a9",
+		TestID:            "github.com/electrikmilk/cherri:" + editorBenchmarkTest,
+		Command:           productionTestCommand(editorProductionTests["RP29"]), Result: "passed", ExitCode: 0,
+		Assertions: map[string]string{
+			"required_production_tests":  strings.Join(editorProductionTests["RP29"], "\n"),
+			"required_security_subtests": strings.Join(assetAuthorizationSecuritySubtests, "\n"),
+			"scope":                      editorProductionScope("RP29"),
+		},
+	}
+	for _, artifact := range []struct{ name, sha string }{
+		{"editor-rp29-go.jsonl", "3bea0cbb00220af9128e02ab6b594f260df62b208cbed4f94e285b05e993b4a6"},
+		{"editor-rp29-benchmark.json", "56685288f44953d612f8ec8a7f2eaa9d10462582e64d471d638fd951e46267a9"},
+		{"editor-rp29-process.json", "20cca63479c8ff72668e65bd4edb67a48ea472d02a4fe6c9f5abfd325b922412"},
+		{"editor-rp29-stderr.log", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+	} {
+		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: filepath.Join(directory, artifact.name), SHA256: artifact.sha})
+	}
+	if err := validateEditorPerformanceRecord("RP29", record); err != nil {
+		t.Fatal("actual historical RP29 receipt rejected", err)
+	}
+	editorAssertActualSourceDigestMutations(t, "RP29", record)
+}

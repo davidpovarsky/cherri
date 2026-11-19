@@ -1,0 +1,119 @@
+package main
+
+import (
+	"archive/zip"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+// Replay actual archived Linux receipts as intake controls only. Copying their
+// bytes to a temporary directory does not establish a new production execution.
+func editorArchivedActualRecord(t *testing.T, id string) EvidenceRecord {
+	t.Helper()
+	var filename = filepath.Join(resolveRepoRoot(), "docs", "language-v2", "evidence", "p15-formal-local-e61-20261119", "p10r15-local-acceptance-44621856878.zip")
+	var raw, err = os.ReadFile(filename)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if editorSHA(raw) != "af9408fc41f90248ccbec2bff05ff32846f3c41f5a08ef22ea37edbaa4d81cfa" {
+		t.Fatal("actual historical artifact changed")
+	}
+	var archive, archiveErr = zip.NewReader(bytes.NewReader(raw), int64(len(raw)))
+	if archiveErr != nil {
+		t.Fatal(archiveErr)
+	}
+	var entries = make(map[string]*zip.File)
+	for _, file := range archive.File {
+		if entries[file.Name] != nil {
+			t.Fatal("duplicate archive entry", file.Name)
+		}
+		entries[file.Name] = file
+	}
+	var read = func(name string) []byte {
+		var file = entries[name]
+		if file == nil || file.UncompressedSize64 > 8<<20 {
+			t.Fatal("missing or oversized actual archive member", name)
+		}
+		var reader, err = file.Open()
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reader.Close()
+		var data, readErr = io.ReadAll(reader)
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		return data
+	}
+	var records []EvidenceRecord
+	if err := json.Unmarshal(read("acceptance-local-evidence.json"), &records); err != nil {
+		t.Fatal(err)
+	}
+	var directory = t.TempDir()
+	for _, record := range records {
+		if len(record.Requirements) != 1 || record.Requirements[0] != id || record.Tier != "benchmark" {
+			continue
+		}
+		if record.ImplementationSHA != "e61e0d306bb363c39ade612ef35ccfc8051ddf3c" || record.ExitCode != 0 || record.Result != "passed" {
+			t.Fatal("historical source or result changed")
+		}
+		for index := range record.Artifacts {
+			var artifact = &record.Artifacts[index]
+			var components = strings.Split(strings.ReplaceAll(artifact.Path, "\\", "/"), "/")
+			if len(components) < 2 {
+				t.Fatal("historical artifact path lost")
+			}
+			var name = strings.Join(components[len(components)-2:], "/")
+			var data = read(name)
+			if editorSHA(data) != artifact.SHA256 {
+				t.Fatal("historical artifact digest changed", name)
+			}
+			artifact.Path = filepath.Join(directory, components[len(components)-1])
+			if err := os.WriteFile(artifact.Path, data, 0600); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return record
+	}
+	t.Fatal("actual benchmark record absent", id)
+	return EvidenceRecord{}
+}
+
+func TestEditorActualReceiptSourceDigestBinding(t *testing.T) {
+	for _, id := range []string{"S03", "E08"} {
+		var original = editorArchivedActualRecord(t, id)
+		if err := validateEditorPerformanceRecord(id, original); err != nil {
+			t.Fatal("actual historical receipt rejected", err)
+		}
+		for index, path := range editorProductionPathsForID(id) {
+			t.Run(fmt.Sprintf("%s/source_file_%02d", id, index), func(t *testing.T) {
+				var changed = editorArchivedActualRecord(t, id)
+				editorMutateModelFile(t, &changed, "-process.json", func(raw []byte) []byte {
+					var receipt editorProcessReceipt
+					if err := json.Unmarshal(raw, &receipt); err != nil {
+						t.Fatal(err)
+					}
+					if receipt.SourceFiles[index].Path != path {
+						t.Fatal("source control targets a different field")
+					}
+					receipt.SourceFiles[index].SHA256 = strings.Repeat("f", 64)
+					var data, err = json.Marshal(receipt)
+					if err != nil {
+						t.Fatal(err)
+					}
+					return data
+				})
+				var err = validateEditorPerformanceRecord(id, changed)
+				if err == nil || !strings.Contains(err.Error(), "source file digest disagrees with immutable Git blob") {
+					t.Fatalf("counterfeit source digest accepted after actual process artifact hash was reconciled: %s: %v", path, err)
+				}
+			})
+		}
+	}
+}

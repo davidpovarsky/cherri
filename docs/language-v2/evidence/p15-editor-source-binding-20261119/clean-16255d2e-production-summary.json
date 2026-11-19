@@ -1,0 +1,28 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=5m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestP15RP29AssetAuthorizationProductionEvidence|TestEditorActualReceiptSourceDigestBinding|TestEditorImmutableGitSourceFiles)$"
+  ],
+  "source": "16255d2e4394fecf24dbf2d9ec94b7fa2ae24482",
+  "status_before": "",
+  "status_after": "",
+  "actual_exit": 0,
+  "timed_out": false,
+  "elapsed_seconds": 95.15058994293213,
+  "named_pass_count": 86,
+  "failed": [],
+  "skipped": [],
+  "top_level_passes": [
+    "TestP15RP29AssetAuthorizationProductionEvidence",
+    "TestEditorActualReceiptSourceDigestBinding",
+    "TestEditorImmutableGitSourceFiles"
+  ],
+  "log_sha256": "29bd1e6460dfeb180e5f5e3c021fc983c15882fccad34b9814abd27b742ecc2f",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

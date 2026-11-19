@@ -1,0 +1,24 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=2m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestEditorActualReceiptSourceDigestBinding$/S03/source_file_00$"
+  ],
+  "exit_code": 1,
+  "duration_seconds": 69.36,
+  "source_sha": "474ae29dae16ac88f7133b6cdb7b82ff054d97c0",
+  "status": "?? tools/language-acceptance/editor_source_binding_test.go\n",
+  "failures": [
+    "TestEditorActualReceiptSourceDigestBinding/S03/source_file_00",
+    "TestEditorActualReceiptSourceDigestBinding",
+    "PACKAGE"
+  ],
+  "causal_output": [
+    "editor_source_binding_test.go:114: counterfeit source digest accepted after actual process artifact hash was reconciled: internal/language/assets/cache.go: <nil>"
+  ]
+}

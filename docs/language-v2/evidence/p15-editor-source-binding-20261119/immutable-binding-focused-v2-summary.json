@@ -1,0 +1,32 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=2m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestEditorActualReceiptSourceDigestBinding|TestEditorImmutableGitSourceFiles|TestEditorEvidenceIntakeRejectsSummaryOnlyAndDetachedExecution|TestEditorBenchmarkIntakeRejectsProxyAndFabricatedMetrics|TestAssetAuthorizationRequiresEveryActualSecurityChild)$"
+  ],
+  "source": "474ae29dae16ac88f7133b6cdb7b82ff054d97c0",
+  "status_before": " M tools/language-acceptance/asset_authorization_execution_test.go\n M tools/language-acceptance/editor_performance_execution.go\n M tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_source_binding.go\n?? tools/language-acceptance/editor_source_binding_test.go\n",
+  "status_after": " M tools/language-acceptance/asset_authorization_execution_test.go\n M tools/language-acceptance/editor_performance_execution.go\n M tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_source_binding.go\n?? tools/language-acceptance/editor_source_binding_test.go\n",
+  "actual_exit": 1,
+  "timed_out": false,
+  "elapsed_seconds": 75.00361275672913,
+  "named_pass_count": 140,
+  "failed": [
+    "TestEditorImmutableGitSourceFiles",
+    "PACKAGE"
+  ],
+  "skipped": [],
+  "top_level_passes": [
+    "TestAssetAuthorizationRequiresEveryActualSecurityChild",
+    "TestEditorBenchmarkIntakeRejectsProxyAndFabricatedMetrics",
+    "TestEditorEvidenceIntakeRejectsSummaryOnlyAndDetachedExecution",
+    "TestEditorActualReceiptSourceDigestBinding"
+  ],
+  "log_sha256": "46e1225374462f483cc1947de32b858c31f99a4551d29b0b862ad1917ab39199",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

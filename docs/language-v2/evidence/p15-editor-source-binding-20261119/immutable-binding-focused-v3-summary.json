@@ -1,0 +1,39 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=2m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestEditorActualReceiptSourceDigestBinding|TestEditorArchivedRP29SourceDigestBinding|TestEditorImmutableGitSourceFiles|TestEditorEvidenceIntakeRejectsSummaryOnlyAndDetachedExecution|TestEditorBenchmarkIntakeRejectsProxyAndFabricatedMetrics|TestAssetAuthorizationRequiresEveryActualSecurityChild)$"
+  ],
+  "source": "474ae29dae16ac88f7133b6cdb7b82ff054d97c0",
+  "source_files": {
+    "editor_performance_execution.go": "6304a85ef3b6e21f94a2fd3d864195b963462d6f63fd182f5ae547bb2d6abd4e",
+    "editor_performance_execution_test.go": "04d4d20608310450f626c5614d4d98fb6d7949b20b80fd9f16ba97c21e9b6de5",
+    "asset_authorization_execution_test.go": "12effe24634a9cbe7855a6e1109bc8b400fae5ea8527cc6e06b02a8c8c03b428",
+    "editor_source_binding.go": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212",
+    "editor_source_binding_test.go": "60ac360ac075fb79bee71a786b2f524b8bad95ea4cd1c61876ea9962ba23a0ce",
+    "editor_source_binding_archived_rp29_test.go": "692f2a05c27dd9e39b5c4f14b5d455833f3221a82431a744f6e0687969178d73"
+  },
+  "status_before": " M tools/language-acceptance/asset_authorization_execution_test.go\n M tools/language-acceptance/editor_performance_execution.go\n M tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_source_binding.go\n?? tools/language-acceptance/editor_source_binding_archived_rp29_test.go\n?? tools/language-acceptance/editor_source_binding_test.go\n",
+  "status_after": " M tools/language-acceptance/asset_authorization_execution_test.go\n M tools/language-acceptance/editor_performance_execution.go\n M tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_source_binding.go\n?? tools/language-acceptance/editor_source_binding_test.go\n",
+  "actual_exit": 0,
+  "timed_out": false,
+  "elapsed_seconds": 29.829202890396118,
+  "named_pass_count": 172,
+  "failed": [],
+  "skipped": [],
+  "top_level_passes": [
+    "TestAssetAuthorizationRequiresEveryActualSecurityChild",
+    "TestEditorBenchmarkIntakeRejectsProxyAndFabricatedMetrics",
+    "TestEditorEvidenceIntakeRejectsSummaryOnlyAndDetachedExecution",
+    "TestEditorArchivedRP29SourceDigestBinding",
+    "TestEditorActualReceiptSourceDigestBinding",
+    "TestEditorImmutableGitSourceFiles"
+  ],
+  "log_sha256": "12a2ff59fdc8a145bdfb28c4f5988db76a4e58c65e444d5b83a184c57d5f2b2b",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

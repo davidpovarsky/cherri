@@ -93,3 +93,7 @@ Independently executed all unchanged RP29 security/service/benchmark tiers at cl
 - Contextual signature callee identity repaired; clean 30fd0c9 actual service/LSP and T08 evidence passed. Initial incorrect new Text-mode expectation and both unsuccessful attempts remain explicit in `docs/language-v2/p15-signature-callee-regression-20261119.md`.
 - Integrated independently verified RP29 authorization/400-sample benchmark producer, constrained continuation zero-clear oracle repair, native File/N03 diagnostic fixtures, and bounded editor foreground guards. Full iOS has an equivalent standard Intel runner option; no native success is inferred from configuration.
 - Existing immutable contracts remain unchanged. New integrated CI, local179, Apple runtime/import, actual consumers/deployment, real AI endpoint and physical-device gates remain open.
+
+## P15 immutable editor evidence source binding — 2026-11-19
+
+Closed an actual intake gap in S03/E08/RP29: a changed source digest with a reconciled process-artifact hash previously passed. Producer and intake now hash exact immutable Git blobs, preserving clean-before/after and Windows CRLF correctness. Implementation 16255d2e passed 172 focused controls (including 67 actual-receipt source mutations); a separate clean replay passed 86 outer events plus the actual RP29 child's 34 events. Original failures and unchanged archived/current receipts are retained. No full179, native UI, race, or release credit is inferred. See [source binding proof](docs/language-v2/p15-editor-source-binding-20261119.md).
