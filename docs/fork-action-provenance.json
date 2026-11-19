@@ -2913,6 +2913,54 @@
       "reason": "Actual public compilation emitted zero capture actions and retained a deferred system reference, allowing later clipboard writes to change the value observed through an immutable let binding.",
       "evidence": "Clean fc560ae30cdcccd8089b1e742fba6f77a8a05720:163 named PASS,0 failures/skips,8.165s; actual CLI/mobile/service and strict native-reference controls. Raw SHA25671e3495ee7a10b6fe2553428fc896a88d06aeff4b397812c92787fb8e7446d1c. Baseline/candidate/clean streams at docs/language-v2/evidence/p15-binding-defaults-fc560ae.",
       "note": "Immutable integrated implementation ancestor. V01/V03/T01 still require their original iOS tier and remain formally unverified. Empty-container wrapper observations are characterization, not evidence that an argument was omitted or Apple runtime passed. Final combined-source corpus and CI replays remain required."
+    },
+    {
+      "name": "P10R15 shared exact-path workspace resource reads",
+      "locations": [
+        "internal/language/workspace/resource.go"
+      ],
+      "firstForkCommit": "24ae0196f9a1196a6c0a88fe0f42edfb2bcb6866",
+      "change": "Share a held entry-directory root and exact authorized regular-file handles, with matching metadata, between module and asset consumers.",
+      "reason": "Independent consumers need the same traversal and symlink boundary without extension guessing or unsafe resolve-then-read behavior.",
+      "evidence": "Exact clean source 482873e3b3776be7178c32977f6038559ce03d8d:332 focused root and87 affected-package named PASS,0 failures/skips; logs825ef4990a30661f1516bb151c3fff69b431aaeb8013552f2a92ae5244205ddc and06bf3e2bd40bfd07cf1245fc9e3eb1fffc9cce44aacd845a80f6994cc1a3472e. Linux rooted API13PASS including real relative-symlink success; direct stdfunc service6PASS after an actual6FAIL baseline; uppercase alias76PASS after actual1PASS/4FAIL baseline.",
+      "note": "Immutable integrated implementation ancestor. Preserved upstream stdfunc bytes and original acceptance contracts remain unchanged. Source-bound formal producers, combined-source CI/private corpus and required Apple runtime tiers remain separate."
+    },
+    {
+      "name": "P10R15 coherent module graph and namespace dispatch",
+      "locations": [
+        "internal/language/modules/graph.go",
+        "internal/language/analysis/module_imports.go",
+        "internal/language/lower/module_scope.go",
+        "internal/language/service/module_analysis.go"
+      ],
+      "firstForkCommit": "47f6f2a522a0493d2d5a0e5103fe3980bc9a2ee0",
+      "change": "Resolve one authorized graph by module identity, qualify function dispatch, and share dependency errors and overlays with compiler and service consumers.",
+      "reason": "Distinct modules collided on bare function names; repeated relative paths produced false cycles; nested authorized sibling imports and dependency diagnostics differed between check and compile.",
+      "evidence": "Exact clean source 482873e3b3776be7178c32977f6038559ce03d8d:332 focused root and87 affected-package named PASS,0 failures/skips; logs825ef4990a30661f1516bb151c3fff69b431aaeb8013552f2a92ae5244205ddc and06bf3e2bd40bfd07cf1245fc9e3eb1fffc9cce44aacd845a80f6994cc1a3472e. Linux rooted API13PASS including real relative-symlink success; direct stdfunc service6PASS after an actual6FAIL baseline; uppercase alias76PASS after actual1PASS/4FAIL baseline.",
+      "note": "Immutable integrated implementation ancestor. Preserved upstream stdfunc bytes and original acceptance contracts remain unchanged. Source-bound formal producers, combined-source CI/private corpus and required Apple runtime tiers remain separate."
+    },
+    {
+      "name": "P10R15 shared preserved standard library source",
+      "locations": [
+        "internal/language/modules"
+      ],
+      "firstForkCommit": "20bfd28a93a88c14b553a7a8f494f965becbcaef",
+      "change": "Make an exact generated snapshot of the preserved upstream stdfunc source available to shared service consumers, with generation freshness and byte-identity controls.",
+      "reason": "Package-main-only initialization left direct service, LSP and tools unable to resolve standard functions despite successful compiler-main tests.",
+      "evidence": "Exact clean source 482873e3b3776be7178c32977f6038559ce03d8d:332 focused root and87 affected-package named PASS,0 failures/skips; logs825ef4990a30661f1516bb151c3fff69b431aaeb8013552f2a92ae5244205ddc and06bf3e2bd40bfd07cf1245fc9e3eb1fffc9cce44aacd845a80f6994cc1a3472e. Linux rooted API13PASS including real relative-symlink success; direct stdfunc service6PASS after an actual6FAIL baseline; uppercase alias76PASS after actual1PASS/4FAIL baseline.",
+      "note": "Immutable integrated implementation ancestor. Preserved upstream stdfunc bytes and original acceptance contracts remain unchanged. Source-bound formal producers, combined-source CI/private corpus and required Apple runtime tiers remain separate."
+    },
+    {
+      "name": "P10R15 imported uppercase module alias calls",
+      "locations": [
+        "internal/language/analysis",
+        "internal/language/lower"
+      ],
+      "firstForkCommit": "422e24ef7b21b2b1bbca487bad461601e36963e2",
+      "change": "Resolve a qualified callable against its actual imported module symbol even when its uppercase syntax has the enum-member AST shape, including function dispatcher discovery.",
+      "reason": "A legal uppercase module alias passed partial analysis but failed lowering or omitted its function dispatcher; actual enum validation must retain its original behavior.",
+      "evidence": "Exact clean source 482873e3b3776be7178c32977f6038559ce03d8d:332 focused root and87 affected-package named PASS,0 failures/skips; logs825ef4990a30661f1516bb151c3fff69b431aaeb8013552f2a92ae5244205ddc and06bf3e2bd40bfd07cf1245fc9e3eb1fffc9cce44aacd845a80f6994cc1a3472e. Linux rooted API13PASS including real relative-symlink success; direct stdfunc service6PASS after an actual6FAIL baseline; uppercase alias76PASS after actual1PASS/4FAIL baseline.",
+      "note": "Immutable integrated implementation ancestor. Preserved upstream stdfunc bytes and original acceptance contracts remain unchanged. Source-bound formal producers, combined-source CI/private corpus and required Apple runtime tiers remain separate."
     }
   ]
 }
