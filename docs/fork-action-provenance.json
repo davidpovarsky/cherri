@@ -2961,6 +2961,18 @@
       "reason": "A legal uppercase module alias passed partial analysis but failed lowering or omitted its function dispatcher; actual enum validation must retain its original behavior.",
       "evidence": "Exact clean source 482873e3b3776be7178c32977f6038559ce03d8d:332 focused root and87 affected-package named PASS,0 failures/skips; logs825ef4990a30661f1516bb151c3fff69b431aaeb8013552f2a92ae5244205ddc and06bf3e2bd40bfd07cf1245fc9e3eb1fffc9cce44aacd845a80f6994cc1a3472e. Linux rooted API13PASS including real relative-symlink success; direct stdfunc service6PASS after an actual6FAIL baseline; uppercase alias76PASS after actual1PASS/4FAIL baseline.",
       "note": "Immutable integrated implementation ancestor. Preserved upstream stdfunc bytes and original acceptance contracts remain unchanged. Source-bound formal producers, combined-source CI/private corpus and required Apple runtime tiers remain separate."
+    },
+    {
+      "name": "P10R15 preserve canonical action identity through builtin aliases",
+      "locations": [
+        "internal/language/modules",
+        "internal/language/lower/lower.go"
+      ],
+      "firstForkCommit": "8748ca766fbb98f46267b905fe670544c3878ac7",
+      "change": "Keep the canonical ActionSchema ID when qualifying a source callable and pass that stable ID to the canonical backend.",
+      "reason": "Qualified builtin calls were replacing the schema ID with the source alias and failing strict canonical dispatch.",
+      "evidence": "docs/language-v2/evidence/module-canonical-alias-ffe67e1-20261119: actual causal baseline3PASS/8FAIL; exact clean ffe67e1cc7c2363c813d9a32a1865b655597708f regression343PASS/0FAIL/0SKIP in41.750s, raw SHA2569d110ee223757d6f1828979308cbbc061d0e9d1e04e5c01fac4c46110c63bf6d.",
+      "note": "No canonical-lookup fallback or inferred VariantID. Original immutable acceptance criteria are unchanged; combined-source and native gates remain separate."
     }
   ]
 }
