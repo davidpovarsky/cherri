@@ -187,8 +187,9 @@ def preflight(stage, live, evidence_path):
     verify_runtime(candidate, release)
     for kind, archive_key, report_key, count in (("source", "sourceArchive", "sourceIntegrity", 20),
                                                ("runtime", "runtimeArchive", "runtimeIntegrity", 23)):
+        compiler = candidate / release["label"] / "runtime/bin/cherri" if kind == "runtime" else None
         files, receipt = expected_package(skill, release["skillSourceHead"], kind,
-                    candidate / release["label"] / "runtime/bin/cherri", str(live / "tools/go/bin/go"))
+                                          compiler, str(live / "tools/go/bin/go"))
         require(len(files) == count, "Unexpected committed package inventory")
         verify_archive(paths[archive_key], files)
         require(sha(paths[archive_key].read_bytes()) == reports[report_key]["archiveSha256"], "Archive receipt differs")
