@@ -88,7 +88,7 @@ func ReferenceToDescriptor(ref *backend.Reference) ReferenceDescriptor {
 		desc.Kind = "ActionOutput"
 		desc.OutputUUID = ref.ProducerID
 		desc.OutputName = ref.ProducerName
-		if desc.OutputName == "" {
+		if desc.OutputName == "" && !ref.OmitOutputName {
 			desc.OutputName = ref.ProducerID
 		}
 	case backend.RefMutableBinding:

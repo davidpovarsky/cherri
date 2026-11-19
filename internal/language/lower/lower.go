@@ -4786,6 +4786,7 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 				Kind:            kind,
 				ProducerID:      v.OutputUUID,
 				ProducerName:    v.OutputName,
+				OmitOutputName:  v.Type == "ActionOutput" && v.OutputName == "",
 				Transformations: transforms,
 			},
 		}

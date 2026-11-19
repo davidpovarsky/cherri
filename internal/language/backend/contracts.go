@@ -54,9 +54,12 @@ type Transformation struct {
 
 // Reference is a structured symbolic reference.
 type Reference struct {
-	Kind            ReferenceKind
-	ProducerID      string // action UUID or variable name
-	ProducerName    string // display / binding name
+	Kind         ReferenceKind
+	ProducerID   string // action UUID or variable name
+	ProducerName string // display / binding name
+	// OmitOutputName preserves an explicitly nameless native ActionOutput.
+	// Ordinary generated references retain their historical ID-name default.
+	OmitOutputName  bool
 	ScopeID         string // loop or function scope ID
 	Transformations []Transformation
 	RawExtensions   map[string]any
