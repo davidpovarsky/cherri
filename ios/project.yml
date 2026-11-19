@@ -20,9 +20,20 @@ targets:
       - path: CherriApp
         excludes:
           - Resources/PreviewShortcut
+          - Resources/Documentation
       - path: CherriApp/Resources/PreviewShortcut
         type: folder
         buildPhase: resources
+      - path: CherriApp/Resources/Documentation
+        type: folder
+        buildPhase: resources
+    preBuildScripts:
+      - name: Verify pinned generated documentation
+        script: |
+          python3 "$SRCROOT/scripts/build_documentation_index.py" --verify-output \
+            --receipt "$SRCROOT/.build/documentation-receipt.json" \
+            --output "$SRCROOT/CherriApp/Resources/Documentation/documentation-index.json"
+        basedOnDependencyAnalysis: false
     info:
       path: CherriApp/Info.plist
       properties:
