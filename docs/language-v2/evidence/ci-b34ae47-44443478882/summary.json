@@ -1,0 +1,445 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-11-19T03:22:23.370068+00:00",
+  "sourceCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "runId": 44443478882,
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44443478882",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 135289824083,
+      "name": "build-test-macos",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-19T03:03:19Z",
+      "completed_at": "2026-11-19T03:12:37Z",
+      "labels": [
+        "macos-latest"
+      ],
+      "runner_id": 1000021729,
+      "runner_name": "GitHub Actions 1000021729",
+      "runner_group_name": "GitHub Actions",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-19T03:03:20Z",
+          "completed_at": "2026-11-19T03:03:21Z"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-19T03:03:21Z",
+          "completed_at": "2026-11-19T03:03:25Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-19T03:03:25Z",
+          "completed_at": "2026-11-19T03:03:25Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-19T03:03:25Z",
+          "completed_at": "2026-11-19T03:03:27Z"
+        },
+        {
+          "name": "Build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-19T03:03:27Z",
+          "completed_at": "2026-11-19T03:03:54Z"
+        },
+        {
+          "name": "Full Go Test Suite",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-11-19T03:03:54Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "Full Matrix Regression Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "Machine-Checked Test Discovery Gate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "Decompilation Test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "Package Manager Test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "Differential Legacy Parity Gate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "P10R8 Independent Oracle Mutation Suite & Sanitized Report Integrity",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "P10 SSoT, Coverage Ledgers, Pack & Release Gates",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:32Z"
+        },
+        {
+          "name": "Upload P10R4 Release Gate Attestation (macOS)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-19T03:12:32Z",
+          "completed_at": "2026-11-19T03:12:33Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 26,
+          "started_at": "2026-11-19T03:12:33Z",
+          "completed_at": "2026-11-19T03:12:33Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27,
+          "started_at": "2026-11-19T03:12:33Z",
+          "completed_at": "2026-11-19T03:12:33Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-11-19T03:12:33Z",
+          "completed_at": "2026-11-19T03:12:33Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-11-19T03:12:33Z",
+          "completed_at": "2026-11-19T03:12:35Z"
+        }
+      ]
+    },
+    {
+      "id": 135289824200,
+      "name": "build-test-linux",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-19T02:19:40Z",
+      "completed_at": "2026-11-19T02:27:05Z",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000021686,
+      "runner_name": "GitHub Actions 1000021686",
+      "runner_group_name": "GitHub Actions",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-19T02:19:40Z",
+          "completed_at": "2026-11-19T02:19:43Z"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-19T02:19:43Z",
+          "completed_at": "2026-11-19T02:19:47Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-19T02:19:47Z",
+          "completed_at": "2026-11-19T02:19:48Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-19T02:19:48Z",
+          "completed_at": "2026-11-19T02:19:50Z"
+        },
+        {
+          "name": "Build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-19T02:19:50Z",
+          "completed_at": "2026-11-19T02:20:13Z"
+        },
+        {
+          "name": "Full Go Test Suite",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-11-19T02:20:13Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Full Matrix Regression Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Machine-Checked Test Discovery Gate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Decompilation Test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Package Manager Test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Differential Legacy Parity Gate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "P10R8 Independent Oracle Mutation Suite & Sanitized Report Integrity",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "P10 SSoT, Coverage Ledgers, Pack & Release Gates",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Upload P10R4 Release Gate Attestation (Linux)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 26,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:03Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-11-19T02:27:03Z",
+          "completed_at": "2026-11-19T02:27:04Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-11-19T02:27:04Z",
+          "completed_at": "2026-11-19T02:27:04Z"
+        }
+      ]
+    },
+    {
+      "id": 135289824221,
+      "name": "build-test-nix",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-19T02:19:40Z",
+      "completed_at": "2026-11-19T02:21:51Z",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000021687,
+      "runner_name": "GitHub Actions 1000021687",
+      "runner_group_name": "GitHub Actions",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-19T02:19:41Z",
+          "completed_at": "2026-11-19T02:19:42Z"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-19T02:19:42Z",
+          "completed_at": "2026-11-19T02:19:44Z"
+        },
+        {
+          "name": "Run DeterminateSystems/nix-installer-action@main",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-19T02:19:44Z",
+          "completed_at": "2026-11-19T02:19:52Z"
+        },
+        {
+          "name": "Run DeterminateSystems/magic-nix-cache-action@main",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-19T02:19:52Z",
+          "completed_at": "2026-11-19T02:20:14Z"
+        },
+        {
+          "name": "Build nix package",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-19T02:20:14Z",
+          "completed_at": "2026-11-19T02:21:35Z"
+        },
+        {
+          "name": "Post Run DeterminateSystems/magic-nix-cache-action@main",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-19T02:21:35Z",
+          "completed_at": "2026-11-19T02:21:48Z"
+        },
+        {
+          "name": "Post Run DeterminateSystems/nix-installer-action@main",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-19T02:21:48Z",
+          "completed_at": "2026-11-19T02:21:49Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-19T02:21:49Z",
+          "completed_at": "2026-11-19T02:21:49Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-19T02:21:49Z",
+          "completed_at": "2026-11-19T02:21:49Z"
+        }
+      ]
+    }
+  ],
+  "failedTests": {
+    "linux": [
+      "TestP15_CollectTypedBodyHasSingleNativeProducer"
+    ],
+    "macos": [
+      "TestP15_CollectTypedBodyHasSingleNativeProducer",
+      "TestP15K01UnpackedPackageContract",
+      "TestP15K01UnpackedPackageContract/unpacked_actual_self_test",
+      "TestSkillPackageProductionEvidence"
+    ]
+  },
+  "observedTimeoutOrPanic": false,
+  "causes": {
+    "collect": "Old unit fixture still expected List-valued collect to compile; E_TARGET_VALUE_SHAPE correctly rejects it after actual native flattening evidence.",
+    "package": "Actual unpacked self-test exited 1 after prepare/edit progress. Its captured output was not printed by the original self-test. Diagnosis remains open in this receipt.",
+    "producer": "Production evidence test retained the actual failing K01 child-process status."
+  },
+  "f04ConsumerRepair": {
+    "commit": "f6de7901f0397da32a691d9fb0d7c8f557028db8",
+    "namedTestsPassed": 33,
+    "failures": 0,
+    "skips": 0,
+    "nativeF04Acceptance": "FAIL_RETAINED",
+    "appleExecuted": false
+  },
+  "completeCI": "FAIL_RETAINED"
+}
