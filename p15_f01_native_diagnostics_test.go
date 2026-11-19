@@ -41,6 +41,10 @@ func p15F01DiagnosticShape(name string, actions []ShortcutAction) error {
 	if !ok || len(actions) != contract.actions {
 		return fmt.Errorf("wrong diagnostic shape/name %s", name)
 	}
+	clearIndex, err := validateP15DiagnosticZeroClear(actions)
+	if err != nil {
+		return err
+	}
 	allowed := map[string]bool{"comment": true, "gettext": true, "number": true, "setvariable": true, "appendvariable": true, "conditional": true, "math": true, "text.combine": true, "output": true}
 	uuids := map[string]int{}
 	for i, action := range actions {
@@ -60,7 +64,7 @@ func p15F01DiagnosticShape(name string, actions []ShortcutAction) error {
 	observed := false
 	for i, action := range actions {
 		short := strings.TrimPrefix(action.WFWorkflowActionIdentifier, "is.workflow.actions.")
-		if !allowed[short] {
+		if (!allowed[short] && i != clearIndex) || action.WFWorkflowActionIdentifier != "is.workflow.actions."+short {
 			return fmt.Errorf("external/unreviewed action %s", short)
 		}
 		p := action.WFWorkflowActionParameters
@@ -222,7 +226,7 @@ func TestP15F01DiagnosticFixturesPreserveIsolation(t *testing.T) {
 }
 
 func TestP15F01DiagnosticOracleRejectsCausalMutations(t *testing.T) {
-	for _, mutation := range []string{"wrong_increment", "wrong_counter_store", "hidden_counter", "external_action", "wrong_and_guard"} {
+	for _, mutation := range []string{"wrong_increment", "wrong_counter_store", "hidden_counter", "external_action", "wrong_and_guard", "old_empty_seed", "clear_input", "nothing_input", "clear_target", "extra_nothing", "consumed_clear"} {
 		name := "counter"
 		if mutation == "wrong_and_guard" {
 			name = "logic"
@@ -232,9 +236,34 @@ func TestP15F01DiagnosticOracleRejectsCausalMutations(t *testing.T) {
 			t.Fatal(err)
 		}
 		actions := compileDebugFixture(t, string(src), false)
+		if err := p15F01DiagnosticShape(name, actions); err != nil {
+			t.Fatalf("%s original graph must pass before causal mutation: %v", mutation, err)
+		}
 		for i := range actions {
 			p := actions[i].WFWorkflowActionParameters
 			switch mutation {
+			case "old_empty_seed", "clear_input", "nothing_input", "clear_target", "extra_nothing", "consumed_clear":
+				if actions[i].WFWorkflowActionIdentifier != "is.workflow.actions.nothing" {
+					continue
+				}
+				next := actions[i+1].WFWorkflowActionParameters
+				ref := map[string]any{"Value": map[string]any{"Type": "ActionOutput", "OutputUUID": p["UUID"]}}
+				switch mutation {
+				case "old_empty_seed":
+					actions[i].WFWorkflowActionIdentifier = "is.workflow.actions.gettext"
+					p["WFTextActionText"] = ""
+				case "clear_input":
+					next["WFInput"] = ref
+				case "nothing_input":
+					p["WFInput"] = "retained previous value"
+				case "clear_target":
+					next["WFVariableName"] = "unreviewed_buffer"
+				case "extra_nothing":
+					// Replace the already visited header, preserving the action count.
+					actions[0].WFWorkflowActionIdentifier = "is.workflow.actions.nothing"
+				case "consumed_clear":
+					actions[len(actions)-1].WFWorkflowActionParameters["WFOutput"] = ref
+				}
 			case "wrong_increment":
 				if actions[i].WFWorkflowActionIdentifier == "is.workflow.actions.math" {
 					p["WFMathOperand"] = 2

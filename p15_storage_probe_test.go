@@ -42,6 +42,17 @@ func validateStorageProbeWire(id string, actions []map[string]any) error {
 	if key == "" {
 		return fmt.Errorf("unknown reviewed storage probe")
 	}
+	typed := make([]ShortcutAction, len(actions))
+	for i, action := range actions {
+		typed[i] = ShortcutAction{
+			WFWorkflowActionIdentifier: fmt.Sprint(action["WFWorkflowActionIdentifier"]),
+			WFWorkflowActionParameters: debugParamMap(action["WFWorkflowActionParameters"]),
+		}
+	}
+	clearIndex, err := validateP15DiagnosticZeroClear(typed)
+	if err != nil {
+		return err
+	}
 	allowed := map[string]bool{
 		"comment": true, "gettext": true, "setvariable": true, "appendvariable": true,
 		"text.combine": true, "output": true, "setstoredcontent": true,
@@ -71,10 +82,10 @@ func validateStorageProbeWire(id string, actions []map[string]any) error {
 			}
 		}
 	}
-	for _, action := range actions {
+	for index, action := range actions {
 		nativeID, _ := action["WFWorkflowActionIdentifier"].(string)
 		suffix := strings.TrimPrefix(nativeID, "is.workflow.actions.")
-		if !allowed[suffix] || nativeID != "is.workflow.actions."+suffix {
+		if (!allowed[suffix] && index != clearIndex) || nativeID != "is.workflow.actions."+suffix {
 			return fmt.Errorf("unexpected effect: %s", nativeID)
 		}
 		p := debugParamMap(action["WFWorkflowActionParameters"])
@@ -216,7 +227,7 @@ func TestP15StorageProbeWireContractsAndCausalMutations(t *testing.T) {
 		if err := validateStorageProbeWire(id, actions); err != nil {
 			t.Fatalf("%s: %v", id, err)
 		}
-		for _, fault := range []string{"foreign-key", "scope", "no-cleanup", "constant-read", "comparison", "extra-network"} {
+		for _, fault := range []string{"foreign-key", "scope", "no-cleanup", "constant-read", "comparison", "extra-network", "old-empty-seed", "clear-input", "nothing-input", "clear-target", "extra-nothing", "consumed-clear"} {
 			bytes, _ := json.Marshal(actions)
 			var altered []map[string]any
 			_ = json.Unmarshal(bytes, &altered)
@@ -249,6 +260,31 @@ func TestP15StorageProbeWireContractsAndCausalMutations(t *testing.T) {
 				}
 			case "extra-network":
 				altered = append(altered, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.downloadurl"})
+			case "old-empty-seed", "clear-input", "nothing-input", "clear-target", "extra-nothing", "consumed-clear":
+				for index, action := range altered {
+					if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" {
+						continue
+					}
+					p := debugParamMap(action["WFWorkflowActionParameters"])
+					next := debugParamMap(altered[index+1]["WFWorkflowActionParameters"])
+					ref := map[string]any{"Value": map[string]any{"Type": "ActionOutput", "OutputUUID": p["UUID"]}}
+					switch fault {
+					case "old-empty-seed":
+						action["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext"
+						p["WFTextActionText"] = ""
+					case "clear-input":
+						next["WFInput"] = ref
+					case "nothing-input":
+						p["WFInput"] = "retained previous value"
+					case "clear-target":
+						next["WFVariableName"] = "unreviewed_buffer"
+					case "extra-nothing":
+						altered = append(altered, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+					case "consumed-clear":
+						debugParamMap(altered[len(altered)-1]["WFWorkflowActionParameters"])["WFOutput"] = ref
+					}
+					break
+				}
 			}
 			if err := validateStorageProbeWire(id, altered); err == nil {
 				t.Fatalf("%s: causal %s mutation passed", id, fault)

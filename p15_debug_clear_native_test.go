@@ -56,3 +56,63 @@ func TestP15DebugClearLogsLeavesNoSyntheticEntry(t *testing.T) {
 		}
 	}
 }
+
+// validateP15DiagnosticZeroClear permits the single run-local debug clear only.
+// Nothing is not a general allowed effect: its exact adjacent store has no input,
+// and no action may consume its empty output as an authored value.
+func validateP15DiagnosticZeroClear(actions []ShortcutAction) (int, error) {
+	clearIndex := -1
+	for i, action := range actions {
+		if action.WFWorkflowActionIdentifier != "is.workflow.actions.nothing" {
+			continue
+		}
+		if clearIndex != -1 || i+1 >= len(actions) {
+			return -1, fmt.Errorf("extra or unpaired Nothing action")
+		}
+		p := action.WFWorkflowActionParameters
+		id, _ := p["UUID"].(string)
+		if len(p) != 1 || id == "" {
+			return -1, fmt.Errorf("zero clear Nothing must have only its output identity")
+		}
+		next := actions[i+1]
+		if next.WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" ||
+			len(next.WFWorkflowActionParameters) != 1 ||
+			next.WFWorkflowActionParameters["WFVariableName"] != debugLogVariableName {
+			return -1, fmt.Errorf("zero clear requires adjacent input-free debug log store")
+		}
+		clearIndex = i
+	}
+	if clearIndex == -1 {
+		return -1, fmt.Errorf("missing zero-item debug clear")
+	}
+	clearUUID := actions[clearIndex].WFWorkflowActionParameters["UUID"]
+	consumed := false
+	var walk func(any)
+	walk = func(value any) {
+		switch value := value.(type) {
+		case map[string]any:
+			if value["OutputUUID"] == clearUUID {
+				consumed = true
+			}
+			for _, child := range value {
+				walk(child)
+			}
+		case []any:
+			for _, child := range value {
+				walk(child)
+			}
+		}
+	}
+	for i, action := range actions {
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" &&
+			action.WFWorkflowActionParameters["WFVariableName"] == debugLogVariableName &&
+			i != clearIndex+1 {
+			return -1, fmt.Errorf("extra debug log initializer")
+		}
+		walk(action.WFWorkflowActionParameters)
+	}
+	if consumed {
+		return -1, fmt.Errorf("zero-clear output must not feed an authored value")
+	}
+	return clearIndex, nil
+}
