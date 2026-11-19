@@ -21,7 +21,8 @@ func TestP15SignatureHelpBindsAnalyzedCallee(t *testing.T) {
 		{"nested_inner", "let many = chooseFromList([chooseFromList([\"a\"], selectMultiple: false|)], selectMultiple: true)", "Text", 2},
 		{"nested_outer", "let many = chooseFromList([chooseFromList([\"a\"], selectMultiple: false)], selectMultiple: true|)", "List<Text>", 2},
 		{"unicode_number", "let number = prompt(\"ערך 😀, q\", inputType: .Nu|mber)", "Number", 1},
-		{"distinct_prompt", "let number = prompt(\"n\", inputType: .Number)\nlet textValue = prompt(\n \"t\", inputType: .Text|\n)", "Text", 1},
+		// A different call must retain its established Unknown result, never borrow Number.
+		{"distinct_prompt", "let number = prompt(\"n\", inputType: .Number)\nlet textValue = prompt(\n \"t\", inputType: .Text|\n)", "Unknown", 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			offset := strings.Index(tc.source, "|")
