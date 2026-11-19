@@ -17,6 +17,7 @@ from prepare_public_artifacts import PublicationBlocked, stage, trusted_fixture_
 from fixture_compile_contract import EXPECTED_REJECTIONS
 from binding_defaults_probe import CASES as BINDING_CASES, verify_adapter_source, verify_adapter_graph
 from export_unicode_diagnostic import FIXTURE_ID as UNICODE_ID, validate_export_unicode_graph
+from f04_record_empty_probe import FIXTURE_ID as RECORD_EMPTY_ID, verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph, verify_causal_mutations as verify_record_empty_mutations
 
 repo = Path(sys.argv[1]).resolve()
 binary = Path(sys.argv[2]).resolve()
@@ -62,6 +63,7 @@ for fid, entry in rejected.items():
     source = repo / "tools/shortcuts-simulator-qa/fixtures" / entry["fileName"]
     assert entry["sourceSha256"] == hashlib.sha256(source.read_bytes()).hexdigest(), fid
 new_probes = {
+    'qa-f04-record-empty-v2': '',
     "CherriBindingCapturePOC": "p15-binding-defaults",
     "CherriTypedDefaultsPOC": "p15-binding-defaults",
     'qa-export-unicode-diagnostic-v2': '',
@@ -149,6 +151,14 @@ for fid in BINDING_CASES:
         else:
             raise AssertionError(fid + ": damaged observer accepted: " + mutation)
     binding_checks[fid] = {"graph":actual_graph,"rejectedGraphMutations":rejected_graphs}
+
+record_empty_entry = selected[RECORD_EMPTY_ID]
+record_empty_bytes = (repo / "tools/shortcuts-simulator-qa/fixtures" / record_empty_entry["fileName"]).read_bytes()
+assert record_empty_entry["recordEmptyFeasibilitySource"] == verify_record_empty_source(repo, RECORD_EMPTY_ID, record_empty_bytes)
+record_empty_graph = plistlib.loads((directory / "builds" / (RECORD_EMPTY_ID + ".shortcut")).read_bytes())["WFWorkflowActions"]
+record_empty_result = verify_record_empty_graph(RECORD_EMPTY_ID, record_empty_graph)
+assert record_empty_entry["recordEmptyFeasibilityGraph"] == record_empty_result
+record_empty_mutations = verify_record_empty_mutations(record_empty_graph)
 
 # Mutate the actual emitted diagnostic graph. This does not simulate Apple:
 # it establishes that a wrong source edge, forged flag or missing output cap
@@ -266,7 +276,7 @@ target_start = script.index("<<'PY'\n", script.index(target_marker)) + len("<<'P
 target_end = script.index("\nPY\n", target_start)
 target_gate = script[target_start:target_end]
 target_results = {}
-for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [(UNICODE_ID, 0), ("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
+for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [(RECORD_EMPTY_ID, 0), (UNICODE_ID, 0), ("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
     result = subprocess.run([sys.executable, "-c", target_gate, str(directory / "compiler-manifest.json"), fid],
                             capture_output=True, text=True, timeout=10)
     assert result.returncode == expected_code, (fid, result.stderr)
@@ -324,6 +334,7 @@ report = {
     'actualCLIExpectedDiagnosticRejections': len(rejected),
     'selectedFixtures': selected, 'newExplicitSignedQASelections': len(new_probes),
     'bindingDefaultsProbes': binding_checks,
+    'recordEmptyFeasibility': record_empty_result, 'recordEmptyCausalMutations': record_empty_mutations,
     'unicodeDiagnosticGraph': unicode_result, 'causalUnicodeGraphMutations': unicode_mutations,
     'causalCompileMutations': negatives, 'causalPublicationMutations': publication_negatives,
     'preservedUnsupportedFixtures': rejected, 'causalRejectionMutations': rejection_negatives,

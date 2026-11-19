@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -349,6 +349,12 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F04_LIST_RESULT:pairs=2:scalars=2:shape=LEFT,TAIL|RIGHT,TAIL"
     ;;
+  qa-f04-record-empty)
+    TARGET_FIXTURE_ID="qa-f04-record-empty-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F04_RECORD_EMPTY_RESULT:outer=2:scalars=2:tags=LEFT,RIGHT:keys=2,2:items=0,0:empty=0:dictionary=Y"
+    ;;
   qa-f04-yield-empty-list)
     TARGET_FIXTURE_ID="qa-f04-yield-empty-list-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -514,6 +520,7 @@ sys.path.insert(0, os.path.join(root_dir, "tools", "shortcuts-simulator-qa"))
 from retry_http_probe import validate_fixture_graph
 from export_unicode_diagnostic import validate_export_unicode_graph
 from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
+from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from fixture_compile_contract import EXPECTED_REJECTIONS, verify_expected_rejection
 cherri_bin = os.path.join(artifact_dir, "builds", "cherri")
 fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtures")
@@ -578,6 +585,7 @@ fixture_specs = [
     ("qa-file-name-extension-v2", "qa-file-name-extension-v2.cherri", "v2"),
     ("qa-f04-yield-list-v2", "qa-f04-yield-list-v2.cherri", "v2"),
     ("qa-f04-yield-empty-list-v2", "qa-f04-yield-empty-list-v2.cherri", "v2"),
+    ("qa-f04-record-empty-v2", "qa-f04-record-empty-v2.cherri", "v2"),
     ("qa-f01-ifresult-let-v2", "qa-f01-ifresult-let-v2.cherri", "v2"),
     ("qa-f01-ifresult-var-v2", "qa-f01-ifresult-var-v2.cherri", "v2"),
     ("qa-require-v2", "qa-require-v2.cherri", "v2"),
@@ -665,6 +673,8 @@ for fid, fname, dialect in fixture_specs:
         "exportUnicodeDiagnosticGraph": validate_export_unicode_graph(fid, actions),
         "bindingDefaultsSource": verify_adapter_source(root_dir, fid, src_bytes),
         "bindingDefaultsGraph": verify_adapter_graph(fid, actions),
+        "recordEmptyFeasibilitySource": verify_record_empty_source(root_dir, fid, src_bytes),
+        "recordEmptyFeasibilityGraph": verify_record_empty_graph(fid, actions),
         "releaseDiagnosticActionsAbsent": release_diagnostics_absent,
         "releaseBodyShapeVerified": release_body_verified,
         "sourceSha256": src_sha256,
