@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import secrets
 import shutil
+import signal
 import subprocess
 import time
 import urllib.parse
@@ -184,13 +185,75 @@ def writer_ready(root, plan):
     return observed
 
 
-def dispatch_reader(root, udid, receiver_data, runner=subprocess.run,
+def run_bounded_native(command, *, timeout, capture_output=True, env=None):
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               env=env, start_new_session=os.name != "nt")
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+        return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+    except subprocess.TimeoutExpired:
+        try:
+            if os.name == "posix":
+                os.killpg(process.pid, signal.SIGKILL)
+            else:
+                process.kill()
+        except ProcessLookupError:
+            pass
+        process.communicate()
+        raise
+
+
+def reader_confirmation_config():
+    names = ("CHERRI_QA_READER_CONFIRM_PROJECT", "CHERRI_QA_READER_CONFIRM_DERIVED_DATA",
+             "CHERRI_QA_READER_CONFIRM_RESULT")
+    values = [os.environ.get(name, "") for name in names]
+    if not any(values):
+        return None
+    if not all(values) or not Path(values[0]).is_dir() or not Path(values[1]).is_dir():
+        raise ValueError("READER_CONSENT_CONFIGURATION_INVALID")
+    return values
+
+
+def confirm_reader_dialog(root, udid, plan, config, runner):
+    project, derived, result = config
+    output = root / "editor"
+    output.mkdir(exist_ok=True)
+    sentinel = output / "confirm-dialog-mode.txt"
+    command = ["xcodebuild", "test-without-building", "-project", project,
+               "-scheme", "CherriSimulatorQAReceiver", "-derivedDataPath", derived,
+               "-destination", "platform=iOS Simulator,id=" + udid,
+               "-only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test04ConfirmPendingRuntimeDialog",
+               "-resultBundlePath", result, "CODE_SIGNING_ALLOWED=NO"]
+    # Reuse the writer's UI consent handler without issuing another READ request.
+    # A green XCTest result never replaces the subsequent callback/trace oracle.
+    record = {"phase": "READ", "startedAt": now(), "finishedAt": "", "exitCode": None}
+    sentinel.write_text("1", encoding="utf-8")
+    try:
+        result = runner(command, capture_output=True, timeout=120,
+                        env={**os.environ, "TEST_RUNNER_CHERRI_QA_DIALOG_CONFIRM_ONLY": "1",
+                             "TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE": plan["readerNonce"],
+                             "TEST_RUNNER_CHERRI_QA_SHARED_OUTPUT_DIR": str(output)})
+        record["exitCode"] = result.returncode
+        log = (result.stdout or b"") + (result.stderr or b"")
+        (root / "runtime/storage-reader-consent.log").write_bytes(log)
+    except subprocess.TimeoutExpired:
+        record["exitCode"] = 124
+    except OSError:
+        record["exitCode"] = 127
+    finally:
+        sentinel.unlink(missing_ok=True)
+        record["finishedAt"] = now()
+        write_json(root / "runtime/storage-reader-consent.json", record)
+
+
+def dispatch_reader(root, udid, receiver_data, runner=run_bounded_native,
                     monotonic=time.monotonic, sleeper=time.sleep):
     root = Path(root)
     plan = load_plan(root)
     if digest(str(uuid.UUID(udid)).encode()) != plan["sameSimulatorSha256"]:
         raise ValueError("SIMULATOR_CHANGED_BETWEEN_PHASES")
     writer = writer_ready(root, plan)
+    confirmation = reader_confirmation_config()
     dispatch_path = root / "runtime/storage-reader-dispatch.json"
     dispatch = {
         "schemaVersion": 1, "sameSimulatorSha256": plan["sameSimulatorSha256"],
@@ -213,17 +276,31 @@ def dispatch_reader(root, udid, receiver_data, runner=subprocess.run,
         dispatch["readerLaunched"] = True
         dispatch["result"] = "CALLBACK_TIMEOUT"
         source = Path(receiver_data) / "Documents/callback-events.json"
-        deadline = monotonic() + 45
-        while monotonic() < deadline:
-            if source.is_file() and source.stat().st_size <= 2 * 1024 * 1024:
-                events = read_json(source, [])
-                if isinstance(events, list) and all(isinstance(e, dict) for e in events):
-                    shutil.copyfile(source, root / "runtime/callback-events.json")
-                    if any(e.get("receiverSelfTest") is False and e.get("runId") == plan["readerNonce"] for e in events):
-                        dispatch["readerCallbackObserved"] = True
-                        dispatch["result"] = "CALLBACK_OBSERVED"
-                        return True
-            sleeper(1)
+        def wait_for_callback(seconds):
+            deadline = monotonic() + seconds
+            while monotonic() < deadline:
+                if source.is_file() and source.stat().st_size <= 2 * 1024 * 1024:
+                    events = read_json(source, [])
+                    if isinstance(events, list) and all(isinstance(e, dict) for e in events):
+                        shutil.copyfile(source, root / "runtime/callback-events.json")
+                        if any(e.get("receiverSelfTest") is False and e.get("runId") == plan["readerNonce"] for e in events):
+                            dispatch["readerCallbackObserved"] = True
+                            dispatch["result"] = "CALLBACK_OBSERVED"
+                            return True
+                sleeper(1)
+            return False
+        if wait_for_callback(10 if confirmation else 45):
+            return True
+        if confirmation:
+            confirm_reader_dialog(root, udid, plan, confirmation, runner)
+            # XCTest may reinstall its host app; use the actual current container.
+            refreshed = runner(["xcrun", "simctl", "get_app_container", udid, BUNDLE, "data"],
+                               capture_output=True, timeout=15)
+            if refreshed.returncode == 0:
+                candidate = Path(refreshed.stdout.decode("utf-8", errors="replace").strip())
+                if candidate.is_absolute() and candidate.is_dir():
+                    source = candidate / "Documents/callback-events.json"
+            return wait_for_callback(45)
         return False
     except subprocess.TimeoutExpired:
         dispatch["result"] = "RECEIVER_COMMAND_TIMEOUT"

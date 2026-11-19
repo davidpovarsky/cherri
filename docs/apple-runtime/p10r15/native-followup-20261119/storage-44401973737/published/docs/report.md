@@ -1,0 +1,25 @@
+# Cherri iPadOS 27 Simulator QA Report (`44401973737`)
+
+- **Compiler Commit SHA:** `a04c6feede79358ee642a1ae27f0a0da8f995ad7`
+- **Release Readiness:** `PARTIAL_READY`
+- **Require Runtime Mode:** `true`
+- **Privacy Gate Passed:** `True`
+
+## Progressive Sub-Gate Outcomes
+
+| Sub-Gate | Status |
+|---|---|
+| `RUNNER_AVAILABLE` | `PASS` |
+| `SIMULATOR_BOOTED` | `PASS` |
+| `SHORTCUTS_APP_INSTALLED` | `PASS` |
+| `SHORTCUTS_LAUNCHED` | `PASS` |
+| `EDITOR_OPENED` | `PASS` |
+| `FILE_IMPORT_ATTEMPTED` | `PASS` |
+| `COMPILER_ARTIFACT_IMPORTED` | `PASS` |
+| `SHORTCUT_EXISTS_IN_LIBRARY` | `PASS` |
+| `ACTION_EDITOR_CAPTURED` | `PARTIAL_EDITOR_CAPTURE` |
+| `SHORTCUT_RUN_ATTEMPTED` | `PASS` |
+| `SHORTCUT_RUN_COMPLETED` | `FAIL_RUNTIME` |
+| `CALLBACK_CAPTURED` | `PASS` |
+| `TRACE_CAPTURED` | `FAIL_RUNTIME` |
+| `PHYSICAL_DEVICE_TESTED` | `BLOCKED_DEVICE` |

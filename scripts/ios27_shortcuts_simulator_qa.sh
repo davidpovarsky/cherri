@@ -2315,7 +2315,10 @@ PY
           EXEC_RUN_NONCE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" reader-nonce --root "$ARTIFACT_DIR")" || { echo "ERROR: storage phase preparation rejected before native launch" >&2; exit 2; }
           EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_STORAGE_CROSS_RUN_RESULT:READ:TYPE_OK:VALUE_OK"
           rm -f "$ARTIFACT_DIR/runtime/runtime-trace.jsonl"
-          python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" dispatch-reader --root "$ARTIFACT_DIR" --udid "$UDID" --receiver-data "$RECEIVER_DATA_DIR" || true
+          CHERRI_QA_READER_CONFIRM_PROJECT="$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
+          CHERRI_QA_READER_CONFIRM_DERIVED_DATA="$DERIVED_DATA_PATH" \
+          CHERRI_QA_READER_CONFIRM_RESULT="$QA_SCRATCH_DIR/CherriStorageReaderConfirm.xcresult" \
+            python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" dispatch-reader --root "$ARTIFACT_DIR" --udid "$UDID" --receiver-data "$RECEIVER_DATA_DIR" || true
           evaluate_runtime_callback
           printf '%s\n' "$RUNTIME_EVAL" > "$ARTIFACT_DIR/runtime/storage-reader-oracle.json"
         fi

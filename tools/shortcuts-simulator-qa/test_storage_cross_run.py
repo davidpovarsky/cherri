@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import urllib.parse
 
 import storage_cross_run as cross
@@ -153,6 +154,67 @@ class StorageCrossRunContractTests(unittest.TestCase):
             return subprocess.CompletedProcess(argv, 0)
         self.assertFalse(cross.dispatch_reader(self.root, UDID, self.receiver, runner=launched,
                          monotonic=lambda: next(times), sleeper=lambda _: self.fail("timeout must be finite")))
+        self.assertEqual(cross.build_report(self.root)["dispatchResult"], "CALLBACK_TIMEOUT")
+
+    def test_reader_pending_consent_reuses_ui_handler_without_relaunch(self):
+        project = Path(self.temp.name) / "CherriSimulatorQA.xcodeproj"
+        derived = Path(self.temp.name) / "DerivedData"
+        project.mkdir()
+        derived.mkdir()
+        env = {
+            "CHERRI_QA_READER_CONFIRM_PROJECT": str(project),
+            "CHERRI_QA_READER_CONFIRM_DERIVED_DATA": str(derived),
+            "CHERRI_QA_READER_CONFIRM_RESULT": str(Path(self.temp.name) / "ReaderConfirm.xcresult"),
+        }
+        clock = [0]
+        calls = []
+        def tick():
+            clock[0] += 6
+            return clock[0]
+        def runner(argv, **kwargs):
+            calls.append((argv, kwargs))
+            if argv[0] == "xcodebuild":
+                self.assertEqual(kwargs["env"]["TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE"],
+                                 self.plan["readerNonce"])
+                self.assertIn("-only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test04ConfirmPendingRuntimeDialog",
+                              argv)
+                cross.write_json(self.receiver / "Documents/callback-events.json",
+                                 [self.writer, self.event("READ")])
+            output = str(self.receiver).encode() if "get_app_container" in argv else b""
+            return subprocess.CompletedProcess(argv, 0, stdout=output, stderr=b"")
+        with mock.patch.dict(os.environ, env):
+            self.assertTrue(cross.dispatch_reader(self.root, UDID, self.receiver,
+                            runner=runner, monotonic=tick, sleeper=lambda _: None))
+        self.assertEqual(sum(argv[0] == "xcodebuild" for argv, _ in calls), 1)
+        self.assertEqual(sum("launch" in argv for argv, _ in calls), 1)
+        self.assertEqual(self.execute_oracle("READ")["traceGate"], "PASS")
+        self.assertTrue(cross.build_report(self.root)["crossRunTextVerified"])
+
+    def test_reader_confirmation_success_does_not_replace_callback(self):
+        project = Path(self.temp.name) / "CherriSimulatorQA.xcodeproj"
+        derived = Path(self.temp.name) / "DerivedData"
+        project.mkdir()
+        derived.mkdir()
+        env = {
+            "CHERRI_QA_READER_CONFIRM_PROJECT": str(project),
+            "CHERRI_QA_READER_CONFIRM_DERIVED_DATA": str(derived),
+            "CHERRI_QA_READER_CONFIRM_RESULT": str(Path(self.temp.name) / "ReaderConfirm.xcresult"),
+        }
+        clock = [0]
+        calls = []
+        def tick():
+            clock[0] += 6
+            return clock[0]
+        def runner(argv, **kwargs):
+            calls.append(argv)
+            output = str(self.receiver).encode() if "get_app_container" in argv else b""
+            return subprocess.CompletedProcess(argv, 0, stdout=output, stderr=b"")
+        with mock.patch.dict(os.environ, env):
+            self.assertFalse(cross.dispatch_reader(self.root, UDID, self.receiver,
+                             runner=runner, monotonic=tick, sleeper=lambda _: None))
+        self.assertEqual(sum(argv[0] == "xcodebuild" for argv in calls), 1)
+        self.assertEqual(sum("launch" in argv for argv in calls), 1)
+        self.assertFalse(cross.build_report(self.root)["crossRunTextVerified"])
         self.assertEqual(cross.build_report(self.root)["dispatchResult"], "CALLBACK_TIMEOUT")
 
     def test_plan_and_release_source_forgery_are_rejected(self):
