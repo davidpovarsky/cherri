@@ -1,0 +1,22 @@
+8757: 2026-11-19T05:17:21.5840192Z === RUN   TestP15C03OriginalCLIParity/math
+8758: 2026-11-19T05:17:21.5840519Z === RUN   TestP15C03OriginalCLIParity/menus
+8759: 2026-11-19T05:17:21.5842076Z     p15_variadic_migration_test.go:547: actual compiler: exit status 1  Compilation error: lowering error: [E_WORKSPACE_ACCESS] embedded local asset: file does not exist
+8760: 2026-11-19T05:17:21.5842417Z === RUN   TestP15C03OriginalCLIParity/repeats
+8761: 2026-11-19T05:17:21.5842776Z --- FAIL: TestP15C03OriginalCLIParity (0.68s)
+8762: 2026-11-19T05:17:21.5843786Z     --- PASS: TestP15C03OriginalCLIParity/arrays (0.14s)
+8763: 2026-11-19T05:17:21.5844286Z     --- PASS: TestP15C03OriginalCLIParity/functions (0.20s)
+8764: 2026-11-19T05:17:21.5844706Z     --- PASS: TestP15C03OriginalCLIParity/math (0.11s)
+8765: 2026-11-19T05:17:21.5845116Z     --- FAIL: TestP15C03OriginalCLIParity/menus (0.07s)
+8766: 2026-11-19T05:17:21.5845545Z     --- PASS: TestP15C03OriginalCLIParity/repeats (0.16s)
+8767: 2026-11-19T05:17:21.5845839Z === RUN   TestP15RequiredVariadicPresence
+8908: 2026-11-19T05:17:21.5928328Z     p15_vcard_tokenstring_test.go:226: actual CLI failed: exit status 1
+8909: 2026-11-19T05:17:21.5928544Z         stdout=
+8910: 2026-11-19T05:17:21.5929705Z         stderr=Compilation error: lowering error: [E_WORKSPACE_ACCESS] embedded local asset: file does not exist
+8911: 2026-11-19T05:17:21.5930074Z --- FAIL: TestP15MenusMigrationCLIParity (0.08s)
+8912: 2026-11-19T05:17:21.5930467Z === RUN   TestP15TargetVersionComponentsProduction
+8913: 2026-11-19T05:17:21.5931010Z === RUN   TestP15TargetVersionComponentsProduction/minVersion/16.10
+9798: 2026-11-19T05:21:18.7213769Z         {"Time":"2026-11-19T05:09:00.108976037Z","Action":"fail","Package":"github.com/electrikmilk/cherri","Elapsed":3.338}
+9799: 2026-11-19T05:21:18.7214293Z         }
+9800: 2026-11-19T05:21:18.7214660Z --- FAIL: TestVariadicMigrationProductionEvidence (4.95s)
+9801: 2026-11-19T05:21:18.7215130Z === RUN   TestCatalogBaselineProductionEvidence
+9802: 2026-11-19T05:21:18.7223760Z     catalog_execution_test.go:6: P15_CATALOG_BASELINE_RECEIPT{"records":[{"evidence_id":"ev-local-B02-repository","requirements":["B02"],"tier":"repository","implementation_sha":"b97ae752205f1e747b6c98ff7511f3484dd53bc2","test_id":"github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs","command":["go","test","-count=1","-json","-timeout","3m0s",".","-run","^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults)$"],"exit_code":0,"result":"passed","assertions":{"assertion":"Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults"},"detail":"Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults"}],"report":{"timestamp":"2026-11-19T05:09:18Z","phase":"local","closure_complete":false,"language_version":"2.0","schema_fingerprint":"","total_cases":1,"passed_cases":1,"failed_cases":0,"skipped_cases":0,"results":[{"id":"B02","group":"baseline","requirement":"Capture baseline catalog, definition identities and representative native outputs","test_level":"repository","executed_levels":["repository"],"passed":true,"status":"PASSED","detail":"All required tiers satisfied by verified evidence"}]},"scope":"Archived definition identity reconciliation and current representative native output capture only; no historical plist parity or runtime claim","source_sha":"b97ae752205f1e747b6c98ff7511f3484dd53bc2","source_tree_clean":true}

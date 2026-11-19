@@ -1,0 +1,48 @@
+{
+  "label": "menus-clean-fixed-root",
+  "sourceSHA": "fd790278f40c2b1352eba2821863b33ddea29c06",
+  "sourceSHAAfter": "fd790278f40c2b1352eba2821863b33ddea29c06",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "protectedBefore": {
+    "tests/menus.cherri": "5553044bc94cc455bb33d022386b2ad8b92e92a558bb20de454f5ac71f78cf22",
+    "assets/cherri_icon.png": "a7cd01cde1dc12c2d1520f82ec6765dceb0bf0283cbd2081d2165d1e5bfe228f",
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "protectedAfter": {
+    "tests/menus.cherri": "5553044bc94cc455bb33d022386b2ad8b92e92a558bb20de454f5ac71f78cf22",
+    "assets/cherri_icon.png": "a7cd01cde1dc12c2d1520f82ec6765dceb0bf0283cbd2081d2165d1e5bfe228f",
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15C03OriginalCLIParity|TestP15MenusMigrationCLIParity|TestP15MenusMigrationAssetWorkspace)$",
+    "."
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 25.891,
+  "bytes": 9606,
+  "sha256": "ac2f6e3f9d652da11527f8c74e984c79d26a722c2f56ada61dc267ecda625c8a",
+  "named": {
+    "run": 11,
+    "pass": 11,
+    "fail": 0,
+    "skip": 0
+  },
+  "missingRequired": [],
+  "failures": [],
+  "diagnostics": [
+    "    p15_vcard_tokenstring_test.go:242: unchanged canonical menus fixture compiled through both actual CLI paths; parity=existing_normalized\n"
+  ]
+}

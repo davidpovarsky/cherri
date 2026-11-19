@@ -1,0 +1,27 @@
+{
+  "formatVersion": 1,
+  "sourceSHA": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "runID": 44462962145,
+  "jobID": 135353904375,
+  "jobURL": "https://github.com/davidpovarsky/cherri/actions/runs/44462962145/job/135353904375",
+  "status": "completed",
+  "conclusion": "failure",
+  "downloadCommand": [
+    "gh",
+    "api",
+    "repos/davidpovarsky/cherri/actions/jobs/135353904375/logs"
+  ],
+  "rawLogBytes": 1416509,
+  "rawLogSHA256": "c4626d369adca1c6a4a45d6b3832161a9e6945cc59cfd893d957dbcdd9508d4d",
+  "passingPackages": 23,
+  "noTestPackages": 5,
+  "failedPackages": 2,
+  "namedFailureMarkers": [
+    "--- FAIL: TestP15C03OriginalCLIParity (0.68s)",
+    "--- FAIL: TestP15C03OriginalCLIParity/menus (0.07s)",
+    "--- FAIL: TestP15MenusMigrationCLIParity (0.08s)",
+    "--- FAIL: TestVariadicMigrationProductionEvidence (4.95s)"
+  ],
+  "actualCause": "Both original menus migration harnesses moved V2 entry source into a fresh temporary directory without staging its exact public assets/cherri_icon.png dependency. Entry-root asset enforcement correctly rejected the missing file. The independently executed C03 producer repeated the same failure.",
+  "scope": "Historical S4 Linux job remains FAILURE. Focused repair and new CLI controls are bound separately to fd79027; no full-suite or Apple runtime success is claimed."
+}
