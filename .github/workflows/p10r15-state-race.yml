@@ -1,0 +1,44 @@
+name: P10R15 State Race Evidence
+
+on:
+  push:
+    branches:
+      - probe/cherri-p10r15-state-race-20261119
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p10r15-state-race-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  state-race:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CGO_ENABLED: '1'
+      GOMAXPROCS: '2'
+      GOFLAGS: '-p=2'
+      GORACE: ''
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.24'
+      - name: Verify race evidence intake controls
+        run: python3 -B -m unittest discover -s tools/language-acceptance -p test_state_race_runner.py -v
+      - name: Execute actual instrumented state scenarios
+        run: python3 -B tools/language-acceptance/run_state_race.py --output "$RUNNER_TEMP/p10r15-state-race-evidence"
+      - name: Preserve actual source, configuration and raw results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p10r15-state-race-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/p10r15-state-race-evidence
+          if-no-files-found: error
+          retention-days: 30
