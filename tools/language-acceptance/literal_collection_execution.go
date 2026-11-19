@@ -18,6 +18,7 @@ var nestedCollectionObservationTests = []string{
 	"TestP15L01NestedDictionaryShape",
 	"TestP15L01NestedDictionaryOracleRejectsCorruption",
 	"TestP15L01UnverifiedNativeNestedLiteralFailsClosed",
+	"TestP15L01InferredNestedNativeListFailsClosed",
 }
 
 func (r *Runner) runLiteralCollectionRequirement(id string) {
@@ -39,7 +40,7 @@ func (r *Runner) runNestedCollectionObservation() {
 	// L01 intentionally stays in incompleteLocalAssertions. These are genuine
 	// production Dictionary-field observations, not native List<List> proof.
 	r.Record("L01", "collections", "Nested lists/maps preserve shape, cardinality and element order", "unit+native", nil, passed, "PASSED",
-		detail+"; explicit Dictionary arrays preserve empty/false/zero/text/map shape. Standalone native List<List> representation and runtime hierarchy remain UNVERIFIED.")
+		detail+"; explicit Dictionary arrays preserve empty/false/zero/text/map shape. Direct and inferred List-valued native rows fail closed; dynamic AnyContent and standalone native List<List> runtime hierarchy remain UNVERIFIED.")
 }
 
 // Only an actually executed producer can supply each S01 tier. A native tree

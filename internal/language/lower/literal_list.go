@@ -5,6 +5,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // lowerListDictionary retains the AST's explicit Dictionary identity. Native
@@ -32,8 +33,8 @@ func (l *Lowerer) lowerListDictionary(expr *syntax.MapExpr) (*ir.AttachmentToken
 func (l *Lowerer) lowerListExpression(expr *syntax.ListExpr, nativeItems bool) (interface{}, error) {
 	list := make([]interface{}, len(expr.Elements))
 	for i, element := range expr.Elements {
-		if _, nested := element.(*syntax.ListExpr); nested && nativeItems {
-			return nil, fmt.Errorf("E_NESTED_NATIVE_LIST: nested List literal at item %d has no verified native content-row encoding; preserve nested arrays in Dictionary fields", i)
+		if nativeItems && l.isNativeListElement(element) {
+			return nil, fmt.Errorf("E_NESTED_NATIVE_LIST: nested List-valued element at item %d has no verified native content-row encoding; preserve nested arrays in Dictionary fields", i)
 		}
 		var value interface{}
 		var err error
@@ -69,4 +70,41 @@ func (l *Lowerer) lowerRuntimeLiteral(expr syntax.Expression) (interface{}, erro
 		return l.lowerListDictionary(dictionary)
 	}
 	return l.lowerExpression(expr)
+}
+
+// A List-valued variable, call, value block, or optional has the same native
+// content-row limitation as a nested literal. Checking only AST ListExpr nodes
+// lets inference silently bypass that boundary.
+func (l *Lowerer) isNativeListElement(expr syntax.Expression) bool {
+	if _, literal := expr.(*syntax.ListExpr); literal {
+		return true
+	}
+	var inferred = l.exprTypes[expr]
+	// A broad/unknown annotation can erase the analyzed identifier type while
+	// its actual lowered initializer still establishes a List-shaped binding.
+	if inferred == nil || inferred.Kind() == types.KindUnknown || inferred.Kind() == types.KindAnyContent {
+		if identifier, ok := expr.(*syntax.IdentExpr); ok {
+			if binding, found := l.bindings[identifier.Name]; found {
+				inferred = binding.Type
+			}
+		}
+	}
+	return nativeListElementType(inferred)
+}
+
+func nativeListElementType(inferred types.Type) bool {
+	if inferred == nil {
+		return false
+	}
+	switch typed := inferred.(type) {
+	case types.OptionalType:
+		return nativeListElementType(typed.Inner)
+	case types.UnionType:
+		for _, member := range typed.Members {
+			if nativeListElementType(member) {
+				return true
+			}
+		}
+	}
+	return inferred.Kind() == types.KindList || inferred.Name() == "Array" || inferred.Name() == "List"
 }
