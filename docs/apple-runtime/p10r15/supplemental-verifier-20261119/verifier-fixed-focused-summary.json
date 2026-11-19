@@ -1,0 +1,25 @@
+{
+  "exit_code": 1,
+  "elapsed_seconds": 32.11,
+  "counts": {
+    "pass": 71,
+    "fail": 2,
+    "skip": 0
+  },
+  "failed": [
+    "TestP15RP02ParserOnlyAndForeignSHA",
+    "TestP15RP03FreshCloneContractIntake"
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestP15Verification.*|TestP15RP0[23].*|TestMeta_.*|TestRealContracts.*|TestEndToEndAggregator.*|TestLocalReport.*|TestSupplementalRequirementsNeedExecutedScenarios|TestSupplementalAcceptanceMissingProducerFailsClosed|TestSupplementalAcceptanceCannotChangeRequiredTiers)$"
+  ],
+  "source_sha": "7f7a37b1108fc1dcdd1e8ae3c887742de1b1d3a6",
+  "source_tree_clean": false
+}

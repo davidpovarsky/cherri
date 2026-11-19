@@ -1,0 +1,24 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 38.51,
+  "counts": {
+    "pass": 48,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed": [],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=12m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestSupplementalVerificationProductionEvidence|TestMeta_.*|TestRealContractsLoadAndVerifyDigests|TestEndToEndAggregator_All12AdversarialAttacks|TestLocalReportIncludesAll179WithoutInheritedClosure|TestSupplementalRequirementsNeedExecutedScenarios|TestSupplementalAcceptanceCannotChangeRequiredTiers)$"
+  ],
+  "source_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+  "source_tree_clean": true,
+  "receipt_records": 7,
+  "receipt_passed_cases": 4
+}
