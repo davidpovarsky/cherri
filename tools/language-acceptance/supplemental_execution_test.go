@@ -417,9 +417,16 @@ func TestSupplementalReferenceAndVariadicProductionEvidence(t *testing.T) {
 				case "invented_runtime":
 					changed.Records[index].Tier = "ios-runtime"
 				case "missing_native_tier":
+					// A roundtrip includes structure under the established tier
+					// relation. Remove the strongest required native tier so the
+					// remaining weaker receipt cannot complete the scenario.
+					var removedTier = "native-structure"
+					if id == "BRG07" {
+						removedTier = "native-roundtrip"
+					}
 					var kept []EvidenceRecord
 					for _, record := range changed.Records {
-						if record.Requirements[0] != id || record.Tier != "native-structure" {
+						if record.Requirements[0] != id || record.Tier != removedTier {
 							kept = append(kept, record)
 						}
 					}
