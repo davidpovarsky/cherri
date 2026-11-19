@@ -255,25 +255,12 @@ customNotify("Build Complete")
 // LANG-002: enum / type aliases
 func TestLANG002_EnumAndTypeAliases(t *testing.T) {
 	t.Run("LiteralReferenceControl", func(t *testing.T) {
-		session := compileMetaSourceToSession(t, "lang002_literal", "quicklook(\"PRODUCTION\")")
-		defer session.Close()
-		if err := lang002QuickLookStringGraph(session.shortcut.WFWorkflowActions, "PRODUCTION"); err != nil {
-			t.Fatal(err)
-		}
+		lang002CompileNormalizedGraph(t, "lang002_literal", "quicklook(\"PRODUCTION\")")
 	})
 	t.Run("ValidEnum", func(t *testing.T) {
-		session := compileMetaSourceToSession(t, "lang002_enum", lang002EnumSource)
-		defer session.Close()
-		actions := session.shortcut.WFWorkflowActions
-		if err := lang002QuickLookStringGraph(actions, "PRODUCTION"); err != nil {
-			t.Fatal(err)
-		}
-		literal := compileMetaSourceToSession(t, "lang002_literal_parity", "quicklook(\"PRODUCTION\")")
-		defer literal.Close()
-		if err := lang002QuickLookStringGraph(literal.shortcut.WFWorkflowActions, "PRODUCTION"); err != nil {
-			t.Fatal(err)
-		}
-		if !reflect.DeepEqual(lang002NormalizedGraph(actions), lang002NormalizedGraph(literal.shortcut.WFWorkflowActions)) {
+		enumGraph := lang002CompileNormalizedGraph(t, "lang002_enum", lang002EnumSource)
+		literalGraph := lang002CompileNormalizedGraph(t, "lang002_literal_parity", "quicklook(\"PRODUCTION\")")
+		if !reflect.DeepEqual(enumGraph, literalGraph) {
 			t.Fatal("enum and ordinary literal differ beyond generated producer UUIDs")
 		}
 	})
@@ -300,6 +287,19 @@ quicklook(Environment.invalid)
 // token. Enum strings therefore use the same one-Text producer as ordinary
 // string arguments. Validate the value and exact edge, not merely a reference.
 const lang002EnumSource = "enum Environment {\n    staging = \"STAGING\",\n    prod = \"PRODUCTION\"\n}\nquicklook(Environment.prod)\n"
+
+func lang002CompileNormalizedGraph(t *testing.T, filename, source string) []ShortcutAction {
+	t.Helper()
+	session := compileMetaSourceToSession(t, filename, source)
+	defer session.Close()
+	actions := session.shortcut.WFWorkflowActions
+	if err := lang002QuickLookStringGraph(actions, "PRODUCTION"); err != nil {
+		t.Fatal(err)
+	}
+	// Snapshot the graph and release the global backend transaction before
+	// compiling the independent control. Never nest canonical sessions.
+	return lang002NormalizedGraph(actions)
+}
 
 func lang002QuickLookStringGraph(actions []ShortcutAction, expected string) error {
 	if len(actions) != 2 {
