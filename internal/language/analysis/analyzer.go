@@ -1353,6 +1353,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.analyzeStatement(e, scope)
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
+		a.requireNativeLoopResultShape(e.BodyBlock)
 		return a.controlExpressionResultType(e)
 
 	case *syntax.ForStmt:
@@ -1363,6 +1364,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.analyzeStatement(e, scope)
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
+		a.requireNativeLoopResultShape(e.BodyBlock)
 		return a.controlExpressionResultType(e)
 
 	case *syntax.MenuStmt:

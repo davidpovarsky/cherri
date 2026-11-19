@@ -491,6 +491,7 @@ import sys
 root_dir, artifact_dir, source_sha = sys.argv[1], sys.argv[2], sys.argv[3]
 sys.path.insert(0, os.path.join(root_dir, "tools", "shortcuts-simulator-qa"))
 from retry_http_probe import validate_fixture_graph
+from fixture_compile_contract import EXPECTED_REJECTIONS, verify_expected_rejection
 cherri_bin = os.path.join(artifact_dir, "builds", "cherri")
 fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtures")
 builds_dir = os.path.join(artifact_dir, "builds")
@@ -561,6 +562,7 @@ fixture_specs = [
 ]
 
 manifest_entries = []
+fixture_rejections = []
 compiled_actions_by_id = {}
 
 def native_strings(value):
@@ -591,6 +593,15 @@ for fid, fname, dialect in fixture_specs:
     if dialect == "legacy":
         cmd.append("--legacy")
     proc = subprocess.run(cmd, cwd=builds_dir, capture_output=True, text=True)
+    if fid in EXPECTED_REJECTIONS:
+        checked = subprocess.run([cherri_bin, "--check=" + build_src, "--json"],
+                                 cwd=builds_dir, capture_output=True, text=True)
+        rejection = verify_expected_rejection(fid, src_bytes.decode("utf-8"), proc, checked,
+            [out_shortcut, os.path.splitext(build_src)[0] + ".shortcut",
+             os.path.splitext(build_src)[0] + ".plist"])
+        rejection.update(fileName=fname, dialect=dialect, sourceSha256=src_sha256)
+        fixture_rejections.append(rejection)
+        continue
     if proc.returncode != 0:
         raise RuntimeError(f"Failed to compile {fid}: {proc.stdout}\n{proc.stderr}")
 
@@ -638,6 +649,10 @@ compiler_manifest = {
     "syntheticOnly": True,
     "compilerCommitSha": source_sha,
     "fixtures": manifest_entries,
+    "fixtureRejections": fixture_rejections,
+    "compileAttempts": len(manifest_entries) + len(fixture_rejections),
+    "compiledArtifactCount": len(manifest_entries),
+    "expectedDiagnosticRejectionCount": len(fixture_rejections),
 }
 with open(os.path.join(artifact_dir, "compiler-manifest.json"), "w", encoding="utf-8") as f:
     json.dump(compiler_manifest, f, indent=2)
@@ -766,6 +781,24 @@ with open(os.path.join(artifact_dir, "runtime", "instrumentation-vs-original.jso
 PY
 FIXTURE_COMPILE_RC=$?
 if [ "$FIXTURE_COMPILE_RC" -ne 0 ]; then exit "$FIXTURE_COMPILE_RC"; fi
+
+# An unsupported preserved probe is a compiler rejection, never a runnable
+# fixture or a successful Apple observation. Stop before signing/Simulator use.
+python3 - "$ARTIFACT_DIR/compiler-manifest.json" "$TARGET_FIXTURE_ID" <<'PY'
+import json
+import sys
+with open(sys.argv[1], encoding="utf-8") as stream:
+    manifest = json.load(stream)
+target = sys.argv[2]
+rejected = [row for row in manifest.get("fixtureRejections", []) if row["fixtureId"] == target]
+if rejected:
+    print("BLOCKED_PLATFORM: " + target + ": E_TARGET_VALUE_SHAPE; no native artifact emitted", file=sys.stderr)
+    sys.exit(3)
+if sum(row["fixtureId"] == target for row in manifest["fixtures"]) != 1:
+    raise SystemExit("selected fixture has no unique compiled artifact")
+PY
+TARGET_COMPILE_RC=$?
+if [ "$TARGET_COMPILE_RC" -ne 0 ]; then exit "$TARGET_COMPILE_RC"; fi
 
 # Verify only the explicitly selected paginate targets against immutable public
 # synthetic bytes before simulator/signing work. Other fixtures do not acquire

@@ -91,6 +91,21 @@ class NativeContinuationAuditTests(unittest.TestCase):
         self.assertEqual(len(report["causalOracleControls"]["rejected"]), 8)
         self.assertEqual(report["observedNumericFlags"], report["expectedNumericFlags"])
 
+    def test_compiler_rejection_cannot_be_promoted_to_native_execution(self):
+        self.compiler["fixtureRejections"] = [{"fixtureId": FID, "status": "BLOCKED_PLATFORM",
+                                              "appleRuntime": "NOT_RUN", "nativeArtifactEmitted": False}]
+        self.publish_control()
+        with self.assertRaisesRegex(ValueError, "compiler-rejected fixture cannot establish native execution"):
+            self.run_audit()
+
+    def test_unrelated_preserved_rejections_do_not_promote_or_block_executed_target(self):
+        self.compiler["fixtureRejections"] = [{"fixtureId": "qa-f04-yield-list-v2",
+                                              "status": "BLOCKED_PLATFORM", "appleRuntime": "NOT_RUN"}]
+        self.publish_control()
+        report = self.run_audit()
+        self.assertEqual(report["fixtureId"], FID)
+        self.assertTrue(report["runtimeContractVerified"])
+
     def test_observed_wrong_number_flags_remain_semantic_failure(self):
         self.event["resultSummary"] = self.case["expectedSummary"].replace("DNE=N", "DNE=Y")
         self.summary["runtimeContractVerified"] = self.assertions["runtimeContractVerified"] = False

@@ -77,6 +77,7 @@ def main():
         "p15_storage_probe_test.go",
         "tools/shortcuts-simulator-qa/test_storage_probe_contract.py",
         "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+        "tools/shortcuts-simulator-qa/fixture_compile_contract.py",
         "scripts/ios27_shortcuts_simulator_qa.sh",
         ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
         ".github/workflows/openminis-skill.yml",
@@ -131,6 +132,9 @@ def main():
     phase0_report = json.loads(phase0_path.read_bytes())
     assert phase0_report["compilerCommitSha"] == source_sha
     assert phase0_report["workingTreeDirty"] is False
+    assert phase0_report["actualCLIFixturesAttempted"] == (phase0_report["actualCLIFixturesCompiled"]
+        + phase0_report["actualCLIExpectedDiagnosticRejections"])
+    assert phase0_report["actualCLIExpectedDiagnosticRejections"] == 2
     selected = []
     for case in cases:
         entry = phase0_report["selectedFixtures"][case["id"]]
@@ -159,7 +163,9 @@ def main():
                     "primitiveFrontendProfileConfigurations": 4, "logSha256": sha256(go_log)},
         "pythonTests": {"modules": test_modules, "passed": int(match.group(1)),
                         "seconds": float(match.group(2)), "logSha256": sha256(py_log)},
+        "actualCLIFixturesAttempted": phase0_report["actualCLIFixturesAttempted"],
         "actualCLIFixturesCompiled": phase0_report["actualCLIFixturesCompiled"],
+        "actualCLIExpectedDiagnosticRejections": phase0_report["actualCLIExpectedDiagnosticRejections"],
         "storageExactNativeActionRoundtrips": len(selected),
         "storageFixtures": selected,
         "phase0ReceiptSha256": sha256(phase0_path),
@@ -184,7 +190,8 @@ def main():
         "elapsedSeconds": round(time.monotonic() - started, 3),
     }
     output.write_bytes((json.dumps(report, indent=2, ensure_ascii=True) + "\n").encode("utf-8"))
-    print(json.dumps({k: report[k] for k in ["status", "sourceCommit", "actualCLIFixturesCompiled",
+    print(json.dumps({k: report[k] for k in ["status", "sourceCommit", "actualCLIFixturesAttempted", "actualCLIFixturesCompiled",
+          "actualCLIExpectedDiagnosticRejections",
           "storageExactNativeActionRoundtrips", "sameRunOnly", "cacheImplemented",
           "crossRunPersistence", "typedArchive", "nativeExecuted", "elapsedSeconds"]}, indent=2))
 

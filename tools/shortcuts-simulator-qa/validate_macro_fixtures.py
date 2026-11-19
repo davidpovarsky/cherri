@@ -12,10 +12,11 @@ import sys
 import tempfile
 
 from prepare_public_artifacts import PublicationBlocked, stage, trusted_fixture_sources
+from fixture_compile_contract import EXPECTED_REJECTIONS
 
 repo = Path(sys.argv[1]).resolve()
 binary = Path(sys.argv[2]).resolve()
-output = repo / 'artifacts/p15-macro-harness-validation'
+output = Path(sys.argv[3]).resolve() if len(sys.argv) > 3 else repo / 'artifacts/p15-macro-harness-validation'
 output.mkdir(parents=True, exist_ok=True)
 script_path = repo / 'scripts/ios27_shortcuts_simulator_qa.sh'
 script = script_path.read_text(encoding='utf-8')
@@ -41,6 +42,21 @@ if positive.returncode != 0:
     print(positive.stderr)
     raise SystemExit(positive.returncode)
 manifest = json.loads((directory / 'compiler-manifest.json').read_text())
+rejected = {entry["fixtureId"]: entry for entry in manifest["fixtureRejections"]}
+assert set(rejected) == set(EXPECTED_REJECTIONS)
+assert manifest["compileAttempts"] == len(manifest["fixtures"]) + len(rejected)
+assert manifest["compiledArtifactCount"] == len(manifest["fixtures"])
+assert manifest["expectedDiagnosticRejectionCount"] == len(rejected)
+assert not set(rejected).intersection(entry["fixtureId"] for entry in manifest["fixtures"])
+for fid, entry in rejected.items():
+    assert entry["status"] == "BLOCKED_PLATFORM" and entry["appleRuntime"] == "NOT_RUN", fid
+    assert entry["compileOutcome"] == "REJECTED_UNSUPPORTED_VALUE_SHAPE", fid
+    assert entry["diagnostic"]["code"] == "E_TARGET_VALUE_SHAPE", fid
+    assert entry["compileExitCode"] != 0 and entry["checkExitCode"] != 0, fid
+    assert entry["nativeArtifactEmitted"] is False, fid
+    assert not (directory / "builds" / (fid + ".shortcut")).exists(), fid
+    source = repo / "tools/shortcuts-simulator-qa/fixtures" / entry["fileName"]
+    assert entry["sourceSha256"] == hashlib.sha256(source.read_bytes()).hexdigest(), fid
 new_probes = {
     'qa-nil-clear-v2': '',
     'qa-label-file-carrier-v2': 'p15-label-probes',
@@ -104,6 +120,39 @@ for name, code in (('ignored-release-profile', ignored_profile), ('missing-body'
     assert 'Release measure fixture retained diagnostics or lost/duplicated its native body' in result.stderr, result.stderr
     negatives[name] = {'exitCode': result.returncode, 'expectedRejectionVerified': True}
 
+# Execute the preserved F04 compile/check paths with damaged success evidence.
+# An unrelated error, success exit or stale artifact must never count as the
+# required fail-closed diagnostic.
+f04_only = program.replace("for fid, fname, dialect in fixture_specs:",
+    'for fid, fname, dialect in [spec for spec in fixture_specs if spec[0] == "qa-f04-yield-list-v2"]:')
+fault_anchor = "        rejection = verify_expected_rejection("
+rejection_negatives = {}
+for name, fault in (
+    ("wrong-diagnostic", '        checked.stdout = checked.stdout.replace("E_TARGET_VALUE_SHAPE", "E_ARGUMENT_TYPE")\n'),
+    ("compile-exit-success", '        proc.returncode = 0\n'),
+    ("unexpected-native-artifact", '        with open(out_shortcut, "wb") as stale: stale.write(b"unexpected-native-output")\n'),
+    ("extra-unrelated-error", '        diagnostic_result = json.loads(checked.stdout)\n'
+                            '        diagnostic_result["diagnostics"].append({"severity":"ERROR","code":"E_UNKNOWN_NAME"})\n'
+                            '        checked.stdout = json.dumps(diagnostic_result)\n'),
+):
+    result, _ = execute("f04-" + name, f04_only.replace(fault_anchor, fault + fault_anchor))
+    assert result.returncode != 0 and "EXPECTED_FIXTURE_REJECTION_MISMATCH" in result.stderr, (name, result.stderr)
+    rejection_negatives[name] = {"exitCode": result.returncode, "expectedRejectionVerified": True}
+
+# Exercise the actual selected-target gate before any signing/Simulator work.
+target_marker = 'python3 - "$ARTIFACT_DIR/compiler-manifest.json" "$TARGET_FIXTURE_ID"'
+target_start = script.index("<<'PY'\n", script.index(target_marker)) + len("<<'PY'\n")
+target_end = script.index("\nPY\n", target_start)
+target_gate = script[target_start:target_end]
+target_results = {}
+for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
+    result = subprocess.run([sys.executable, "-c", target_gate, str(directory / "compiler-manifest.json"), fid],
+                            capture_output=True, text=True, timeout=10)
+    assert result.returncode == expected_code, (fid, result.stderr)
+    if expected_code:
+        assert "BLOCKED_PLATFORM" in result.stderr and "E_TARGET_VALUE_SHAPE" in result.stderr
+    target_results[fid] = {"exitCode": result.returncode, "signing": "NOT_RUN", "appleRuntime": "NOT_RUN"}
+
 # Use actual Phase 0 source hashes against reviewed checkout files. This
 # synthetic local producer supplies the publication precondition, not a claim
 # that an Apple run's privacy gate has passed.
@@ -149,14 +198,18 @@ report = {
     'orchestratorSha256': hashlib.sha256(script_path.read_bytes()).hexdigest(),
     'validatorSha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
     'compilerBinarySha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
+    'actualCLIFixturesAttempted': manifest['compileAttempts'],
     'actualCLIFixturesCompiled': len(manifest['fixtures']),
+    'actualCLIExpectedDiagnosticRejections': len(rejected),
     'selectedFixtures': selected, 'newExplicitSignedQASelections': len(new_probes),
     'causalCompileMutations': negatives, 'causalPublicationMutations': publication_negatives,
+    'preservedUnsupportedFixtures': rejected, 'causalRejectionMutations': rejection_negatives,
+    'selectedTargetCompileGates': target_results,
     'publication': {'publishedTextFiles': len(publication['published']),
                     'quarantinedRawFiles': len(publication['quarantined']),
                     'rasterPublicationAllowed': False},
     'appleRuntime': 'NOT_RUN', 'signing': 'NOT_RUN',
 }
 (output / 'validation.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-print(json.dumps({k: report[k] for k in ('status', 'actualCLIFixturesCompiled', 'newExplicitSignedQASelections',
-    'causalCompileMutations', 'causalPublicationMutations', 'publication', 'appleRuntime', 'signing')}, indent=2))
+print(json.dumps({k: report[k] for k in ('status', 'actualCLIFixturesAttempted', 'actualCLIFixturesCompiled', 'actualCLIExpectedDiagnosticRejections', 'newExplicitSignedQASelections',
+    'causalCompileMutations', 'causalPublicationMutations', 'causalRejectionMutations', 'selectedTargetCompileGates', 'publication', 'appleRuntime', 'signing')}, indent=2))

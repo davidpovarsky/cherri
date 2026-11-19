@@ -317,6 +317,8 @@ def audit(artifact, commit, run_id, fid, metadata):
     require(summary.get("targetFixtureId") == assertions.get("targetFixtureId") == fid,
             "fixture identity disagreement")
     case = reviewed_case(commit, fid)
+    require(not any(row.get("fixtureId") == fid for row in compiler.get("fixtureRejections", [])),
+            "compiler-rejected fixture cannot establish native execution")
     entries = [f for f in compiler["fixtures"] if f.get("fixtureId") == fid]
     require(len(entries) == 1, "ambiguous source fixture")
     source = entries[0]
