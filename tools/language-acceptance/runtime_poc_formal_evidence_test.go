@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -21,19 +20,9 @@ func TestRuntimePOCFormalExporterUsesActualGoIntake(t *testing.T) {
 	if contractErr != nil {
 		t.Fatal(contractErr)
 	}
-	var interpreter string
-	var candidates = []string{"python3", "python"}
-	if runtime.GOOS == "windows" {
-		candidates = []string{"python", "python3"}
-	}
-	for _, candidate := range candidates {
-		if path, err := exec.LookPath(candidate); err == nil {
-			interpreter = path
-			break
-		}
-	}
-	if interpreter == "" {
-		t.Fatal("Python 3 is required to execute the actual formal PoC exporter")
+	var interpreter, interpreterErr = acceptancePython3("CHERRI_TEST_PYTHON")
+	if interpreterErr != nil {
+		t.Fatal("Python 3 is required to execute the actual formal PoC exporter", interpreterErr)
 	}
 	var toolsPath = filepath.Join(repo, "tools", "shortcuts-simulator-qa")
 	var fixturePath = t.TempDir()

@@ -25,9 +25,10 @@ func p15AcceptanceCLI(t *testing.T) string {
 	bin := filepath.Join(t.TempDir(), "cherri-acceptance.exe")
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
+	var buildStarted = time.Now()
 	cmd := exec.CommandContext(ctx, "go", "build", "-o", bin, ".")
 	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("build current production CLI: %v\n%s", err, out)
+		t.Fatalf("build current production CLI: %v (context: %v, elapsed: %s)\n%s", err, ctx.Err(), time.Since(buildStarted).Round(time.Millisecond), out)
 	}
 	return bin
 }

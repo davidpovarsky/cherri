@@ -593,18 +593,11 @@ func TestDocumentationLocalRunnerCannotMintConsumerEvidence(t *testing.T) {
 
 func TestDocumentationActualCollectorAdapterToFormalIntake(t *testing.T) {
 	var model = newDocumentationIntakeModel(t)
-	var python = os.Getenv("CHERRI_TEST_PYTHON")
-	if python == "" {
-		for _, name := range []string{"python3", "python"} {
-			if candidate, err := exec.LookPath(name); err == nil {
-				python = candidate
-				break
-			}
-		}
+	var python, pythonErr = acceptancePython3("CHERRI_TEST_PYTHON")
+	if pythonErr != nil {
+		t.Fatal("the source-bound iOS collector adapter test requires a verified Python 3 interpreter", pythonErr)
 	}
-	if python == "" {
-		t.Fatal("the source-bound iOS collector adapter test requires Python")
-	}
+
 	for _, scenario := range []string{"complete_model", "indented_receipt", "missing_generation", "failed_process", "duplicated_raw_receipt", "missing_ui_checkpoint"} {
 		t.Run(scenario, func(t *testing.T) {
 			var directory = t.TempDir()

@@ -13,18 +13,7 @@ import (
 const documentationGeneratorPath = "ios/scripts/build_documentation_index.py"
 
 func documentationPython() (string, error) {
-	if configured := os.Getenv("CHERRI_D03_PYTHON"); configured != "" {
-		if path, err := exec.LookPath(configured); err == nil {
-			return path, nil
-		}
-		return "", fmt.Errorf("configured D03 Python interpreter is unavailable")
-	}
-	for _, candidate := range []string{"python3", "python"} {
-		if path, err := exec.LookPath(candidate); err == nil {
-			return path, nil
-		}
-	}
-	return "", fmt.Errorf("canonical documentation verification requires Python")
+	return acceptancePython3("CHERRI_D03_PYTHON")
 }
 
 // The canonical generator comes from the same immutable K that ran the app.
