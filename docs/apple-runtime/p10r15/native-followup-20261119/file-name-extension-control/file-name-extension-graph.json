@@ -1,0 +1,82 @@
+[
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.base64encode",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "file",
+      "UUID": "34CBF9DD-99F4-4C77-A3B6-004C00655F68",
+      "WFEncodeMode": "Decode",
+      "WFInput": {
+        "Value": {
+          "OutputName": "Text",
+          "OutputUUID": "4306D6EE-5D7C-4169-9808-718E94EAC257",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setitemname",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "named",
+      "UUID": "B095E599-FCD9-4E5F-9D7E-A3C96F4B6BB1",
+      "WFInput": {
+        "Value": {
+          "OutputName": "file",
+          "OutputUUID": "34CBF9DD-99F4-4C77-A3B6-004C00655F68",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFName": "cherri-export-control.json"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getitemname",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "actualStem",
+      "UUID": "24C622A9-4086-44A4-A092-2D83C1315BB6",
+      "WFInput": {
+        "Value": {
+          "OutputName": "named",
+          "OutputUUID": "B095E599-FCD9-4E5F-9D7E-A3C96F4B6BB1",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.properties.files",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "actualExtension",
+      "UUID": "487CF055-C6D9-480B-A917-96D81DFA9B9F",
+      "WFContentItemPropertyName": "File Extension",
+      "WFInput": {
+        "Value": {
+          "OutputName": "named",
+          "OutputUUID": "B095E599-FCD9-4E5F-9D7E-A3C96F4B6BB1",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.base64encode",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "actualBytes",
+      "UUID": "223294A8-DED9-48E1-8D34-DE012469889A",
+      "WFEncodeMode": "Encode",
+      "WFInput": {
+        "Value": {
+          "OutputName": "named",
+          "OutputUUID": "B095E599-FCD9-4E5F-9D7E-A3C96F4B6BB1",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "input": "Encode"
+    }
+  }
+]
