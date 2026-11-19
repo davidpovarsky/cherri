@@ -943,6 +943,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateBindingCaptureRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateModuleRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1533,21 +1537,12 @@ func (r *Runner) runUpstream() {
 
 // Group 4: Binding
 func (r *Runner) runBinding() {
-	// V01: let captures current var value before later assignment
-	srcV01 := "var x = 1\nlet snap = x\nx = 2"
-	diagsV01 := analyzeSrc(r.reg, srcV01)
-	wfV01, errV01 := lowerSrc(r.reg, srcV01)
-	v01Passed := len(diagsV01) == 0 && errV01 == nil && len(wfV01.Actions) >= 2
-	r.Record("V01", "binding", "let captures current var value before later assignment", "unit+native+iOS", []string{"unit", "native"}, v01Passed, "PASSED", "let snapshot evaluated at declaration site before subsequent mutation")
+	r.runBindingCaptureRequirement("V01")
 
 	// V02: Execute all scoped binding and flow obligations through production.
 	r.runBindingScopeRequirement()
 
-	// V03: System clipboard read captured once
-	srcV03 := "let clip = Clipboard\nshow(clip)"
-	wfV03, errV03 := lowerSrc(r.reg, srcV03)
-	v03Passed := errV03 == nil && len(wfV03.Actions) > 0
-	r.Record("V03", "binding", "System clipboard read captured once", "unit+native+iOS", []string{"unit", "native"}, v03Passed, "PASSED", "Clipboard reference materialized cleanly into AttachmentToken")
+	r.runBindingCaptureRequirement("V03")
 
 	// V04: Execute the actual source/import/native-format production proof.
 	r.runNativePreservationRequirement("V04")

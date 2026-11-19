@@ -20,8 +20,6 @@ type LocalSmokeObservation struct {
 var incompleteLocalAssertions = map[string]string{
 	"B01":  "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
 	"U01":  "Declaration/document existence does not establish preservation against the upstream baseline.",
-	"V01":  "Action count does not prove snapshot timing or original producer identity.",
-	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
