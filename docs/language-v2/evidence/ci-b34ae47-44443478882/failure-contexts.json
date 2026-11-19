@@ -1,0 +1,112 @@
+{
+  "sourceCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "runId": 44443478882,
+  "conclusion": "failure",
+  "platforms": [
+    {
+      "platform": "linux",
+      "jobId": 135289824200,
+      "logSha256": "6d289ca1d7423717708cae8e25b4ad9ac86bc8a3c019a44e2f295108d707fbe3",
+      "logBytes": 1128902,
+      "failureLines": [
+        "2026-11-19T02:25:28.1064375Z --- FAIL: TestP15_CollectTypedBodyHasSingleNativeProducer (0.01s)"
+      ],
+      "failureContexts": [
+        [
+          "2026-11-19T02:25:28.1063252Z === RUN   TestP15_CollectTypedBodyHasSingleNativeProducer",
+          "2026-11-19T02:25:28.1064134Z     p15_scoped_blocks_test.go:305: semantic error [E_TARGET_VALUE_SHAPE]: List-valued loop results are unsupported: native Repeat Results do not preserve nested List cardinality at profile-fixture.cherri:1:41-1:57",
+          "2026-11-19T02:25:28.1064375Z --- FAIL: TestP15_CollectTypedBodyHasSingleNativeProducer (0.01s)",
+          "2026-11-19T02:25:28.1064611Z === RUN   TestP15_MeasureAndCollectReusableFixturesCompile",
+          "2026-11-19T02:25:28.1064856Z --- PASS: TestP15_MeasureAndCollectReusableFixturesCompile (0.01s)",
+          "2026-11-19T02:25:28.1065078Z === RUN   TestP15SemanticUnconsumedListRetainsTypedGraph",
+          "2026-11-19T02:25:28.1065307Z --- PASS: TestP15SemanticUnconsumedListRetainsTypedGraph (0.02s)",
+          "2026-11-19T02:25:28.1065518Z === RUN   TestP15F01LocalRuntimeWrapperPreservesCounterProof",
+          "2026-11-19T02:25:28.1066022Z     p15_short_circuit_local_harness_test.go:131: standalone=79, wrapped=91 native actions; signed runtime remains open",
+          "2026-11-19T02:25:28.1066255Z --- PASS: TestP15F01LocalRuntimeWrapperPreservesCounterProof (0.04s)"
+        ]
+      ],
+      "packageFailures": [
+        "2026-11-19T02:25:28.1537306Z FAIL\tgithub.com/electrikmilk/cherri\t305.141s"
+      ]
+    },
+    {
+      "platform": "macos",
+      "jobId": 135289824083,
+      "logSha256": "3fe75912931f21a65d3bff86b50267111589e9d0e88bd3c1467d0d13a4f00c23",
+      "logBytes": 1137389,
+      "failureLines": [
+        "2026-11-19T03:10:35.9502820Z --- FAIL: TestP15_CollectTypedBodyHasSingleNativeProducer (0.01s)",
+        "2026-11-19T03:10:35.9556190Z --- FAIL: TestP15K01UnpackedPackageContract (23.39s)",
+        "2026-11-19T03:10:35.9556560Z     --- FAIL: TestP15K01UnpackedPackageContract/unpacked_actual_self_test (4.22s)",
+        "2026-11-19T03:12:32.5974680Z         {\"Time\":\"2026-11-19T03:11:51.28016Z\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15K01UnpackedPackageContract\",\"Output\":\"--- FAIL: TestP15K01UnpackedPackageContract (18.17s)\\n\"}",
+        "2026-11-19T03:12:32.5981420Z --- FAIL: TestSkillPackageProductionEvidence (18.94s)"
+      ],
+      "failureContexts": [
+        [
+          "2026-11-19T03:10:35.9501790Z === RUN   TestP15_CollectTypedBodyHasSingleNativeProducer",
+          "2026-11-19T03:10:35.9502650Z     p15_scoped_blocks_test.go:305: semantic error [E_TARGET_VALUE_SHAPE]: List-valued loop results are unsupported: native Repeat Results do not preserve nested List cardinality at profile-fixture.cherri:1:41-1:57",
+          "2026-11-19T03:10:35.9502820Z --- FAIL: TestP15_CollectTypedBodyHasSingleNativeProducer (0.01s)",
+          "2026-11-19T03:10:35.9502960Z === RUN   TestP15_MeasureAndCollectReusableFixturesCompile",
+          "2026-11-19T03:10:35.9503120Z --- PASS: TestP15_MeasureAndCollectReusableFixturesCompile (0.01s)",
+          "2026-11-19T03:10:35.9503260Z === RUN   TestP15SemanticUnconsumedListRetainsTypedGraph",
+          "2026-11-19T03:10:35.9503420Z --- PASS: TestP15SemanticUnconsumedListRetainsTypedGraph (0.03s)",
+          "2026-11-19T03:10:35.9503570Z === RUN   TestP15F01LocalRuntimeWrapperPreservesCounterProof",
+          "2026-11-19T03:10:35.9504020Z     p15_short_circuit_local_harness_test.go:131: standalone=79, wrapped=91 native actions; signed runtime remains open",
+          "2026-11-19T03:10:35.9504210Z --- PASS: TestP15F01LocalRuntimeWrapperPreservesCounterProof (0.06s)"
+        ],
+        [
+          "2026-11-19T03:10:35.9555800Z === RUN   TestP15K01UnpackedPackageContract/occupied_unpack_destination_preserved",
+          "2026-11-19T03:10:35.9556040Z === RUN   TestP15K01UnpackedPackageContract/current_compiler_cannot_impersonate_manifest_pin",
+          "2026-11-19T03:10:35.9556190Z --- FAIL: TestP15K01UnpackedPackageContract (23.39s)",
+          "2026-11-19T03:10:35.9556560Z     --- FAIL: TestP15K01UnpackedPackageContract/unpacked_actual_self_test (4.22s)",
+          "2026-11-19T03:10:35.9556930Z     --- PASS: TestP15K01UnpackedPackageContract/source_and_reproducible_runtime_inventory (2.11s)",
+          "2026-11-19T03:10:35.9557220Z     --- PASS: TestP15K01UnpackedPackageContract/reject_missing_wrapper (1.22s)",
+          "2026-11-19T03:10:35.9557560Z     --- PASS: TestP15K01UnpackedPackageContract/reject_unexpected_file (1.02s)",
+          "2026-11-19T03:10:35.9557900Z     --- PASS: TestP15K01UnpackedPackageContract/reject_duplicate_path (1.00s)",
+          "2026-11-19T03:10:35.9558160Z     --- PASS: TestP15K01UnpackedPackageContract/reject_traversal (1.33s)",
+          "2026-11-19T03:10:35.9558430Z     --- PASS: TestP15K01UnpackedPackageContract/reject_binary_bytes (1.18s)"
+        ],
+        [
+          "2026-11-19T03:10:35.9556040Z === RUN   TestP15K01UnpackedPackageContract/current_compiler_cannot_impersonate_manifest_pin",
+          "2026-11-19T03:10:35.9556190Z --- FAIL: TestP15K01UnpackedPackageContract (23.39s)",
+          "2026-11-19T03:10:35.9556560Z     --- FAIL: TestP15K01UnpackedPackageContract/unpacked_actual_self_test (4.22s)",
+          "2026-11-19T03:10:35.9556930Z     --- PASS: TestP15K01UnpackedPackageContract/source_and_reproducible_runtime_inventory (2.11s)",
+          "2026-11-19T03:10:35.9557220Z     --- PASS: TestP15K01UnpackedPackageContract/reject_missing_wrapper (1.22s)",
+          "2026-11-19T03:10:35.9557560Z     --- PASS: TestP15K01UnpackedPackageContract/reject_unexpected_file (1.02s)",
+          "2026-11-19T03:10:35.9557900Z     --- PASS: TestP15K01UnpackedPackageContract/reject_duplicate_path (1.00s)",
+          "2026-11-19T03:10:35.9558160Z     --- PASS: TestP15K01UnpackedPackageContract/reject_traversal (1.33s)",
+          "2026-11-19T03:10:35.9558430Z     --- PASS: TestP15K01UnpackedPackageContract/reject_binary_bytes (1.18s)",
+          "2026-11-19T03:10:35.9558760Z     --- PASS: TestP15K01UnpackedPackageContract/reject_binary_executable_mode (1.10s)"
+        ],
+        [
+          "2026-11-19T03:12:32.5970130Z         {\"Time\":\"2026-11-19T03:11:51.183128Z\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15K01UnpackedPackageContract/current_compiler_cannot_impersonate_manifest_pin\",\"Output\":\"--- PASS: TestP15K01UnpackedPackageContract/current_compiler_cannot_impersonate_manifest_pin (1.60s)\\n\"}",
+          "2026-11-19T03:12:32.5972680Z         {\"Time\":\"2026-11-19T03:11:51.183152Z\",\"Action\":\"pass\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15K01UnpackedPackageContract/current_compiler_cannot_impersonate_manifest_pin\",\"Elapsed\":1.6}",
+          "2026-11-19T03:12:32.5974680Z         {\"Time\":\"2026-11-19T03:11:51.28016Z\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15K01UnpackedPackageContract\",\"Output\":\"--- FAIL: TestP15K01UnpackedPackageContract (18.17s)\\n\"}",
+          "2026-11-19T03:12:32.5976130Z         {\"Time\":\"2026-11-19T03:11:51.280178Z\",\"Action\":\"fail\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15K01UnpackedPackageContract\",\"Elapsed\":18.17}",
+          "2026-11-19T03:12:32.5977370Z         {\"Time\":\"2026-11-19T03:11:51.280182Z\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Output\":\"FAIL\\n\"}",
+          "2026-11-19T03:12:32.5978710Z         {\"Time\":\"2026-11-19T03:11:51.281123Z\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Output\":\"FAIL\\tgithub.com/electrikmilk/cherri\\t18.192s\\n\"}",
+          "2026-11-19T03:12:32.5980790Z         {\"Time\":\"2026-11-19T03:11:51.281135Z\",\"Action\":\"fail\",\"Package\":\"github.com/electrikmilk/cherri\",\"Elapsed\":18.192}",
+          "2026-11-19T03:12:32.5981190Z         }",
+          "2026-11-19T03:12:32.5981420Z --- FAIL: TestSkillPackageProductionEvidence (18.94s)",
+          "2026-11-19T03:12:32.5981750Z === RUN   TestSupplementalAcceptanceProductionEvidence"
+        ],
+        [
+          "2026-11-19T03:12:32.5980790Z         {\"Time\":\"2026-11-19T03:11:51.281135Z\",\"Action\":\"fail\",\"Package\":\"github.com/electrikmilk/cherri\",\"Elapsed\":18.192}",
+          "2026-11-19T03:12:32.5981190Z         }",
+          "2026-11-19T03:12:32.5981420Z --- FAIL: TestSkillPackageProductionEvidence (18.94s)",
+          "2026-11-19T03:12:32.5981750Z === RUN   TestSupplementalAcceptanceProductionEvidence",
+          "2026-11-19T03:12:32.5982230Z === RUN   TestSupplementalAcceptanceProductionEvidence/missing_native_tier",
+          "2026-11-19T03:12:32.5982770Z === RUN   TestSupplementalAcceptanceProductionEvidence/wrong_producer",
+          "2026-11-19T03:12:32.5983220Z === RUN   TestSupplementalAcceptanceProductionEvidence/partial_intake_selection",
+          "2026-11-19T03:12:32.5983690Z === RUN   TestSupplementalAcceptanceProductionEvidence/zero_selection_command",
+          "2026-11-19T03:12:32.5984170Z === RUN   TestSupplementalAcceptanceProductionEvidence/missing_selection_assertion",
+          "2026-11-19T03:12:32.5984680Z === RUN   TestSupplementalAcceptanceProductionEvidence/stale_source"
+        ]
+      ],
+      "packageFailures": [
+        "2026-11-19T03:10:35.9950730Z FAIL\tgithub.com/electrikmilk/cherri\t391.628s",
+        "2026-11-19T03:12:32.6623260Z FAIL\tgithub.com/electrikmilk/cherri/tools/language-acceptance\t502.928s"
+      ]
+    }
+  ]
+}
