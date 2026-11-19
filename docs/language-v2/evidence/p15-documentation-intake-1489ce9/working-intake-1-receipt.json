@@ -1,0 +1,30 @@
+{
+  "sourceSHA": "b7929c6b629ae12622b9f240152f0ec5d28223bc",
+  "sourceClean": false,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=180s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestDocumentation"
+  ],
+  "startUTC": "2026-11-19T05:14:54.066644+00:00",
+  "durationSeconds": 28.719000000040978,
+  "exitCode": 0,
+  "timedOut": false,
+  "availableMemoryBefore": 3377905664,
+  "counts": {
+    "pass": 58,
+    "fail": 0,
+    "skip": 0
+  },
+  "failedTests": [],
+  "rawBytes": 59126,
+  "rawSHA256": "e4206616fcafb337dd55e87eea5561c2aa3a139d5150c12fa5c28c7afc3aeeda",
+  "statusBefore": " M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/main.go\n?? tools/language-acceptance/documentation_consumers_intake.go\n?? tools/language-acceptance/documentation_intake.go\n?? tools/language-acceptance/documentation_intake_test.go\n?? tools/p10r15/test_verify_documentation_consumers.py\n?? tools/p10r15/verify_documentation_consumers.py\n",
+  "statusAfter": " M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/main.go\n?? tools/language-acceptance/documentation_consumers_intake.go\n?? tools/language-acceptance/documentation_intake.go\n?? tools/language-acceptance/documentation_intake_test.go\n?? tools/p10r15/test_verify_documentation_consumers.py\n?? tools/p10r15/verify_documentation_consumers.py\n"
+}

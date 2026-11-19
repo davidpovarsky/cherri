@@ -1,0 +1,566 @@
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"reflect"
+	"strings"
+	"testing"
+	"time"
+)
+
+// These fixtures model external receipts to test rejection behavior. They do
+// not run Apple code or establish an actual publication/installed consumer pass.
+type documentationIntakeModel struct {
+	pins      documentationPins
+	manifest  EvidenceManifest
+	contracts *ContractsSet
+	app       EvidenceRecord
+	consumer  EvidenceRecord
+	appBytes  map[string][]byte
+	docBytes  map[string][]byte
+}
+
+func documentationModelJSON(t *testing.T, value any) []byte {
+	t.Helper()
+	var data, err = json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(data, '\n')
+}
+
+func documentationModelGit(t *testing.T, root string, arguments ...string) string {
+	t.Helper()
+	var command = exec.Command("git", append([]string{"-C", root}, arguments...)...)
+	command.Env = append(os.Environ(), "GIT_AUTHOR_NAME=Synthetic D03 control", "GIT_AUTHOR_EMAIL=synthetic@example.invalid",
+		"GIT_COMMITTER_NAME=Synthetic D03 control", "GIT_COMMITTER_EMAIL=synthetic@example.invalid", "GIT_EDITOR=true")
+	var output, err = command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("synthetic Git fixture: %v %s", err, output)
+	}
+	return strings.TrimSpace(string(output))
+}
+
+func documentationModelWrite(t *testing.T, name string, data []byte) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Dir(name), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(name, data, 0644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func newDocumentationIntakeModel(t *testing.T) *documentationIntakeModel {
+	t.Helper()
+	var all, contractErr = LoadAllContracts("", "", "")
+	if contractErr != nil {
+		t.Fatal(contractErr)
+	}
+	var selected = &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
+	for _, row := range all.Acceptance.Cases {
+		if row.ID == "D03" {
+			selected.Acceptance.Cases = append(selected.Acceptance.Cases, row)
+		}
+	}
+	selected.Acceptance.CaseCount = len(selected.Acceptance.Cases)
+	if selected.Acceptance.CaseCount != 1 || selected.Acceptance.Cases[0].MinimumTestLevel != "docs+integration" {
+		t.Fatal("immutable D03 docs+integration contract is missing")
+	}
+	var originalRoot, _ = filepath.Abs(resolveRepoRoot())
+	var root = t.TempDir()
+	var source = filepath.Join(root, "source")
+	var docs = filepath.Join(root, "docs")
+	var pins = documentationPins{SkillVersion: "2.0.0", LanguageVersion: "2.0", CatalogSchemaVersion: "3.0",
+		CompilerRepo: "https://github.com/davidpovarsky/cherri.git", CompilerCommit: strings.Repeat("a", 40),
+		DocsRepo:          "https://github.com/davidpovarsky/cherrilang.org.git",
+		SchemaFingerprint: strings.Repeat("1", 64), CodecFingerprint: strings.Repeat("2", 64), MacroFingerprint: strings.Repeat("3", 64)}
+	for _, directory := range []string{source, docs} {
+		if err := os.MkdirAll(directory, 0755); err != nil {
+			t.Fatal(err)
+		}
+		documentationModelGit(t, directory, "init", "-q")
+		documentationModelGit(t, directory, "config", "core.autocrlf", "false")
+	}
+	documentationModelGit(t, source, "remote", "add", "origin", pins.CompilerRepo)
+	documentationModelGit(t, docs, "remote", "add", "origin", pins.DocsRepo)
+	var sources []documentationSourceFile
+	var docBytes = make(map[string][]byte)
+	for i, name := range documentationSourcePaths {
+		var data = []byte("# Synthetic current documentation\nshow(\"public model\")\n" + name + "\n")
+		documentationModelWrite(t, filepath.Join(docs, filepath.FromSlash(name)), data)
+		sources = append(sources, documentationSourceFile{Path: name, SHA256: nativeEncodingDigest(data)})
+		docBytes[documentationSourceArtifacts[i]] = data
+	}
+	documentationModelGit(t, docs, "add", ".")
+	documentationModelGit(t, docs, "commit", "-q", "-m", "Synthetic pinned D03 docs")
+	pins.DocsCommit = documentationModelGit(t, docs, "rev-parse", "HEAD")
+	var manifestBytes = documentationModelJSON(t, pins)
+	var skillFiles []documentationSourceFile
+	for i, name := range documentationSkillPaths {
+		var data = manifestBytes
+		if name != "compatibility-manifest.json" {
+			var err error
+			data, err = os.ReadFile(filepath.Join(originalRoot, "skills", "cherri-shortcuts", filepath.FromSlash(name)))
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+		documentationModelWrite(t, filepath.Join(source, "skills", "cherri-shortcuts", filepath.FromSlash(name)), data)
+		docBytes[documentationSkillArtifacts[i]] = data
+		skillFiles = append(skillFiles, documentationSourceFile{Path: name, SHA256: nativeEncodingDigest(data)})
+	}
+	documentationModelWrite(t, filepath.Join(source, "go.mod"), []byte("module synthetic.invalid/documentation-intake\n\ngo 1.24\n"))
+	documentationModelGit(t, source, "add", ".")
+	documentationModelGit(t, source, "commit", "-q", "-m", "Synthetic immutable D03 consumer pins")
+	var implementation = documentationModelGit(t, source, "rev-parse", "HEAD")
+	var priorDirectory, _ = os.Getwd()
+	if err := os.Chdir(source); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.Chdir(priorDirectory); err != nil {
+			t.Error(err)
+		}
+	})
+	t.Setenv("CHERRI_D03_DOCS_REPO", docs)
+	var model = &documentationIntakeModel{
+		pins: pins, contracts: selected, appBytes: make(map[string][]byte), docBytes: docBytes,
+		manifest: EvidenceManifest{SchemaVersion: "1", ImplementationSHA: implementation, DocsSHA: pins.DocsCommit,
+			SchemaFingerprint: pins.SchemaFingerprint, CodecFingerprint: pins.CodecFingerprint,
+			Runs: []CIRunRecord{{RunID: "123456", Repository: "davidpovarsky/cherri", WorkflowName: "iOS Build",
+				HeadSHA: implementation, CheckoutSHA: implementation, Conclusion: "success"}}},
+		app: EvidenceRecord{EvidenceID: "synthetic-d03-app-model", Requirements: []string{"D03"}, Tier: "integration",
+			ImplementationSHA: implementation, TestID: documentationAppTestID, Command: []string{"xcodebuild", "test", "-scheme", "Cherri"},
+			Result: "passed", Assertions: map[string]string{"current_docs_bundle": "true", "historical_docs_rejected": "true", "current_docs_ui_search": "true"}},
+		consumer: EvidenceRecord{EvidenceID: "synthetic-d03-consumer-model", Requirements: []string{"D03"}, Tier: "docs",
+			ImplementationSHA: implementation, TestID: documentationConsumerTestID, Result: "passed",
+			Assertions: map[string]string{"published_current_docs": "true", "installed_skill_current_docs": "true", "historical_docs_explicit_only": "true"},
+			Command: []string{"python3", "tools/p10r15/verify_documentation_consumers.py",
+				"--source", "/synthetic/source", "--skill", "/synthetic/installed", "--docs", "/synthetic/docs",
+				"--implementation-sha", implementation, "--site-build", "/synthetic/build.json",
+				"--site-controls", "/synthetic/controls.json", "--deployment", "/synthetic/deployment.json", "--output", "/synthetic/evidence"}},
+	}
+	var sections []map[string]any
+	for i := 1; i <= 501; i++ {
+		var title = fmt.Sprintf("Synthetic section %d", i)
+		var code = "synthetic public prose"
+		var kind = "prose"
+		if i == 1 {
+			title, kind, code = "show", "code", "show(\"synthetic model\")"
+		}
+		sections = append(sections, map[string]any{"id": fmt.Sprintf("fork-language/actions.md:%d", i),
+			"sourcePath": "fork-language/actions.md", "sourceLine": i, "documentTitle": "Synthetic actions",
+			"title": title, "migrationOnly": false, "blocks": []map[string]any{{"kind": kind, "language": "", "text": code}}})
+	}
+	sections = append(sections, map[string]any{"id": "fork-language/migration.md:1", "sourcePath": "fork-language/migration.md",
+		"sourceLine": 1, "documentTitle": "Synthetic migration", "title": "Explicit migration", "migrationOnly": true,
+		"blocks": []map[string]any{{"kind": "code", "language": "cherri-legacy", "text": "synthetic historical code"}}})
+	var index = map[string]any{"formatVersion": 1, "languageVersion": "2.0", "docsCommit": pins.DocsCommit,
+		"compilerCommit": pins.CompilerCommit, "schemaFingerprint": pins.SchemaFingerprint,
+		"macroFingerprint": pins.MacroFingerprint, "sourceFiles": sources, "sections": sections}
+	var indexBytes = documentationModelJSON(t, index)
+	model.appBytes["documentation-index.json"] = indexBytes
+	model.appBytes["documentation-compatibility-manifest.json"] = manifestBytes
+	model.appBytes["documentation-receipt.json"] = documentationModelJSON(t, documentationGenerationReceipt{
+		DocsCommit: pins.DocsCommit, CompilerCommit: pins.CompilerCommit, SourceFiles: 4, Sections: len(sections),
+		Bytes: len(indexBytes), SHA256: nativeEncodingDigest(indexBytes)})
+	var zero = 0
+	var receipt = documentationAppReceipt{SchemaVersion: "1.0", DocsCommit: pins.DocsCommit,
+		CompilerCommit: pins.CompilerCommit, SchemaFingerprint: pins.SchemaFingerprint, MacroFingerprint: pins.MacroFingerprint,
+		BundleSHA256: nativeEncodingDigest(indexBytes), Sections: len(sections), ExactActionFirst: "show",
+		DefaultMigrationResults: &zero, MissingResults: &zero, ExplicitMigrationResults: 1}
+	for _, file := range sources {
+		receipt.SourcePaths = append(receipt.SourcePaths, file.Path)
+		receipt.SourceHashes = append(receipt.SourceHashes, file.SHA256)
+	}
+	var rawReceipt, _ = json.Marshal(receipt)
+	var log strings.Builder
+	for i, id := range documentationAppTests {
+		var parts = strings.Split(id, "/")
+		var target = "CherriTests."
+		if i == 2 {
+			target = "CherriUITests."
+		}
+		fmt.Fprintf(&log, "Test Case '-[%s%s %s]' started.\n", target, parts[0], parts[1])
+		if i == 0 {
+			fmt.Fprintf(&log, "%s%s\n", documentationReceiptPrefix, rawReceipt)
+		}
+		if i == 2 {
+			fmt.Fprintln(&log, documentationCheckpoint)
+		}
+		fmt.Fprintf(&log, "Test Case '-[%s%s %s]' passed (0.100 seconds).\n", target, parts[0], parts[1])
+	}
+	model.appBytes["xcodetest.log"] = []byte(log.String())
+	var testResults []map[string]string
+	for _, id := range documentationAppTests {
+		testResults = append(testResults, map[string]string{"testId": id, "observedStatus": "passed"})
+	}
+	model.appBytes["ios-test-diagnostics.json"] = documentationModelJSON(t, map[string]any{
+		"schemaVersion": "1.0", "implementationSha": implementation, "runId": "123456",
+		"xcodebuildExitCode": 0, "runStatus": "PASSED", "rawLogPresent": true,
+		"sanitizedLogSha256": nativeEncodingDigest(model.appBytes["xcodetest.log"]), "testResults": testResults})
+	var report = documentationConsumerReport{FormatVersion: 1, Mode: "actual-installed-public-site",
+		ImplementationSHA: implementation, CompilerCommit: pins.CompilerCommit, DocsCommit: pins.DocsCommit,
+		SchemaFingerprint: pins.SchemaFingerprint, CodecFingerprint: pins.CodecFingerprint, MacroFingerprint: pins.MacroFingerprint,
+		SourceOrigin: pins.CompilerRepo, DocsOrigin: pins.DocsRepo, SourceClean: true, DocsClean: true,
+		SourceDirectory: "/synthetic/source", InstalledSkill: "/synthetic/installed", DocsDirectory: "/synthetic/docs",
+		SourceFiles: sources, SkillFiles: skillFiles, Before: make(map[string]string), After: make(map[string]string),
+		ObservedAtUTC: time.Now().UTC().Format(time.RFC3339Nano), ElapsedSeconds: 0.1}
+	for _, source := range sources {
+		report.Before["docs/"+source.Path] = source.SHA256
+	}
+	for _, source := range skillFiles {
+		report.Before["skill/"+source.Path] = source.SHA256
+	}
+	for key, value := range report.Before {
+		report.After[key] = value
+	}
+	var falseValue = false
+	for _, name := range documentationSearchCases {
+		var row = documentationSearchCase{Name: name, Cwd: report.InstalledSkill, DocsDirectory: report.DocsDirectory,
+			Command: []string{"/bin/sh", "/synthetic/installed/scripts/search-docs.sh"}, ExitCode: &zero, TimedOut: &falseValue}
+		var stdout, stderr []byte
+		switch name {
+		case "active-empty":
+			stdout = []byte("/synthetic/docs/fork-language\n")
+		case "active-show", "restored-active":
+			row.Command = append(row.Command, "show")
+			stdout = []byte("/synthetic/docs/fork-language/actions.md:2:show(\"public model\")\n")
+		case "legacy-empty":
+			row.Command = append(row.Command, "--legacy-reference")
+			stdout = []byte("/synthetic/docs/language\n")
+		case "legacy-query":
+			row.Command = append(row.Command, "--legacy-reference", "action")
+			stdout = []byte("/synthetic/docs/language/raw-actions.md:2:action rawAction\n")
+		case "absent-query":
+			row.Command = append(row.Command, "CHERRI_D03_NO_MATCH_6ce5e096b6a7")
+		case "invalid-regex":
+			var code = 2
+			row.ExitCode = &code
+			row.Command = append(row.Command, "[")
+			stderr = []byte("grep: Invalid regular expression\n")
+		case "missing-current":
+			var code = 1
+			row.ExitCode = &code
+			row.DocsDirectory = "/synthetic/isolated/missing-current-docs"
+			row.Command = append(row.Command, "CHERRI_D03_HISTORICAL_SENTINEL_49CE")
+			stderr = []byte("Active V2 documentation directory is missing or linked: /synthetic/isolated/missing-current-docs/fork-language\n")
+		}
+		row.StdoutSHA256, row.StderrSHA256 = nativeEncodingDigest(stdout), nativeEncodingDigest(stderr)
+		model.docBytes[name+".stdout.log"], model.docBytes[name+".stderr.log"] = stdout, stderr
+		report.SearchCases = append(report.SearchCases, row)
+	}
+	for _, route := range documentationHTTPRoutes {
+		var raw = []byte("<html>Synthetic public document " + route.route + "</html>")
+		if route.route == "assets/js/search-data.json" {
+			raw = documentationModelJSON(t, map[string]any{"0": map[string]string{
+				"doc": "Synthetic action", "title": "show", "content": "Current documentation",
+				"url": "/cherrilang.org/fork-language/actions#show", "relUrl": "/fork-language/actions#show"}})
+		}
+		model.docBytes[route.artifact] = raw
+		report.HTTPObservations = append(report.HTTPObservations, documentationHTTPObservation{
+			Route: route.route, URL: documentationSite + route.route, Status: 200, Bytes: len(raw),
+			SHA256: nativeEncodingDigest(raw), Artifact: route.artifact, Headers: map[string]string{"Content-Type": "text/html"}})
+	}
+	var notPublished = false
+	var build = documentationSiteBuild{FormatVersion: 2, BaseURL: "/cherrilang.org", PublicationOrigin: "https://davidpovarsky.github.io",
+		CurrentSearchRoutes: []string{"/cherrilang.org", "/cherrilang.org/fork-language", "/cherrilang.org/fork-language/actions", "/cherrilang.org/fork-language/guide", "/cherrilang.org/fork-language/migration"},
+		VerifiedLocalLinks:  5, HistoricalSearchEntries: &zero, DocsCommit: pins.DocsCommit, CompilerCommit: pins.CompilerCommit,
+		SourceTreeClean: true, SourceReferenceSHA256: nativeEncodingDigest(model.docBytes["docs-actions.md"]),
+		RenderedActionPage: "fork-language/actions.html", RenderedActionPageSHA256: nativeEncodingDigest(model.docBytes["published-actions.html"]),
+		SearchIndexSHA256:  nativeEncodingDigest(model.docBytes["published-search-data.json"]),
+		SchemaFingerprints: []string{pins.SchemaFingerprint, pins.MacroFingerprint}, NativeActionCount: 1,
+		RenderedReferenceSignatures: 1, SearchEntries: 1, ActionSearchEntries: 1, SitePublished: &notPublished}
+	model.docBytes["documentation-site-build.json"] = documentationModelJSON(t, build)
+	var controlNames = []string{"historical-route-in-default-search", "search-result-without-project-base",
+		"client-search-request-without-project-base", "missing-home-authoring-entry",
+		"missing-home-image", "damaged-canonical-action-fingerprint"}
+	var diagnostics = []string{"Default search includes a historical route: /language/old", "Search result URL does not match its project-base route",
+		"Search client does not load current URLs", "Home page lacks its unique current-guide entry",
+		"Built site is missing a unique page: /assets/missing.png", "rendered action page lost canonical metadata: fingerprints=[]"}
+	var controls []map[string]any
+	for i, name := range controlNames {
+		controls = append(controls, map[string]any{"name": name, "rejected": true, "diagnostic": diagnostics[i]})
+	}
+	model.docBytes["documentation-site-controls.json"] = documentationModelJSON(t, map[string]any{
+		"formatVersion": 1, "docsCommit": pins.DocsCommit, "compilerCommit": pins.CompilerCommit,
+		"passed": 6, "failed": 0, "skipped": 0, "artifactsRestoredExactly": true, "controls": controls})
+	model.docBytes["documentation-site-deployment.json"] = documentationModelJSON(t, map[string]any{
+		"headSha": pins.DocsCommit, "conclusion": "success", "status": "completed",
+		"url":  "https://github.com/davidpovarsky/cherrilang.org/actions/runs/789012",
+		"jobs": []map[string]string{{"name": "build", "conclusion": "success", "status": "completed"}, {"name": "deploy", "conclusion": "success", "status": "completed"}}})
+	report.SiteBuildSHA256 = nativeEncodingDigest(model.docBytes["documentation-site-build.json"])
+	report.SiteControlsSHA256 = nativeEncodingDigest(model.docBytes["documentation-site-controls.json"])
+	report.DeploymentSHA256 = nativeEncodingDigest(model.docBytes["documentation-site-deployment.json"])
+	model.docBytes["documentation-consumers.json"] = documentationModelJSON(t, report)
+	return model
+}
+
+func documentationCopyBytes(original map[string][]byte) map[string][]byte {
+	var output = make(map[string][]byte)
+	for key, value := range original {
+		output[key] = append([]byte{}, value...)
+	}
+	return output
+}
+
+func documentationMaterializeRecord(t *testing.T, original EvidenceRecord, data map[string][]byte, runID string) EvidenceRecord {
+	t.Helper()
+	var record EvidenceRecord
+	if err := json.Unmarshal(documentationModelJSON(t, original), &record); err != nil {
+		t.Fatal(err)
+	}
+	record.Artifacts = nil
+	var directory = t.TempDir()
+	for name, content := range data {
+		var path = filepath.Join(directory, name)
+		documentationModelWrite(t, path, content)
+		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: nativeEncodingDigest(content), RunID: runID})
+	}
+	return record
+}
+
+func documentationMutateJSON(t *testing.T, data map[string][]byte, name string, change func(map[string]any)) {
+	t.Helper()
+	var value map[string]any
+	if err := json.Unmarshal(data[name], &value); err != nil {
+		t.Fatal(err)
+	}
+	change(value)
+	data[name] = documentationModelJSON(t, value)
+}
+
+func documentationRebindAppLog(t *testing.T, data map[string][]byte) {
+	t.Helper()
+	documentationMutateJSON(t, data, "ios-test-diagnostics.json", func(value map[string]any) {
+		value["sanitizedLogSha256"] = nativeEncodingDigest(data["xcodetest.log"])
+	})
+}
+
+func TestDocumentationAppIntakeCausalContracts(t *testing.T) {
+	var model = newDocumentationIntakeModel(t)
+	var good = documentationMaterializeRecord(t, model.app, model.appBytes, "123456")
+	if err := validateDocumentationRecord("D03", good, &model.manifest); err != nil {
+		t.Fatalf("synthetic causal intake control: %v", err)
+	}
+	var cases = []struct {
+		name   string
+		mutate func(map[string][]byte, *EvidenceRecord, *EvidenceManifest)
+	}{
+		{"old_file_existence_producer", func(_ map[string][]byte, r *EvidenceRecord, _ *EvidenceManifest) {
+			r.TestID = "tools/language-acceptance:runDocs"
+		}},
+		{"wrong_tier", func(_ map[string][]byte, r *EvidenceRecord, _ *EvidenceManifest) { r.Tier = "docs" }},
+		{"no_ui_assertion", func(_ map[string][]byte, r *EvidenceRecord, _ *EvidenceManifest) {
+			delete(r.Assertions, "current_docs_ui_search")
+		}},
+		{"wrong_command", func(_ map[string][]byte, r *EvidenceRecord, _ *EvidenceManifest) {
+			r.Command = []string{"xcodebuild", "build"}
+		}},
+		{"missing_generation_receipt", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			delete(d, "documentation-receipt.json")
+		}},
+		{"missing_index", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			delete(d, "documentation-index.json")
+		}},
+		{"failed_run", func(_ map[string][]byte, _ *EvidenceRecord, m *EvidenceManifest) { m.Runs[0].Conclusion = "failure" }},
+		{"stale_checkout", func(_ map[string][]byte, _ *EvidenceRecord, m *EvidenceManifest) {
+			m.Runs[0].CheckoutSHA = strings.Repeat("f", 40)
+		}},
+		{"missing_checkout", func(_ map[string][]byte, _ *EvidenceRecord, m *EvidenceManifest) { m.Runs[0].CheckoutSHA = "" }},
+		{"wrong_workflow", func(_ map[string][]byte, _ *EvidenceRecord, m *EvidenceManifest) {
+			m.Runs[0].WorkflowName = "OpenMinis Skill"
+		}},
+		{"failed_process", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			documentationMutateJSON(t, d, "ios-test-diagnostics.json", func(v map[string]any) { v["xcodebuildExitCode"] = 65 })
+		}},
+		{"missing_process_exit", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			documentationMutateJSON(t, d, "ios-test-diagnostics.json", func(v map[string]any) { delete(v, "xcodebuildExitCode") })
+		}},
+		{"process_summary_only", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			documentationMutateJSON(t, d, "ios-test-diagnostics.json", func(v map[string]any) { v["testResults"] = []any{} })
+		}},
+		{"failed_test_outcome", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			documentationMutateJSON(t, d, "ios-test-diagnostics.json", func(v map[string]any) { v["testResults"].([]any)[1].(map[string]any)["observedStatus"] = "failed" })
+		}},
+		{"raw_ui_failure", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["xcodetest.log"] = bytes.ReplaceAll(d["xcodetest.log"], []byte("passed (0.100 seconds)."), []byte("failed (0.100 seconds)."))
+			documentationRebindAppLog(t, d)
+		}},
+		{"missing_ui_checkpoint", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["xcodetest.log"] = bytes.ReplaceAll(d["xcodetest.log"], []byte(documentationCheckpoint), nil)
+			documentationRebindAppLog(t, d)
+		}},
+		{"wrong_target_negative_test", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["xcodetest.log"] = bytes.ReplaceAll(d["xcodetest.log"], []byte("CherriTests.DocumentationIndexTests testD03Rejects"), []byte("OtherTarget.DocumentationIndexTests testD03Rejects"))
+			documentationRebindAppLog(t, d)
+		}},
+		{"receipt_outside_test", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			var lines = strings.Split(string(d["xcodetest.log"]), "\n")
+			lines[0], lines[1] = lines[1], lines[0]
+			d["xcodetest.log"] = []byte(strings.Join(lines, "\n"))
+			documentationRebindAppLog(t, d)
+		}},
+		{"duplicated_receipt", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			var lines = strings.Split(string(d["xcodetest.log"]), "\n")
+			lines[1] += "\n" + lines[1]
+			d["xcodetest.log"] = []byte(strings.Join(lines, "\n"))
+			documentationRebindAppLog(t, d)
+		}},
+		{"duplicate_json_process_exit", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["ios-test-diagnostics.json"] = bytes.Replace(d["ios-test-diagnostics.json"], []byte("\"xcodebuildExitCode\": 0"), []byte("\"xcodebuildExitCode\": 65, \"xcodebuildExitCode\": 0"), 1)
+		}},
+		{"missing_zero_assertion", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["xcodetest.log"] = bytes.Replace(d["xcodetest.log"], []byte("\"defaultMigrationResults\":0,"), nil, 1)
+			documentationRebindAppLog(t, d)
+		}},
+		{"fractional_zero_assertion", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["xcodetest.log"] = bytes.Replace(d["xcodetest.log"], []byte("\"missingResults\":0"), []byte("\"missingResults\":0.5"), 1)
+			documentationRebindAppLog(t, d)
+		}},
+		{"bundled_historical_path", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			d["documentation-index.json"] = bytes.Replace(d["documentation-index.json"], []byte("\"sourcePath\": \"fork-language/actions.md\""), []byte("\"sourcePath\": \"language/actions.md\""), 1)
+		}},
+		{"bundle_source_is_compiler_pin_not_K", func(d map[string][]byte, _ *EvidenceRecord, m *EvidenceManifest) {
+			documentationMutateJSON(t, d, "ios-test-diagnostics.json", func(v map[string]any) { v["implementationSha"] = model.pins.CompilerCommit })
+		}},
+		{"forged_manifest_metadata", func(d map[string][]byte, _ *EvidenceRecord, _ *EvidenceManifest) {
+			documentationMutateJSON(t, d, "documentation-compatibility-manifest.json", func(v map[string]any) { v["skillVersion"] = "invented" })
+		}},
+	}
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			var data = documentationCopyBytes(model.appBytes)
+			var changed EvidenceRecord
+			var manifest EvidenceManifest
+			_ = json.Unmarshal(documentationModelJSON(t, model.app), &changed)
+			_ = json.Unmarshal(documentationModelJSON(t, model.manifest), &manifest)
+			test.mutate(data, &changed, &manifest)
+			changed = documentationMaterializeRecord(t, changed, data, "123456")
+			if err := validateDocumentationRecord("D03", changed, &manifest); err == nil {
+				t.Fatal("damaged modeled app evidence minted a D03 integration pass")
+			}
+		})
+	}
+}
+
+func TestDocumentationConsumerIntakeCausalContracts(t *testing.T) {
+	var model = newDocumentationIntakeModel(t)
+	var good = documentationMaterializeRecord(t, model.consumer, model.docBytes, "")
+	if err := validateDocumentationRecord("D03", good, &model.manifest); err != nil {
+		t.Fatalf("synthetic consumer intake control: %v", err)
+	}
+	var cases = []struct {
+		name, file string
+		mutate     func(map[string]any)
+	}{
+		{"no_installed_host_scope", "documentation-consumers.json", func(v map[string]any) { v["mode"] = "source-only-test" }},
+		{"wrong_tuple", "documentation-consumers.json", func(v map[string]any) { v["compilerCommit"] = strings.Repeat("f", 40) }},
+		{"dirty_docs", "documentation-consumers.json", func(v map[string]any) { v["docsClean"] = false }},
+		{"source_copy_instead_of_installed_skill", "documentation-consumers.json", func(v map[string]any) { v["installedSkill"] = "/synthetic/source/skills/cherri-shortcuts" }},
+		{"missing_before", "documentation-consumers.json", func(v map[string]any) { delete(v, "before") }},
+		{"changed_after", "documentation-consumers.json", func(v map[string]any) {
+			v["after"].(map[string]any)["skill/scripts/common.sh"] = strings.Repeat("f", 64)
+		}},
+		{"missing_query", "documentation-consumers.json", func(v map[string]any) { v["searchCases"] = v["searchCases"].([]any)[:7] }},
+		{"duplicate_query", "documentation-consumers.json", func(v map[string]any) { v["searchCases"].([]any)[1] = v["searchCases"].([]any)[0] }},
+		{"missing_process_exit", "documentation-consumers.json", func(v map[string]any) { delete(v["searchCases"].([]any)[0].(map[string]any), "exitCode") }},
+		{"timeout", "documentation-consumers.json", func(v map[string]any) { v["searchCases"].([]any)[0].(map[string]any)["timedOut"] = true }},
+		{"wrong_query_command", "documentation-consumers.json", func(v map[string]any) {
+			v["searchCases"].([]any)[1].(map[string]any)["command"] = []string{"/bin/sh", "/synthetic/installed/scripts/search-docs.sh", "--legacy-reference", "show"}
+		}},
+		{"swallowed_search_error", "documentation-consumers.json", func(v map[string]any) { v["searchCases"].([]any)[5].(map[string]any)["exitCode"] = 0 }},
+		{"missing_live_route", "documentation-consumers.json", func(v map[string]any) { v["httpObservations"] = v["httpObservations"].([]any)[:6] }},
+		{"redirected_live_route", "documentation-consumers.json", func(v map[string]any) {
+			v["httpObservations"].([]any)[3].(map[string]any)["url"] = "https://example.invalid/actions"
+		}},
+		{"http_failure", "documentation-consumers.json", func(v map[string]any) { v["httpObservations"].([]any)[0].(map[string]any)["status"] = 404 }},
+		{"historical_search_build", "documentation-site-build.json", func(v map[string]any) { v["historicalSearchEntries"] = 1 }},
+		{"stale_build", "documentation-site-build.json", func(v map[string]any) { v["docsCommit"] = strings.Repeat("f", 40) }},
+		{"wrong_site_macro", "documentation-site-build.json", func(v map[string]any) { v["schemaFingerprints"] = []string{model.pins.SchemaFingerprint} }},
+		{"site_controls_summary_only", "documentation-site-controls.json", func(v map[string]any) { v["controls"] = []any{} }},
+		{"site_controls_without_diagnostic", "documentation-site-controls.json", func(v map[string]any) { v["controls"].([]any)[0].(map[string]any)["diagnostic"] = "" }},
+		{"failed_deployment", "documentation-site-deployment.json", func(v map[string]any) { v["conclusion"] = "failure" }},
+		{"stale_deployment", "documentation-site-deployment.json", func(v map[string]any) { v["headSha"] = strings.Repeat("f", 40) }},
+		{"missing_deploy_job", "documentation-site-deployment.json", func(v map[string]any) { v["jobs"] = v["jobs"].([]any)[:1] }},
+		{"wrong_deployment_repository", "documentation-site-deployment.json", func(v map[string]any) { v["url"] = "https://github.com/example/other/actions/runs/789012" }},
+	}
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			var data = documentationCopyBytes(model.docBytes)
+			documentationMutateJSON(t, data, test.file, test.mutate)
+			for file, key := range map[string]string{"documentation-site-build.json": "siteBuildSHA256",
+				"documentation-site-controls.json": "siteControlsSHA256", "documentation-site-deployment.json": "deploymentSHA256"} {
+				if test.file == file {
+					documentationMutateJSON(t, data, "documentation-consumers.json", func(v map[string]any) { v[key] = nativeEncodingDigest(data[file]) })
+				}
+			}
+			var record = documentationMaterializeRecord(t, model.consumer, data, "")
+			if err := validateDocumentationRecord("D03", record, &model.manifest); err == nil {
+				t.Fatal("damaged modeled consumer proof minted a D03 docs pass")
+			}
+		})
+	}
+	t.Run("actual_artifact_bytes_drift", func(t *testing.T) {
+		var changed = documentationCopyBytes(model.docBytes)
+		changed["installed-search-docs.sh.txt"] = append(changed["installed-search-docs.sh.txt"], []byte("# drift\n")...)
+		var record = documentationMaterializeRecord(t, model.consumer, changed, "")
+		if err := validateDocumentationRecord("D03", record, &model.manifest); err == nil {
+			t.Fatal("changed installed source counted as pinned proof")
+		}
+	})
+}
+
+func TestDocumentationFormalScopeRequiresBothConsumers(t *testing.T) {
+	var model = newDocumentationIntakeModel(t)
+	var app = documentationMaterializeRecord(t, model.app, model.appBytes, "123456")
+	var consumer = documentationMaterializeRecord(t, model.consumer, model.docBytes, "")
+	model.manifest.Records = []EvidenceRecord{app, consumer}
+	var report, err = ValidateEvidenceManifest(&model.manifest, model.contracts, "local")
+	if err != nil || report.PassedCases != 1 || report.ClosureComplete {
+		t.Fatalf("synthetic complete intake control: %+v %v", report, err)
+	}
+	for _, row := range []EvidenceRecord{app, consumer} {
+		var changed = model.manifest
+		changed.Records = []EvidenceRecord{row}
+		var partial, _ = ValidateEvidenceManifest(&changed, model.contracts, "local")
+		if partial == nil || partial.PassedCases != 0 || partial.ClosureComplete {
+			t.Fatal("one consumer alone closed D03")
+		}
+	}
+	for _, mutation := range []string{"wrong_producer", "wrong_scope", "missing_artifact", "summary_only"} {
+		t.Run(mutation, func(t *testing.T) {
+			var changed EvidenceManifest
+			_ = json.Unmarshal(documentationModelJSON(t, model.manifest), &changed)
+			switch mutation {
+			case "wrong_producer":
+				changed.Records[0].TestID = "tools/language-acceptance:runDocs"
+			case "wrong_scope":
+				changed.Records[0].Requirements = []string{"D03", "RP46"}
+			case "missing_artifact":
+				changed.Records[0].Artifacts = changed.Records[0].Artifacts[1:]
+			case "summary_only":
+				changed.Records[1].Artifacts = nil
+			}
+			var invalid, invalidErr = ValidateEvidenceManifest(&changed, model.contracts, "local")
+			if invalidErr == nil || invalid.PassedCases != 0 || invalid.ClosureComplete {
+				t.Fatal("invalid D03 evidence survived the actual manifest validator")
+			}
+		})
+	}
+}
+
+func TestDocumentationLocalRunnerCannotMintConsumerEvidence(t *testing.T) {
+	var runner = NewRunner()
+	runner.runDocumentationSeparationRequirement()
+	if runner.results["D03"].Passed || runner.results["D03"].Status != "NOT_RUN" ||
+		len(runner.records) != 0 || !reflect.DeepEqual(deriveAcceptanceTestIDs("D03", "docs"), []string{documentationConsumerTestID, documentationAppTestID}) {
+		t.Fatal("unexecuted D03 consumer evidence was credited or mapped to a file-existence smoke")
+	}
+}

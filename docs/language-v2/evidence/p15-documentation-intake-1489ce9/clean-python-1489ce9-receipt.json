@@ -1,0 +1,35 @@
+{
+  "sourceSHA": "1489ce92e597d30a727a285a43768b78a4497551",
+  "scope": "Exact four required Git-blob source files executed on local POSIX; actual shell subprocesses, synthetic Git repositories and modeled HTTP; no installed production Skill or Apple claim",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/p10r15",
+    "-p",
+    "test_verify_documentation_consumers.py",
+    "-v"
+  ],
+  "observedAtUTC": "2026-11-19T05:33:06.680662+00:00",
+  "durationSeconds": 1.9393531609966885,
+  "exitCode": 0,
+  "tests": 11,
+  "passed": true,
+  "rawSHA256": "f7220b8ad85dc30e5511f4716613ea4bcde9724d4c35d319a54b1bfde6dd5e03",
+  "rawBytes": 2178,
+  "before": {
+    "tools/p10r15/verify_documentation_consumers.py": "ae641d4f1d931ce3d0874796102cf34e9c87e2972b093b6b216f85c18036df12",
+    "tools/p10r15/test_verify_documentation_consumers.py": "50a7e0cfe257acff909b4afc72b7e8aee4e39814425e19a98e6859159be529be",
+    "skills/cherri-shortcuts/scripts/common.sh": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5",
+    "skills/cherri-shortcuts/scripts/search-docs.sh": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8"
+  },
+  "after": {
+    "tools/p10r15/verify_documentation_consumers.py": "ae641d4f1d931ce3d0874796102cf34e9c87e2972b093b6b216f85c18036df12",
+    "tools/p10r15/test_verify_documentation_consumers.py": "50a7e0cfe257acff909b4afc72b7e8aee4e39814425e19a98e6859159be529be",
+    "skills/cherri-shortcuts/scripts/common.sh": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5",
+    "skills/cherri-shortcuts/scripts/search-docs.sh": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8"
+  }
+}
