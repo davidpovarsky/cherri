@@ -1,0 +1,136 @@
+name: P10R15 Installed Documentation Consumers
+
+on:
+  workflow_dispatch:
+    inputs:
+      docs_deployment_run_id:
+        description: Successful Pages deployment run for the unchanged checked-in docs pin
+        required: true
+        type: string
+      publication_evidence_zip_base64:
+        description: Base64 of the original public published-docs-build-evidence ZIP (maximum 32 KiB decoded)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: p10r15-documentation-consumers-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  installed-public-documentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CHERRI_D03_DOCS_REPO: ${{ github.workspace }}/cherrilang.org
+      CHERRI_D03_RUN_ROOT: ${{ runner.temp }}/cherri-d03-${{ github.run_id }}-${{ github.run_attempt }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: cherri
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          path: cherri
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Preserve the exact canonical compiler origin
+        run: git remote set-url origin https://github.com/davidpovarsky/cherri.git
+
+      - name: Verify public receipt transport controls
+        run: python3 -m unittest discover -s tools/p10r15 -p test_prepare_documentation_consumer_ci.py -v
+
+      - name: Verify original Pages ZIP and current deployment metadata
+        id: publication
+        env:
+          CHERRI_D03_DEPLOYMENT_RUN_ID: ${{ inputs.docs_deployment_run_id }}
+          CHERRI_D03_PUBLICATION_ZIP_BASE64: ${{ inputs.publication_evidence_zip_base64 }}
+        run: >-
+          python3 tools/p10r15/prepare_documentation_consumer_ci.py
+          --source "$PWD" --implementation-sha "$GITHUB_SHA"
+          --output "$CHERRI_D03_RUN_ROOT"
+
+      - uses: actions/checkout@v6
+        with:
+          repository: davidpovarsky/cherrilang.org
+          ref: ${{ steps.publication.outputs.docs_sha }}
+          fetch-depth: 0
+          path: cherrilang.org
+          persist-credentials: false
+
+      - name: Preserve the exact canonical documentation origin
+        run: git -C "$CHERRI_D03_DOCS_REPO" remote set-url origin https://github.com/davidpovarsky/cherrilang.org.git
+
+      - name: Package and install the exact committed Skill outside its source tree
+        run: |
+          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" \
+            --kind source --archive "$CHERRI_D03_RUN_ROOT/verified/skill-source.zip" \
+            --report "$CHERRI_D03_RUN_ROOT/verified/skill-source-create.json"
+          python3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" \
+            --kind source --archive "$CHERRI_D03_RUN_ROOT/verified/skill-source.zip" \
+            --unpack "$CHERRI_D03_RUN_ROOT/installed" \
+            --report "$CHERRI_D03_RUN_ROOT/verified/skill-source-verify.json"
+
+      - name: Collect actual installed searches and exact live documentation bytes
+        run: >-
+          python3 tools/p10r15/verify_documentation_consumers.py
+          --source "$PWD" --skill "$CHERRI_D03_RUN_ROOT/installed/cherri-shortcuts"
+          --docs "$CHERRI_D03_DOCS_REPO" --implementation-sha "$GITHUB_SHA"
+          --site-build "$CHERRI_D03_RUN_ROOT/verified/cherri-docs-site-evidence.json"
+          --site-controls "$CHERRI_D03_RUN_ROOT/verified/cherri-docs-site-controls.json"
+          --deployment "$CHERRI_D03_RUN_ROOT/verified/documentation-site-deployment.json"
+          --output "$CHERRI_D03_RUN_ROOT/verified/consumer"
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+          cache-dependency-path: cherri/go.sum
+
+      - name: Validate actual collector bytes with existing Go intake in this workspace
+        env:
+          CHERRI_D03_CI_REQUIRED: '1'
+          CHERRI_D03_CONSUMER_EVIDENCE: ${{ env.CHERRI_D03_RUN_ROOT }}/verified/consumer/documentation-consumer-evidence.json
+          CHERRI_D03_INTAKE_RECEIPT: ${{ env.CHERRI_D03_RUN_ROOT }}/verified/intake-receipt.json
+        run: |
+          set -euo pipefail
+          go test ./tools/language-acceptance -count=1 -timeout=5m -json \
+            -run '^TestDocumentationConsumerCIActualIntake$' \
+            > "$CHERRI_D03_RUN_ROOT/verified/intake-test.jsonl" \
+            2> "$CHERRI_D03_RUN_ROOT/verified/intake-test.stderr.txt"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['CHERRI_D03_RUN_ROOT']) / 'verified'
+          events = [json.loads(line) for line in (root / 'intake-test.jsonl').read_text().splitlines() if line.strip()]
+          name = 'TestDocumentationConsumerCIActualIntake'
+          assert sum(e.get('Action') == 'pass' and e.get('Test') == name for e in events) == 1
+          assert not any(e.get('Action') in ('fail', 'skip') for e in events)
+          receipt = json.loads((root / 'intake-receipt.json').read_text())
+          assert receipt['implementation_sha'] == os.environ['GITHUB_SHA']
+          assert receipt['documentation_record_accepted'] and receipt['original_references_unchanged']
+          assert not receipt['d03_complete'] and not receipt['app_integration_executed'] and not receipt['closure_complete']
+          for repo in (Path.cwd(), Path(os.environ['CHERRI_D03_DOCS_REPO'])):
+              assert not subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain', '--untracked-files=all']).strip()
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+              stream.write('## Actual installed/public documentation proof\n\n')
+              stream.write('Existing Go intake accepted the original D03 docs record and all referenced bytes.\n')
+              stream.write('The separate app integration tier remains missing; this job does not close D03 or final179.\n')
+          PY
+
+      - name: Retain only verified public inputs and unchanged consumer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p10r15-documentation-consumers-${{ github.run_id }}
+          path: ${{ env.CHERRI_D03_RUN_ROOT }}/verified/
+          if-no-files-found: warn
+          retention-days: 14
