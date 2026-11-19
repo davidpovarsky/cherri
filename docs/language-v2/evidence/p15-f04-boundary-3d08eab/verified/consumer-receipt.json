@@ -1,0 +1,34 @@
+{
+  "runs": [
+    {
+      "label": "phase0",
+      "sourceCommit": "3d08eab1c2770a3ad2836fd695907a22aa2ef794",
+      "exitCode": 0,
+      "logSHA256": "0f8fc84ded176d0aa40f171f20e277c13dbc1d84e1f996f52a38ac189c8fda3c",
+      "command": [
+        "python3",
+        "-X",
+        "utf8",
+        "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-f04-boundary-20261119",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/f04-boundary-3d08eab/cherri",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/f04-boundary-3d08eab/phase0"
+      ],
+      "startedAt": "2026-11-19T02:11:15.493260+00:00",
+      "finishedAt": "2026-11-19T02:11:19.674683+00:00"
+    },
+    {
+      "label": "python-related",
+      "sourceCommit": "3d08eab1c2770a3ad2836fd695907a22aa2ef794",
+      "exitCode": 0,
+      "logSHA256": "ce46ad58120b3155e56541b252be2bf1a477b5fba9daf6db00f47dec39986e7b",
+      "command": [
+        "python3",
+        "-c",
+        "import sys,unittest;sys.path.insert(0,'tools/shortcuts-simulator-qa');names=['test_native_macro_diagnostic_contract','test_collect_native_contract','test_storage_probe_contract','test_native_continuation_audit'];result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromNames(names));sys.exit(not result.wasSuccessful())"
+      ],
+      "startedAt": "2026-11-19T02:11:19.675070+00:00",
+      "finishedAt": "2026-11-19T02:11:31.672439+00:00"
+    }
+  ]
+}
