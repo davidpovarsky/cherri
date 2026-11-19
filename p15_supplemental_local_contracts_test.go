@@ -154,7 +154,7 @@ func TestP15RP09StaticVariantNativeDifferential(t *testing.T) {
 	for _, tc := range p15StaticVariantCases() {
 		t.Run(tc.name, func(t *testing.T) {
 			v2 := compileDebugFixture(t, tc.source, false)
-			legacy := compileDebugFixture(t, "#include \""+tc.include+"\"\n"+tc.source, true)
+			legacy := compileDebugFixture(t, "#include '"+tc.include+"'\n"+tc.source, true)
 			if err := p15StaticVariantError(v2, tc); err != nil {
 				t.Fatal(err)
 			}
