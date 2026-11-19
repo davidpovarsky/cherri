@@ -17,6 +17,34 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP27": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames: []string{
+			"TestP15IM01ModuleNamespaceDispatch",
+			"TestP15IM01NestedModuleNamespaceIsolation",
+			"TestP15IM01CanonicalRelativeModuleIdentity",
+			"TestP15IM01ModuleServiceResolvesActualDependencies",
+			"TestP15IM01DuplicateImportAndLocalNamesStayDistinct",
+			"TestP15IM01ModuleServiceRefreshAndExports",
+			"TestP15IM01ModuleAliasCasePreservesNamespace",
+			"TestP15IM01UppercaseModuleRejectsUnexportedCallable",
+			"TestP15IM01BuiltinModuleAliasesPreserveNativeParity",
+			"TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity",
+			"TestP15IM01CyclePathAndDuplicateAliasDiagnostics",
+			"TestP15IM02RejectsModuleRuntimeInitialization",
+			"TestP15IM02LegacyMigrationDoesNotDropInitialization",
+			"TestP15IM05RemoteImportsNeverFetch",
+			"TestP15IM05UnresolvedLocalDependencyNoInstallation",
+		},
+		Tiers: []string{"unit", "service", "migration"},
+		ProductionPaths: []string{
+			"internal/language/modules/graph.go", "internal/language/workspace/resource.go",
+			"internal/language/analysis/module_imports.go", "internal/language/lower/module_scope.go",
+			"internal/language/service/module_analysis.go", "internal/language/migrate/migrate.go",
+			"language_emit_adapter.go", "p15_module_contracts_test.go",
+			"p15_module_alias_case_test.go", "p15_module_canonical_alias_test.go", "p15_module_acceptance_test.go",
+		},
+	},
 	"RP38": {
 		PackagePath: "./internal/language/lsp", ModulePath: "github.com/electrikmilk/cherri/internal/language/lsp",
 		TestNames: []string{
