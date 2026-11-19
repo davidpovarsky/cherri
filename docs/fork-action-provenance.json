@@ -2810,6 +2810,22 @@
       "reason": "The canonical serializers silently discarded native reference extension fields, including false, zero and empty metadata values, breaking the exact reference roundtrip contract.",
       "evidence": "Clean dd2b72a passed 76 codec/reference/roundtrip cases and 14 supplemental-producer/manifest-control cases with zero failures/skips. The negative baseline reproduced 11 failure events across all three reference kinds and six typed/inline paths. Raw logs SHA256 e888bc2e351a4af9494d188550b81238e101c614a77180f910180ff72be77996 and c0857eadac12aee4ed802afa4ade5d21bdcfa1ba4992fbc9f6f35070b2b820e4. Strongest-tier evidence deletion remains rejected; the strict comparator and original contract tiers are unchanged.",
       "note": "Immutable integrated implementation ancestor. Explicit imported dictionaries retain original field presence; compiler-generated transformations keep their existing serializer. Native roundtrip structure is not Apple execution proof, and final combined-source acceptance remains required."
+    },
+    {
+      "name": "P10R15 public action declaration validation",
+      "locations": [
+        "internal/language/analysis/action_declarations.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/backend/parameter_codecs.go",
+        "internal/language/syntax/parser.go",
+        "tools/language-schema/main.go",
+        "p15_action_declaration_validation_test.go"
+      ],
+      "firstForkCommit": "ede603006b3e8f4b020b77622b923fb82102bd49",
+      "change": "Validate public custom action parameter and primary bindings, nonempty identifiers/wire keys, duplicate parameters/wire keys, and registered codec identities before publishing a document-local schema. Preserve duplicate binding entry/property diagnostics before parser map replacement. Reuse canonical backend codec identities in schema generation.",
+      "reason": "The actual public checker reported valid and the compiler emitted 2173-byte shortcuts for an unknown codec and undeclared binding parameter. Nine invalid declaration cases reproduced acceptance through actual CLI, embedded/mobile and service paths, including the controlled signing side-effect detector.",
+      "evidence": "Exact clean source 4065c3549b5fdde2e0a1aa94f2bcae2f7f4b1a05 passed 82 root tests and 80 affected-package tests, with zero failures/skips. Original baseline, candidate and clean replay receipts are archived at docs/language-v2/evidence/p15-action-declarations-4065c35; baseline SHA256 c79863072e21ecb76ab9c18aa67c2f1a7efd6c14071b8ae7ca6696c90050ca2d.",
+      "note": "Immutable integrated implementation ancestor. This validates declaration rejection and existing healthy codec controls; it does not establish arbitrary third-party action execution on Apple or complete the full acceptance matrix."
     }
   ]
 }
