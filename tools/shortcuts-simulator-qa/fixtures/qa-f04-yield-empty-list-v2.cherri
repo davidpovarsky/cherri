@@ -1,0 +1,24 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "f04-yield-empty-list")
+// Empty yielded Lists are values: the outer semantic collection must have two elements.
+let inputs = ["LEFT", "RIGHT"]
+let empties = for item in inputs { yield [] }
+let scalars = for item in inputs { yield item }
+let outerCount = count(empties)
+let scalarCount = count(scalars)
+var shape = "COUNT_MISMATCH"
+if outerCount == 2 {
+    let first = empties[0]
+    let second = empties[1]
+    let firstCount = count(first)
+    let secondCount = count(second)
+    shape = f"{firstCount},{secondCount}"
+}
+let semanticResult = text(f"outer={outerCount}:scalars={scalarCount}:shape={shape}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "f04-yield-empty-list")
+let traceEnvelope = debugExportTrace(runId: "qa-f04-yield-empty-list-v2")
+let finalSummary = text(f"CHERRI_QA_F04_EMPTY_LIST_RESULT:{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

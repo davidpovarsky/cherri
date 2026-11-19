@@ -1,0 +1,28 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "f04-yield-list")
+// Synthetic cardinality diagnostic: two iterations, one List value per iteration.
+let inputs = ["LEFT", "RIGHT"]
+let pairs = for item in inputs { yield [item, "TAIL"] }
+let scalars = for item in inputs { yield item }
+let pairCount = count(pairs)
+let scalarCount = count(scalars)
+var shape = "COUNT_MISMATCH"
+if pairCount == 2 {
+    let left = pairs[0]
+    let right = pairs[1]
+    let leftCount = count(left)
+    let rightCount = count(right)
+    if leftCount == 2 {
+        if rightCount == 2 {
+            shape = f"{left[0]},{left[1]}|{right[0]},{right[1]}"
+        }
+    }
+}
+let semanticResult = text(f"pairs={pairCount}:scalars={scalarCount}:shape={shape}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "f04-yield-list")
+let traceEnvelope = debugExportTrace(runId: "qa-f04-yield-list-v2")
+let finalSummary = text(f"CHERRI_QA_F04_LIST_RESULT:{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

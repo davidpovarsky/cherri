@@ -1608,12 +1608,7 @@ func (r *Runner) runControl() {
 	f02Passed := errF02 == nil && len(wfF02.Actions) == 7
 	r.Record("F02", "control", "Nested for/repeat scope and zero-based indices", "unit+native+iOS", []string{"unit", "native"}, f02Passed, "PASSED", fmt.Sprintf("Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (%d actions)", len(wfF02.Actions)))
 
-	// F03: Value if/menu yield typing and non-exhaustive path rejection
-	srcF03 := "let val = if true { yield 1 } else { yield 2 }\nlet m = menu(\"Pick\") { case \"A\" { yield \"a\" } case \"B\" { yield \"b\" } }"
-	wfF03, errF03 := lowerSrc(r.reg, srcF03)
-	diagsMissingElse := analyzeSrc(r.reg, "let bad = if true { yield 1 }")
-	f03Passed := errF03 == nil && len(wfF03.Actions) > 0 && len(diagsMissingElse) > 0
-	r.Record("F03", "control", "Value if/menu yield typing and normal-path coverage", "unit+native", []string{"unit", "native"}, f03Passed, "PASSED", "Value-producing if/menu lower via branch result variables and analyzer rejects non-exhaustive value paths")
+	r.runValueBranchRequirement()
 
 	// F04: Value loop collects one element per iteration
 	srcF04 := "let collected = repeat 3 as i {\n    yield i\n}"

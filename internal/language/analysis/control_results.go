@@ -11,13 +11,17 @@ import (
 func (a *Analyzer) controlExpressionResultType(expr syntax.Expression) types.Type {
 	switch control := expr.(type) {
 	case *syntax.IfStmt:
-		thenType := a.controlBranchResultType(control.ThenBlock)
+		thenType := a.normalControlBranchResultType(control.ThenBlock)
 		var elseType types.Type = types.AnyContent
 		switch alternate := control.ElseBlock.(type) {
 		case *syntax.BlockStmt:
-			elseType = a.controlBranchResultType(alternate)
+			elseType = a.normalControlBranchResultType(alternate)
 		case *syntax.IfStmt:
-			elseType = a.controlExpressionResultType(alternate)
+			if statementMayContinue(alternate) {
+				elseType = a.controlExpressionResultType(alternate)
+			} else {
+				elseType = nil
+			}
 		}
 		return types.NewUnion(thenType, elseType)
 	case *syntax.ForStmt:
@@ -27,7 +31,7 @@ func (a *Analyzer) controlExpressionResultType(expr syntax.Expression) types.Typ
 	case *syntax.MenuStmt:
 		branches := make([]types.Type, 0, len(control.Cases))
 		for _, item := range control.Cases {
-			branches = append(branches, a.controlBranchResultType(item.BodyBlock))
+			branches = append(branches, a.normalControlBranchResultType(item.BodyBlock))
 		}
 		if len(branches) != 0 {
 			return types.NewUnion(branches...)
@@ -56,4 +60,13 @@ func (a *Analyzer) controlBranchResultType(body *syntax.BlockStmt) types.Type {
 	default:
 		return types.AnyContent
 	}
+}
+
+// A return terminates the current invocation and does not contribute a value
+// to an If/Menu join. Retain the existing loop result policy separately.
+func (a *Analyzer) normalControlBranchResultType(body *syntax.BlockStmt) types.Type {
+	if !statementMayContinue(body) {
+		return nil
+	}
+	return a.controlBranchResultType(body)
 }

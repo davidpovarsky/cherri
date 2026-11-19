@@ -302,6 +302,13 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 		}
 		return ids
 	}
+	if tests, ok := valueFlowProductionTests[id]; ok {
+		ids := make([]string, 0, len(tests))
+		for _, test := range tests {
+			ids = append(ids, "github.com/electrikmilk/cherri:"+test)
+		}
+		return ids
+	}
 	if tests, ok := callProductionTests[id]; ok {
 		ids := make([]string, 0, len(tests))
 		for _, test := range tests {

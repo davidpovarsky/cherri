@@ -1509,6 +1509,15 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 }
 
 func (l *Lowerer) materializeYieldValue(val interface{}) {
+	if val == nil {
+		// A missing action would leave the previous branch output in place.
+		// Native Nothing explicitly supplies no output at this result boundary.
+		l.emitAction(&ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.nothing",
+		})
+		return
+	}
 	if tok, ok := val.(*ir.AttachmentToken); ok {
 		if tok.Type == "Variable" {
 			uuid := l.GenerateUUID()

@@ -846,6 +846,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			a.error(CodeYieldContext, s.Span, "'yield' statement is only permitted inside value-producing if/menu/for/repeat blocks")
 		}
 		yt := a.analyzeExpression(s.Value, scope)
+		if isVoidValue(yt) {
+			a.error(CodeYieldContext, s.Span, "yield requires a value; a Void action has no result")
+		}
 		if yt != nil {
 			a.yieldedTypes = append(a.yieldedTypes, yt)
 		}
@@ -1023,44 +1026,6 @@ func menuAnyYield(s *syntax.MenuStmt) bool {
 		}
 	}
 	return false
-}
-
-func blockHasYield(blk *syntax.BlockStmt) bool {
-	if blk == nil {
-		return false
-	}
-	for _, st := range blk.Statements {
-		switch s := st.(type) {
-		case *syntax.YieldStmt:
-			return true
-		case *syntax.BlockStmt:
-			if blockHasYield(s) {
-				return true
-			}
-		case *syntax.IfStmt:
-			if ifBranchHasYield(s) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func ifBranchHasYield(s *syntax.IfStmt) bool {
-	if s == nil || s.ElseBlock == nil {
-		return false
-	}
-	if !blockHasYield(s.ThenBlock) {
-		return false
-	}
-	switch el := s.ElseBlock.(type) {
-	case *syntax.BlockStmt:
-		return blockHasYield(el)
-	case *syntax.IfStmt:
-		return ifBranchHasYield(el)
-	default:
-		return false
-	}
 }
 
 func isZeroNumberLiteral(expr syntax.Expression) bool {
@@ -1375,8 +1340,8 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.analyzeStatement(e, scope)
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		if ifAnyYield(e) && e.ElseBlock == nil {
-			a.error(CodeYieldContext, e.Span, "value-producing 'if' expression requires 'else'")
+		if ifAnyYield(e) {
+			a.requireIfYieldResults(e)
 		}
 		return a.controlExpressionResultType(e)
 
@@ -1409,11 +1374,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
 		if menuAnyYield(e) {
-			for _, c := range e.Cases {
-				if !blockHasYield(c.BodyBlock) {
-					a.error(CodeYieldContext, c.Span, fmt.Sprintf("value-producing 'menu' case %q requires 'yield'", c.Label))
-				}
-			}
+			a.requireMenuYieldResults(e)
 		}
 		return a.controlExpressionResultType(e)
 	}

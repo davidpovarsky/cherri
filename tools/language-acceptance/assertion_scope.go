@@ -30,7 +30,6 @@ var incompleteLocalAssertions = map[string]string{
 	"N01":  "A modulus action and action count do not establish fractional division and numeric constraints.",
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F02":  "Seven actions do not prove group identities, scopes, or zero-based indices.",
-	"F03":  "Nonempty lowering and any diagnostic do not validate typed branch outputs or all normal paths.",
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
 	"F05":  "A parser error for while/break does not separately prove break behavior inside a supported loop.",
 	"FN01": "Action count does not prove returned value and caller continuation.",
