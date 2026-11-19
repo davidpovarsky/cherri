@@ -43,6 +43,13 @@ uploads `required-encoding-gate` even on failure. Download that artifact into
 evidence ingestion. CI records for CI01 and RP47 are emitted only after all
 three real engine phases pass and the GitHub run/source identity matches.
 
+Formal intake independently reads every phase report and process receipt. It
+reconstructs each required verdict from the actual per-form matrix, checks the
+canonical EXPECT identity and sole negative case, reconciles process argv and
+exit with the summary, and checks the exact diagnostic in actual stderr.
+Recomputed artifact hashes cannot hide contradictory contents; duplicate JSON
+keys are rejected.
+
 This gate checks WorkflowKit parameter serialization. It does not run a
 Shortcut or establish iOS Simulator, physical-device, or editor behavior.
 The Node fixture tests exercise process failure and report validation only;
