@@ -1,0 +1,51 @@
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=false
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=true
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=false
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=true
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=false
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (4:19)
+
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=true
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (4:19)
+
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=false
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=true
+    p15_debug_export_file_materialization_test.go:23: File boundary action 0 = is.workflow.actions.text.combine, want gettext
+--- FAIL: TestP15DebugExportUsesBase64FileMaterialization (0.05s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=false (0.02s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=true (0.01s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=false (0.01s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=true (0.01s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=false (0.00s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=true (0.00s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=false (0.00s)
+    --- FAIL: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=true (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.214s
+FAIL
