@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: p10r15-local-acceptance-${{ github.ref }}
@@ -92,6 +93,8 @@ jobs:
         run: go build -o cherri .
 
       - name: Execute all 179 local obligations without inherited closure
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p "$CHERRI_LOCAL_ACCEPTANCE_OUT"
