@@ -140,6 +140,10 @@ def main():
                     shutil.copy2(opts.remote_home / "config/default-language-mode", work / "config/default-language-mode")
                     (work / "source" / remote_label).symlink_to(opts.remote_home / "source" / remote_label, target_is_directory=True)
                     (work / remote_label / "runtime").symlink_to(opts.remote_home / remote_label / "runtime", target_is_directory=True)
+                    # Preserve the observed, checksum-verified Go dependency of
+                    # immutable release runners; do not replace their verifier.
+                    if (opts.remote_home / "tools").is_dir():
+                        (work / "tools").symlink_to(opts.remote_home / "tools", target_is_directory=True)
                     wrapper = (opts.remote_home / "bin/cherri-remote-legacy.sh").read_text()
                     assert wrapper.count("--hubsign") == 1, "unexpected wrapper signing invocation"
                     wrapper_path = work / "bin/cherri-remote-legacy.sh"
