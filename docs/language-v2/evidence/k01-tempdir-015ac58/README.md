@@ -1,0 +1,13 @@
+# Actual K01 temporary-path regression and packaged self-test
+
+The retained [b34 full CI failure](../ci-b34ae47-44443478882/README.md) stopped in the macOS unpacked self-test immediately after its prepare/edit progress marker. Its original script captured and suppressed the child output. This archive establishes the concrete source portability defect with real compiler execution; fresh macOS CI remains necessary to validate the integrated release there.
+
+Exact compiler S is `b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb`. Its Linux/arm64 binary SHA-256 is `87cbf0e94f1cda7df461826a2dad107a9f24a18a688102fd812a76545a6f6a9f`; actual Go build information records Go 1.24.13, `CGO_ENABLED=0`, the exact revision and `vcs.modified=false`. Baseline skill K is `7cedd175172a050e575abb10860a003399b97a93`; fixed skill K is `015ac58c794eb412e0efa0b525ef928172df611c`. Both manifests bind this compiler.
+
+Using the baseline script, an ordinary TMPDIR passed the complete self-test. Appending one slash caused a real failure after successful prepare-edit: the returned paths had one separator while the grep expectation contained two. A directory containing a space and literal square brackets independently failed because the expected pathname was treated as a regular expression. The traces retain the successful prepare-edit output and the exact failing grep.
+
+The fixed script canonicalizes its owned temporary directory, checks literal pathnames, and preserves captured prepare-edit errors. The exact committed source export passed ordinary, trailing-separator and space/bracket controls. The canonical package tool then created a runtime archive, independently verified and unpacked it, checked the bundled compiler bytes, and ran the actual unpacked self-test with a fresh CHERRI_HOME and no CHERRI_BIN override. All three package stages passed; the unpacked self-test finished in 4.327 seconds. Its existing ten installation scenarios are explicitly mock scenarios in the observations; the compile/decompile/prepare/edit operations used the actual compiler.
+
+The Go packaging regression now supplies a trailing-separator TMPDIR on every platform. No extra Go test or Apple engine execution is claimed by this shell/package receipt. The initial Windows fallback reached a separate modernc `panic: no console` before the self-test; those logs remain in `windows-shell-precondition`. A first Linux archive extraction rejected the harmless `skills` parent directory; its bounded setup receipt is also preserved.
+
+The reviewed transfer contains 29 explicitly allowed public synthetic files, verified against the ZIP and per-file hashes before extraction. It excludes binaries, source clones, private corpus inputs and live builder data. Git blobs below are byte-preserved.

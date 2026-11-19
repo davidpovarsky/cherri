@@ -1,0 +1,553 @@
++ set -eu
++++ dirname -- C:/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts/self-test.sh
+++ CDPATH=
+++ cd -- C:/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts
+++ pwd
++ SCRIPT_DIR=/c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts
++ . /c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts/common.sh
+++ set -eu
+++++ dirname -- C:/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts/self-test.sh
++++ CDPATH=
++++ cd -- C:/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts
++++ pwd
+++ SCRIPT_DIR=/c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/scripts
++++ CDPATH=
++++ cd -- C:/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts
++++ pwd
+++ SKILL_DIR=/c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts
+++ MANIFEST_FILE=/c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/compatibility-manifest.json
+++ load_compatibility_manifest
+++ '[' '!' -f /c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/compatibility-manifest.json ']'
++++ cat /c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/compatibility-manifest.json
+++ MANIFEST_RAW='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
+++ json_is_valid_object '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ printf %s '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r\n\t '
+++ _raw='{"skillVersion":"2.0.0","languageVersion":"2.0","catalogSchemaVersion":"3.0","schemaFingerprint":"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b","codecFingerprint":"3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e","compilerRepo":"https://github.com/davidpovarsky/cherri.git","compilerCommit":"b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb","docsRepo":"https://github.com/davidpovarsky/cherrilang.org.git","docsCommit":"9fb6256a4549d93414e9b65318d4794ae40fbee7","macroFingerprint":"1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"}'
+++ case "$_raw" in
+++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
+++ awk '
+    BEGIN { in_str=0; esc=0; depth=0 }
+    {
+      for (i=1; i<=length($0); i++) {
+        c = substr($0, i, 1)
+        if (esc) { esc=0; continue }
+        if (c == "\\") { if (in_str) esc=1; continue }
+        if (c == "\"") { in_str = !in_str; continue }
+        if (!in_str) {
+          if (c == "{") depth++
+          else if (c == "}") depth--
+        }
+      }
+    }
+    END {
+      if (in_str != 0 || depth != 0) exit 1
+    }
+  '
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' languageVersion
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=languageVersion
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"languageVersion"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_LANG_VERSION=2.0
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' catalogSchemaVersion
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=catalogSchemaVersion
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"catalogSchemaVersion"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_CATALOG_VERSION=3.0
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' schemaFingerprint
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=schemaFingerprint
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"schemaFingerprint"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_SCHEMA_FP=7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' codecFingerprint
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=codecFingerprint
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"codecFingerprint"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_CODEC_FP=3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' macroFingerprint
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=macroFingerprint
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"macroFingerprint"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_MACRO_FP=1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' compilerRepo
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=compilerRepo
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"compilerRepo"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_COMPILER_REPO=https://github.com/davidpovarsky/cherri.git
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' compilerCommit
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=compilerCommit
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"compilerCommit"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_COMPILER_COMMIT=b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' docsRepo
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=docsRepo
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"docsRepo"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_DOCS_REPO=https://github.com/davidpovarsky/cherrilang.org.git
++++ json_extract_string '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}' docsCommit
++++ _json_text='{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ _field_key=docsCommit
++++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
++++ tr -d '\r'
++++ sed -n 's/.*"docsCommit"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
++++ head -n 1
+++ MANIFEST_DOCS_COMMIT=9fb6256a4549d93414e9b65318d4794ae40fbee7
+++ '[' -z 2.0 ']'
+++ '[' -z 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b ']'
+++ is_hex_len 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b 64
+++ _val=7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b
+++ _len=64
+++ '[' 64 -eq 64 ']'
+++ case "$_val" in
+++ return 0
+++ '[' -n 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e ']'
+++ is_hex_len 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e 64
+++ _val=3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e
+++ _len=64
+++ '[' 64 -eq 64 ']'
+++ case "$_val" in
+++ return 0
+++ '[' 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e = 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b ']'
+++ printf '%s\n' '{
+  "skillVersion": "2.0.0",
+  "languageVersion": "2.0",
+  "catalogSchemaVersion": "3.0",
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "docsCommit": "9fb6256a4549d93414e9b65318d4794ae40fbee7",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+}'
+++ grep -q '"macroFingerprint"[[:space:]]*:'
+++ is_hex_len 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec 64
+++ _val=1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec
+++ _len=64
+++ '[' 64 -eq 64 ']'
+++ case "$_val" in
+++ return 0
+++ '[' -z b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb ']'
+++ is_hex_len b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb 40
+++ _val=b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb
+++ _len=40
+++ '[' 40 -eq 40 ']'
+++ case "$_val" in
+++ return 0
+++ '[' -z 9fb6256a4549d93414e9b65318d4794ae40fbee7 ']'
+++ is_hex_len 9fb6256a4549d93414e9b65318d4794ae40fbee7 40
+++ _val=9fb6256a4549d93414e9b65318d4794ae40fbee7
+++ _len=40
+++ '[' 40 -eq 40 ']'
+++ case "$_val" in
+++ return 0
+++ export MANIFEST_LANG_VERSION MANIFEST_CATALOG_VERSION MANIFEST_SCHEMA_FP MANIFEST_CODEC_FP MANIFEST_MACRO_FP
+++ export MANIFEST_COMPILER_REPO MANIFEST_COMPILER_COMMIT MANIFEST_DOCS_REPO MANIFEST_DOCS_COMMIT
+++ return 0
+++ '[' -z C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/native-triage/ci-consumer-baseline-b34/home-trailing_separator ']'
+++ : https://github.com/davidpovarsky/cherri.git
+++ : b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb
+++ : https://github.com/davidpovarsky/cherrilang.org.git
+++ : 9fb6256a4549d93414e9b65318d4794ae40fbee7
+++ : C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/native-triage/ci-consumer-baseline-b34/home-trailing_separator/docs
+++ BUNDLED_CHERRI=/c/Users/DAVID/Code/cherri-p10r15-ci-consumers-20261119/skills/cherri-shortcuts/bin/cherri
+++ CACHED_CHERRI=C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/native-triage/ci-consumer-baseline-b34/home-trailing_separator/bin/cherri
++ SIGN=0
++ SKIP_SETUP=0
++ EVIDENCE_OUT=
++ '[' 3 -gt 0 ']'
++ case "$1" in
++ SKIP_SETUP=1
++ shift
++ '[' 2 -gt 0 ']'
++ case "$1" in
++ EVIDENCE_OUT=C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/native-triage/ci-consumer-baseline-b34/trailing_separator-wrapper-observations.json
++ shift 2
++ '[' 0 -gt 0 ']'
++ '[' 1 -eq 0 ']'
+++ resolve_cherri
+++ '[' -n C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe ']'
+++ validate_cherri_bin C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe
+++ _cand=C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe
+++ '[' -z C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe ']'
+++ '[' '!' -f C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe ']'
+++ '[' -f C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe.sha256 ']'
+++ chmod +x C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe
+++ '[' '!' -x C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe ']'
++++ C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe --capabilities-json
+++ _cap_out=
+++ echo 'Cherri binary failed --capabilities-json: C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe'
+Cherri binary failed --capabilities-json: C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe
+++ return 1
+++ echo 'Explicit CHERRI_BIN is missing or incompatible: C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe'
+Explicit CHERRI_BIN is missing or incompatible: C:/Users/DAVID/Code/cherri-p10r15-evidence-20261119/docs-final-b34ae47/compiler-cache/cherri.exe
+++ return 1
++ CHERRI_BIN_RESOLVED=
++ echo 'Compatible Cherri binary missing'
+Compatible Cherri binary missing
++ exit 1

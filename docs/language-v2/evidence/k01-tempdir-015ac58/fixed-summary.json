@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-11-19T03:36:30.503374+00:00",
+  "skillCommit": "015ac58c794eb412e0efa0b525ef928172df611c",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "compilerSha256": "87cbf0e94f1cda7df461826a2dad107a9f24a18a688102fd812a76545a6f6a9f",
+  "selfTestSha256": "82970e3c1fe3674aebd64f637dc762c830b657580dee86abd1d55085ce1b111b",
+  "exactCommittedSourceExport": true,
+  "appleEngineExecuted": false,
+  "results": [
+    {
+      "label": "baseline_literal_path",
+      "exitCode": 1,
+      "durationSeconds": 1.553,
+      "stdoutSha256": "b8490c933c2d7c92c749b9eb2112741c84b8fef300c2d23df236212657151757",
+      "stderrSha256": "e4f2db47f76eb8bce5207c8cad15667e5ea1661e8f5aadb161937a7bad426fa3",
+      "selfTestCompleted": false,
+      "lastOutput": [
+        "Testing unsigned compile wrapper...",
+        "Testing decompile wrapper...",
+        "Testing decompiled-source recompilation (self-contained invariant)...",
+        "Testing existing-Shortcut prepare/edit workflow..."
+      ],
+      "lastTrace": [
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp parent [literal]/cherri-skill-test-1056434/prepared/builds/validation.shortcut",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp parent [literal]/cherri-skill-test-1056434/prepared'",
+        "+ grep -q '/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp parent [literal]/cherri-skill-test-1056434/prepared/original/shortcut.plist'",
+        "+ rm -rf '/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp parent [literal]/cherri-skill-test-1056434'"
+      ]
+    },
+    {
+      "label": "fixed_ordinary",
+      "exitCode": 0,
+      "durationSeconds": 3.499,
+      "stdoutSha256": "0cc72ed54ae66785fea47113ef5cbd6b564ca2a336c7c9348148a065d4f2a514",
+      "stderrSha256": "1db68a62e2aadc6f99228baf39e6f528d9cb759ff6740a2155d6963fa67ba28e",
+      "selfTestCompleted": true,
+      "lastOutput": [
+        "  [PASS] Scenario 8: docs SHA/fingerprint mismatch rejected",
+        "  [PASS] Scenario 9: failed download preserved existing working binary",
+        "  [PASS] Scenario 10: branch advance did not alter pinned installed version",
+        "Cherri Shortcuts skill self-test passed."
+      ],
+      "lastTrace": [
+        "+ mkdir -p /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced",
+        "+ cat",
+        "+ echo 'Cherri Shortcuts skill self-test passed.'",
+        "+ rm -rf /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/fixed-temp-parent/cherri-skill-test-1057664"
+      ]
+    },
+    {
+      "label": "fixed_trailing_separator",
+      "exitCode": 0,
+      "durationSeconds": 3.466,
+      "stdoutSha256": "0cc72ed54ae66785fea47113ef5cbd6b564ca2a336c7c9348148a065d4f2a514",
+      "stderrSha256": "fd76caf3cbf70b626721b4f346c757a0fd876f08d79b5770a6d412ff5b6bac19",
+      "selfTestCompleted": true,
+      "lastOutput": [
+        "  [PASS] Scenario 8: docs SHA/fingerprint mismatch rejected",
+        "  [PASS] Scenario 9: failed download preserved existing working binary",
+        "  [PASS] Scenario 10: branch advance did not alter pinned installed version",
+        "Cherri Shortcuts skill self-test passed."
+      ],
+      "lastTrace": [
+        "+ mkdir -p /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced",
+        "+ cat",
+        "+ echo 'Cherri Shortcuts skill self-test passed.'",
+        "+ rm -rf /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/fixed-temp-parent/cherri-skill-test-1061067"
+      ]
+    },
+    {
+      "label": "fixed_literal_path",
+      "exitCode": 0,
+      "durationSeconds": 3.421,
+      "stdoutSha256": "0cc72ed54ae66785fea47113ef5cbd6b564ca2a336c7c9348148a065d4f2a514",
+      "stderrSha256": "09435b5c71112844bdcbf2e80c6a56342f9d008d04a8656b3b1d0b5d2169644f",
+      "selfTestCompleted": true,
+      "lastOutput": [
+        "  [PASS] Scenario 8: docs SHA/fingerprint mismatch rejected",
+        "  [PASS] Scenario 9: failed download preserved existing working binary",
+        "  [PASS] Scenario 10: branch advance did not alter pinned installed version",
+        "Cherri Shortcuts skill self-test passed."
+      ],
+      "lastTrace": [
+        "+ mkdir -p /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced",
+        "+ cat",
+        "+ echo 'Cherri Shortcuts skill self-test passed.'",
+        "+ rm -rf '/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp parent [literal]/cherri-skill-test-1064471'"
+      ]
+    }
+  ]
+}
