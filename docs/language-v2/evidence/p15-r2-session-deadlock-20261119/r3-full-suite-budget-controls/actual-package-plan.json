@@ -1,0 +1,91 @@
+{
+  "source_sha": "1bc91c97aa255e0f7d07a1aec1d9e23ad16cb301",
+  "package_count": 30,
+  "plan": [
+    {
+      "packages": [
+        "github.com/electrikmilk/cherri",
+        "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+        "github.com/electrikmilk/cherri/internal/icloudshortcut",
+        "github.com/electrikmilk/cherri/internal/language/analysis",
+        "github.com/electrikmilk/cherri/internal/language/assets",
+        "github.com/electrikmilk/cherri/internal/language/backend",
+        "github.com/electrikmilk/cherri/internal/language/enums",
+        "github.com/electrikmilk/cherri/internal/language/ir",
+        "github.com/electrikmilk/cherri/internal/language/lower",
+        "github.com/electrikmilk/cherri/internal/language/lsp",
+        "github.com/electrikmilk/cherri/internal/language/migrate",
+        "github.com/electrikmilk/cherri/internal/language/modules",
+        "github.com/electrikmilk/cherri/internal/language/protocol",
+        "github.com/electrikmilk/cherri/internal/language/schema",
+        "github.com/electrikmilk/cherri/internal/language/service",
+        "github.com/electrikmilk/cherri/internal/language/source",
+        "github.com/electrikmilk/cherri/internal/language/syntax",
+        "github.com/electrikmilk/cherri/internal/language/types",
+        "github.com/electrikmilk/cherri/internal/language/workspace",
+        "github.com/electrikmilk/cherri/internal/shortcutcompare",
+        "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+        "github.com/electrikmilk/cherri/tools/inventory",
+        "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+        "github.com/electrikmilk/cherri/tools/language-docs",
+        "github.com/electrikmilk/cherri/tools/language-migrate",
+        "github.com/electrikmilk/cherri/tools/language-schema",
+        "github.com/electrikmilk/cherri/tools/language-stdlib",
+        "github.com/electrikmilk/cherri/tools/legacy-parity",
+        "github.com/electrikmilk/cherri/tools/shortcut-corpus"
+      ],
+      "timeout": "15m",
+      "argv": [
+        "go",
+        "test",
+        "-count=1",
+        "-timeout=15m",
+        "-v",
+        "github.com/electrikmilk/cherri",
+        "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+        "github.com/electrikmilk/cherri/internal/icloudshortcut",
+        "github.com/electrikmilk/cherri/internal/language/analysis",
+        "github.com/electrikmilk/cherri/internal/language/assets",
+        "github.com/electrikmilk/cherri/internal/language/backend",
+        "github.com/electrikmilk/cherri/internal/language/enums",
+        "github.com/electrikmilk/cherri/internal/language/ir",
+        "github.com/electrikmilk/cherri/internal/language/lower",
+        "github.com/electrikmilk/cherri/internal/language/lsp",
+        "github.com/electrikmilk/cherri/internal/language/migrate",
+        "github.com/electrikmilk/cherri/internal/language/modules",
+        "github.com/electrikmilk/cherri/internal/language/protocol",
+        "github.com/electrikmilk/cherri/internal/language/schema",
+        "github.com/electrikmilk/cherri/internal/language/service",
+        "github.com/electrikmilk/cherri/internal/language/source",
+        "github.com/electrikmilk/cherri/internal/language/syntax",
+        "github.com/electrikmilk/cherri/internal/language/types",
+        "github.com/electrikmilk/cherri/internal/language/workspace",
+        "github.com/electrikmilk/cherri/internal/shortcutcompare",
+        "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+        "github.com/electrikmilk/cherri/tools/inventory",
+        "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+        "github.com/electrikmilk/cherri/tools/language-docs",
+        "github.com/electrikmilk/cherri/tools/language-migrate",
+        "github.com/electrikmilk/cherri/tools/language-schema",
+        "github.com/electrikmilk/cherri/tools/language-stdlib",
+        "github.com/electrikmilk/cherri/tools/legacy-parity",
+        "github.com/electrikmilk/cherri/tools/shortcut-corpus"
+      ]
+    },
+    {
+      "packages": [
+        "github.com/electrikmilk/cherri/tools/language-acceptance"
+      ],
+      "timeout": "35m",
+      "argv": [
+        "go",
+        "test",
+        "-count=1",
+        "-timeout=35m",
+        "-v",
+        "github.com/electrikmilk/cherri/tools/language-acceptance"
+      ]
+    }
+  ],
+  "go_tests_executed": false
+}
