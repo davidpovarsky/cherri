@@ -401,6 +401,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if producer, ok := supplementalProductionScenarios[id]; ok {
+		return producer.testIDs()
+	}
 	base := []string{"tools/language-acceptance:runRepair"}
 	switch id {
 	case "RP01", "RP02", "RP03":
@@ -445,6 +448,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if producer, ok := supplementalProductionScenarios[id]; ok {
+		return producer.testIDs()
+	}
 	base := []string{"tools/language-acceptance:runGates"}
 	switch id {
 	case "BRG01":
