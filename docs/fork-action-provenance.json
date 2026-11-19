@@ -2698,7 +2698,7 @@
       "firstForkCommit": "03c42946c62564102bd612fbf5f5ec0e2483005a",
       "change": "Validate every reachable normal value-producing branch, retain concrete branch result types, and reject missing, overwritten or void yields before native emission.",
       "reason": "A terminated or later-overwritten yield could incorrectly satisfy value-result analysis.",
-      "evidence": "Source-bound F03 positive/negative and native-graph controls are retained in the value-branch acceptance evidence. T06 diagnostic assertions are being aligned to the real two-error rejection. F04 nested List native run44431486363 failed and is not covered by an F03 pass.",
+      "evidence": "Exact clean3132ce8 T06+F03 gate passed59 named cases with0 failures/skips; receipts retain the three stale-oracle failures, exact diagnostics/spans, service/CLI no-artifact checks and causal corruptions under docs/language-v2/evidence/p15-t06-diagnostics-20261119. F04 nested List native run44431486363 failed and is not covered by an F03 pass.",
       "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
     },
     {
