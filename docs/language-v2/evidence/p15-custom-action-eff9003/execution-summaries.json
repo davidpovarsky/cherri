@@ -1,0 +1,89 @@
+{
+  "clean-c2bd-summary.json": {
+    "source_sha": "c2bd5d6fd55d0fab645185aa1f4ae0615e591f6a",
+    "source_status_before": "",
+    "source_status_after": "",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^TestP15AC02.*$",
+      "."
+    ],
+    "exit_code": 1,
+    "timed_out": false,
+    "seconds": 28.378,
+    "named_tests": {
+      "pass": 17,
+      "fail": 1
+    },
+    "failed": [
+      "TestP15AC02DeclaredSchemaRegistryAndRejections"
+    ],
+    "skipped": [],
+    "log_bytes": 19442,
+    "log_sha256": "71be928df2755066055b178aa7fa08df73f6fcb62deb2b388d874ab001035415",
+    "invalid_json": [],
+    "available_bytes_before": 3462848512
+  },
+  "clean-eff900-formal-summary.json": {
+    "source_sha": "eff9003d0dcc04c514b808bcaf2f03eb16f20ec7",
+    "source_status_before": "",
+    "source_status_after": "",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^TestCustomActionProductionEvidence$",
+      "./tools/language-acceptance"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 24.03,
+    "named_tests": {
+      "pass": 7
+    },
+    "failed": [],
+    "skipped": [],
+    "log_bytes": 14771,
+    "log_sha256": "ef4b4aaeb7dce63c6c7fcda50f345667d97dd1e87076e2a84c7c11227a3741ee",
+    "invalid_json": [],
+    "available_bytes_before": 3182911488
+  },
+  "clean-eff900-root-summary.json": {
+    "source_sha": "eff9003d0dcc04c514b808bcaf2f03eb16f20ec7",
+    "source_status_before": "",
+    "source_status_after": "",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^TestP15AC02.*$",
+      "."
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 25.125,
+    "named_tests": {
+      "pass": 22
+    },
+    "failed": [],
+    "skipped": [],
+    "log_bytes": 19712,
+    "log_sha256": "d9200baed19ff795e7fe0034e406f3170acd8ed33ad8ba64221b72e9a1f1a50e",
+    "invalid_json": [],
+    "available_bytes_before": 2762022912
+  }
+}
