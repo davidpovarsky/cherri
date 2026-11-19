@@ -1,0 +1,58 @@
+{
+  "fixtureAndHarnessSource": "55de41070d6766c83d4c0f9e1a1c1b489af6b533",
+  "compilerSource": "8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46",
+  "compilerBinarySha256": "439eff31c429874506bff1a18b3d19177f08127ece69f296dcb6a3329a3c6689",
+  "compilerVcsModified": false,
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "phase0": {
+    "exitCode": 0,
+    "elapsedSeconds": 4.984,
+    "attempted": 66,
+    "compiledArtifacts": 64,
+    "expectedF04Rejections": 2,
+    "graph": {
+      "status": "PASS_LOCAL_DICTIONARY_GRAPH_ONLY",
+      "nativeActions": 53,
+      "carrier": "Dictionary",
+      "twoExplicitEmptyArrayFields": true,
+      "actualFieldReads": true,
+      "formalF04Acceptance": false,
+      "appleRuntime": "NOT_RUN"
+    },
+    "damagedGraphsRejected": [
+      "list-carrier",
+      "missing-items-key",
+      "wrong-item-type",
+      "nonempty-inner",
+      "wrong-iteration-tag",
+      "wrong-outer-count",
+      "wrong-last-record",
+      "wrong-items-read",
+      "wrong-keys-mode",
+      "wrong-empty-control",
+      "wrong-type-witness",
+      "unconditional-type-pass",
+      "hardcoded-summary",
+      "wrong-output-edge"
+    ]
+  },
+  "python": {
+    "command": [
+      "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+      "-m",
+      "unittest",
+      "-v",
+      "test_f04_record_empty_contract",
+      "test_binding_defaults_probe",
+      "test_workflow_input_contract",
+      "test_public_artifacts"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 48.594
+  },
+  "provenanceScope": "Actual production Phase0 invoked with the independently verified compiler S3 revision. Diagnostic fixture and harness belong to child55de410; no compiler source relabeling.",
+  "appleRuntime": "NOT_RUN",
+  "signing": "NOT_RUN",
+  "formalF04Acceptance": false
+}
