@@ -935,6 +935,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateDeclarationTriggerRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if partialTypeProducer(reqID, rec.TestID) {
 				validationErrors = append(validationErrors, fmt.Sprintf("test_id %q is a partial producer and cannot satisfy the full %s contract", rec.TestID, reqID))
 			}
@@ -1728,71 +1732,7 @@ func (r *Runner) runMetadata() {
 	r.runMetadataRequirement("M03")
 	r.runMetadataRequirement("M04")
 
-	// M05: Seven existing trigger families migrate without install claims and lower with exact parameters
-	legacyM05 := `#trigger battery 80
-#trigger screenshot photos, files
-#trigger wifi joined
-#trigger bluetooth connect
-#trigger stageManager on
-#trigger display connect
-#trigger charging connect
-show("Triggers Acceptance")`
-	migratedM05, diagsM05, errM05 := migrate.MigrateSourceWithDiagnostics(legacyM05)
-	var m05Passed bool
-	var m05Detail string
-	if errM05 != nil || len(diagsM05) > 0 {
-		m05Passed = false
-		m05Detail = fmt.Sprintf("Migration failed with %d diagnostics: %v", len(diagsM05), errM05)
-	} else {
-		wfM05, errLowerM05 := lowerSrc(r.reg, migratedM05)
-		if errLowerM05 != nil {
-			m05Passed = false
-			m05Detail = fmt.Sprintf("Lowering migrated triggers failed: %v", errLowerM05)
-		} else if len(wfM05.Triggers) != 7 {
-			m05Passed = false
-			m05Detail = fmt.Sprintf("Expected 7 lowered triggers, got %d", len(wfM05.Triggers))
-		} else {
-			var foundBattery, foundScreenshot, foundWifi, foundBluetooth, foundStageManager, foundDisplay, foundCharging bool
-			for _, trig := range wfM05.Triggers {
-				id, _ := trig["Identifier"].(string)
-				p, _ := trig["Parameters"].(map[string]any)
-				switch id {
-				case "WFBatteryLevelTrigger":
-					if lvl, ok := p["WFBatteryLevel"].(float64); ok && lvl > 79.98 && lvl < 80.0 {
-						foundBattery = true
-					}
-				case "WFScreenshotTrigger":
-					if locs, ok := p["ScreenshotLocations"].([]string); ok && len(locs) == 2 && locs[0] == "photos" && locs[1] == "files" {
-						foundScreenshot = true
-					}
-				case "WFWifiTrigger":
-					if p["WFConnectionType"] == "joined" {
-						foundWifi = true
-					}
-				case "WFBluetoothTrigger":
-					if p["WFBluetoothConnectionType"] == "connect" {
-						foundBluetooth = true
-					}
-				case "WFStageManagerTrigger":
-					if p["WFStageManagerType"] == "on" {
-						foundStageManager = true
-					}
-				case "WFExternalDisplayTrigger":
-					if p["WFConnectionType"] == "connect" {
-						foundDisplay = true
-					}
-				case "WFPlugInTrigger":
-					if p["WFConnectionType"] == "connect" {
-						foundCharging = true
-					}
-				}
-			}
-			m05Passed = foundBattery && foundScreenshot && foundWifi && foundBluetooth && foundStageManager && foundDisplay && foundCharging
-			m05Detail = fmt.Sprintf("Verified legacy migration and lowering for all 7 trigger families: battery=%t, screenshot=%t, wifi=%t, bluetooth=%t, stageManager=%t, display=%t, charging=%t",
-				foundBattery, foundScreenshot, foundWifi, foundBluetooth, foundStageManager, foundDisplay, foundCharging)
-		}
-	}
-	r.Record("M05", "metadata", "Seven existing trigger families migrate without install claims", "unit+native", []string{"unit", "native"}, m05Passed, "PASSED", m05Detail)
+	r.runDeclarationTriggerRequirement("M05")
 }
 
 // Group 13: Modules
@@ -1843,10 +1783,7 @@ func (r *Runner) runSchema() {
 	ac02Passed := errAC02 == nil && len(wfAC02.Actions) > 0
 	r.Record("AC02", "schema", "Public custom action declaration feeds same schema/codecs", "unit+native", []string{"unit", "native"}, ac02Passed, "PASSED", "ActionSchema model shared across CLI, LSP, analysis, and lowering")
 
-	// AC03: Unregistered codec or duplicate label
-	enumNames := r.reg.AllEnums()
-	ac03Passed := len(enumNames) > 0
-	r.Record("AC03", "schema", "Unregistered codec, duplicate enum/label or stale facet", "generation", []string{"generation"}, ac03Passed, "PASSED", "Registry generation script validates uniqueness and facet coherence")
+	r.runDeclarationTriggerRequirement("AC03")
 }
 
 // Group 15: Native Preservation

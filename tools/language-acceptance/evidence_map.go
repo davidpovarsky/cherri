@@ -246,6 +246,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if scenario, ok := declarationTriggerScenarios[id]; ok {
+		return scenario.testIDs()
+	}
 	if tests, ok := upstreamRouteProductionTests[id]; ok {
 		ids := make([]string, 0, len(tests))
 		for _, test := range tests {
