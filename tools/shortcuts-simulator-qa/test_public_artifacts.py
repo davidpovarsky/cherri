@@ -239,6 +239,61 @@ class PublicArtifactTests(unittest.TestCase):
         with self.assertRaisesRegex(PublicationBlocked, "FIXTURE_SOURCE_SYMLINK"):
             trusted_fixture_sources(fixtures)
 
+
+    def test_unicode_escaped_json_secrets_are_blocked_without_echo(self):
+        cases = [
+            ("environment.json", {"note": "CHERRI_PRIVATE_CANARY_pixel_backup"}),
+            ("runtime/output-assertions.json", {"nested": [{"password": "synthetic-test-value"}]}),
+            ("runtime/runtime-trace.jsonl", {"value": "cherriqa://done?token=synthetic-test-value"}),
+        ]
+        for name, value in cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory) / "raw"
+                root.mkdir()
+                for base in ("compiler-manifest.json", "summary.json"):
+                    (root / base).write_bytes((self.root / base).read_bytes())
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                raw = json.dumps(value)
+                # Legal JSON escapes hide letters from raw-byte token matching.
+                escaped = "".join("\\u%04x" % ord(ch) if ch.isalpha() else ch for ch in raw)
+                path.write_text(escaped + "\n", encoding="utf-8")
+                self.assertEqual(json.loads(escaped), value)
+                output = Path(directory) / "public"
+                with self.assertRaisesRegex(PublicationBlocked, "SECRET_OR_PRIVATE_CANARY") as caught:
+                    stage(root, output, self.trusted)
+                self.assertNotIn("synthetic-test-value", str(caught.exception))
+                self.assertNotIn("pixel_backup", str(caught.exception))
+                self.assertFalse(output.exists())
+                self.assertEqual(path.read_text(encoding="utf-8"), escaped + "\n")
+
+    def test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl(self):
+        for name, value in [
+            ("environment.json", {"nested": [{"publicationPolicy": "LOCAL_ONLY_RAW_OCR", "text": "local"}]}),
+            ("runtime/runtime-trace.jsonl", [{"publicationPolicy": "LOCAL_ONLY_RAW_OCR", "text": "local"}]),
+        ]:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory) / "raw"
+                root.mkdir()
+                for base in ("compiler-manifest.json", "summary.json"):
+                    (root / base).write_bytes((self.root / base).read_bytes())
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps(value) + "\n", encoding="utf-8")
+                output = Path(directory) / "public"
+                with self.assertRaisesRegex(PublicationBlocked, "RAW_OCR_NOT_PUBLIC"):
+                    stage(root, output, self.trusted)
+                self.assertFalse(output.exists())
+
+
+    def test_duplicate_decoded_keys_cannot_discard_private_values(self):
+        (self.root / "environment.json").write_text(
+            '{"\\u0070assword":"\\u0073ynthetic-test-value","password":""}',
+            encoding="utf-8")
+        with self.assertRaisesRegex(PublicationBlocked, "INVALID_TEXT_OR_STRUCTURED_DATA"):
+            self.publish()
+        self.assertFalse(self.output.exists())
+
     def test_output_never_overwrites_existing_evidence(self):
         self.output.mkdir()
         with self.assertRaisesRegex(PublicationBlocked, "OUTPUT_MUST_BE_NEW"):
