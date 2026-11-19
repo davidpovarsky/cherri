@@ -1,0 +1,61 @@
+{
+  "source_commit": "a2cc53fc5fc9e827e65420266ce2c0848fa527b9",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^TestP15N03TextEqualityDiagnostic",
+    "."
+  ],
+  "exit_code": 0,
+  "duration_seconds": 2.875,
+  "clean_before": true,
+  "clean_after": true,
+  "source_sha256": "e4acefccc8a81c77a8336fa7a5f07eacaf84fc25a6dc251eb8150c607fac80ab",
+  "expected_contract_sha256": "007b9eb4edaf6822e587cb72c753aa2b7a1b112810834ea6593df54a82dbb98c",
+  "raw_log_sha256": "1b0c14cbad11de0b2546e916b4c32d2e7896f94ab1d766160dcb53217d11b669",
+  "runtime_status": "NOT_RUN",
+  "formal_requirements_proved": [],
+  "passed_named_tests": [
+    "TestP15N03TextEqualityDiagnosticSourceAndGraph",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/source",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/case_witness",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/case_equality",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/missing_field",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/runtime_credit",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/formal_credit",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift/unknown_field",
+    "TestP15N03TextEqualityDiagnosticRejectsContractDrift",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/case_operand",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/base64_witness",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/folded_result",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/dynamic_rhs",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/inequality_code",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/numeric_yields",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/missing_compatibility",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/invented_case_field",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/flag_seed",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/flag_store",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/match_case_flag",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/match_pattern",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/match_subject",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/count_input",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/constant_summary",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/summary_offset",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults/output_bypass",
+    "TestP15N03TextEqualityDiagnosticRejectsGraphFaults"
+  ],
+  "failed_named_tests": [],
+  "skipped_named_tests": [],
+  "package_results": [
+    {
+      "Time": "2026-11-19T23:44:23.2598384+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Elapsed": 0.226
+    }
+  ]
+}
