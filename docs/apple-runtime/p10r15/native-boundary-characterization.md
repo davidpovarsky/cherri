@@ -5,9 +5,13 @@ incorrect semantic output. This public diagnostic distinguishes the remaining
 boundaries without changing those original fixtures or acceptance oracles.
 
 The export path reports the actual entries count and separately bounded first
-and last payload bytes. It preserves the production empty Text debug-log seed
-under investigation. It does not filter out an empty item to manufacture the
-desired count.
+and last payload bytes. Historical [run 44466065158](https://github.com/davidpovarsky/cherri/actions/runs/44466065158)
+used the former empty Text seed and observed two entries after logging one Text,
+with the first payload empty. The integrated [6d9ff8ac repair](https://github.com/davidpovarsky/cherri/commit/6d9ff8ac)
+now emits Nothing followed immediately by Set Variable without WFInput. Current
+graph controls require that exact zero-item clear and reject the former seed.
+An intentionally logged empty Text is preserved; no blanket empty-item filter
+manufactures the intended count. New native execution remains required.
 
 Type observations compare the artifact against independent one-byte Base64
 Decode, Text, and Dictionary witnesses. TYPE_FILE means equality with the
@@ -34,3 +38,24 @@ emitted producer/consumer graph, and reject damaged graph controls before this
 single registered selector is dispatched. The source hash and original-body
 hashes are checked in the production compilation phase. This helper provides no
 Apple execution claim from its local PASS result.
+
+## Retained causal observations, 19 November 2026
+
+Run 44466065158 also observed TYPE_FILE=N, TYPE_DICT=Y and COERCED_FILE=N.
+The decoded witness comparison therefore remains a failed File boundary.
+The successful name/byte control in run 44429796917 compared type before and
+after renaming the same decoded JSON value; it cannot independently establish
+that value as a generic File. The acceptance oracles retain the separate witness.
+
+The independent Get Variable Clipboard observer returned GETVAR_LEN=0, while
+the canonical Get Clipboard observer returned ACTION_LEN=108. The immutable
+Clipboard lowering and binding/defaults QA observer were repaired to use the
+canonical parameterless Get Clipboard producer on candidate b2961bbd. The four
+explicit observers in this causal diagnostic remain intact, including the known
+empty Get Variable route. Thus this diagnostic may still fail even when the
+original binding acceptance probe passes; it is not the acceptance replacement.
+
+The original binding capture body and expected result remain byte-for-byte
+unchanged in [run 44608110760](https://github.com/davidpovarsky/cherri/actions/runs/44608110760).
+Only completed source-bound native receipts can establish its result. Physical
+iPad behavior and the independent export File boundary remain separate gates.

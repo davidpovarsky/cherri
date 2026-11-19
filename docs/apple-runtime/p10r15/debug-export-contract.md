@@ -9,7 +9,8 @@ It does not replace the separate QA callback helper, debugExportTrace.
 
 Both frontends expand the same implementation into existing native actions:
 
-- debugExport() returns one named File, cherri-debug.json.
+- The authored API targets one named File, cherri-debug.json. The emitted
+  materialization chain still needs independent native File-type acceptance.
 - format:"text" returns cherri-debug.txt containing a human-readable header and
   one JSON record per native log item.
 - Payloads are completely redacted by default. No token, header, URL query,
@@ -28,8 +29,9 @@ Both frontends expand the same implementation into existing native actions:
 - All options are compile-time literals. includeDates:true is rejected with
   DEBUG_EXPORT_DATES_UNSUPPORTED; labels and dates are recorded as not-collected.
   No unverified timestamp or entry association is fabricated.
-- Output encodes the completed UTF-8 Text envelope with Base64 Encode and
-  decodes those exact bytes into a new File, then uses Set Name. No Save File, provider destination, network, Share, clipboard,
+- Output encodes the completed UTF-8 Text envelope with Base64 Encode, decodes
+  those bytes, and applies Set Name. The native class of that result is not yet
+  proved to be File. No Save File, provider destination, network, Share, clipboard,
   Stored Content or Run Shortcut action is emitted.
 - The raw __cherri_debug_log references remain untouched. A diagnostic export
   does not rename or convert original objects. Existing six display modes are
@@ -84,7 +86,7 @@ parser and strict base64 decoder verify model results. The native Base64/UTF-8
 behavior still needs the signed fixture.
 
 There is no caller-supplied path or filename. The only filenames are
-cherri-debug.json and cherri-debug.txt. The returned File stays under the
+cherri-debug.json and cherri-debug.txt. The returned artifact stays under the
 caller’s control; no persistence is promised.
 
 ## Evidence and reproducibility
@@ -117,7 +119,7 @@ The producer independently checks:
   and Set Name. This is macOS metadata evidence, not iPad execution proof.
 
 The Go suite also compiles 0/1/1,000 logged items in both frontends and checks
-constant export graph size, immutable original UUID references, returned File
+constant export graph size, immutable original UUID references, returned action-output
 identity, literal option failures, Release behavior and the canonical macro
 descriptor. Existing six-mode and signed-fixture graph tests remain controls.
 
@@ -176,6 +178,10 @@ copies under dist with signing skipped. Neither failed run was accepted.
 
 The prior model assumed Get File of Type could convert any Text envelope to the required bytes. The direct signed native control failed, so that assumption is removed from the local model and production path. Final File materialization now uses Base64 Encode/Decode after the existing payload policy and JSON/Text envelope construction. Default payload redaction remains in the row construction; the final encoding of the already-redacted envelope is not a payload opt-in.
 
-Independent signed run44429796917 at0c286b6 proved name-plus-File-Extension, native File type, exact Base64 bytes and Get Text for the reviewed decoded File. The earlier Get Name-only full-name expectation was false on this runtime; original run44401954515 remains archived as a failure. The export probes now reconstruct the full name with that independent property and compare the output type to an actual decoded File witness.
+Signed [run 44429796917](https://github.com/davidpovarsky/cherri/actions/runs/44429796917) at 0c286b6 verified reconstructed Name plus File Extension, exact Base64 bytes, Get Text, and type preservation relative to the same decoded value before renaming. Its type comparison did **not** establish an independent generic File class. The earlier Get Name-only full-name expectation was false on this runtime; [run 44401954515](https://github.com/davidpovarsky/cherri/actions/runs/44401954515) remains a retained failure. Export probes keep the independent one-byte decoded witness and do not change their expected File parity to match the production output.
+
+The later causal [run 44466065158](https://github.com/davidpovarsky/cherri/actions/runs/44466065158) returned ENTRIES=2 after clearing and logging one Text, with an empty first payload. It also returned TYPE_FILE=N and TYPE_DICT=Y; the separate .file coercion retained exact bytes/name but returned COERCED_FILE=N. Those are failed semantic observations, not successful File materialization. The original Get File of Type control [run 44334287258](https://github.com/davidpovarsky/cherri/actions/runs/44334287258) also failed; its sanitized callback contains no finer causal error message.
+
+The integrated zero-item clear repair at [6d9ff8ac](https://github.com/davidpovarsky/cherri/commit/6d9ff8ac) replaces the synthetic empty Text seed with Nothing followed by Set Variable with no input. An intentionally logged empty Text remains a real entry. The local source/CLI model and causal graph controls pass with this change; they do not establish Apple cardinality or repair the independent File boundary. Candidate b2961bbd dispatched unchanged empty and Unicode export acceptance probes in [run 44608118732](https://github.com/davidpovarsky/cherri/actions/runs/44608118732) and [run 44608124572](https://github.com/davidpovarsky/cherri/actions/runs/44608124572). Their real completed observations, not their dispatch or setup status, determine native acceptance.
 
 These control results do not execute debugExport. The revised production macro still requires exact-source signed native export validation before any runtime success claim. The native action graph regression fails on the original source and the bounded local model now rejects the old unproved conversion rather than fabricating a File value.
