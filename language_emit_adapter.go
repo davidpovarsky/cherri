@@ -336,6 +336,12 @@ func CompileSourceToPlistWithModules(filePath string, content string, virtualMod
 
 // CompileSourceToPlistWithOptions applies an isolated build profile and module map.
 func CompileSourceToPlistWithOptions(filePath string, content string, options CompileOptions) ([]byte, error) {
+	return compileSourceToPlistWithSession(filePath, content, options, NewCanonicalBackendSession)
+}
+
+// The explicit session factory lets an embedded request reuse its owned native
+// state lock without a global reentrancy flag or a recursive mutex acquisition.
+func compileSourceToPlistWithSession(filePath string, content string, options CompileOptions, newSession func() *CanonicalBackendSession) ([]byte, error) {
 	var profile, profileErr = normalizeBuildProfile(options.BuildProfile)
 	if profileErr != nil {
 		return nil, profileErr
@@ -361,11 +367,11 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
 		}
 	}
 
-	session := NewCanonicalBackendSession()
+	session := newSession()
+	defer session.Close()
 	session.buildProfile = profile
 	session.configureAssets(filePath, options.AssetCache)
 	session.configurePlatformVersions(analyzer.Registry(), analyzer.Targets(), analyzer.MinTargetVersionString(), analyzer.MaxTargetVersionString())
-	defer session.Close()
 
 	lowerer := lower.NewLowererWithSession(analyzer.Registry(), session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
