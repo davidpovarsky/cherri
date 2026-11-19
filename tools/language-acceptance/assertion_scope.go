@@ -46,7 +46,6 @@ var incompleteLocalAssertions = map[string]string{
 	"E01":  "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
 	"E02":  "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",
 	"E03":  "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
-	"E04":  "Idempotence and one comment substring do not verify literal preservation and all comment contents.",
 	"E05":  "One out-of-order document update does not test cancellation and stale response publication.",
 	"E06":  "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
 	"E08":  "Fifty tiny edits do not cover small/large documents and embedded assets.",

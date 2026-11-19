@@ -44,7 +44,7 @@ func (f *Formatter) emitCommentsBefore(byteOffset int) {
 			break
 		}
 		f.writeIndent()
-		f.buf.WriteString(strings.TrimSpace(c.Text))
+		f.buf.WriteString(c.Text)
 		f.buf.WriteString("\n")
 		f.commentIdx++
 	}
@@ -76,7 +76,7 @@ func (f *Formatter) formatProgram(prog *Program) {
 	for f.commentIdx < len(f.comments) {
 		c := f.comments[f.commentIdx]
 		f.writeIndent()
-		f.buf.WriteString(strings.TrimSpace(c.Text))
+		f.buf.WriteString(c.Text)
 		f.buf.WriteString("\n")
 		f.commentIdx++
 	}
@@ -86,10 +86,10 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 	switch d := decl.(type) {
 	case *ImportDecl:
 		f.writeIndent()
-		fmt.Fprintf(&f.buf, "import %q as %s", d.Path, d.Alias)
+		fmt.Fprintf(&f.buf, "import %s as %s", quoteStringLiteral(d.Path), d.Alias)
 	case *ShortcutDecl:
 		f.writeIndent()
-		fmt.Fprintf(&f.buf, "shortcut %q {\n", d.Name)
+		fmt.Fprintf(&f.buf, "shortcut %s {\n", quoteStringLiteral(d.Name))
 		f.indent++
 		if d.Metadata != nil {
 			for _, field := range d.Metadata.Fields {
@@ -111,7 +111,7 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 			if len(trig.Locations) > 0 {
 				var locStrs []string
 				for _, loc := range trig.Locations {
-					locStrs = append(locStrs, fmt.Sprintf("%q", loc))
+					locStrs = append(locStrs, quoteStringLiteral(loc))
 				}
 				args = append(args, fmt.Sprintf("locations: [%s]", strings.Join(locStrs, ", ")))
 			}
@@ -136,7 +136,7 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		if len(d.Locations) > 0 {
 			var locStrs []string
 			for _, loc := range d.Locations {
-				locStrs = append(locStrs, fmt.Sprintf("%q", loc))
+				locStrs = append(locStrs, quoteStringLiteral(loc))
 			}
 			args = append(args, fmt.Sprintf("locations: [%s]", strings.Join(locStrs, ", ")))
 		}
@@ -159,11 +159,11 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		f.indent++
 		if d.Prompt != "" {
 			f.writeIndent()
-			fmt.Fprintf(&f.buf, "prompt: %q\n", d.Prompt)
+			fmt.Fprintf(&f.buf, "prompt: %s\n", quoteStringLiteral(d.Prompt))
 		}
 		if d.DefaultValue != "" {
 			f.writeIndent()
-			fmt.Fprintf(&f.buf, "default: %q\n", d.DefaultValue)
+			fmt.Fprintf(&f.buf, "default: %s\n", quoteStringLiteral(d.DefaultValue))
 		}
 		f.indent--
 		f.writeIndent()
@@ -179,10 +179,10 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 			f.writeIndent()
 			name := m.Name
 			if !IsIdentifier(name) {
-				name = fmt.Sprintf("%q", name)
+				name = quoteStringLiteral(name)
 			}
 			if m.WireValue != m.Name {
-				fmt.Fprintf(&f.buf, "%s = %q", name, m.WireValue)
+				fmt.Fprintf(&f.buf, "%s = %s", name, quoteStringLiteral(m.WireValue))
 			} else {
 				f.buf.WriteString(name)
 			}
@@ -238,11 +238,11 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		f.indent++
 		if d.AppleIdentifier != "" {
 			f.writeIndent()
-			fmt.Fprintf(&f.buf, "identifier: %q\n", d.AppleIdentifier)
+			fmt.Fprintf(&f.buf, "identifier: %s\n", quoteStringLiteral(d.AppleIdentifier))
 		}
 		if d.PrimaryParam != "" {
 			f.writeIndent()
-			fmt.Fprintf(&f.buf, "primary: %q\n", d.PrimaryParam)
+			fmt.Fprintf(&f.buf, "primary: %s\n", quoteStringLiteral(d.PrimaryParam))
 		}
 		if len(d.Bindings) > 0 {
 			f.writeIndent()
@@ -260,11 +260,11 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 				f.indent++
 				if b.WireKey != "" {
 					f.writeIndent()
-					fmt.Fprintf(&f.buf, "key: %q\n", b.WireKey)
+					fmt.Fprintf(&f.buf, "key: %s\n", quoteStringLiteral(b.WireKey))
 				}
 				if b.Codec != "" {
 					f.writeIndent()
-					fmt.Fprintf(&f.buf, "codec: %q\n", b.Codec)
+					fmt.Fprintf(&f.buf, "codec: %s\n", quoteStringLiteral(b.Codec))
 				}
 				f.indent--
 				f.writeIndent()
@@ -423,9 +423,9 @@ func (f *Formatter) formatExpression(expr Expression) {
 	case *LiteralExpr:
 		switch e.Type {
 		case TokenString:
-			fmt.Fprintf(&f.buf, "%q", e.Value)
+			f.buf.WriteString(quoteStringLiteral(e.Value))
 		case TokenRawString:
-			fmt.Fprintf(&f.buf, "r%q", e.Value)
+			f.buf.WriteString(quoteRawStringLiteral(e.Value))
 		default:
 			f.buf.WriteString(e.Value)
 		}
@@ -621,10 +621,10 @@ func (f *Formatter) formatMenuCaseHeader(c MenuCase) {
 	if c.Value != nil {
 		f.formatControlExpression(c.Value)
 	} else {
-		fmt.Fprintf(&f.buf, "%q", c.Label)
+		f.buf.WriteString(quoteStringLiteral(c.Label))
 	}
 	if c.HasTitle {
-		fmt.Fprintf(&f.buf, " title %q", c.Title)
+		fmt.Fprintf(&f.buf, " title %s", quoteStringLiteral(c.Title))
 	}
 	if c.Plain {
 		f.buf.WriteString(" plain")
@@ -669,27 +669,6 @@ func formatTypeAnnotation(t TypeAnnotation) string {
 }
 
 func escapeFStringPart(s string) string {
-	var sb strings.Builder
-	sb.Grow(len(s))
-	for _, r := range s {
-		switch r {
-		case '\\':
-			sb.WriteString(`\\`)
-		case '"':
-			sb.WriteString(`\"`)
-		case '\n':
-			sb.WriteString(`\n`)
-		case '\r':
-			sb.WriteString(`\r`)
-		case '\t':
-			sb.WriteString(`\t`)
-		case '{':
-			sb.WriteString(`{{`)
-		case '}':
-			sb.WriteString(`}}`)
-		default:
-			sb.WriteRune(r)
-		}
-	}
-	return sb.String()
+	quoted := quoteStringLiteral(s)
+	return strings.NewReplacer("{", "{{", "}", "}}").Replace(quoted[1 : len(quoted)-1])
 }

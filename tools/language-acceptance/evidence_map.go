@@ -252,6 +252,13 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 	if scenario, ok := declarationTriggerScenarios[id]; ok {
 		return scenario.testIDs()
 	}
+	if tests, ok := formattingProductionTests[id]; ok {
+		ids := make([]string, 0, len(tests))
+		for _, test := range tests {
+			ids = append(ids, "github.com/electrikmilk/cherri:"+test)
+		}
+		return ids
+	}
 	if tests, ok := upstreamRouteProductionTests[id]; ok {
 		ids := make([]string, 0, len(tests))
 		for _, test := range tests {

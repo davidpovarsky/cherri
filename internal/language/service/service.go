@@ -179,6 +179,9 @@ func (s *Service) Format(uri string) (string, error) {
 		return "", fmt.Errorf("document not found: %s", uri)
 	}
 
+	if len(doc.ParseErrors) != 0 {
+		return "", fmt.Errorf("cannot format document with syntax errors")
+	}
 	return syntax.Format(doc.Program), nil
 }
 

@@ -935,6 +935,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateFormattingRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateSupplementalProductionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1835,14 +1839,7 @@ func (r *Runner) runEditor() {
 	e03Passed := errE03 == nil && len(editsE03) == 2 && updatedE03 != ""
 	r.Record("E03", "editor", "Hover/signature/definition/semantic rename", "service+UI", []string{"service"}, e03Passed, "PASSED", "Scoped rename updates only target symbol binding and references")
 
-	// E04: Formatter idempotence and comment preservation
-	srcE04 := "// header comment\nlet   x = 10\n// trailing comment\nshow(f\"{x}\")"
-	svc.ChangeDocument(docURI, 4, srcE04)
-	fmt1, errFmt1 := svc.Format(docURI)
-	svc.ChangeDocument(docURI, 5, fmt1)
-	fmt2, errFmt2 := svc.Format(docURI)
-	e04Passed := errFmt1 == nil && errFmt2 == nil && fmt1 == fmt2 && strings.Contains(fmt1, "// header comment")
-	r.Record("E04", "editor", "Formatter idempotence and literal/comment preservation", "unit+integration", []string{"unit", "integration"}, e04Passed, "PASSED", "Canonical formatter preserves comments and produces idempotent output")
+	r.runFormattingRequirement()
 
 	// E05: Out-of-order rapid versioned edits
 	svc.OpenDocument("file:///e05.cherri", 1, "let v = 1")
