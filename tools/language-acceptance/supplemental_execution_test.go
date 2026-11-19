@@ -10,36 +10,73 @@ import (
 	"testing"
 )
 
+// Keep an explicit set of implemented producers, but derive record counts and
+// required tiers from the immutable contracts. Adding a real producer must add
+// its ID here; removing one cannot silently shrink the verification scope.
+func p15SupplementalSelection(t *testing.T, all *ContractsSet) (*ContractsSet, int) {
+	t.Helper()
+	var expectedIDs = strings.Fields(`
+RP01 RP02 RP03 RP04 RP05 RP09 RP10 RP13 RP30 RP31 RP32 RP34 RP35 RP36 RP37
+BRG02 BRG03 BRG04 BRG05 BRG07 BRG17
+`)
+	if len(supplementalProductionScenarios) != len(expectedIDs) {
+		t.Fatal("supplemental producer inventory changed without explicit accounting")
+	}
+	for _, id := range expectedIDs {
+		if _, found := supplementalProductionScenarios[id]; !found {
+			t.Fatalf("required supplemental producer %s is absent", id)
+		}
+	}
+	var selected = &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
+	var requiredRecords int
+	for _, scenario := range all.Repair.Cases {
+		if producer, found := supplementalProductionScenarios[scenario.ID]; found {
+			var tiers = parseRequiredTiers(strings.Join(scenario.RequiredTestLevels, "+"))
+			if !reflect.DeepEqual(producer.Tiers, tiers) {
+				t.Fatalf("%s producer tiers differ from immutable repair contract: got %v want %v", scenario.ID, producer.Tiers, tiers)
+			}
+			selected.Repair.Cases = append(selected.Repair.Cases, scenario)
+			requiredRecords += len(tiers)
+		}
+	}
+	for _, scenario := range all.Gates.Gates {
+		if producer, found := supplementalProductionScenarios[scenario.ID]; found {
+			var tiers = parseRequiredTiers(strings.Join(scenario.MinimumEvidenceTiers, "+"))
+			if !reflect.DeepEqual(producer.Tiers, tiers) {
+				t.Fatalf("%s producer tiers differ from immutable recovery contract: got %v want %v", scenario.ID, producer.Tiers, tiers)
+			}
+			selected.Gates.Gates = append(selected.Gates.Gates, scenario)
+			requiredRecords += len(tiers)
+		}
+	}
+	selected.Repair.CaseCount = len(selected.Repair.Cases)
+	selected.Gates.GateCount = len(selected.Gates.Gates)
+	if selected.Repair.CaseCount+selected.Gates.GateCount != len(expectedIDs) {
+		t.Fatal("supplemental producer is not an immutable repair/recovery ID")
+	}
+	return selected, requiredRecords
+}
+
+func TestSupplementalProductionScenarioInventory(t *testing.T) {
+	var all, err = LoadAllContracts("", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _ = p15SupplementalSelection(t, all)
+}
+
 func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	var all, err = LoadAllContracts("", "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	var selected = &ContractsSet{
-		Acceptance: &ContractFile{},
-		Repair:     &RepairContractFile{},
-		Gates:      &GatesContractFile{},
-	}
-	for _, scenario := range all.Repair.Cases {
-		if _, ok := supplementalProductionScenarios[scenario.ID]; ok {
-			selected.Repair.Cases = append(selected.Repair.Cases, scenario)
-		}
-	}
-	for _, scenario := range all.Gates.Gates {
-		if _, ok := supplementalProductionScenarios[scenario.ID]; ok {
-			selected.Gates.Gates = append(selected.Gates.Gates, scenario)
-		}
-	}
-	selected.Repair.CaseCount = len(selected.Repair.Cases)
-	selected.Gates.GateCount = len(selected.Gates.Gates)
-	if selected.Repair.CaseCount != 13 || selected.Gates.GateCount != 6 {
-		t.Fatal("supplemental scenario selection drifted")
-	}
+	var selected, requiredRecords = p15SupplementalSelection(t, all)
+	var requiredCases = selected.Repair.CaseCount + selected.Gates.GateCount
 
 	var runner = NewRunner()
 	runner.runRepairCases(all.Repair)
 	runner.runRecoveryGates(all.Gates)
-	if len(runner.results) != 85 || len(runner.records) != 36 || len(runner.observations) != 0 {
+	if len(runner.results) != 85 || len(runner.records) != requiredRecords || len(runner.observations) != 0 {
 		t.Fatalf("unexpected supplemental scope: results=%d records=%d observations=%d",
 			len(runner.results), len(runner.records), len(runner.observations))
 	}
@@ -71,7 +108,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	var report, reportErr = ValidateEvidenceManifest(manifest, selected, "local")
-	if reportErr != nil || report.PassedCases != 19 || report.FailedCases != 0 ||
+	if reportErr != nil || report.PassedCases != requiredCases || report.FailedCases != 0 ||
 		report.SkippedCases != 0 || report.ClosureComplete {
 		t.Fatalf("supplemental evidence rejected or expanded into release closure: %+v err=%v", report, reportErr)
 	}
@@ -170,7 +207,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	var status, statusErr = exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()
 	var receipt, receiptErr = json.Marshal(map[string]any{
 		"source_sha": runner.implSHA, "source_tree_clean": statusErr == nil && len(status) == 0,
-		"scope":  "RP01/RP02/RP03/BRG04 actual verification contracts; BRG02/BRG03 strict comparator; BRG07 direct reference chains; RP13 named variadic lists; RP35 native preservation; RP36 intake; RP37 allowed-edit and failed-signing gates. No linked-ID inheritance, live signing success, or release closure.",
+		"scope":  "Explicit supplemental producer inventory with immutable contract tiers, including RP04 checked compilation and RP34 actual failed/restored migration; RP01/RP02/RP03/BRG04 actual verification contracts; BRG02/BRG03 strict comparator; BRG07 direct reference chains; RP13 named variadic lists; RP35 native preservation; RP36 intake; RP37 allowed-edit and failed-signing gates. No linked-ID inheritance, live signing success, or release closure.",
 		"report": report, "records": runner.records,
 	})
 	if receiptErr != nil {
