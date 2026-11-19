@@ -1,0 +1,34 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "number-coercion-control")
+// Independent control: explicit Number coercion on forwarded and bound values.
+// Direct Number producers and every original observation remain controls.
+let direct = number(0)
+let required = require(0, type: "number", nonEmpty: true, message: "number zero rejected")
+var bound = required
+let one = number(1)
+var directEq = "N"
+var directNe = "N"
+var requiredEq = "N"
+var requiredNe = "N"
+var boundEq = "N"
+var boundNe = "N"
+var oneNeZero = "N"
+var zeroNeOne = "N"
+var oneEqOne = "N"
+if direct == 0 { directEq = "Y" }
+if direct != 0 { directNe = "Y" }
+if required.number == 0 { requiredEq = "Y" }
+if required.number != 0 { requiredNe = "Y" }
+if bound.number == 0 { boundEq = "Y" }
+if bound.number != 0 { boundNe = "Y" }
+if one != 0 { oneNeZero = "Y" }
+if direct != 1 { zeroNeOne = "Y" }
+if one == 1 { oneEqOne = "Y" }
+let verdict = text(f"DEQ={directEq}:DNE={directNe}:REQ={requiredEq}:RNE={requiredNe}:BEQ={boundEq}:BNE={boundNe}:ONE_NE_ZERO={oneNeZero}:ZERO_NE_ONE={zeroNeOne}:ONE_EQ_ONE={oneEqOne}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "number-coercion-control")
+let traceEnvelope = debugExportTrace(runId: "qa-number-coercion-control-v2")
+let finalSummary = text(f"CHERRI_QA_NUMBER_COERCION_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
