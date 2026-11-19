@@ -1,0 +1,57 @@
+{
+  "sourceProduction": "6fd0476073529a4a1c8bbe7d208aa10cff8549f0",
+  "sourceState": "one new canonical-alias test; production unchanged",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^TestP15IM01BuiltinModuleAliases",
+    "."
+  ],
+  "exitCode": 1,
+  "seconds": 29.625,
+  "bytes": 17581,
+  "sha256": "376e3d82ef473ea5ef95f3cb01897fb1919fbab8c3c13260166975a86d8a738c",
+  "testSha256": "35628fc94d632e28a177fc7d77f88f1e2d43de403a94feb9d2a1ad17c70257b1",
+  "named": {
+    "run": 11,
+    "pass": 3,
+    "fail": 8,
+    "skip": 0
+  },
+  "failures": [
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity/url/library",
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity/url/Library",
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity/splitText/library",
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity/splitText/Library",
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity/emailAddress/library",
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity/emailAddress/Library",
+    "TestP15IM01BuiltinModuleAliasesPreserveNativeParity",
+    "TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity"
+  ],
+  "diagnostics": [
+    "    p15_module_canonical_alias_test.go:52: lowering error: canonical definition not found for action \"library.url\": typed actions must resolve canonically\n",
+    "    p15_module_canonical_alias_test.go:52: lowering error: canonical definition not found for action \"Library.url\": typed actions must resolve canonically\n",
+    "    p15_module_canonical_alias_test.go:52: lowering error: canonical definition not found for action \"library.splitText\": typed actions must resolve canonically\n",
+    "    p15_module_canonical_alias_test.go:52: lowering error: canonical definition not found for action \"Library.splitText\": typed actions must resolve canonically\n",
+    "    p15_module_canonical_alias_test.go:52: lowering error: canonical definition not found for action \"library.emailAddress\": typed actions must resolve canonically\n",
+    "    p15_module_canonical_alias_test.go:52: lowering error: canonical definition not found for action \"Library.emailAddress\": typed actions must resolve canonically\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Web.addToReadingList lost its canonical schema identity: ID=\"Web.addToReadingList\" original=\"addToReadingList\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable TextActions.containsText lost its canonical schema identity: ID=\"TextActions.containsText\" original=\"containsText\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Contacts.emailAddress lost its canonical schema identity: ID=\"Contacts.emailAddress\" original=\"emailAddress\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Builtins.embedFile lost its canonical schema identity: ID=\"Builtins.embedFile\" original=\"embedFile\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable TextActions.joinText lost its canonical schema identity: ID=\"TextActions.joinText\" original=\"joinText\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Builtins.makeVCard lost its canonical schema identity: ID=\"Builtins.makeVCard\" original=\"makeVCard\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Contacts.newContact lost its canonical schema identity: ID=\"Contacts.newContact\" original=\"newContact\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Web.openCustomXCallbackURL lost its canonical schema identity: ID=\"Web.openCustomXCallbackURL\" original=\"openCustomXCallbackURL\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Contacts.phoneNumber lost its canonical schema identity: ID=\"Contacts.phoneNumber\" original=\"phoneNumber\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable TextActions.splitText lost its canonical schema identity: ID=\"TextActions.splitText\" original=\"splitText\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable TextActions.transcribeText lost its canonical schema identity: ID=\"TextActions.transcribeText\" original=\"transcribeText\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Contacts.updateContact lost its canonical schema identity: ID=\"Contacts.updateContact\" original=\"updateContact\"\n",
+    "    p15_module_canonical_alias_test.go:99: qualified callable Web.url lost its canonical schema identity: ID=\"Web.url\" original=\"url\"\n"
+  ]
+}

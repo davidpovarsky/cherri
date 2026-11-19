@@ -1,0 +1,28 @@
+{
+  "sourceProduction": "6fd0476073529a4a1c8bbe7d208aa10cff8549f0",
+  "sourceState": "working canonical schema identity repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM0[1345]|TestMODULES_|TestP15C01|TestP15C04|TestP15Enum|TestP15F0[134]|TestP15T06)",
+    "."
+  ],
+  "exitCode": 0,
+  "seconds": 45.922,
+  "bytes": 297342,
+  "sha256": "c6d558529bb863d39bb76aa9f348ea0c72d9ccf2933d9edcdc6309c41181f140",
+  "testSha256": "35628fc94d632e28a177fc7d77f88f1e2d43de403a94feb9d2a1ad17c70257b1",
+  "named": {
+    "run": 343,
+    "pass": 343,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": []
+}
