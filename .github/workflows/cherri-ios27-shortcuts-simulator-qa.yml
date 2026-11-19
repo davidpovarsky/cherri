@@ -85,6 +85,9 @@ on:
           - qa-label-file-carrier
           - qa-label-raw-empty
           - qa-label-raw-grouping
+          - qa-binding-defaults
+          - qa-binding-capture
+          - qa-typed-defaults
           - qa-export-unicode-diagnostic
           - qa-export-unicode
           - qa-export-empty
@@ -140,6 +143,11 @@ jobs:
     name: iPadOS 27 Simulator Shortcuts QA
     runs-on: xcode-27
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        sample: ${{ fromJSON(inputs.sample_id == 'qa-binding-defaults' && '["qa-binding-capture","qa-typed-defaults"]' || '["selected"]') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -175,7 +183,7 @@ jobs:
           CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
           QA_PROBE_LEVEL: ${{ inputs.probe_level || 'full' }}
           QA_DEVICE_PROFILE: ${{ inputs.device_profile || 'ipad-default' }}
-          QA_SAMPLE_ID: ${{ inputs.sample_id || 'all' }}
+          QA_SAMPLE_ID: ${{ matrix.sample == 'selected' && (inputs.sample_id || 'all') || matrix.sample }}
           QA_CAPTURE_FULL_EDITOR: ${{ github.event_name == 'workflow_dispatch' && toJSON(inputs.capture_full_editor) || 'true' }}
           QA_MAX_EDITOR_PAGES: ${{ inputs.max_editor_pages || '20' }}
           QA_REQUIRE_RUNTIME: ${{ inputs.require_runtime == true && 'true' || 'false' }}
@@ -202,7 +210,7 @@ jobs:
         if: always() && steps.privacy_gate.outputs.passed == 'true' && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
         uses: actions/upload-artifact@v4
         with:
-          name: cherri-ios27-simulator-qa-${{ github.run_id }}
+          name: cherri-ios27-simulator-qa-${{ github.run_id }}${{ matrix.sample != 'selected' && format('-{0}', matrix.sample) || '' }}
           path: artifacts/cherri-ios27-simulator-qa-public/${{ github.run_id }}/
           retention-days: 7
           if-no-files-found: warn

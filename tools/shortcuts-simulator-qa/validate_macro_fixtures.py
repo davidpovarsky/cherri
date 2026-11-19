@@ -15,6 +15,7 @@ import tempfile
 
 from prepare_public_artifacts import PublicationBlocked, stage, trusted_fixture_sources
 from fixture_compile_contract import EXPECTED_REJECTIONS
+from binding_defaults_probe import CASES as BINDING_CASES, verify_adapter_source, verify_adapter_graph
 from export_unicode_diagnostic import FIXTURE_ID as UNICODE_ID, validate_export_unicode_graph
 
 repo = Path(sys.argv[1]).resolve()
@@ -61,6 +62,8 @@ for fid, entry in rejected.items():
     source = repo / "tools/shortcuts-simulator-qa/fixtures" / entry["fileName"]
     assert entry["sourceSha256"] == hashlib.sha256(source.read_bytes()).hexdigest(), fid
 new_probes = {
+    "CherriBindingCapturePOC": "p15-binding-defaults",
+    "CherriTypedDefaultsPOC": "p15-binding-defaults",
     'qa-export-unicode-diagnostic-v2': '',
     'qa-nil-clear-v2': '',
     'qa-label-file-carrier-v2': 'p15-label-probes',
@@ -105,6 +108,37 @@ for fid, folder in new_probes.items():
     compiled = directory / 'builds' / (fid + '.shortcut')
     assert entry['unsignedPlistSha256'] == hashlib.sha256(compiled.read_bytes()).hexdigest(), fid
     assert entry['nativeActionCount'] > 0, fid
+
+binding_checks = {}
+for fid in BINDING_CASES:
+    entry = selected[fid]
+    actual_source = (repo / "tools/shortcuts-simulator-qa/fixtures" / entry["fileName"]).read_bytes()
+    assert entry["bindingDefaultsSource"] == verify_adapter_source(repo, fid, actual_source)
+    graph = plistlib.loads((directory / "builds" / (fid + ".shortcut")).read_bytes())["WFWorkflowActions"]
+    actual_graph = verify_adapter_graph(fid, graph)
+    assert entry["bindingDefaultsGraph"] == actual_graph
+    rejected_graphs = []
+    for mutation in ["wrong-observation", "raised-cap", "hardcoded-summary"] + (
+            ["wrong-self-call-name"] if fid == "CherriTypedDefaultsPOC" else []):
+        damaged = copy.deepcopy(graph)
+        for action in damaged:
+            p = action.get("WFWorkflowActionParameters", {})
+            if mutation == "wrong-observation" and p.get("CustomOutputName") == "qaObservedClipboard":
+                p["WFVariable"]["Value"]["Type"] = "CurrentDate"
+            elif mutation == "raised-cap" and p.get("WFNumberValue") == 513:
+                p["WFNumberValue"] = 999999
+            elif mutation == "hardcoded-summary" and p.get("CustomOutputName") == "qaFinalSummary":
+                p["WFTextActionText"] = entry["bindingDefaultsSource"]["expectedSummary"]
+            elif mutation == "wrong-self-call-name" and action.get("WFWorkflowActionIdentifier") == "is.workflow.actions.runworkflow":
+                p["WFWorkflowName"] = "WrongShortcutName"
+        try:
+            verify_adapter_graph(fid, damaged)
+        except ValueError as exc:
+            assert "BINDING_DEFAULTS_GRAPH_CONTRACT" in str(exc), str(exc)
+            rejected_graphs.append(mutation)
+        else:
+            raise AssertionError(fid + ": damaged observer accepted: " + mutation)
+    binding_checks[fid] = {"graph":actual_graph,"rejectedGraphMutations":rejected_graphs}
 
 # Mutate the actual emitted diagnostic graph. This does not simulate Apple:
 # it establishes that a wrong source edge, forged flag or missing output cap
@@ -279,6 +313,7 @@ report = {
     'actualCLIFixturesCompiled': len(manifest['fixtures']),
     'actualCLIExpectedDiagnosticRejections': len(rejected),
     'selectedFixtures': selected, 'newExplicitSignedQASelections': len(new_probes),
+    'bindingDefaultsProbes': binding_checks,
     'unicodeDiagnosticGraph': unicode_result, 'causalUnicodeGraphMutations': unicode_mutations,
     'causalCompileMutations': negatives, 'causalPublicationMutations': publication_negatives,
     'preservedUnsupportedFixtures': rejected, 'causalRejectionMutations': rejection_negatives,
