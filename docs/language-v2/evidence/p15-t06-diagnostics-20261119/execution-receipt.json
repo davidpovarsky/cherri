@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "repair_source_sha": "3132ce8946929f251b26e8474eec92f38d55f036",
+  "changed_source_files": [
+    "p15_control_type_acceptance_test.go"
+  ],
+  "production_code_changed": false,
+  "baseline": {
+    "source_sha": "359135c1ff06ee79f3d630696f7d7bc676d5a629",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "exit_code": 1,
+    "seconds": 2.27,
+    "named_pass": 7,
+    "named_fail": 4,
+    "named_skip": 0,
+    "failed_tests": [
+      "TestP15T06ControlResultsRequireAllBranches/missing_branch_yield",
+      "TestP15T06ControlResultsRequireAllBranches/overwritten_yield",
+      "TestP15T06ControlResultsRequireAllBranches/nested_missing_yield",
+      "TestP15T06ControlResultsRequireAllBranches"
+    ],
+    "raw_log_sha256": "958408dcf55d0e551ded4ba5bb970eb070a633d7537e672d57f845f42deb24db",
+    "raw_log_bytes": 11288
+  },
+  "focus": {
+    "source_sha": "3132ce8946929f251b26e8474eec92f38d55f036",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "started_utc": "2026-11-19T01:46:54.947613+00:00",
+    "command": [
+      "go",
+      "test",
+      "-p=1",
+      "-json",
+      "-count=1",
+      "-timeout=5m",
+      "-run",
+      "^TestP15(T06ControlResultsRequireAllBranches|F03.*)$",
+      "."
+    ],
+    "environment": {
+      "GOMAXPROCS": "2",
+      "GOFLAGS": "-p=1",
+      "CHERRI_P10R10_CORPUS": "0"
+    },
+    "exit_code": 0,
+    "seconds": 8.71,
+    "named_run": 59,
+    "named_pass": 59,
+    "named_fail": 0,
+    "named_skip": 0,
+    "failed_tests": [],
+    "raw_log_sha256": "4721884d9e604a22d7d0a8b52f571cd584c74ad0cd1c5b6c20fa4f95888fb769",
+    "raw_log_bytes": 47354,
+    "verified_pass": true,
+    "executed_test_names": [
+      "TestP15T06ControlResultsRequireAllBranches",
+      "TestP15T06ControlResultsRequireAllBranches/if_known_first",
+      "TestP15T06ControlResultsRequireAllBranches/if_external_first",
+      "TestP15T06ControlResultsRequireAllBranches/menu_known_first",
+      "TestP15T06ControlResultsRequireAllBranches/repeat_mixed",
+      "TestP15T06ControlResultsRequireAllBranches/for_mixed",
+      "TestP15T06ControlResultsRequireAllBranches/missing_branch_yield",
+      "TestP15T06ControlResultsRequireAllBranches/overwritten_yield",
+      "TestP15T06ControlResultsRequireAllBranches/repeat_overwritten_yield",
+      "TestP15T06ControlResultsRequireAllBranches/nested_mixed",
+      "TestP15T06ControlResultsRequireAllBranches/nested_missing_yield",
+      "TestP15F03LiteralYieldNativeFields",
+      "TestP15F03LiteralYieldNativeFields/empty_text",
+      "TestP15F03LiteralYieldNativeFields/zero_number",
+      "TestP15F03LiteralYieldNativeFields/large_integer",
+      "TestP15F03LiteralYieldNativeFields/false",
+      "TestP15F03LiteralYieldNativeFields/list",
+      "TestP15F03LiteralYieldNativeFields/map",
+      "TestP15F03YieldTypesAndNormalPaths",
+      "TestP15F03YieldTypesAndNormalPaths/if_text",
+      "TestP15F03YieldTypesAndNormalPaths/if_number",
+      "TestP15F03YieldTypesAndNormalPaths/if_false",
+      "TestP15F03YieldTypesAndNormalPaths/if_list",
+      "TestP15F03YieldTypesAndNormalPaths/if_map",
+      "TestP15F03YieldTypesAndNormalPaths/if_union",
+      "TestP15F03YieldTypesAndNormalPaths/else_if",
+      "TestP15F03YieldTypesAndNormalPaths/nested_if",
+      "TestP15F03YieldTypesAndNormalPaths/menu_text",
+      "TestP15F03YieldTypesAndNormalPaths/menu_union",
+      "TestP15F03YieldTypesAndNormalPaths/menu_nested_if",
+      "TestP15F03YieldTypesAndNormalPaths/menu_nested_menu",
+      "TestP15F03TerminatedPathsDoNotBecomeValues",
+      "TestP15F03YieldDiagnosticsProduction",
+      "TestP15F03YieldDiagnosticsProduction/missing_else",
+      "TestP15F03YieldDiagnosticsProduction/missing_normal_branch",
+      "TestP15F03YieldDiagnosticsProduction/missing_nested_branch",
+      "TestP15F03YieldDiagnosticsProduction/overwritten_yield",
+      "TestP15F03YieldDiagnosticsProduction/menu_missing",
+      "TestP15F03YieldDiagnosticsProduction/void_if_yield",
+      "TestP15F03YieldDiagnosticsProduction/void_menu_yield",
+      "TestP15F03YieldDiagnosticsProduction/wrong_annotated_branch",
+      "TestP15F03YieldDiagnosticsProduction/opaque_cannot_claim_text",
+      "TestP15F03YieldDiagnosticsProduction/yield_outside",
+      "TestP15F03ImplicitResultBoundary",
+      "TestP15F03NativeBranchResults",
+      "TestP15F03NativeBranchResults/if",
+      "TestP15F03NativeBranchResults/else_if",
+      "TestP15F03NativeBranchResults/nested_if",
+      "TestP15F03NativeBranchResults/menu",
+      "TestP15F03NativeBranchResults/nested_menu",
+      "TestP15F03WireOracleMutations",
+      "TestP15F03WireOracleMutations/wrong_branch_value",
+      "TestP15F03WireOracleMutations/foreign_final_result",
+      "TestP15F03WireOracleMutations/wrong_end_group",
+      "TestP15F03WireOracleMutations/missing_yield_bridge",
+      "TestP15F03WireOracleMutations/duplicate_uuid",
+      "TestP15F03WireOracleMutations/removed_else",
+      "TestP15F03CLIAndService",
+      "TestP15F03NoneYieldClearsPrecedingOutput"
+    ]
+  },
+  "expected_diagnostics": {
+    "missing_branch_yield": [
+      "E_YIELD_CONTEXT",
+      "E_RETURN_TYPE"
+    ],
+    "overwritten_yield": [
+      "E_YIELD_CONTEXT",
+      "E_RETURN_TYPE"
+    ],
+    "nested_missing_yield": [
+      "E_YIELD_CONTEXT",
+      "E_RETURN_TYPE"
+    ],
+    "other_invalid_cases": [
+      "E_RETURN_TYPE"
+    ]
+  },
+  "assertions": [
+    "exact error cardinality",
+    "exact diagnostic code and source byte span",
+    "primary compiler diagnostic order",
+    "shared analyzer/service agreement",
+    "zero native bytes for every invalid control result",
+    "actual CLI rejects three explicit-yield violations without a Shortcut artifact",
+    "actual CLI healthy control emits a nonempty Shortcut artifact",
+    "missing, code, span, severity, duplicate, and order mutations rejected"
+  ],
+  "closure_claim": false
+}
