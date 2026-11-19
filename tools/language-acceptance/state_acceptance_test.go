@@ -571,3 +571,28 @@ func TestBackendStateActualAvailableProduction(t *testing.T) {
 	}
 	t.Log("P15_STATE_ACCEPTANCE_PRODUCTION_RECEIPT:" + string(stateControlJSON(t, map[string]any{"source_sha": runner.implSHA, "scope": "Independently executed state security and strict cold/warm benchmark; race only when the complete actual current-source Linux bundle is available", "report": report, "records": runner.records})))
 }
+
+// A real historical archive has legitimate bytes but is not an independently
+// observed current process. The production runner must reject the import route
+// before reading or trusting any caller-supplied source/run summary.
+func TestBackendStateRejectsImportedRaceDirectory(t *testing.T) {
+	for _, identity := range []string{"historical", "current_source_and_run_rebound"} {
+		t.Run(identity, func(t *testing.T) {
+			runner := NewRunner()
+			data := stateArchivedRaceData(t)
+			if identity == "current_source_and_run_rebound" {
+				stateControlReconcile(t, data, func(receipt *stateRaceReceipt) {
+					receipt.SourceCommit = runner.implSHA
+					receipt.RunID = "99999999999"
+					receipt.RunAttempt = "2"
+				})
+			}
+			artifacts := stateControlArtifacts(t, data, stateRaceArtifactNames)
+			t.Setenv("CHERRI_STATE_RACE_EVIDENCE_DIR", filepath.Dir(artifacts[0].Path))
+			result := runner.executeStateRace()
+			if !result.Available || result.Err == nil || !strings.Contains(result.Err.Error(), "external race directories are not accepted") || len(result.Artifacts) != 0 || len(runner.records) != 0 {
+				t.Fatalf("imported/self-rebound race process was accepted: %+v", result)
+			}
+		})
+	}
+}
