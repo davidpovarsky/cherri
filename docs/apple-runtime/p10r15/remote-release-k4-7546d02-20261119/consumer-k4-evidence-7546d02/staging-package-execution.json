@@ -1,0 +1,245 @@
+{
+  "formatVersion": 1,
+  "result": "PASS_STAGING_AND_PACKAGE_INTEGRITY",
+  "operationalToolCommit": "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+  "toolSHA256": {
+    "stage_remote_release.py": "88fd031121294e9469deb29801964a02f46270af067daf0c771031ef01ac7554",
+    "package_skill.py": "c343547b9ca5a415d74b925f479f8e009401c0ea9881db78b3ca592ba5badf82"
+  },
+  "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+  "skillCommit": "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+  "stage": "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02",
+  "packages": "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02",
+  "protectedBefore": {
+    "files": {
+      "active.json": {
+        "sha256": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+        "mode": 384
+      },
+      "config/default-language-mode": {
+        "sha256": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+        "mode": 384
+      },
+      "bin/cherri-remote-runner.sh": {
+        "sha256": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+        "mode": 448
+      },
+      "bin/cherri-remote-legacy.sh": {
+        "sha256": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+        "mode": 448
+      },
+      "bin/cherri-shortcut-lint.py": {
+        "sha256": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+        "mode": 384
+      }
+    },
+    "link": {
+      "target": "cherri-remote-legacy.sh",
+      "mode": 511
+    }
+  },
+  "protectedAfter": {
+    "files": {
+      "active.json": {
+        "sha256": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+        "mode": 384
+      },
+      "config/default-language-mode": {
+        "sha256": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+        "mode": 384
+      },
+      "bin/cherri-remote-runner.sh": {
+        "sha256": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+        "mode": 448
+      },
+      "bin/cherri-remote-legacy.sh": {
+        "sha256": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+        "mode": 448
+      },
+      "bin/cherri-shortcut-lint.py": {
+        "sha256": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+        "mode": 384
+      }
+    },
+    "link": {
+      "target": "cherri-remote-legacy.sh",
+      "mode": 511
+    }
+  },
+  "protectedUnchanged": true,
+  "livePromotion": false,
+  "observedAtUTC": "2026-11-19T05:43:27.224875+00:00",
+  "diskFreeBytes": 540160000,
+  "steps": [
+    {
+      "step": "stage",
+      "command": [
+        "python3",
+        "-B",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02/tools/p10r15/stage_remote_release.py",
+        "--repo",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "--compiler-source",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-source",
+        "--compiler",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-evidence/cherri-b97ae75-linux-arm64",
+        "--docs",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/docs-source-d4-205217a",
+        "--live-home",
+        "/home/chatgpt-agent/workspaces/cherri-remote",
+        "--stage",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02",
+        "--go",
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "--label",
+        "p15-release-s4-k4-20261119",
+        "--branch",
+        "agent/cherri-p10r15-consumer-k4-20261119"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 3.0074377544224262,
+      "stdoutSHA256": "32b9e23c80abcb2f5e12d201c03f604e4bfdcc1a9c351e2ab66ff1a83310ec48",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "package-source-create",
+      "command": [
+        "python3",
+        "-B",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02/tools/p10r15/package_skill.py",
+        "create",
+        "--repo",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "--skill-commit",
+        "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+        "--kind",
+        "source",
+        "--go",
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "--archive",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02/source-skill-k4.zip",
+        "--report",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-evidence-7546d02/source-create.json"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.09040165599435568,
+      "stdoutSHA256": "13b417511693124b560a31d679375bfa1e2f8aced9bce6717c0465349b4e401f",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "package-source-verify",
+      "command": [
+        "python3",
+        "-B",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02/tools/p10r15/package_skill.py",
+        "verify",
+        "--repo",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "--skill-commit",
+        "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+        "--kind",
+        "source",
+        "--go",
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "--archive",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02/source-skill-k4.zip",
+        "--report",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-evidence-7546d02/source-integrity.json"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.08452578261494637,
+      "stdoutSHA256": "13b417511693124b560a31d679375bfa1e2f8aced9bce6717c0465349b4e401f",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "package-runtime-create",
+      "command": [
+        "python3",
+        "-B",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02/tools/p10r15/package_skill.py",
+        "create",
+        "--repo",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "--skill-commit",
+        "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+        "--kind",
+        "runtime",
+        "--go",
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "--archive",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02/runtime-skill-k4.zip",
+        "--compiler",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-evidence/cherri-b97ae75-linux-arm64",
+        "--report",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-evidence-7546d02/runtime-create.json"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 1.3123005414381623,
+      "stdoutSHA256": "97924613c60f67b0288f438babe39fb465943fe32a75157c214734d423b872c8",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "package-runtime-verify",
+      "command": [
+        "python3",
+        "-B",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02/tools/p10r15/package_skill.py",
+        "verify",
+        "--repo",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "--skill-commit",
+        "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+        "--kind",
+        "runtime",
+        "--go",
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "--archive",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02/runtime-skill-k4.zip",
+        "--compiler",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-evidence/cherri-b97ae75-linux-arm64",
+        "--report",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-evidence-7546d02/runtime-integrity.json"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.2560081174597144,
+      "stdoutSHA256": "97924613c60f67b0288f438babe39fb465943fe32a75157c214734d423b872c8",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "package-runtime-unpack",
+      "command": [
+        "python3",
+        "-B",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02/tools/p10r15/package_skill.py",
+        "verify",
+        "--repo",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "--skill-commit",
+        "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+        "--kind",
+        "runtime",
+        "--go",
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "--archive",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02/runtime-skill-k4.zip",
+        "--compiler",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-evidence/cherri-b97ae75-linux-arm64",
+        "--unpack",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-packages-7546d02/unpacked",
+        "--report",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/consumer-k4-evidence-7546d02/unpacked-integrity.json"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.2650770116597414,
+      "stdoutSHA256": "b1b008bd4e0fc2c474313bc482c60dddd70579d935bb648708f24ad1a3d228d2",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

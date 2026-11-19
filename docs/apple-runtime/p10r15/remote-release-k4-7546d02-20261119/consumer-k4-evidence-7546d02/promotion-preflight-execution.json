@@ -1,0 +1,181 @@
+{
+  "formatVersion": 1,
+  "operationalToolCommit": "8261cb8add28af419bc9b52817b4d4a0a9256afc",
+  "operatorUnitReceiptSHA256": "5811175225df262fc1134933fe56e6bc962129910ea8a84505623b79cd2d5b2b",
+  "toolFileHashes": {
+    "verify_macro_compatibility.py": "2523fca56bad3f7ceb40ef0d0f38cb24f448ee46a01e9e807d768ea50297dfa9",
+    "test_verify_documentation_consumers.py": "50a7e0cfe257acff909b4afc72b7e8aee4e39814425e19a98e6859159be529be",
+    "verify_remote_release.py": "3c3814606c45a319be2bb312762f70dad2a778913ce934ae09b38e8b3d065565",
+    "verify_storage_probes.py": "737d418bd33fd72ebf6a89177d705607f6b0b9d3e50c13e9b1614189ca7dcd80",
+    "verify_installed_signing.py": "0e5aace733193a80ad1ff93eaf875f87a53e79e67538fd3b6d3dafd00aec5fb9",
+    "verify_documentation_consumers.py": "ae641d4f1d931ce3d0874796102cf34e9c87e2972b093b6b216f85c18036df12",
+    "remote_release_gates.py": "cfaf89b44c576f1c0f184fd1bdd5faefa2a10c79dc4a781fe5f576b00aa9f09f",
+    "stage_remote_release.py": "88fd031121294e9469deb29801964a02f46270af067daf0c771031ef01ac7554",
+    "verify_remote_smoke.py": "a9074b3e60cd24c1fdf41de87a84e716ca4b3076c44c884c009de2b069372181",
+    "test_remote_package_preflight.py": "fdfdbb92ba8a196b60ce38e4c8622d0f8508b2a7d59133205d904eb97ded17c8",
+    "verify_paginate.py": "1f8edac2b046bdf8b662bf7d817b5ed6469ddb7a4508ebec49c458d517d6b4cd",
+    "audit_storage_text_native.py": "0d174ba3ca44811a14cebf9f90290760e00d73c5087c5aad6b7d9d6b229111e8",
+    "verify_label_representation_probes.py": "5753fbc812cd6a3f6fef45ce719309a21adc43e14688d44267a951eae1517291",
+    "verify_debug_export.py": "f33f5dc60827a9be14243ed7c4e32cb0521346f415202481d47c83ef1a84c5e8",
+    "package_skill.py": "c343547b9ca5a415d74b925f479f8e009401c0ea9881db78b3ca592ba5badf82",
+    "generate_macro_contract_coverage.py": "dd8d568c9df4af3b8a090eaf5d50293777eb95f1d7a2f0885d6e445af185532a",
+    "verify_paginate_probe_data.py": "ded90ee0395f0387a05fa4ce635f7e2c106c582e2a67fc883b2758349200e8ab",
+    "verify_macro_ledger_evidence.py": "f1b1e79a437e67cca51188139f753816f81b91317f0c01dcb6e8cec38469e9ef",
+    "verify_native_continuation_probes.py": "d275f35d88b2f4fd53b7595d4ddeb92be0f21793e14fc5358be9eeb545ff1ec9",
+    "test_remote_promotion.py": "5fd1a23299d5d7f392d275b06acf2f274916d28800b4478bf625532ece64bb4b",
+    "audit_native_continuation.py": "9464ff39c04aad2e87471c86ca9546f6ef911d214324bdd8f2c554905aed29a2",
+    "promote_remote_release.py": "f9610556cf876bec92d11a73efc1007879d0b50cc469ad937f014b0cf309639b"
+  },
+  "tuple": {
+    "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+    "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+    "compilerSHA256": "563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd",
+    "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+    "label": "p15-release-s4-k4-20261119",
+    "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+    "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+    "skillSourceHead": "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+    "sourceBranch": "agent/cherri-p10r15-consumer-k4-20261119"
+  },
+  "evidenceManifestSHA256": "6fcbf09f77d62ffdd3f8eadc72762cebd9c9f8e65385bd4c10ad06f2e6a5d6f7",
+  "observedAtUTC": "2026-11-19T05:54:38.964874+00:00",
+  "livePromotion": false,
+  "journalCreated": false,
+  "result": "PASS_READ_ONLY_PROMOTION_PREFLIGHT",
+  "durationSeconds": 0.4027585741132498,
+  "protectedBefore": {
+    "live": {
+      "files": {
+        "active.json": {
+          "sha256": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+          "mode": 384
+        },
+        "bin/cherri-remote-runner.sh": {
+          "sha256": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+          "mode": 448
+        },
+        "bin/cherri-remote-legacy.sh": {
+          "sha256": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+          "mode": 448
+        },
+        "bin/cherri-shortcut-lint.py": {
+          "sha256": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+          "mode": 384
+        },
+        "config/default-language-mode": {
+          "sha256": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+          "mode": 384
+        }
+      },
+      "link": {
+        "target": "cherri-remote-legacy.sh",
+        "mode": 511
+      }
+    },
+    "candidate": {
+      "files": {
+        "active.json": {
+          "sha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+          "mode": 384
+        },
+        "bin/cherri-remote-runner.sh": {
+          "sha256": "a900e644df7f88ed9e7daf7a2017e516388188ccc1676c91610df89235249416",
+          "mode": 448
+        },
+        "bin/cherri-remote-legacy.sh": {
+          "sha256": "2a562f1be21bab7bc27c9ba80d4f6b65d7ddc5b7b3ddb9148bf93aa77e500619",
+          "mode": 448
+        },
+        "bin/cherri-shortcut-lint.py": {
+          "sha256": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+          "mode": 384
+        },
+        "config/default-language-mode": {
+          "sha256": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+          "mode": 384
+        }
+      },
+      "link": {
+        "target": "cherri-remote-legacy.sh",
+        "mode": 511
+      }
+    }
+  },
+  "protectedAfter": {
+    "live": {
+      "files": {
+        "active.json": {
+          "sha256": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+          "mode": 384
+        },
+        "bin/cherri-remote-runner.sh": {
+          "sha256": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+          "mode": 448
+        },
+        "bin/cherri-remote-legacy.sh": {
+          "sha256": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+          "mode": 448
+        },
+        "bin/cherri-shortcut-lint.py": {
+          "sha256": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+          "mode": 384
+        },
+        "config/default-language-mode": {
+          "sha256": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+          "mode": 384
+        }
+      },
+      "link": {
+        "target": "cherri-remote-legacy.sh",
+        "mode": 511
+      }
+    },
+    "candidate": {
+      "files": {
+        "active.json": {
+          "sha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+          "mode": 384
+        },
+        "bin/cherri-remote-runner.sh": {
+          "sha256": "a900e644df7f88ed9e7daf7a2017e516388188ccc1676c91610df89235249416",
+          "mode": 448
+        },
+        "bin/cherri-remote-legacy.sh": {
+          "sha256": "2a562f1be21bab7bc27c9ba80d4f6b65d7ddc5b7b3ddb9148bf93aa77e500619",
+          "mode": 448
+        },
+        "bin/cherri-shortcut-lint.py": {
+          "sha256": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+          "mode": 384
+        },
+        "config/default-language-mode": {
+          "sha256": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+          "mode": 384
+        }
+      },
+      "link": {
+        "target": "cherri-remote-legacy.sh",
+        "mode": 511
+      }
+    }
+  },
+  "sourcePackageFiles": 20,
+  "runtimePackageFiles": 23,
+  "entrypoints": {
+    "checks": 37,
+    "passed": 37,
+    "failed": 0,
+    "notRun": 0
+  },
+  "faults": {
+    "checks": 58,
+    "controlsPassed": 5,
+    "negativesRejected": 53,
+    "failures": 0
+  },
+  "candidateSmoke": {
+    "checks": 8,
+    "failed": 0,
+    "passed": 8
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "formatVersion": 1,
+  "result": "PASS_IMMUTABLE_INPUT_PREPARATION",
+  "observedAtUTC": "2026-11-19T05:40:44.527425+00:00",
+  "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+  "skillCommit": "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+  "compilerSHA256": "563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd",
+  "compilerSource": "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-source",
+  "skillSource": "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+  "docsSource": "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/docs-source-d4-205217a",
+  "ordinaryIndependentClones": true,
+  "skillShallow": "true",
+  "docsShallow": "true",
+  "diskFreeBytes": 845119488,
+  "liveMutation": false,
+  "steps": [
+    {
+      "name": "clone-K4",
+      "command": [
+        "git",
+        "clone",
+        "--no-checkout",
+        "--local",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/compiler-source",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.5619805427268147,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "2dcd89af12033cf8c0533aa112248f0ef0fb2a61e074a6dae4ad8d072790fa00"
+    },
+    {
+      "name": "canonical-origin-K4",
+      "command": [
+        "git",
+        "-C",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/davidpovarsky/cherri.git"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.0034359395503997803,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fetch-K4",
+      "command": [
+        "git",
+        "-C",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "fetch",
+        "--no-tags",
+        "origin",
+        "refs/heads/agent/cherri-p10r15-consumer-k4-20261119"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 2.6541969906538725,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "f8663227c61ed7f64ca19cec12ab4f8c500b7fdd430080c1a1bcc0fac11d729c"
+    },
+    {
+      "name": "checkout-K4",
+      "command": [
+        "git",
+        "-C",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/skill-source-k4-7546d02",
+        "checkout",
+        "--detach",
+        "7546d0203405ba326e4e71ff9f74115dd0d34fa8"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.3038409687578678,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "63a4240ba6ad878a102874532067462e39fd59eccaaf191964077408b207d236"
+    },
+    {
+      "name": "clone-D4",
+      "command": [
+        "git",
+        "clone",
+        "--no-checkout",
+        "--depth",
+        "1",
+        "--branch",
+        "main",
+        "https://github.com/davidpovarsky/cherrilang.org.git",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/docs-source-d4-205217a"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 1.1419539144262671,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "039dd821ef659b91bbe7772877f8d0eebe06f945361ec2e60a7bd7d5d1651eba"
+    },
+    {
+      "name": "checkout-D4",
+      "command": [
+        "git",
+        "-C",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/docs-source-d4-205217a",
+        "checkout",
+        "--detach",
+        "205217a256b5f220724363b44b5ae516ffe6a539"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "durationSeconds": 0.018462950363755226,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "92b49d82ab035551883a4c564703a7fe3420ca15991a4050f60c11374b1d143b"
+    }
+  ]
+}

@@ -1,0 +1,2068 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-19T05:50:51Z",
+  "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+  "appleCryptographicValidation": "NOT_TESTED",
+  "privateCorpusUsed": false,
+  "provenance": {
+    "compilerSha256": "563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd",
+    "capabilities": {
+      "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+      "compilerMacros": [
+        {
+          "id": "debugAssert",
+          "callableName": "debugAssert",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.conditional",
+          "primaryParameterId": "condition",
+          "parameters": [
+            {
+              "id": "condition",
+              "label": "condition",
+              "displayName": "Condition",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": false,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFInput",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "message",
+              "label": "message",
+              "displayName": "Message",
+              "type": "text",
+              "rawType": "string",
+              "optional": true,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "default": "Assertion failed",
+              "omissionPolicy": "omit",
+              "wireKey": "WFAlertActionMessage",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFAlertActionMessage",
+            "WFInput"
+          ],
+          "docs": {
+            "title": "Assert Condition",
+            "description": "Stop the Shortcut with a message when the condition is false.",
+            "category": "debug",
+            "insertionSnippet": "debugAssert(condition: <#bool#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugClearLogs",
+          "callableName": "debugClearLogs",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.setvariable",
+          "parameters": null,
+          "docs": {
+            "title": "Clear Debug Logs",
+            "description": "Reset the execution-local debug log to an empty value.",
+            "category": "debug",
+            "insertionSnippet": "debugClearLogs()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugExport",
+          "callableName": "debugExport",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.setitemname",
+          "primaryParameterId": "format",
+          "parameters": [
+            {
+              "id": "format",
+              "label": "format",
+              "displayName": "Format",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "json",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportFormat",
+              "enumValues": [
+                "json",
+                "text"
+              ],
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "includeDates",
+              "label": "includeDates",
+              "displayName": "Include Dates (unsupported)",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "includeTypes",
+              "label": "includeTypes",
+              "displayName": "Include Native Types",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "true",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportTypes",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "redactSensitive",
+              "label": "redactSensitive",
+              "displayName": "Redact All Payloads",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "true",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugExportRedact",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "File",
+          "rawOutputType": "variable",
+          "docs": {
+            "title": "Export Local Debug File",
+            "description": "Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. Dates/labels are not collected; includeDates:true is rejected. Options are compile-time literals. Native runtime acceptance remains required.",
+            "category": "debug",
+            "insertionSnippet": "debugExport()"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugExportTrace",
+          "callableName": "debugExportTrace",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.gettext",
+          "primaryParameterId": "runId",
+          "parameters": [
+            {
+              "id": "runId",
+              "label": "runId",
+              "displayName": "Run ID",
+              "type": "text",
+              "rawType": "string",
+              "optional": true,
+              "acceptedForms": [
+                "string"
+              ],
+              "default": "cherri-qa-run",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugTraceRunID",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTraceRunID"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Export QA Structured Trace Snapshot",
+            "description": "Combine the execution-local QA trace buffer into a deterministic JSON envelope for QA inspection or callback export without mutating __cherri_debug_log.",
+            "category": "debug",
+            "insertionSnippet": "debugExportTrace(runId: \"qa-run-1\")"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugFinish",
+          "callableName": "debugFinish",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.previewdocument",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates"
+          ],
+          "docs": {
+            "title": "Finish Debug Session",
+            "description": "Preview native objects with optional Creation Date names or display text with showLogsAsText.",
+            "category": "debug",
+            "insertionSnippet": "debugFinish()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugLog",
+          "callableName": "debugLog",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogs",
+              "label": "showLogs",
+              "displayName": "Show Logs",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogs",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogs",
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates",
+            "WFVariableName"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Debug Log",
+            "description": "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.",
+            "category": "debug",
+            "insertionSnippet": "debugLog()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugLogPrevious",
+          "callableName": "debugLogPrevious",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogs",
+              "label": "showLogs",
+              "displayName": "Show Logs",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogs",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogs",
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Log Previous Result",
+            "description": "Alias for debugLog with optional withDates/showLogs/showLogsAsText.",
+            "category": "debug",
+            "insertionSnippet": "debugLogPrevious()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugShowLogs",
+          "callableName": "debugShowLogs",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.previewdocument",
+          "primaryParameterId": "withDates",
+          "parameters": [
+            {
+              "id": "withDates",
+              "label": "withDates",
+              "displayName": "With Dates",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugWithDates",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "showLogsAsText",
+              "label": "showLogsAsText",
+              "displayName": "Show Logs As Text",
+              "type": "bool",
+              "rawType": "bool",
+              "optional": true,
+              "acceptedForms": [
+                "bool",
+                "expression",
+                "reference"
+              ],
+              "default": "false",
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugShowLogsAsText",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugShowLogsAsText",
+            "WFDebugWithDates"
+          ],
+          "docs": {
+            "title": "Show Debug Logs",
+            "description": "Preview native objects, naming items by Creation Date when enabled; use showLogsAsText for text formatting.",
+            "category": "debug",
+            "insertionSnippet": "debugShowLogs()"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugStartTimer",
+          "callableName": "debugStartTimer",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.date",
+          "primaryParameterId": "label",
+          "parameters": [
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFDebugTimerLabel",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTimerLabel"
+          ],
+          "docs": {
+            "title": "Start Debug Timer",
+            "description": "Remember the current time under a compile-time label.",
+            "category": "debug",
+            "insertionSnippet": "debugStartTimer(label: <#text#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugStopTimer",
+          "callableName": "debugStopTimer",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.gettimebetweendates",
+          "primaryParameterId": "label",
+          "parameters": [
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFDebugTimerLabel",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTimerLabel"
+          ],
+          "outputType": "number",
+          "rawOutputType": "float",
+          "docs": {
+            "title": "Stop Debug Timer",
+            "description": "Measure elapsed seconds and append the result to the execution-local log.",
+            "category": "debug",
+            "insertionSnippet": "debugStopTimer(label: <#text#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugTrace",
+          "callableName": "debugTrace",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "value",
+          "parameters": [
+            {
+              "id": "value",
+              "label": "value",
+              "displayName": "Value",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string",
+                "interpolation",
+                "expression",
+                "reference"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFInput",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFInput"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Trace Value and Time",
+            "description": "Append current time followed by a value to the execution-local debug log.",
+            "category": "debug",
+            "insertionSnippet": "debugTrace(value: <#text#>)"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "debugTraceEvent",
+          "callableName": "debugTraceEvent",
+          "module": "debug",
+          "appleIdentifier": "is.workflow.actions.appendvariable",
+          "primaryParameterId": "stage",
+          "parameters": [
+            {
+              "id": "stage",
+              "label": "stage",
+              "displayName": "Stage",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "acceptedForms": [
+                "string"
+              ],
+              "omissionPolicy": "emit",
+              "wireKey": "WFDebugTraceStage",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": true,
+              "acceptedForms": [
+                "string"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFDebugTraceLabel",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "emittedKeys": [
+            "WFDebugTraceLabel",
+            "WFDebugTraceStage"
+          ],
+          "outputType": "text",
+          "rawOutputType": "string",
+          "docs": {
+            "title": "Record QA Structured Trace Event",
+            "description": "Append a structured JSONL trace record (stage, label, step sequence, and CurrentDate timestamp) to the execution-local QA trace buffer without mutating __cherri_debug_log.",
+            "category": "debug",
+            "insertionSnippet": "debugTraceEvent(stage: \"after\", label: \"step-1\")"
+          },
+          "builtin": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "measure",
+          "callableName": "measure",
+          "module": "debug",
+          "appleIdentifier": "",
+          "primaryParameterId": "label",
+          "parameters": [
+            {
+              "id": "label",
+              "label": "label",
+              "displayName": "Label",
+              "type": "text",
+              "rawType": "string",
+              "optional": false,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "AnyContent",
+          "docs": {
+            "title": "Measure Block",
+            "description": "V2 scoped value block. Evaluate once, log elapsed seconds through existing native timers, and return the original typed value. Runtime timing accuracy remains platform-dependent.",
+            "category": "debug",
+            "insertionSnippet": "measure(\"label\") { <#expression#> }"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "scopedBlock": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "paginate",
+          "callableName": "paginate",
+          "module": "web",
+          "appleIdentifier": "is.workflow.actions.getvariable",
+          "primaryParameterId": "startURL",
+          "parameters": [
+            {
+              "id": "startURL",
+              "label": "startURL",
+              "displayName": "Initial HTTP(S) URL",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": false,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateStartURL",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "itemsKey",
+              "label": "itemsKey",
+              "displayName": "Dictionary items key",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "items",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateItemsKey",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "nextKey",
+              "label": "nextKey",
+              "displayName": "Next URL or sibling filename key",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "next",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateNextKey",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "maxPages",
+              "label": "maxPages",
+              "displayName": "Maximum native GET invocations (0..100)",
+              "type": "Number",
+              "rawType": "number",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "20",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateMaxPages",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "maxItems",
+              "label": "maxItems",
+              "displayName": "Maximum returned Dictionary items (0..10000)",
+              "type": "Number",
+              "rawType": "number",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "default": "1000",
+              "omissionPolicy": "omit",
+              "wireKey": "WFPaginateMaxItems",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "List<Map<Text, AnyContent>>",
+          "rawOutputType": "array",
+          "docs": {
+            "title": "Paginate Bounded Dictionary Pages",
+            "description": "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+            "category": "web",
+            "insertionSnippet": "paginate(\"https://example.invalid/pages/one.json\")"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "require",
+          "callableName": "require",
+          "module": "control",
+          "appleIdentifier": "is.workflow.actions.getvariable",
+          "primaryParameterId": "value",
+          "parameters": [
+            {
+              "id": "value",
+              "label": "value",
+              "displayName": "Value",
+              "type": "AnyContent",
+              "rawType": "variable",
+              "optional": false,
+              "omissionPolicy": "emit",
+              "wireKey": "WFInput",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "type",
+              "label": "type",
+              "displayName": "Native Category",
+              "type": "Text",
+              "rawType": "rawstring",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFRequireType",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "nonEmpty",
+              "label": "nonEmpty",
+              "displayName": "Nonempty",
+              "type": "Bool",
+              "rawType": "bool",
+              "optional": true,
+              "literal": true,
+              "acceptedForms": [
+                "literal"
+              ],
+              "omissionPolicy": "omit",
+              "wireKey": "WFRequireNonEmpty",
+              "evidenceStatus": "inferred"
+            },
+            {
+              "id": "message",
+              "label": "message",
+              "displayName": "Failure Message",
+              "type": "Text",
+              "rawType": "string",
+              "optional": true,
+              "omissionPolicy": "omit",
+              "wireKey": "WFAlertActionMessage",
+              "codec": "textToken",
+              "evidenceStatus": "inferred"
+            }
+          ],
+          "outputType": "AnyContent",
+          "rawOutputType": "variable",
+          "docs": {
+            "title": "Require Typed Value",
+            "description": "Validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.",
+            "category": "control",
+            "insertionSnippet": "require(<#value#>, nonEmpty: true)"
+          },
+          "builtin": true,
+          "compilerConstruct": true,
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "protocolVersion": "1.0",
+      "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "actionCount": 505,
+      "features": [
+        "let_var_bindings",
+        "named_call_arguments",
+        "f_strings",
+        "raw_strings",
+        "typed_collections",
+        "value_producing_blocks",
+        "ast_functions",
+        "native_preservation",
+        "shared_analysis_service",
+        "zero_based_indexing",
+        "compiler_macro_metadata",
+        "compile_time_build_profiles"
+      ]
+    },
+    "skillManifest": {
+      "skillVersion": "2.0.0",
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+      "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+      "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+      "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+      "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+    },
+    "skillBuildSha256": "7bbb35317afd8b85edd33e8ac5a6a035058f2541570d56e578f21549b009f887",
+    "installedTuple": {
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+      "compilerSHA256": "563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd",
+      "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+      "label": "p15-release-s4-k4-20261119",
+      "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+      "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+      "skillSourceHead": "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+      "sourceBranch": "agent/cherri-p10r15-consumer-k4-20261119"
+    },
+    "remoteLegacySha256": "2a562f1be21bab7bc27c9ba80d4f6b65d7ddc5b7b3ddb9148bf93aa77e500619",
+    "remoteRunnerSha256": "a900e644df7f88ed9e7daf7a2017e516388188ccc1676c91610df89235249416"
+  },
+  "results": [
+    {
+      "surface": "cli_v2",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.024,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.026,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=5196a43330b55e6aecf1fc77251ddfea16b78aceec89a02bf6ed713e8c8f"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.026,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=a5722c1c1868abba7244184faa3543160bfdfcd28b1de65be1cf3c0f7c9b"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.027,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=cf67d4a4bcc618036410dd30ab9941db80025e88248950705727e22fa376"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.028,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=c0523405b8febe1906a39bd85a89212319317b0f423febd7988d86484429"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.027,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=97f0e5796df46901047e07c07dc5a4728e26842a6051fee4a524ccfa195a"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned empty response\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.026,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=201c908d55ee7c76c24a89822b3457e728e64579bd415cb3838b7c3dd70d"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.029,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=90208329edb69427d2638479840225a2868d2084107ffe049af7af9d2b99"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.032,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=c1cfcf00fd61c9877c3877bbfcc7159afcb0ff48b323083c3e99d11bbdd2"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.026,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=fe78e4e5f7a37441f06144a4f79dfe33097653046ed27c3d5cacdb25cd20"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.025,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=cd3d3e48230ee21fde856fdca50f9b3c52c86b664a450f38ecd81e0fdc46"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.026,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2453,
+          "contentType": "multipart/form-data; boundary=a40c544db1404db9b8ca7ee044c3989b2a3df256ff975a3761e5c40fa6cf"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing request timeout: Post \"http://127.0.0.1:40757/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.038,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 1964,
+          "magicHex": "3c3f786d",
+          "sha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.038,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=6c12b0b12a5b7b1c1a7c9473943b00e5fe756c4bdac14f8d33178b67263e"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.038,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=f26149d642d6f047469a3c791fb327a2c82166f5f36a7612bbfe6eaf1e06"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.038,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=42a99fe86797a672c05d7eb549bc1584f8ab76dd34b3829bc3682e35c4b3"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing server error: synthetic fault (TEST)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.039,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=f77d327827d739d34f71f4c78fb4fab2595a50322e5b8e38c9a9596335ba"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.039,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=16e9e3d6238cab0026b0e17fdf2c0e89516be682c6b229ddf7fcc0f01f33"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned empty response\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.038,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=95edcce2fddc15631f414697d00913253ad5ad8f341fbff0fc916f23fe72"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.042,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=14fb5dfd36ab11e0b2d46b77528400ff2139880d9c41186a2859c4a84146"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted base64 signed payload: illegal base64 data at input byte 0\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.038,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=19a2a369253807f5bc3a1feaa56d18e7a6634a076108eeed99d71f673fe8"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=688712b002e27dc68027493b32604182b08d15dc6c87e0a91b86adeacff9"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.039,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2212,
+          "contentType": "multipart/form-data; boundary=63f8205bb4dd5ccf7204b64f6150cd9062fc0df71fdc878b07065d7ce5bf"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.142,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "<isolated-audit>/skill_copy/unsigned_control/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.151,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=e0307a93e647ac65e07a3430da2130321f630957747074202f9acf78ee5d"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.153,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=d60855728abb1e56f41187e6b5c80ba83ade72e3cbeb626b43eba29ea343"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.154,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=c52e4f0b827a0c2c6d38a6e0731f42baf651bd81c1958f1c47af63d6d2de"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.148,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=3944426ca04d013b0676503618e0b4acbcb74440f12c68bf6987c804908a"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.153,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=3d079888ec75eef366c1b8c02fc6ac482ff24877c3384faade4d4a80945b"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned empty response\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.151,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=dec1b8928af1b44e0f01423a8a0dfbb8413cd3351df687d7914977ce7bbe"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.157,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=6001bf32cf93207fbfca47b50b0d3c4a4eb064328551abbb9ff12847144f"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.154,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=c2bdf109a27fa662e183cf2316f0750ac988074162a539019f4aa53c6390"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.153,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=de4aea728375a03d41a8551f64bf0f62c86d908c805d9777686e1b428d64"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.152,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2452,
+          "contentType": "multipart/form-data; boundary=c4f2158e7970501ec93812cf90d0d1bfbd88b2008c05f606fa6cce68ce5a"
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Signing error: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.441,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 1964,
+          "magicHex": "3c3f786d",
+          "sha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10r15-consumer-k4-20261119\nBUILD_ARTIFACT=<isolated-audit>/remote_legacy_copy/unsigned_control/outputs/fixture-p15-release-s4-k4-20261119-legacy-20261119T054859-1105419.shortcut\nd5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade  <isolated-audit>/remote_legacy_copy/unsigned_control/outputs/fixture-p15-release-s4-k4-20261119-legacy-20261119T054859-1105419.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/unsigned_control/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/unsigned_control/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/unsigned_control/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.457,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=9011012306e8b3bd198c697d341edc086f6e4c0fc0e3ab2a0139cb67f8aa",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/xml/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/xml/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/xml/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.446,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=9bea924d4de72f2c0d25222a46986de9e2cc745423979827a014b5fd0224",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/html/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/html/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/html/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.455,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=eae252897c138c0ecbd77d284afe408f288947cb42f9189239c7650af7ec",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/json_error/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/json_error/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/json_error/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing server error: synthetic fault (TEST)\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.444,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=028f2cb7d26172918d27cfbe6d8a0cf4f312229e87ec7e63e7f0f228cc0e",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/non_200/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/non_200/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/non_200/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.45,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=3655730067aca17c4546db971bae3e6d19eb59e679f71a312cae2c85a374",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/empty/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/empty/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/empty/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned empty response\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.47,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=3440d2e130e5fbfe1ec7d9bf7a962217ed16f9134a8ca52f67bf55387f06",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/corrupt_json/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/corrupt_json/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/corrupt_json/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.467,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=3c2cc4df8600ade251da58859ef8fdf392a97647e54f8123822a7ec5083b",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/corrupt_base64/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/corrupt_base64/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/corrupt_base64/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: corrupted base64 signed payload: illegal base64 data at input byte 0\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.451,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=256da20ba8626adb1033f8e8fd9e2c7be76cf46568c54ac677789dcf0c4d",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/digest_mismatch/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/digest_mismatch/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/digest_mismatch/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.449,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=ebc110cecd1ca8cab5c489d71f9b51fa64544dfab692a27338f1f9421449",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/header_only/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/header_only/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/header_only/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.443,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=632e8f4e7616a257979975fb7777a175c8591d494942dae9f8d28a65b438",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/zero_archive/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/zero_archive/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/zero_archive/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.527,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2270,
+          "contentType": "multipart/form-data; boundary=b5c8cfd85ed88baf00ac1b8b46d52d14a5725594c4ecb36783af6a119ac4",
+          "uploadedPlistSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "preflightSha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/timeout/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_legacy_copy/timeout/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/timeout/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing request timeout: Post \"http://127.0.0.1:39465/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.533,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "exactPreflightBytesObserved": null,
+      "requestEvidence": [],
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/unsigned_control/tmp/v2-preflight-bW4cotBi.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3  <isolated-audit>/remote_v2_copy/unsigned_control/outputs/fixture-p15-release-s4-k4-20261119-20261119T054955-1108113.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/unsigned_control/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/unsigned_control/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/unsigned_control/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.563,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=227e51b00022335698816a3adbfe18d7d18325a1071d5f7d3a83a0441a6b",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/xml/tmp/v2-preflight-AWiA2csM.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/xml/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/xml/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/xml/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.544,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=0bafb04a3049969352616a8b46ba4270f4954610cd1dc9422e397c1f86da",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/html/tmp/v2-preflight-rrgtA6lh.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/html/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/html/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/html/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.537,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=b453676f81c6a5ef5b6463f984d47bdaf43344862257e930522a85adb308",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/json_error/tmp/v2-preflight-3gZTv65m.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/json_error/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/json_error/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/json_error/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.55,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=6487640d947f19ea0293a37cfd6e27b6eb699e9d263ada53b47a1a95ee42",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/non_200/tmp/v2-preflight-cr6gumIz.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/non_200/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/non_200/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/non_200/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.558,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=266c6eba13b24b93ae24d813d76ea3d257c8de39a8e1c0ac3a3970ededf8",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/empty/tmp/v2-preflight-g5zAYiNO.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/empty/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/empty/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/empty/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned empty response\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.553,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=42a10d476b4a68058e426ee122527f459679daf1585cced34f68b469c21b",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/corrupt_json/tmp/v2-preflight-lpIBrcyW.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/corrupt_json/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/corrupt_json/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/corrupt_json/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.543,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=19099ff8c65b8d6ee50e5aedc6a0c479a5adea74fd6b6bb89f15808aa130",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/corrupt_base64/tmp/v2-preflight-VpLLYMmM.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/corrupt_base64/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/corrupt_base64/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/corrupt_base64/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.539,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=43ea9c302c7511315b6a37839082bc5890b931090274723a044c427d7463",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/digest_mismatch/tmp/v2-preflight-Ncfceu6T.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/digest_mismatch/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/digest_mismatch/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/digest_mismatch/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.524,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=e93fe89c88273b6cec185d17daf2c3789828bf38d78c1016a3b7c7026c56",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/header_only/tmp/v2-preflight-adYrC9iq.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/header_only/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/header_only/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/header_only/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.553,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=fb0916d6609cbbab1c3e558190ac309a67468e45a3fa2ba6915931c206e1",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/zero_archive/tmp/v2-preflight-Ol8JoNTf.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/zero_archive/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/zero_archive/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/zero_archive/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "remote_v2_copy",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.576,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "exactPreflightBytesObserved": true,
+      "requestEvidence": [
+        {
+          "method": "POST",
+          "requestBytes": 2504,
+          "contentType": "multipart/form-data; boundary=2085df7fae0fcdb3226e64932c05b958f6c1cbcd90c64a53ae1218fe8b93",
+          "uploadedPlistSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "preflightSha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3",
+          "exactPreflightBytes": true
+        }
+      ],
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "<isolated-audit>/remote_v2_copy/timeout/tmp/v2-preflight-ZWMzPXne.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_v2_copy/timeout/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: <isolated-audit>/remote_v2_copy/timeout/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_v2_copy/timeout/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nSigning error: signing request timeout: Post \"http://127.0.0.1:41187/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n"
+    }
+  ],
+  "summary": {
+    "checks": 58,
+    "controlsPassed": 5,
+    "negativesRejected": 53,
+    "failures": 0
+  }
+}

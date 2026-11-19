@@ -1,0 +1,520 @@
+{
+  "formatVersion": 1,
+  "scope": "INACTIVE_CANDIDATE_REAL_ENTRYPOINTS_AND_CAUSAL_INTEGRITY",
+  "observedAtUtc": "2026-11-19T05:46:06Z",
+  "tuple": {
+    "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+    "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+    "compilerSHA256": "563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd",
+    "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+    "label": "p15-release-s4-k4-20261119",
+    "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+    "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+    "skillSourceHead": "7546d0203405ba326e4e71ff9f74115dd0d34fa8",
+    "sourceBranch": "agent/cherri-p10r15-consumer-k4-20261119"
+  },
+  "privateCorpusUsed": false,
+  "livePromotion": false,
+  "liveHashesBefore": {
+    "active.json": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+    "bin/cherri-remote-legacy.sh": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+    "bin/cherri-remote-runner.sh": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+    "config/default-language-mode": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+    "tools/go/VERSION": "756345ba66e44025c7756e491a40b0a2fbbbd9611e462477df64fa38c6ddaba0",
+    "tools/go/bin/go": "aedb1694ac1516bbd353a7c737f31be252f59f17746133d46f9e77f2f5fe9d22",
+    "tools/go/pkg/tool/linux_arm64/asm": "b1e92ca41e0c771514e0b4b260dde22a0d589f44cc363bf1bc3846f686d5271d",
+    "tools/go/pkg/tool/linux_arm64/compile": "5d3ce715273cf3bea2215369d94cbf36126aed4727a0b0d193bdb0ea3eb5f1af",
+    "tools/go/pkg/tool/linux_arm64/link": "3d8da962f016004e0d964d169313f5b43a91eb29078357a3127e8dcc5de8e4ca"
+  },
+  "liveHashesAfter": {
+    "active.json": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+    "bin/cherri-remote-legacy.sh": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+    "bin/cherri-remote-runner.sh": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+    "config/default-language-mode": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+    "tools/go/VERSION": "756345ba66e44025c7756e491a40b0a2fbbbd9611e462477df64fa38c6ddaba0",
+    "tools/go/bin/go": "aedb1694ac1516bbd353a7c737f31be252f59f17746133d46f9e77f2f5fe9d22",
+    "tools/go/pkg/tool/linux_arm64/asm": "b1e92ca41e0c771514e0b4b260dde22a0d589f44cc363bf1bc3846f686d5271d",
+    "tools/go/pkg/tool/linux_arm64/compile": "5d3ce715273cf3bea2215369d94cbf36126aed4727a0b0d193bdb0ea3eb5f1af",
+    "tools/go/pkg/tool/linux_arm64/link": "3d8da962f016004e0d964d169313f5b43a91eb29078357a3127e8dcc5de8e4ca"
+  },
+  "liveUnchanged": true,
+  "candidateHashesBefore": {
+    "active.json": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+    "bin/cherri-remote-legacy.sh": "2a562f1be21bab7bc27c9ba80d4f6b65d7ddc5b7b3ddb9148bf93aa77e500619",
+    "bin/cherri-remote-runner.sh": "a900e644df7f88ed9e7daf7a2017e516388188ccc1676c91610df89235249416",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+    "config/default-language-mode": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+    "tools/go/VERSION": "756345ba66e44025c7756e491a40b0a2fbbbd9611e462477df64fa38c6ddaba0",
+    "tools/go/bin/go": "aedb1694ac1516bbd353a7c737f31be252f59f17746133d46f9e77f2f5fe9d22",
+    "tools/go/pkg/tool/linux_arm64/asm": "b1e92ca41e0c771514e0b4b260dde22a0d589f44cc363bf1bc3846f686d5271d",
+    "tools/go/pkg/tool/linux_arm64/compile": "5d3ce715273cf3bea2215369d94cbf36126aed4727a0b0d193bdb0ea3eb5f1af",
+    "tools/go/pkg/tool/linux_arm64/link": "3d8da962f016004e0d964d169313f5b43a91eb29078357a3127e8dcc5de8e4ca"
+  },
+  "candidateHashesAfter": {
+    "active.json": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+    "bin/cherri-remote-legacy.sh": "2a562f1be21bab7bc27c9ba80d4f6b65d7ddc5b7b3ddb9148bf93aa77e500619",
+    "bin/cherri-remote-runner.sh": "a900e644df7f88ed9e7daf7a2017e516388188ccc1676c91610df89235249416",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
+    "config/default-language-mode": "777d90290a75129dbd33a5ac590f4633ec91d0eb381213761c728004961c3320",
+    "tools/go/VERSION": "756345ba66e44025c7756e491a40b0a2fbbbd9611e462477df64fa38c6ddaba0",
+    "tools/go/bin/go": "aedb1694ac1516bbd353a7c737f31be252f59f17746133d46f9e77f2f5fe9d22",
+    "tools/go/pkg/tool/linux_arm64/asm": "b1e92ca41e0c771514e0b4b260dde22a0d589f44cc363bf1bc3846f686d5271d",
+    "tools/go/pkg/tool/linux_arm64/compile": "5d3ce715273cf3bea2215369d94cbf36126aed4727a0b0d193bdb0ea3eb5f1af",
+    "tools/go/pkg/tool/linux_arm64/link": "3d8da962f016004e0d964d169313f5b43a91eb29078357a3127e8dcc5de8e4ca"
+  },
+  "candidateRestored": true,
+  "results": [
+    {
+      "check": "runner_status",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 1.306,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+      "stdoutBytes": 654,
+      "diagnosticTail": "{\n  \"codecFingerprint\": \"3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e\",\n  \"compilerCommit\": \"b97ae752205f1e747b6c98ff7511f3484dd53bc2\",\n  \"compilerSHA256\": \"563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd\",\n  \"docsCommit\": \"205217a256b5f220724363b44b5ae516ffe6a539\",\n  \"label\": \"p15-release-s4-k4-20261119\",\n  \"macroFingerprint\": \"1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\",\n  \"schemaFingerprint\": \"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\n  \"skillSourceHead\": \"7546d0203405ba326e4e71ff9f74115dd0d34fa8\",\n  \"sourceBranch\": \"agent/cherri-p10r15-consumer-k4-20261119\"\n}\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "legacy_status",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.512,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "1a4a9431709b1fe37656aaf57e14db4bfa81996d32c0a1f28f67f701e42277ca",
+      "stdoutBytes": 349,
+      "diagnosticTail": "CHERRI_REMOTE_LANGUAGE_MODE=legacy\nCHERRI_REMOTE_SOURCE_BRANCH=agent/cherri-p10r15-consumer-k4-20261119\ncompilerCommit=b97ae752205f1e747b6c98ff7511f3484dd53bc2\ndocsCommit=205217a256b5f220724363b44b5ae516ffe6a539\nschemaFingerprint=7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\nsourceBranch=agent/cherri-p10r15-consumer-k4-20261119\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "registered_status",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.542,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "1a4a9431709b1fe37656aaf57e14db4bfa81996d32c0a1f28f67f701e42277ca",
+      "stdoutBytes": 349,
+      "diagnosticTail": "CHERRI_REMOTE_LANGUAGE_MODE=legacy\nCHERRI_REMOTE_SOURCE_BRANCH=agent/cherri-p10r15-consumer-k4-20261119\ncompilerCommit=b97ae752205f1e747b6c98ff7511f3484dd53bc2\ndocsCommit=205217a256b5f220724363b44b5ae516ffe6a539\nschemaFingerprint=7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\nsourceBranch=agent/cherri-p10r15-consumer-k4-20261119\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "runner_check",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.4,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "c567d7cd0461bd988f874ca9603ecbcee09c7b362bfe81bd643e7183923d2e79",
+      "stdoutBytes": 321,
+      "diagnosticTail": "{\n  \"uri\": \"file:////home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/jobs/release-audit-v2.cherri\",\n  \"version\": 1,\n  \"languageVersion\": \"2.0\",\n  \"schemaFingerprint\": \"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\n  \"diagnostics\": null,\n  \"valid\": true\n}\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "legacy_check",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.522,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "95bff6414b6de472f16f2fc9748f933c16339b31b03a959b431c3d708d8b9954",
+      "stdoutBytes": 204,
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nLEGACY_CHECK=PASS source=/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/jobs/release-audit-legacy.cherri\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "registered_check",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.527,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "95bff6414b6de472f16f2fc9748f933c16339b31b03a959b431c3d708d8b9954",
+      "stdoutBytes": 204,
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nLEGACY_CHECK=PASS source=/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/jobs/release-audit-legacy.cherri\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "runner_compile_unsigned",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.616,
+      "verdict": "PASS",
+      "nativeArtifacts": [
+        {
+          "name": "release-audit-v2-p15-release-s4-k4-20261119-20261119T054518-1098676.shortcut",
+          "sha256": "e6f0f775cfedc0fe7ea63c3edfed91b61b55fa80427e15b4f508deb70b9e35c0",
+          "actions": 2,
+          "syntheticSemanticsMatch": true,
+          "nativeActionIDs": [
+            "is.workflow.actions.gettext",
+            "is.workflow.actions.showresult"
+          ]
+        }
+      ],
+      "stdoutSha256": "893694ec72c99c790315775e7082a2c59c9555145d41a67af3a4f515e3e8e2d7",
+      "stdoutBytes": 426,
+      "diagnosticTail": "/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/tmp/v2-preflight-9Us3IPs7.shortcut\nSHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\ne6f0f775cfedc0fe7ea63c3edfed91b61b55fa80427e15b4f508deb70b9e35c0  /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/outputs/release-audit-v2-p15-release-s4-k4-20261119-20261119T054518-1098676.shortcut\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "legacy_compile_unsigned",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.561,
+      "verdict": "PASS",
+      "nativeArtifacts": [
+        {
+          "name": "release-audit-legacy-p15-release-s4-k4-20261119-legacy-20261119T054518-1099018.shortcut",
+          "sha256": "9fcef789676ed7f97b233cdc6b8aba88bff58c7de56a6972985bd964ceb0e706",
+          "actions": 3,
+          "syntheticSemanticsMatch": true,
+          "nativeActionIDs": [
+            "is.workflow.actions.gettext",
+            "is.workflow.actions.setvariable",
+            "is.workflow.actions.showresult"
+          ]
+        }
+      ],
+      "stdoutSha256": "f0fbf63af3c38c5f821252896eeddb3a3a18628c55924192fd83114770f970f3",
+      "stdoutBytes": 591,
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10r15-consumer-k4-20261119\nBUILD_ARTIFACT=/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/outputs/release-audit-legacy-p15-release-s4-k4-20261119-legacy-20261119T054518-1099018.shortcut\n9fcef789676ed7f97b233cdc6b8aba88bff58c7de56a6972985bd964ceb0e706  /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/outputs/release-audit-legacy-p15-release-s4-k4-20261119-legacy-20261119T054518-1099018.shortcut\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "registered_compile_unsigned",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.599,
+      "verdict": "PASS",
+      "nativeArtifacts": [
+        {
+          "name": "release-audit-legacy-p15-release-s4-k4-20261119-legacy-20261119T054519-1099239.shortcut",
+          "sha256": "afa25edaa6af8f21e26e738b4b069aa1755d4473154957806f8fbbb8ae84a2ad",
+          "actions": 3,
+          "syntheticSemanticsMatch": true,
+          "nativeActionIDs": [
+            "is.workflow.actions.gettext",
+            "is.workflow.actions.setvariable",
+            "is.workflow.actions.showresult"
+          ]
+        }
+      ],
+      "stdoutSha256": "c5069f4746ed33ad6455523eae3ff9e804fc93a31e8693e31fd5c0feabed0012",
+      "stdoutBytes": 591,
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10r15-consumer-k4-20261119\nBUILD_ARTIFACT=/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/outputs/release-audit-legacy-p15-release-s4-k4-20261119-legacy-20261119T054519-1099239.shortcut\nafa25edaa6af8f21e26e738b4b069aa1755d4473154957806f8fbbb8ae84a2ad  /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/outputs/release-audit-legacy-p15-release-s4-k4-20261119-legacy-20261119T054519-1099239.shortcut\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "runner_catalog",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.587,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "bd80dc014dc73d3c6642d1335981db1c11f6e491108fb7a0baa1f7bb5ad4abd1",
+      "stdoutBytes": 1572,
+      "diagnosticTail": "Center()\"}\n{\"name\":\"showInCalendar\"\n\"shortcutIdentifier\":\"is.workflow.actions.showincalendar\"\n\"insertionSnippet\":\"showInCalendar(\\u003c#event#\\u003e)\"}\n{\"name\":\"showIniTunes\"\n\"shortcutIdentifier\":\"is.workflow.actions.showinstore\"\n\"insertionSnippet\":\"showIniTunes(\\u003c#product#\\u003e)\"}\n{\"name\":\"showNotification\"\n\"insertionSnippet\":\"showNotification(\\u003c#body#\\u003e)\"}\n{\"name\":\"showQuickNote\"\n\"insertionSnippet\":\"showQuickNote()\"}\n{\"name\":\"showWebpage\"\n\"shortcutIdentifier\":\"is.workflow.actions.showwebpage\"\n\"insertionSnippet\":\"showWebpage(\\u003c#url#\\u003e)\"}\n\"parameters\":[{\"name\":\"show\"\n{\"name\":\"showError\"\n{\"name\":\"showPreview\"\n{\"name\":\"showWhenRun\"\n\"parameters\":[{\"name\":\"showDock\"\n\"key\":\"showDock\"\n{\"name\":\"showRecentApps\"\n\"key\":\"showRecentApps\"\n{\"name\":\"showWhenRun\"\n{\"name\":\"showWhenRun\"\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "runner_actions",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.543,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "9996dbf2a9c463e99f018cffad03431e6512d27d3a6af05ac6344e76cacb0cf8",
+      "stdoutBytes": 58,
+      "diagnosticTail": "\n### Show Result\n\nShow `input`.\n\n```\nshow(text input)\n```\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "runner_docs",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.455,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "2cded9095d73c34fb94430047dd960925d046e8a1032d486101d720f8b00235a",
+      "stdoutBytes": 17690,
+      "diagnosticTail": "ndowedMultitasking(automaticallyShowAndHideDock?: Bool)\n/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs/fork-language/actions.md:8345:| `automaticallyShowAndHideDock` | `Bool` | No | - | `automaticallyShowAndHideDock` | - |\n/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs/fork-language/actions.md:8633:Preview native objects with optional Creation Date names or display text with showLogsAsText.\n/home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs/fork-language/actions.md:8636:debugFinish(withDates?: bool = false, showLogsAsText?: bool = false)\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "immutable_sync",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.395,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+      "stdoutBytes": 654,
+      "diagnosticTail": "{\n  \"codecFingerprint\": \"3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e\",\n  \"compilerCommit\": \"b97ae752205f1e747b6c98ff7511f3484dd53bc2\",\n  \"compilerSHA256\": \"563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd\",\n  \"docsCommit\": \"205217a256b5f220724363b44b5ae516ffe6a539\",\n  \"label\": \"p15-release-s4-k4-20261119\",\n  \"macroFingerprint\": \"1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\",\n  \"schemaFingerprint\": \"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\n  \"skillSourceHead\": \"7546d0203405ba326e4e71ff9f74115dd0d34fa8\",\n  \"sourceBranch\": \"agent/cherri-p10r15-consumer-k4-20261119\"\n}\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nIMMUTABLE_RELEASE_VERIFIED p15-release-s4-k4-20261119 b97ae752205f1e747b6c98ff7511f3484dd53bc2\n"
+    },
+    {
+      "check": "immutable_sync_p15",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.357,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+      "stdoutBytes": 654,
+      "diagnosticTail": "{\n  \"codecFingerprint\": \"3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e\",\n  \"compilerCommit\": \"b97ae752205f1e747b6c98ff7511f3484dd53bc2\",\n  \"compilerSHA256\": \"563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd\",\n  \"docsCommit\": \"205217a256b5f220724363b44b5ae516ffe6a539\",\n  \"label\": \"p15-release-s4-k4-20261119\",\n  \"macroFingerprint\": \"1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\",\n  \"schemaFingerprint\": \"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\n  \"skillSourceHead\": \"7546d0203405ba326e4e71ff9f74115dd0d34fa8\",\n  \"sourceBranch\": \"agent/cherri-p10r15-consumer-k4-20261119\"\n}\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nIMMUTABLE_RELEASE_VERIFIED p15-release-s4-k4-20261119 b97ae752205f1e747b6c98ff7511f3484dd53bc2\n"
+    },
+    {
+      "check": "immutable_sync_p10_compatibility",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.4,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+      "stdoutBytes": 654,
+      "diagnosticTail": "{\n  \"codecFingerprint\": \"3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e\",\n  \"compilerCommit\": \"b97ae752205f1e747b6c98ff7511f3484dd53bc2\",\n  \"compilerSHA256\": \"563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd\",\n  \"docsCommit\": \"205217a256b5f220724363b44b5ae516ffe6a539\",\n  \"label\": \"p15-release-s4-k4-20261119\",\n  \"macroFingerprint\": \"1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\",\n  \"schemaFingerprint\": \"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\n  \"skillSourceHead\": \"7546d0203405ba326e4e71ff9f74115dd0d34fa8\",\n  \"sourceBranch\": \"agent/cherri-p10r15-consumer-k4-20261119\"\n}\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nIMMUTABLE_RELEASE_VERIFIED p15-release-s4-k4-20261119 b97ae752205f1e747b6c98ff7511f3484dd53bc2\n"
+    },
+    {
+      "check": "skill_full_catalog",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.169,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "744f422c3d4c8e88f530658e2f02f77fa389deb2e6108c29e96633875659d0fb",
+      "stdoutBytes": 237101,
+      "diagnosticTail": "enuItemTitle\",\"WFMenuItems\",\"WFMenuPrompt\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"menu(\\\"Choose\\\") {\\n\\tcase \\\"Option 1\\\" {\\n\\t\\t\\n\\t}\\n}\"},{\"name\":\"repeat\",\"shortcutIdentifier\":\"is.workflow.actions.repeat.count\",\"title\":\"Repeat\",\"category\":\"controlflow\",\"emittedKeys\":[\"GroupingIdentifier\",\"UUID\",\"WFControlFlowMode\",\"WFRepeatCount\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"repeat (\\u003c#count#\\u003e) {\\n\\t\\n}\"},{\"name\":\"repeat.each\",\"shortcutIdentifier\":\"is.workflow.actions.repeat.each\",\"title\":\"Repeat with Each\",\"category\":\"controlflow\",\"emittedKeys\":[\"GroupingIdentifier\",\"UUID\",\"WFControlFlowMode\",\"WFInput\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"for item in \\u003c#items#\\u003e {\\n\\t\\n}\"},{\"name\":\"setVariable\",\"shortcutIdentifier\":\"is.workflow.actions.setvariable\",\"title\":\"Set Variable\",\"category\":\"controlflow\",\"emittedKeys\":[\"WFInput\",\"WFVariableName\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"var variable = \\u003c#value#\\u003e\"},{\"name\":\"appendVariable\",\"shortcutIdentifier\":\"is.workflow.actions.appendvariable\",\"title\":\"Add to Variable\",\"category\":\"controlflow\",\"emittedKeys\":[\"WFInput\",\"WFVariableName\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"variable += \\u003c#value#\\u003e\"},{\"name\":\"dictionaryValue\",\"shortcutIdentifier\":\"is.workflow.actions.dictionary\",\"title\":\"Dictionary\",\"category\":\"controlflow\",\"emittedKeys\":[\"WFItems\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"let dict = {\\n\\t\\\"key\\\": \\\"value\\\"\\n}\"},{\"name\":\"calculateExpression\",\"shortcutIdentifier\":\"is.workflow.actions.calculateexpression\",\"title\":\"Calculate Expression\",\"category\":\"math\",\"emittedKeys\":[\"Input\"],\"builtin\":true,\"compilerConstruct\":true,\"insertionSnippet\":\"let result = 1 + 1\"}]}\n"
+    },
+    {
+      "check": "runner_existing_tests",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 41.582,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "ecfac88c56935a32cf62060a458c45a534fff8df86418682c8c0122a0f4aa7a9",
+      "stdoutBytes": 4916,
+      "diagnosticTail": "om/electrikmilk/cherri/tools/ci-test-discovery\t0.006s [no tests to run]\n?   \tgithub.com/electrikmilk/cherri/tools/inventory\t[no test files]\nok  \tgithub.com/electrikmilk/cherri/tools/ios-runtime-verifier\t0.006s [no tests to run]\nok  \tgithub.com/electrikmilk/cherri/tools/language-acceptance\t0.009s [no tests to run]\nok  \tgithub.com/electrikmilk/cherri/tools/language-docs\t0.007s [no tests to run]\nok  \tgithub.com/electrikmilk/cherri/tools/language-migrate\t0.007s [no tests to run]\nok  \tgithub.com/electrikmilk/cherri/tools/language-schema\t0.007s [no tests to run]\n?   \tgithub.com/electrikmilk/cherri/tools/language-stdlib\t[no test files]\nok  \tgithub.com/electrikmilk/cherri/tools/legacy-parity\t0.008s [no tests to run]\nok  \tgithub.com/electrikmilk/cherri/tools/shortcut-corpus\t0.011s [no tests to run]\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "reject_tuple_codecFingerprint",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.047,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_compilerCommit",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.048,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_compilerSHA256",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.051,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_docsCommit",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.05,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_label",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.051,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_macroFingerprint",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.05,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_schemaFingerprint",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.05,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_skillSourceHead",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.049,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_tuple_sourceBranch",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.052,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_RELEASE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_dirty_skill",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.115,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_SOURCE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_dirty_compiler",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.131,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_SOURCE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_dirty_docs",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.134,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_SOURCE_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_binary_drift",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.24,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "IMMUTABLE_COMPILER_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_toolchain_dependency_drift",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.057,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "TOOLCHAIN_DEPENDENCY_MISMATCH\nERROR: Cannot read active release\n"
+    },
+    {
+      "check": "reject_implicit_language_switch",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.006,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "LEGACY_BUILDER_ERROR: default language mode is not Legacy\n"
+    },
+    {
+      "check": "reject_validator_drift_legacy",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.011,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "LEGACY_BUILDER_ERROR: preflight checksum changed\n"
+    },
+    {
+      "check": "reject_validator_drift_v2",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.39,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "Platform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nERROR: Preflight validator checksum mismatch\n"
+    },
+    {
+      "check": "reject_registered_runner_drift",
+      "kind": "CAUSAL_REJECTION",
+      "exitCode": 1,
+      "seconds": 0.008,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "diagnosticTail": "LEGACY_BUILDER_ERROR: runner checksum changed\n"
+    },
+    {
+      "check": "restored_registered_status",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.434,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "1a4a9431709b1fe37656aaf57e14db4bfa81996d32c0a1f28f67f701e42277ca",
+      "stdoutBytes": 349,
+      "diagnosticTail": "CHERRI_REMOTE_LANGUAGE_MODE=legacy\nCHERRI_REMOTE_SOURCE_BRANCH=agent/cherri-p10r15-consumer-k4-20261119\ncompilerCommit=b97ae752205f1e747b6c98ff7511f3484dd53bc2\ndocsCommit=205217a256b5f220724363b44b5ae516ffe6a539\nschemaFingerprint=7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\nsourceBranch=agent/cherri-p10r15-consumer-k4-20261119\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "check": "restored_runner_status",
+      "kind": "ENTRYPOINT",
+      "exitCode": 0,
+      "seconds": 0.349,
+      "verdict": "PASS",
+      "nativeArtifacts": [],
+      "stdoutSha256": "813b45447e1cafc9645e48e055486bec17f0587161d7b70b6c37c68ce93ba665",
+      "stdoutBytes": 654,
+      "diagnosticTail": "{\n  \"codecFingerprint\": \"3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e\",\n  \"compilerCommit\": \"b97ae752205f1e747b6c98ff7511f3484dd53bc2\",\n  \"compilerSHA256\": \"563d0c763644bbd0ec9f33b94627c6e3143ee19ce41f5aa5675afb71c803d1bd\",\n  \"docsCommit\": \"205217a256b5f220724363b44b5ae516ffe6a539\",\n  \"label\": \"p15-release-s4-k4-20261119\",\n  \"macroFingerprint\": \"1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\",\n  \"schemaFingerprint\": \"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\n  \"skillSourceHead\": \"7546d0203405ba326e4e71ff9f74115dd0d34fa8\",\n  \"sourceBranch\": \"agent/cherri-p10r15-consumer-k4-20261119\"\n}\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/source/p15-release-s4-k4-20261119/skills/cherri-shortcuts\nPinned compiler commit: b97ae752205f1e747b6c98ff7511f3484dd53bc2\nPinned docs commit: 205217a256b5f220724363b44b5ae516ffe6a539\nCherri: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-p10r15-release-s4-20261119/stage-k4-7546d02/remote-home/p15-release-s4-k4-20261119/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    }
+  ],
+  "fatalError": null,
+  "summary": {
+    "checks": 37,
+    "passed": 37,
+    "failed": 0,
+    "notRun": 0
+  },
+  "activationGatePassed": true
+}
