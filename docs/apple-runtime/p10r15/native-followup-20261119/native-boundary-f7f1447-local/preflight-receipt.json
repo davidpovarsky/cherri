@@ -1,0 +1,97 @@
+{
+  "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "compilerBinarySha256": "a79ae7d6374ccc21d394b8257bbdf994ac8d322beca3e929148bb14d54a8d03c",
+  "harnessCommit": "f7f1447263ff99deb891e6044b62b270b6e8797c",
+  "harnessCleanBefore": true,
+  "phase0ExitCode": 0,
+  "phase0Seconds": 4.703,
+  "actualAttempts": 67,
+  "compiledArtifacts": 65,
+  "expectedDiagnosticRejections": 2,
+  "source": {
+    "fixtureSha256": "30f7ea3431a917b4b8f73b200ef113fd833cd0e522f9932b1a714e53bfd4e8dd",
+    "originalFixturesUnchanged": true,
+    "bindingBodyByteIdentical": true,
+    "formalAcceptance": false,
+    "appleRuntime": "NOT_RUN"
+  },
+  "graph": {
+    "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+    "nativeActions": 181,
+    "independentClipboardRoutes": 4,
+    "boundedPublicExportByteWitnesses": 2,
+    "clipboardContentPublished": false,
+    "independentTypeWitnesses": 3,
+    "supportedFileCoercionObservedSeparately": true,
+    "formalAcceptance": false,
+    "appleRuntime": "NOT_RUN"
+  },
+  "rejectedGraphMutations": [
+    "wrong-entry-count",
+    "first-as-last",
+    "wrong-payload-key",
+    "wrong-dictionary-control",
+    "wrong-binary-control",
+    "type-witness-alias",
+    "getvariable-not-clipboard",
+    "token-route-collapsed",
+    "canonical-action-collapsed",
+    "direct-result-replaced",
+    "hardcoded-result",
+    "flag-always-yes",
+    "cap-bypassed",
+    "missing-uuid",
+    "duplicate-uuid",
+    "callback-replaced",
+    "seed-changed",
+    "unlogged-public-value",
+    "file-coercion-removed",
+    "file-coercion-wrong-class",
+    "file-byte-route-collapsed",
+    "file-name-hardcoded"
+  ],
+  "newContractTests": {
+    "exitCode": 0,
+    "methods": 3,
+    "logSha256": "41d50013ce5f7cdf5058ee30fcea669d566bdc2c4a0d3ec14da9110aa976f0a8"
+  },
+  "harnessCleanAfter": true,
+  "sourceFiles": [
+    {
+      "path": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "sha256": "f1578c25af84c35afb1f46322ad539bf08fb5964f8489a0e82f3f71ff835d2b0"
+    },
+    {
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "sha256": "119be15fc3684a4e298dec880f3fb3cc20fea28ea8f906c6fc51963b2ec9dce8"
+    },
+    {
+      "path": "tools/p10r15/audit_native_continuation.py",
+      "sha256": "5d2eeec9c888c272e2c27145deafd5d79f7d88add008f725f3f4335dfc57736d"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
+      "sha256": "39b1051c18288e96363711fe2326f9cf0fa9391ffbd885546ac7bf66da8617a3"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+      "sha256": "c13695493c25113ea2c2e1bb40eeb00591626cdf51e98f55f904bc3d0ab4ea55"
+    },
+    {
+      "path": "docs/apple-runtime/p10r15/native-boundary-characterization.md",
+      "sha256": "c29c130628beee36d1a51c0ec46a3708187fe098609152435fa767be333637fd"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-native-boundary-diagnostic-v2.cherri",
+      "sha256": "30f7ea3431a917b4b8f73b200ef113fd833cd0e522f9932b1a714e53bfd4e8dd"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/native_boundary_diagnostic.py",
+      "sha256": "56d3952fae4cac14e43c358d270f4f6a4b2ac725c7f98a9fd46e1b378c06bc8d"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_native_boundary_contract.py",
+      "sha256": "dabc9906fe4e82ce76ab2fedda3301f0b34727b00546fc0b0b0e0cc8d8a8d0de"
+    }
+  ]
+}
