@@ -163,7 +163,7 @@ func p15BindingSnapshotError(actions []map[string]any, kind string) error {
 	if consumed != 2 {
 		return fmt.Errorf("original %s capture consumed %d times, want exactly twice", kind, consumed)
 	}
-	return nil
+	return p15BindingTerminalError(actions, kind, captureID, later, positions)
 }
 
 func TestP15V01DeclarationSnapshotProduction(t *testing.T) {
