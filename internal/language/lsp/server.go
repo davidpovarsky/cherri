@@ -168,6 +168,16 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 			s.publishDiagnostics(p.TextDocument.URI)
 		}
 
+	case "workspace/didChangeWatchedFiles":
+		var changes struct {
+			Changes []json.RawMessage `json:"changes"`
+		}
+		if err := json.Unmarshal(msg.Params, &changes); err == nil && len(changes.Changes) > 0 {
+			for _, uri := range s.svc.InvalidateAssets() {
+				s.publishDiagnostics(uri)
+			}
+		}
+
 	case "textDocument/didClose":
 		var p struct {
 			TextDocument struct {

@@ -122,6 +122,8 @@ type CallArgument struct {
 
 // ResolvedCall describes a typed, resolved action invocation.
 type ResolvedCall struct {
+	// SourceDocument is source metadata for local resources, never a native parameter.
+	SourceDocument  string
 	DefinitionID    string
 	VariantID       string
 	AppleIdentifier string

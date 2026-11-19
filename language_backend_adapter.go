@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/assets"
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -17,6 +18,9 @@ import (
 )
 
 type CanonicalBackendSession struct {
+	assetEntryDocument       string
+	assetCache               *assets.Cache
+	assetScope               *assets.Scope
 	tx                       *BackendTransaction
 	cleanup                  func()
 	shortcut                 Shortcut
@@ -47,6 +51,10 @@ func NewCanonicalBackendSession() *CanonicalBackendSession {
 }
 
 func (s *CanonicalBackendSession) Close() {
+	if s.assetScope != nil {
+		_ = s.assetScope.Close()
+		s.assetScope = nil
+	}
 	if s.cleanup != nil {
 		s.cleanup()
 		s.cleanup = nil
@@ -138,6 +146,9 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		identifier: ident,
 		definition: *def,
 		arguments:  args,
+	}
+	if err := s.prepareEmbeddedAsset(call, &actRef); err != nil {
+		return "", err
 	}
 	if ident == "rawAction" && len(args) > 0 {
 		if rawIdent, ok := getArgValue(args[0]).(string); ok {

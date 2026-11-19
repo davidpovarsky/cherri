@@ -363,6 +363,7 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
 
 	session := NewCanonicalBackendSession()
 	session.buildProfile = profile
+	session.configureAssets(filePath, options.AssetCache)
 	session.configurePlatformVersions(analyzer.Registry(), analyzer.Targets(), analyzer.MinTargetVersionString(), analyzer.MaxTargetVersionString())
 	defer session.Close()
 

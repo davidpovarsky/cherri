@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/electrikmilk/cherri/internal/language/assets"
 )
 
 // BuildProfile controls compiler-owned diagnostics; it never removes assertions.
@@ -18,6 +20,9 @@ const (
 type CompileOptions struct {
 	BuildProfile   BuildProfile
 	VirtualModules map[string]string
+	// AssetCache allows the editor and compiler to share verified local file bytes.
+	// Nil selects the process-wide bounded cache.
+	AssetCache *assets.Cache
 	// RequireAuthoredWorkflow rejects native.workflow provenance before any output
 	// is finalized. Edit workflows instead supply an original and exact policy.
 	RequireAuthoredWorkflow bool
