@@ -23,7 +23,6 @@ var incompleteLocalAssertions = map[string]string{
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
-	"N01":  "A modulus action and action count do not establish fractional division and numeric constraints.",
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F02":  "Seven actions do not prove group identities, scopes, or zero-based indices.",
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",

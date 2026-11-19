@@ -224,6 +224,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/service/service.go", "p15_parser_acceptance_test.go"}
 			row.PositiveAndNegative = res.Passed
 		}
+		if scenario, found := numberFunctionScenarios[row.ID]; found {
+			row.TestNames = scenario.tests()
+			row.ProductionPath = append([]string{}, scenario.ProductionPaths...)
+			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
+			row.Scope = scenario.Scope + "; actual Apple observations remain separately required"
+		}
 		if tests, ok := bindingProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, bindingProductionPaths[row.ID]...)

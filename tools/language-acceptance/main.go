@@ -947,6 +947,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateBindingCaptureRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1630,20 +1634,7 @@ func (r *Runner) runCollections() {
 
 // Group 9: Numbers
 func (r *Runner) runNumbers() {
-	// N01: Fractional arithmetic, modulus, compound assignment
-	srcN01 := "var acc = 5\nacc += 6\nlet half = acc / 2\nlet rem = acc % 3"
-	wfN01, errN01 := lowerSrc(r.reg, srcN01)
-	hasModMath := false
-	if wfN01 != nil {
-		for _, a := range wfN01.Actions {
-			if a.AppleIdentifier == "is.workflow.actions.math" && a.Parameters["WFScientificMathOperation"] == "Modulus" {
-				hasModMath = true
-				break
-			}
-		}
-	}
-	n01Passed := errN01 == nil && hasModMath && len(wfN01.Actions) >= 3
-	r.Record("N01", "numbers", "Fractional arithmetic including 5/2 and constraints", "unit+native+iOS", []string{"unit", "native"}, n01Passed, "PASSED", "Floating point division, modulus via WFScientificMathOperation=Modulus, and compound assignment lowered")
+	r.runNumberFunctionRequirement("N01")
 
 	// N02: Known zero divisor (/ 0 and % 0) and text-plus-number
 	diagsDivZero := analyzeSrc(r.reg, "let z = 10 / 0")

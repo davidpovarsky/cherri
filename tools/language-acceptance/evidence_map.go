@@ -256,6 +256,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if scenario, found := numberFunctionScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if id == "D03" {
 		return []string{documentationConsumerTestID, documentationAppTestID}
 	}
