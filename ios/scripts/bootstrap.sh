@@ -15,6 +15,12 @@ fi
   npm run build
 )
 
+CHERRI_DOCS_COMMIT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["docsCommit"])' "$ROOT_DIR/skills/cherri-shortcuts/compatibility-manifest.json")"
+mkdir -p "$IOS_DIR/.build"
+python3 "$IOS_DIR/scripts/build_documentation_index.py" \
+  --docs "$IOS_DIR/.build/documentation-source/$CHERRI_DOCS_COMMIT" --fetch \
+  > "$IOS_DIR/.build/documentation-receipt.json"
+
 "$IOS_DIR/scripts/build_cherri_core.sh"
 
 (

@@ -68,6 +68,29 @@ The repository's **iOS Build** GitHub Actions workflow is the reference build en
 
 This validates the source and integration without requiring a local Mac or Apple signing identity.
 
+## Bundled documentation
+
+The workspace's Documentation screen searches the active fork-language guide
+and the generated action reference offline. The migration guide is available
+through an explicit toggle and labels Legacy code as migration reference.
+Search and reading use the bundled index; explicit links to the pinned source
+on GitHub require a network connection.
+
+Bootstrap and the iOS workflow run `scripts/build_documentation_index.py`.
+The generator uses the exact docs commit from the shared
+`skills/cherri-shortcuts/compatibility-manifest.json`, checks the repository,
+clean working tree, original Git bytes and schema/macro fingerprints, and
+bundles only the four current fork-language documents. Action signatures come
+from the existing generated reference; Swift contains no action catalog copy.
+The generated JSON is ignored by Git. Each native build checks its exact digest
+against the generation receipt and its version fields against the current shared
+manifest. A missing, damaged or stale index stops the build; rerun bootstrap to
+regenerate it from the pinned source.
+
+The workflow's optional `documentation_component_only` input runs a separate
+SwiftUI type-check and generator check before app integration. It deliberately
+does not represent a full iOS app build or Simulator test run.
+
 ## Local Mac build
 
 When a Mac is available:

@@ -71,11 +71,6 @@ def verified_sources(root, manifest):
         blob = git(root, "show", "HEAD:" + path)
         require(local.read_bytes() == blob, "Documentation bytes differ from pinned Git blob: " + path)
         sources[path] = blob
-    actions = sources["fork-language/actions.md"].decode("utf-8")
-    for label, key in (("Schema Fingerprint", "schemaFingerprint"),
-                       ("Compiler Macro Fingerprint", "macroFingerprint")):
-        observed = re.findall(r"\*\*" + label + r":\*\*\s*`([a-f0-9]{64})`", actions)
-        require(observed == [manifest[key]], "Documentation " + label + " mismatch")
     return sources
 
 
@@ -133,7 +128,11 @@ def sections_for(path, raw, commit):
         match = re.match(r"^\s*(`{3,}|~{3,})(.*)$", line)
         if match:
             flush_prose()
-            fence, language = match.group(1), match.group(2).strip()
+            fence = match.group(1)
+            info = match.group(2).strip().split()
+            language = info[0].lower() if info else ""
+            require(re.fullmatch(r"[a-z0-9_+-]*", language) is not None,
+                    "Unsupported code-fence language token")
             require(language != "cherri-legacy" or migration, "Legacy example outside migration guide")
             continue
         match = re.match(r"^#{1,6}\s+(.+?)\s*#*\s*$", line)
@@ -148,8 +147,18 @@ def sections_for(path, raw, commit):
     return output
 
 
-def build_index(root, manifest):
-    sources = verified_sources(Path(root), manifest)
+def build_index_from_sources(sources, manifest):
+    """Build canonical content from four verified Git blobs, without filesystem I/O."""
+    require(isinstance(sources, dict) and set(sources) == set(SOURCES),
+            "Documentation source scope mismatch")
+    require(all(isinstance(sources[path], bytes) for path in SOURCES),
+            "Documentation sources must be exact bytes")
+    sources = {path: sources[path] for path in SOURCES}
+    actions = sources["fork-language/actions.md"].decode("utf-8")
+    for label, key in (("Schema Fingerprint", "schemaFingerprint"),
+                       ("Compiler Macro Fingerprint", "macroFingerprint")):
+        observed = re.findall(r"\*\*" + label + r":\*\*\s*`([a-f0-9]{64})`", actions)
+        require(observed == [manifest[key]], "Documentation " + label + " mismatch")
     index = {"formatVersion": 1, "languageVersion": manifest["languageVersion"],
              **{key: manifest[key] for key in ("docsCommit", "compilerCommit",
                                                "schemaFingerprint", "macroFingerprint")},
@@ -162,17 +171,50 @@ def build_index(root, manifest):
     return index
 
 
+def build_index(root, manifest):
+    return build_index_from_sources(verified_sources(Path(root), manifest), manifest)
+
+
+def verify_output(output, receipt_path, manifest):
+    raw = Path(output).read_bytes()
+    index = json.loads(raw, object_pairs_hook=unique_object)
+    receipt = json.loads(Path(receipt_path).read_bytes(), object_pairs_hook=unique_object)
+    require(receipt.get("sha256") == hashlib.sha256(raw).hexdigest() and
+            receipt.get("bytes") == len(raw), "Generated documentation digest mismatch")
+    for key in ("docsCommit", "compilerCommit", "schemaFingerprint", "macroFingerprint", "languageVersion"):
+        require(index.get(key) == manifest[key], "Stale generated documentation: " + key)
+    require(index.get("formatVersion") == 1 and isinstance(index.get("sections"), list),
+            "Invalid generated documentation schema")
+    require(receipt.get("docsCommit") == index["docsCommit"] and
+            receipt.get("compilerCommit") == index["compilerCommit"] and
+            receipt.get("sections") == len(index["sections"]) and
+            receipt.get("sourceFiles") == len(SOURCES), "Generation receipt metadata mismatch")
+    sources = index.get("sourceFiles", [])
+    require(len(sources) == len(SOURCES) and {row["path"] for row in sources} == set(SOURCES),
+            "Generated documentation source scope mismatch")
+    return {"status": "VERIFIED_BUNDLED_DOCUMENTATION", "docsCommit": index["docsCommit"],
+            "compilerCommit": index["compilerCommit"], "sha256": receipt["sha256"]}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=Path(__file__).resolve().parents[2] /
                         "skills/cherri-shortcuts/compatibility-manifest.json")
-    parser.add_argument("--docs", type=Path, required=True)
+    parser.add_argument("--docs", type=Path)
     parser.add_argument("--fetch", action="store_true",
                         help="Create a new ordinary checkout at the exact manifest revision")
     parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] /
                         "CherriApp/Resources/Documentation/documentation-index.json")
+    parser.add_argument("--verify-output", action="store_true",
+                        help="Reject stale or damaged generated resources before a native build")
+    parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
     manifest = read_manifest(args.manifest)
+    if args.verify_output:
+        require(args.receipt is not None, "--verify-output requires --receipt")
+        print(json.dumps(verify_output(args.output, args.receipt, manifest)))
+        return
+    require(args.docs is not None, "Generation requires --docs")
     if args.fetch:
         fetch_docs(args.docs, manifest)
     index = build_index(args.docs, manifest)

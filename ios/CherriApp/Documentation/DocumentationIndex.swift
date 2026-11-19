@@ -66,6 +66,7 @@ struct DocumentationIndex: Decodable {
                   !section.title.isEmpty && !section.blocks.isEmpty &&
                   section.blocks.allSatisfy {
                       ["prose", "code"].contains($0.kind) &&
+                      $0.language.range(of: "^[a-z0-9_+-]*$", options: .regularExpression) != nil &&
                       ($0.language != "cherri-legacy" || section.migrationOnly)
                   }
               }) else {

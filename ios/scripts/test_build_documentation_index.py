@@ -69,6 +69,23 @@ class DocumentationIndexTests(unittest.TestCase):
     def testDeterministicOutput(self):
         self.assertEqual(self.build(), self.build())
 
+    def testCanonicalSourceHelperUsesExactScopeAndStableOrder(self):
+        sources = {path: self.git("show", "HEAD:" + path) for path in docs.SOURCES}
+        expected = self.build()
+        reordered = dict(reversed(list(sources.items())))
+        self.assertEqual(docs.build_index_from_sources(reordered, self.manifest), expected)
+        missing = dict(sources)
+        missing.pop(docs.SOURCES[-1])
+        historical = dict(sources, **{"language/obsolete.md": b"Historical"})
+        for damaged in (missing, historical):
+            with self.subTest(keys=list(damaged)):
+                with self.assertRaisesRegex(ValueError, "source scope mismatch"):
+                    docs.build_index_from_sources(damaged, self.manifest)
+        nonbytes = dict(sources)
+        nonbytes[docs.SOURCES[0]] = nonbytes[docs.SOURCES[0]].decode("utf-8")
+        with self.assertRaisesRegex(ValueError, "exact bytes"):
+            docs.build_index_from_sources(nonbytes, self.manifest)
+
     def testDirtyTrackedSourceRejected(self):
         self.write("fork-language/guide.md", self.read("fork-language/guide.md") + "\nTampered")
         with self.assertRaisesRegex(ValueError, "dirty"):
@@ -123,6 +140,15 @@ class DocumentationIndexTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Legacy example outside"):
             self.build()
 
+    def testLegacyFenceInfoCannotBypassMigrationPolicy(self):
+        original = self.read("fork-language/guide.md")
+        for info in ["cherri-legacy title=example", "ChErRi-LeGaCy", "cherri-legacy{.example}"]:
+            with self.subTest(info=info):
+                self.write("fork-language/guide.md", original.replace("```cherri", "```" + info))
+                self.commit()
+                with self.assertRaisesRegex(ValueError, "Legacy example outside|Unsupported code-fence"):
+                    self.build()
+
     def testUnterminatedFenceRejected(self):
         self.write("fork-language/guide.md", self.read("fork-language/guide.md") + "\n```cherri\nbroken\n")
         self.commit()
@@ -134,6 +160,29 @@ class DocumentationIndexTests(unittest.TestCase):
         path.write_bytes(b'{"docsCommit":"first","docsCommit":"second"}')
         with self.assertRaisesRegex(ValueError, "Duplicate JSON key"):
             docs.read_manifest(path)
+
+    def testNativeBuildRejectsStaleOrDamagedGeneratedResource(self):
+        raw = (json.dumps(self.build(), ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+        output, receipt = Path(self.temp.name) / "index.json", Path(self.temp.name) / "receipt.json"
+        output.write_bytes(raw)
+        receipt.write_bytes(json.dumps({"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+                                        "docsCommit": self.manifest["docsCommit"],
+                                        "compilerCommit": self.manifest["compilerCommit"],
+                                        "sourceFiles": 4, "sections": len(self.build()["sections"])}).encode())
+        self.assertEqual(docs.verify_output(output, receipt, self.manifest)["status"],
+                         "VERIFIED_BUNDLED_DOCUMENTATION")
+        changed = dict(self.manifest, compilerCommit="f" * 40)
+        with self.assertRaisesRegex(ValueError, "Stale generated documentation"):
+            docs.verify_output(output, receipt, changed)
+        output.write_bytes(raw.replace(b"Current V2 prose", b"Changed V2 prose"))
+        with self.assertRaisesRegex(ValueError, "digest mismatch"):
+            docs.verify_output(output, receipt, self.manifest)
+        output.write_bytes(raw)
+        bad_receipt = json.loads(receipt.read_bytes())
+        bad_receipt["sections"] += 1
+        receipt.write_bytes(json.dumps(bad_receipt).encode())
+        with self.assertRaisesRegex(ValueError, "metadata mismatch"):
+            docs.verify_output(output, receipt, self.manifest)
 
     def testFloatingManifestRevisionRejected(self):
         path = Path(self.temp.name) / "manifest.json"

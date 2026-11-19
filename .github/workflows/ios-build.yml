@@ -102,6 +102,14 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
+      - name: Bundle manifest-pinned documentation
+        run: |
+          python3 -m unittest discover -s ios/scripts -p 'test_build_documentation_index.py' -v
+          mkdir -p ios/.build
+          python3 ios/scripts/build_documentation_index.py \
+            --docs "$RUNNER_TEMP/cherri-pinned-docs" --fetch \
+            > ios/.build/documentation-receipt.json
+
       - name: Test existing Cherri compiler
         run: |
           go test -run TestCherriNoSign -v ./...
