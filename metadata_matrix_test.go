@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -253,29 +254,27 @@ customNotify("Build Complete")
 
 // LANG-002: enum / type aliases
 func TestLANG002_EnumAndTypeAliases(t *testing.T) {
-	t.Run("ValidEnum", func(t *testing.T) {
-		codeEnum := `
-enum Environment {
-    staging = "STAGING",
-    prod = "PRODUCTION"
-}
-quicklook(Environment.prod)
-`
-		session := compileMetaSourceToSession(t, "lang002_enum", codeEnum)
+	t.Run("LiteralReferenceControl", func(t *testing.T) {
+		session := compileMetaSourceToSession(t, "lang002_literal", "quicklook(\"PRODUCTION\")")
 		defer session.Close()
-
-		found := false
-		for _, act := range session.shortcut.WFWorkflowActions {
-			if act.WFWorkflowActionIdentifier == "is.workflow.actions.previewdocument" {
-				found = true
-				input := act.WFWorkflowActionParameters["WFInput"]
-				if input != "PRODUCTION" {
-					t.Errorf("expected quicklook input to be 'PRODUCTION', got %v", input)
-				}
-			}
+		if err := lang002QuickLookStringGraph(session.shortcut.WFWorkflowActions, "PRODUCTION"); err != nil {
+			t.Fatal(err)
 		}
-		if !found {
-			t.Fatalf("expected quicklook action")
+	})
+	t.Run("ValidEnum", func(t *testing.T) {
+		session := compileMetaSourceToSession(t, "lang002_enum", lang002EnumSource)
+		defer session.Close()
+		actions := session.shortcut.WFWorkflowActions
+		if err := lang002QuickLookStringGraph(actions, "PRODUCTION"); err != nil {
+			t.Fatal(err)
+		}
+		literal := compileMetaSourceToSession(t, "lang002_literal_parity", "quicklook(\"PRODUCTION\")")
+		defer literal.Close()
+		if err := lang002QuickLookStringGraph(literal.shortcut.WFWorkflowActions, "PRODUCTION"); err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(lang002NormalizedGraph(actions), lang002NormalizedGraph(literal.shortcut.WFWorkflowActions)) {
+			t.Fatal("enum and ordinary literal differ beyond generated producer UUIDs")
 		}
 	})
 
@@ -294,6 +293,123 @@ quicklook(Environment.invalid)
 			t.Errorf("expected error mentioning missing member, got: %v", err)
 		}
 	})
+}
+
+// The canonical declaration in actions/basic.cherri uses variable input: WFInput.
+// Its generated schema accepts attachment(output)/attachment(variable), codec
+// token. Enum strings therefore use the same one-Text producer as ordinary
+// string arguments. Validate the value and exact edge, not merely a reference.
+const lang002EnumSource = "enum Environment {\n    staging = \"STAGING\",\n    prod = \"PRODUCTION\"\n}\nquicklook(Environment.prod)\n"
+
+func lang002QuickLookStringGraph(actions []ShortcutAction, expected string) error {
+	if len(actions) != 2 {
+		return fmt.Errorf("expected one Text producer and one Quick Look consumer, got %d actions", len(actions))
+	}
+	producer, consumer := actions[0], actions[1]
+	if producer.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
+		consumer.WFWorkflowActionIdentifier != "is.workflow.actions.previewdocument" {
+		return fmt.Errorf("expected ordered Text -> Quick Look graph")
+	}
+	pp := producer.WFWorkflowActionParameters
+	if pp["WFTextActionText"] != expected || pp["CustomOutputName"] != "Text" {
+		return fmt.Errorf("wrong Text producer value/name: %#v", pp)
+	}
+	uid, ok := pp["UUID"].(string)
+	if !ok || uid == "" {
+		return fmt.Errorf("Text producer has no UUID")
+	}
+	input, ok := consumer.WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment)
+	if !ok || input.WFSerializationType != "WFTextTokenAttachment" {
+		return fmt.Errorf("Quick Look requires the canonical attachment, got %#v", consumer.WFWorkflowActionParameters["WFInput"])
+	}
+	want := Value{Type: "ActionOutput", OutputUUID: uid, OutputName: "Text"}
+	if !reflect.DeepEqual(input.Value, want) {
+		return fmt.Errorf("Quick Look must consume exactly the preceding Text UUID without coercions: %#v", input.Value)
+	}
+	return nil
+}
+
+func lang002CloneActions(actions []ShortcutAction) []ShortcutAction {
+	cloned := append([]ShortcutAction(nil), actions...)
+	for i := range cloned {
+		cloned[i].WFWorkflowActionParameters = make(map[string]any, len(actions[i].WFWorkflowActionParameters))
+		for key, value := range actions[i].WFWorkflowActionParameters {
+			cloned[i].WFWorkflowActionParameters[key] = value
+		}
+	}
+	return cloned
+}
+
+func lang002NormalizedGraph(actions []ShortcutAction) []ShortcutAction {
+	normalized := lang002CloneActions(actions)
+	for i := range normalized {
+		if _, present := normalized[i].WFWorkflowActionParameters["UUID"]; present {
+			normalized[i].WFWorkflowActionParameters["UUID"] = fmt.Sprintf("LANG002_ACTION_%d", i)
+		}
+	}
+	input := normalized[1].WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment)
+	input.Value.OutputUUID = "LANG002_ACTION_0"
+	normalized[1].WFWorkflowActionParameters["WFInput"] = input
+	return normalized
+}
+
+func TestLANG002ScalarReferenceOracleRejectsCorruption(t *testing.T) {
+	session := compileMetaSourceToSession(t, "lang002_causal", lang002EnumSource)
+	defer session.Close()
+	actual := session.shortcut.WFWorkflowActions
+	if err := lang002QuickLookStringGraph(actual, "PRODUCTION"); err != nil {
+		t.Fatal(err)
+	}
+	mutations := []struct {
+		name  string
+		alter func([]ShortcutAction) []ShortcutAction
+	}{
+		{"wrong_text", func(a []ShortcutAction) []ShortcutAction {
+			a[0].WFWorkflowActionParameters["WFTextActionText"] = "STAGING"
+			return a
+		}},
+		{"unbound_uuid", func(a []ShortcutAction) []ShortcutAction {
+			input := a[1].WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment)
+			input.Value.OutputUUID = "UNBOUND"
+			a[1].WFWorkflowActionParameters["WFInput"] = input
+			return a
+		}},
+		{"literal_bypasses_required_reference", func(a []ShortcutAction) []ShortcutAction {
+			a[1].WFWorkflowActionParameters["WFInput"] = "PRODUCTION"
+			return a
+		}},
+		{"variable_instead_of_exact_output", func(a []ShortcutAction) []ShortcutAction {
+			input := a[1].WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment)
+			input.Value = Value{Type: "Variable", VariableName: "PRODUCTION"}
+			a[1].WFWorkflowActionParameters["WFInput"] = input
+			return a
+		}},
+		{"unexpected_coercion", func(a []ShortcutAction) []ShortcutAction {
+			input := a[1].WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment)
+			input.Value.Aggrandizements = []Aggrandizement{{Type: "WFCoercionVariableAggrandizement", CoercionItemClass: "WFNumberContentItem"}}
+			a[1].WFWorkflowActionParameters["WFInput"] = input
+			return a
+		}},
+		{"missing_producer", func(a []ShortcutAction) []ShortcutAction { return a[1:] }},
+		{"duplicated_producer", func(a []ShortcutAction) []ShortcutAction {
+			return []ShortcutAction{a[0], a[0], a[1]}
+		}},
+		{"consumer_before_producer", func(a []ShortcutAction) []ShortcutAction {
+			return []ShortcutAction{a[1], a[0]}
+		}},
+		{"wrong_native_consumer", func(a []ShortcutAction) []ShortcutAction {
+			a[1].WFWorkflowActionIdentifier = "is.workflow.actions.showresult"
+			return a
+		}},
+	}
+	for _, mutation := range mutations {
+		t.Run(mutation.name, func(t *testing.T) {
+			damaged := mutation.alter(lang002CloneActions(actual))
+			if err := lang002QuickLookStringGraph(damaged, "PRODUCTION"); err == nil {
+				t.Fatal("damaged actual graph was accepted")
+			}
+		})
+	}
 }
 
 // LANG-003: all native escape APIs documented
