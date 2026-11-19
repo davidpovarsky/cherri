@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      documentation_component_only:
+        description: "Type-check the isolated documentation component before app integration"
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: ios-build-${{ github.event.pull_request.number || github.ref }}
@@ -15,7 +21,35 @@ permissions:
   contents: read
 
 jobs:
+  documentation-component:
+    if: ${{ inputs.documentation_component_only == true }}
+    runs-on: macos-15
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify pinned documentation generator
+        run: |
+          mkdir -p "$RUNNER_TEMP/docs-component-evidence"
+          python3 -m unittest discover -s ios/scripts -p 'test_build_documentation_index.py' -v > "$RUNNER_TEMP/docs-component-evidence/generator-tests.log" 2>&1
+          python3 ios/scripts/build_documentation_index.py --docs "$RUNNER_TEMP/cherri-pinned-docs" --fetch > "$RUNNER_TEMP/docs-component-evidence/index-build.json"
+      - name: Type-check standalone SwiftUI documentation component
+        run: |
+          xcrun swiftc -typecheck -target arm64-apple-ios17.0-simulator \
+            -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+            ios/CherriApp/Documentation/DocumentationIndex.swift \
+            ios/CherriApp/Documentation/DocumentationSearchView.swift \
+            > "$RUNNER_TEMP/docs-component-evidence/swift-typecheck.log" 2>&1
+      - name: Preserve actual component diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-component-evidence
+          path: ${{ runner.temp }}/docs-component-evidence
+          if-no-files-found: error
+          retention-days: 14
+
   ios-build:
+    if: ${{ inputs.documentation_component_only != true }}
     runs-on: macos-15
     timeout-minutes: 35
 
