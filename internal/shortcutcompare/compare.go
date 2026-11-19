@@ -22,8 +22,8 @@ const maxDifferences = 0 // 0 means unlimited diff reporting without truncation
 type Difference struct {
 	Path string `json:"path"`
 	Kind string `json:"kind"`
-	A    any    `json:"a,omitempty"`
-	B    any    `json:"b,omitempty"`
+	A    any    `json:"a"`
+	B    any    `json:"b"`
 }
 
 type ComparisonResult struct {
