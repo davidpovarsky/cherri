@@ -1,0 +1,584 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP05-unit",
+      "requirements": [
+        "RP05"
+      ],
+      "tier": "unit",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP05LiteralPublicRoutes",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP05LiteralPublicRoutes)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP05LiteralPublicRoutes",
+        "required_production_tests": "TestP15RP05LiteralPublicRoutes"
+      },
+      "detail": "Executed production tests: TestP15RP05LiteralPublicRoutes"
+    },
+    {
+      "evidence_id": "ev-local-RP05-cli",
+      "requirements": [
+        "RP05"
+      ],
+      "tier": "cli",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP05LiteralPublicRoutes",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP05LiteralPublicRoutes)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP05LiteralPublicRoutes",
+        "required_production_tests": "TestP15RP05LiteralPublicRoutes"
+      },
+      "detail": "Executed production tests: TestP15RP05LiteralPublicRoutes"
+    },
+    {
+      "evidence_id": "ev-local-RP05-embedded",
+      "requirements": [
+        "RP05"
+      ],
+      "tier": "embedded",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP05LiteralPublicRoutes",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP05LiteralPublicRoutes)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP05LiteralPublicRoutes",
+        "required_production_tests": "TestP15RP05LiteralPublicRoutes"
+      },
+      "detail": "Executed production tests: TestP15RP05LiteralPublicRoutes"
+    },
+    {
+      "evidence_id": "ev-local-RP09-native-differential",
+      "requirements": [
+        "RP09"
+      ],
+      "tier": "native-differential",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP09StaticVariantNativeDifferential",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP09StaticVariantNativeDifferential)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP09StaticVariantNativeDifferential",
+        "required_production_tests": "TestP15RP09StaticVariantNativeDifferential"
+      },
+      "detail": "Executed production tests: TestP15RP09StaticVariantNativeDifferential"
+    },
+    {
+      "evidence_id": "ev-local-RP10-native-differential",
+      "requirements": [
+        "RP10"
+      ],
+      "tier": "native-differential",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalCallbackCausality|TestCompilerEndToEndParityMatrix|TestComparatorMutationMatrix|TestAppIntentDescriptorGeneralization|TestCuratedAppleIntentObservedShapesRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalCallbackCausality, TestCompilerEndToEndParityMatrix, TestComparatorMutationMatrix, TestAppIntentDescriptorGeneralization, TestCuratedAppleIntentObservedShapesRoundTrip",
+        "required_production_tests": "TestP15CanonicalCallbackCausality\nTestCompilerEndToEndParityMatrix\nTestComparatorMutationMatrix\nTestAppIntentDescriptorGeneralization\nTestCuratedAppleIntentObservedShapesRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15CanonicalCallbackCausality, TestCompilerEndToEndParityMatrix, TestComparatorMutationMatrix, TestAppIntentDescriptorGeneralization, TestCuratedAppleIntentObservedShapesRoundTrip"
+    },
+    {
+      "evidence_id": "ev-local-RP30-unit",
+      "requirements": [
+        "RP30"
+      ],
+      "tier": "unit",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M01KnownHeaderMapping|TestP15M01NativeHeaderRoundTrip|TestP15RP30HeaderAbsenceAndNameRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip",
+        "required_production_tests": "TestP15M01KnownHeaderMapping\nTestP15M01NativeHeaderRoundTrip\nTestP15RP30HeaderAbsenceAndNameRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip"
+    },
+    {
+      "evidence_id": "ev-local-RP30-native-roundtrip",
+      "requirements": [
+        "RP30"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M01KnownHeaderMapping|TestP15M01NativeHeaderRoundTrip|TestP15RP30HeaderAbsenceAndNameRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip",
+        "required_production_tests": "TestP15M01KnownHeaderMapping\nTestP15M01NativeHeaderRoundTrip\nTestP15RP30HeaderAbsenceAndNameRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip"
+    },
+    {
+      "evidence_id": "ev-local-RP31-unit",
+      "requirements": [
+        "RP31"
+      ],
+      "tier": "unit",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M03SetupFinalActionBinding|TestP15M03SetupNativeRoundTrip|TestP15M03SetupBindingRejectsIdentityCorruption|TestP15M04InvalidSetupAndEditorHoles|TestP15M04SetupScopeAndUnused|TestP15M04CatalogInsertionHoles)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles",
+        "required_production_tests": "TestP15M03SetupFinalActionBinding\nTestP15M03SetupNativeRoundTrip\nTestP15M03SetupBindingRejectsIdentityCorruption\nTestP15M04InvalidSetupAndEditorHoles\nTestP15M04SetupScopeAndUnused\nTestP15M04CatalogInsertionHoles"
+      },
+      "detail": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles"
+    },
+    {
+      "evidence_id": "ev-local-RP31-service",
+      "requirements": [
+        "RP31"
+      ],
+      "tier": "service",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M03SetupFinalActionBinding|TestP15M03SetupNativeRoundTrip|TestP15M03SetupBindingRejectsIdentityCorruption|TestP15M04InvalidSetupAndEditorHoles|TestP15M04SetupScopeAndUnused|TestP15M04CatalogInsertionHoles)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles",
+        "required_production_tests": "TestP15M03SetupFinalActionBinding\nTestP15M03SetupNativeRoundTrip\nTestP15M03SetupBindingRejectsIdentityCorruption\nTestP15M04InvalidSetupAndEditorHoles\nTestP15M04SetupScopeAndUnused\nTestP15M04CatalogInsertionHoles"
+      },
+      "detail": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles"
+    },
+    {
+      "evidence_id": "ev-local-RP31-native-roundtrip",
+      "requirements": [
+        "RP31"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M03SetupFinalActionBinding|TestP15M03SetupNativeRoundTrip|TestP15M03SetupBindingRejectsIdentityCorruption|TestP15M04InvalidSetupAndEditorHoles|TestP15M04SetupScopeAndUnused|TestP15M04CatalogInsertionHoles)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles",
+        "required_production_tests": "TestP15M03SetupFinalActionBinding\nTestP15M03SetupNativeRoundTrip\nTestP15M03SetupBindingRejectsIdentityCorruption\nTestP15M04InvalidSetupAndEditorHoles\nTestP15M04SetupScopeAndUnused\nTestP15M04CatalogInsertionHoles"
+      },
+      "detail": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles"
+    },
+    {
+      "evidence_id": "ev-local-RP32-unit",
+      "requirements": [
+        "RP32"
+      ],
+      "tier": "unit",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP32SevenTriggerMigrationAndNativeRoundTrip|TestP15ActionDeclarationPublicValidation|TestP15ActionDeclarationHealthyControl)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip, TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl",
+        "required_production_tests": "TestP15RP32SevenTriggerMigrationAndNativeRoundTrip\nTestP15ActionDeclarationPublicValidation\nTestP15ActionDeclarationHealthyControl"
+      },
+      "detail": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip, TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl"
+    },
+    {
+      "evidence_id": "ev-local-RP32-native-structure",
+      "requirements": [
+        "RP32"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP32SevenTriggerMigrationAndNativeRoundTrip|TestP15ActionDeclarationPublicValidation|TestP15ActionDeclarationHealthyControl)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip, TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl",
+        "required_production_tests": "TestP15RP32SevenTriggerMigrationAndNativeRoundTrip\nTestP15ActionDeclarationPublicValidation\nTestP15ActionDeclarationHealthyControl"
+      },
+      "detail": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip, TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl"
+    },
+    {
+      "evidence_id": "ev-local-BRG05-unit",
+      "requirements": [
+        "BRG05"
+      ],
+      "tier": "unit",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalCallbackCausality|TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend|TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation|TestArchitecture_D_SharedCodecMaintenance|TestCompilerEndToEndParityMatrix|TestCORE003_UnknownDefinitionIDHardError)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError",
+        "required_production_tests": "TestP15CanonicalCallbackCausality\nTestArchitecture_A_ProductionCompilerInvokesCanonicalBackend\nTestArchitecture_B_DisablingCanonicalBackendBreaksCompilation\nTestArchitecture_D_SharedCodecMaintenance\nTestCompilerEndToEndParityMatrix\nTestCORE003_UnknownDefinitionIDHardError"
+      },
+      "detail": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError"
+    },
+    {
+      "evidence_id": "ev-local-BRG05-native-structure",
+      "requirements": [
+        "BRG05"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalCallbackCausality|TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend|TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation|TestArchitecture_D_SharedCodecMaintenance|TestCompilerEndToEndParityMatrix|TestCORE003_UnknownDefinitionIDHardError)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError",
+        "required_production_tests": "TestP15CanonicalCallbackCausality\nTestArchitecture_A_ProductionCompilerInvokesCanonicalBackend\nTestArchitecture_B_DisablingCanonicalBackendBreaksCompilation\nTestArchitecture_D_SharedCodecMaintenance\nTestCompilerEndToEndParityMatrix\nTestCORE003_UnknownDefinitionIDHardError"
+      },
+      "detail": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError"
+    },
+    {
+      "evidence_id": "ev-local-BRG05-integration",
+      "requirements": [
+        "BRG05"
+      ],
+      "tier": "integration",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalCallbackCausality|TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend|TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation|TestArchitecture_D_SharedCodecMaintenance|TestCompilerEndToEndParityMatrix|TestCORE003_UnknownDefinitionIDHardError)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError",
+        "required_production_tests": "TestP15CanonicalCallbackCausality\nTestArchitecture_A_ProductionCompilerInvokesCanonicalBackend\nTestArchitecture_B_DisablingCanonicalBackendBreaksCompilation\nTestArchitecture_D_SharedCodecMaintenance\nTestCompilerEndToEndParityMatrix\nTestCORE003_UnknownDefinitionIDHardError"
+      },
+      "detail": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError"
+    },
+    {
+      "evidence_id": "ev-local-BRG17-unit",
+      "requirements": [
+        "BRG17"
+      ],
+      "tier": "unit",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M01KnownHeaderMapping|TestP15M01NativeHeaderRoundTrip|TestP15RP30HeaderAbsenceAndNameRoundTrip|TestP15M03SetupFinalActionBinding|TestP15M03SetupNativeRoundTrip|TestP15M03SetupBindingRejectsIdentityCorruption|TestP15RP32SevenTriggerMigrationAndNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip, TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+        "required_production_tests": "TestP15M01KnownHeaderMapping\nTestP15M01NativeHeaderRoundTrip\nTestP15RP30HeaderAbsenceAndNameRoundTrip\nTestP15M03SetupFinalActionBinding\nTestP15M03SetupNativeRoundTrip\nTestP15M03SetupBindingRejectsIdentityCorruption\nTestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip, TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+    },
+    {
+      "evidence_id": "ev-local-BRG17-native-roundtrip",
+      "requirements": [
+        "BRG17"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+      "test_id": "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15M01KnownHeaderMapping|TestP15M01NativeHeaderRoundTrip|TestP15RP30HeaderAbsenceAndNameRoundTrip|TestP15M03SetupFinalActionBinding|TestP15M03SetupNativeRoundTrip|TestP15M03SetupBindingRejectsIdentityCorruption|TestP15RP32SevenTriggerMigrationAndNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip, TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+        "required_production_tests": "TestP15M01KnownHeaderMapping\nTestP15M01NativeHeaderRoundTrip\nTestP15RP30HeaderAbsenceAndNameRoundTrip\nTestP15M03SetupFinalActionBinding\nTestP15M03SetupNativeRoundTrip\nTestP15M03SetupBindingRejectsIdentityCorruption\nTestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip, TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T03:05:33Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 8,
+    "passed_cases": 8,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG05",
+        "group": "gate",
+        "requirement": "Canonical action builder is really invoked",
+        "test_level": "unit+native-structure+integration",
+        "executed_levels": [
+          "unit",
+          "native-structure",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "BRG17",
+        "group": "gate",
+        "requirement": "Metadata, setup and trigger preservation",
+        "test_level": "unit+native-roundtrip",
+        "executed_levels": [
+          "unit",
+          "native-roundtrip"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP05",
+        "group": "repair",
+        "requirement": "Literal legacy-looking text",
+        "test_level": "unit+cli+embedded",
+        "executed_levels": [
+          "unit",
+          "cli",
+          "embedded"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP09",
+        "group": "repair",
+        "requirement": "Static action variants",
+        "test_level": "native-differential",
+        "executed_levels": [
+          "native-differential"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP10",
+        "group": "repair",
+        "requirement": "Custom callbacks and App Intents",
+        "test_level": "native-differential",
+        "executed_levels": [
+          "native-differential"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP30",
+        "group": "repair",
+        "requirement": "Header metadata roundtrip",
+        "test_level": "unit+native-roundtrip",
+        "executed_levels": [
+          "unit",
+          "native-roundtrip"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP31",
+        "group": "repair",
+        "requirement": "Setup indices and askEachTime",
+        "test_level": "unit+service+native-roundtrip",
+        "executed_levels": [
+          "unit",
+          "service",
+          "native-roundtrip"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP32",
+        "group": "repair",
+        "requirement": "Existing triggers and declarations",
+        "test_level": "unit+native-structure",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Eight independently executed immutable local contracts: RP05/RP09/RP10/RP30/RP31/RP32/BRG05/BRG17. Actual CLI/mobile/service, canonical native differential, metadata/setup/trigger exact roundtrip and causal controls. Native format data is not Apple runtime or automation installation. RP20 remains unverified. No release closure.",
+  "source_sha": "d4256019b3465ee9f7b3726d4f23f6d449502be0",
+  "source_tree_clean": true
+}
