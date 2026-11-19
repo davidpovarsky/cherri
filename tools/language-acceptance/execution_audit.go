@@ -254,9 +254,10 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.TestNames = []string{"tools/language-acceptance:runNumbers"}
 			row.ProductionPath = []string{"internal/language/analysis/analyzer.go"}
 		}
-		if row.ID == "M05" {
-			row.TestNames = []string{"tools/language-acceptance:runMetadata"}
-			row.ProductionPath = []string{"internal/language/migrate/migrate.go", "internal/language/lower/lower.go"}
+		if scenario, ok := declarationTriggerScenarios[row.ID]; ok {
+			row.TestNames = append([]string{}, scenario.TestNames...)
+			row.ProductionPath = append([]string{}, scenario.ProductionPaths...)
+			row.PositiveAndNegative = res.Passed
 		}
 		if row.ID == "E07" {
 			row.TestNames = []string{"tools/language-acceptance:runEditor"}

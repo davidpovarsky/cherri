@@ -43,7 +43,6 @@ var incompleteLocalAssertions = map[string]string{
 	"IM04": "filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes.",
 	"IM05": "An unresolved import diagnostic does not observe or prohibit network access.",
 	"AC02": "An injected empty schema action does not exercise public custom action source and codecs.",
-	"AC03": "Nonempty enums do not test bad codecs, duplicates, or stale facets.",
 	"E01":  "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
 	"E02":  "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",
 	"E03":  "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
