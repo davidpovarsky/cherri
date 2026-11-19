@@ -1,0 +1,94 @@
+{
+  "implementationSha": "5f4408cb74c63ab99d8ce1f144dc29640169514e",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestP15BRG32RequirementMapMatchesAllContracts|TestP15BRG32InstalledAIHarness)$"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 17.984,
+  "passes": [
+    "TestP15BRG32RequirementMapMatchesAllContracts",
+    "TestP15BRG32InstalledAIHarness"
+  ],
+  "failuresOrSkips": [],
+  "logSha256": "a8b6a958f2777f1e87ef2f022732962d1ca808307668028df507f7ee06d15aff",
+  "cleanAfter": true,
+  "pythonControl": {
+    "selection_complete": true,
+    "found": [
+      "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+      "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+      "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+      "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+      "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+      "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+      "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+      "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+      "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+      "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+      "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+      "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+      "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+    ],
+    "passed": [
+      "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+      "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+      "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+      "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+      "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+      "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+      "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+      "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+      "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+      "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+      "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+      "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+      "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+    ],
+    "tests_run": 15,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "expected_failures": 0,
+    "unexpected_successes": 0
+  },
+  "installedHarness": {
+    "ai_quality_measured": false,
+    "files": {
+      "README.md": "2d18a2419035443e376f987421b2ae7b930065103d0d1cdd573273a4a8287f88",
+      "runner.py": "b7b883bf4394d0634dc53b7efa7dc8f184d72a668be78f25664bdaf07aa370cf",
+      "tasks.json": "fcdb35966a50e2bd7daaa1311a552bde46136e5824109d71d8bf8918db6b4cb5",
+      "test_runner.py": "b68180256b94d5b6d0a97b337379ea6dad8384ea31fe60f15559c1f7d92e00d7"
+    },
+    "installed_outside_repository": true,
+    "required_python_tests": [
+      "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+      "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+      "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+      "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+      "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+      "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+      "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+      "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+      "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+      "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+      "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+      "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+      "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+    ],
+    "scope": "installed-control-flow-only"
+  }
+}

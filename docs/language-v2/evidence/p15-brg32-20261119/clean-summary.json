@@ -1,0 +1,100 @@
+{
+  "implementationSha": "5f4408cb74c63ab99d8ce1f144dc29640169514e",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "5m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestSupplementalObligationHarnessProductionEvidence|TestAIEvaluationHarnessEvidenceRetainsExternalRequirement)$"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 119.688,
+  "events": [
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/invented_evaluation",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/borrowed_AI01",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/wrong_command",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/missing_python_tests",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/quality_claim",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/stale_sha",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement",
+      "Elapsed": 18.68
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/partial_command",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/wrong_producer",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/missing_scope",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/ai_quality",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/missing_python_selection",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/borrow_ai01",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/missing_repository",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence/foreign_sha",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestSupplementalObligationHarnessProductionEvidence",
+      "Elapsed": 94
+    }
+  ],
+  "logSha256": "aa2b1093dc1a4cd6d81507442a2cd67eb1465c6333fba91240db8096e3c198af",
+  "cleanAfter": true
+}

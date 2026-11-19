@@ -97,3 +97,11 @@ Independently executed all unchanged RP29 security/service/benchmark tiers at cl
 ## P15 immutable editor evidence source binding — 2026-11-19
 
 Closed an actual intake gap in S03/E08/RP29: a changed source digest with a reconciled process-artifact hash previously passed. Producer and intake now hash exact immutable Git blobs, preserving clean-before/after and Windows CRLF correctness. Implementation 16255d2e passed 172 focused controls (including 67 actual-receipt source mutations); a separate clean replay passed 86 outer events plus the actual RP29 child's 34 events. Original failures and unchanged archived/current receipts are retained. No full179, native UI, race, or release credit is inferred. See [source binding proof](docs/language-v2/p15-editor-source-binding-20261119.md).
+
+## P15 BRG32 and expanded state races — 2026-11-19
+
+Actual BRG32 execution now covers complete179 mapping,a real fresh clone/CLI build,an installed external harness and15Python controls. Eight mutations reject invented/partial evidence. RP50 still requires external evaluation and AI01 is not run. See `docs/language-v2/p15-brg32-obligation-harness-20261119.md`.
+
+Expanded Linux-race87ca5dfc passed6scenarios and64+32 concurrent cases after two retained failing baselines. Cold catalog,import/prepass and reverse metadata use shared native-state ownership. No blanket thread-safety or formal BRG06/RP51 closure is claimed. See `docs/language-v2/p15-state-import-race-20261119.md`.
+
+Living plan2.6.0 retains actual e61 result84PASS/1FAIL/94pending,Apple timeout/loop-index failure,and remaining native,consumer and release work.

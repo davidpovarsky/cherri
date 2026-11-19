@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.5.0 | **Current audit:** 2026-11-18 | **Status:** P10R15 IN_PROGRESS from verified P10R14. Formal local report: **20/179 PASS, 0 failed formal assertions, 159 pending or unexecuted** at immutable `8c42876`; **closure_complete=false**. The separate full Go suite failed three test families. See chapter 18 for the latest completed formal snapshot. Earlier P0-P12 completion labels and corpus counts describe their historical runs, not the final P10R15 candidate.
+> **Plan version:** 2.6.0 | **Current audit:** 2026-11-19 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **84/179 PASS, 1 FAILED, 94 pending or unexecuted** at immutable e61e0d306bb363c39ade612ef35ccfc8051ddf3c; **closure_complete=false**. Later component repairs do not rewrite that result. Chapter19 is the latest ledger. Earlier completion labels/corpus counts describe their exact historical runs.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -899,7 +899,7 @@ Next smallest independently verifiable batch:
 
 ## 16. P10R15 — Historical first formal acceptance repair (2026-11-18)
 
-This chapter preserves the first P10R15 component snapshot. Chapter 17 is the later current formal snapshot. Sections 1–15 retain historical provenance; they are not automatic proof for a newer SHA.
+This chapter preserves the first P10R15 component snapshot. Chapters17 onward preserve later snapshots;chapter19 is the latest ledger. Sections 1–15 retain historical provenance; they are not automatic proof for a newer SHA.
 
 | Item | Current state |
 |---|---|
@@ -980,3 +980,42 @@ The canonical eight-callable variadic API now has an AST migration to explicit n
 The C03 singleton-contamination evidence is now addressed by isolated analyzer registries and per-document service lookups. Successful, failed and diagnostic-only compilations cannot register source actions into the canonical catalog; local shadows and typed native producer references remain supported. Repeated callable replacement now removes stale native index entries. The working component batch passed 305 root and 85 internal named tests, with clean immutable-source receipts to follow. See p15-registry-lifetime.md. No new full-contract or Apple-runtime completion is claimed. The general Legacy inline-argument producer omission is a separate remaining repair.
 
 Registry clean follow-up: exact 48e0c965f5e40595ee76ff9e3d180d7459597721 passed 305 root and 85 internal named tests in job_b8aac1411e41; 47 original public fixture hashes were unchanged and the source was clean before/after. Source-bound payloads and their audit are under evidence/p15-registry-48e0c96. No new formal ID or native-runtime claim is added.
+
+## 19. P10R15 continuation: e61 report and R2 repairs — 2026-11-19
+
+### Current source and milestone board
+
+The supplied staging branch remains `staging/cherri-p10r15-integration-20261119` at `d7052f4568db26dba169bdefc72623e48c04968a`. Frozen published candidate `e61e0d306bb363c39ade612ef35ccfc8051ddf3c` is on `agent/cherri-p10r15-completion-20261119`. R2 is being assembled on `agent/cherri-p10r15-completion-r2-20261119`; its boundary immediately before this documentation commit is `0c7cf2fc085b12b2183e398ae1b562054dd9be50`. No integrated release claim follows from component proofs.
+
+| Milestone | Actual evidence and status |
+|---|---|
+| Three original Legacy failures | Repair restored47/47 public fixtures and17/17 mappings with unchanged inputs and causal controls. R2 CI replay remains required. |
+| e61 formal local | [44621856878](https://github.com/davidpovarsky/cherri/actions/runs/44621856878):84PASS,1T08FAIL,85NOT_RUN,8PENDING_EXTERNAL,1AI_EVAL_NOT_RUN. Actual exit1,closurefalse. |
+| e61 full Build & Test | [44621720770](https://github.com/davidpovarsky/cherri/actions/runs/44621720770): Linux/macOS failed conditional-cardinality/prompt signature tests. Nix and macOS WorkflowKit encoding passed, but do not replace the failed suite. |
+| Signature repair | Clean30fd0c9 root,service/LSP and actualT08 producer passed after the retained red baseline. Callee-token location now selects analyzed return type. [Proof](p15-signature-callee-regression-20261119.md). |
+| OpenMinis | e61[44622158293](https://github.com/davidpovarsky/cherri/actions/runs/44622158293) rejected the initial debug-log clear. Narrow repair passed4actual graphs,4roundtrips,63mutations and13Python controls. Combined run remains required. |
+| RP29/source integrity | Actual400-sample authorization/benchmark producer and required security children passed. A separate real forgery baseline led to immutable Git-blob binding for S03/E08/RP29. [RP29 proof](p15-rp29-actual-producer-20261119.md),[binding proof](p15-editor-source-binding-20261119.md). |
+| BRG32 | Actual clone/build,complete179 map,external installation and15Python controls passed at5f4408cb. [Proof](p15-brg32-obligation-harness-20261119.md). AI quality is unmeasured. |
+| Native-state races | Expanded Linux-race[44631364786](https://github.com/davidpovarsky/cherri/actions/runs/44631364786),87ca5dfc,passed6named scenarios and64+32 concurrent cases;zero race/failure/skip. Red and intermediate results retained. [Proof](p15-state-import-race-20261119.md). Formal BRG06/RP51 mapping remains open. |
+| Native diagnostics | File and N03 fixtures/strict observers locally verified; actual native runs pending. Typed-default bundle retains the paired capture control. |
+| e61 Apple formal | [44622055945](https://github.com/davidpovarsky/cherri/actions/runs/44622055945) reached native runs and S01/F01 import but exceeded45minutes. No final artifact/cleanup receipt: no formal credit. Actual old smoke exposed one-based authored loop indices where unchanged golden requires zero-based; repair pending. |
+| Private corpus | Five actual parents covered38 unchanged private inputs at frozenb2961bbd in two invocations. First invocation timed out after two passing parents; remaining three passed separately. Sanitized receipts retained; not finalR2 proof. |
+
+### Acceptance matrix and evidence boundaries
+
+[The complete e61 audit](p15-formal-local-e61-audit-20261119.md) retains the original archive and179distinct rows. Report SHA-256 `89545406ef6af4b56a00e862738aeaaf5adb0a79e253f7f6bacbc830ebfaeee6`; archive SHA-256 `af9408fc41f90248ccbec2bff05ff32846f3c41f5a08ef22ea37edbaa4d81cfa`. There are94original+52repair+33recovery obligations.
+
+Of85NOT_RUN,60had no dedicated producer and25had insufficient smoke/bounded observations. Current N01/FN01/FN02/FN03 and BRG06/RP51 work must execute substantive scenarios before promotion. V01,V03,S01,L02,L04,F01 had local tiers but still needed exact-source native evidence. A timed-out Apple job cannot supply a missing final chain.
+
+All three original contract hashes remain unchanged. Raw source-bound evidence, including failed/interrupted attempts, is retained byte-for-byte. Later repairs do not rewrite the e61 report.
+
+### Open defects, decisions and next work
+
+- Repair the actual zero-based loop mismatch against the unchanged golden.
+- Execute prepared native File/N03/typed-default diagnostics before changing semantics.
+- Complete missing list,function,default and other requirement-specific producers. Harness controls do not supply real AI evaluation.
+- Build full iOS on an available supported runner. Earlier b296ARM never acquired a runner; an Intel option has no build credit until executed.
+- Reconcile compiler/docs/Skill pins, test actual installed consumers outside Git, build and verify docs deployment, and verify real RemoteBuilder service installation/promotion/rollback.
+- Re-run private corpus and release gates on the final compiler. Physical iPad and a configured eligible AI endpoint remain unavailable.
+
+Freeze and publish R2 after focused regression checks; execute Build & Test,complete local179,OpenMinis,Linux-race and nativeQA. Include the causal loop fix before full formal native replay. Preserve outcomes and existing contracts,goldens and privacy gates. No staging promotion or completion is justified by component passes alone. Update Asana after every verified stage.
