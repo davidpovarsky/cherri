@@ -95,7 +95,7 @@ enum usageDuration {
 }
 
 // [Doc]: [Screen Time] Get Website & App Activity
-action 'com.apple.intelligenceplatform.IntelligencePlatform.IntelligencePlatformDataActionsAppIntentsExtension.CalculateAppUsageIntent' getDeviceUsage(deviceUsageType usageType: 'activityType' = "all", variable ?device: 'selectedDevice', usageDuration during: 'during' = "today", text ?startTime: 'startTime', text ?startTime: 'endTime')
+action 'com.apple.intelligenceplatform.IntelligencePlatform.IntelligencePlatformDataActionsAppIntentsExtension.CalculateAppUsageIntent' getDeviceUsage(deviceUsageType usageType: 'activityType' = "all", variable ?device: 'selectedDevice', usageDuration during: 'during' = "today", text ?startTime: 'startTime', text ?endTime: 'endTime')
 
 // [Doc]: [Connectivity] Airplane Mode
 action toggleSet 'airplanemode.set' AirplaneMode 'OnValue'
