@@ -452,7 +452,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("remote package imports not permitted: %q", d.Path))
 			}
 			cleanPath := filepath.Clean(d.Path)
-			if strings.HasPrefix(cleanPath, "..") || filepath.IsAbs(d.Path) {
+			if !filepath.IsLocal(d.Path) {
 				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("path traversal outside workspace not permitted: %q", d.Path))
 			}
 			for _, p := range a.importStack {

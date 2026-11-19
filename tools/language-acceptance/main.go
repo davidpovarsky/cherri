@@ -939,6 +939,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateWorkspaceRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateSupplementalProductionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1764,10 +1768,7 @@ func (r *Runner) runModules() {
 	im03Passed := errIM03 == nil && len(wfIM03.Actions) > 0
 	r.Record("IM03", "modules", "Existing stdfunc behavior migrated from preserved upstream source", "unit+native", []string{"unit", "native"}, im03Passed, "PASSED", "Built-in standard functions accessible globally and lower directly")
 
-	// IM04: Workspace traversal and symlink escape rejection
-	relPath := filepath.Clean("../../../etc/passwd")
-	im04Passed := strings.HasPrefix(relPath, "..")
-	r.Record("IM04", "modules", "Local workspace resource traversal and symlink escape", "security", []string{"security"}, im04Passed, "PASSED", "Resource loaders validate canonical path boundaries to prevent traversal")
+	r.runWorkspaceResourceRequirement()
 
 	// IM05: Analysis with unresolved remote package
 	srcIM05 := "import \"https://malicious.example.com/package.cherri\" as pkg"

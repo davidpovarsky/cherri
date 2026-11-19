@@ -40,7 +40,6 @@ var incompleteLocalAssertions = map[string]string{
 	"IM01": "Duplicate-alias diagnostics do not exercise relative imports and cycles.",
 	"IM02": "Removing an include token does not execute module initialization or prove dependency order.",
 	"IM03": "Global base64 lowering does not prove preserved upstream stdfunc migration.",
-	"IM04": "filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes.",
 	"IM05": "An unresolved import diagnostic does not observe or prohibit network access.",
 	"AC02": "An injected empty schema action does not exercise public custom action source and codecs.",
 	"E01":  "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",

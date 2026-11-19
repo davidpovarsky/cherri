@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -731,7 +730,7 @@ func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
 		return fmt.Errorf("remote package imports not permitted: %q", d.Path)
 	}
 	cleanPath := filepath.Clean(d.Path)
-	if strings.HasPrefix(cleanPath, "..") || filepath.IsAbs(d.Path) {
+	if !filepath.IsLocal(d.Path) {
 		return fmt.Errorf("path traversal outside workspace not permitted: %q", d.Path)
 	}
 
@@ -786,23 +785,11 @@ function chooseFromVCard(items: List, prompt: Text) {
 	} else if vmContent, ok := l.virtualModules[cleanPath]; ok {
 		content = vmContent
 	} else {
-		filePath := cleanPath
-		if l.baseFilePath != "" && !filepath.IsAbs(filePath) {
-			filePath = filepath.Join(filepath.Dir(l.baseFilePath), filePath)
-		}
-		if _, err := os.Stat(filePath); os.IsNotExist(err) {
-			if _, err2 := os.Stat(filePath + ".cherri"); err2 == nil {
-				filePath = filePath + ".cherri"
-			} else {
-				return fmt.Errorf("cannot resolve module %q: file not found", d.Path)
-			}
-		}
-		data, err := os.ReadFile(filePath)
+		var err error
+		content, resolvedPath, err = l.readWorkspaceModule(cleanPath)
 		if err != nil {
-			return fmt.Errorf("cannot read module %q: %w", d.Path, err)
+			return err
 		}
-		content = string(data)
-		resolvedPath = filePath
 	}
 
 	// 3. Parse module

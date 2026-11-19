@@ -180,6 +180,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = append([]string{}, formattingProductionPaths...)
 			row.PositiveAndNegative = res.Passed
 		}
+		if tests, ok := workspaceProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, workspaceProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+		}
 		if tests, ok := documentationProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, documentationProductionPaths[row.ID]...)
