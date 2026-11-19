@@ -81,7 +81,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		}
 	}
 
-	def, ident, ok := lookupCanonicalAction(call)
+	def, ident, ok := lookupCanonicalActionLocked(call)
 	if !ok || def == nil {
 		return "", fmt.Errorf("canonical definition not found for action %q: typed actions must resolve canonically", call.DefinitionID)
 	}

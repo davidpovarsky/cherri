@@ -458,6 +458,8 @@ func compileLegacySourceToRawMapInMemory(src string) (result map[string]any, err
 func compileLegacySourceToRawMapInMemoryWithProfile(src string, profile BuildProfile) (result map[string]any, err error) {
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
+	compilerSessionMutex.Lock()
+	defer compilerSessionMutex.Unlock()
 
 	prevEmbedded := embeddedCompilerMode
 	embeddedCompilerMode = true
