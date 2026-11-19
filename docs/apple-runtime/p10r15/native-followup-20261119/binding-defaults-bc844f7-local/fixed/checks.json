@@ -1,0 +1,57 @@
+{
+  "source": "bc844f7ed48226ce59e92774625b5467731dd63f",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "GOMAXPROCS": "1",
+  "GOFLAGS": "-p=1",
+  "availableMemoryBefore": 3107045376,
+  "results": [
+    {
+      "name": "build",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "build",
+        "-p=1",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\binding-defaults-bc844f7\\cherri.exe",
+        "."
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.64,
+      "startedAt": "2026-11-19T04:25:44.035585+00:00"
+    },
+    {
+      "name": "phase0",
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-binding-native-20261119\\tools\\shortcuts-simulator-qa\\validate_macro_fixtures.py",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-binding-native-20261119",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\binding-defaults-bc844f7\\cherri.exe",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\binding-defaults-bc844f7\\phase0"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 7.953,
+      "startedAt": "2026-11-19T04:25:46.902717+00:00"
+    },
+    {
+      "name": "python-consumers",
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "-v",
+        "test_binding_defaults_probe",
+        "test_workflow_input_contract",
+        "test_public_artifacts"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 38.547,
+      "startedAt": "2026-11-19T04:25:54.997260+00:00"
+    }
+  ],
+  "appleRuntime": "NOT_RUN",
+  "signing": "NOT_RUN",
+  "embeddedVcsClaim": false,
+  "binarySHA256": "0102a52168ac0ee9963e18ee5a25cd0a89ffead169dced4b866115e81f991396",
+  "binaryBytes": 24815104
+}
