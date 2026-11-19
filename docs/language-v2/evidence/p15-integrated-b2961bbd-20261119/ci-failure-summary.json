@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "implementationSha": "b2961bbd51e45dd2a1b21d9fd2fb9f3390ed5f74",
+  "runId": 44607346129,
+  "scope": "Actual failed CI retained; fixes require independent rerun on their candidate",
+  "jobs": [
+    {
+      "platform": "linux",
+      "jobId": 135854462823,
+      "conclusion": "failure",
+      "failedTopLevelTests": [
+        "TestP15F01DiagnosticFixturesPreserveIsolation",
+        "TestP15StorageProbeWireContractsAndCausalMutations",
+        "TestSupplementalAcceptanceProductionEvidence"
+      ],
+      "rawLogBytes": 1418768,
+      "rawLogSha256": "c0d38ce34680c6c6addc3973cc73276c45b4e92b429c46eee1d4146e36d7c1a7"
+    },
+    {
+      "platform": "macos",
+      "jobId": 135854463315,
+      "conclusion": "failure",
+      "failedTopLevelTests": [
+        "TestP15F01DiagnosticFixturesPreserveIsolation",
+        "TestP15StorageProbeWireContractsAndCausalMutations",
+        "TestSupplementalAcceptanceProductionEvidence"
+      ],
+      "rawLogBytes": 1431142,
+      "rawLogSha256": "b8b3d9d7140c17c786175f6cbf5902d8e7b723dc74fdbfd8f0f59cd458099ca1"
+    }
+  ],
+  "nixJob": {
+    "jobId": 135854463306,
+    "conclusion": "success"
+  },
+  "downstreamMatrixDiscoveryParityLedgerSkipped": true
+}

@@ -1,0 +1,183 @@
+name: P10R15 Local Acceptance
+
+on:
+  # Register this additive workflow from the authorized integration work branch.
+  # The expensive 179-case run remains an explicit workflow_dispatch action.
+  push:
+    branches:
+      - agent/cherri-p10r15-completion-20261119
+    paths:
+      - .github/workflows/p10r15-local-acceptance.yml
+  workflow_dispatch:
+    inputs:
+      allow_public_fixture_signing:
+        description: Allow the existing K05 signer for its reviewed public synthetic fixture
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p10r15-local-acceptance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  register-workflow:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Register the manual local acceptance workflow
+        run: echo 'Workflow registered; dispatch the exact candidate ref for actual acceptance execution.'
+
+  local-179:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CHERRI_DOCS_DIR: ${{ github.workspace }}/cherrilang.org
+      CHERRI_D03_DOCS_REPO: ${{ github.workspace }}/cherrilang.org
+      CHERRI_LOCAL_ACCEPTANCE_OUT: ${{ github.workspace }}/local-acceptance
+      CHERRI_K05_EVIDENCE_DIR: ${{ github.workspace }}/local-acceptance/k05
+      CHERRI_K05_LIVE_SIGNING: ${{ inputs.allow_public_fixture_signing == true && '1' || '0' }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    defaults:
+      run:
+        shell: bash
+        working-directory: cherri
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          path: cherri
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Resolve the exact checked-in documentation pin
+        id: pins
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          manifest = json.loads(Path('skills/cherri-shortcuts/compatibility-manifest.json').read_text())
+          assert manifest['docsRepo'] == 'https://github.com/davidpovarsky/cherrilang.org.git'
+          assert re.fullmatch(r'[0-9a-f]{40}', manifest['docsCommit'])
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('docs_sha=' + manifest['docsCommit'] + '\n')
+          PY
+
+      - uses: actions/checkout@v6
+        with:
+          repository: davidpovarsky/cherrilang.org
+          ref: ${{ steps.pins.outputs.docs_sha }}
+          fetch-depth: 0
+          path: cherrilang.org
+          persist-credentials: false
+
+      - name: Preserve the exact declared documentation origin
+        run: git -C "$CHERRI_D03_DOCS_REPO" remote set-url origin https://github.com/davidpovarsky/cherrilang.org.git
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.24'
+
+      - name: Build the current production compiler
+        run: go build -o cherri .
+
+      - name: Execute all 179 local obligations without inherited closure
+        run: |
+          set -euo pipefail
+          mkdir -p "$CHERRI_LOCAL_ACCEPTANCE_OUT"
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, subprocess
+          from pathlib import Path
+          root, docs = Path.cwd(), Path(os.environ['CHERRI_DOCS_DIR'])
+          out = Path(os.environ['CHERRI_LOCAL_ACCEPTANCE_OUT'])
+          def git(path, *args):
+              return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()
+          expected = {
+              'acceptance-contract.json': '9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e',
+              'repair-regression-plan.json': 'eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5',
+              'backend-recovery-gates.json': 'e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c',
+          }
+          contracts = {name: hashlib.sha256((root / 'tests/language-v2' / name).read_bytes()).hexdigest() for name in expected}
+          assert contracts == expected
+          manifest_bytes = (root / 'skills/cherri-shortcuts/compatibility-manifest.json').read_bytes()
+          manifest = json.loads(manifest_bytes)
+          assert git(root, 'rev-parse', 'HEAD') == os.environ['GITHUB_SHA']
+          assert git(docs, 'rev-parse', 'HEAD') == manifest['docsCommit']
+          assert git(docs, 'remote', 'get-url', 'origin') == manifest['docsRepo']
+          assert not git(root, 'status', '--porcelain') and not git(docs, 'status', '--porcelain')
+          assert not os.environ.get('CHERRI_P10R10_CORPUS') and not os.environ.get('CHERRI_P10R10_CORPUS_DIR')
+          receipt = {
+              'schemaVersion': 1, 'implementationSha': os.environ['GITHUB_SHA'],
+              'docsSha': manifest['docsCommit'], 'consumerCompilerPin': manifest['compilerCommit'],
+              'manifestSha256': hashlib.sha256(manifest_bytes).hexdigest(), 'contractDigests': contracts,
+              'compilerSha256': hashlib.sha256((root / 'cherri').read_bytes()).hexdigest(),
+              'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'startedUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'sourceCleanBefore': True, 'docsCleanBefore': True,
+              'scope': 'actual local179 diagnostic execution; final/native/consumer closure remains independently required',
+              'publicFixtureSigningOptIn': os.environ['CHERRI_K05_LIVE_SIGNING'] == '1',
+              'privateCorpusRequested': False,
+              'command': ['go', 'run', './tools/language-acceptance', '--phase', 'local', '--out', str(out / 'acceptance-report.json')],
+          }
+          (out / 'process-start.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PY
+          set +e
+          timeout --signal=TERM --kill-after=30s 80m \
+            go run ./tools/language-acceptance --phase local \
+            --out "$CHERRI_LOCAL_ACCEPTANCE_OUT/acceptance-report.json" \
+            2>&1 | tee "$CHERRI_LOCAL_ACCEPTANCE_OUT/runner.log"
+          runner_status="${PIPESTATUS[0]}"
+          set -e
+          CHERRI_LOCAL_RUNNER_EXIT="$runner_status" python3 - <<'PY'
+          import datetime, hashlib, json, os, subprocess
+          from pathlib import Path
+          out = Path(os.environ['CHERRI_LOCAL_ACCEPTANCE_OUT'])
+          receipt = json.loads((out / 'process-start.json').read_text())
+          def git(path, *args):
+              return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()
+          receipt.update({
+              'finishedUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'exitCode': int(os.environ['CHERRI_LOCAL_RUNNER_EXIT']),
+              'sourceUnchanged': git(Path.cwd(), 'rev-parse', 'HEAD') == receipt['implementationSha'] and not git(Path.cwd(), 'status', '--porcelain'),
+              'docsUnchanged': git(os.environ['CHERRI_DOCS_DIR'], 'rev-parse', 'HEAD') == receipt['docsSha'] and not git(os.environ['CHERRI_DOCS_DIR'], 'status', '--porcelain'),
+              'runnerLogSha256': hashlib.sha256((out / 'runner.log').read_bytes()).hexdigest(),
+          })
+          report_path = out / 'acceptance-report.json'
+          receipt['reportPresent'] = report_path.is_file()
+          if report_path.is_file():
+              report = json.loads(report_path.read_text())
+              receipt['reportSha256'] = hashlib.sha256(report_path.read_bytes()).hexdigest()
+              receipt['reportedCounts'] = {key: report.get(key) for key in ('total_cases', 'passed_cases', 'failed_cases', 'skipped_cases', 'closure_complete')}
+              receipt['all179Reported'] = report.get('total_cases') == 179 and len(report.get('results', [])) == 179
+          else:
+              receipt['all179Reported'] = False
+          (out / 'process-result.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+              stream.write('## Actual local179 diagnostic run\n\n')
+              stream.write('```json\n' + json.dumps(receipt, indent=2) + '\n```\n')
+              stream.write('\nThis workflow does not grant iOS runtime, private corpus, deployment, AI quality, or final179 closure.\n')
+          assert receipt['sourceUnchanged'] and receipt['docsUnchanged']
+          assert receipt['all179Reported'], 'Runner ended before a complete 179-row report'
+          PY
+          # Preserve the real runner result. Missing/failed requirements never
+          # become a green acceptance job merely because a report was written.
+          exit "$runner_status"
+
+      - name: Retain actual report and process evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p10r15-local-acceptance-${{ github.run_id }}
+          path: local-acceptance/
+          if-no-files-found: error
+          retention-days: 14

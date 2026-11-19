@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "implementationSha": "b2961bbd51e45dd2a1b21d9fd2fb9f3390ed5f74",
+  "compilerSha256": "d732c4cad8937d4b0cfe06c3f001704642ad16a5029474c997a53ff20b223042",
+  "scope": "Five named local corpus checks observed passing across two preserved invocations on one unchanged candidate",
+  "specimenCount": 38,
+  "inputHashesUnchanged": true,
+  "inputHashesRecheckedAtArchive": true,
+  "inputSetDigests": {
+    "sha256OfJsonSortedHashValues": "140a7575adb9e2fcc92397fc4e3e374b6929ab86a3456542581d5f8e037dcebd",
+    "sha256OfJsonSortedFilenameToHashMapping": "0112476d1f5fb5713bc0808714a7bef1379e2a75b1e4896b2bcc6398dd74abaf"
+  },
+  "allRequestedNamedTestsObservedPassed": true,
+  "fullOriginalInvocationPassed": false,
+  "namedTestsRequired": [
+    "TestP10R10CorpusMeasure",
+    "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+    "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+    "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+    "TestP13_CorpusFidelityAndSourceSizeAudit"
+  ],
+  "namedTestsPassed": [
+    "TestP10R10CorpusMeasure",
+    "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+    "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+    "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+    "TestP13_CorpusFidelityAndSourceSizeAudit"
+  ],
+  "invocations": [
+    {
+      "exitCode": 1,
+      "durationSeconds": 1299.297,
+      "timedOut": true,
+      "namedTestsPassed": [
+        "TestP10R10CorpusMeasure",
+        "TestP11_WIRE_01_Fresh38x2NativeActionWire"
+      ],
+      "rawLogSha256": "b4c67734ad514e55c33d2f265adbeffb5d9f54b2680de963a814f56f306b6e54"
+    },
+    {
+      "exitCode": 0,
+      "durationSeconds": 1596.39,
+      "timedOut": false,
+      "namedTestsPassed": [
+        "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+        "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+        "TestP13_CorpusFidelityAndSourceSizeAudit"
+      ],
+      "rawLogSha256": "b1fe7908a28f700419f0c4acb1beafe648481c03fdcd8a903122efc6f2a34c3f"
+    }
+  ],
+  "privateSourcesOrNamesUploaded": false,
+  "privateSigningRequested": false,
+  "nativeRuntimeClaimed": false,
+  "final179ClosureClaimed": false
+}
