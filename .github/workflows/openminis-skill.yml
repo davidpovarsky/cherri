@@ -38,6 +38,8 @@ jobs:
           github_token: ${{ github.token }}
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
@@ -190,11 +192,14 @@ jobs:
       - name: Package immutable source and pinned runtime
         run: |
           PIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')
-          git fetch --no-tags origin "$PIN"
           PINNED_SOURCE="$RUNNER_TEMP/cherri-skill-pinned-source"
-          git -c core.autocrlf=false clone --quiet --shared --no-checkout "$PWD" "$PINNED_SOURCE"
+          test ! -e "$PINNED_SOURCE"
+          git init --quiet "$PINNED_SOURCE"
           git -C "$PINNED_SOURCE" config core.autocrlf false
+          git -C "$PINNED_SOURCE" remote add origin https://github.com/davidpovarsky/cherri.git
+          git -C "$PINNED_SOURCE" fetch --quiet --no-tags --depth=1 origin "$PIN"
           git -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"
+          git -C "$PINNED_SOURCE" cat-file -e "$PIN^{tree}"
           test "$(git -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"
           test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-pinned-linux-arm64" .
