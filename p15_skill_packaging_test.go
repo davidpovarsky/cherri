@@ -160,7 +160,10 @@ func TestP15K01UnpackedPackageContract(t *testing.T) {
 			t.Fatal("unpacked binary commit receipt differs")
 		}
 		env := map[string]string{"SKILL_DIR": filepath.ToSlash(skill),
-			"CHERRI_HOME": filepath.ToSlash(filepath.Join(t.TempDir(), "empty-home"))}
+			"CHERRI_HOME": filepath.ToSlash(filepath.Join(t.TempDir(), "empty-home")),
+			// Exercise the macOS-style trailing separator on every platform.
+			// The actual prepare/edit wrapper reports canonical absolute paths.
+			"TMPDIR": filepath.ToSlash(t.TempDir()) + "/"}
 		observations := filepath.Join(t.TempDir(), "wrapper-observations.json")
 		out, err := p15InstallRun(t, filepath.Join(skill, "scripts", "self-test.sh"), env, "--skip-setup", "--evidence-out", filepath.ToSlash(observations))
 		if err != nil || !strings.Contains(out, "Cherri Shortcuts skill self-test passed.") {
