@@ -37,7 +37,18 @@ type CanonicalBackendSession struct {
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
-	tx, cleanup := BeginBackendTransaction()
+	var tx, cleanup = BeginBackendTransaction()
+	return newCanonicalBackendSession(tx, cleanup)
+}
+
+// newCanonicalBackendSessionLocked is only used by an entry point that owns
+// compilerSessionMutex for its complete request, including error recovery.
+func newCanonicalBackendSessionLocked() *CanonicalBackendSession {
+	var tx, cleanup = beginBackendTransactionLocked()
+	return newCanonicalBackendSession(tx, cleanup)
+}
+
+func newCanonicalBackendSession(tx *BackendTransaction, cleanup func()) *CanonicalBackendSession {
 	sc := BuildWorkflowHeader()
 	sc.WFWorkflowImportQuestions = make([]WFQuestion, 0)
 	sc.WFWorkflowTypes = schema.DefaultWorkflowTypes()

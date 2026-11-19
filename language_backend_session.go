@@ -39,6 +39,17 @@ type BackendTransaction struct {
 
 func BeginBackendTransaction() (*BackendTransaction, func()) {
 	compilerSessionMutex.Lock()
+	var tx, cleanup = beginBackendTransactionLocked()
+	return tx, func() {
+		cleanup()
+		compilerSessionMutex.Unlock()
+	}
+}
+
+// beginBackendTransactionLocked starts a canonical emission scope while its
+// caller owns compilerSessionMutex. Mobile requests already own the same lock
+// before configuring embedded errors, arguments and legacy parser state.
+func beginBackendTransactionLocked() (*BackendTransaction, func()) {
 	resetCompilerState()
 	if len(canonicalEnumerations) > 0 {
 		if enumerations == nil {
@@ -53,7 +64,6 @@ func BeginBackendTransaction() (*BackendTransaction, func()) {
 
 	cleanup := func() {
 		resetCompilerStateFully()
-		compilerSessionMutex.Unlock()
 	}
 
 	return tx, cleanup

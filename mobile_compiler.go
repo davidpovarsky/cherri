@@ -105,6 +105,10 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 	options.BuildProfile = profile
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
+	// This embedded request shares state ownership with canonical emission.
+	// Hold the mutex before changing globals and through deferred recovery.
+	compilerSessionMutex.Lock()
+	defer compilerSessionMutex.Unlock()
 
 	embeddedCompilerMode = true
 	previousArgs := args.Args
@@ -154,7 +158,7 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 	}
 
 	if selectedMode == MobileCompileModeV2 {
-		v2Bytes, err := CompileSourceToPlistWithOptions(name+".cherri", src, options)
+		v2Bytes, err := compileSourceToPlistWithSession(name+".cherri", src, options, newCanonicalBackendSessionLocked)
 		if err == nil {
 			response = mobileCompileResponse{
 				OK:          true,
@@ -334,6 +338,10 @@ func decompileForMobileWithOptions(plistBytes []byte, requestedName string, mode
 func decompileForMobile(plistBytes []byte, requestedName string) (response mobileCompileResponse) {
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
+	// This embedded request shares state ownership with canonical emission.
+	// Hold the mutex before changing globals and through deferred recovery.
+	compilerSessionMutex.Lock()
+	defer compilerSessionMutex.Unlock()
 
 	embeddedCompilerMode = true
 	previousArgs := args.Args
