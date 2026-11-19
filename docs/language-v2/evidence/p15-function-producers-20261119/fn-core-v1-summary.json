@@ -1,0 +1,41 @@
+{
+  "implementation_parent": "17867426da3537c562b4bc45abe8623b898b8a03",
+  "status_before": "?? p15_function_acceptance_test.go\n?? p15_function_native_oracle_test.go",
+  "status_after": "?? p15_function_acceptance_test.go\n?? p15_function_native_oracle_test.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=3m",
+    "-json",
+    ".",
+    "-run",
+    "^(TestP15FN01FunctionTyping|TestP15FN01ReturnAndContinuationNative|TestP15FN02DefaultTyping|TestP15FN02PresenceDefaultsNative|TestP15FN03CaptureAndRecursionTyping|TestP15FN03TerminatingRecursionNative)$"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 19.20400000002701,
+  "named_passes": 30,
+  "failed": [
+    "TestP15FN01FunctionTyping",
+    "TestP15FN01ReturnAndContinuationNative/ordinary",
+    "TestP15FN01ReturnAndContinuationNative/zero",
+    "TestP15FN01ReturnAndContinuationNative/fractional",
+    "TestP15FN01ReturnAndContinuationNative",
+    "TestP15FN02DefaultTyping",
+    "TestP15FN02PresenceDefaultsNative",
+    "TestP15FN03CaptureAndRecursionTyping/immutable_capture",
+    "TestP15FN03CaptureAndRecursionTyping/mutable_capture",
+    "TestP15FN03CaptureAndRecursionTyping/capture_declared_later",
+    "TestP15FN03CaptureAndRecursionTyping/nested_capture",
+    "TestP15FN03CaptureAndRecursionTyping",
+    "TestP15FN03TerminatingRecursionNative/input_0",
+    "TestP15FN03TerminatingRecursionNative/input_1",
+    "TestP15FN03TerminatingRecursionNative/input_3",
+    "TestP15FN03TerminatingRecursionNative/input_5",
+    "TestP15FN03TerminatingRecursionNative",
+    null
+  ],
+  "skips": [],
+  "raw_sha256": "03c934efecfb70c39d60e25a68e48d823310bda8882969439b9b3aeb01746675",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

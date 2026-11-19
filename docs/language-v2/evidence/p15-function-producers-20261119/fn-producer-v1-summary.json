@@ -1,0 +1,22 @@
+{
+  "implementation_parent": "460b86e4de8a42ccdbef84641fbbe2e263437eb0",
+  "status_before": "M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/main.go\n M tools/language-acceptance/main_test.go\n M tools/language-acceptance/number_function_execution.go\n M tools/language-acceptance/number_function_execution_test.go\n?? p15_function_acceptance_test.go\n?? p15_function_native_oracle_test.go",
+  "status_after": "M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/main.go\n M tools/language-acceptance/main_test.go\n M tools/language-acceptance/number_function_execution.go\n M tools/language-acceptance/number_function_execution_test.go\n?? p15_function_acceptance_test.go\n?? p15_function_native_oracle_test.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=5m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestNumberFunctionProducerInventory|TestNumberFunctionActualProductionEvidence|TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15RP02ParserOnlyAndForeignSHA|TestIncompleteSmokeCannotMintFormalEvidence|TestIncompleteSmokeFailureIsStillVisible|TestRequirementsEvidenceMap_CompleteCoverage|TestMeta_Negative.*)$"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 34.18700000003446,
+  "named_passes": 118,
+  "failed": [],
+  "skips": [],
+  "raw_sha256": "d19921fd101fd15502833aa443221f11551d19c8d543f1870ffe9ca4e81f38ba",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

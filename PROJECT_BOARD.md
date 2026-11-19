@@ -114,3 +114,8 @@ Clean implementation `db918ee8493907c90da449e67e1be6df1dc43770` passed 22 named 
 ### 2026-11-19 — R2 complete local179 audit
 
 Actual Linux run44634809329 at clean4e56dbcfe895baa8f944b83715ecff0d07bfd24e produced all179:87PASS,0FAIL,82NOT_RUN,9PENDING_EXTERNAL,1AI_EVAL_NOT_RUN; closure remains false. The original ZIP/report/process/audit and all hashes are retained in `docs/language-v2/evidence/p15-formal-local-r2-20261119/`. See `docs/language-v2/p15-formal-local-r2-audit-20261119.md`; no runtime or consumer completion is inferred.
+
+
+### 2026-11-19 — FN01–FN03 actual local producers
+
+Clean3b3711f968464a3f42ee3bc8ebdfde73bc299a14 passed118 producer/intake events; six new core tests passed60 events with38 causal native-graph corruptions. FN01–FN03 now produce real unit/native-structure evidence and remain PENDING_EXTERNAL for their unchanged iOS tiers. No linked requirement inherits success. Scope and original failures/replays: `docs/language-v2/p15-function-actual-producers-20261119.md`.

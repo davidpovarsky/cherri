@@ -1,0 +1,22 @@
+{
+  "implementation_sha": "3b3711f968464a3f42ee3bc8ebdfde73bc299a14",
+  "status_before": "",
+  "status_after": "",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=5m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestNumberFunctionProducerInventory|TestNumberFunctionActualProductionEvidence|TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15RP02ParserOnlyAndForeignSHA|TestIncompleteSmokeCannotMintFormalEvidence|TestIncompleteSmokeFailureIsStillVisible|TestRequirementsEvidenceMap_CompleteCoverage|TestMeta_Negative.*)$"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 103.59400000004098,
+  "named_passes": 118,
+  "failed": [],
+  "skips": [],
+  "raw_sha256": "148f50c8e9ef41d88d8639c707f0db5464da2966b7787c6da0880de8baccfb18",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
