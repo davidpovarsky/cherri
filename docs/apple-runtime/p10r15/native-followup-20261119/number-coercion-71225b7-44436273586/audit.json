@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_BOUNDED_NATIVE_CONTRACT",
+  "sourceCommit": "71225b71f5353a0f661722d154a8b670b52e76f6",
+  "runId": 44436273586,
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44436273586",
+  "workflowConclusion": "success",
+  "fixtureId": "qa-number-coercion-control-v2",
+  "sourceSha256": "c33a99da546b5b043c2774a581381285c181e174320ed09d76e8914992820d54",
+  "unsignedPlistSha256": "27dbbb301f7729536778ed1a6b5ba75045daf992ae01f3d6388a10a603e761e7",
+  "signedArtifactSha256": "3b9683913a7f9ca774a15a70d7715a5596c0924cd140f73f1a94245c234abd9e",
+  "nativeActionCount": 89,
+  "observedCallback": {
+    "matchingCallbacks": 1,
+    "identityVerified": true,
+    "status": "SUCCESS",
+    "runId": "qa-number-coercion-control-v2-44436273586-eb927c3d21d0226a83e7764cae034ac0",
+    "timestampISO8601": "2026-11-19T02:33:15.902Z",
+    "resultSummary": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
+    "resultSummarySha256": "35448082ad27dddfe6f36f680934aa7435e7b768598b7e2ca629f88231f05e1f"
+  },
+  "canonicalOracleReplay": {
+    "runGate": "PASS",
+    "traceGate": "PASS",
+    "reason": "verified correlated callback output and NDJSON trace",
+    "targetFixtureId": "qa-number-coercion-control-v2",
+    "compilerCommitSha": "71225b71f5353a0f661722d154a8b670b52e76f6",
+    "buildProfile": "debug",
+    "traceExpectation": "REQUIRED_NDJSON",
+    "releaseBuildVerified": false,
+    "sourceSha256": "c33a99da546b5b043c2774a581381285c181e174320ed09d76e8914992820d54",
+    "unsignedPlistSha256": "27dbbb301f7729536778ed1a6b5ba75045daf992ae01f3d6388a10a603e761e7"
+  },
+  "runtimeContractVerified": true,
+  "oracleSourceSha256": "41c3bdbe45d9d35e0e55446d4469d738f23f237aef0efe26e43e0b955698ef85",
+  "publicationPolicySourceSha256": "2d489089972d7a86d17077543b6dd1746c5613db68b873a50cb36f29c7463af3",
+  "publicationManifestSha256": "a94a6f63e4728fe3196ff1a35194bd97a9e684db8cf750a32f888d1127945670",
+  "publishedHashesVerified": 20,
+  "files": [
+    {
+      "path": "compiler-manifest.json",
+      "sha256": "b271c6b91e23c8cc31a8e6ff7c8527d44a21cd6f22386f0d7c25082e1304fca0",
+      "bytes": 213888
+    },
+    {
+      "path": "docs/report.md",
+      "sha256": "a8237d29f37e42e3c5213fa14dceeff4f834bc52a9a1cf24ce74561a1e389eea",
+      "bytes": 833
+    },
+    {
+      "path": "editor/ax-persistence-diagnostics.json",
+      "sha256": "8e71290efdfcd2b63003793fe9afad6dcc65b58e959461b0da65b45d9bf661e9",
+      "bytes": 225
+    },
+    {
+      "path": "editor/editor-action-coverage.json",
+      "sha256": "3e04bc8b79868c952e9df39963e5239195160693aa385fb378d41f9ecd2faa01",
+      "bytes": 2080
+    },
+    {
+      "path": "editor/editor-actions.json",
+      "sha256": "7d9cd56dac11dbdaf01bf237a53d9e508c65c6d95c2e2eb5f984ef131ef85e98",
+      "bytes": 5907
+    },
+    {
+      "path": "editor/editor-comparison.json",
+      "sha256": "1b9a6f8d3b0d49c370ff5fc420ba6883eb9a61d4602e9c8480f5529284d317f8",
+      "bytes": 50511
+    },
+    {
+      "path": "editor/editor-report.md",
+      "sha256": "cda12607c0035c101a3cbcf62cb17616b70576a74420885d264b77a9f6ff8e9f",
+      "bytes": 5043
+    },
+    {
+      "path": "editor/editor-tree.json",
+      "sha256": "b5cadbdee978d1419f438b2c36ab0100e72ffe622d16a4fad8080bae972ee7e9",
+      "bytes": 154461
+    },
+    {
+      "path": "editor/handshake-status.json",
+      "sha256": "2a51a293d47b328a25097219eec1aa39a58c0857bfc20758ddc9e62a246ae76a",
+      "bytes": 292
+    },
+    {
+      "path": "editor/plist-vs-editor-comparison.json",
+      "sha256": "1b9a6f8d3b0d49c370ff5fc420ba6883eb9a61d4602e9c8480f5529284d317f8",
+      "bytes": 50511
+    },
+    {
+      "path": "editor/screenshots-manifest.json",
+      "sha256": "854843a260e8b33c045a6196321394fe08d4a93b6a77a0f99205cb4410c5809d",
+      "bytes": 527
+    },
+    {
+      "path": "environment.json",
+      "sha256": "85bb43f819e31989effc78d52aab069feb286ed5017118ac44f3e5dd38a2007a",
+      "bytes": 786
+    },
+    {
+      "path": "import-attempts.json",
+      "sha256": "e6e0ac9667f3f4c3dc3d1accb39b055935b45da23f0a3cdfa9ec6e5175adbcba",
+      "bytes": 1686
+    },
+    {
+      "path": "runtime/callback-events.json",
+      "sha256": "a550f1dbb674579e09b1225b0c3cc63a1fa84e27968f0a1812b15b031020b1bc",
+      "bytes": 2347
+    },
+    {
+      "path": "runtime/instrumentation-vs-original.json",
+      "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+      "bytes": 7446
+    },
+    {
+      "path": "runtime/output-assertions.json",
+      "sha256": "60f9cdfd233ac90331985089445f276e65a4e03cae5297d7bec38c15d220080e",
+      "bytes": 1534
+    },
+    {
+      "path": "runtime/runtime-trace.jsonl",
+      "sha256": "1d6789f764ce82f76ebce7ad75688e05edefbe40230c85f75cd56c5ee36c851f",
+      "bytes": 1038
+    },
+    {
+      "path": "runtime/signing-provenance.json",
+      "sha256": "3056c618c45e1e848f12664cbec8fc3f6b8b210d3e527297a594a3b1e05b612c",
+      "bytes": 2083
+    },
+    {
+      "path": "summary.json",
+      "sha256": "827a12dfb97e861df9463f9c649cb27797c02ca01b85509f324460311afee464",
+      "bytes": 1114
+    },
+    {
+      "path": "tests/xcresult-summary.json",
+      "sha256": "3e8aa1f5bd3e8be3d40bd30de7dcebb26e747e6db1e55f36a6e7de2ed930402d",
+      "bytes": 983
+    }
+  ],
+  "causalOracleControls": {
+    "status": "PASS_LOCAL_ORACLE_MUTATIONS_ONLY",
+    "rejected": [
+      {
+        "mutation": "wrong_summary",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "wrong_nonce",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "self_test",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "wrong_fixture",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "native_error",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "native_cancelled",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "missing_trace",
+        "gate": "traceGate",
+        "result": "FAIL_RUNTIME"
+      },
+      {
+        "mutation": "duplicate_callback",
+        "gate": "runGate",
+        "result": "FAIL_RUNTIME"
+      }
+    ]
+  },
+  "editorStatus": "NEEDS_REVIEW",
+  "environment": {
+    "schemaVersion": "1.4",
+    "compilerCommitSha": "71225b71f5353a0f661722d154a8b670b52e76f6",
+    "uname": "Darwin sjc20-cw713-af8efd1b-d077-4475-a4f3-964e8908b21d-DE0D95F0DA14.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:00:07 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_VMAPPLE arm64",
+    "swVers": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+    "xcodeSelectPath": "/Applications/Xcode_27.1.app/Contents/Developer",
+    "xcodebuildVersion": "Xcode 27.1\nBuild version 27A9275",
+    "simulator": {
+      "maskedUdid": "8721CBAE-REDACTED",
+      "deviceName": "iPad mini (A17 Pro)",
+      "runtimeName": "iOS 27.0",
+      "runtimeVersion": "27.0",
+      "isIPad": true,
+      "shortcutsAppInstalled": true,
+      "shortcutsBundleId": "com.apple.shortcuts"
+    }
+  },
+  "scope": "This exact source, fixture, synthetic inputs and recorded Simulator run only.",
+  "notProven": [
+    "Physical device",
+    "General typed cache/TTL",
+    "Native failure cause",
+    "Complete per-action typed coverage",
+    "Complete Inspector identity mapping",
+    "HTTP status/error catching or redirect policy",
+    "Original require fixture repair"
+  ],
+  "privacy": {
+    "syntheticOnly": true,
+    "rawOrRasterPublication": false,
+    "privateCorpusUsed": false
+  },
+  "observedNumericFlags": {
+    "DEQ": "Y",
+    "DNE": "N",
+    "REQ": "Y",
+    "RNE": "N",
+    "BEQ": "Y",
+    "BNE": "N",
+    "ONE_NE_ZERO": "Y",
+    "ZERO_NE_ONE": "Y",
+    "ONE_EQ_ONE": "Y"
+  },
+  "expectedNumericFlags": {
+    "DEQ": "Y",
+    "DNE": "N",
+    "REQ": "Y",
+    "RNE": "N",
+    "BEQ": "Y",
+    "BNE": "N",
+    "ONE_NE_ZERO": "Y",
+    "ZERO_NE_ONE": "Y",
+    "ONE_EQ_ONE": "Y"
+  }
+}

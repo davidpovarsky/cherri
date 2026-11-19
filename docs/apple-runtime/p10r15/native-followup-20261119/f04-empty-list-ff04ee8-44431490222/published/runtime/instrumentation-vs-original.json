@@ -1,0 +1,240 @@
+{
+  "schemaVersion": "1.4",
+  "comparisons": [
+    {
+      "dialect": "v2",
+      "instrumentedFixtureId": "qa-functional-v2",
+      "uninstrumentedFixtureId": "qa-functional-v2-uninstrumented",
+      "uninstrumentedActionCount": 16,
+      "instrumentedTotalActionCount": 33,
+      "projectedSourceActionCount": 16,
+      "inlineDebugActionCount": 15,
+      "collectorEventActionCount": 2,
+      "sourceActionSequenceMatches": true,
+      "sourceActionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.number",
+        "is.workflow.actions.dictionary",
+        "is.workflow.actions.getvalueforkey",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.repeat.count",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.repeat.count",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ],
+      "inlineDebugActions": [
+        {
+          "nativeIndex": 1,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "ClearLogsEmptyText"
+        },
+        {
+          "nativeIndex": 2,
+          "identifier": "is.workflow.actions.setvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 3,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceEventLine"
+        },
+        {
+          "nativeIndex": 4,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_qa_trace"
+        },
+        {
+          "nativeIndex": 6,
+          "identifier": "is.workflow.actions.detect.date",
+          "reason": "CreationDateCapture"
+        },
+        {
+          "nativeIndex": 7,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 8,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceEventLine"
+        },
+        {
+          "nativeIndex": 9,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_qa_trace"
+        },
+        {
+          "nativeIndex": 11,
+          "identifier": "is.workflow.actions.detect.date",
+          "reason": "CreationDateCapture"
+        },
+        {
+          "nativeIndex": 12,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 14,
+          "identifier": "is.workflow.actions.detect.date",
+          "reason": "CreationDateCapture"
+        },
+        {
+          "nativeIndex": 15,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 21,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 26,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceEventLine"
+        },
+        {
+          "nativeIndex": 27,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_qa_trace"
+        }
+      ],
+      "collectorActions": [
+        {
+          "nativeIndex": 28,
+          "identifier": "is.workflow.actions.text.combine"
+        },
+        {
+          "nativeIndex": 29,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceExportEnvelope"
+        }
+      ]
+    },
+    {
+      "dialect": "legacy",
+      "instrumentedFixtureId": "qa-functional-legacy",
+      "uninstrumentedFixtureId": "qa-functional-legacy-uninstrumented",
+      "uninstrumentedActionCount": 17,
+      "instrumentedTotalActionCount": 34,
+      "projectedSourceActionCount": 17,
+      "inlineDebugActionCount": 15,
+      "collectorEventActionCount": 2,
+      "sourceActionSequenceMatches": true,
+      "sourceActionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.number",
+        "is.workflow.actions.dictionary",
+        "is.workflow.actions.getvalueforkey",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.repeat.count",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.repeat.count",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ],
+      "inlineDebugActions": [
+        {
+          "nativeIndex": 1,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "ClearLogsEmptyText"
+        },
+        {
+          "nativeIndex": 2,
+          "identifier": "is.workflow.actions.setvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 3,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceEventLine"
+        },
+        {
+          "nativeIndex": 4,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_qa_trace"
+        },
+        {
+          "nativeIndex": 6,
+          "identifier": "is.workflow.actions.detect.date",
+          "reason": "CreationDateCapture"
+        },
+        {
+          "nativeIndex": 7,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 8,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceEventLine"
+        },
+        {
+          "nativeIndex": 9,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_qa_trace"
+        },
+        {
+          "nativeIndex": 11,
+          "identifier": "is.workflow.actions.detect.date",
+          "reason": "CreationDateCapture"
+        },
+        {
+          "nativeIndex": 12,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 14,
+          "identifier": "is.workflow.actions.detect.date",
+          "reason": "CreationDateCapture"
+        },
+        {
+          "nativeIndex": 15,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 22,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_debug_log"
+        },
+        {
+          "nativeIndex": 27,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceEventLine"
+        },
+        {
+          "nativeIndex": 28,
+          "identifier": "is.workflow.actions.appendvariable",
+          "variable": "__cherri_qa_trace"
+        }
+      ],
+      "collectorActions": [
+        {
+          "nativeIndex": 29,
+          "identifier": "is.workflow.actions.text.combine"
+        },
+        {
+          "nativeIndex": 30,
+          "identifier": "is.workflow.actions.gettext",
+          "reason": "TraceExportEnvelope"
+        }
+      ]
+    }
+  ]
+}
