@@ -208,6 +208,10 @@ func MigrateSemanticLegacySourceToV2Strict(legacySrc string) (string, error) {
 		}
 		return "", fmt.Errorf("semantic v2 migration failed: %w", migErr)
 	}
+	migrated, migErr = migrate.ReconstructNativeListExpressions(migrated)
+	if migErr != nil {
+		return "", fmt.Errorf("semantic native List reconstruction failed: %w", migErr)
+	}
 	file := source.NewFile(source.DocumentID("semantic_import.cherri"), "semantic_import.cherri", 1, migrated)
 	p := syntax.NewParser(file)
 	_ = p.ParseProgram()

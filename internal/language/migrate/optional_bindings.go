@@ -156,8 +156,8 @@ func (scope *migrationBindingScope) lookup(name string) *syntax.BindingStmt {
 // Follow lexical identity through the canonical AST. Initializers are visited
 // before declaration, and function/loop/scoped-block locals cannot capture an
 // unrelated same-named outer declaration for Optional annotation.
-func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.BindingStmt), onAssignment func(*syntax.AssignStmt, *syntax.BindingStmt), onCalls ...func(*syntax.CallExpr, *migrationBindingScope)) {
-	var expression func(syntax.Expression, *migrationBindingScope)
+func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.BindingStmt), onAssignment func(*syntax.AssignStmt, *syntax.BindingStmt), onCalls ...func(*syntax.CallExpr, *migrationBindingScope, *syntax.ExprStmt)) {
+	var expression func(syntax.Expression, *migrationBindingScope, ...*syntax.ExprStmt)
 	var statement func(syntax.Statement, *migrationBindingScope)
 	var block func(*syntax.BlockStmt, *migrationBindingScope)
 	block = func(body *syntax.BlockStmt, parent *migrationBindingScope) {
@@ -169,7 +169,7 @@ func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.Bindi
 			statement(child, scope)
 		}
 	}
-	expression = func(value syntax.Expression, scope *migrationBindingScope) {
+	expression = func(value syntax.Expression, scope *migrationBindingScope, standalone ...*syntax.ExprStmt) {
 		switch e := value.(type) {
 		case *syntax.CallExpr:
 			expression(e.Callee, scope)
@@ -180,8 +180,12 @@ func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.Bindi
 			if e.Block != nil {
 				block(e.Block.Body, scope)
 			}
+			var statement *syntax.ExprStmt
+			if len(standalone) != 0 {
+				statement = standalone[0]
+			}
 			for _, visit := range onCalls {
-				visit(e, scope)
+				visit(e, scope, statement)
 			}
 		case *syntax.FStringExpr:
 			for _, part := range e.Parts {
@@ -236,7 +240,7 @@ func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.Bindi
 		case *syntax.BlockStmt:
 			block(s, scope)
 		case *syntax.ExprStmt:
-			expression(s.Expr, scope)
+			expression(s.Expr, scope, s)
 		case *syntax.ReturnStmt:
 			expression(s.Value, scope)
 		case *syntax.YieldStmt:

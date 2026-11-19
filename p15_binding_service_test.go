@@ -58,8 +58,20 @@ func TestP15V02BindingServiceAndCLI(t *testing.T) {
 					errors = append(errors, diagnostic)
 				}
 			}
-			if result.Valid || len(errors) != 1 || errors[0].Code != tc.code || errors[0].Range != p15V02Range(tc) {
-				t.Fatalf("actual CLI code/range/exit mismatch: %+v", result)
+			expected := p15V02ExpectedDiagnostics(tc)
+			if result.Valid || len(errors) != len(expected) {
+				t.Fatalf("actual CLI error count/validity mismatch: %+v", result)
+			}
+			for _, want := range expected {
+				matches := 0
+				for _, actual := range errors {
+					if actual.Code == want.code && actual.Range == p15V02Range(want) {
+						matches++
+					}
+				}
+				if matches != 1 {
+					t.Fatalf("actual CLI code/range/exit mismatch: %+v", result)
+				}
 			}
 			svc.ChangeDocument(uri, 3+index*2, "var value=1\nvalue+=2\nnumber(value)")
 			diagnostics, _ = svc.Analyze(uri)

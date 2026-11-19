@@ -18,7 +18,7 @@ func migrateVariadicCalls(program *syntax.Program, registry *schema.Registry) {
 			declaredCallables[declared.Name] = true
 		}
 	}
-	walkMigrationBindings(program, nil, nil, func(call *syntax.CallExpr, scope *migrationBindingScope) {
+	walkMigrationBindings(program, nil, nil, func(call *syntax.CallExpr, scope *migrationBindingScope, _ *syntax.ExprStmt) {
 		callee, ok := call.Callee.(*syntax.IdentExpr)
 		if !ok || declaredCallables[callee.Name] {
 			return

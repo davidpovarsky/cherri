@@ -1551,7 +1551,8 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	// A named variadic list is a source argument pack, not one text value.
 	// Reuse the ordinary per-element type/binding checks on its unchanged nodes.
-	if expanded, packError := schema.ExpandNamedVariadicLists(call, actionSchema); packError != nil {
+	expanded, suppliedEmptyPacks, packError := schema.ExpandNamedVariadicLists(call, actionSchema)
+	if packError != nil {
 		a.error(CodeDuplicateArgument, packError.Span, packError.Message)
 		return types.Unknown
 	} else {
@@ -1560,6 +1561,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	// Step-by-step argument binding algorithm per §7.2
 	boundIndices := make(map[int]bool)
+	for _, index := range suppliedEmptyPacks {
+		boundIndices[index] = true
+	}
 	boundArguments := make(map[string]syntax.Expression)
 
 	// Step 2: Primary argument binding
@@ -1669,7 +1673,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	// Step 6: Validate requiredness
 	for pIdx, p := range actionSchema.Parameters {
-		if !p.Optional && !p.Variadic && !boundIndices[pIdx] {
+		if !p.Optional && !boundIndices[pIdx] {
 			a.error(CodeMissingArgument, call.Span, fmt.Sprintf("missing required argument %q in call to %q", p.Label, callName))
 		}
 	}

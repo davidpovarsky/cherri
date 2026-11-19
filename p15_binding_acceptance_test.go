@@ -80,20 +80,79 @@ func p15V02TargetOffset(tc p15V02Case) int {
 	return expected
 }
 
+// JSON null remains unsupported, and it must not narrow an Optional value.
+// Both independent diagnostics are required at their own exact source spans.
+func p15V02ExpectedDiagnostics(tc p15V02Case) []p15V02Case {
+	if tc.name == "guard_json_null" {
+		return []p15V02Case{
+			{name: "unsupported_json_null", source: tc.source, target: "null", code: analysis.CodeNativeJSONNull},
+			tc,
+		}
+	}
+	return []p15V02Case{tc}
+}
+
 func p15V02Diagnostic(diagnostics []analysis.Diagnostic, tc p15V02Case) error {
-	expected := p15V02TargetOffset(tc)
 	var errors []analysis.Diagnostic
 	for _, d := range diagnostics {
 		if d.Severity == analysis.SeverityError {
 			errors = append(errors, d)
 		}
 	}
-	if len(errors) != 1 || errors[0].Code != tc.code ||
-		errors[0].Span.Start.ByteOffset != expected ||
-		errors[0].Span.End.ByteOffset != expected+len(tc.target) {
-		return fmt.Errorf("%s: want one %s at [%d,%d), got %+v", tc.name, tc.code, expected, expected+len(tc.target), errors)
+	expected := p15V02ExpectedDiagnostics(tc)
+	if len(errors) != len(expected) {
+		return fmt.Errorf("%s: want exactly %d independent errors, got %+v", tc.name, len(expected), errors)
+	}
+	for _, want := range expected {
+		start := p15V02TargetOffset(want)
+		matches := 0
+		for _, actual := range errors {
+			if actual.Code == want.code && actual.Span.Start.ByteOffset == start && actual.Span.End.ByteOffset == start+len(want.target) {
+				matches++
+			}
+		}
+		if matches != 1 {
+			return fmt.Errorf("%s: want one %s at [%d,%d), got %+v", tc.name, want.code, start, start+len(want.target), errors)
+		}
 	}
 	return nil
+}
+
+func TestP15V02NullGuardDiagnosticOracleRejectsCorruption(t *testing.T) {
+	var tc p15V02Case
+	for _, item := range p15V02Invalid {
+		if item.name == "guard_json_null" {
+			tc = item
+			break
+		}
+	}
+	if tc.name == "" {
+		t.Fatal("missing null guard fixture")
+	}
+	diagnostics := p15TypeDiagnostics(t, tc.source)
+	if err := p15V02Diagnostic(diagnostics, tc); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"missing_null", "missing_unsafe_read", "wrong_null_code", "wrong_null_span", "unexpected_error"} {
+		t.Run(fault, func(t *testing.T) {
+			changed := append([]analysis.Diagnostic(nil), diagnostics...)
+			switch fault {
+			case "missing_null":
+				changed = changed[1:]
+			case "missing_unsafe_read":
+				changed = changed[:1]
+			case "wrong_null_code":
+				changed[0].Code = analysis.CodeUnknownName
+			case "wrong_null_span":
+				changed[0].Span.Start.ByteOffset++
+			case "unexpected_error":
+				changed = append(changed, changed[0])
+			}
+			if p15V02Diagnostic(changed, tc) == nil {
+				t.Fatal("accepted " + fault)
+			}
+		})
+	}
 }
 
 func TestP15V02BindingFlowProduction(t *testing.T) {
@@ -105,7 +164,10 @@ func TestP15V02BindingFlowProduction(t *testing.T) {
 				t.Fatal(err)
 			}
 			raw, err := CompileSourceToPlist("p15-v02-invalid.cherri", tc.source)
-			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), tc.code) {
+			// CompileSource returns the first error; analysis/service retain the
+			// complete independent diagnostic set checked above.
+			firstCode := p15V02ExpectedDiagnostics(tc)[0].code
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), firstCode) {
 				t.Fatalf("invalid binding emitted native output: bytes=%d err=%v", len(raw), err)
 			}
 			changed := append([]analysis.Diagnostic(nil), diagnostics...)
