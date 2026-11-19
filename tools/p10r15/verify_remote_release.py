@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import signal
 import subprocess
 import tempfile
 import time
@@ -17,6 +18,72 @@ import time
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def execute_owned(command, env, cwd, timeout):
+    """Wait for or terminate the entire owned process group before returning."""
+    process = subprocess.Popen([str(part) for part in command], env=env, cwd=cwd,
+                               text=True, errors="replace", stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, start_new_session=True)
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+        return process.returncode, stdout, stderr
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            stdout, stderr = process.communicate(timeout=3)
+        except subprocess.TimeoutExpired:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            stdout, stderr = process.communicate(timeout=3)
+        # A parent may exit on TERM while a descendant ignores it and has closed
+        # the inherited pipes. Kill any remaining member before state restoration.
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        return None, stdout, stderr + "\nAUDIT_TIMEOUT_NOT_A_PASS"
+
+
+def synthetic_workflow_matches(actions, dialect):
+    """Independent exact producer/consumer oracle for these two tiny fixtures."""
+    expected_ids = ["is.workflow.actions.gettext"]
+    if dialect == "legacy":
+        expected_ids.append("is.workflow.actions.setvariable")
+    expected_ids.append("is.workflow.actions.showresult")
+    if [a.get("WFWorkflowActionIdentifier") for a in actions] != expected_ids:
+        return False
+    producer = actions[0].get("WFWorkflowActionParameters", {})
+    expected_text = "P10R15 staged " + ("Legacy" if dialect == "legacy" else "V2") + " verification"
+    uuid = producer.get("UUID")
+    if producer.get("WFTextActionText") != expected_text or not isinstance(uuid, str) or not uuid:
+        return False
+    display = actions[-1].get("WFWorkflowActionParameters", {}).get("Text", {})
+    if display.get("WFSerializationType") != "WFTextTokenString":
+        return False
+    value = display.get("Value", {})
+    if value.get("string") != "\ufffc":
+        return False
+    attachments = value.get("attachmentsByRange", {})
+    if set(attachments) != {"{0, 1}"}:
+        return False
+    actual = attachments["{0, 1}"]
+    if dialect == "legacy":
+        assignment = actions[1].get("WFWorkflowActionParameters", {})
+        source = assignment.get("WFInput", {})
+        if assignment.get("WFVariableName") != "message":
+            return False
+        if source.get("WFSerializationType") != "WFTextTokenAttachment":
+            return False
+        reference = source.get("Value", {})
+        return (reference.get("Type") == "ActionOutput" and reference.get("OutputUUID") == uuid
+                and actual == {"Type": "Variable", "VariableName": "message"})
+    return actual == {"Type": "ActionOutput", "OutputUUID": uuid, "OutputName": "message"}
 
 
 def main():
@@ -61,13 +128,7 @@ def main():
     def execute(name, command, expected=None, timeout=60):
         artifacts_before = {str(p): digest(p) for p in (candidate / "outputs").glob("*.shortcut")}
         start = time.monotonic()
-        try:
-            result = subprocess.run([str(part) for part in command], env=env,
-                                    cwd=candidate, text=True, errors="replace",
-                                    capture_output=True, timeout=timeout)
-            rc, stdout, stderr = result.returncode, result.stdout, result.stderr
-        except subprocess.TimeoutExpired:
-            rc, stdout, stderr = None, "", "AUDIT_TIMEOUT_NOT_A_PASS"
+        rc, stdout, stderr = execute_owned(command, env, candidate, timeout)
         artifacts_after = {str(p): digest(p) for p in (candidate / "outputs").glob("*.shortcut")}
         emitted = [Path(path) for path in artifacts_after if path not in artifacts_before]
         native = []
@@ -79,12 +140,14 @@ def main():
                 for path in emitted:
                     try:
                         actions = plistlib.loads(path.read_bytes()).get("WFWorkflowActions", [])
+                        dialect = "v2" if name == "runner_compile_unsigned" else "legacy"
                         native.append({"name": path.name, "sha256": digest(path), "actions": len(actions),
+                                       "syntheticSemanticsMatch": synthetic_workflow_matches(actions, dialect),
                                        "nativeActionIDs": sorted({a["WFWorkflowActionIdentifier"] for a in actions})})
                     except Exception:
                         ok = False
                 ok = ok and len(native) == 1 and native[0]["actions"] > 0
-                ok = ok and "is.workflow.actions.showresult" in native[0]["nativeActionIDs"]
+                ok = ok and native[0]["syntheticSemanticsMatch"]
                 ok = ok and all(artifacts_after.get(path) == sha for path, sha in artifacts_before.items())
             elif name == "skill_full_catalog":
                 try:
@@ -99,11 +162,19 @@ def main():
                     ok = ok and json.loads(stdout) == release
                 except ValueError:
                     ok = False
-            elif name == "runner_status":
+            elif name in ("runner_status", "restored_runner_status"):
                 try:
                     ok = ok and json.loads(stdout) == release
                 except ValueError:
                     ok = False
+            elif name in ("legacy_status", "registered_status", "restored_registered_status"):
+                expected = {"CHERRI_REMOTE_LANGUAGE_MODE": "legacy",
+                            "CHERRI_REMOTE_SOURCE_BRANCH": release["sourceBranch"]}
+                expected.update({key: release[key] for key in
+                                 ("compilerCommit", "docsCommit", "schemaFingerprint", "sourceBranch")})
+                lines = [line.split("=", 1) for line in stdout.splitlines() if line.strip()]
+                ok = ok and len(lines) == len(expected) and all(len(pair) == 2 for pair in lines)
+                ok = ok and dict(lines) == expected
         row = {"check": name, "kind": "CAUSAL_REJECTION" if expected else "ENTRYPOINT",
                "exitCode": rc, "seconds": round(time.monotonic() - start, 3),
                "verdict": "PASS" if ok else "FAIL", "nativeArtifacts": native,
