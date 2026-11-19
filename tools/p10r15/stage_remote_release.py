@@ -27,8 +27,16 @@ def clean_head(repo):
     return head
 
 
-def checked_clone(source, destination, revision):
+def checked_clone(source, destination, revision, canonical_origin):
+    if canonical_origin not in ("https://github.com/davidpovarsky/cherri.git",
+                                "https://github.com/davidpovarsky/cherrilang.org.git"):
+        raise ValueError("Unexpected immutable clone origin")
     run(["git", "clone", "--no-checkout", "--local", source, destination])
+    # Local objects may be hardlinked, but the release must not depend on the
+    # temporary source checkout as its future origin or borrowed object store.
+    run(["git", "remote", "set-url", "origin", canonical_origin], destination)
+    if (destination / ".git/objects/info/alternates").exists():
+        raise ValueError("Release clone must not borrow another object store")
     run(["git", "checkout", "--detach", revision], destination)
     if clean_head(destination) != revision:
         raise ValueError("Clone revision mismatch")
@@ -106,9 +114,9 @@ def main():
         (candidate / name).mkdir(parents=True, exist_ok=True)
     source = candidate / "source" / args.label
     runtime = candidate / args.label / "runtime"
-    checked_clone(args.repo, source, skill_sha)
-    checked_clone(args.compiler_source, runtime / "src", source_sha)
-    checked_clone(args.docs, runtime / "docs", docs_sha)
+    checked_clone(args.repo, source, skill_sha, manifest["compilerRepo"])
+    checked_clone(args.compiler_source, runtime / "src", source_sha, manifest["compilerRepo"])
+    checked_clone(args.docs, runtime / "docs", docs_sha, manifest["docsRepo"])
     (runtime / "bin/cherri").write_bytes(binary_data)
     (runtime / "bin/cherri").chmod(0o700)
     (runtime / "bin/cherri.commit").write_text(source_sha + "\n")
