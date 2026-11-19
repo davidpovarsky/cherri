@@ -3,6 +3,7 @@ package lower
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/ir"
@@ -89,6 +90,8 @@ func TestP15F02NamedIndicesUseZeroBasedNativeProducer(t *testing.T) {
 	}{
 		{"named_repeat", `repeat 3 as index { show(index) }`, []string{"index@Repeat Index"}},
 		{"tuple_for", `for (index, item) in ["A", "B"] { show(index); show(item) }`, []string{"index@Repeat Index"}},
+		{"iterable_loop_is_not_nested_in_its_consumer", `for (outerIndex, outerItem) in (repeat 2 as producerIndex { yield producerIndex }) { show(outerIndex) }`, []string{"producerIndex@Repeat Index", "outerIndex@Repeat Index"}},
+		{"legacy_named_repeat", `repeat index for 3 { show(index) }`, nil},
 		{"mixed_nested_and_siblings", `for (outerIndex, outerItem) in ["A", "B"] {
     repeat 2 as middleIndex {
         for (innerIndex, innerItem) in ["1", "2"] { show(f"{outerIndex}:{outerItem}:{middleIndex}:{innerIndex}:{innerItem}") }
@@ -96,6 +99,7 @@ func TestP15F02NamedIndicesUseZeroBasedNativeProducer(t *testing.T) {
     }
     show(outerIndex)
 }
+
 for (siblingIndex, siblingItem) in ["C"] { show(siblingIndex) }
 repeat 1 as lastIndex { show(lastIndex) }`, []string{"outerIndex@Repeat Index", "middleIndex@Repeat Index 2", "innerIndex@Repeat Index 3", "siblingIndex@Repeat Index", "lastIndex@Repeat Index"}},
 		{"ignored_indices", `repeat 2 { show(RepeatIndex) }
@@ -160,5 +164,53 @@ func TestP15F02IndexGraphRejectsCausalMutations(t *testing.T) {
 				t.Fatal("causal index mutation was accepted")
 			}
 		})
+	}
+}
+
+func TestP15F02IndexShadowRestoresOuterLoopAndBindings(t *testing.T) {
+	var workflow = p15F02Lower(t, `var index = 99
+var item = "outside"
+for (index, item) in ["A", "B"] {
+    show(index)
+    repeat 2 as index { show(index) }
+    show(index)
+    show(item)
+}
+show(index)
+show(item)`)
+	var indices, err = p15F02IndexGraph(workflow)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(indices) != 2 {
+		t.Fatalf("need both scoped zero-based indices: %v", indices)
+	}
+	var outer = strings.TrimSuffix(indices[0], "@Repeat Index")
+	var inner = strings.TrimSuffix(indices[1], "@Repeat Index 2")
+	if outer == inner || outer == "index" || inner == "index" || outer == indices[0] || inner == indices[1] {
+		t.Fatalf("loop index owners collide: %v", indices)
+	}
+	var itemName string
+	var reads []string
+	for _, action := range workflow.Actions {
+		if action.AppleIdentifier == "is.workflow.actions.setvariable" {
+			if ref, ok := action.Parameters["WFInput"].(*ir.AttachmentToken); ok && ref.Type == "Variable" && ref.OutputName == "Repeat Item" {
+				itemName, _ = action.Parameters["WFVariableName"].(string)
+			}
+		}
+		if action.AppleIdentifier == "is.workflow.actions.showresult" {
+			var token, ok = action.Parameters["Text"].(*ir.AttachmentToken)
+			if !ok || token.Type != "Variable" {
+				t.Fatalf("scoped consumer lost its variable identity: %#v", action.Parameters)
+			}
+			reads = append(reads, token.OutputName)
+		}
+	}
+	if itemName == "" || itemName == "item" {
+		t.Fatal("loop item did not shadow outer item")
+	}
+	var expected = []string{outer, inner, outer, itemName, "index", "item"}
+	if !reflect.DeepEqual(reads, expected) {
+		t.Fatalf("scope restoration: got %v, want %v", reads, expected)
 	}
 }
