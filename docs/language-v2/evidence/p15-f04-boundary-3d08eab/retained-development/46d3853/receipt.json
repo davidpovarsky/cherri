@@ -1,0 +1,75 @@
+{
+  "sourceCommit": "46d3853c06491a25068c842b3a90db11ad7da8fa",
+  "baselineProductionCommit": "e5f941f691f3f8b4b2cfd738d221c1790c2dc330",
+  "sourceCleanBefore": true,
+  "runs": [
+    {
+      "label": "baseline",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-json",
+        "-count=1",
+        "-p=1",
+        "-timeout=180s",
+        "-run",
+        "^TestP15F04",
+        "."
+      ],
+      "startedAt": "2026-11-19T01:55:54.120773+00:00",
+      "finishedAt": "2026-11-19T01:56:11.011963+00:00",
+      "exitCode": 1,
+      "logSHA256": "cedec67897404550626e1c7437b63f1450cadd2a334a503c4ae42e3839e15496",
+      "pass": 8,
+      "fail": 18,
+      "skip": 0,
+      "failures": [
+        "TestP15F04KnownListLoopResultsFailClosed/for_literal",
+        "TestP15F04KnownListLoopResultsFailClosed/for_empty",
+        "TestP15F04KnownListLoopResultsFailClosed/repeat_literal",
+        "TestP15F04KnownListLoopResultsFailClosed/repeat_empty",
+        "TestP15F04KnownListLoopResultsFailClosed/bound_list",
+        "TestP15F04KnownListLoopResultsFailClosed/mutable_list",
+        "TestP15F04KnownListLoopResultsFailClosed/function_result",
+        "TestP15F04KnownListLoopResultsFailClosed/optional_list",
+        "TestP15F04KnownListLoopResultsFailClosed/if_union",
+        "TestP15F04KnownListLoopResultsFailClosed/menu_union",
+        "TestP15F04KnownListLoopResultsFailClosed/nested_loop",
+        "TestP15F04KnownListLoopResultsFailClosed",
+        "TestP15F04SupportedLoopResultsRemainAvailable/statement_loop",
+        "TestP15F04SupportedLoopResultsRemainAvailable/untyped_native_last_action",
+        "TestP15F04SupportedLoopResultsRemainAvailable",
+        "TestP15F04NestedListProbesFailClosed/qa-f04-yield-empty-list-v2",
+        "TestP15F04NestedListProbesFailClosed/qa-f04-yield-list-v2",
+        "TestP15F04NestedListProbesFailClosed"
+      ]
+    },
+    {
+      "label": "fixed",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-json",
+        "-count=1",
+        "-p=1",
+        "-timeout=180s",
+        "-run",
+        "^TestP15(F04|F03|Storage|RuntimeDiagnosticCollectEmptyGraph)",
+        "."
+      ],
+      "startedAt": "2026-11-19T01:56:11.057157+00:00",
+      "finishedAt": "2026-11-19T01:56:30.356500+00:00",
+      "exitCode": 1,
+      "logSHA256": "fa76262d4bd3dcfcd11e4f683d9eb94d513996a17d44f5489bd3976f8bc293a5",
+      "pass": 87,
+      "fail": 3,
+      "skip": 0,
+      "failures": [
+        "TestP15F04SupportedLoopResultsRemainAvailable/statement_loop",
+        "TestP15F04SupportedLoopResultsRemainAvailable/untyped_native_last_action",
+        "TestP15F04SupportedLoopResultsRemainAvailable"
+      ]
+    }
+  ],
+  "sourceCleanAfter": true
+}

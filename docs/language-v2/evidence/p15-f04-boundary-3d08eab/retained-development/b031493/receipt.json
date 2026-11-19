@@ -1,0 +1,52 @@
+{
+  "sourceCommit": "b031493f4a5dddfb55e0de4221b10c2ee43ad979",
+  "baselineProductionCommit": "e5f941f691f3f8b4b2cfd738d221c1790c2dc330",
+  "sourceCleanBefore": true,
+  "runs": [
+    {
+      "label": "baseline",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-json",
+        "-count=1",
+        "-p=1",
+        "-timeout=180s",
+        "-run",
+        "^TestP15F04",
+        "."
+      ],
+      "startedAt": "2026-11-19T01:58:02.398809+00:00",
+      "finishedAt": "2026-11-19T01:58:14.402245+00:00",
+      "exitCode": 1,
+      "logSHA256": "b56ad03ac4d4f7a97c0871ee1ce94846ad2fbb0856f94e5cc3c3e20534bac7cc",
+      "pass": 0,
+      "fail": 0,
+      "skip": 0,
+      "failures": []
+    },
+    {
+      "label": "fixed",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-json",
+        "-count=1",
+        "-p=1",
+        "-timeout=180s",
+        "-run",
+        "^TestP15(F04|F03|Storage|RuntimeDiagnosticCollectEmptyGraph)",
+        "."
+      ],
+      "startedAt": "2026-11-19T01:58:14.416763+00:00",
+      "finishedAt": "2026-11-19T01:58:30.157061+00:00",
+      "exitCode": 1,
+      "logSHA256": "468087ba89d9a413d9c2303527795a432cecc257c0a511be0270851ab99fba52",
+      "pass": 0,
+      "fail": 0,
+      "skip": 0,
+      "failures": []
+    }
+  ],
+  "sourceCleanAfter": true
+}
