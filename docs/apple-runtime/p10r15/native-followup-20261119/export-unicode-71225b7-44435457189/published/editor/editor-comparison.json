@@ -1,0 +1,1490 @@
+{
+  "schemaVersion": "1.5",
+  "fixtureId": "qa-export-unicode-v2",
+  "runId": "qa-export-unicode-v2-44435457189-9344e2cb78f1785ca610b6113ce323fc",
+  "compilerSha": "71225b71f5353a0f661722d154a8b670b52e76f6",
+  "expectedNativeActionCount": 79,
+  "observedCardCount": 8,
+  "observedCardCountScope": "AX_CONTAINERS",
+  "status": "NEEDS_REVIEW",
+  "issues": [
+    "ACTION_COUNT_MISMATCH",
+    "EDITOR_BOTTOM_UNVERIFIED"
+  ],
+  "proofTier": "AX_NATIVE_COMPARISON",
+  "ocrUsed": false,
+  "actions": [
+    {
+      "sourceIndex": 0,
+      "nativeIdentifier": "is.workflow.actions.comment",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFCommentActionText",
+          "value": "ANCHOR_CARD_01_TOP_HEADER",
+          "nativeType": "string",
+          "status": "AX_UNEXPOSED",
+          "observedTextPresent": true,
+          "evidence": [
+            {
+              "kind": "AX",
+              "page": 1,
+              "nodeId": "p1:n33"
+            }
+          ]
+        }
+      ],
+      "hiddenOrUnobserved": [],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n33"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Comment",
+        "ANCHOR_CARD_01_TOP_HEADER",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 1,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "9ef7b2d304075bf6412c3158f7e99ee9d5438f4cc1018e698e73111da9cd5cce",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n65"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Text",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 2,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFVariableName",
+          "value": "__cherri_debug_log",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n97"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 3,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "f7db616d6de8d59f5df1384ce6cc977ecffd0df9467fe0847bf2743d3e517666",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFTextActionText",
+          "value": "{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"unicode\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"￼\"}",
+          "nativeType": "WFTextTokenString",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n111"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Text",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 4,
+      "nativeIdentifier": "is.workflow.actions.appendvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFVariableName",
+          "value": "__cherri_qa_trace",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n143"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Add"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 5,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "d4f081acc71120ef8ef4aa7fa13dfa1b6c0f334a67b68f566b22d5de1891646d",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFTextActionText",
+          "value": "P15_EXPORT_UNICODE_OK",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n157"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Text",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 6,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFVariableName",
+          "value": "verdict",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n189"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 7,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "a5ead1a4d61a8a8bd451817b41d17ca2c8c075bd346e4595a10d3303b6164737",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFTextActionText",
+          "value": "quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n203"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Text"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 8,
+      "nativeIdentifier": "is.workflow.actions.appendvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 9,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "a12db54520684ee3cacb88d62039f40c1ea5a9e7e0725afc539063284cca292b",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 10,
+      "nativeIdentifier": "is.workflow.actions.getitemtype",
+      "nativeUUIDDigest": "371ba8e6d2c9bc016984d77548ba166bff98f2cfaa9e89600fc7811bdc15e3a8",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 11,
+      "nativeIdentifier": "is.workflow.actions.repeat.each",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "2ea075f32385cb03951a380d1c88653be19bc506dd88eacf268350618e99d171",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 12,
+      "nativeIdentifier": "is.workflow.actions.getitemtype",
+      "nativeUUIDDigest": "b3a29c5259bf3a90854d2e031de2a453a7f80086b2305d295a272782c230a5b2",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 13,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "9f0effbc37c83d6c0859df3ad28c0047e0cdc8904e60a69daa5a609fc995bd26",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalActionString",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 14,
+      "nativeIdentifier": "is.workflow.actions.base64encode",
+      "nativeUUIDDigest": "41c43ca7d9d5a61660ce6fa975659308c52dfbf09b0d1005620a02fce00e0b6d",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 15,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "3e42fe50542f67b6ecf8b00c6f72ce5f94597b1e26935f62ecd53bef4270efe3",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 16,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "9f0effbc37c83d6c0859df3ad28c0047e0cdc8904e60a69daa5a609fc995bd26",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 17,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "7f1f15230edbc82088d1744f211270ee626e93c6f72a9dc7a7b0869c3e2b3e6a",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 18,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "7c226a378cea7b5f02ed802fa7db307a8ee21a193dda724856ceb8fc0c1c95e6",
+      "groupingIdentifierDigest": "9f0effbc37c83d6c0859df3ad28c0047e0cdc8904e60a69daa5a609fc995bd26",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 19,
+      "nativeIdentifier": "is.workflow.actions.repeat.each",
+      "nativeUUIDDigest": "7ef9af7a3adc921208b3cb890ac983a1ad87546823541ceb970315d7558913f8",
+      "groupingIdentifierDigest": "2ea075f32385cb03951a380d1c88653be19bc506dd88eacf268350618e99d171",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 20,
+      "nativeIdentifier": "is.workflow.actions.text.combine",
+      "nativeUUIDDigest": "810e34ee640976d4444940227921c4252e71e09bcf8208ff3fb7cea4f2e0bdae",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "text",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 21,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "aca4d4afb552bc0fa2dfead4a142748b5348b1e1704c9223224c213ea3ac327a",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 22,
+      "nativeIdentifier": "is.workflow.actions.base64encode",
+      "nativeUUIDDigest": "623cf39995e292b1f5777eae9b71499fdfc9db43189fe7b016f5907b32d3169f",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 23,
+      "nativeIdentifier": "is.workflow.actions.base64encode",
+      "nativeUUIDDigest": "d8bd2bc155253ef259ed64aeb1f579fc1302d3beb6bd54285d29ac1236c28a62",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 24,
+      "nativeIdentifier": "is.workflow.actions.setitemname",
+      "nativeUUIDDigest": "480560e44477c423cba6c87b4f0a9ead3edd35e039af418035e866269f340d31",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFDontIncludeFileExtension",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 25,
+      "nativeIdentifier": "is.workflow.actions.getitemname",
+      "nativeUUIDDigest": "7ab2b531e928f3ba2b9d4dbe31891ffcb74cdf18319a45582ea9d05778e005ff",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 26,
+      "nativeIdentifier": "is.workflow.actions.properties.files",
+      "nativeUUIDDigest": "1617d3df26ec2c76d23747584a1ca2bad36aa36e2b0a7a247015932e593052dd",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 27,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "9d389c5573493bc510e4658799480bfe8ace64244b48c062c33d84b64cc87344",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 28,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "b557b55059adef980d7e7aa7a4b59210674e92cbdb23e4daecfd119f228b74c4",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 29,
+      "nativeIdentifier": "is.workflow.actions.base64encode",
+      "nativeUUIDDigest": "c8f471e5762c725e4caeb063f15772b2306a9fd53a3c2676404803ec424db500",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 30,
+      "nativeIdentifier": "is.workflow.actions.getitemtype",
+      "nativeUUIDDigest": "40bcd9458cd7be57312c9ea13067e6831a80e35b711c01d1b49c5331d1bc6aec",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 31,
+      "nativeIdentifier": "is.workflow.actions.getitemtype",
+      "nativeUUIDDigest": "fa2a5ea0b5b4542a0a133fb4d0287304984e3ca46b0033862c446c52be87a4f6",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 32,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "8b10d2319a153411517f3f6756ed03280403f9900884c9d2a6fffcda402011ba",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalActionString",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 33,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "f03ccfef89a271a0dea44e81b7fb8840098bc9290128ede7e115809423fc5650",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 34,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 35,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "8b10d2319a153411517f3f6756ed03280403f9900884c9d2a6fffcda402011ba",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 36,
+      "nativeIdentifier": "is.workflow.actions.detect.text",
+      "nativeUUIDDigest": "f83dcbd63d2a8d1318f3271d0ad7228b5d246ac4dfa820179474e8e6286c0f83",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 37,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "ed01deb15f25830e2338661e3132a9264341e5054b46806c35dbf8a5b4aae6bc",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 38,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "40fc73cc7d9e9b7e9efe5acc2c046ae73a05122fa13744e606e0ca27ce2f678a",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 39,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 40,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "ed01deb15f25830e2338661e3132a9264341e5054b46806c35dbf8a5b4aae6bc",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 41,
+      "nativeIdentifier": "is.workflow.actions.detect.dictionary",
+      "nativeUUIDDigest": "47c6d0874fcd1848fe90bfc4a0135af0ca9e40efab03a655556b53f877744ecf",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 42,
+      "nativeIdentifier": "is.workflow.actions.getvalueforkey",
+      "nativeUUIDDigest": "4894144c5ab24a832d9c22f984682bca96fe1de23cdcd8853e994a7cac9e4c84",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 43,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "3e2f273d24f51a8a3199c18c53e21ab8f8ce5bc628ccb99d038dd9c0f3661712",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 44,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "92614582fd56f2b97c04361feb366599ba5681910eb9035ef2da2855f07151aa",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 45,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "42f02222993a0fafd58a0e318ecb4ac93ce32af898b6a4c42e4128b7327b7814",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 46,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 47,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "92614582fd56f2b97c04361feb366599ba5681910eb9035ef2da2855f07151aa",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 48,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "4c00d5687362de77689bab34efeaa73ef090d191993756a4688cb76a1d5dea7a",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 49,
+      "nativeIdentifier": "is.workflow.actions.getvalueforkey",
+      "nativeUUIDDigest": "7528aab61b1b16b3424675432494b4523dd3e1e3dbf347b48091e5ad32d0b6ce",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 50,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "0d6db9e72d34260c1701841b13bc4dba89cd9c058a4018da1f39bf48ea1ef289",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 51,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "0612fa6224f048fe3e852167c76735887ca6e54739f73623c8b91ae8480af570",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 52,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 53,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "0d6db9e72d34260c1701841b13bc4dba89cd9c058a4018da1f39bf48ea1ef289",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 54,
+      "nativeIdentifier": "is.workflow.actions.getvalueforkey",
+      "nativeUUIDDigest": "1301af2f7fb3931e903ee8225a443a383d522144ddcc1272208bd72d6be11f6e",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 55,
+      "nativeIdentifier": "is.workflow.actions.getvalueforkey",
+      "nativeUUIDDigest": "ddf6acf115f004ce0b8cfffad2558945080c0e000ac50e2fb45536e551bfb7c0",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 56,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "97e64b6cd433d94fc7d6e3e010fb4296e819d43741bb25221f52d67075b69810",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 57,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "6e615aba93d5d1c3e5797ff332387dd41019f2666ead1b034d4c804b62f25d9f",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 58,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 59,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "97e64b6cd433d94fc7d6e3e010fb4296e819d43741bb25221f52d67075b69810",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 60,
+      "nativeIdentifier": "is.workflow.actions.base64encode",
+      "nativeUUIDDigest": "d16dcbe31a28293c3f6885317623553394b17360144ee418f42239a7f9c73b74",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 61,
+      "nativeIdentifier": "is.workflow.actions.detect.text",
+      "nativeUUIDDigest": "2bea535dbf4dc32265c127117698bb3432d153ca3f966bdbf3894310f30ca04d",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 62,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "cdaabd99487265802a306fa6918968b93783de8702e137563f5914657342a3f6",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalActionString",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 63,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "d251fd0fd2c5cd1dbd9686032276631e79482cbdbca4ff9cf6ba33488cd7784e",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 64,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 65,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "cdaabd99487265802a306fa6918968b93783de8702e137563f5914657342a3f6",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 66,
+      "nativeIdentifier": "is.workflow.actions.getvariable",
+      "nativeUUIDDigest": "237b294325e988ba767b8465c10689e40e2f76360b93816c44709040cabde277",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFVariable",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 67,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "0c45c0328a7cf927e9a33cecb824b62756b4793155bbe960f0e2d6783f1040d1",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalActionString",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 68,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "ede164781bd9d2f3fefebd16192887fce6c4733ac4bfc45943a262c16724d4e8",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 69,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 70,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "0c45c0328a7cf927e9a33cecb824b62756b4793155bbe960f0e2d6783f1040d1",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 71,
+      "nativeIdentifier": "is.workflow.actions.comment",
+      "nativeUUIDDigest": "0219726c76873411b57d8b4c6e434fdd4324cb9766c95f51d538ec8c045f0d7a",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 72,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "816e0ed8783de8cb63647d1fa7d4b2bc604b9f729a24e3b8da5800be5003e7cf",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 73,
+      "nativeIdentifier": "is.workflow.actions.appendvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 74,
+      "nativeIdentifier": "is.workflow.actions.text.combine",
+      "nativeUUIDDigest": "89952bb98d6cd134b6f131cd3eb7e25009acf1f009a42875162ca13d30e419f5",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "text",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 75,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "5804193b6b50ea9ef6952e72d73a4e1955a520768395fa6fd8376223ffff4fd0",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 76,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "fa30b9a6a765cba9c99679e7ba8c7c8193a1474bb93dd75ed72aaa3f3047afc9",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 77,
+      "nativeIdentifier": "is.workflow.actions.comment",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 78,
+      "nativeIdentifier": "is.workflow.actions.output",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFOutput",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    }
+  ],
+  "summary": {
+    "matched": 0,
+    "unmatchedExpected": 79,
+    "statusCounts": {
+      "AX_UNEXPOSED": 8,
+      "NOT_FOUND": 71
+    },
+    "ambiguousObserved": 8,
+    "falsePassCount": null,
+    "falsePassNote": "Measured only by separate negative-control test execution"
+  }
+}

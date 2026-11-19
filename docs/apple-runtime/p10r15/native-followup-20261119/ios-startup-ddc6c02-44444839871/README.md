@@ -1,0 +1,7 @@
+# Verified iOS startup follow-up: 50/50 at ddc6c02
+
+[Run 44444839871](https://github.com/davidpovarsky/cherri/actions/runs/44444839871) completed SUCCESS at exact source `ddc6c020806e8e2edad727d07d7d78ea13d7bfe7`. The actual iOS Simulator suite reports 50 passed, zero failed and xcodebuild exit 0. This includes the previously failing `CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI`; its final editor assertion remains present.
+
+The published artifact contains 18 source-bound records: seven ios-ui, ten service and one ios-build. The 57 behavioral UI receipts remain separate from 33 bounded startup receipts (11 tests, each with window/document/editor stages). Every startup receipt contains only the fixed schema/test/stage fields and seven booleans. The E02 receipt observes the actual Create Document affordance followed by the visible/hittable editor. Startup booleans do not substitute for the behavior assertions.
+
+The artifact ZIP digest, sanitized log digest and every formal record's source/run/log binding were independently checked. The original 49/50 failure at 4ff1d remains in the preceding startup archive. This follow-up demonstrates the changed harness and actual suite at ddc6c02; it does not prove that a particular timing race caused the older failure, and it does not transfer acceptance to later compiler sources or physical iPad behavior. A separate combined-S2 run was dispatched once after this success.
