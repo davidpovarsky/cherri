@@ -32,14 +32,14 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	selected.Repair.CaseCount = len(selected.Repair.Cases)
 	selected.Gates.GateCount = len(selected.Gates.Gates)
-	if selected.Repair.CaseCount != 1 || selected.Gates.GateCount != 2 {
+	if selected.Repair.CaseCount != 3 || selected.Gates.GateCount != 2 {
 		t.Fatal("supplemental scenario selection drifted")
 	}
 
 	var runner = NewRunner()
 	runner.runRepairCases(all.Repair)
 	runner.runRecoveryGates(all.Gates)
-	if len(runner.results) != 85 || len(runner.records) != 5 || len(runner.observations) != 0 {
+	if len(runner.results) != 85 || len(runner.records) != 8 || len(runner.observations) != 0 {
 		t.Fatalf("unexpected supplemental scope: results=%d records=%d observations=%d",
 			len(runner.results), len(runner.records), len(runner.observations))
 	}
@@ -71,9 +71,20 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	var report, reportErr = ValidateEvidenceManifest(manifest, selected, "local")
-	if reportErr != nil || report.PassedCases != 3 || report.FailedCases != 0 ||
+	if reportErr != nil || report.PassedCases != 5 || report.FailedCases != 0 ||
 		report.SkippedCases != 0 || report.ClosureComplete {
 		t.Fatalf("supplemental evidence rejected or expanded into release closure: %+v err=%v", report, reportErr)
+	}
+
+	var intakeRecordIndex = -1
+	for index, record := range manifest.Records {
+		if record.Requirements[0] == "RP36" {
+			intakeRecordIndex = index
+			break
+		}
+	}
+	if intakeRecordIndex < 0 {
+		t.Fatal("independent intake receipt missing")
 	}
 
 	// A producer selection, its complete required tiers, and its source SHA are
@@ -92,22 +103,22 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 			m.Records = records
 		}},
 		{"wrong_producer", func(m *EvidenceManifest) {
-			m.Records[0].TestID = "github.com/electrikmilk/cherri:TestAlphaRenamingPasses"
+			m.Records[intakeRecordIndex].TestID = "github.com/electrikmilk/cherri:TestAlphaRenamingPasses"
 		}},
 		{"partial_intake_selection", func(m *EvidenceManifest) {
-			m.Records[0].Command = productionTestCommand([]string{"TestP15R06ProductionImportFormats"})
+			m.Records[intakeRecordIndex].Command = productionTestCommand([]string{"TestP15R06ProductionImportFormats"})
 		}},
 		{"zero_selection_command", func(m *EvidenceManifest) {
-			m.Records[0].Command = productionTestCommand([]string{"TestSupplementalMissingProducer"})
+			m.Records[intakeRecordIndex].Command = productionTestCommand([]string{"TestSupplementalMissingProducer"})
 		}},
 		{"missing_selection_assertion", func(m *EvidenceManifest) {
-			delete(m.Records[0].Assertions, "required_production_tests")
+			delete(m.Records[intakeRecordIndex].Assertions, "required_production_tests")
 		}},
 		{"stale_source", func(m *EvidenceManifest) {
-			m.Records[0].ImplementationSHA = strings.Repeat("f", 40)
+			m.Records[intakeRecordIndex].ImplementationSHA = strings.Repeat("f", 40)
 		}},
 		{"invented_runtime_tier", func(m *EvidenceManifest) {
-			m.Records[0].Tier = "ios-runtime"
+			m.Records[intakeRecordIndex].Tier = "ios-runtime"
 		}},
 	} {
 		t.Run(mutation.name, func(t *testing.T) {
@@ -159,7 +170,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	var status, statusErr = exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()
 	var receipt, receiptErr = json.Marshal(map[string]any{
 		"source_sha": runner.implSHA, "source_tree_clean": statusErr == nil && len(status) == 0,
-		"scope":  "BRG02 and BRG03 strict native comparator scenarios; RP36 intake preservation and signed-container rejection. No linked-ID inheritance or release closure.",
+		"scope":  "BRG02/BRG03 strict comparator; RP35 native preservation; RP36 intake; RP37 allowed-edit and failed-signing gates. No linked-ID inheritance, live signing success, or release closure.",
 		"report": report, "records": runner.records,
 	})
 	if receiptErr != nil {
