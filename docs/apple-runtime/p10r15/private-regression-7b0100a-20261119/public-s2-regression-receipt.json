@@ -1,0 +1,389 @@
+{
+  "formatVersion": 1,
+  "scope": "Exact S2 private-corpus regression only; not all-project acceptance or Apple runtime proof",
+  "source": {
+    "sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+    "cleanAtVerification": true,
+    "ordinaryClone": true,
+    "origin": "https://github.com/davidpovarsky/cherri.git"
+  },
+  "receipt": {
+    "source_sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+    "planned": 5,
+    "completed": 5,
+    "go_version": "go version go1.24.13 linux/arm64",
+    "corpus_before": {
+      "files": 38,
+      "bytes": 62980131,
+      "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+    },
+    "corpus_after": {
+      "files": 38,
+      "bytes": 62980131,
+      "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+    },
+    "entire_input_directory_unchanged": true,
+    "input_identities_unchanged": true,
+    "results": [
+      {
+        "index": 1,
+        "test": "TestP10R10CorpusMeasure",
+        "source_sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+        "source_clean_before": true,
+        "source_clean_after": true,
+        "started_utc": "2026-11-19T03:39:28.417077+00:00",
+        "command": [
+          "go",
+          "test",
+          "-p=1",
+          "-json",
+          "-count=1",
+          "-timeout=25m",
+          "-run",
+          "^TestP10R10CorpusMeasure$",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 178.46,
+        "timed_out": false,
+        "raw_log_sha256": "dff1def2d5264bedaa5df1a9d68cdbd7d3fc1f776ee560c7a39b2d5c8bdc6105",
+        "raw_log_bytes": 946037,
+        "corpus_after": {
+          "files": 38,
+          "bytes": 62980131,
+          "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+        },
+        "entire_input_directory_unchanged": true,
+        "input_identities_unchanged": true,
+        "verified_pass": true,
+        "named_run": 1,
+        "named_pass": 1,
+        "named_fail": 0,
+        "named_skip": 0,
+        "discovered": true,
+        "required_test_passed": true,
+        "failed_top_level": [],
+        "not_run_marker_seen": false,
+        "safe_aggregates": [
+          {
+            "kind": "measurement",
+            "total_actions": "27652",
+            "natural_verified": "23353",
+            "natural_pct": "84.45"
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+        "source_sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+        "source_clean_before": true,
+        "source_clean_after": true,
+        "started_utc": "2026-11-19T03:42:26.896652+00:00",
+        "command": [
+          "go",
+          "test",
+          "-p=1",
+          "-json",
+          "-count=1",
+          "-timeout=25m",
+          "-run",
+          "^TestP11_WIRE_01_Fresh38x2NativeActionWire$",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 216.05,
+        "timed_out": false,
+        "raw_log_sha256": "a69068b45851a12d5f3edafa92a715d4f09f09a57d4d4d70069bab8a21cc378d",
+        "raw_log_bytes": 1542846,
+        "corpus_after": {
+          "files": 38,
+          "bytes": 62980131,
+          "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+        },
+        "entire_input_directory_unchanged": true,
+        "input_identities_unchanged": true,
+        "verified_pass": true,
+        "named_run": 1,
+        "named_pass": 1,
+        "named_fail": 0,
+        "named_skip": 0,
+        "discovered": true,
+        "required_test_passed": true,
+        "failed_top_level": [],
+        "not_run_marker_seen": false,
+        "safe_aggregates": [
+          {
+            "kind": "wire",
+            "files": "38",
+            "total_actions": "27652",
+            "natural_verified": "23353"
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+        "source_sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+        "source_clean_before": true,
+        "source_clean_after": true,
+        "started_utc": "2026-11-19T03:46:02.961803+00:00",
+        "command": [
+          "go",
+          "test",
+          "-p=1",
+          "-json",
+          "-count=1",
+          "-timeout=25m",
+          "-run",
+          "^TestP12_BASE_02_LifecycleStagesAndReconcileCorpus$",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 320.04,
+        "timed_out": false,
+        "raw_log_sha256": "1b7b177b5a30ce764c7538d3dc527110333d93117140ef6f528efe3c523c4a9c",
+        "raw_log_bytes": 2144598,
+        "corpus_after": {
+          "files": 38,
+          "bytes": 62980131,
+          "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+        },
+        "entire_input_directory_unchanged": true,
+        "input_identities_unchanged": true,
+        "verified_pass": true,
+        "named_run": 1,
+        "named_pass": 1,
+        "named_fail": 0,
+        "named_skip": 0,
+        "discovered": true,
+        "required_test_passed": true,
+        "failed_top_level": [],
+        "not_run_marker_seen": false,
+        "safe_aggregates": [
+          {
+            "kind": "lifecycle",
+            "files": "38",
+            "fresh_natural": "23353",
+            "sequential_natural": "23353"
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+        "source_sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+        "source_clean_before": true,
+        "source_clean_after": true,
+        "started_utc": "2026-11-19T03:51:23.021408+00:00",
+        "command": [
+          "go",
+          "test",
+          "-p=1",
+          "-json",
+          "-count=1",
+          "-timeout=25m",
+          "-run",
+          "^TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate$",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 216.27,
+        "timed_out": false,
+        "raw_log_sha256": "a4ff8c7db7804b01ac96078fe7e895cfa0eead53ccdfb2cb73d2b9f0a3603321",
+        "raw_log_bytes": 1624043,
+        "corpus_after": {
+          "files": 38,
+          "bytes": 62980131,
+          "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+        },
+        "entire_input_directory_unchanged": true,
+        "input_identities_unchanged": true,
+        "verified_pass": true,
+        "named_run": 1,
+        "named_pass": 1,
+        "named_fail": 0,
+        "named_skip": 0,
+        "discovered": true,
+        "required_test_passed": true,
+        "failed_top_level": [],
+        "not_run_marker_seen": false,
+        "safe_aggregates": [
+          {
+            "kind": "complex_parameters",
+            "files": "38",
+            "total_actions": "27652",
+            "natural_verified": "23353",
+            "fallback": "4298",
+            "invalid": "1",
+            "demotions": "0",
+            "third_party": "137"
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+        "source_sha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+        "source_clean_before": true,
+        "source_clean_after": true,
+        "started_utc": "2026-11-19T03:54:59.309132+00:00",
+        "command": [
+          "go",
+          "test",
+          "-p=1",
+          "-json",
+          "-count=1",
+          "-timeout=25m",
+          "-run",
+          "^TestP13_CorpusFidelityAndSourceSizeAudit$",
+          "."
+        ],
+        "exit_code": 0,
+        "seconds": 162.79,
+        "timed_out": false,
+        "raw_log_sha256": "de5d87d024ae5b8ab02240dca92502ac1e43e1cb40776e965142a659accaba75",
+        "raw_log_bytes": 1024395,
+        "corpus_after": {
+          "files": 38,
+          "bytes": 62980131,
+          "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+        },
+        "entire_input_directory_unchanged": true,
+        "input_identities_unchanged": true,
+        "verified_pass": true,
+        "named_run": 1,
+        "named_pass": 1,
+        "named_fail": 0,
+        "named_skip": 0,
+        "discovered": true,
+        "required_test_passed": true,
+        "failed_top_level": [],
+        "not_run_marker_seen": false,
+        "safe_aggregates": [
+          {
+            "kind": "fidelity",
+            "total_actions": "27652",
+            "natural_verified": "23353",
+            "natural_pct": "84.45",
+            "promoted_vs_p12": "863",
+            "fallback": "4298",
+            "invalid": "1",
+            "demotions": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "independentVerification": {
+    "verifiedUTC": "2026-11-19T04:07:35.860474+00:00",
+    "originals": {
+      "files": 38,
+      "bytes": 62980131,
+      "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+    },
+    "allInputFiles": {
+      "files": 76,
+      "bytes": 132843610,
+      "content_set_sha256": "87aecae33a4e295228d400a364418b96f8234cb50e49df3ad5ccbbfe9931446c"
+    },
+    "testEventAndHashChecks": [
+      {
+        "test": "TestP10R10CorpusMeasure",
+        "actualRawHashMatchesReceipt": true,
+        "actualNamedEvents": {
+          "run": 1,
+          "pass": 1,
+          "fail": 0,
+          "skip": 0
+        },
+        "actualPackagePass": true
+      },
+      {
+        "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+        "actualRawHashMatchesReceipt": true,
+        "actualNamedEvents": {
+          "run": 1,
+          "pass": 1,
+          "fail": 0,
+          "skip": 0
+        },
+        "actualPackagePass": true
+      },
+      {
+        "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+        "actualRawHashMatchesReceipt": true,
+        "actualNamedEvents": {
+          "run": 1,
+          "pass": 1,
+          "fail": 0,
+          "skip": 0
+        },
+        "actualPackagePass": true
+      },
+      {
+        "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+        "actualRawHashMatchesReceipt": true,
+        "actualNamedEvents": {
+          "run": 1,
+          "pass": 1,
+          "fail": 0,
+          "skip": 0
+        },
+        "actualPackagePass": true
+      },
+      {
+        "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+        "actualRawHashMatchesReceipt": true,
+        "actualNamedEvents": {
+          "run": 1,
+          "pass": 1,
+          "fail": 0,
+          "skip": 0
+        },
+        "actualPackagePass": true
+      }
+    ],
+    "runner": {
+      "bytes": 10703,
+      "sha256": "7d139bcf4d11ef7d5ae982ade824a722a2b5cfcee6b9132148940e48ea43d277"
+    },
+    "testSourceFiles": [
+      {
+        "path": "p10r10_corpus_test.go",
+        "bytes": 2893,
+        "sha256": "a6188a41ff23fd43f25308b8547391d9186d3c1b6ad92dbaea9ae514d865a761"
+      },
+      {
+        "path": "p11_wire_fidelity_test.go",
+        "bytes": 73254,
+        "sha256": "6588ba4c8f0c59dad1086495664a4b21ca30aa73aa784bbb341f89ecea3fde43"
+      },
+      {
+        "path": "p12_baseline_truth_test.go",
+        "bytes": 30135,
+        "sha256": "eb8b70716337cba945409df4d60edb23063c2998330bc15da8c1ec8e08c87658"
+      },
+      {
+        "path": "p12_complex_params_test.go",
+        "bytes": 44249,
+        "sha256": "86172facc402af313872a2412e6dcd2d1dbd50f9f125d88a102acf21088db1ed"
+      },
+      {
+        "path": "p13_fidelity_promotion_test.go",
+        "bytes": 22402,
+        "sha256": "8163a5d80ef4ee23423fff2eef54599b5289c73e44337b02e006b2e47b9d6279"
+      }
+    ],
+    "rawPrivateLogsRetainedOnHost": true,
+    "rawPrivateLogTotalBytes": 7281919,
+    "privateInputNameMatchesInPublicReceipt": 0
+  },
+  "unchangedPolicy": {
+    "naturalVerifiedFloor": 23340,
+    "reportsWritten": false,
+    "requiredTests": 5,
+    "expectedMissingTests": 0,
+    "expectedSkips": 0
+  }
+}
