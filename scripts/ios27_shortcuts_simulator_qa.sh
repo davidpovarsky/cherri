@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f01-ifresult-let|qa-f01-ifresult-var) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f01-ifresult-let|qa-f01-ifresult-var) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -322,6 +322,18 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_FILE_NAME_EXTENSION:NAME=ok:EXTENSION=ok:TYPE=ok:BYTES=ok:TEXT=ok"
     ;;
+  qa-f04-yield-list)
+    TARGET_FIXTURE_ID="qa-f04-yield-list-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F04_LIST_RESULT:pairs=2:scalars=2:shape=LEFT,TAIL|RIGHT,TAIL"
+    ;;
+  qa-f04-yield-empty-list)
+    TARGET_FIXTURE_ID="qa-f04-yield-empty-list-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F04_EMPTY_LIST_RESULT:outer=2:scalars=2:shape=0,0"
+    ;;
   qa-f01-ifresult-let)
     TARGET_FIXTURE_ID="qa-f01-ifresult-let-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -537,6 +549,8 @@ fixture_specs = [
     ("qa-export-file-bytes-v2", "qa-export-file-bytes-v2.cherri", "v2"),
     ("qa-file-name-binding-v2", "qa-file-name-binding-v2.cherri", "v2"),
     ("qa-file-name-extension-v2", "qa-file-name-extension-v2.cherri", "v2"),
+    ("qa-f04-yield-list-v2", "qa-f04-yield-list-v2.cherri", "v2"),
+    ("qa-f04-yield-empty-list-v2", "qa-f04-yield-empty-list-v2.cherri", "v2"),
     ("qa-f01-ifresult-let-v2", "qa-f01-ifresult-let-v2.cherri", "v2"),
     ("qa-f01-ifresult-var-v2", "qa-f01-ifresult-var-v2.cherri", "v2"),
     ("qa-require-v2", "qa-require-v2.cherri", "v2"),

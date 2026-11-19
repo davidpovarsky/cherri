@@ -22,6 +22,8 @@ CASES = {
     "qa-export-file-bytes-v2": "CHERRI_QA_EXPORT_FILE_BYTES:NAME=ok:TEXT=ok",
     "qa-file-name-binding-v2": "CHERRI_QA_FILE_NAME_BINDING:L=ok:V=ok:I=ok:LT=ok:VT=ok:IT=ok",
     "qa-file-name-extension-v2": "CHERRI_QA_FILE_NAME_EXTENSION:NAME=ok:EXTENSION=ok:TYPE=ok:BYTES=ok:TEXT=ok",
+    "qa-f04-yield-list-v2": "CHERRI_QA_F04_LIST_RESULT:pairs=2:scalars=2:shape=LEFT,TAIL|RIGHT,TAIL",
+    "qa-f04-yield-empty-list-v2": "CHERRI_QA_F04_EMPTY_LIST_RESULT:outer=2:scalars=2:shape=0,0",
     "qa-f01-ifresult-let-v2": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
     "qa-f01-ifresult-var-v2": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
 }
@@ -91,6 +93,28 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                 manifest = self.oracle.manifest(fid)
                 manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
                 self.assertEqual(self.oracle.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
+    def test_f04_flattening_dropped_empties_and_inner_value_loss_are_rejected(self):
+        wrong_results = {
+            "qa-f04-yield-list-v2": (
+                "CHERRI_QA_F04_LIST_RESULT:pairs=4:scalars=2:shape=COUNT_MISMATCH",
+                "CHERRI_QA_F04_LIST_RESULT:pairs=2:scalars=2:shape=LEFT,TAIL|LEFT,TAIL",
+                "CHERRI_QA_F04_LIST_RESULT:pairs=2:scalars=2:shape=LEFT,TAIL|RIGHT,LOST",
+            ),
+            "qa-f04-yield-empty-list-v2": (
+                "CHERRI_QA_F04_EMPTY_LIST_RESULT:outer=0:scalars=2:shape=COUNT_MISMATCH",
+                "CHERRI_QA_F04_EMPTY_LIST_RESULT:outer=2:scalars=2:shape=0,1",
+                "CHERRI_QA_F04_EMPTY_LIST_RESULT:outer=2:scalars=0:shape=0,0",
+            ),
+        }
+        for fid, wrong in wrong_results.items():
+            event = self.oracle.event()
+            event.update(fixtureId=fid, expectedShortcutName=fid)
+            event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+            for summary in wrong:
+                with self.subTest(fixture=fid, observed=summary):
+                    result = self.oracle.verify([{**event, "resultSummary": summary}], fid, CASES[fid])
+                    self.assertEqual(result["runGate"], "FAIL_RUNTIME")
 
     def test_phase_zero_compiles_all_new_sources_at_the_existing_debug_boundary(self):
         start = self.script.index("fixture_specs = [")
