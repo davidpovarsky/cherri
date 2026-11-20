@@ -215,3 +215,54 @@ func TestP15E02ClosedNestedCallControls(t *testing.T) {
 		}
 	})
 }
+
+func TestP15E02DistinctDiagnosticLocationsAndRecovery(t *testing.T) {
+	t.Run("repeated_name_at_distinct_source_ranges", func(t *testing.T) {
+		const uri = "file:///p15-e02-distinct.cherri"
+		const code = "show(unknown)\nshow(unknown)\n"
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		actual, _ := svc.Analyze(uri)
+		if len(actual) != 2 {
+			t.Fatalf("distinct authored errors must both remain: %+v", actual)
+		}
+		starts := map[int]bool{}
+		for _, d := range actual {
+			if d.Code != analysis.CodeUnknownName || d.Severity != analysis.SeverityError {
+				t.Fatal("wrong independent error", d)
+			}
+			if err := p15EditorSpanError(code, uri, d.Span); err != nil {
+				t.Fatal(err)
+			}
+			starts[d.Span.Start.ByteOffset] = true
+		}
+		if !starts[5] || !starts[19] {
+			t.Fatal("distinct occurrence positions lost", starts)
+		}
+	})
+	t.Run("different_missing_tokens_at_same_eof", func(t *testing.T) {
+		const uri = "file:///p15-e02-distinct-recovery.cherri"
+		const code = "show(["
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		actual, _ := svc.Analyze(uri)
+		messages := map[string]bool{}
+		for _, d := range actual {
+			if err := p15EditorSpanError(code, uri, d.Span); err != nil {
+				t.Fatal(err)
+			}
+			if d.Code == analysis.CodeSyntax {
+				if d.Span.Start.ByteOffset != len(code) || d.Span.End.ByteOffset != len(code) {
+					t.Fatal("missing-token range moved", d)
+				}
+				if messages[d.Message] {
+					t.Fatal("duplicate exact recovery diagnostic", d)
+				}
+				messages[d.Message] = true
+			}
+		}
+		if len(messages) < 2 || len(messages) > 4 {
+			t.Fatal("distinct missing delimiters lost or flooded", actual)
+		}
+	})
+}

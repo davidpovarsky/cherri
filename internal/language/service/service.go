@@ -171,7 +171,7 @@ func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 		diags = append(diags, doc.Analyzer.Diagnostics()...)
 	}
 
-	return diags, s.registry.Fingerprint()
+	return uniqueDocumentDiagnostics(diags), s.registry.Fingerprint()
 }
 
 // SchemaFingerprint returns the fingerprint of the underlying schema registry.
