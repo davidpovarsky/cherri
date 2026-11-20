@@ -973,6 +973,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateSafeImportEditRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 
 			if err := validateBindingCaptureRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
@@ -1955,6 +1958,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runSafeImportEditRequirement(g) {
+			continue
+		}
 		if r.runLoopRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
 			continue
 		}

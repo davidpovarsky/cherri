@@ -559,6 +559,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if id == "BRG19" {
+		return safeImportEditTestIDs()
+	}
 	if scenario, found := loopAcceptanceScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -639,6 +642,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if id == "BRG19" {
+		return append([]string{}, safeImportEditProductionPaths...)
+	}
 	return []string{"tests/language-v2/backend-recovery-gates.json#" + id}
 }
 
