@@ -97,6 +97,18 @@ class DocumentationWrapperControls(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     subject.validate_catalog(value, self.capabilities())
 
+    def test_catalog_filter_uses_real_compact_or_formatted_bytes_without_empty_credit(self):
+        for original in (b'{"name":"resizeImage","title":"Resize Image"}\n',
+                         b'{\n  "name": "resizeImage",\n  "title": "Resize Image"\n}\n'):
+            expected = b"".join(line + b"\n" for line in original.replace(b",", b"\n").splitlines()
+                                if b"resizeImage" in line)
+            subject.verify_catalog_filter(expected, original, "resizeImage")
+            for changed in (b"", expected + b"extra\n", expected.replace(b"resizeImage", b"foreign")):
+                with self.assertRaises(ValueError):
+                    subject.verify_catalog_filter(changed, original, "resizeImage")
+        with self.assertRaises(ValueError):
+            subject.verify_catalog_filter(b"", b'{"name":"resizeImage"}\n', '"name": "resizeImage"')
+
     def reference(self):
         tick = chr(96)
         body = ("# Actual synthetic reference control\n"

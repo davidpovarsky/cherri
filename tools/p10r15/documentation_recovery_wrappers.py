@@ -235,6 +235,13 @@ def validate_catalog(value, capabilities):
     return {action["name"]: action for action in actions}
 
 
+def verify_catalog_filter(actual, original, needle):
+    expected = b"".join(line + b"\n" for line in original.replace(b",", b"\n").splitlines()
+                        if needle.encode("utf-8") in line)
+    if not expected or actual != expected:
+        raise ValueError("filtered catalog differs from original full response")
+
+
 def reference_body(raw):
     if not raw.startswith(b"---\n"):
         raise ValueError("pinned docs reference lacks reviewed front matter")
@@ -448,11 +455,11 @@ def collect(repo, source_commit, package_dir, compiler, docs_dir, evidence_dir, 
         wrapped_catalog, error = succeeded(recorder.run("wrapper-catalog", [bash, (script / "catalog.sh").as_posix()], work, env))
         if error or wrapped_catalog != catalog_raw:
             raise ValueError("wrapper catalog differs from complete compiler response")
-        needle = '"name": "resizeImage"'
+        needle = "resizeImage"
         filtered, error = succeeded(recorder.run("wrapper-catalog-filter", [bash, (script / "catalog.sh").as_posix(), needle], work, env))
-        expected_filter = b"".join(line + b"\n" for line in catalog_raw.replace(b",", b"\n").splitlines() if needle.encode() in line)
-        if error or not expected_filter or filtered != expected_filter:
-            raise ValueError("filtered catalog differs from original full response")
+        if error:
+            raise ValueError("filtered catalog wrote unexpected stderr")
+        verify_catalog_filter(filtered, catalog_raw, needle)
         report["checks"]["complete-catalog"] = True
         report["checks"]["filtered-catalog"] = True
         for index, query in enumerate(DOC_QUERIES):
