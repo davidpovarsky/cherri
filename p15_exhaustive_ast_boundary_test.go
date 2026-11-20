@@ -109,7 +109,7 @@ func TestP15RP16UnknownNodesCanonicalBoundary(t *testing.T) {
 			p.Declarations[0].(*syntax.FunctionDecl).Body.Statements[0].(*syntax.ReturnStmt).Value = &p15RP16UnknownExpr{}
 		}, "unhandled expression"},
 		{"unused_copy", "copy target { text(\"RP16_HEALTHY\") }\ntext(\"RP16_AFTER\")", func(p *syntax.Program) {
-			p.Declarations[0].(*syntax.CopyBlockStmt).Body.Statements[0].(*syntax.ExprStmt).Expr = &p15RP16UnknownExpr{}
+			p.Declarations = append(p.Declarations, &syntax.CopyBlockStmt{Name: "afterAnalysis", Body: &syntax.BlockStmt{Statements: []syntax.Statement{&syntax.ExprStmt{Expr: &p15RP16UnknownExpr{}}}}})
 		}, "unhandled expression"},
 		{"metadata_record", "shortcut \"RP16\" { icon: {glyph: 59789, color: 4282601983} }\ntext(\"RP16_HEALTHY\")", func(p *syntax.Program) {
 			p.Declarations[0].(*syntax.ShortcutDecl).Metadata.Fields[0].Value = &p15RP16UnknownExpr{}
