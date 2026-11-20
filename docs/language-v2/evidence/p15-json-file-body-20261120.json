@@ -1,0 +1,227 @@
+{
+  "schema_version": "1",
+  "scope": "LOCAL_FILE_UTF8_TRANSPORT_COMPONENT",
+  "implementation_sha": "7cd57eb0f04611dcbe9fc9430f55bd67ece69350",
+  "base_sha": "03f17a785f31f7bdc8c7607bef1ac9a16c28d3b4",
+  "source_files": {
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": {
+      "bytes": 9194,
+      "sha256": "d20d522802aa2d34dbca623ab27e65f4975e7b8a2e52d37f8ab0249d46d85dfc"
+    },
+    "scripts/ios27_shortcuts_simulator_qa.sh": {
+      "bytes": 167212,
+      "sha256": "d27248a781aa34d305018aec086c5ba8cca9f495d34e90441fc5c481e5a76eff"
+    },
+    "tools/shortcuts-simulator-qa/json_body_probe.py": {
+      "bytes": 38742,
+      "sha256": "afaf38f499bdcd4bc56be3a5b7958b96fb65f8eaa7ea22550248a57f678b1520"
+    },
+    "tools/shortcuts-simulator-qa/json_file_body_probe.py": {
+      "bytes": 12641,
+      "sha256": "6ecc10c7765b24957b94365e57bf81e0958136f3ba9629bb7866c98ab868c24f"
+    },
+    "tools/shortcuts-simulator-qa/test_json_file_body_probe.py": {
+      "bytes": 12914,
+      "sha256": "90c04f43d4e225e87d4a6061ce2d196f07f9f0cfa6dfb51b3c01972e15651ecd"
+    },
+    "tools/shortcuts-simulator-qa/fixtures/qa-json-body-file-utf8-v2.cherri": {
+      "bytes": 1126,
+      "sha256": "8e69b72584bedbfc101c8b2e4cfec92e07afc70a47c7f9405abde9bea6a73247"
+    },
+    "tools/shortcuts-simulator-qa/fixtures/qa-json-body-file-utf8-v2.expected.json": {
+      "bytes": 1843,
+      "sha256": "ea45b8953cd0cfbbcc10120f677f8b52b0b710ef6b7eea54bebb086af0f2286b"
+    }
+  },
+  "local_validation": {
+    "source_sha": "7cd57eb0f04611dcbe9fc9430f55bd67ece69350",
+    "clean_before_after": true,
+    "initial_free_bytes": 769470464,
+    "final_free_bytes": 10784501760,
+    "phase0": {
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\json-file-body-20261120\\clean-7cd57eb0-retry1\\phase0\\actual-heredoc.py",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-file-diagnostic-20261119",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\json-file-body-20261120\\clean-7cd57eb0-retry1\\phase0",
+        "7cd57eb0f04611dcbe9fc9430f55bd67ece69350"
+      ],
+      "exit_code": 0,
+      "seconds": 10.266,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "program_sha256": "3a83aaab721489cb0002ad5b07fd70491cf56731235e5f7780f31bc99ee43a30"
+    },
+    "phase0_attempts": 84,
+    "phase0_compiled": 82,
+    "phase0_expected_rejections": 2,
+    "graph": {
+      "graph": {
+        "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+        "nativeActionCount": 17,
+        "httpActionCount": 2,
+        "primaryMethod": "POST",
+        "continuationMethod": "GET",
+        "case": "file-utf8",
+        "bodySha256": "310514cc82c5926d5b2f63ff61f23e4d41967f60e83cfd6a60db058656f3bdac",
+        "transport": "REGISTERED_FILE_REQUEST_TEXT_BODY",
+        "candidateNullSemantics": "NOT_ASSUMED",
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "negative": {
+        "status": "PASS_LOCAL_NEGATIVE_CONTROLS",
+        "rejected": [
+          "external-host",
+          "changed-loopback-path",
+          "borrowed-input",
+          "wrong-url-range",
+          "get-instead-of-post",
+          "json-instead-of-file",
+          "missing-file-body",
+          "borrowed-body-producer",
+          "body-text-encoded",
+          "null-dropped",
+          "null-empty-text",
+          "null-false",
+          "null-zero",
+          "false-coerced-zero",
+          "zero-coerced-false",
+          "empty-text-null",
+          "flattened-matrix",
+          "missing-key-authored",
+          "wrong-content-type",
+          "extra-header",
+          "continuation-post",
+          "continuation-wrong-input",
+          "borrowed-response-producer",
+          "unreviewed-extra-network",
+          "extra-nothing",
+          "clear-borrows-input",
+          "trace-current-date-lost",
+          "trace-store-replaced",
+          "response-edge-replaced",
+          "trace-envelope-replaced",
+          "final-output-replaced"
+        ],
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "uuid_alpha_renaming": "PASS",
+      "bool_item_type_rejection": "PASS",
+      "unsigned_sha256": "7793d906680faa6b703b469ad2dc9c745ff898d882f57d668aace546573fbdaf",
+      "manifest_sha256": "2bddb28164ad3807b753d91e5ef585afe8176fd7f61e1d3984c98c1acbc689f5",
+      "compiler_source_sha": "a8b69008d70f48989bf3c3db6258e0e22ee85eda",
+      "compiler_binary_sha256": "70c37704293081896af89304505a28eb009504fe739dc88e96b85cdb1bb0bedd",
+      "compiler_production_equal": true,
+      "embedded_vcs": "ABSENT_RETAINED_LINKED_WORKTREE_LIMITATION",
+      "source_sha": "7cd57eb0f04611dcbe9fc9430f55bd67ece69350"
+    },
+    "python": {
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "-v",
+        "test_json_file_body_probe",
+        "test_json_body_probe",
+        "test_retry_http_probe",
+        "test_public_artifacts",
+        "test_simulator_session_recovery"
+      ],
+      "exit_code": 0,
+      "seconds": 73.969,
+      "discovered": 82,
+      "skipped": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d12a215a4008830344e82f3143ac7e55f504901be05935e252da732e7977d2e7"
+    },
+    "checks": [
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "C:\\Program Files\\Git\\bin\\bash.exe",
+          "-n",
+          "scripts/ios27_shortcuts_simulator_qa.sh"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "apple_runtime": "NOT_RUN",
+    "formal_acceptance": false
+  },
+  "retained_evidence_root": "json-file-body-20261120",
+  "retained_receipts": {
+    "draft-controls/receipt.json": {
+      "sha256": "9491baccae9ea34e2426e323c14ed0f48ad6acdb5d20b98ee01b666d99165c62",
+      "bytes": 630
+    },
+    "draft-controls/stderr.log": {
+      "sha256": "012559a95667eb16998a00595fca4b66897d33007721df9ce8d53fd8d0a4f3d0",
+      "bytes": 14794
+    },
+    "clean-7cd57eb0/phase0/receipt.json": {
+      "sha256": "fc82aafdce16c48f1ac56b42595b9850cf1973b0a08e67001313758b543bb492",
+      "bytes": 758
+    },
+    "clean-7cd57eb0/phase0/stderr.log": {
+      "sha256": "1167f7a36cc8f6f504de5ce7b9836e2682bb2ee5f7302db157807560e02774d3",
+      "bytes": 636
+    },
+    "clean-7cd57eb0-retry1/receipt.json": {
+      "sha256": "453f597359757f253bc06fe1156eb7c92ecbf900d90b2e304810b52de27f8c80",
+      "bytes": 4556
+    },
+    "clean-7cd57eb0-retry1/python.stderr": {
+      "sha256": "d12a215a4008830344e82f3143ac7e55f504901be05935e252da732e7977d2e7",
+      "bytes": 14794
+    },
+    "clean-7cd57eb0-retry1/graph-control.json": {
+      "sha256": "5788d586157b390824f012a21805b926c181036ae2ab30c163699f80010762d0",
+      "bytes": 2059
+    },
+    "clean-7cd57eb0-retry1/phase0/actual-heredoc.py": {
+      "sha256": "3a83aaab721489cb0002ad5b07fd70491cf56731235e5f7780f31bc99ee43a30",
+      "bytes": 20353
+    },
+    "clean-7cd57eb0-retry1/phase0/compiler-manifest.json": {
+      "sha256": "2bddb28164ad3807b753d91e5ef585afe8176fd7f61e1d3984c98c1acbc689f5",
+      "bytes": 493759
+    },
+    "clean-7cd57eb0-retry1/phase0/runtime/instrumentation-vs-original.json": {
+      "sha256": "18bbe34e17d056d5e1f04a59f3536fb777cdc722187845860eb1a2e82a0a1455",
+      "bytes": 7681
+    },
+    "clean-7cd57eb0-retry1/phase0/builds/qa-json-body-file-utf8-v2.shortcut": {
+      "sha256": "7793d906680faa6b703b469ad2dc9c745ff898d882f57d668aace546573fbdaf",
+      "bytes": 15447
+    }
+  },
+  "failed_local_invocation": {
+    "source_sha": "7cd57eb0f04611dcbe9fc9430f55bd67ece69350",
+    "result": "FAILED_INVOCATION_SETUP",
+    "reason": "Extraction driver omitted runtime directory created by original shell preamble",
+    "preserved": true,
+    "successful_retry_changed_source": false
+  },
+  "apple_runtime": "NOT_RUN",
+  "formal_acceptance_granted": false,
+  "physical_device_tested": false,
+  "public_data_only": true,
+  "planned_dispatch": {
+    "workflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+    "sample_id": "qa-json-body-file-utf8",
+    "status": "NOT_DISPATCHED"
+  }
+}

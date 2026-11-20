@@ -1,0 +1,69 @@
+{
+  "schema_version": "1",
+  "fixture_id": "qa-json-body-file-utf8-v2",
+  "case": "file-utf8",
+  "source_sha256": "8e69b72584bedbfc101c8b2e4cfec92e07afc70a47c7f9405abde9bea6a73247",
+  "authored_api": "fileRequest",
+  "authored_body_type": "File",
+  "expected_content_type": "application/json",
+  "expected_control_json": {
+    "empty_val": "",
+    "max_tokens": 256,
+    "model": "CHERRI_JSON_BODY_SYNTHETIC",
+    "nested": {
+      "env": "prod",
+      "flags": [
+        true,
+        false
+      ],
+      "matrix": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    "stream": false,
+    "zero": 0,
+    "marker": "CHERRI_JSON_BODY_FILE_UTF8"
+  },
+  "expected_raw_utf8": "{\"candidate_null\":null,\"empty_val\":\"\",\"max_tokens\":256,\"model\":\"CHERRI_JSON_BODY_SYNTHETIC\",\"nested\":{\"env\":\"prod\",\"flags\":[true,false],\"matrix\":[[1,2],[3,4]]},\"stream\":false,\"zero\":0,\"marker\":\"CHERRI_JSON_BODY_FILE_UTF8\"}",
+  "expected_raw_utf8_sha256": "310514cc82c5926d5b2f63ff61f23e4d41967f60e83cfd6a60db058656f3bdac",
+  "expected_json": {
+    "candidate_null": null,
+    "empty_val": "",
+    "max_tokens": 256,
+    "model": "CHERRI_JSON_BODY_SYNTHETIC",
+    "nested": {
+      "env": "prod",
+      "flags": [
+        true,
+        false
+      ],
+      "matrix": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    "stream": false,
+    "zero": 0,
+    "marker": "CHERRI_JSON_BODY_FILE_UTF8"
+  },
+  "required_absent_key": "missing_val",
+  "candidate_null_field": "candidate_null",
+  "candidate_null_semantics": "NOT_ASSUMED",
+  "expected_callback_prefix": "CHERRI_QA_JSON_BODY_FILE_UTF8_RESULT:",
+  "expected_callback_body": "P15_JSON_BODY_OBSERVED",
+  "runtime_status": "NOT_RUN",
+  "formal_requirements_proved": []
+}

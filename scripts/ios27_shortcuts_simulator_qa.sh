@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-optional-forwarding-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-json-body-control|qa-json-body-null-candidate|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-optional-forwarding-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-json-body-control|qa-json-body-null-candidate|qa-json-body-file-utf8|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -54,7 +54,7 @@ HTTP_PROBE_DIAGNOSTIC_RC=0
 http_probe() {
   # Only fixed, reviewed fixture IDs may select an endpoint implementation.
   case "$TARGET_FIXTURE_ID" in
-    qa-json-body-control-v2|qa-json-body-null-candidate-v2)
+    qa-json-body-control-v2|qa-json-body-null-candidate-v2|qa-json-body-file-utf8-v2)
       python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/json_body_probe.py" "$@"
       ;;
     qa-retry-control-v2|qa-retry-http500-v2|qa-retry-http404-v2|qa-retry-http429-v2|qa-retry-transport-v2)
@@ -505,6 +505,13 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="qa-measure-release-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
     ;;
+  qa-json-body-file-utf8)
+    TARGET_FIXTURE_ID="qa-json-body-file-utf8-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-json-body-file-utf8-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_JSON_BODY_FILE_UTF8_RESULT:P15_JSON_BODY_OBSERVED"
+    HTTP_PROBE_ENABLED="true"
+    ;;
   qa-json-body-control)
     TARGET_FIXTURE_ID="qa-json-body-control-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -659,6 +666,7 @@ fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtur
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-json-body-file-utf8-v2", "qa-json-body-file-utf8-v2.cherri", "v2"),
     ("qa-json-body-control-v2", "qa-json-body-control-v2.cherri", "v2"),
     ("qa-json-body-null-candidate-v2", "qa-json-body-null-candidate-v2.cherri", "v2"),
     ("qa-debug-label-plain-v2", "qa-debug-label-plain-v2.cherri", "v2"),
