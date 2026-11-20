@@ -331,7 +331,9 @@ def audit(artifact, commit, run_id, fid, metadata):
     entries = [f for f in compiler["fixtures"] if f.get("fixtureId") == fid]
     require(len(entries) == 1, "ambiguous source fixture")
     source = entries[0]
-    target = signing.get("targetProvenance", {})
+    target = signing.get("targetProvenance")
+    require(isinstance(target, dict) and target,
+            "signed target provenance missing or malformed; native execution cannot be verified")
     source_sha = digest(source_bytes(commit, case["path"]))
     require(source_sha == case["sourceSha256"] == source.get("sourceSha256")
             == assertions.get("compiledSourceSha256") == target.get("sourceSha256"),
