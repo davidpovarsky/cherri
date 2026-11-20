@@ -1,0 +1,17 @@
+import pathlib,subprocess,json,hashlib,datetime
+r=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-json-oracle-r5-20261120");e=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-continuation-evidence-20261119")/"r5-json-oracle"
+(e/"submitted-commit-script.py.txt").write_bytes(pathlib.Path(__file__).read_bytes())
+def git(*a):
+ p=subprocess.run(["git","--no-replace-objects","-C",str(r),*a],capture_output=True);assert p.returncode==0,(a,p.stderr.decode());return p.stdout
+assert git("rev-parse","HEAD").decode().strip()=="89d0a327259bb97150c5dd410165e9097ff39ae9"
+receipt=json.loads((e/"draft01"/"receipt.json").read_text(encoding="utf-8"));assert receipt["exit_code"]==0 and receipt["events"]["pass"]==28
+for item in receipt["witness"]:assert hashlib.sha256((r/item["path"]).read_bytes()).hexdigest()==item["sha256"]
+text=(r/"p10_http_json_test.go").read_text(encoding="utf-8");bt=chr(96);start=text.index("const p10OriginalJSONLiteralSource = "+bt)+len("const p10OriginalJSONLiteralSource = "+bt);end=text.index(bt,start)
+template=text[start:end].encode();assert template==(e/"original-literal-request-template.cherri.txt").read_bytes()
+paths=["p10_http_json_test.go","p10_http_json_oracle_test.go"]
+git("diff","--check");git("-c","core.autocrlf=false","add","--",*paths)
+diff=git("diff","--cached","--binary");(e/"source.patch").write_bytes(diff)
+commit=git("commit","-m","Strengthen HTTP JSON wire assertions and retain exact absent-value rejection")
+source=git("rev-parse","HEAD").decode().strip();assert not git("status","--porcelain")
+result={"utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),"source":source,"parent":"89d0a327259bb97150c5dd410165e9097ff39ae9","changed_paths":git("diff-tree","--no-commit-id","--name-only","-r",source).decode().splitlines(),"original_template_sha256":hashlib.sha256(template).hexdigest(),"patch_sha256":hashlib.sha256(diff).hexdigest(),"production_sources_changed":False,"formal_null_requirement_changed":False,"commit":commit.decode()}
+(e/"source-commit.json").write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8");print(json.dumps(result))

@@ -1,0 +1,20 @@
+let dynamicModel = "gpt-4o-mini"
+let resp = jsonRequest(
+	%q,
+	method: "POST",
+	body: {
+		"model": dynamicModel,
+		"stream": false,
+		"max_tokens": 256,
+		"empty_val": nil,
+		"nested": {
+			"env": "prod",
+			"flags": [true, false],
+			"matrix": [[1, 2], [3, 4]]
+		}
+	},
+	headers: {
+		"Authorization": "Bearer test-token-123",
+		"X-Custom-Client": "Cherri-P10"
+	}
+)

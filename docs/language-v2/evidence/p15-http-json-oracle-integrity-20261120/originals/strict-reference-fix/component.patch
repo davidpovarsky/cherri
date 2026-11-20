@@ -1,0 +1,255 @@
+diff --git a/p10_http_json_oracle_test.go b/p10_http_json_oracle_test.go
+index e46346f7..ab351ff6 100644
+--- a/p10_http_json_oracle_test.go
++++ b/p10_http_json_oracle_test.go
+@@ -50,24 +50,39 @@ func p10DecodeJSONDictionary(raw any, resolved map[string]any) (map[string]any,
+ }
+ 
+ func p10DecodeJSONReference(ref map[string]any, resolved map[string]any) (any, error) {
+-	kind, _ := ref["Type"].(string)
+-	key := ""
++	var kind, ok = ref["Type"].(string)
++	if !ok {
++		return nil, fmt.Errorf("invalid reference Type metadata")
++	}
++	var identityKey string
++	var allowed map[string]bool
+ 	switch kind {
+ 	case "ActionOutput":
+-		id, _ := ref["OutputUUID"].(string)
+-		if id != "" {
+-			key = kind + ":" + id
+-		}
++		identityKey = "OutputUUID"
++		allowed = map[string]bool{"Type": true, "OutputUUID": true, "OutputName": true}
+ 	case "Variable":
+-		name, _ := ref["VariableName"].(string)
+-		if name != "" {
+-			key = kind + ":" + name
+-		}
++		identityKey = "VariableName"
++		allowed = map[string]bool{"Type": true, "VariableName": true}
+ 	default:
+ 		return nil, fmt.Errorf("unsupported reference kind %q", kind)
+ 	}
+-	value, exists := resolved[key]
+-	if key == "" || !exists || value == nil {
++	// This decoder only proves plain references. Ignoring a property, coercion
++	// or unknown field would silently substitute the original producer value.
++	for name, raw := range ref {
++		if !allowed[name] {
++			return nil, fmt.Errorf("unsupported reference field %q", name)
++		}
++		if _, valid := raw.(string); !valid {
++			return nil, fmt.Errorf("invalid reference %s metadata", name)
++		}
++	}
++	var identity, valid = ref[identityKey].(string)
++	if !valid || identity == "" {
++		return nil, fmt.Errorf("missing reference %s", identityKey)
++	}
++	var key = kind + ":" + identity
++	var value, exists = resolved[key]
++	if !exists || value == nil {
+ 		return nil, fmt.Errorf("unresolved actual reference %q", key)
+ 	}
+ 	return value, nil
+@@ -236,7 +251,7 @@ func p10JSONWireField(t *testing.T, wire any, key string) map[string]any {
+ 
+ func p10AssertJSONWireMutations(t *testing.T, original any, resolved map[string]any, expected map[string]any) {
+ 	t.Helper()
+-	for _, fault := range []string{"unknown_item_type", "missing_item_type", "missing_value", "null_value", "malformed_bool", "missing_bool", "malformed_number", "nonfinite_number", "unknown_wrapper", "duplicate_key", "wrong_reference", "reference_property", "reference_coercion", "missing_array", "unknown_array_item"} {
++	for _, fault := range []string{"unknown_item_type", "missing_item_type", "missing_value", "null_value", "malformed_bool", "missing_bool", "malformed_number", "nonfinite_number", "unknown_wrapper", "duplicate_key", "wrong_reference", "reference_property", "reference_coercion", "reference_unknown_field", "reference_type_type", "reference_uuid_type", "reference_name_type", "reference_missing_uuid", "reference_extra_variable_name", "reference_empty_aggrandizements", "missing_array", "unknown_array_item"} {
+ 		t.Run("strict-wire/"+fault, func(t *testing.T) {
+ 			copy := p10CloneJSONWire(original)
+ 			if got, err := p10DecodeJSONDictionary(copy, resolved); err != nil || !reflect.DeepEqual(got, expected) {
+@@ -270,6 +285,25 @@ func p10AssertJSONWireMutations(t *testing.T, original any, resolved map[string]
+ 				model := p10JSONWireField(t, copy, "model")["WFValue"].(map[string]any)
+ 				ref := model["Value"].(map[string]any)
+ 				ref["OutputUUID"] = "unrelated-producer"
++			case "reference_unknown_field", "reference_type_type", "reference_uuid_type", "reference_name_type", "reference_missing_uuid", "reference_extra_variable_name", "reference_empty_aggrandizements":
++				model := p10JSONWireField(t, copy, "model")["WFValue"].(map[string]any)
++				ref := model["Value"].(map[string]any)
++				switch fault {
++				case "reference_unknown_field":
++					ref["UnknownMetadata"] = "unreviewed"
++				case "reference_type_type":
++					ref["Type"] = 7
++				case "reference_uuid_type":
++					ref["OutputUUID"] = 7
++				case "reference_name_type":
++					ref["OutputName"] = []any{"dynamicModel"}
++				case "reference_missing_uuid":
++					delete(ref, "OutputUUID")
++				case "reference_extra_variable_name":
++					ref["VariableName"] = "unreviewed"
++				case "reference_empty_aggrandizements":
++					ref["Aggrandizements"] = []any{}
++				}
+ 			case "reference_property", "reference_coercion":
+ 				model := p10JSONWireField(t, copy, "model")["WFValue"].(map[string]any)
+ 				ref := model["Value"].(map[string]any)
+@@ -342,31 +376,56 @@ func TestP10JSONOriginalNilRequestFailsPrecisely(t *testing.T) {
+ 	}
+ }
+ 
+-// Extracted without changing the original map-based counting behavior so the
+-// actual duplicate-producer counterexample is retained before its repair.
++// Bind the value to one actual producer and a unique native identity. Map
++// cardinality alone cannot distinguish duplicated actions sharing one UUID.
+ func p10JSONModelBindings(actions []map[string]any) (map[string]any, error) {
+-	resolved := map[string]any{}
++	var resolved = map[string]any{}
++	var identities = map[string]bool{}
++	var producers int
+ 	for _, action := range actions {
++		var identifier, valid = action["WFWorkflowActionIdentifier"].(string)
++		if !valid || identifier == "" {
++			return nil, fmt.Errorf("invalid actual action identifier")
++		}
+ 		// The canonical main Nothing action can omit its parameter envelope.
+ 		// No other missing or malformed action shape supplies a binding.
+-		if _, present := action["WFWorkflowActionParameters"]; !present && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" {
++		if _, present := action["WFWorkflowActionParameters"]; !present && identifier == "is.workflow.actions.nothing" {
+ 			continue
+ 		}
+-		fields, ok := action["WFWorkflowActionParameters"].(map[string]any)
+-		if !ok {
++		var fields, ok = action["WFWorkflowActionParameters"].(map[string]any)
++		if !ok || fields == nil {
+ 			return nil, fmt.Errorf("invalid actual action parameter shape")
+ 		}
+-		if fields["CustomOutputName"] != "dynamicModel" {
++		var uuid string
++		if raw, present := fields["UUID"]; present {
++			uuid, valid = raw.(string)
++			if !valid || uuid == "" {
++				return nil, fmt.Errorf("invalid actual action UUID metadata")
++			}
++			if identities[uuid] {
++				return nil, fmt.Errorf("duplicated actual action UUID")
++			}
++			identities[uuid] = true
++		}
++		var outputName string
++		if raw, present := fields["CustomOutputName"]; present {
++			outputName, valid = raw.(string)
++			if !valid {
++				return nil, fmt.Errorf("invalid actual output name metadata")
++			}
++		}
++		if outputName != "dynamicModel" {
+ 			continue
+ 		}
+-		uuid, ok := fields["UUID"].(string)
+-		if !ok || uuid == "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || fields["WFTextActionText"] != "gpt-4o-mini" {
+-			return nil, fmt.Errorf("actual dynamic model producer changed")
++		producers++
++		var text, literal = fields["WFTextActionText"].(string)
++		if producers != 1 || uuid == "" || identifier != "is.workflow.actions.gettext" || !literal || text != "gpt-4o-mini" {
++			return nil, fmt.Errorf("actual dynamic model producer changed or duplicated")
+ 		}
+-		resolved["ActionOutput:"+uuid] = "gpt-4o-mini"
++		resolved["ActionOutput:"+uuid] = text
+ 	}
+-	if len(resolved) != 1 {
+-		return nil, fmt.Errorf("missing or duplicated actual dynamic model producer")
++	if producers != 1 {
++		return nil, fmt.Errorf("missing actual dynamic model producer")
+ 	}
+ 	return resolved, nil
+ }
+@@ -391,7 +450,7 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
+ 	if model < 0 || consumer < 0 {
+ 		t.Fatal("missing actual mutation target")
+ 	}
+-	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid"} {
++	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid", "wrong_uuid_type", "empty_uuid", "consumer_uuid_type", "wrong_output_name_type", "missing_model_parameters", "missing_consumer_parameters", "malformed_action_identifier", "duplicate_nonmodel_uuid"} {
+ 		t.Run(fault, func(t *testing.T) {
+ 			changed := p15ContainerCloneNative(t, original)
+ 			if bindings, err := p10JSONModelBindings(changed); err != nil || !reflect.DeepEqual(bindings, expected) {
+@@ -417,6 +476,22 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
+ 				fields["CustomOutputName"] = "unrelated"
+ 			case "missing_uuid":
+ 				delete(fields, "UUID")
++			case "wrong_uuid_type":
++				fields["UUID"] = 7
++			case "empty_uuid":
++				fields["UUID"] = ""
++			case "consumer_uuid_type":
++				p15C01Params(changed[consumer])["UUID"] = []any{"unreviewed"}
++			case "wrong_output_name_type":
++				p15C01Params(changed[consumer])["CustomOutputName"] = []any{"unreviewed"}
++			case "missing_model_parameters":
++				delete(changed[model], "WFWorkflowActionParameters")
++			case "missing_consumer_parameters":
++				delete(changed[consumer], "WFWorkflowActionParameters")
++			case "malformed_action_identifier":
++				changed[consumer]["WFWorkflowActionIdentifier"] = 7
++			case "duplicate_nonmodel_uuid":
++				changed = append(changed, p10CloneJSONWire(changed[consumer]).(map[string]any))
+ 			}
+ 			if got, err := p10JSONModelBindings(changed); err == nil {
+ 				t.Fatalf("corrupt producer binding accepted: %s %#v", fault, got)
+@@ -424,3 +499,61 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
+ 		})
+ 	}
+ }
++
++// Decoder-only controls distinguish a bound present empty value from no binding;
++// these synthetic values are not Apple or compiler runtime observations.
++func TestP10JSONPlainReferenceShape(t *testing.T) {
++	var id = "db740247-8a09-480c-b7ec-11ff01483f13"
++	for _, kind := range []string{"ActionOutput", "Variable"} {
++		for _, tc := range []struct {
++			name  string
++			value any
++		}{{"text", "value"}, {"empty_text", ""}, {"false", false}, {"zero", float64(0)}} {
++			t.Run(kind+"/"+tc.name, func(t *testing.T) {
++				var ref = map[string]any{"Type": kind}
++				var identity = "source"
++				if kind == "ActionOutput" {
++					identity = id
++					ref["OutputUUID"] = id
++					ref["OutputName"] = "display name"
++				} else {
++					ref["VariableName"] = identity
++				}
++				var value, err = p10DecodeJSONReference(ref, map[string]any{kind + ":" + identity: tc.value})
++				if err != nil || !reflect.DeepEqual(value, tc.value) {
++					t.Fatalf("present plain value changed: %#v %v", value, err)
++				}
++			})
++		}
++	}
++	for _, fault := range []string{"name_type", "empty_name", "extra_output_uuid", "extra_output_name", "property", "unknown_field", "missing_binding", "nil_binding"} {
++		t.Run("variable_reject/"+fault, func(t *testing.T) {
++			var ref = map[string]any{"Type": "Variable", "VariableName": "source"}
++			var resolved = map[string]any{"Variable:source": ""}
++			if value, err := p10DecodeJSONReference(ref, resolved); err != nil || value != "" {
++				t.Fatal("unchanged plain reference rejected", value, err)
++			}
++			switch fault {
++			case "name_type":
++				ref["VariableName"] = 7
++			case "empty_name":
++				ref["VariableName"] = ""
++			case "extra_output_uuid":
++				ref["OutputUUID"] = id
++			case "extra_output_name":
++				ref["OutputName"] = "unreviewed"
++			case "property":
++				ref["Aggrandizements"] = []any{map[string]any{"Type": "WFPropertyVariableAggrandizement", "PropertyName": "Name"}}
++			case "unknown_field":
++				ref["UnknownMetadata"] = "unreviewed"
++			case "missing_binding":
++				delete(resolved, "Variable:source")
++			case "nil_binding":
++				resolved["Variable:source"] = nil
++			}
++			if value, err := p10DecodeJSONReference(ref, resolved); err == nil {
++				t.Fatalf("unsupported variable reference accepted: %#v", value)
++			}
++		})
++	}
++}

@@ -1,0 +1,10 @@
+{
+  "original_template_acquisition": "Exact immutable Git blob byte slice from original B1/B2 request literal",
+  "source": "89d0a327259bb97150c5dd410165e9097ff39ae9",
+  "path": "p10_http_json_test.go",
+  "original_template_sha256": "1f22bb15f3ba1fe956b5f35d81f1c843329521466faf966656f3776a6aedff02",
+  "new_const_byte_equal_to_git_literal": true,
+  "derived_text_artifact_sha256": "3cefac62c082b7d99efa251368db6d3e4a7a7de925e8b03a2f5514dc9e166437",
+  "derived_text_artifact_crlf": 20,
+  "clarification": "The initial template convenience text write expanded LF to CRLF on Windows. It is preserved as a derived artifact. The actual original source copy and immutable Git blob remain retained; the new const is byte-equal to the Git literal. First commit guard failed only on this derived-file newline mismatch; no tests or source were changed during recovery."
+}

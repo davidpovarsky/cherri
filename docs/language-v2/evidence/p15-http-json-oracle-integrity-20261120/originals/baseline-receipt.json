@@ -1,0 +1,29 @@
+{
+  "source": "89d0a327259bb97150c5dd410165e9097ff39ae9",
+  "clean_before_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=4m",
+    "-run",
+    "^TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer$",
+    "."
+  ],
+  "started_utc": "2026-11-20T11:33:08.901882+00:00",
+  "elapsed_seconds": 40.375,
+  "exit_code": 1,
+  "timed_out": false,
+  "raw_bytes": 4116,
+  "raw_sha256": "86d523af8270213f4abb2fa3bd62ba65392c79c83163708cf07be7b93d86230b",
+  "named_event_counts": {
+    "run": 2,
+    "output": 7,
+    "fail": 2
+  },
+  "failed": [
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/literal-dict-with-dynamic-fields-and-local-http-echo",
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer"
+  ]
+}
