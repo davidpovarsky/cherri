@@ -51,10 +51,17 @@ func atomicWriteFile(filePath string, data []byte, perm os.FileMode) error {
 }
 
 func main() {
-	flag.Parse()
+	flag.Usage = func() {
+		fmt.Fprintln(flag.CommandLine.Output(), "Usage: cherri-migrate <file.cherri> [--write] [--check]")
+		flag.PrintDefaults()
+	}
+	if err := flag.CommandLine.Parse(migrationFlagArguments(os.Args[1:])); err != nil {
+		os.Exit(2)
+	}
 	args := flag.Args()
-	if len(args) == 0 {
-		fmt.Println("Usage: cherri-migrate <file.cherri> [--write] [--check]")
+	if len(args) != 1 {
+		fmt.Fprintln(os.Stderr, "cherri-migrate requires exactly one input file")
+		flag.Usage()
 		os.Exit(1)
 	}
 
