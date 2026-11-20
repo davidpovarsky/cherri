@@ -128,7 +128,7 @@ func p15OptionalIndexNegatives() []p15OptionalIndexNegative {
 		{"dynamic_binding", `let index=0;let selected:Text?=["ready"][index]`, `["ready"][index]`, nil},
 		{"target_alias", `let values=["ready"];let selected:Text?=values[0]`, `values[0]`, nil},
 		{"map_lookup", `let selected:Text?={"key":"ready"}["key"]`, `{"key":"ready"}["key"]`, nil},
-		{"optional_element", `let maybe:Text?="";let selected:Text?=[maybe][0]`, `[maybe][0]`, []string{"maybe"}},
+		{"optional_element", `let maybe:Text?=none;let selected:Text?=[maybe][0]`, `[maybe][0]`, []string{"maybe"}},
 		{"optional_result_element", `function maybe()->Text?{return none};let selected:Text?=[maybe()][0]`, `[maybe()][0]`, []string{"maybe()"}},
 		{"opaque_element", `let selected:AnyContent?=[native.action("is.workflow.actions.nothing",{})][0]`, `[native.action("is.workflow.actions.nothing",{})][0]`, nil},
 	}
@@ -227,5 +227,17 @@ getVariable([state,if true{state="AFTER";yield "SECOND"}else{yield "UNUSED"}][0]
 			}
 		}
 		t.Fatal(err)
+	}
+}
+
+func TestP15OptionalStaticIndexKnownPresentElement(t *testing.T) {
+	source := `let maybe:Text?="";let selected:Text?=[maybe][0];getVariable(selected)`
+	for _, d := range p15TypeDiagnostics(t, source) {
+		if d.Severity == analysis.SeverityError {
+			t.Fatal(d)
+		}
+	}
+	if raw, err := CompileSourceToPlist("p15-known-present-index.cherri", source); err != nil || len(raw) == 0 {
+		t.Fatalf("known present slot failed: bytes=%d error=%v", len(raw), err)
 	}
 }
