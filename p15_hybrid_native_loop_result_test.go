@@ -27,7 +27,23 @@ func p15NativeLoopResultFixture(t *testing.T, kind, body string, outputName bool
 	if !ok || len(actions) < 3 {
 		t.Fatalf("fixture must have a balanced native loop: %T %d", doc.RawRoot["WFWorkflowActions"], len(actions))
 	}
-	end := actions[len(actions)-1].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
+	}
+	// Preserve the complete freshly compiled graph, including the explicit
+	// empty main result. The existing outer loop closes immediately before it.
+	endAction, ok := actions[len(actions)-2].(map[string]any)
+	if !ok {
+		t.Fatal("native outer loop closure is not an action")
+	}
+	end, ok := endAction["WFWorkflowActionParameters"].(map[string]any)
+	startAction, startOK := actions[0].(map[string]any)
+	start := p15Param(startAction)
+	if !ok || !startOK || p15Int(end["WFControlFlowMode"]) != 2 ||
+		end["GroupingIdentifier"] == "" || end["GroupingIdentifier"] != start["GroupingIdentifier"] ||
+		endAction["WFWorkflowActionIdentifier"] != startAction["WFWorkflowActionIdentifier"] {
+		t.Fatal("native outer loop closure identity changed")
+	}
 	const resultUUID = "33333333-3333-3333-3333-333333330404"
 	end["UUID"] = resultUUID
 	token := map[string]any{"Type": "ActionOutput", "OutputUUID": resultUUID}
