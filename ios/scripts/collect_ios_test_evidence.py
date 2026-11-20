@@ -68,8 +68,8 @@ service_test_map = {
 }
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|DocumentationIndexTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
-FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|DocumentationIndexTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests|CherriPreviewLifecycleTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
 STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown", "completion-candidates"}
@@ -328,6 +328,28 @@ def safe_runtime_event(line, active_test):
     return record
 
 
+def failure_category(message):
+    """Retain only a fixed XCTest failure category, never the AX/error payload.
+
+    Match the immediate failure-message prefix, not arbitrary assertion text or
+    restored document content later in a log line. Unknown forms stay unknown.
+    This diagnostic has no role in deciding whether a test or run passed.
+    """
+    prefix = message.lstrip(" :")[:160]
+    patterns = (
+        (r"Failed to get matching snapshot(?:s)?\b", "SNAPSHOT_QUERY_FAILURE"),
+        (r"Failed to get attributes\b", "ATTRIBUTE_QUERY_FAILURE"),
+        (r"Multiple matching elements found\b", "AMBIGUOUS_ELEMENT"),
+        (r"No matches found for\b", "ELEMENT_NOT_FOUND"),
+        (r"Application is not running\b", "APPLICATION_NOT_RUNNING"),
+        (r"XCTAssert[A-Za-z0-9_]* failed\b", "ASSERTION_FAILURE"),
+    )
+    for pattern, category in patterns:
+        if re.match(pattern, prefix):
+            return category
+    return "UNCLASSIFIED"
+
+
 def bounded_log(raw_text):
     lines, receipts, failures = [], [], []
     case_events = 0
@@ -409,7 +431,8 @@ def bounded_log(raw_text):
                 receipts.append(receipt)
                 lines.append(RECEIPT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
         elif (failure := FAILURE_LINE.search(line)):
-            record = {"testId": failure.group(1) + "/" + failure.group(3), "sourceLine": int(failure.group(2))}
+            record = {"testId": failure.group(1) + "/" + failure.group(3), "sourceLine": int(failure.group(2)),
+                      "failureCategory": failure_category(line[failure.end():])}
             if len(failures) < 64:
                 failures.append(record)
                 lines.append("[CHERRI_UI_FAILURE] " + json.dumps(record, sort_keys=True))

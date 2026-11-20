@@ -76,9 +76,61 @@ class IOSTestEvidenceTests(unittest.TestCase):
         diagnostic, records, outputs = self.collect(log, 65)
         self.assertEqual(records, [])
         self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
-        self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorInputTests/" + method, "sourceLine": 65}])
+        self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorInputTests/" + method,
+                                                   "sourceLine": 65, "failureCategory": "UNCLASSIFIED"}])
         self.assertNotIn("PRIVATE_MESSAGE", "".join(outputs.values()))
         self.assertNotIn("/Users/runner", "".join(outputs.values()))
+
+    def test_fixed_failure_categories_never_publish_private_failure_details(self):
+        cases = {
+            "Failed to get matching snapshot: ": "SNAPSHOT_QUERY_FAILURE",
+            "Failed to get matching snapshots: ": "SNAPSHOT_QUERY_FAILURE",
+            "Failed to get attributes for element: ": "ATTRIBUTE_QUERY_FAILURE",
+            "Multiple matching elements found for query: ": "AMBIGUOUS_ELEMENT",
+            "No matches found for query: ": "ELEMENT_NOT_FOUND",
+            "Application is not running: ": "APPLICATION_NOT_RUNNING",
+            "XCTAssertTrue failed - ": "ASSERTION_FAILURE",
+            "Unhandled future XCTest error: ": "UNCLASSIFIED",
+        }
+        secret = "PRIVATE_RESTORED_DOCUMENT /Users/Private/document.cherri ghp_FAKE_SECRET_TOKEN"
+        for prefix, expected in cases.items():
+            with self.subTest(prefix=prefix):
+                failure = (f"/Users/runner/project/CherriEditorUITests.swift:120: error: "
+                           f"-[CherriUITests.CherriEditorUITests {self.ui_method}] : {prefix}{secret}")
+                diagnostic, records, outputs = self.collect(self.block(status="failed", body=failure), 65)
+                self.assertEqual(records, [])
+                self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorUITests/" + self.ui_method,
+                    "sourceLine": 120, "failureCategory": expected}])
+                for private in (secret, "PRIVATE_RESTORED_DOCUMENT", "/Users/Private", "ghp_FAKE_SECRET_TOKEN"):
+                    self.assertNotIn(private, "".join(outputs.values()))
+
+    def test_failure_category_only_uses_immediate_bounded_prefix(self):
+        cases = (
+            "asserted private text: Multiple matching elements found for query",
+            "Unknown error: Failed to get matching snapshot",
+            "x" * 200 + "No matches found for query",
+            'XCTAssertEqual failed: ("No matches found for private value")',
+        )
+        expected = ("UNCLASSIFIED", "UNCLASSIFIED", "UNCLASSIFIED", "ASSERTION_FAILURE")
+        for message, category in zip(cases, expected):
+            with self.subTest(message=message[:40]):
+                self.assertEqual(collector.failure_category(message), category)
+
+    def test_preview_lifecycle_tests_remain_diagnostics_without_formal_membership(self):
+        target = "CherriTests.CherriPreviewLifecycleTests"
+        method = "testCompiledPreviewAppearsAndIsRemovedWhenSourceClears"
+        for status, exit_code in (("passed", 0), ("failed", 65)):
+            with self.subTest(status=status):
+                failure = (f"/Users/runner/CherriPreviewLifecycleTests.swift:89: error: "
+                           f"-[{target} {method}] : XCTAssertTrue failed - PRIVATE_CONTENT")
+                log = (f"Test Case '-[{target} {method}]' started.\n"
+                       + (failure + "\n" if status == "failed" else "")
+                       + f"Test Case '-[{target} {method}]' {status} (0.123 seconds).\n")
+                diagnostic, records, outputs = self.collect(log, exit_code)
+                self.assertEqual(records, [])
+                self.assertEqual(diagnostic["testResults"], [{"testId": "CherriPreviewLifecycleTests/" + method,
+                                                             "observedStatus": status}])
+                self.assertNotIn("PRIVATE_CONTENT", "".join(outputs.values()))
 
     def test_checkpoint_outside_case_or_inside_another_case_cannot_pass(self):
         log = self.checkpoint + "\n" + self.block() + self.block(method="testUnrelated", body=self.checkpoint)
