@@ -1,0 +1,325 @@
+{
+  "schema_version": "1",
+  "kind": "STARTUP_NATIVE_DIAGNOSTIC_PROOF",
+  "source_commit": "954cd45f49742a6b824047852d8735a24738b9c7",
+  "run_id": 44741698137,
+  "run_attempt": 1,
+  "job_id": 136306683965,
+  "conclusion": "failure",
+  "actual_passed": 0,
+  "actual_failed": 3,
+  "unchanged_readiness_budget_ms": 28000,
+  "unchanged_paste_budget_ms": 3000,
+  "source_native_intake": {
+    "schema_version": "1",
+    "kind": "ACTUAL_STARTUP_OBSERVATION_INTAKE",
+    "implementation_sha": "954cd45f49742a6b824047852d8735a24738b9c7",
+    "run_id": "44741698137",
+    "run_attempt": 1,
+    "source_blobs_verified": 11,
+    "source_files": {
+      ".github/workflows/ios-build.yml": "627da9a34624564960f02658e649fb5b8c4823fcc994c49e0e7db6d532b70840",
+      "ios/CherriApp/App/CherriApp.swift": "1566e855e13f0cb17bce76a810bc2d440d35964f3bb6d68b51fb95d47d27dcfe",
+      "ios/CherriApp/App/WorkspaceView.swift": "5ba4166137fdc1f2a44bcdd97e1c36043047a918f6aa3639d8df05742b602a3b",
+      "ios/CherriApp/Diagnostics/StartupContainerWitness.swift": "b7f69b1c59effe822125645628db6dc379ab5d4cde6e9792b59fc59915efb4bd",
+      "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift": "7b78d454ed7b29ab41d0e41f1ce87fa001314310603838eb4bd18bf25acd40a8",
+      "ios/CherriApp/Documents/CherriDocument.swift": "6c533568992ffd877fa701075bd90047fcb3d22b9c4834e07c0d4da3ed972e6c",
+      "ios/CherriApp/Editor/CherriEditorView.swift": "45581a83f937780dd1b3c430c6285ad103f1a571dc54d292ff41630c152ddbee",
+      "ios/CherriUITests/CherriEditorUITests.swift": "9921e43fe2896972c73a94a25c10c0e07d2b770412dcaa36450c88e619431a79",
+      "ios/CherriUITests/EditorStartupDeadline.swift": "a263d9a1fc8dc8476ede4ab09f6096195fa1f1d14368830006a31c8fdfec92c3",
+      "ios/scripts/capture_startup_observation.py": "8e8468f0bbbec55fb5fedede42002f31ee7a6de23977d1767b8e8855427af772",
+      "ios/scripts/collect_ios_test_evidence.py": "fb20e3b4246269468322bc8752c35714a722d028344c08894cf8a1bd914be7b8"
+    },
+    "original_zip_hashes": {
+      "startup-lifecycle-observation": "5203ea896127d3c36d670d5c02784c34066f1a694e0df613617e4da614520759",
+      "ios-build-evidence": "2e6e105469257a65b94e90cb9b287e14ace0de88cae20f1d96e3d4ddc8fab45f"
+    },
+    "published_originals_verified": 10,
+    "same_source_event_validator_executed": true,
+    "corruption_controls": [
+      {
+        "test": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "mutation": "foreign_nonce",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "mutation": "foreign_process",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "mutation": "sequence",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "mutation": "heartbeat_main_thread",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "mutation": "foreign_nonce",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "mutation": "foreign_process",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "mutation": "sequence",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "mutation": "heartbeat_main_thread",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "mutation": "foreign_nonce",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "mutation": "foreign_process",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "mutation": "sequence",
+        "rejected": true
+      },
+      {
+        "test": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "mutation": "heartbeat_main_thread",
+        "rejected": true
+      }
+    ],
+    "cases": {
+      "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": {
+        "actual_test_result": "failed",
+        "native_event_rows": 26,
+        "phase_counts": {
+          "app-initialized": 1,
+          "heartbeat": 24,
+          "observer-opened": 1
+        },
+        "observer_health": {
+          "status": "HEARTBEATS_OBSERVED",
+          "heartbeatCount": 24,
+          "heartbeatSpanMs": 46001,
+          "largestObservedHeartbeatGapMs": 2231,
+          "terminatedBy": "NO_TERMINAL_EVENT",
+          "absenceProvesMissingLifecycle": false
+        },
+        "readiness_trace_elapsed_ms": 28290,
+        "in_flight_observations": 1,
+        "issue_metadata": [
+          {
+            "errorPresent": false,
+            "errorDomain": "ABSENT",
+            "errorCode": 0,
+            "diagnosticSignatures": [],
+            "compactDescription": {
+              "capturedBytes": 174,
+              "capturedSha256": "2b135c191786dfbd2422b24102cc531e0ae0918862cbfcfe20f1a1e61c770853",
+              "originalBytes": 174,
+              "truncated": false
+            }
+          }
+        ],
+        "event_original_sha256": "3b5c882d540e4435cbb293397637edd3391bf124e5274bc17d3551ca681a6ed7"
+      },
+      "CherriEditorUITests/testD03CurrentDocumentationSearchUI": {
+        "actual_test_result": "failed",
+        "native_event_rows": 21,
+        "phase_counts": {
+          "app-initialized": 1,
+          "heartbeat": 19,
+          "observer-opened": 1
+        },
+        "observer_health": {
+          "status": "HEARTBEATS_OBSERVED",
+          "heartbeatCount": 19,
+          "heartbeatSpanMs": 36001,
+          "largestObservedHeartbeatGapMs": 2029,
+          "terminatedBy": "NO_TERMINAL_EVENT",
+          "absenceProvesMissingLifecycle": false
+        },
+        "readiness_trace_elapsed_ms": 28280,
+        "in_flight_observations": 1,
+        "issue_metadata": [
+          {
+            "errorPresent": false,
+            "errorDomain": "ABSENT",
+            "errorCode": 0,
+            "diagnosticSignatures": [],
+            "compactDescription": {
+              "capturedBytes": 174,
+              "capturedSha256": "e7327b7d830a50d757cbc3fa77d4a28f4bdaf1ce6eade79db55909f4a8cfb3dd",
+              "originalBytes": 174,
+              "truncated": false
+            }
+          }
+        ],
+        "event_original_sha256": "cd5aa95230e279cab15ae793c33a502b140a8c7f020302ba23a3940c9236fdbe"
+      },
+      "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": {
+        "actual_test_result": "failed",
+        "native_event_rows": 23,
+        "phase_counts": {
+          "app-initialized": 1,
+          "heartbeat": 21,
+          "observer-opened": 1
+        },
+        "observer_health": {
+          "status": "HEARTBEATS_OBSERVED",
+          "heartbeatCount": 21,
+          "heartbeatSpanMs": 40001,
+          "largestObservedHeartbeatGapMs": 2421,
+          "terminatedBy": "NO_TERMINAL_EVENT",
+          "absenceProvesMissingLifecycle": false
+        },
+        "readiness_trace_elapsed_ms": 34305,
+        "in_flight_observations": 0,
+        "issue_metadata": [
+          {
+            "errorPresent": false,
+            "errorDomain": "ABSENT",
+            "errorCode": 0,
+            "diagnosticSignatures": [
+              "STARTUP_ASSERTION"
+            ],
+            "compactDescription": {
+              "capturedBytes": 113,
+              "capturedSha256": "15c0a18fa451737b12d31fc1b5cdd2f332da2eb4173deb960068499f04f6f268",
+              "originalBytes": 113,
+              "truncated": false
+            }
+          }
+        ],
+        "event_original_sha256": "f78dc807b831d95f8fd43ffcd3367831d8d218633bfcbbfc0501af8fe2bce469"
+      }
+    },
+    "formal_acceptance_granted": false,
+    "runtime_acceptance_granted": false,
+    "scope_limits": [
+      "Original native tests all failed.",
+      "Background heartbeat health does not prove MainActor responsiveness or absence of unrecorded lifecycle.",
+      "Raw private XCTest descriptions are quarantined on the original runner and are not present in these public artifacts."
+    ]
+  },
+  "artifact_intake": [
+    {
+      "id": 14633864372,
+      "name": "startup-lifecycle-observation",
+      "original_zip_sha256": "5203ea896127d3c36d670d5c02784c34066f1a694e0df613617e4da614520759",
+      "members": [
+        {
+          "path": "startup-events-brg27.jsonl",
+          "bytes": 7125,
+          "sha256": "3b5c882d540e4435cbb293397637edd3391bf124e5274bc17d3551ca681a6ed7"
+        },
+        {
+          "path": "startup-events-d03.jsonl",
+          "bytes": 5776,
+          "sha256": "cd5aa95230e279cab15ae793c33a502b140a8c7f020302ba23a3940c9236fdbe"
+        },
+        {
+          "path": "startup-events-e01.jsonl",
+          "bytes": 6395,
+          "sha256": "f78dc807b831d95f8fd43ffcd3367831d8d218633bfcbbfc0501af8fe2bce469"
+        },
+        {
+          "path": "startup-observation.json",
+          "bytes": 42216,
+          "sha256": "ec6e05eaf59cccc6be876a520faf957d1d65645cfbf33fba0d401d032c7726f1"
+        }
+      ]
+    },
+    {
+      "id": 14633754554,
+      "name": "ios-build-evidence",
+      "original_zip_sha256": "2e6e105469257a65b94e90cb9b287e14ace0de88cae20f1d96e3d4ddc8fab45f",
+      "members": [
+        {
+          "path": "xcodetest.log",
+          "bytes": 17878,
+          "sha256": "8ce1150fa76c2f658373fb5e3c9d1af2f29a5ae100090bdf8dae1da4c9a5b361"
+        },
+        {
+          "path": "ios-test-evidence.json",
+          "bytes": 20,
+          "sha256": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359"
+        },
+        {
+          "path": "ios-test-diagnostics.json",
+          "bytes": 25559,
+          "sha256": "472e702af973c8249693ef0d97043f76db540b55ab940439122654c628b3ea17"
+        },
+        {
+          "path": "documentation-index.json",
+          "bytes": 534718,
+          "sha256": "858bb2225a60d9eb3136b9613dd445c4419e89929196e0163db32e67eebf2bda"
+        },
+        {
+          "path": "documentation-compatibility-manifest.json",
+          "bytes": 620,
+          "sha256": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a"
+        },
+        {
+          "path": "documentation-receipt.json",
+          "bytes": 251,
+          "sha256": "ae9c29f1965dc563ead4eed201b6386d8ef527eee3e58b68c2ead0ad75323bfb"
+        }
+      ]
+    }
+  ],
+  "api_original_files": {
+    "run-original.stdout": {
+      "bytes": 12446,
+      "sha256": "d63354470fbba0f4c23df28510c1489e3b68f4bdc31769b2a9af31856b98310d"
+    },
+    "run-original.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "job-original.stdout": {
+      "bytes": 7744,
+      "sha256": "275b06a6c6209f9f6254c35ea5385c10444cea4607315ee47ddf87a55028f842"
+    },
+    "job-original.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "artifacts-original.stdout": {
+      "bytes": 2266,
+      "sha256": "ee7d52010f26c7cdabf71215e46069deb54ee664684a68f0565e10b3e5d35401"
+    },
+    "artifacts-original.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "job-log-original.stdout": {
+      "bytes": 150286,
+      "sha256": "feb9db07b10fbe73f79a47616ef60bb0dcce2de5fbb12d78a9bd8925a86ef147"
+    },
+    "job-log-original.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "auditor": {
+    "relative_retained_path": "startup-lifecycle-observation-20261120/native-terminal/audit_startup_observation.py",
+    "sha256": "caf3678b2c5c42877551c7f86d1967aa36c2582fae4a84484054cedd3f93e0c3",
+    "exit_code": 0,
+    "report_sha256": "f4f14b4f97cdc7a8cf18f7ab7c36ff7ffe91f957e586392e9d12aa262a941412",
+    "command": "python audit_startup_observation.py --root <retained-native-terminal> --repo <authorized-cherri-repository> --out <new-intake-report.json>"
+  },
+  "formal_acceptance_granted": false,
+  "runtime_acceptance_granted": false,
+  "cause_classification": "UNRESOLVED_BEFORE_EDITOR_READINESS"
+}
