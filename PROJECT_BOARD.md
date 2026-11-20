@@ -143,3 +143,7 @@ Four actual schema scenarios RP06/RP07/BRG22/BRG23 passed at clean a278d9f3 with
 ## P10R15 R3 publication and evidence review — 2026-11-20
 
 The real full179 result at frozen K 8e66254d is 95 PASS / 2 FAIL / 82 pending or unexecuted; no final closure. Both failures select a stale synthetic policy fixture, which a separate test-only component repairs without weakening validation. Docs main D5 was published through the existing branch-restricted Pages environment after successful CI; the feature branch's blocked deployment remains retained. Actual installed/public D03 docs intake passed on one unchanged retry, but app integration is still missing. OpenMinis package source and embedded compiler pins were independently checked. Original artifacts, failures and scope boundaries are preserved in [the frozen R3 audit](docs/language-v2/p15-r3-ci-consumers-audit-20261120.md). Current docs examples total 39; older 37-count receipts are historical.
+
+## P10R15 RP11 local parameter-wire acceptance — 2026-11-20
+
+RP11 now independently executes eleven captured-Apple native parameter comparisons, semantic Number checks and58 causal wire/reference/range controls. Clean8c1305b3 produced248 outer and83 inner named passes with45 source hashes and two RP11-only tier records. Original failed test expectations remain retained. No linked T03/T09/R03 or Apple/runtime/final release credit is inherited. See docs/language-v2/p15-rp11-parameter-wire-20261120.md.
