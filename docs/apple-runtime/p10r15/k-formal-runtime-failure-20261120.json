@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "source_commit": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "run_id": "44653155762",
+  "run_url": "https://github.com/davidpovarsky/cherri/actions/runs/44653155762",
+  "workflow_conclusion": "failure",
+  "job_started": "2026-11-20T01:52:04Z",
+  "job_completed": "2026-11-20T02:48:02Z",
+  "artifact_id": "14597015639",
+  "original_zip_sha256": "e65d5254aa4a8ca2e5dd1e503acd1609c0400f89bd729a1e13119dc9da42fe67",
+  "original_log_sha256": "5dbfd806bc11aa9c2ebf27ff26bc6ed14eee293e19db970b32e90ca29f0b935f",
+  "raw_diagnostic_count": 17,
+  "raw_passed_count": 17,
+  "raw_requirement_ids_are_not_formal_claims": true,
+  "formal_records": [
+    {
+      "test_id": "ios27-runtime-poc:variables",
+      "requirements": [
+        "V01",
+        "V03"
+      ],
+      "result": "passed"
+    },
+    {
+      "test_id": "ios27-runtime-poc:indexing",
+      "requirements": [
+        "L02",
+        "L04"
+      ],
+      "result": "passed"
+    },
+    {
+      "test_id": "ios27-runtime-poc:numbers",
+      "requirements": [
+        "N01"
+      ],
+      "result": "passed"
+    },
+    {
+      "test_id": "ios27-runtime-poc:functions",
+      "requirements": [
+        "FN01",
+        "FN02",
+        "FN03"
+      ],
+      "result": "passed"
+    },
+    {
+      "test_id": "ios27-runtime-poc:coverage-s01",
+      "requirements": [
+        "S01"
+      ],
+      "result": "failed"
+    },
+    {
+      "test_id": "ios27-runtime-poc:coverage-f01",
+      "requirements": [
+        "F01"
+      ],
+      "result": "failed"
+    }
+  ],
+  "publication_replay": {
+    "exact_published_files": 31,
+    "all_original_bytes_unchanged": true,
+    "formal_exporter_exact_bytes_equal": true
+  },
+  "coverage": {
+    "source_sha256": "4a13f90af2bdc326e24f9dbf785f76a1ae41043e176b5a3188ab794694a19aa3",
+    "expected_contract_sha256": "8baa3279a770ca20e3daa6036f416360a308d6f40eb1dd0874a38afeb7d0b10c",
+    "fresh_reset_observed": true,
+    "observed_byte_count": 302,
+    "expected_byte_count": 313,
+    "observed_clipboard_sha256": "dad266bbf32337c8ec900ca03d3b1163cde292fd2019c00bfe82bcdc6f472b4e",
+    "expected_clipboard_sha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+    "first_difference_byte_zero_based": 92,
+    "fields": {
+      "S01_OUTPUT": {
+        "expected": "שָׁלוֹם👩‍💻é|α|אבב|éα|🌍🌍||￼🙂αבéαשָׁ🌍",
+        "observed": "שָׁלוֹם👩‍💻é|α|אבב|éα|🌍🌍||🙂éבשָׁ",
+        "equal": false
+      },
+      "F01_TRACE": {
+        "expected": "START|OR_TRUE|OR_FALSE|NEST_OR|NEST_AND|MIX_LEFT|MIX_RIGHT",
+        "observed": "START|OR_TRUE|OR_FALSE|NEST_OR|NEST_AND|MIX_LEFT|MIX_RIGHT",
+        "equal": true
+      },
+      "F01_RESULTS": {
+        "expected": "and_skip=F|or_skip=T|false_or_true=T|false_or_false=F|nested_or=T|nested_and=F|outer_and=F|outer_or=T|mixed_run=T",
+        "observed": "and_skip=F|or_skip=T|false_or_true=T|false_or_false=F|nested_or=T|nested_and=F|outer_and=F|outer_or=T|mixed_run=T",
+        "equal": true
+      }
+    }
+  },
+  "owned_device_cleanup": "DELETED",
+  "production_go_intake": {
+    "exit_code": 1,
+    "report_sha256": "827ed9f910ead6e68f6c695b4033011ee9ded1543450b21ab63c483f9e02ba09",
+    "original_run_conclusion": "failure",
+    "validation_errors": 296,
+    "first_run_error": "CI run 44653155762 failed with conclusion failure",
+    "wrapper_sha256": "b2a3ba74c73a438d695a996897f434e023a531aca9cc35164a02a2498e79c8a4",
+    "formal_credit_granted": false,
+    "all_local_producers_rerun": false
+  },
+  "scope": "Diagnostic preservation and unchanged original evidence intake only. No update to the official 179 report; full successful exact-source replay and all required tiers remain necessary."
+}
