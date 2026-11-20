@@ -24,6 +24,11 @@ CONTROL_NAMES = {
     "current_error_is_not_suppressed", "current_completion", "different_source",
     "different_caret", "canonical_unicode", "cancelled_completion",
     "selection_range_does_not_call_completion",
+    "manual_stale_success", "same_source_replacement", "source_aba_replacement",
+    "changed_mode_without_new_request", "changed_name_without_new_request",
+    "pre_cancelled_request_does_not_compile", "current_generic_error",
+    "stale_after_catalog_await_cannot_write", "cancelled_analysis_does_not_publish",
+    "current_signed_adapter_publication",
 }
 
 def sha(data: bytes) -> str:

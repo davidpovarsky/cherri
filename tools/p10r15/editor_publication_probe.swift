@@ -40,6 +40,9 @@ enum ProbeOutcome: Sendable { case success(String), diagnostic(String), generic 
 struct ProbeCompilePlan: Sendable {
     let source: String
     let outcome: ProbeOutcome
+    var mode = "v2"
+    var signed = false
+    var signedPayload: Data? = nil
     let started = ProbeGate()
     let release = ProbeGate()
 }
@@ -60,15 +63,17 @@ struct ProbeCompletionPlan: Sendable {
     static var compilePlans: [ProbeCompilePlan] = []
     static var analysisPlans: [ProbeAnalyzePlan] = []
     static var completionPlans: [ProbeCompletionPlan] = []
+    static var compileCalls = 0
     static func compile(source: String, name: String, mode: String, signed: Bool) async throws -> CompiledShortcut {
         precondition(!compilePlans.isEmpty, "unexpected controlled compile")
         let plan = compilePlans.removeFirst()
+        compileCalls += 1
         precondition(plan.source.utf16.elementsEqual(source.utf16), "wrong actual compile input")
-        precondition(mode == "v2" && !signed, "unexpected mode/signing side effect")
+        precondition(mode == plan.mode && signed == plan.signed, "wrong actual mode/signing input")
         await plan.started.release()
         await plan.release.wait()
         switch plan.outcome {
-        case .success(let marker): return CompiledShortcut(name: marker, plist: Data(marker.utf8), signedShortcut: nil)
+        case .success(let marker): return CompiledShortcut(name: marker, plist: Data(marker.utf8), signedShortcut: plan.signedPayload)
         case .diagnostic(let message): throw CompilationDiagnostic(message: message, line: 1, column: 1)
         case .generic: throw ProbeError()
         }
@@ -94,7 +99,7 @@ struct ProbeCompletionPlan: Sendable {
 
 @MainActor final class WorkspaceHarness {
     struct Document { var text: String }
-    enum Mode: String { case v2 }
+    enum Mode: String { case v2, legacy }
     var document = Document(text: "")
     var fileDisplayName = "Controlled"
     var languageMode = Mode.v2
@@ -105,9 +110,18 @@ struct ProbeCompletionPlan: Sendable {
     var diagnostics: [CompilationDiagnostic] = []
     var signedURL: URL?
     var buildRequestGeneration: UInt64 = 0
-    func refreshActionCatalog() async {}
+    var catalogStarted: ProbeGate?
+    var catalogRelease: ProbeGate?
+    var signedWrites = 0
+    func refreshActionCatalog() async {
+        if let started = catalogStarted, let release = catalogRelease {
+            catalogStarted = nil; catalogRelease = nil
+            await started.release(); await release.wait()
+        }
+    }
     func writeSignedShortcut(_ data: Data, name: String) throws -> URL {
-        preconditionFailure("controlled unsigned route attempted a file write")
+        signedWrites += 1
+        return URL(fileURLWithPath: "/controlled-no-file-write/" + name)
     }
     __ACTUAL_BUILD_METHOD__
 }
@@ -130,7 +144,7 @@ struct ProbeCompletionPlan: Sendable {
         print(String(data: data, encoding: .utf8)!)
     }
     static func observe(_ harness: WorkspaceHarness) -> [String: Any] {
-        ["compiled": harness.compiled?.name ?? "", "diagnostic": harness.diagnostic?.message ?? "", "diagnostics": harness.diagnostics.map(\.message), "isCompiling": harness.isCompiling]
+        ["compiled": harness.compiled?.name ?? "", "diagnostic": harness.diagnostic?.message ?? "", "diagnostics": harness.diagnostics.map(\.message), "isCompiling": harness.isCompiling, "isSigning": harness.isSigning, "signedWrites": harness.signedWrites]
     }
     static func reset() {
         precondition(CherriCompiler.compilePlans.isEmpty && CherriCompiler.analysisPlans.isEmpty && CherriCompiler.completionPlans.isEmpty, "unconsumed actual adapter operation")
@@ -231,6 +245,107 @@ struct ProbeCompletionPlan: Sendable {
             emit("current_error_is_not_suppressed", harness.diagnostic?.message == "CURRENT_COMPILE" && harness.diagnostics.map(\.message) == ["CURRENT_ANALYSIS"], observe(harness)); reset()
         }
     }
+
+    static func additionalWorkspaceControls() async {
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "old"
+            let old = ProbeCompilePlan(source: "old", outcome: .success("OLD_MANUAL"))
+            CherriCompiler.compilePlans.append(old)
+            let task = Task { await harness.build(signed: false) }
+            await old.started.wait(); harness.document.text = "new"
+            await old.release.release(); await task.value
+            emit("manual_stale_success", harness.compiled == nil, observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "same"
+            let old = ProbeCompilePlan(source: "same", outcome: .success("OLD_SAME"))
+            CherriCompiler.compilePlans.append(old)
+            let task = Task { await harness.build(signed: false, liveBuild: true) }
+            await old.started.wait()
+            await healthy(harness, source: "same", marker: "NEW_SAME")
+            await old.release.release(); await task.value
+            emit("same_source_replacement", harness.compiled?.name == "NEW_SAME", observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "A"
+            let old = ProbeCompilePlan(source: "A", outcome: .success("OLD_A"))
+            CherriCompiler.compilePlans.append(old)
+            let task = Task { await harness.build(signed: false, liveBuild: true) }
+            await old.started.wait()
+            await healthy(harness, source: "B", marker: "NEW_B")
+            await healthy(harness, source: "A", marker: "NEW_A")
+            await old.release.release(); await task.value
+            emit("source_aba_replacement", harness.compiled?.name == "NEW_A", observe(harness)); reset()
+        }
+        for name in ["changed_mode_without_new_request", "changed_name_without_new_request"] {
+            let harness = WorkspaceHarness(); harness.document.text = "same"
+            let old = ProbeCompilePlan(source: "same", outcome: .success("OLD_CONTEXT"))
+            CherriCompiler.compilePlans.append(old)
+            let task = Task { await harness.build(signed: false, liveBuild: true) }
+            await old.started.wait()
+            if name == "changed_mode_without_new_request" { harness.languageMode = .legacy }
+            else { harness.fileDisplayName = "Renamed" }
+            await old.release.release(); await task.value
+            emit(name, harness.compiled == nil, observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "cancelled"
+            let launch = ProbeGate()
+            let old = ProbeCompilePlan(source: "cancelled", outcome: .success("CANCELLED_BEFORE_START"))
+            await old.release.release()
+            CherriCompiler.compilePlans.append(old)
+            let before = CherriCompiler.compileCalls
+            let task = Task { await launch.wait(); await harness.build(signed: false, liveBuild: true) }
+            task.cancel(); await launch.release(); await task.value
+            let calls = CherriCompiler.compileCalls - before
+            // The queued controlled response is intentionally unused only when
+            // the actual production method rejects cancellation before dispatch.
+            CherriCompiler.compilePlans.removeAll()
+            emit("pre_cancelled_request_does_not_compile", calls == 0 && harness.compiled == nil && !harness.isCompiling, ["actualCompileCalls": calls]); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "invalid"
+            let plan = ProbeCompilePlan(source: "invalid", outcome: .generic)
+            await plan.release.release(); CherriCompiler.compilePlans.append(plan)
+            await harness.build(signed: false)
+            emit("current_generic_error", harness.diagnostic != nil && harness.diagnostics.count == 1 && harness.compiled == nil, observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "old"
+            let started = ProbeGate(), release = ProbeGate()
+            harness.catalogStarted = started; harness.catalogRelease = release
+            var old = ProbeCompilePlan(source: "old", outcome: .success("OLD_SIGNED"))
+            old.signed = true; old.signedPayload = Data([1, 2, 3])
+            await old.release.release(); CherriCompiler.compilePlans.append(old)
+            let task = Task { await harness.build(signed: true) }
+            await started.wait()
+            await healthy(harness, source: "new", marker: "NEW_UNSIGNED")
+            await release.release(); await task.value
+            emit("stale_after_catalog_await_cannot_write", harness.compiled?.name == "NEW_UNSIGNED" && harness.signedURL == nil && harness.signedWrites == 0 && !harness.isSigning && !harness.isCompiling, observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "invalid"
+            let held = CompilationDiagnostic(message: "HELD", line: 1, column: 1)
+            harness.diagnostic = held; harness.diagnostics = [held]
+            let compile = ProbeCompilePlan(source: "invalid", outcome: .diagnostic("CANCELLED_COMPILE"))
+            let analysis = ProbeAnalyzePlan(source: "invalid", message: "CANCELLED_ANALYSIS")
+            await compile.release.release()
+            CherriCompiler.compilePlans.append(compile); CherriCompiler.analysisPlans.append(analysis)
+            let task = Task { await harness.build(signed: false, liveBuild: true) }
+            await analysis.started.wait(); task.cancel()
+            await analysis.release.release(); await task.value
+            emit("cancelled_analysis_does_not_publish", harness.diagnostic?.message == "HELD" && harness.diagnostics.map(\.message) == ["HELD"], observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "same"
+            var plan = ProbeCompilePlan(source: "same", outcome: .success("CURRENT_SIGNED"))
+            plan.signed = true; plan.signedPayload = Data([4, 5, 6])
+            await plan.release.release(); CherriCompiler.compilePlans.append(plan)
+            await harness.build(signed: true)
+            emit("current_signed_adapter_publication", harness.compiled?.name == "CURRENT_SIGNED" && harness.signedWrites == 1 && harness.signedURL?.lastPathComponent == "CURRENT_SIGNED" && !harness.isSigning, observe(harness)); reset()
+        }
+    }
+
     static func completionControls() async {
         let original = CherriCompletionRequest(source: "sho", selection: NSRange(location: 3, length: 0))
         for name in ["current_completion", "different_source", "different_caret", "canonical_unicode", "cancelled_completion"] {
@@ -259,8 +374,9 @@ struct ProbeCompletionPlan: Sendable {
     }
     static func main() async {
         await workspaceControls()
+        await additionalWorkspaceControls()
         await completionControls()
-        precondition(controls == 14)
+        precondition(controls == 24)
         print("{\"event\":\"summary\",\"controls\":\(controls),\"failed\":\(failures),\"uiExecuted\":false,\"realCompilerExecuted\":false}")
         if failures != 0 { exit(1) }
     }
