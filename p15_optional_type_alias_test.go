@@ -293,3 +293,43 @@ func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
 		})
 	}
 }
+
+func TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope(t *testing.T) {
+	for _, tc := range []struct {
+		name, alias string
+		value       p15FunctionOptionalCase
+	}{
+		{"Text_is_optional_Number", "Text", p15FunctionOptionalCases()[3]},
+		{"Number_is_optional_Text", "Number", p15FunctionOptionalCases()[1]},
+	} {
+		for _, imported := range []bool{false, true} {
+			mode := "local"
+			if imported {
+				mode = "qualified"
+			}
+			t.Run(tc.name+"/"+mode, func(t *testing.T) {
+				declaration := "type " + tc.alias + "=" + tc.value.typ + "?\n"
+				annotation := tc.alias
+				if imported {
+					annotation = "dep." + annotation
+				}
+				body := strings.ReplaceAll(p15FunctionOptionalSource(tc.value), tc.value.typ+"?", annotation)
+				var actions []map[string]any
+				if imported {
+					entry := "import \"./dependency.cherri\" as dep\ntype " + tc.alias + "=Bool?\n" + body
+					path, source := p15ModuleProject(t, map[string]string{"main.cherri": entry, "dependency.cherri": declaration})
+					actions = p15OptionalAliasModuleActions(t, path, source, "")
+				} else {
+					source := declaration + body
+					if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
+						t.Fatal(diagnostics)
+					}
+					actions = p15CompiledActions(t, source)
+				}
+				if err := p15FunctionOptionalError(actions, tc.value); err != nil {
+					t.Fatal(err)
+				}
+			})
+		}
+	}
+}
