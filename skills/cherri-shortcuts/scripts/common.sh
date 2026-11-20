@@ -5,39 +5,33 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 SKILL_DIR=$(CDPATH= cd -- "${SKILL_DIR:-$SCRIPT_DIR/..}" && pwd)
 MANIFEST_FILE="${CHERRI_MANIFEST_FILE:-$SKILL_DIR/compatibility-manifest.json}"
 
-# Extract a top-level string field from a flat JSON object after verifying JSON framing.
-json_extract_string() {
-  _json_text=$1
-  _field_key=$2
-  printf '%s\n' "$_json_text" | tr -d '\r' | sed -n 's/.*"'"$_field_key"'"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1
+# Parse the original bytes before shell command substitution can remove NULs.
+# The parser accepts an object root, exact top-level keys, and strict UTF-8.
+json_parse_object() {
+  LC_ALL=C awk -v wanted="${1:-}" -v mode="${2:-}" -f "$SKILL_DIR/scripts/json-object.awk"
 }
 
-# Verify that a string is a syntactically well-formed JSON object with balanced outer braces and no unclosed quotes.
+# Some awk implementations treat NUL as an input terminator. Reject those bytes
+# independently before parsing, and cap the original file as well as the parser.
+json_file_is_valid_object() {
+  _json_file=$1
+  _json_size=$(wc -c < "$_json_file") || return 1
+  [ "$_json_size" -le 8388608 ] || return 1
+  _json_without_nul=$(LC_ALL=C tr -d '\000' < "$_json_file" | wc -c) || return 1
+  [ "$_json_size" -eq "$_json_without_nul" ] || return 1
+  json_parse_object < "$_json_file"
+}
+
+json_extract_string() {
+  printf '%s' "$1" | json_parse_object "$2"
+}
+
 json_is_valid_object() {
-  _raw=$(printf '%s' "$1" | tr -d '\r\n\t ')
-  case "$_raw" in
-    \{*\}) ;;
-    *) return 1 ;;
-  esac
-  # Reject malformed key/value syntax such as trailing garbage or unquoted keys
-  printf '%s\n' "$1" | awk '
-    BEGIN { in_str=0; esc=0; depth=0 }
-    {
-      for (i=1; i<=length($0); i++) {
-        c = substr($0, i, 1)
-        if (esc) { esc=0; continue }
-        if (c == "\\") { if (in_str) esc=1; continue }
-        if (c == "\"") { in_str = !in_str; continue }
-        if (!in_str) {
-          if (c == "{") depth++
-          else if (c == "}") depth--
-        }
-      }
-    }
-    END {
-      if (in_str != 0 || depth != 0) exit 1
-    }
-  '
+  printf '%s' "$1" | json_parse_object
+}
+
+json_has_field() {
+  printf '%s' "$1" | json_parse_object "$2" exists
 }
 
 is_hex_len() {
@@ -55,14 +49,15 @@ load_compatibility_manifest() {
     echo "Compatibility manifest missing: $MANIFEST_FILE" >&2
     return 1
   fi
-  MANIFEST_RAW=$(cat "$MANIFEST_FILE")
-  if ! json_is_valid_object "$MANIFEST_RAW"; then
+  if ! json_file_is_valid_object "$MANIFEST_FILE"; then
     echo "Compatibility manifest is not valid JSON: $MANIFEST_FILE" >&2
     return 1
   fi
+  MANIFEST_RAW=$(cat "$MANIFEST_FILE")
 
   MANIFEST_LANG_VERSION=$(json_extract_string "$MANIFEST_RAW" "languageVersion")
   MANIFEST_CATALOG_VERSION=$(json_extract_string "$MANIFEST_RAW" "catalogSchemaVersion")
+  MANIFEST_PROTOCOL_VERSION=$(json_extract_string "$MANIFEST_RAW" "protocolVersion")
   MANIFEST_SCHEMA_FP=$(json_extract_string "$MANIFEST_RAW" "schemaFingerprint")
   MANIFEST_CODEC_FP=$(json_extract_string "$MANIFEST_RAW" "codecFingerprint")
   MANIFEST_MACRO_FP=$(json_extract_string "$MANIFEST_RAW" "macroFingerprint")
@@ -73,6 +68,14 @@ load_compatibility_manifest() {
 
   if [ -z "$MANIFEST_LANG_VERSION" ]; then
     MANIFEST_LANG_VERSION="2.0"
+  fi
+  # Manifests from protocol 1.0 predate its explicit field. Their compiler must
+  # still expose protocol 1.0; a declared empty/non-string value is never ignored.
+  if ! json_has_field "$MANIFEST_RAW" protocolVersion; then
+    MANIFEST_PROTOCOL_VERSION="1.0"
+  elif [ -z "$MANIFEST_PROTOCOL_VERSION" ]; then
+    echo "Compatibility manifest has missing or invalid protocolVersion" >&2
+    return 1
   fi
   if [ -z "$MANIFEST_SCHEMA_FP" ] || ! is_hex_len "$MANIFEST_SCHEMA_FP" 64; then
     echo "Compatibility manifest has missing or invalid schemaFingerprint: ${MANIFEST_SCHEMA_FP:-<empty>}" >&2
@@ -90,7 +93,7 @@ load_compatibility_manifest() {
   fi
   # Old releases had no separate compiler macro contract. Once declared, it is
   # mandatory and cannot silently degrade to the native action fingerprint.
-  if printf '%s\n' "$MANIFEST_RAW" | grep -q '"macroFingerprint"[[:space:]]*:'; then
+  if json_has_field "$MANIFEST_RAW" macroFingerprint; then
     if ! is_hex_len "$MANIFEST_MACRO_FP" 64; then
       echo "[CHERRI_MACRO_MANIFEST_INVALID] Compatibility manifest has missing or invalid macroFingerprint" >&2
       return 1
@@ -105,7 +108,7 @@ load_compatibility_manifest() {
     return 1
   fi
 
-  export MANIFEST_LANG_VERSION MANIFEST_CATALOG_VERSION MANIFEST_SCHEMA_FP MANIFEST_CODEC_FP MANIFEST_MACRO_FP
+  export MANIFEST_LANG_VERSION MANIFEST_CATALOG_VERSION MANIFEST_PROTOCOL_VERSION MANIFEST_SCHEMA_FP MANIFEST_CODEC_FP MANIFEST_MACRO_FP
   export MANIFEST_COMPILER_REPO MANIFEST_COMPILER_COMMIT MANIFEST_DOCS_REPO MANIFEST_DOCS_COMMIT
   return 0
 }
@@ -163,7 +166,7 @@ verify_cherri_checksum() {
   fi
 }
 
-validate_cherri_bin() {
+validate_cherri_bin() (
   _cand=$1
   if [ -z "$_cand" ] || [ ! -f "$_cand" ]; then
     echo "[CHERRI_COMPILER_NOT_FOUND] Cherri binary not found: ${_cand:-<empty>}" >&2
@@ -178,27 +181,40 @@ validate_cherri_bin() {
     return 1
   fi
 
-  if ! _cap_out=$("$_cand" --capabilities-json 2>/dev/null); then
+  _cap_file=$(umask 077; mktemp "${TMPDIR:-/tmp}/cherri-capabilities.XXXXXX") || {
+    echo "Cannot create a private capabilities validation file" >&2
+    return 1
+  }
+  trap 'rm -f "$_cap_file"' 0
+  trap 'exit 129' HUP
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  if ! "$_cand" --capabilities-json > "$_cap_file" 2>/dev/null; then
     echo "Cherri binary failed --capabilities-json: $_cand" >&2
     return 1
   fi
-  if [ -z "$_cap_out" ] || ! json_is_valid_object "$_cap_out"; then
+  if ! json_file_is_valid_object "$_cap_file"; then
     echo "Cherri binary returned malformed JSON from --capabilities-json: $_cand" >&2
     return 1
   fi
 
-  _actual_lang=$(json_extract_string "$_cap_out" "languageVersion")
-  _actual_cat=$(json_extract_string "$_cap_out" "catalogSchemaVersion")
-  _actual_fp=$(json_extract_string "$_cap_out" "schemaFingerprint")
-  _actual_codec_fp=$(json_extract_string "$_cap_out" "codecFingerprint")
-  _actual_macro_fp=$(json_extract_string "$_cap_out" "macroFingerprint")
+  _actual_lang=$(json_parse_object languageVersion < "$_cap_file")
+  _actual_cat=$(json_parse_object catalogSchemaVersion < "$_cap_file")
+  _actual_protocol=$(json_parse_object protocolVersion < "$_cap_file")
+  _actual_fp=$(json_parse_object schemaFingerprint < "$_cap_file")
+  _actual_codec_fp=$(json_parse_object codecFingerprint < "$_cap_file")
+  _actual_macro_fp=$(json_parse_object macroFingerprint < "$_cap_file")
 
   if [ "$_actual_lang" != "$MANIFEST_LANG_VERSION" ]; then
     echo "Cherri languageVersion mismatch in $_cand: expected $MANIFEST_LANG_VERSION, got ${_actual_lang:-<missing>}" >&2
     return 1
   fi
-  if [ -n "$MANIFEST_CATALOG_VERSION" ] && [ -n "$_actual_cat" ] && [ "$_actual_cat" != "$MANIFEST_CATALOG_VERSION" ]; then
-    echo "Cherri catalogSchemaVersion mismatch in $_cand: expected $MANIFEST_CATALOG_VERSION, got $_actual_cat" >&2
+  if [ -n "$MANIFEST_CATALOG_VERSION" ] && [ "$_actual_cat" != "$MANIFEST_CATALOG_VERSION" ]; then
+    echo "Cherri catalogSchemaVersion mismatch in $_cand: expected $MANIFEST_CATALOG_VERSION, got ${_actual_cat:-<missing>}" >&2
+    return 1
+  fi
+  if [ "$_actual_protocol" != "$MANIFEST_PROTOCOL_VERSION" ]; then
+    echo "Cherri protocolVersion mismatch in $_cand: expected $MANIFEST_PROTOCOL_VERSION, got ${_actual_protocol:-<missing>}" >&2
     return 1
   fi
   if [ -z "$_actual_fp" ] || ! is_hex_len "$_actual_fp" 64; then
@@ -207,6 +223,10 @@ validate_cherri_bin() {
   fi
   if [ "$_actual_fp" != "$MANIFEST_SCHEMA_FP" ]; then
     echo "Cherri schemaFingerprint mismatch in $_cand: expected $MANIFEST_SCHEMA_FP, got $_actual_fp" >&2
+    return 1
+  fi
+  if [ -n "$MANIFEST_CODEC_FP" ] && [ -z "$_actual_codec_fp" ]; then
+    echo "Cherri binary returned missing codecFingerprint in $_cand" >&2
     return 1
   fi
   if [ -n "$_actual_codec_fp" ]; then
@@ -244,7 +264,7 @@ validate_cherri_bin() {
   fi
 
   return 0
-}
+)
 
 validate_docs_dir() {
   _docs=$1
