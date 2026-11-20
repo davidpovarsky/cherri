@@ -133,3 +133,99 @@ func TestP15SemanticContainerEntriesCaptureBeforeLaterWrite(t *testing.T) {
 		})
 	}
 }
+
+func TestP15SemanticContainerEntryCaptureOracleRejectsCorruption(t *testing.T) {
+	original := p15CompiledActions(t, p15ContainerEntrySource("map"))
+	if err := p15ContainerEntryCaptureError(original, "map"); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"live_reference", "missing_producer", "after_write", "inside_branch", "wrong_variable", "duplicate_producer", "duplicate_effect"} {
+		t.Run(fault, func(t *testing.T) {
+			actions := p15ContainerCloneNative(t, original)
+			payload, err := p15ContainerOrderedPayload(actions, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+			value, err := p15ContainerEarlyReference(payload, "map")
+			if err != nil {
+				t.Fatal(err)
+			}
+			wrapper := value.(map[string]any)
+			uuid := wrapper["Value"].(map[string]any)["OutputUUID"]
+			capture := -1
+			for index, action := range actions {
+				if p15Param(action)["UUID"] == uuid {
+					capture = index
+				}
+			}
+			if capture < 0 {
+				t.Fatal("positive control lacks capture")
+			}
+			switch fault {
+			case "live_reference":
+				wrapper["Value"] = map[string]any{"Type": "Variable", "VariableName": "state"}
+			case "missing_producer":
+				actions = append(actions[:capture], actions[capture+1:]...)
+			case "after_write":
+				producer := actions[capture]
+				actions = append(actions[:capture], actions[capture+1:]...)
+				actions = append(actions, producer)
+			case "inside_branch":
+				producer := actions[capture]
+				actions = append(actions[:capture], actions[capture+1:]...)
+				branch := -1
+				for index, action := range actions {
+					if index >= capture && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" {
+						branch = index
+						break
+					}
+				}
+				if branch < 0 {
+					t.Fatal("positive control lacks later branch")
+				}
+				tail := append([]map[string]any(nil), actions[branch+1:]...)
+				actions = append(append(actions[:branch+1], producer), tail...)
+			case "wrong_variable":
+				p15Param(actions[capture])["WFVariable"].(map[string]any)["Value"].(map[string]any)["VariableName"] = "unrelated"
+			case "duplicate_producer":
+				actions = append(actions, deepClonePlistMap(actions[capture]))
+			case "duplicate_effect":
+				for _, action := range actions {
+					if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" && p15Param(action)["WFTextActionText"] == "P15_CONTAINER_AFTER" {
+						actions = append(actions, deepClonePlistMap(action))
+						break
+					}
+				}
+			}
+			if err := p15ContainerEntryCaptureError(actions, "map"); err == nil {
+				t.Fatal("container entry oracle accepted " + fault)
+			}
+		})
+	}
+}
+
+func TestP15SemanticContainerDoesNotCaptureUnwrittenBinding(t *testing.T) {
+	for name, later := range map[string]string{
+		"pure":      `state`,
+		"unrelated": `if true {other="changed";yield "done"} else {yield "unused"}`,
+		"shadowed":  `if true {var state="local";state="changed";yield state} else {yield "unused"}`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			actions := p15CompiledActions(t, "var state=\"before\"\nvar other=\"other\"\nlet data={\"before\":state,\"write\":"+later+"}\ngetVariable(data)")
+			payload, err := p15ContainerOrderedPayload(actions, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+			value, err := p15ContainerEarlyReference(payload, "map")
+			_, expected := p15ContainerFieldValue(p15ContainerReference{"Type": "Variable", "VariableName": "state"})
+			if err != nil || !reflect.DeepEqual(value, expected) {
+				t.Fatal("unwritten outer binding lost its original native representation", err)
+			}
+			for _, action := range actions {
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && reflect.DeepEqual(p15Param(action)["WFVariable"], expected) {
+					t.Fatal("unwritten outer binding gained an unnecessary read action")
+				}
+			}
+		})
+	}
+}
