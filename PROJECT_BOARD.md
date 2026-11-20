@@ -147,3 +147,5 @@ The real full179 result at frozen K 8e66254d is 95 PASS / 2 FAIL / 82 pending or
 ## P10R15 RP11 local parameter-wire acceptance — 2026-11-20
 
 RP11 now independently executes eleven captured-Apple native parameter comparisons, semantic Number checks and58 causal wire/reference/range controls. Clean8c1305b3 produced248 outer and83 inner named passes with45 source hashes and two RP11-only tier records. Original failed test expectations remain retained. No linked T03/T09/R03 or Apple/runtime/final release credit is inherited. See docs/language-v2/p15-rp11-parameter-wire-20261120.md.
+
+RP11 follow-up: independent review found unbound mutable initializer/store inputs in the first consumer-only oracle. Clean8cb6ae7b exposed12 causal failures. Strengthened8042bdf8 independently binds each source producer/value to its store and consumer;260 outer and95 inner named cases now pass, including70 causal native controls. The earlier receipts remain unchanged and are qualified by their narrower historical scope.
