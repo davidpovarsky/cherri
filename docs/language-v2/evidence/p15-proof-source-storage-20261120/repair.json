@@ -1,0 +1,34 @@
+{
+  "observed_at": "2026-11-20T09:36:41.052071+00:00",
+  "source_base": "bc6c178f732eeed556b9479c4d9e6c547885407e",
+  "source_state": "M02 production draft was present and unchanged; only evidence-storage paths committed in this component",
+  "original_full_suite_source": "fd691b96fb661697a1cbaddab92476d457636ba9",
+  "original_compile_failure_sha256": "a95de4b402dfab81dd42d80ab5d1ff81db4d2128dc7463940c84f1f3d3fdef7d",
+  "moves": [
+    {
+      "old": "source/p15_function_native_oracle_test.go",
+      "new": "source/p15_function_native_oracle_test.go.txt",
+      "bytes": 12993,
+      "sha256": "fdc2a57f968dcdbfd95674956f3f88a8ad5baa5909faf98d655517e20c6adc4e",
+      "immutable_original_source": "fd691b96fb661697a1cbaddab92476d457636ba9"
+    },
+    {
+      "old": "source/p15_optional_native_diagnostic_test.go",
+      "new": "source/p15_optional_native_diagnostic_test.go.txt",
+      "bytes": 25271,
+      "sha256": "e04d22548bdb41c7d23513e04a393c8af2f6f599485a7140abbd44e448177daf",
+      "immutable_original_source": "fd691b96fb661697a1cbaddab92476d457636ba9"
+    }
+  ],
+  "original_manifest_sha256": "fbba5ed6030b8e457467586b8dd493063d945f0a44de3b52b67a54a8b83e757f",
+  "verified_manifest_members": 18,
+  "package_counts": {
+    "before": 31,
+    "after": 30
+  },
+  "removed_package": "github.com/electrikmilk/cherri/docs/language-v2/evidence/p15-optional-native-diagnostic-20261120/source",
+  "all_other_packages_preserved": true,
+  "active_root_test_sources_renamed": false,
+  "tests_run_for_storage_fix": false,
+  "scope": "Verified original-byte preservation and actual Go discovery correction. Full original run remains failed; final clean complete suite is separate."
+}
