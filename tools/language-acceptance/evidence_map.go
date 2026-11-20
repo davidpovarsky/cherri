@@ -582,6 +582,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if id == "BRG18" {
+		return nativePathsTestIDs()
+	}
 	if id == "BRG19" {
 		return safeImportEditTestIDs()
 	}
@@ -665,6 +668,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if id == "BRG18" {
+		return append([]string{}, nativePathsProductionPaths...)
+	}
 	if id == "BRG19" {
 		return append([]string{}, safeImportEditProductionPaths...)
 	}
