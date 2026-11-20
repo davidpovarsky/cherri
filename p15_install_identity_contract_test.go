@@ -150,11 +150,11 @@ func TestP15RP45PackageIgnoresGitReplacements(t *testing.T) {
 	for _, kind := range []string{"commit", "tree", "blob"} {
 		t.Run(kind, func(t *testing.T) {
 			repo := filepath.Join(t.TempDir(), "replaced-skill")
-			p15ExtractedGit(t, f.root, "clone", "--quiet", "--shared", f.packageRepo, repo)
+			p15ExtractedGit(t, f.root, "clone", "--quiet", "--shared", "--no-checkout", f.packageRepo, repo)
 			p15ExtractedGit(t, repo, "config", "core.autocrlf", "false")
 			p15ExtractedGit(t, repo, "checkout", "--quiet", "--detach", f.skillSHA)
 			path := "skills/cherri-shortcuts/SKILL.md"
-			original := p15InstallRead(t, filepath.Join(repo, filepath.FromSlash(path)))
+			original := p15ExtractedGit(t, repo, "show", f.skillSHA+":"+path)
 			p15InstallWrite(t, filepath.Join(repo, filepath.FromSlash(path)), append(append([]byte{}, original...), []byte("\nRP45 replacement object must not be packaged.\n")...))
 			replacement := p15ExtractedCommit(t, repo, "Disposable replacement object")
 			oldOID, newOID := f.skillSHA, replacement
