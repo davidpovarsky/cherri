@@ -43,7 +43,10 @@ func TestP15RP33ReferenceRawParameter(t *testing.T) {
 		t.Run(fixture.name, func(t *testing.T) {
 			source := `saveFile("rp33-public.txt", content: "public-payload", overwrite: false, folder: ` + fixture.expression + ")\n"
 			actions := compileDebugFixture(t, source, false)
-			if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" || actions[0].WFWorkflowActionParameters["WFTextActionText"] != "public-payload" || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.documentpicker.save" {
+			if err := p15M02MainVoidDebugError(actions); err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" || actions[0].WFWorkflowActionParameters["WFTextActionText"] != "public-payload" || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.documentpicker.save" {
 				t.Fatalf("content producer or raw reference consumer changed: %#v", actions)
 			}
 			input := actions[1].WFWorkflowActionParameters["WFInput"].(map[string]any)["Value"].(map[string]any)

@@ -276,7 +276,10 @@ func p15LoopNativeError(id string, actions []map[string]any) error {
 	if c.err != nil {
 		return c.err
 	}
-	if c.at != len(actions) || len(c.stack) != 0 {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	if c.at != len(actions)-1 || len(c.stack) != 0 {
 		return fmt.Errorf("unconsumed or unclosed native loop graph: at=%d actions=%d owners=%d", c.at, len(actions), len(c.stack))
 	}
 	return nil

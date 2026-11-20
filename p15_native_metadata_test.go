@@ -25,8 +25,11 @@ func p15MetadataActions(t *testing.T, expression string) []any {
 
 func p15MetadataValue(t *testing.T, actions []any) any {
 	t.Helper()
-	if len(actions) != 1 {
-		t.Fatalf("raw metadata materialized %d runtime actions instead of exactly one explicit native action", len(actions))
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 2 {
+		t.Fatalf("raw metadata must retain exactly one explicit native action and the empty main result, got %d actions", len(actions))
 	}
 	action := actions[0].(map[string]any)
 	if action["WFWorkflowActionIdentifier"] != "com.example.cherri.metadata" {

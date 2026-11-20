@@ -15,3 +15,19 @@ func p15M02MainVoidRowsError(rows []any) error {
 	}
 	return p15M02MainVoidBoundaryError(actions)
 }
+
+// Preserve the entire decoded action sequence; this checks only its explicit
+// authored-main boundary. Each caller also asserts its complete scenario.
+func p15M02MainVoidDebugError(actions []ShortcutAction) error {
+	if len(actions) == 0 {
+		return fmt.Errorf("main fallthrough has no explicit empty result")
+	}
+	last := actions[len(actions)-1]
+	if last.WFWorkflowActionIdentifier != "is.workflow.actions.nothing" || len(last.WFWorkflowActionParameters) != 0 {
+		return fmt.Errorf("main fallthrough has no exact empty terminal action")
+	}
+	if last.rawNativeEnvelope != nil {
+		return p15M02MainVoidBoundaryError([]map[string]any{last.rawNativeEnvelope})
+	}
+	return nil
+}
