@@ -47,6 +47,7 @@ const (
 	CodeArgumentType            = "E_ARGUMENT_TYPE"
 	CodeTypeAlias               = "E_TYPE_ALIAS"
 	CodeNativeJSONNull          = "E_NATIVE_JSON_NULL"
+	CodeNestedNativeList        = "E_NESTED_NATIVE_LIST"
 	CodeLiteralRequired         = "E_LITERAL_REQUIRED"
 	CodeEnumMember              = "E_ENUM_MEMBER"
 	CodeReturnType              = "E_RETURN_TYPE"
