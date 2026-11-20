@@ -199,3 +199,10 @@ Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 pas
 - Original causal failures, corrected fixture expectations and Windows NOT_RUN evidence remain unchanged. The registration-only push is not counted as execution.
 - Final integrated179, required CI, Apple/native signing and coherent consumer publication remain open. No related-ID inheritance or manifest/pin change.
 - Proof: docs/language-v2/p15-output-signing-linux-20261120.md, with the original Linux archive and source/member manifests alongside it.
+
+
+## P10R15 native nested-List observation preparation (2026-11-20)
+
+- Added separate public control and experimental native List-row diagnostics with explicit main returns; no production encoding or formal requirement promotion.
+- Local full graphs cover56/78actions;28/33 actual graph corruptions and15 bounded observation controls. Clean-source replay and native selector/callback/publication integration remain separate gates.
+- Preserve actual contradictions and type-name bytes. A shape match or Dictionary carrier does not establish native nested-List type. See docs/apple-runtime/p10r15/nested-list-native-observation.md.
