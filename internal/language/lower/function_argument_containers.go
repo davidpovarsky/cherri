@@ -10,6 +10,9 @@ import (
 // braces cannot select raw native/template codecs. Scalar and native-reference
 // argument routes retain their existing representation.
 func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentIndex int, expr syntax.Expression) (interface{}, error) {
+	if err := l.requirePresentTransport(expr, "function argument"); err != nil {
+		return nil, err
+	}
 	if _, literalMap := expr.(*syntax.MapExpr); !literalMap {
 		return l.lowerCallArgumentValue(call, argumentIndex, expr)
 	}

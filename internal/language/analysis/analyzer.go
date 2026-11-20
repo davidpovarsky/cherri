@@ -1097,7 +1097,10 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		case syntax.TokenTrue, syntax.TokenFalse:
 			return types.Bool
 		case syntax.TokenNone:
-			return types.NewOptional(types.Unknown)
+			// Preserve authored absence through inferred aliases and value joins.
+			// NewOptional(Unknown) deliberately erases unknown native type knowledge;
+			// an explicit None is different evidence and must retain its optional kind.
+			return types.OptionalType{Inner: types.Unknown}
 		case syntax.TokenNull:
 			// A raw escape does not create a plist-null representation. Reject
 			// explicit null before it can be omitted or coerced by serialization.
@@ -1316,6 +1319,8 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			elementType := a.analyzeExpression(el, scope)
 			if isVoidValue(elementType) {
 				a.error(CodeArgumentType, el.NodeSpan(), "Void cannot be stored as a list value")
+			} else {
+				a.requirePresentTransport(el, elementType, "List element")
 			}
 			elements = append(elements, elementType)
 		}
@@ -1338,9 +1343,13 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			valueType := a.analyzeExpression(entry.Value, scope)
 			if isVoidValue(keyType) {
 				a.error(CodeArgumentType, entry.Key.NodeSpan(), "Void cannot be a dictionary key")
+			} else {
+				a.requirePresentTransport(entry.Key, keyType, "Dictionary key")
 			}
 			if isVoidValue(valueType) {
 				a.error(CodeArgumentType, entry.Value.NodeSpan(), "Void cannot be stored as a dictionary value")
+			} else {
+				a.requirePresentTransport(entry.Value, valueType, "Dictionary value")
 			}
 			values = append(values, valueType)
 		}

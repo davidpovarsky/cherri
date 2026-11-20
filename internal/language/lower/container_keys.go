@@ -18,11 +18,17 @@ func (l *Lowerer) lowerSemanticMap(expr *syntax.MapExpr) (backend.SemanticValue,
 	laterWrites := l.semanticSiblingWrites(expressions)
 	entries := make([]backend.DictEntry, 0, len(expr.Entries))
 	for index, entry := range expr.Entries {
+		if err := l.requirePresentTransport(entry.Key, "Dictionary key"); err != nil {
+			return backend.SemanticValue{}, err
+		}
 		key, err := l.lowerSemanticMapKey(entry.Key)
 		if err != nil {
 			return backend.SemanticValue{}, err
 		}
 		key = l.captureCallSemanticValue(key, laterWrites[index*2])
+		if err := l.requirePresentTransport(entry.Value, "Dictionary value"); err != nil {
+			return backend.SemanticValue{}, err
+		}
 		value, err := l.lowerSemanticValue(entry.Value)
 		if err != nil {
 			return backend.SemanticValue{}, err
