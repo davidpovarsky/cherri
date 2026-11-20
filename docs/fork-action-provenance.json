@@ -3291,6 +3291,19 @@
       "reason": "Clean tests-only5bfa6823 reproduced10 value-control workflows that emitted RunSelf without the self dispatcher;7 direct/statement/unused controls passed.",
       "evidence": "Original baseline go-JSON SHA2561292c4fbae1fa78ff6af1f84ebde3d4144a520dc73d8417acb1f535c67832f07. Independent complete native graph oracle and128 causal corruptions; clean implementation replay retained separately.",
       "note": "Compiler structure only. No Apple runtime, collected Optional cardinality, broad container requirement or final acceptance credit."
+    },
+    {
+      "name": "P10R15 Optional value-loop presence boundary",
+      "locations": [
+        "internal/language/analysis/loop_result_shape.go",
+        "p15_optional_loop_boundary_test.go",
+        "p15_value_control_function_discovery_test.go"
+      ],
+      "firstForkCommit": "255cf7e526e7a830660ae7e2d1f899160d2de624",
+      "change": "Reject statically Optional final elements in value-producing For and Repeat loops with a precise E_TARGET_VALUE_SHAPE before native emission. Preserve existing List guards, terminating paths, present scalar and Map values, statement loops and explicit unverified native results.",
+      "reason": "Clean tests-only5e2e1611 accepted15 Optional/None loop shapes without transporting a compiler-owned presence bit per collected element. Exact original native bytes and analysis/service observations are retained.",
+      "evidence": "Causal baseline raw SHA256a70b1ff9a23fb317f1b6fdd60ff0842e5c1622024494b2174c31767915056057. Precommit279 named graph/diagnostic/corruption events passed, including explicit Text interpolation for the function-discovery control; clean committed replay is separately retained.",
+      "note": "This is a bounded current-transport safety repair, not an Apple observation or proof that Optional loop elements are inherently unencodable. T05/L01/F04/FN05, native one-item cardinality and final acceptance remain open. Original unsafe discovery source stays a required negative."
     }
   ]
 }

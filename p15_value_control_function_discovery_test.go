@@ -28,7 +28,7 @@ func p15ValueControlFunctionCases() []p15ValueControlFunctionCase {
 		{"repeat_count", "repeat_count", "Number", "2", "let value=repeat target() {yield 7}\nreturn value"},
 		{"for_iterable", "for_iterable", "List<Text>", `["row"]`, "let value=for item in target() {yield 7}\nreturn value"},
 		{"menu_prompt", "menu_prompt", "Text", `"Pick"`, "let value=menu(target()) {case \"A\" {yield 7} case \"B\" {yield 9}}\nreturn value"},
-		{"optional_repeat", "repeat_value", "Text?", "none", "let value=repeat 2 {yield target()}\nreturn value"},
+		{"optional_repeat", "repeat_value", "Text?", "none", "let value=repeat 2 {yield f\"{target()}\"}\nreturn value"},
 		{"nested_value", "nested_value", "Number", "7", "let value=if true {yield repeat 2 {yield target()}} else {yield repeat 1 {yield 9}}\nreturn value"},
 		{"statement_repeat", "statement_repeat", "Number", "7", "repeat 2 {target()}\nreturn 9"},
 		{"unused_function", "unused", "Number", "7", "return 9"},
@@ -159,7 +159,12 @@ func p15ValueControlFunctionGraphError(actions []map[string]any, tc p15ValueCont
 		if tc.control == "repeat_count" {
 			number(7)
 		} else {
-			p15DiscoveryCall(g, tc)
+			value := p15DiscoveryCall(g, tc)
+			if tc.name == "optional_repeat" {
+				// Explicit interpolation produces a Text element. The original
+				// Optional-yield source is a required fail-closed boundary test.
+				g.value("gettext", map[string]any{"WFTextActionText": p15FunctionText("\ufffc", value)})
+			}
 		}
 		result = p15DiscoveryLoopEnd(g, "repeat.count", loop, tc.control != "statement_repeat")
 		if tc.control == "statement_repeat" {
