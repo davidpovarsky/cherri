@@ -249,6 +249,27 @@ class DocumentationWrapperControls(unittest.TestCase):
         time.sleep(1.3)
         self.assertFalse(later.exists(), "owned child survived timeout cleanup")
 
+    def test_late_exit_zero_cannot_satisfy_original_deadline(self):
+        from unittest import mock
+        recorder = subject.Recorder(self.root / "calls")
+        actual_popen = subject.subprocess.Popen
+
+        def delayed_launch_return(*args, **kwargs):
+            process = actual_popen(*args, **kwargs)
+            self.assertEqual(process.wait(timeout=5), 0)
+            time.sleep(0.04)
+            return process
+
+        with mock.patch.object(subject.subprocess, "Popen", side_effect=delayed_launch_return):
+            result = recorder.run("actual-child-delayed-launch-return",
+                                  [sys.executable, "-c", "print('actual public child completed')"],
+                                  self.root, os.environ.copy(), timeout=0.01)
+        self.assertEqual(result[0]["exitCode"], 0)
+        self.assertGreater(result[0]["elapsedSeconds"], result[0]["timeoutSeconds"])
+        print("CHERRI_DOC_WRAPPER_LATE_CHILD_CONTROL=" + json.dumps(result[0], sort_keys=True))
+        with self.assertRaises(ValueError):
+            subject.succeeded(result)
+
     def test_environment_cannot_inherit_caller_pin_or_compiler_overrides(self):
         old = dict(os.environ)
         try:
