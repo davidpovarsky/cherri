@@ -812,7 +812,15 @@ func collectArgument(argIndex *int, param *parameterDefinition, paramsSize *int)
 
 	var valueType tokenType
 	var value any
-	collectValue(&valueType, &value, endOfNextArgument())
+	if char == '"' && *argIndex == 3 && param.key == "WFDebugLogLabel" &&
+		(currentAction.identifier == "debugLog" || currentAction.identifier == "debugLogPrevious") {
+		// A label is literal metadata, not Legacy text interpolation. Other
+		// arguments retain their original parser and effect ordering.
+		advance()
+		valueType, value = RawString, collectString()
+	} else {
+		collectValue(&valueType, &value, endOfNextArgument())
+	}
 
 	skipWhitespace()
 

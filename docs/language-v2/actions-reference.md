@@ -8564,7 +8564,7 @@ url(url: Text)
 
 ## Compiler macros
 
-**Compiler Macro Fingerprint:** `3741bc7d242876d3ed6e65c77258f97220823184e767bf93aa3e6c2d848a4867`
+**Compiler Macro Fingerprint:** `acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c`
 
 **Compiler Macros:** 15
 
@@ -8635,10 +8635,10 @@ debugFinish(withDates?: bool = false, showLogsAsText?: bool = false)
 
 ### `debugLog`
 
-Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.
+Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows. A literal label stores separate scalar metadata and names preview copies; raw objects stay unchanged.
 
 ```cherri
-debugLog(withDates?: bool = false, showLogs?: bool = false, showLogsAsText?: bool = false) -> text
+debugLog(withDates?: bool = false, showLogs?: bool = false, showLogsAsText?: bool = false, label?: text) -> text
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
@@ -8646,13 +8646,14 @@ debugLog(withDates?: bool = false, showLogs?: bool = false, showLogsAsText?: boo
 | `withDates` | `bool` | true | false | false |
 | `showLogs` | `bool` | true | false | false |
 | `showLogsAsText` | `bool` | true | false | false |
+| `label` | `text` | true | false | - |
 
 ### `debugLogPrevious`
 
-Alias for debugLog with optional withDates/showLogs/showLogsAsText.
+Alias for debugLog with optional withDates/showLogs/showLogsAsText and a literal per-entry label.
 
 ```cherri
-debugLogPrevious(withDates?: bool = false, showLogs?: bool = false, showLogsAsText?: bool = false) -> text
+debugLogPrevious(withDates?: bool = false, showLogs?: bool = false, showLogsAsText?: bool = false, label?: text) -> text
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
@@ -8660,6 +8661,7 @@ debugLogPrevious(withDates?: bool = false, showLogs?: bool = false, showLogsAsTe
 | `withDates` | `bool` | true | false | false |
 | `showLogs` | `bool` | true | false | false |
 | `showLogsAsText` | `bool` | true | false | false |
+| `label` | `text` | true | false | - |
 
 ### `debugShowLogs`
 

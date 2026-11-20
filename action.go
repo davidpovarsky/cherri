@@ -297,6 +297,14 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 			shortcut.WFWorkflowActions = withDates
 			actionIndex += inserted
 		}
+		if legacyActiveBuildProfile != BuildProfileRelease && debugMacroRequestsLabels(macroName, params) {
+			withLabels, inserted, backfillErr := backfillDebugLabelContext(shortcut.WFWorkflowActions)
+			if backfillErr != nil {
+				exit(backfillErr.Error())
+			}
+			shortcut.WFWorkflowActions = withLabels
+			actionIndex += inserted
+		}
 		recordDebugExpandedActions(macroName, len(shortcut.WFWorkflowActions), expanded)
 		shortcut.WFWorkflowActions = append(shortcut.WFWorkflowActions, expanded...)
 		actionIndex += len(expanded)

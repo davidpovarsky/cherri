@@ -464,14 +464,15 @@ func captureDebugPreviousInput(actions []ShortcutAction) (any, error) {
 }
 
 // resolveDebugMacroCall is shared by Legacy and v2.
-// Every debugLog() / debugLogPrevious() emits EXACTLY ONE Add to Variable
-// and its WFInput is a magic-variable token linked to the preceding action.
+// Every debugLog() / debugLogPrevious() emits exactly one raw Add to Variable
+// linked to the preceding action. An optional literal label adds separate
+// scalar metadata; it never wraps or replaces the native logged value.
 // An explicit message is not accepted: the user must emit it themselves
 // as a normal action if desired; logging does not synthesize Text actions.
 func resolveDebugMacroCall(name string, params map[string]any, prior []ShortcutAction, outputUUID, outputName string) ([]ShortcutAction, error) {
 	if name == "debugLog" || name == "debugLogPrevious" {
 		if value, passed := params["WFInput"]; passed && value != nil {
-			return nil, fmt.Errorf("%s() accepts only withDates/showLogs flags; it captures the previous native output", name)
+			return nil, fmt.Errorf("%s() accepts only display flags and a literal label; it captures the previous native output", name)
 		}
 		if _, err := debugLiteralFlag(params, "WFDebugWithDates", name); err != nil {
 			return nil, err
@@ -482,12 +483,16 @@ func resolveDebugMacroCall(name string, params map[string]any, prior []ShortcutA
 		if _, err := debugLiteralFlag(params, "WFDebugShowLogsAsText", name); err != nil {
 			return nil, err
 		}
+		_, labeled, labelErr := debugLiteralLogLabel(params, name)
+		if labelErr != nil {
+			return nil, labelErr
+		}
 		ref, err := captureDebugPreviousInput(prior)
 		if err != nil {
 			return nil, err
 		}
-		flags := map[string]any{"WFInput": ref}
-		for _, k := range []string{"WFDebugWithDates", "WFDebugShowLogs", "WFDebugShowLogsAsText"} {
+		flags := map[string]any{"WFInput": ref, debugLabelContextKey: labeled || debugPriorLabels(prior)}
+		for _, k := range []string{"WFDebugWithDates", "WFDebugShowLogs", "WFDebugShowLogsAsText", "WFDebugLogLabel"} {
 			if value, exists := params[k]; exists {
 				flags[k] = value
 			}
@@ -521,6 +526,14 @@ func resolveDebugMacroCall(name string, params map[string]any, prior []ShortcutA
 		}
 		return buildDebugStdlibActions("debugTraceEvent", cloned, outputUUID, outputName)
 	}
+	if (name == "debugShowLogs" || name == "debugFinish" || name == "debugClearLogs") && debugPriorLabels(prior) {
+		cloned := make(map[string]any, len(params)+1)
+		for key, value := range params {
+			cloned[key] = value
+		}
+		cloned[debugLabelContextKey] = true
+		params = cloned
+	}
 	return buildDebugStdlibActions(name, params, outputUUID, outputName)
 }
 
@@ -551,13 +564,15 @@ func registerDebugStdlibActions() {
 	registerDebugExportMacro()
 	actions["debugLog"] = &actionDefinition{
 		identifier:  "appendvariable",
-		doc:         selfDoc{title: "Debug Log", description: "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.", category: "debug"},
+		doc:         selfDoc{title: "Debug Log", description: "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows. A literal label stores separate scalar metadata and names preview copies; raw objects stay unchanged.", category: "debug"},
 		outputType:  String,
 		emittedKeys: []string{"WFVariableName"},
+		makeParams:  debugLogMacroParameters,
 		parameters: []parameterDefinition{
 			{name: "withDates", key: "WFDebugWithDates", validType: Bool, optional: true, defaultValue: false},
 			{name: "showLogs", key: "WFDebugShowLogs", validType: Bool, optional: true, defaultValue: false},
 			{name: "showLogsAsText", key: "WFDebugShowLogsAsText", validType: Bool, optional: true, defaultValue: false},
+			{name: "label", key: "WFDebugLogLabel", validType: String, optional: true},
 		},
 	}
 	actions["debugShowLogs"] = &actionDefinition{
@@ -608,12 +623,14 @@ func registerDebugStdlibActions() {
 	}
 	actions["debugLogPrevious"] = &actionDefinition{
 		identifier: "appendvariable",
-		doc:        selfDoc{title: "Log Previous Result", description: "Alias for debugLog with optional withDates/showLogs/showLogsAsText.", category: "debug"},
+		doc:        selfDoc{title: "Log Previous Result", description: "Alias for debugLog with optional withDates/showLogs/showLogsAsText and a literal per-entry label.", category: "debug"},
 		outputType: String,
+		makeParams: debugLogMacroParameters,
 		parameters: []parameterDefinition{
 			{name: "withDates", key: "WFDebugWithDates", validType: Bool, optional: true, defaultValue: false},
 			{name: "showLogs", key: "WFDebugShowLogs", validType: Bool, optional: true, defaultValue: false},
 			{name: "showLogsAsText", key: "WFDebugShowLogsAsText", validType: Bool, optional: true, defaultValue: false},
+			{name: "label", key: "WFDebugLogLabel", validType: String, optional: true},
 		},
 	}
 	actions["debugTraceEvent"] = &actionDefinition{
@@ -742,6 +759,10 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		if showLogs && showLogsAsText {
 			return nil, fmt.Errorf("debugLog: showLogs and showLogsAsText are alternative display modes; select only one")
 		}
+		label, labeled, err := debugLiteralLogLabel(params, name)
+		if err != nil {
+			return nil, err
+		}
 		appendParams := map[string]any{
 			"WFVariableName": debugLogVariableName,
 			"WFInput":        value,
@@ -767,16 +788,27 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			}))
 		}
 		result = append(result, add("appendvariable", appendParams))
+		if labeled {
+			result = append(result, debugLabelMetadataActions(value, label)...)
+		}
 		if showLogs || showLogsAsText {
 			preview, err := buildDebugStdlibActions("debugShowLogs",
 				map[string]any{
 					"WFDebugWithDates":      withDates,
 					"WFDebugShowLogsAsText": showLogsAsText,
+					debugLabelContextKey:    labeled || params[debugLabelContextKey] == true,
 				}, "", "")
 			if err != nil {
 				return nil, err
 			}
 			result = append(result, preview...)
+		}
+		if labeled {
+			// Metadata and preview must not become the implicit output observed
+			// by the next source action. Restore the exact original native token.
+			result = append(result, add("getvariable", map[string]any{
+				"WFVariable": value, "UUID": strings.ToUpper(uuid.NewString()),
+			}))
 		}
 		return result, nil
 
@@ -900,6 +932,9 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		if err != nil {
 			return nil, err
 		}
+		if params[debugLabelContextKey] == true {
+			return buildDebugLabeledPreview(withDates, asText, resultUUID, resultName)
+		}
 		var body []ShortcutAction
 		var input any
 		if asText && !withDates {
@@ -960,12 +995,16 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		// Empty Text is one native item, so seeding the buffer with it creates a
 		// spurious export entry. Match the independently verified native clear:
 		// Nothing followed by Set Variable with its input explicitly absent.
-		return []ShortcutAction{
+		result := []ShortcutAction{
 			add("nothing", map[string]any{"UUID": strings.ToUpper(uuid.NewString())}),
 			add("setvariable", map[string]any{
 				"WFVariableName": debugLogVariableName,
 			}),
-		}, nil
+		}
+		if params[debugLabelContextKey] == true {
+			result = append(result, debugLabelClearActions()...)
+		}
+		return result, nil
 
 	case "debugTraceEvent":
 		stage, _ := params["WFDebugTraceStage"].(string)
