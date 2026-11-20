@@ -153,3 +153,7 @@ RP11 follow-up: independent review found unbound mutable initializer/store input
 ## 2026-11-20 — U01 repository declaration boundary component
 
 Actual clean-source production passed 135 outer / 14 child named tests on 6bdddd6d5ea3012b806ae82239cd7a7fe49e2138. All 26 declaration inputs were reconciled with four immutable baselines: 24 unchanged since the continuation and two reviewed one-token label corrections. Fifty producer source blobs and the three original child artifacts were independently verified. U01 receives one local repository record only; final 179-row closure remains open. See [the original evidence audit](docs/language-v2/p15-u01-upstream-boundary-20261120.md).
+
+## 2026-11-20 U01 original-object hardening
+
+Clean 06c5c2fa completed 140 outer and 19 actual root events after a real four-operation isolated replacement-ref counterexample. Fifty source blobs and three original artifact references independently audited. Repository U01 component only; all final/native/other-ID gates remain unchanged. See docs/language-v2/p15-u01-original-object-hardening-20261120.md.

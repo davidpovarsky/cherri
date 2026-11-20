@@ -1,0 +1,264 @@
+{
+  "formatVersion": 1,
+  "scope": "U01 repository component only; final closure remains false",
+  "sourceCommit": "06c5c2fa58183dc8ca3cad923eccc8c854eeed54",
+  "baselineCommit": "8cb4c316cdefe2b6790595e0449d071d415a3dff",
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 27459,
+    "sha256": "b128cd09d11cbf4004b5f636081ba8bca8fcbaf54ebbeb9303c6f55c15b32dc5"
+  },
+  "files": [
+    {
+      "path": "independent-audit-06c5c2fa.json",
+      "bytes": 6542,
+      "sha256": "23f6ecfc24d3e6ad08c807fd59c25de92f0758f101a27f0ce1425caf345d79a2"
+    },
+    {
+      "path": "independent-audit-06c5c2fa.py",
+      "bytes": 10428,
+      "sha256": "b70c782b53b8473fee61727289712b2fe0b48aa8c856fab5877c985189301310"
+    },
+    {
+      "path": "producer-06c5c2fa/child/u01-269887211/u01-go.jsonl",
+      "bytes": 36374,
+      "sha256": "d3f40aca2084bd63827ab2b4b059b627a24faef1a7cfd67a4a35469bd17e501a"
+    },
+    {
+      "path": "producer-06c5c2fa/child/u01-269887211/u01-process.json",
+      "bytes": 10478,
+      "sha256": "db6898bac872954776c2062e5fe2ee068e60a1c09b8daa0e8f71260712c01fca"
+    },
+    {
+      "path": "producer-06c5c2fa/child/u01-269887211/u01-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "producer-06c5c2fa/process-original.json",
+      "bytes": 870,
+      "sha256": "bd25f62972bfc2c1ab2f1bc9457a6b72a7016f9ae3437ca0fcb46539891536df"
+    },
+    {
+      "path": "producer-06c5c2fa/stderr-original.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "producer-06c5c2fa/stdout-original.jsonl",
+      "bytes": 161493,
+      "sha256": "dac8614f0a466225dad83942d0842cf847ab637d821b997bf5a12cd88893bf38"
+    },
+    {
+      "path": "replacement-baseline-8cb4c316/go-test-original.jsonl",
+      "bytes": 5546,
+      "sha256": "f579c1a9a17c3ec471f6dcbb12b1b133e7c9b67ddc82fd29f76059ac7e59c0f9"
+    },
+    {
+      "path": "replacement-baseline-8cb4c316/process-original.json",
+      "bytes": 876,
+      "sha256": "ff12291b5b3e02c2d784e5938f4cd7677210ab309a6b7ac629cc4107e3dcde15"
+    }
+  ],
+  "audit": {
+    "status": "VERIFIED_U01_COMPONENT_ONLY",
+    "audited_at_utc": "2026-11-20T03:48:33.465315+00:00",
+    "source_sha": "06c5c2fa58183dc8ca3cad923eccc8c854eeed54",
+    "component": {
+      "source": "dc32dbb68b34078cefd3941415febc0d468c5390",
+      "named_passes": 14,
+      "raw_bytes": 32543,
+      "raw_sha256": "57c0f5147e54834e7624278226b8225950d3eb8e17d3a835a973699a80f3d12f"
+    },
+    "outer": {
+      "source": "06c5c2fa58183dc8ca3cad923eccc8c854eeed54",
+      "named_passes": 140,
+      "raw_bytes": 161493,
+      "raw_sha256": "dac8614f0a466225dad83942d0842cf847ab637d821b997bf5a12cd88893bf38"
+    },
+    "inner": {
+      "named_passes": 19,
+      "raw_bytes": 36374,
+      "raw_sha256": "d3f40aca2084bd63827ab2b4b059b627a24faef1a7cfd67a4a35469bd17e501a",
+      "source_files_verified": 50,
+      "artifact_references_verified": 3
+    },
+    "replacement_ref_causal_baseline": {
+      "source": "8cb4c316cdefe2b6790595e0449d071d415a3dff",
+      "raw_sha256": "f579c1a9a17c3ec471f6dcbb12b1b133e7c9b67ddc82fd29f76059ac7e59c0f9",
+      "failed_named_events": 5,
+      "actual_isolated_operations": 4,
+      "no_shared_repository_replacements": true
+    },
+    "matrix": {
+      "upstream_identical": 6,
+      "language_identical": 6,
+      "unchanged_since_continuation": 24,
+      "reviewed_corrections": 2
+    },
+    "declarations": [
+      {
+        "path": "actions/a11y.cherri",
+        "bytes": 4487,
+        "sha256": "0bcf29095f6d0715ae9df16b39ec5e471fa1b6bfe5e6973de6b20c278b355df2"
+      },
+      {
+        "path": "actions/basic.cherri",
+        "bytes": 7870,
+        "sha256": "8d56aa01e688e3abbc390931778ac6471596f1dcd35628034a597369366f382a"
+      },
+      {
+        "path": "actions/calendar.cherri",
+        "bytes": 10114,
+        "sha256": "3b81cc3488a00f44b1a9d48c7266fa6c2db7dc1e1b1c48fdcbf546aaa04bee24"
+      },
+      {
+        "path": "actions/contacts.cherri",
+        "bytes": 2735,
+        "sha256": "fae6c98274c721d0f1ccc23294eb202773b86a9d39f13e8bd07b34ca641b67da"
+      },
+      {
+        "path": "actions/crypto.cherri",
+        "bytes": 890,
+        "sha256": "06bcf460375f0c549289573a20175a6672db962aad979289272f6dc26ad50025"
+      },
+      {
+        "path": "actions/device.cherri",
+        "bytes": 4428,
+        "sha256": "bb332dfd9acdf50a4f78224368bd452186fb16a067ffb3fabd6cdbdf37c206e2"
+      },
+      {
+        "path": "actions/documents.cherri",
+        "bytes": 6330,
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+      },
+      {
+        "path": "actions/dropbox.cherri",
+        "bytes": 640,
+        "sha256": "52c00b74ae7ac9e0610aa1038ec76b4447bdd080817f082999ce175a23038ce4"
+      },
+      {
+        "path": "actions/images.cherri",
+        "bytes": 7696,
+        "sha256": "74ff5f2fedb7c66d291070b3f29ec4e2c10498c494dd82915582317ea62518ec"
+      },
+      {
+        "path": "actions/intelligence.cherri",
+        "bytes": 4841,
+        "sha256": "40836eb5d8a11c188e333e565221b0b2648bec12727f42f6a54299785ef00312"
+      },
+      {
+        "path": "actions/location.cherri",
+        "bytes": 5374,
+        "sha256": "69a7f25919bf218537a7c726afc952284ae6aafbdc4c69106b47e2f5668ce174"
+      },
+      {
+        "path": "actions/mac.cherri",
+        "bytes": 4179,
+        "sha256": "477f82ecf0fc547fb925f8fad520decf7ea221241b3e0f3c488e2d4bd9b72eaf"
+      },
+      {
+        "path": "actions/math.cherri",
+        "bytes": 1909,
+        "sha256": "c8bd38d21c92a22b9b0e544f3230aacc3333f7819db36f7c49dab8a15e034f92"
+      },
+      {
+        "path": "actions/media.cherri",
+        "bytes": 5861,
+        "sha256": "bbfd770c299f2c92c14d357b790ee0f88e0729a5a76a3d1bb642e60b1293d8e6"
+      },
+      {
+        "path": "actions/music.cherri",
+        "bytes": 3790,
+        "sha256": "079161a59dbe287bd95410a74a2afc9c253e7fa4717b30a82fbe735ff94666a1"
+      },
+      {
+        "path": "actions/network.cherri",
+        "bytes": 3361,
+        "sha256": "7202e62939624edbc6277742278aa2cbd25cc81ac53de5a3486ede20d977ee7b"
+      },
+      {
+        "path": "actions/pdf.cherri",
+        "bytes": 1093,
+        "sha256": "1886ba75837eb102db51a8024df215ef4279701abc235c8f4904e68130e3e049"
+      },
+      {
+        "path": "actions/photos.cherri",
+        "bytes": 1965,
+        "sha256": "35dde208e9e786899ee61826d9076517e50158f567a8a3107ed7fca8083e7b1e"
+      },
+      {
+        "path": "actions/settings.cherri",
+        "bytes": 2773,
+        "sha256": "7594d04c324b53c5cb419811b61057f66a7c3f4a30c0505951694919b2e01fd4"
+      },
+      {
+        "path": "actions/sharing.cherri",
+        "bytes": 2183,
+        "sha256": "37d759894f084a05244af3591d72071965f3e0efef5ab359775493aa13cb012d"
+      },
+      {
+        "path": "actions/shortcuts.cherri",
+        "bytes": 1006,
+        "sha256": "6e35e4573a233d9b80970a69540b9846cde9b45b6a5e7bcf0adbfad7d93f74dc"
+      },
+      {
+        "path": "actions/storage.cherri",
+        "bytes": 768,
+        "sha256": "15dbcdeb85bd8d864b22a63cdc5a677cee4d50656e4a7172b0cf3d194857e76e"
+      },
+      {
+        "path": "actions/text.cherri",
+        "bytes": 4863,
+        "sha256": "470e7f9544aae83395966dd09ab5bf1d843bd34ff0449b472349389299fe4c6a"
+      },
+      {
+        "path": "actions/translation.cherri",
+        "bytes": 609,
+        "sha256": "0815387c6896e47a4560057122895d3798bc36966f042f0f22fd5578ae9af4ec"
+      },
+      {
+        "path": "actions/web.cherri",
+        "bytes": 5175,
+        "sha256": "96c52949f4f3b6549c9df607c08961b6a710b0af7697d72e6dda08a4f33fb711"
+      },
+      {
+        "path": "stdfunc.cherri",
+        "bytes": 606,
+        "sha256": "6a5586d0d5f9283472a4c2a286437db74888c2ea6970e1beaf202ad218b78cab"
+      }
+    ],
+    "local_report": {
+      "timestamp": "2026-11-20T03:45:14Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "U01",
+          "group": "upstream",
+          "requirement": "Preserve upstream declaration files when build-time adapters suffice",
+          "test_level": "repository",
+          "executed_levels": [
+            "repository"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "immutable_contracts": {
+      "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    "closure_complete": false,
+    "scope": "U01 repository-only actual component; no inherited B01/BRG01, native or final release credit."
+  }
+}
