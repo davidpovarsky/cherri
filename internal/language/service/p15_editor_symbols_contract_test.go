@@ -321,3 +321,107 @@ func TestP15E03UnusedSameScopeRenameCollision(t *testing.T) {
 		t.Fatalf("unused same-scope duplicate accepted: %v %+v %q", err, edits, updated)
 	}
 }
+
+func TestP15E03ParameterLabelAndScopeControls(t *testing.T) {
+	t.Run("rename_from_own_label", func(t *testing.T) {
+		const uri = "file:///p15-e03-label-origin.cherri"
+		const marked = "show(greet(\u00abperson\u00bb: \"x\"))\nfunction greet(\u00abperson\u00bb: Text) -> Text { return \u00abperson\u00bb }\n"
+		code, expected, offsets := p15E03MarkedSource(marked, "person", "guest")
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		p15E03Healthy(t, svc, uri)
+		pos := p15EditorExpectedPosition(code, offsets[0])
+		actual, edits, err := svc.Rename(uri, pos.Line, pos.Column, "guest")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := p15E03RenameError(code, uri, "person", "guest", actual, expected, edits, offsets); err != nil {
+			t.Fatal(err)
+		}
+		svc.ChangeDocument(uri, 2, actual)
+		p15E03Healthy(t, svc, uri)
+	})
+	t.Run("parameter_external_label", func(t *testing.T) {
+		const uri = "file:///p15-e03-external-label.cherri"
+		const code = "function greet(_person: Text) -> Text { return _person }\nshow(greet(person: \"x\"))\n"
+		const expected = "function greet(_guest: Text) -> Text { return _guest }\nshow(greet(guest: \"x\"))\n"
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		p15E03Healthy(t, svc, uri)
+		actual, edits, err := svc.Rename(uri, 1, 16, "_guest")
+		if err != nil || actual != expected || len(edits) != 3 {
+			t.Fatalf("internal identifier and external label differ: %v %+v %q", err, edits, actual)
+		}
+		for _, edit := range edits {
+			if err := p15EditorSpanError(code, uri, edit.Span); err != nil {
+				t.Fatal(err)
+			}
+		}
+		svc.ChangeDocument(uri, 2, actual)
+		p15E03Healthy(t, svc, uri)
+	})
+	t.Run("parameter_label_collision", func(t *testing.T) {
+		const uri = "file:///p15-e03-parameter-collision.cherri"
+		const code = "function greet(person: Text, other: Text) -> Text { return person }\nshow(greet(\"x\", other:\"y\"))\n"
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		p15E03Healthy(t, svc, uri)
+		if actual, edits, err := svc.Rename(uri, 1, 16, "_other"); err == nil || actual != "" || len(edits) != 0 {
+			t.Fatalf("duplicate external label accepted: %v %+v", err, edits)
+		}
+	})
+	t.Run("sibling_scopes_may_reuse_name", func(t *testing.T) {
+		const uri = "file:///p15-e03-sibling-scopes.cherri"
+		const marked = "if true { let \u00abfirst\u00bb=1; show(\u00abfirst\u00bb) }\nif true { let second=2; show(second) }\n"
+		code, expected, offsets := p15E03MarkedSource(marked, "first", "second")
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		p15E03Healthy(t, svc, uri)
+		pos := p15EditorExpectedPosition(code, offsets[1])
+		actual, edits, err := svc.Rename(uri, pos.Line, pos.Column, "second")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := p15E03RenameError(code, uri, "first", "second", actual, expected, edits, offsets); err != nil {
+			t.Fatal(err)
+		}
+		svc.ChangeDocument(uri, 2, actual)
+		p15E03Healthy(t, svc, uri)
+	})
+	t.Run("computed_dictionary_key_is_a_reference", func(t *testing.T) {
+		const uri = "file:///p15-e03-computed-key.cherri"
+		const marked = "let \u00abkey\u00bb=\"item\"\nlet data={\u00abkey\u00bb: 1}\nshow(data)\n"
+		code, expected, offsets := p15E03MarkedSource(marked, "key", "field")
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		p15E03Healthy(t, svc, uri)
+		pos := p15EditorExpectedPosition(code, offsets[1])
+		actual, edits, err := svc.Rename(uri, pos.Line, pos.Column, "field")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := p15E03RenameError(code, uri, "key", "field", actual, expected, edits, offsets); err != nil {
+			t.Fatal(err)
+		}
+		svc.ChangeDocument(uri, 2, actual)
+		p15E03Healthy(t, svc, uri)
+	})
+	t.Run("later_parameter_default_uses_renamed_owner", func(t *testing.T) {
+		const uri = "file:///p15-e03-default-reference.cherri"
+		const marked = "function choose(\u00abfirst\u00bb: Text = \"x\", second: Text = \u00abfirst\u00bb) -> Text { return second }\nshow(choose(\u00abfirst\u00bb: \"y\"))\n"
+		code, expected, offsets := p15E03MarkedSource(marked, "first", "initial")
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		p15E03Healthy(t, svc, uri)
+		pos := p15EditorExpectedPosition(code, offsets[1])
+		actual, edits, err := svc.Rename(uri, pos.Line, pos.Column, "initial")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := p15E03RenameError(code, uri, "first", "initial", actual, expected, edits, offsets); err != nil {
+			t.Fatal(err)
+		}
+		svc.ChangeDocument(uri, 2, actual)
+		p15E03Healthy(t, svc, uri)
+	})
+}

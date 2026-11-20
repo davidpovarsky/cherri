@@ -351,22 +351,24 @@ func (s *Service) Hover(uri string, line, col int) *HoverResult {
 	s.mu.RLock()
 	doc, ok := s.documents[uri]
 	s.mu.RUnlock()
-
 	if !ok {
 		return nil
 	}
-
-	lines := strings.Split(doc.File.Content, "\n")
-	if line-1 < 0 || line-1 >= len(lines) {
+	ref, declarations, _, found := semanticIdentifierAt(doc, line, col)
+	if !found {
 		return nil
 	}
-	lineText := lines[line-1]
-
-	word, start, end, foundWord := extractWordAtRuneCol(lineText, col)
-	if !foundWord {
-		return nil
+	word := ref.name
+	if declaration := resolveIdentifierReference(declarations, ref); declaration != nil {
+		if fn := authoredFunctionForDeclaration(doc, declaration); fn != nil {
+			var params []string
+			for _, parameter := range fn.Parameters {
+				params = append(params, parameter.Name)
+			}
+			return &HoverResult{Contents: fmt.Sprintf("\x60\x60\x60cherri\nfunction %s(%s)\n\x60\x60\x60", fn.Name, strings.Join(params, ", ")), Span: ref.span}
+		}
+		return &HoverResult{Contents: fmt.Sprintf("\x60\x60\x60cherri\n(variable) %s\n\x60\x60\x60", declaration.name), Span: ref.span}
 	}
-
 	if a, found := s.documentRegistry(doc).LookupAction(word); found {
 		var md strings.Builder
 		fmt.Fprintf(&md, "### %s\n\n", a.CallableName)
@@ -391,34 +393,12 @@ func (s *Service) Hover(uri string, line, col int) *HoverResult {
 			fmt.Fprintf(&md, "\n**Returns:** `%s`\n", output)
 		}
 
-		span := doc.File.SpanForOffsets(byteOffsetAtLineCol(doc.File, line, start+1), byteOffsetAtLineCol(doc.File, line, end+1))
+		span := ref.span
 
 		return &HoverResult{
 			Contents: md.String(),
 			Span:     span,
 		}
-	}
-
-	if doc.Program != nil {
-		for _, decl := range doc.Program.Declarations {
-			if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Name == word {
-				var params []string
-				for _, p := range fn.Parameters {
-					params = append(params, p.Name)
-				}
-				span := doc.File.SpanForOffsets(byteOffsetAtLineCol(doc.File, line, start+1), byteOffsetAtLineCol(doc.File, line, end+1))
-				return &HoverResult{
-					Contents: fmt.Sprintf("```cherri\nfunction %s(%s)\n```", fn.Name, strings.Join(params, ", ")),
-					Span:     span,
-				}
-			}
-		}
-		declarations, _ := collectScopesAndRefs(doc.File, doc.Program)
-		if declaration := resolveDeclForRef(declarations, word, byteOffsetAtLineCol(doc.File, line, col)); declaration != nil && !declaration.isFunc {
-			span := doc.File.SpanForOffsets(byteOffsetAtLineCol(doc.File, line, start+1), byteOffsetAtLineCol(doc.File, line, end+1))
-			return &HoverResult{Contents: fmt.Sprintf("```cherri\n(variable) %s\n```", word), Span: span}
-		}
-
 	}
 
 	return nil
@@ -429,18 +409,23 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 	s.mu.RLock()
 	doc, ok := s.documents[uri]
 	s.mu.RUnlock()
-
-	if !ok {
+	if !ok || !validDocumentPosition(doc, line, col) {
 		return nil
 	}
-
 	_, context := enumCompletionTokens(doc.File, byteOffsetAtLineCol(doc.File, line, col))
 	callIdent := context.name
 	if callIdent == "" {
 		return nil
 	}
 	activeParam := len(context.arguments) - 1
-
+	declarations, _ := collectScopesAndRefs(doc.File, doc.Program)
+	if declaration := resolveDeclForRef(declarations, callIdent, context.calleeSpan.Start.ByteOffset); declaration != nil {
+		fn := authoredFunctionForDeclaration(doc, declaration)
+		if fn == nil {
+			return nil
+		}
+		return functionSignature(doc, fn, context)
+	}
 	if act, found := s.documentRegistry(doc).LookupAction(callIdent); found {
 		params := make([]string, len(act.Parameters))
 		parameters := make([]enumCompletionParameter, len(act.Parameters))
@@ -477,30 +462,6 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 		}
 	}
 
-	if doc.Program != nil {
-		for _, decl := range doc.Program.Declarations {
-			if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Name == callIdent {
-				params := make([]string, len(fn.Parameters))
-				parameters := make([]enumCompletionParameter, len(fn.Parameters))
-				for i, p := range fn.Parameters {
-					params[i] = parameterSignature(doc.File, p)
-					parameters[i] = enumCompletionParameter{name: p.Name, label: strings.TrimPrefix(p.Name, "_")}
-				}
-				if index, _ := activeCallParameter(parameters, 0, context); index >= 0 {
-					activeParam = index
-				}
-				if activeParam >= len(params) && len(params) > 0 {
-					activeParam = len(params) - 1
-				}
-				return &SignatureHelpResult{
-					Label:           fmt.Sprintf("function %s(%s) -> %s", fn.Name, strings.Join(params, ", "), annotationText(doc.File, fn.ReturnType, "Void")),
-					Parameters:      params,
-					ActiveParameter: activeParam,
-				}
-			}
-		}
-	}
-
 	return nil
 }
 
@@ -510,11 +471,15 @@ type scopedDeclaration struct {
 	scopeSpan         source.Span // enclosing lexical scope span
 	isFunc            bool
 	scopeEndExclusive bool
+	ownerSpan         source.Span // complete lexical scope, independent of visibility start
+	parameter         bool
 }
 
 type identRef struct {
-	name string
-	span source.Span
+	name        string
+	span        source.Span
+	declaration *source.Span // explicit owner for a user-function argument label
+	label       bool
 }
 
 func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDeclaration, []identRef) {
@@ -551,6 +516,8 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 
 	var decls []scopedDeclaration
 	var refs []identRef
+	var calls []*syntax.CallExpr
+	functions := map[int]*syntax.FunctionDecl{}
 
 	var walkExpr func(expr syntax.Expression)
 	var walkStmt func(stmt syntax.Statement, currentScope source.Span)
@@ -574,6 +541,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 			walkExpr(e.Left)
 			walkExpr(e.Right)
 		case *syntax.CallExpr:
+			calls = append(calls, e)
 			walkExpr(e.Callee)
 			if e.PrimaryArg != nil {
 				walkExpr(e.PrimaryArg)
@@ -623,6 +591,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 			declSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.Name)
 			decls = append(decls, scopedDeclaration{
 				name:              s.Name,
+				ownerSpan:         currentScope,
 				declSpan:          declSpan,
 				scopeSpan:         file.SpanForOffsets(s.Span.End.ByteOffset, currentScope.End.ByteOffset),
 				scopeEndExclusive: currentScope.Start.ByteOffset != progScope.Start.ByteOffset || currentScope.End.ByteOffset != progScope.End.ByteOffset,
@@ -657,6 +626,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 					idxSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.IndexVar)
 					decls = append(decls, scopedDeclaration{
 						name:              s.IndexVar,
+						ownerSpan:         s.BodyBlock.Span,
 						declSpan:          idxSpan,
 						scopeSpan:         s.BodyBlock.Span,
 						scopeEndExclusive: true,
@@ -667,6 +637,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 					itSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.ItemVar)
 					decls = append(decls, scopedDeclaration{
 						name:              s.ItemVar,
+						ownerSpan:         s.BodyBlock.Span,
 						declSpan:          itSpan,
 						scopeSpan:         s.BodyBlock.Span,
 						scopeEndExclusive: true,
@@ -682,6 +653,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 					idxSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.IndexVar)
 					decls = append(decls, scopedDeclaration{
 						name:              s.IndexVar,
+						ownerSpan:         s.BodyBlock.Span,
 						declSpan:          idxSpan,
 						scopeSpan:         s.BodyBlock.Span,
 						scopeEndExclusive: true,
@@ -704,8 +676,10 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 		switch d := decl.(type) {
 		case *syntax.FunctionDecl:
 			fnSpan := findIdentSpanAfter(d.Span.Start.ByteOffset, d.Name)
+			functions[fnSpan.Start.ByteOffset] = d
 			decls = append(decls, scopedDeclaration{
 				name:      d.Name,
+				ownerSpan: progScope,
 				declSpan:  fnSpan,
 				scopeSpan: progScope,
 				isFunc:    true,
@@ -724,7 +698,8 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 					visibleAfter = p.DefaultExpr.NodeSpan().End.ByteOffset
 				}
 				decls = append(decls, scopedDeclaration{
-					name:              p.Name,
+					name:      p.Name,
+					ownerSpan: bodyScope, parameter: true,
 					declSpan:          p.Span,
 					scopeSpan:         file.SpanForOffsets(visibleAfter, bodyScope.End.ByteOffset),
 					scopeEndExclusive: d.Body != nil,
@@ -741,6 +716,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 			sdSpan := findIdentSpanAfter(d.Span.Start.ByteOffset, d.Name)
 			decls = append(decls, scopedDeclaration{
 				name:      d.Name,
+				ownerSpan: progScope,
 				declSpan:  sdSpan,
 				scopeSpan: progScope,
 			})
@@ -752,6 +728,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 		walkStmt(stmt, progScope)
 	}
 
+	refs = appendParameterLabelReferences(file, decls, refs, functions, calls)
 	return decls, refs
 }
 
@@ -809,23 +786,14 @@ func (s *Service) Definition(uri string, line, col int) *source.Span {
 	s.mu.RLock()
 	doc, ok := s.documents[uri]
 	s.mu.RUnlock()
-
-	if !ok || doc.File == nil || doc.Program == nil {
+	if !ok {
 		return nil
 	}
-
-	lines := strings.Split(doc.File.Content, "\n")
-	if line-1 < 0 || line-1 >= len(lines) {
-		return nil
-	}
-	word, startRune, _, found := extractWordAtRuneCol(lines[line-1], col)
+	ref, declarations, _, found := semanticIdentifierAt(doc, line, col)
 	if !found {
 		return nil
 	}
-
-	targetOffset := byteOffsetAtLineCol(doc.File, line, startRune+1)
-	decls, _ := collectScopesAndRefs(doc.File, doc.Program)
-	resolved := resolveDeclForRef(decls, word, targetOffset)
+	resolved := resolveIdentifierReference(declarations, ref)
 	if resolved == nil {
 		return nil
 	}
@@ -874,37 +842,35 @@ func (s *Service) Rename(uri string, line, col int, newName string) (string, []T
 		return "", nil, fmt.Errorf("document not found: %s", uri)
 	}
 
-	lines := strings.Split(doc.File.Content, "\n")
-	if line-1 < 0 || line-1 >= len(lines) {
-		return "", nil, fmt.Errorf("position %d:%d out of range", line, col)
-	}
-	word, startRune, _, found := extractWordAtRuneCol(lines[line-1], col)
+	ref, decls, refs, found := semanticIdentifierAt(doc, line, col)
 	if !found {
-		return "", nil, fmt.Errorf("no identifier at %d:%d", line, col)
+		return "", nil, fmt.Errorf("no semantic identifier at %d:%d", line, col)
 	}
-
-	targetOffset := byteOffsetAtLineCol(doc.File, line, startRune+1)
-	decls, refs := collectScopesAndRefs(doc.File, doc.Program)
-	targetDecl := resolveDeclForRef(decls, word, targetOffset)
+	word := ref.name
+	targetDecl := resolveIdentifierReference(decls, ref)
 	if targetDecl == nil {
 		return "", nil, fmt.Errorf("symbol %q is not a renameable local or function declaration", word)
+	}
+	if err := validateRenameIdentity(decls, refs, targetDecl, newName); err != nil {
+		return "", nil, err
 	}
 
 	seenOffsets := make(map[int]bool)
 	var edits []TextEdit
 	for _, ref := range refs {
-		if ref.name != word {
-			continue
-		}
 		if seenOffsets[ref.span.Start.ByteOffset] {
 			continue
 		}
-		resolved := resolveDeclForRef(decls, ref.name, ref.span.Start.ByteOffset)
-		if resolved != nil && resolved.declSpan.Start.ByteOffset == targetDecl.declSpan.Start.ByteOffset {
+		resolved := resolveIdentifierReference(decls, ref)
+		if sameDeclaration(resolved, targetDecl) {
 			seenOffsets[ref.span.Start.ByteOffset] = true
+			replacement := newName
+			if ref.label {
+				replacement = strings.TrimPrefix(newName, "_")
+			}
 			edits = append(edits, TextEdit{
 				Span:    ref.span,
-				NewText: newName,
+				NewText: replacement,
 			})
 		}
 	}
