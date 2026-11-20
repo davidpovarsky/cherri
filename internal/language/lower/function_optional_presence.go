@@ -279,7 +279,7 @@ func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name strin
 		l.emitIfStart(group, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: supplied}, 4, "1", true)
 		l.optionalField(dictionary, valueKey, "")
 		l.emitIfElse(group)
-		defaultValue, err := l.lowerCallValue(fallback)
+		defaultValue, err := l.lowerFunctionDefaultValue(fallback, true)
 		if err != nil {
 			return "", "", err
 		}

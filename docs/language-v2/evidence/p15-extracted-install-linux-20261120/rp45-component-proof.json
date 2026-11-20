@@ -1,0 +1,121 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP45-integration",
+      "requirements": [
+        "RP45"
+      ],
+      "tier": "integration",
+      "implementation_sha": "9654056e2191b4867a314f1154a9e767ef0e851f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP45ExtractedInstallAndRollback",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "20m0s",
+        ".",
+        "-run",
+        "^(TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements|TestP15RP45IdentityValidationOrder|TestP15RP45ExtractedInstallAndRollback|TestP15RP45ExtractedRuntimePair|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals\nTestP15RP45InstalledBinaryOwnership/reconciled_wrong_source\nTestP15RP45InstalledBinaryOwnership/wrong_migration_role\nTestP15RP45InstalledBinaryOwnership/missing_migration_binary\nTestP15RP45InstalledBinaryOwnership/migration_checksum_before_execution\nTestP15RP45RuntimePackageOwnership/missing_companion\nTestP15RP45RuntimePackageOwnership/wrong_compiler_role\nTestP15RP45PackageIgnoresGitReplacements/commit\nTestP15RP45PackageIgnoresGitReplacements/tree\nTestP15RP45PackageIgnoresGitReplacements/blob\nTestP15RP45IdentityValidationOrder/missing_checksum_before_execution\nTestP15RP45IdentityValidationOrder/migration_wrapper_cannot_borrow_identity\nTestP15RP45IdentityValidationOrder/different_platform_metadata\nTestP15RP45ExtractedInstallAndRollback/offline_compatible_cache\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_compiler\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_migration\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_missing\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_wrong_role\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_backup\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_binary\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_source_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_checksum_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_documentation\nTestP15RP45ExtractedInstallAndRollback/successful_complete_update\nTestP15RP45ExtractedRuntimePair/exact_extracted_pair\nTestP15RP45ExtractedRuntimePair/actual_offline_bundled_install\nTestP15RP45ExtractedRuntimePair/shipped_compiler_and_migrator_execute\nTestP15RP45ExtractedRuntimePair/controlled_installation_self_test\nTestP15RP45GitIndexSourceIntegrity/assume-unchanged\nTestP15RP45GitIndexSourceIntegrity/skip-worktree\nTestP15RP45LockAcquisitionSignals/after_mkdir_HUP\nTestP15RP45LockAcquisitionSignals/after_mkdir_INT\nTestP15RP45LockAcquisitionSignals/after_mkdir_TERM\nTestP15RP45LockAcquisitionSignals/existing_owner_preserved",
+        "required_production_tests": "TestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals",
+        "scope": "Independent RP45 actual immutable source build after source/docs branches advance, both embedded tool roles/source/platforms and mandatory byte receipts, verified runtime ZIP extraction, offline cache, corrupt replacement rejection and real handled interruptions after filesystem operations. Six prior tool/receipt files plus exact docs survive failures; a complete update executes the installed migrator. Controlled download self-test is distinct from the real source-build route. No power-loss or concurrent-reader guarantee, published deployment, K01/K03/K04 or other linked acceptance is inferred."
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP45/actual-artifacts/rp45-2368037426/rp45-process.json",
+          "sha256": "6562f98729e169fc89bb4b07c0009887ef4124771fbdcce2830a065eba605df4"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP45/actual-artifacts/rp45-2368037426/rp45-go.jsonl",
+          "sha256": "d129968a2fcf10c4140eb595db47306273fa695c91cffa72962d345433ec1d54"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP45/actual-artifacts/rp45-2368037426/rp45-stderr.log",
+          "sha256": "9795f826d0c2aef18b95b0f6ee2c659e16c0e44712ae0ccddb872a834155b322"
+        }
+      ],
+      "detail": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls"
+    },
+    {
+      "evidence_id": "ev-local-RP45-skill-package",
+      "requirements": [
+        "RP45"
+      ],
+      "tier": "skill-package",
+      "implementation_sha": "9654056e2191b4867a314f1154a9e767ef0e851f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP45ExtractedRuntimePair",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "20m0s",
+        ".",
+        "-run",
+        "^(TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements|TestP15RP45IdentityValidationOrder|TestP15RP45ExtractedInstallAndRollback|TestP15RP45ExtractedRuntimePair|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals\nTestP15RP45InstalledBinaryOwnership/reconciled_wrong_source\nTestP15RP45InstalledBinaryOwnership/wrong_migration_role\nTestP15RP45InstalledBinaryOwnership/missing_migration_binary\nTestP15RP45InstalledBinaryOwnership/migration_checksum_before_execution\nTestP15RP45RuntimePackageOwnership/missing_companion\nTestP15RP45RuntimePackageOwnership/wrong_compiler_role\nTestP15RP45PackageIgnoresGitReplacements/commit\nTestP15RP45PackageIgnoresGitReplacements/tree\nTestP15RP45PackageIgnoresGitReplacements/blob\nTestP15RP45IdentityValidationOrder/missing_checksum_before_execution\nTestP15RP45IdentityValidationOrder/migration_wrapper_cannot_borrow_identity\nTestP15RP45IdentityValidationOrder/different_platform_metadata\nTestP15RP45ExtractedInstallAndRollback/offline_compatible_cache\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_compiler\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_migration\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_missing\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_wrong_role\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_backup\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_binary\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_source_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_checksum_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_documentation\nTestP15RP45ExtractedInstallAndRollback/successful_complete_update\nTestP15RP45ExtractedRuntimePair/exact_extracted_pair\nTestP15RP45ExtractedRuntimePair/actual_offline_bundled_install\nTestP15RP45ExtractedRuntimePair/shipped_compiler_and_migrator_execute\nTestP15RP45ExtractedRuntimePair/controlled_installation_self_test\nTestP15RP45GitIndexSourceIntegrity/assume-unchanged\nTestP15RP45GitIndexSourceIntegrity/skip-worktree\nTestP15RP45LockAcquisitionSignals/after_mkdir_HUP\nTestP15RP45LockAcquisitionSignals/after_mkdir_INT\nTestP15RP45LockAcquisitionSignals/after_mkdir_TERM\nTestP15RP45LockAcquisitionSignals/existing_owner_preserved",
+        "required_production_tests": "TestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals",
+        "scope": "Independent RP45 actual immutable source build after source/docs branches advance, both embedded tool roles/source/platforms and mandatory byte receipts, verified runtime ZIP extraction, offline cache, corrupt replacement rejection and real handled interruptions after filesystem operations. Six prior tool/receipt files plus exact docs survive failures; a complete update executes the installed migrator. Controlled download self-test is distinct from the real source-build route. No power-loss or concurrent-reader guarantee, published deployment, K01/K03/K04 or other linked acceptance is inferred."
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP45/actual-artifacts/rp45-2368037426/rp45-process.json",
+          "sha256": "6562f98729e169fc89bb4b07c0009887ef4124771fbdcce2830a065eba605df4"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP45/actual-artifacts/rp45-2368037426/rp45-go.jsonl",
+          "sha256": "d129968a2fcf10c4140eb595db47306273fa695c91cffa72962d345433ec1d54"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP45/actual-artifacts/rp45-2368037426/rp45-stderr.log",
+          "sha256": "9795f826d0c2aef18b95b0f6ee2c659e16c0e44712ae0ccddb872a834155b322"
+        }
+      ],
+      "detail": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T07:48:47Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "RP45",
+        "group": "repair",
+        "requirement": "Exact install and rollback",
+        "test_level": "skill-package+integration",
+        "executed_levels": [
+          "skill-package",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "RP45",
+  "scope": "Independent RP45 actual immutable source build after source/docs branches advance, both embedded tool roles/source/platforms and mandatory byte receipts, verified runtime ZIP extraction, offline cache, corrupt replacement rejection and real handled interruptions after filesystem operations. Six prior tool/receipt files plus exact docs survive failures; a complete update executes the installed migrator. Controlled download self-test is distinct from the real source-build route. No power-loss or concurrent-reader guarantee, published deployment, K01/K03/K04 or other linked acceptance is inferred.",
+  "source_sha": "9654056e2191b4867a314f1154a9e767ef0e851f"
+}

@@ -1,0 +1,121 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP42-cli",
+      "requirements": [
+        "RP42"
+      ],
+      "tier": "cli",
+      "implementation_sha": "9654056e2191b4867a314f1154a9e767ef0e851f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP42ExtractedInstallPublicCLI",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "8m0s",
+        ".",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags\nTestP15RP42ExtractedInstallPublicCLI/help_and_schema\nTestP15RP42ExtractedInstallPublicCLI/check_and_alias\nTestP15RP42ExtractedInstallPublicCLI/format_and_aliases\nTestP15RP42ExtractedInstallPublicCLI/compile_and_file_alias\nTestP15RP42ExtractedInstallPublicCLI/import_and_alias\nTestP15RP42ExtractedInstallPublicCLI/installed_migration_tool\nTestP15RP42MigrationDocumentedFlags/check\nTestP15RP42MigrationDocumentedFlags/write\nTestP15RP42MigrationDocumentedFlags/check/before_file\nTestP15RP42MigrationDocumentedFlags/check/documented_after_file\nTestP15RP42MigrationDocumentedFlags/write/before_file\nTestP15RP42MigrationDocumentedFlags/write/documented_after_file",
+        "required_production_tests": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags",
+        "scope": "Independent RP42 actual clean-source build, generated reference, committed disposable component tuple, ZIP create/verify/extract and source install. Public help/schema/check/format/compile/import aliases, native equality and installed cherri-migrate preview/check/write are executed. This component tuple is not the published release tuple; no CL01,K01,K03 or other linked requirement inherits credit."
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP42/actual-artifacts/rp42-3827982484/rp42-process.json",
+          "sha256": "d5530e8f20b4a77b28865b809effa8d548d4fd0a5452891c069570f0e88f241f"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP42/actual-artifacts/rp42-3827982484/rp42-go.jsonl",
+          "sha256": "6713a83ad28804ef6711f0f64309735733e88e3dd8a2fda09267fa316e7315cb"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP42/actual-artifacts/rp42-3827982484/rp42-stderr.log",
+          "sha256": "9795f826d0c2aef18b95b0f6ee2c659e16c0e44712ae0ccddb872a834155b322"
+        }
+      ],
+      "detail": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls"
+    },
+    {
+      "evidence_id": "ev-local-RP42-skill-package",
+      "requirements": [
+        "RP42"
+      ],
+      "tier": "skill-package",
+      "implementation_sha": "9654056e2191b4867a314f1154a9e767ef0e851f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP42ExtractedInstallPublicCLI",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "8m0s",
+        ".",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags\nTestP15RP42ExtractedInstallPublicCLI/help_and_schema\nTestP15RP42ExtractedInstallPublicCLI/check_and_alias\nTestP15RP42ExtractedInstallPublicCLI/format_and_aliases\nTestP15RP42ExtractedInstallPublicCLI/compile_and_file_alias\nTestP15RP42ExtractedInstallPublicCLI/import_and_alias\nTestP15RP42ExtractedInstallPublicCLI/installed_migration_tool\nTestP15RP42MigrationDocumentedFlags/check\nTestP15RP42MigrationDocumentedFlags/write\nTestP15RP42MigrationDocumentedFlags/check/before_file\nTestP15RP42MigrationDocumentedFlags/check/documented_after_file\nTestP15RP42MigrationDocumentedFlags/write/before_file\nTestP15RP42MigrationDocumentedFlags/write/documented_after_file",
+        "required_production_tests": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags",
+        "scope": "Independent RP42 actual clean-source build, generated reference, committed disposable component tuple, ZIP create/verify/extract and source install. Public help/schema/check/format/compile/import aliases, native equality and installed cherri-migrate preview/check/write are executed. This component tuple is not the published release tuple; no CL01,K01,K03 or other linked requirement inherits credit."
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP42/actual-artifacts/rp42-3827982484/rp42-process.json",
+          "sha256": "d5530e8f20b4a77b28865b809effa8d548d4fd0a5452891c069570f0e88f241f"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP42/actual-artifacts/rp42-3827982484/rp42-go.jsonl",
+          "sha256": "6713a83ad28804ef6711f0f64309735733e88e3dd8a2fda09267fa316e7315cb"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP42/actual-artifacts/rp42-3827982484/rp42-stderr.log",
+          "sha256": "9795f826d0c2aef18b95b0f6ee2c659e16c0e44712ae0ccddb872a834155b322"
+        }
+      ],
+      "detail": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T07:47:49Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "RP42",
+        "group": "repair",
+        "requirement": "Real public CLI and installed tools",
+        "test_level": "cli+skill-package",
+        "executed_levels": [
+          "cli",
+          "skill-package"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "RP42",
+  "scope": "Independent RP42 actual clean-source build, generated reference, committed disposable component tuple, ZIP create/verify/extract and source install. Public help/schema/check/format/compile/import aliases, native equality and installed cherri-migrate preview/check/write are executed. This component tuple is not the published release tuple; no CL01,K01,K03 or other linked requirement inherits credit.",
+  "source_sha": "9654056e2191b4867a314f1154a9e767ef0e851f"
+}

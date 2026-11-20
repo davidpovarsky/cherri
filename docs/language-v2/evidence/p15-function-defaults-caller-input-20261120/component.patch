@@ -1,0 +1,737 @@
+diff --git a/internal/language/lower/function_defaults.go b/internal/language/lower/function_defaults.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..8c5068debecb466692acca640c7bce19e17a3362
+--- /dev/null
++++ b/internal/language/lower/function_defaults.go
+@@ -0,0 +1,21 @@
++package lower
++
++import "github.com/electrikmilk/cherri/internal/language/syntax"
++
++// A function fallback is an authored semantic value, never opaque native
++// metadata. Preserve a Map's AST identity before entering the existing codec.
++// Ordinary parameters need a branch-output Dictionary producer; Optional
++// parameters already have a typed carrier and keep the Dictionary inline.
++// Other defaults retain their existing value, effect and empty-List routes.
++func (l *Lowerer) lowerFunctionDefaultValue(expr syntax.Expression, insideOptionalCarrier bool) (interface{}, error) {
++	if _, dictionary := expr.(*syntax.MapExpr); !dictionary {
++		return l.lowerCallValue(expr)
++	}
++	previous := l.inExprStmt
++	l.inExprStmt = false
++	defer func() { l.inExprStmt = previous }()
++	if insideOptionalCarrier {
++		return l.lowerSemanticValue(expr)
++	}
++	return l.lowerRuntimeLiteral(expr)
++}
+diff --git a/internal/language/lower/function_optional_presence.go b/internal/language/lower/function_optional_presence.go
+index cf5e9c9b6748efe4040502c98fce87cca9ea67fb..ab1b30fb7ec96be22721715161b3e4b283961354 100644
+--- a/internal/language/lower/function_optional_presence.go
++++ b/internal/language/lower/function_optional_presence.go
+@@ -276,7 +276,7 @@ func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name strin
+ 		l.emitIfStart(group, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: supplied}, 4, "1", true)
+ 		l.optionalField(dictionary, valueKey, "")
+ 		l.emitIfElse(group)
+-		defaultValue, err := l.lowerCallValue(fallback)
++		defaultValue, err := l.lowerFunctionDefaultValue(fallback, true)
+ 		if err != nil {
+ 			return "", "", err
+ 		}
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 5f7f8307eb443b5c4c97fc30a0eb5af76cd6394d..2c2ca32bb1f0ec54b15ad1068e61d884d16c1ba5 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -1304,7 +1304,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
+ 
+ 				l.emitIfElse(defGroupUUID)
+ 
+-				defVal, err := l.lowerCallValue(param.DefaultExpr)
++				defVal, err := l.lowerFunctionDefaultValue(param.DefaultExpr, false)
+ 				if err != nil {
+ 					return nil, fmt.Errorf("function %s default param %s: %w", fn.Name, param.Name, err)
+ 				}
+diff --git a/p15_function_caller_input_test.go b/p15_function_caller_input_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..916ddb38ef47802a5825ad5929d73c8674ddbc6d
+--- /dev/null
++++ b/p15_function_caller_input_test.go
+@@ -0,0 +1,161 @@
++package main
++
++import (
++	"fmt"
++	"reflect"
++	"testing"
++)
++
++func p15CallerInputText(literal string, refs ...map[string]any) map[string]any {
++	attachments := map[string]any{}
++	for index, ref := range refs {
++		attachments[fmt.Sprintf("{%d, 1}", index*2)] = ref["Value"]
++	}
++	return map[string]any{"WFSerializationType": "WFTextTokenString", "Value": map[string]any{
++		"string": literal, "attachmentsByRange": attachments,
++	}}
++}
++
++func p15CallerInputSource(nested bool) string {
++	source := `function inspect(value:Text)->Text{return f"{system.input}|{ShortcutInput}|{value}"}
++`
++	callee := "inspect"
++	if nested {
++		source += `function outer(value:Text)->Text{
++let inner=inspect(value)
++return f"{system.input}|{inner}|{ShortcutInput}"
++}
++`
++		callee = "outer"
++	}
++	return source + `let before=f"{system.input}|{ShortcutInput}"
++let result=` + callee + `("VALUE")
++setClipboard(f"{before}|{result}|{system.input}|{ShortcutInput}")`
++}
++
++// The same preserved caller reference is required at every authored read and
++// child payload. Only the guarded dispatcher probes inspect ExtensionInput.
++// UUID alpha names are taken from the actual graph; no semantic value is.
++func p15CallerInputGraph(actions []map[string]any, nested bool) (map[string]int, error) {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	positions := map[string]int{}
++	envelope := g.header("inspect")
++	caller := p15FunctionVariable("_cherri_caller_input")
++	argument := g.get("arg_0", envelope)
++	positions["body"] = len(g.expected)
++	value := g.value("gettext", map[string]any{"WFTextActionText": p15CallerInputText("\ufffc|\ufffc|\ufffc", caller, caller, p15FunctionEdge(argument))})
++	g.output(value)
++	callee := "inspect"
++	if nested {
++		g.nextFunction("outer")
++		outerArg := g.get("arg_0", envelope)
++		positions["nested_payload"] = len(g.expected)
++		inner := g.call(g.payload("inspect", p15FunctionArgument{true, 0, p15FunctionEdge(outerArg)}))
++		positions["outer_body"] = len(g.expected)
++		outer := g.value("gettext", map[string]any{"WFTextActionText": p15CallerInputText("\ufffc|\ufffc|\ufffc", caller, p15FunctionEdge(inner), caller)})
++		g.output(outer)
++		callee = "outer"
++	}
++	g.caller()
++	positions["before"] = len(g.expected)
++	before := g.value("gettext", map[string]any{"WFTextActionText": p15CallerInputText("\ufffc|\ufffc", caller, caller)})
++	positions["payload"] = len(g.expected)
++	result := g.call(g.payload(callee, p15FunctionString("VALUE")))
++	positions["consumer"] = len(g.expected)
++	g.emit("setclipboard", map[string]any{"WFInput": p15CallerInputText("\ufffc|\ufffc|\ufffc|\ufffc", p15FunctionEdge(before), p15FunctionEdge(result), caller, caller)})
++	return positions, g.finish()
++}
++
++func TestP15FN04CallerInputCompleteNativeGraphs(t *testing.T) {
++	for _, nested := range []bool{false, true} {
++		t.Run(fmt.Sprintf("nested_%t", nested), func(t *testing.T) {
++			source := p15CallerInputSource(nested)
++			callee := "inspect"
++			if nested {
++				callee = "outer"
++			}
++			p15FunctionTypedProgram(t, source, map[string]string{callee + `("VALUE")`: "Text"})
++			actions := p15CompiledActions(t, source)
++			p15FunctionBoundaryRetain(t, fmt.Sprintf("caller-input-nested-%t", nested), actions)
++			if _, err := p15CallerInputGraph(actions, nested); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func TestP15FN04CallerInputWithoutFunctions(t *testing.T) {
++	actions := p15CompiledActions(t, "getVariable(system.input)\ngetVariable(ShortcutInput)")
++	want := map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.getvariable", "WFWorkflowActionParameters": map[string]any{
++		"WFVariable": p15FunctionAttachment(map[string]any{"Type": "ExtensionInput"}),
++	}}
++	if len(actions) != 2 {
++		t.Fatal("ordinary caller input unexpectedly added a function dispatcher", len(actions))
++	}
++	for _, action := range actions {
++		if !reflect.DeepEqual(p15FunctionComparable(action, false), want) {
++			t.Fatalf("ordinary system.input/ShortcutInput lost ExtensionInput: %#v", action)
++		}
++	}
++}
++
++func TestP15FN04CallerInputCorruptions(t *testing.T) {
++	for _, nested := range []bool{false, true} {
++		t.Run(fmt.Sprintf("nested_%t", nested), func(t *testing.T) {
++			original := p15CompiledActions(t, p15CallerInputSource(nested))
++			positions, err := p15CallerInputGraph(original, nested)
++			if err != nil {
++				t.Fatal(err)
++			}
++			faults := []string{"initial_snapshot_lost", "unguarded_envelope", "marker_key_wrong", "marker_value_wrong", "marker_truthiness", "restore_arguments", "restore_envelope", "body_reads_transport", "caller_reads_transport", "payload_loses_caller", "consumer_reads_transport", "call_uses_wrong_input"}
++			if nested {
++				faults = append(faults, "nested_payload_loses_caller", "nested_body_reads_transport")
++			}
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15C01Clone(t, original)
++					transport := p15FunctionAttachment(map[string]any{"Type": "ExtensionInput"})
++					switch fault {
++					case "initial_snapshot_lost":
++						p15C01Params(bad[2])["WFInput"] = p15FunctionText("REPLACED")
++					case "unguarded_envelope":
++						p15C01Params(bad[3])["WFControlFlowMode"] = 1
++					case "marker_key_wrong":
++						p15C01Params(bad[6])["WFDictionaryKey"] = "cherri_functions"
++					case "marker_value_wrong":
++						p15C01Params(bad[7])["WFConditionalActionString"] = "__wrong_envelope__"
++					case "marker_truthiness":
++						p15C01Params(bad[7])["WFCondition"] = 100
++					case "restore_arguments":
++						p15C01Params(bad[10])["WFDictionaryKey"] = "arguments"
++					case "restore_envelope":
++						p15C01Params(bad[11])["WFInput"] = p15FunctionEdge(p15C01Params(bad[4])["UUID"].(string))
++					case "body_reads_transport", "caller_reads_transport", "nested_body_reads_transport":
++						name := "body"
++						if fault == "caller_reads_transport" {
++							name = "before"
++						} else if fault == "nested_body_reads_transport" {
++							name = "outer_body"
++						}
++						value := p15C01Params(bad[positions[name]])["WFTextActionText"].(map[string]any)["Value"].(map[string]any)
++						value["attachmentsByRange"].(map[string]any)["{0, 1}"] = transport["Value"]
++					case "payload_loses_caller", "nested_payload_loses_caller":
++						name := "payload"
++						if fault == "nested_payload_loses_caller" {
++							name = "nested_payload"
++						}
++						p15FunctionPayloadRow(t, bad, positions[name], "_cherri_caller_input")["WFValue"] = transport
++					case "consumer_reads_transport":
++						value := p15C01Params(bad[positions["consumer"]])["WFInput"].(map[string]any)["Value"].(map[string]any)
++						value["attachmentsByRange"].(map[string]any)["{4, 1}"] = transport["Value"]
++					case "call_uses_wrong_input":
++						p15C01Params(bad[positions["payload"]+1])["WFInput"] = transport
++					}
++					if _, err := p15CallerInputGraph(bad, nested); err == nil {
++						t.Fatal("caller/transport corruption accepted")
++					}
++				})
++			}
++		})
++	}
++}
+diff --git a/p15_function_default_boundary_test.go b/p15_function_default_boundary_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..c2ae51622bec825bbe90cfa55d07f93b339fbf13
+--- /dev/null
++++ b/p15_function_default_boundary_test.go
+@@ -0,0 +1,233 @@
++package main
++
++import (
++	"encoding/json"
++	"fmt"
++	"os"
++	"path/filepath"
++	"strings"
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++)
++
++// These expectations specify authored values, complete native graphs and
++// presence decisions. No Apple execution or final T01 acceptance is inferred.
++type p15TypedDefaultCase struct {
++	name, annotation, supplied, fallback string
++	argument                             p15FunctionArgument
++	defaultValue                         any
++	numeric                              bool
++}
++
++func p15TypedDefaultCases() []p15TypedDefaultCase {
++	list := func(value []any) p15FunctionArgument {
++		kind, wire := p15ContainerFieldValue(value)
++		return p15FunctionArgument{true, int(kind), wire}
++	}
++	dict := func(value map[string]any) p15FunctionArgument {
++		kind, wire := p15ContainerFieldValue(value)
++		return p15FunctionArgument{true, int(kind), wire}
++	}
++	return []p15TypedDefaultCase{
++		{"false", "Bool", "false", "true", p15FunctionNumber("0"), true, true},
++		{"zero", "Number", "0", "9", p15FunctionNumber("0"), p15ContainerNumber("9"), true},
++		{"empty_text", "Text", `""`, `"DEFAULT"`, p15FunctionString(""), "DEFAULT", false},
++		{"empty_list", "List<Text>", "[]", `["DEFAULT"]`, list([]any{}), []any{"DEFAULT"}, false},
++		{"empty_map", "Map<Text,Number>", "{}", `{"DEFAULT":9}`, dict(map[string]any{}), map[string]any{"DEFAULT": p15ContainerNumber("9")}, false},
++		{"empty_list_default", "List<Text>", `["SUPPLIED"]`, "[]", list([]any{"SUPPLIED"}), []any{}, false},
++		{"empty_map_default", "Map<Text,Number>", `{"SUPPLIED":7}`, "{}", dict(map[string]any{"SUPPLIED": p15ContainerNumber("7")}), map[string]any{}, false},
++		{"reserved_map_default", "Map<Text,AnyContent>", "{}", `{"WFSerializationType":"WFTextTokenString","Value":"ordinary"}`, dict(map[string]any{}), map[string]any{"WFSerializationType": "WFTextTokenString", "Value": "ordinary"}, false},
++		{"nested_empty_default", "Map<Text,AnyContent>", "{}", `{"list":[],"map":{}}`, dict(map[string]any{}), map[string]any{"list": []any{}, "map": map[string]any{}}, false},
++	}
++}
++
++func p15TypedDefaultSource(tc p15TypedDefaultCase) string {
++	return fmt.Sprintf("function echo(value:%s = %s)->AnyContent{return value}\nlet supplied=echo(%s)\ngetVariable(supplied)\nlet omitted=echo()\ngetVariable(omitted)\nlet named=echo(value:%s)\ngetVariable(named)", tc.annotation, tc.fallback, tc.supplied, tc.supplied)
++}
++
++func p15TypedDefaultValueGraph(g *p15FunctionGraph, value any) {
++	switch v := value.(type) {
++	case bool:
++		n := 0
++		if v {
++			n = 1
++		}
++		g.value("number", map[string]any{"WFNumberActionNumber": n})
++	case p15ContainerNumber:
++		// The authored fallback is deliberately distinct from the supplied zero.
++		g.value("number", map[string]any{"WFNumberActionNumber": 9})
++	case string:
++		g.value("gettext", map[string]any{"WFTextActionText": v})
++	case []any:
++		if len(v) == 0 {
++			p15TypedEmptyDefaultGraph(g)
++			return
++		}
++		rows := []any{}
++		for _, item := range v {
++			rows = append(rows, map[string]any{"WFItemType": 0, "WFValue": item})
++		}
++		g.value("list", map[string]any{"WFItems": rows})
++	case map[string]any:
++		_, wire := p15ContainerFieldValue(v)
++		g.value("dictionary", map[string]any{"WFItems": wire})
++	default:
++		g.err = fmt.Errorf("unmodeled authored fallback %T", value)
++	}
++}
++
++// Empty runtime Lists already use the verified clear/Get Variable bridge.
++// The private name and UUID are alpha identities; every operation, missing
++// Set input, consumed edge and branch position remains independently authored.
++func p15TypedEmptyDefaultGraph(g *p15FunctionGraph) {
++	index := len(g.expected)
++	if index+2 >= len(g.actual) {
++		g.err = fmt.Errorf("missing empty default clear/producer sequence")
++		return
++	}
++	name, _ := p15C01Params(g.actual[index+1])["WFVariableName"].(string)
++	uuid, _ := p15C01Params(g.actual[index+2])["UUID"].(string)
++	if uuid == "" || !strings.HasPrefix(name, "__cherri_scope_") || !strings.HasSuffix(name, "_emptyList_"+uuid) {
++		g.err = fmt.Errorf("empty default lacks a private producer-bound identity")
++	}
++	g.emit("nothing", nil)
++	g.emit("setvariable", map[string]any{"WFVariableName": name})
++	g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable(name)})
++}
++
++func p15TypedDefaultGraph(actions []map[string]any, tc p15TypedDefaultCase) (map[string]int, error) {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	positions := map[string]int{}
++	envelope := g.header("echo")
++	positions["presence"] = len(g.expected)
++	present := g.get("has_arg_0", envelope)
++	positions["guard"] = len(g.expected)
++	guard := g.conditional(4, p15FunctionEdge(present), "WFConditionalActionString", "1")
++	positions["value"] = len(g.expected)
++	g.get("arg_0", envelope)
++	positions["else"] = len(g.expected)
++	g.boundary(guard, 1, false)
++	positions["default"] = len(g.expected)
++	p15TypedDefaultValueGraph(g, tc.defaultValue)
++	positions["default_result"] = len(g.expected) - 1
++	positions["join"] = len(g.expected)
++	value := g.boundary(guard, 2, true)
++	if tc.numeric {
++		value = g.numberCast(value)
++	}
++	positions["return"] = len(g.expected)
++	g.output(value)
++	g.caller()
++	for _, call := range []struct {
++		name string
++		arg  p15FunctionArgument
++	}{{"supplied", tc.argument}, {"omitted", p15FunctionArgument{}}, {"named", tc.argument}} {
++		positions[call.name] = len(g.expected)
++		result := g.call(g.payload("echo", call.arg))
++		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
++	}
++	return positions, g.finish()
++}
++
++func p15FunctionBoundaryRetain(t *testing.T, name string, actions []map[string]any) {
++	t.Helper()
++	if root := os.Getenv("CHERRI_FUNCTION_BOUNDARY_DIAGNOSTICS"); root != "" {
++		if err := os.MkdirAll(root, 0700); err != nil {
++			t.Fatal(err)
++		}
++		data, err := json.MarshalIndent(actions, "", "  ")
++		if err != nil {
++			t.Fatal(err)
++		}
++		if err := os.WriteFile(filepath.Join(root, name+".json"), append(data, '\n'), 0600); err != nil {
++			t.Fatal(err)
++		}
++	}
++}
++
++func TestP15T01TypedDefaultBoundaryGraphs(t *testing.T) {
++	for _, tc := range p15TypedDefaultCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			source := p15TypedDefaultSource(tc)
++			p15FunctionTypedProgram(t, source, map[string]string{
++				"echo(" + tc.supplied + ")": "AnyContent", "echo()": "AnyContent", "echo(value:" + tc.supplied + ")": "AnyContent",
++			})
++			actions := p15CompiledActions(t, source)
++			p15FunctionBoundaryRetain(t, "typed-default-"+tc.name, actions)
++			if _, err := p15TypedDefaultGraph(actions, tc); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func TestP15T01TypedDefaultBoundaryCorruptions(t *testing.T) {
++	for _, tc := range p15TypedDefaultCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			original := p15CompiledActions(t, p15TypedDefaultSource(tc))
++			positions, err := p15TypedDefaultGraph(original, tc)
++			if err != nil {
++				t.Fatal(err)
++			}
++			faults := []string{"supplied_absent", "named_absent", "omitted_present", "truthiness_guard", "read_value_as_presence", "wrong_value_slot", "wrong_join", "default_branch_lost", "default_kind_lost", "caller_input_lost", "return_uses_default", "caller_consumer_detached"}
++			if list, emptyList := tc.defaultValue.([]any); emptyList && len(list) == 0 {
++				faults = append(faults, "empty_clear_lost", "empty_inherits_input", "empty_read_detached")
++			}
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15C01Clone(t, original)
++					switch fault {
++					case "supplied_absent", "named_absent":
++						name := "supplied"
++						if fault == "named_absent" {
++							name = "named"
++						}
++						p15FunctionPayloadRow(t, bad, positions[name], "has_arg_0")["WFValue"] = p15FunctionText("0")
++					case "omitted_present":
++						p15FunctionPayloadRow(t, bad, positions["omitted"], "has_arg_0")["WFValue"] = p15FunctionText("1")
++					case "truthiness_guard":
++						p15C01Params(bad[positions["guard"]])["WFCondition"] = 100
++					case "read_value_as_presence":
++						p15C01Params(bad[positions["presence"]])["WFDictionaryKey"] = "arg_0"
++					case "wrong_value_slot":
++						p15C01Params(bad[positions["value"]])["WFDictionaryKey"] = "has_arg_0"
++					case "wrong_join":
++						p15C01Params(bad[positions["join"]])["GroupingIdentifier"] = p15C01Params(bad[7])["GroupingIdentifier"]
++					case "default_branch_lost":
++						p15C01Params(bad[positions["else"]])["WFControlFlowMode"] = 2
++					case "default_kind_lost":
++						bad[positions["default_result"]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.nothing"
++					case "caller_input_lost":
++						p15FunctionPayloadRow(t, bad, positions["supplied"], "_cherri_caller_input")["WFValue"] = p15FunctionText("FORGED")
++					case "return_uses_default":
++						p15C01Params(bad[positions["return"]])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(bad[positions["default_result"]])["UUID"].(string))
++					case "empty_clear_lost":
++						bad[positions["default"]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.getvariable"
++					case "empty_inherits_input":
++						p15C01Params(bad[positions["default"]+1])["WFInput"] = p15FunctionText("STALE")
++					case "empty_read_detached":
++						p15C01Params(bad[positions["default_result"]])["WFVariable"] = p15FunctionVariable("unrelated")
++					case "caller_consumer_detached":
++						p15C01Params(bad[positions["supplied"]+2])["WFVariable"] = p15FunctionVariable("unrelated")
++					}
++					if _, err := p15TypedDefaultGraph(bad, tc); err == nil {
++						t.Fatal("corrupted default/argument graph accepted")
++					}
++				})
++			}
++		})
++	}
++}
++
++func TestP15T01WrongTypedDefaultsRejected(t *testing.T) {
++	for _, tc := range []struct{ name, annotation, value string }{
++		{"bool", "Bool", `"false"`}, {"number", "Number", `"0"`}, {"text", "Text", "false"},
++		{"list", "List<Text>", "[1]"}, {"map", "Map<Text,Number>", `{"key":false}`},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			source := fmt.Sprintf("function bad(value:%s = %s)->AnyContent{return value}\nbad()", tc.annotation, tc.value)
++			p15FunctionRejects(t, source, tc.value, analysis.CodeArgumentType, "default value of type")
++		})
++	}
++}
+diff --git a/p15_function_map_default_effect_test.go b/p15_function_map_default_effect_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..ccf2d84c207fe004ff529b234a9ad44da812eefd
+--- /dev/null
++++ b/p15_function_map_default_effect_test.go
+@@ -0,0 +1,130 @@
++package main
++
++import (
++	"fmt"
++	"testing"
++)
++
++func p15MapDefaultEffectSource(optional bool) string {
++	parameter, result := "Map<Text,AnyContent>", "AnyContent"
++	if optional {
++		parameter += "?"
++		result = parameter
++	}
++	return `function echo(seed:Text,value:` + parameter + ` = {"seed":seed,"first":text("FIRST"),"second":text("SECOND")})->` + result + `{return value}
++let supplied=echo("SEED",value:{})
++getVariable(supplied)
++let omitted=echo("SEED")
++getVariable(omitted)`
++}
++
++func p15MapDefaultEffectGraph(actions []map[string]any, optional bool) (map[string]int, error) {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	positions := map[string]int{}
++	envelope := g.header("echo")
++	seed := g.get("arg_0", envelope)
++	hasValue := g.get("has_arg_1", envelope)
++	guard := g.conditional(4, p15FunctionEdge(hasValue), "WFConditionalActionString", "1")
++	g.get("arg_1", envelope)
++	positions["else"] = len(g.expected)
++	g.boundary(guard, 1, false)
++	positions["first"] = len(g.expected)
++	first := g.value("gettext", map[string]any{"WFTextActionText": "FIRST"})
++	positions["second"] = len(g.expected)
++	second := g.value("gettext", map[string]any{"WFTextActionText": "SECOND"})
++	kind, wire := p15ContainerFieldValue(map[string]any{
++		"seed":   p15ContainerReference{"Type": "ActionOutput", "OutputUUID": seed},
++		"first":  p15ContainerReference{"Type": "ActionOutput", "OutputUUID": first},
++		"second": p15ContainerReference{"Type": "ActionOutput", "OutputUUID": second},
++	})
++	positions["default"] = len(g.expected)
++	if optional {
++		p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", true, p15FunctionArgument{true, int(kind), wire})
++	} else {
++		g.value("dictionary", map[string]any{"WFItems": wire})
++	}
++	chosen := g.boundary(guard, 2, true)
++	if optional {
++		value, presence := p15DecodeOptionalGraph(g, chosen, "has_value", "value")
++		present := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
++		p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
++		g.boundary(present, 1, false)
++		p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", false, p15FunctionArgument{})
++		chosen = g.boundary(present, 2, true)
++	}
++	positions["return"] = len(g.expected)
++	g.output(chosen)
++	g.caller()
++	for _, supplied := range []bool{true, false} {
++		argument := p15FunctionArgument{}
++		name := "omitted"
++		if supplied {
++			name = "supplied"
++			kind, wire := p15ContainerFieldValue(map[string]any{})
++			argument = p15FunctionArgument{true, int(kind), wire}
++			if optional {
++				carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", true, argument)
++				argument = p15FunctionArgument{true, 0, p15FunctionEdge(carrier)}
++			}
++		}
++		positions[name] = len(g.expected)
++		result := g.call(g.payload("echo", p15FunctionString("SEED"), argument))
++		if optional {
++			result, _ = p15DecodeOptionalGraph(g, result, "has_value", "value")
++		}
++		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
++	}
++	return positions, g.finish()
++}
++
++func TestP15T01MapDefaultEffectOrderAndScope(t *testing.T) {
++	for _, optional := range []bool{false, true} {
++		t.Run(fmt.Sprintf("optional_%t", optional), func(t *testing.T) {
++			source := p15MapDefaultEffectSource(optional)
++			p15FunctionTypedProgram(t, source, map[string]string{})
++			original := p15CompiledActions(t, source)
++			p15FunctionBoundaryRetain(t, fmt.Sprintf("map-default-effects-optional-%t", optional), original)
++			positions, err := p15MapDefaultEffectGraph(original, optional)
++			if err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"effects_swapped", "effect_duplicated", "effect_eager", "effect_lost", "previous_parameter_lost", "supplied_absent", "omitted_present", "return_always_default"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15C01Clone(t, original)
++					switch fault {
++					case "effects_swapped":
++						bad[positions["first"]], bad[positions["second"]] = bad[positions["second"]], bad[positions["first"]]
++					case "effect_duplicated":
++						i := positions["first"]
++						bad = append(bad[:i], append([]map[string]any{bad[i]}, bad[i:]...)...)
++					case "effect_eager":
++						bad[positions["first"]], bad[positions["else"]] = bad[positions["else"]], bad[positions["first"]]
++					case "effect_lost":
++						bad[positions["first"]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.nothing"
++					case "previous_parameter_lost":
++						fields, err := p15ContainerFields(p15C01Params(bad[positions["default"]])["WFItems"])
++						if err != nil {
++							t.Fatal(err)
++						}
++						if optional {
++							fields, err = p15ContainerFields(fields["value"]["WFValue"])
++							if err != nil {
++								t.Fatal(err)
++							}
++						}
++						fields["seed"]["WFValue"] = p15FunctionText("REPLACED")
++					case "supplied_absent":
++						p15FunctionPayloadRow(t, bad, positions["supplied"], "has_arg_1")["WFValue"] = p15FunctionText("0")
++					case "omitted_present":
++						p15FunctionPayloadRow(t, bad, positions["omitted"], "has_arg_1")["WFValue"] = p15FunctionText("1")
++					case "return_always_default":
++						p15C01Params(bad[positions["return"]])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(bad[positions["default"]])["UUID"].(string))
++					}
++					if _, err := p15MapDefaultEffectGraph(bad, optional); err == nil {
++						t.Fatal("default effect/scope corruption accepted")
++					}
++				})
++			}
++		})
++	}
++}
+diff --git a/p15_function_optional_map_default_test.go b/p15_function_optional_map_default_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..f752270b338f24a989e26c41365b1cbc4a7f1a80
+--- /dev/null
++++ b/p15_function_optional_map_default_test.go
+@@ -0,0 +1,136 @@
++package main
++
++import (
++	"fmt"
++	"testing"
++)
++
++type p15OptionalMapDefaultCase struct {
++	name, source string
++	value        map[string]any
++}
++
++func p15OptionalMapDefaultCases() []p15OptionalMapDefaultCase {
++	return []p15OptionalMapDefaultCase{
++		{"empty", `{}`, map[string]any{}},
++		{"reserved", `{"WFSerializationType":"WFTextTokenString","Value":"ordinary"}`, map[string]any{"WFSerializationType": "WFTextTokenString", "Value": "ordinary"}},
++		{"nested_empty", `{"list":[],"map":{},"flag":false,"zero":0,"text":""}`, map[string]any{"list": []any{}, "map": map[string]any{}, "flag": false, "zero": p15ContainerNumber("0"), "text": ""}},
++		{"literal_braces", `{"text":"{ordinary}"}`, map[string]any{"text": "{ordinary}"}},
++	}
++}
++
++func p15OptionalMapDefaultSource(tc p15OptionalMapDefaultCase, mode string) string {
++	argument := ""
++	if mode == "none" {
++		argument = "none"
++	} else if mode == "empty" {
++		argument = "{}"
++	}
++	return `function echo(value:Map<Text,AnyContent>? = ` + tc.source + `)->Map<Text,AnyContent>? {return value}
++let result=echo(` + argument + `)
++getVariable(result)`
++}
++
++// Default presence, supplied-argument presence and returned value presence are
++// separate. The complete expected graph is authored from source values; only
++// UUID/control alpha names are borrowed from the observed compiled graph.
++func p15OptionalMapDefaultGraph(actions []map[string]any, tc p15OptionalMapDefaultCase, mode string) (map[string]int, error) {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	positions := map[string]int{}
++	envelope := g.header("echo")
++	supplied := g.get("has_arg_0", envelope)
++	positions["guard"] = len(g.expected)
++	guard := g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
++	positions["value"] = len(g.expected)
++	g.get("arg_0", envelope)
++	g.boundary(guard, 1, false)
++	positions["default"] = len(g.expected)
++	kind, wire := p15ContainerFieldValue(tc.value)
++	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", true, p15FunctionArgument{true, int(kind), wire})
++	positions["join"] = len(g.expected)
++	chosen := g.boundary(guard, 2, true)
++	value, presence := p15DecodeOptionalGraph(g, chosen, "has_value", "value")
++	resultGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
++	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
++	g.boundary(resultGroup, 1, false)
++	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", false, p15FunctionArgument{})
++	returned := g.boundary(resultGroup, 2, true)
++	positions["return"] = len(g.expected)
++	g.output(returned)
++	g.caller()
++	argument := p15FunctionArgument{}
++	if mode != "omitted" {
++		kind, wire := p15ContainerFieldValue(map[string]any{})
++		carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", mode == "empty", p15FunctionArgument{true, int(kind), wire})
++		argument = p15FunctionArgument{true, 0, p15FunctionEdge(carrier)}
++	}
++	positions["payload"] = len(g.expected)
++	result := g.call(g.payload("echo", argument))
++	unboxed, _ := p15DecodeOptionalGraph(g, result, "has_value", "value")
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(unboxed)})
++	return positions, g.finish()
++}
++
++func TestP15T01OptionalMapDefaultGraphs(t *testing.T) {
++	for _, tc := range p15OptionalMapDefaultCases() {
++		for _, mode := range []string{"omitted", "none", "empty"} {
++			t.Run(tc.name+"/"+mode, func(t *testing.T) {
++				source := p15OptionalMapDefaultSource(tc, mode)
++				p15FunctionTypedProgram(t, source, map[string]string{})
++				actions := p15CompiledActions(t, source)
++				p15FunctionBoundaryRetain(t, "optional-map-default-"+tc.name+"-"+mode, actions)
++				if _, err := p15OptionalMapDefaultGraph(actions, tc, mode); err != nil {
++					t.Fatal(err)
++				}
++			})
++		}
++	}
++}
++
++func TestP15T01OptionalMapDefaultCorruptions(t *testing.T) {
++	for _, tc := range p15OptionalMapDefaultCases() {
++		for _, mode := range []string{"omitted", "none", "empty"} {
++			t.Run(tc.name+"/"+mode, func(t *testing.T) {
++				original := p15CompiledActions(t, p15OptionalMapDefaultSource(tc, mode))
++				positions, err := p15OptionalMapDefaultGraph(original, tc, mode)
++				if err != nil {
++					t.Fatal(err)
++				}
++				for _, fault := range []string{"default_absent", "default_kind", "default_value", "default_null", "truthiness", "wrong_slot", "wrong_join", "wrong_supplied_flag", "wrong_return"} {
++					t.Run(fault, func(t *testing.T) {
++						bad := p15C01Clone(t, original)
++						switch fault {
++						case "default_absent":
++							p15FunctionPayloadRow(t, bad, positions["default"], "has_value")["WFValue"] = p15FunctionText("0")
++						case "default_kind":
++							p15FunctionPayloadRow(t, bad, positions["default"], "value")["WFItemType"] = 0
++						case "default_value":
++							p15FunctionPayloadRow(t, bad, positions["default"], "value")["WFValue"] = p15FunctionText("REPLACED")
++						case "default_null":
++							p15FunctionPayloadRow(t, bad, positions["default"], "value")["WFValue"] = nil
++						case "truthiness":
++							p15C01Params(bad[positions["guard"]])["WFCondition"] = 100
++						case "wrong_slot":
++							p15C01Params(bad[positions["value"]])["WFDictionaryKey"] = "has_arg_0"
++						case "wrong_join":
++							p15C01Params(bad[positions["join"]])["GroupingIdentifier"] = p15C01Params(bad[7])["GroupingIdentifier"]
++						case "wrong_supplied_flag":
++							flag := "0"
++							if mode == "omitted" {
++								flag = "1"
++							}
++							p15FunctionPayloadRow(t, bad, positions["payload"], "has_arg_0")["WFValue"] = p15FunctionText(flag)
++						case "wrong_return":
++							p15C01Params(bad[positions["return"]])["WFOutput"] = p15FunctionText("FORGED")
++						default:
++							t.Fatal(fmt.Sprintf("unknown fault %s", fault))
++						}
++						if _, err := p15OptionalMapDefaultGraph(bad, tc, mode); err == nil {
++							t.Fatal("Optional default corruption accepted")
++						}
++					})
++				}
++			})
++		}
++	}
++}

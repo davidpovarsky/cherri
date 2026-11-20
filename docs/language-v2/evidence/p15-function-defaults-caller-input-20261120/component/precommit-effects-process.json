@@ -1,0 +1,92 @@
+{
+  "implementation_sha": "e830670044173d1854481a6a9c623b2aa17b1f7d",
+  "provenance": "DIRTY_PRECOMMIT",
+  "source_files": {
+    "internal/language/lower/lower.go": "043336fa957f79a39f43c93c408d9ddfeb8a8d9bcf2a5a7379877a7a646465c7",
+    "internal/language/lower/function_optional_presence.go": "2f2afe2844e85a38c4f43b7f670028b268658e489176843382d3d64233925d13",
+    "internal/language/lower/function_defaults.go": "c46f1b5899be7c8a9d57cabf6092c25a034b863a6713642738b73f59226b0d6d",
+    "p15_function_map_default_effect_test.go": "16d6236b34be1bd4c4b8cc3d582e54db8420705aca443f213386b7f68453545b"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15T01MapDefaultEffectOrderAndScope$",
+    "."
+  ],
+  "started_utc": "2026-11-20T07:33:56.638735+00:00",
+  "finished_utc": "2026-11-20T07:34:21.361363+00:00",
+  "elapsed_seconds": 24.71799999999348,
+  "exit_code": 0,
+  "named": {
+    "run": [
+      "TestP15T01MapDefaultEffectOrderAndScope",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effects_swapped",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effect_duplicated",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effect_eager",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effect_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/previous_parameter_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/supplied_absent",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/omitted_present",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/return_always_default",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effects_swapped",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effect_duplicated",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effect_eager",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effect_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/previous_parameter_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/supplied_absent",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/omitted_present",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/return_always_default"
+    ],
+    "pass": [
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effects_swapped",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effect_duplicated",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effect_eager",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/effect_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/previous_parameter_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/supplied_absent",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/omitted_present",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false/return_always_default",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_false",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effects_swapped",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effect_duplicated",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effect_eager",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/effect_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/previous_parameter_lost",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/supplied_absent",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/omitted_present",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true/return_always_default",
+      "TestP15T01MapDefaultEffectOrderAndScope/optional_true",
+      "TestP15T01MapDefaultEffectOrderAndScope"
+    ],
+    "fail": [],
+    "skip": []
+  },
+  "artifacts": {
+    "precommit-effects.jsonl": {
+      "sha256": "6a4ba03c9f96c9fc12f58f36aa30baa2ed01da4ee0d2095a05e30e21a99ac220",
+      "bytes": 18213
+    },
+    "precommit-effects.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "precommit-effects-source.go.txt": {
+      "sha256": "16d6236b34be1bd4c4b8cc3d582e54db8420705aca443f213386b7f68453545b",
+      "bytes": 5489
+    },
+    "precommit-effects-graphs\\map-default-effects-optional-false.json": {
+      "sha256": "e120616cf5687fccfe3a26307885e373309e786bb30f186a660f6e7034fb3137",
+      "bytes": 25206
+    },
+    "precommit-effects-graphs\\map-default-effects-optional-true.json": {
+      "sha256": "c802acdfd4bc747a80a8b82ee148a2a1dfeae806aec766270f3f498456150735",
+      "bytes": 39536
+    }
+  }
+}

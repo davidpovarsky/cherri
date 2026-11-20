@@ -3,6 +3,9 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
+. "$SCRIPT_DIR/installation.sh"
+CACHED_CHERRI_MIGRATE="$CHERRI_HOME/bin/cherri-migrate"
+BUNDLED_CHERRI_MIGRATE="$SKILL_DIR/bin/cherri-migrate"
 
 UPDATE=0
 FORCE=0
@@ -23,27 +26,46 @@ fi
 
 mkdir -p "$CHERRI_HOME/bin"
 
-# Keep the active compiler/docs pair untouched until both candidates validate.
+# Keep both active tools and docs untouched until every candidate validates.
 # Backup files remain available until the installed pair also passes validation.
 # This handles command failures/signals; it is not a power-loss journal.
 BIN_STAGE=""
 DOCS_STAGE=""
 INSTALL_LOCKED=0
+INSTALL_LOCKING=0
+INSTALL_PENDING_SIGNAL=0
 INSTALL_COMMITTED=0
 OLD_BIN_PRESENT=0
 OLD_COMMIT_PRESENT=0
 OLD_CHECKSUM_PRESENT=0
 OLD_DOCS_PRESENT=0
+OLD_MIGRATION_PRESENT=0
+OLD_MIGRATION_COMMIT_PRESENT=0
+OLD_MIGRATION_CHECKSUM_PRESENT=0
 BIN_PROMOTING=0
 DOCS_PROMOTING=0
 
 begin_install() {
   if [ "$INSTALL_LOCKED" -eq 0 ]; then
+    # A handled signal after mkdir but before the following assignment must
+    # wait until the command result establishes whether this process owns it.
+    INSTALL_LOCKING=1
     if ! mkdir "$CHERRI_HOME/.install-lock" 2>/dev/null; then
+      INSTALL_LOCKING=0
       echo "[CHERRI_INSTALL_BUSY] Another install owns $CHERRI_HOME/.install-lock; inspect an interrupted install before removing its lock." >&2
       exit 1
     fi
     INSTALL_LOCKED=1
+    INSTALL_LOCKING=0
+    if [ "$INSTALL_PENDING_SIGNAL" -ne 0 ]; then exit "$INSTALL_PENDING_SIGNAL"; fi
+  fi
+}
+
+install_signal() {
+  if [ "$INSTALL_LOCKING" -eq 1 ]; then
+    INSTALL_PENDING_SIGNAL=$1
+  else
+    exit "$1"
   fi
 }
 
@@ -85,6 +107,9 @@ finish_install() {
       fi
     fi
     if [ "$BIN_PROMOTING" -eq 1 ]; then
+      restore_install_file "$CACHED_CHERRI_MIGRATE.sha256" "$BIN_STAGE/previous-migrate.sha256" "$BIN_STAGE/candidate-migrate.sha256" "$OLD_MIGRATION_CHECKSUM_PRESENT"
+      restore_install_file "$CACHED_CHERRI_MIGRATE.commit" "$BIN_STAGE/previous-migrate.commit" "$BIN_STAGE/candidate-migrate.commit" "$OLD_MIGRATION_COMMIT_PRESENT"
+      restore_install_file "$CACHED_CHERRI_MIGRATE" "$BIN_STAGE/previous-migrate" "$BIN_STAGE/candidate-migrate" "$OLD_MIGRATION_PRESENT"
       restore_install_file "$CACHED_CHERRI.sha256" "$BIN_STAGE/previous.sha256" "$BIN_STAGE/candidate.sha256" "$OLD_CHECKSUM_PRESENT"
       restore_install_file "$CACHED_CHERRI.commit" "$BIN_STAGE/previous.commit" "$BIN_STAGE/candidate.commit" "$OLD_COMMIT_PRESENT"
       restore_install_file "$CACHED_CHERRI" "$BIN_STAGE/previous" "$BIN_STAGE/candidate" "$OLD_BIN_PRESENT"
@@ -101,12 +126,12 @@ finish_install() {
   exit "$INSTALL_STATUS"
 }
 trap finish_install EXIT
-trap 'exit 129' HUP
-trap 'exit 130' INT
-trap 'exit 143' TERM
+trap 'install_signal 129' HUP
+trap 'install_signal 130' INT
+trap 'install_signal 143' TERM
 
 if [ -n "${CHERRI_BIN:-}" ]; then
-  if ! validate_cherri_bin "$CHERRI_BIN"; then
+  if ! validate_cherri_installation "$CHERRI_BIN" "$(cherri_migration_for_compiler "$CHERRI_BIN")"; then
     echo "Explicit CHERRI_BIN failed compatibility validation: $CHERRI_BIN" >&2
     exit 1
   fi
@@ -114,7 +139,7 @@ if [ -n "${CHERRI_BIN:-}" ]; then
 else
   HAVE_COMPATIBLE_BIN=0
   if [ -f "$CACHED_CHERRI" ] && [ "$UPDATE" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
-    if validate_cherri_bin "$CACHED_CHERRI"; then
+    if validate_cherri_installation "$CACHED_CHERRI" "$CACHED_CHERRI_MIGRATE"; then
       echo "Using compatible cached Cherri: $CACHED_CHERRI"
       HAVE_COMPATIBLE_BIN=1
     else
@@ -123,7 +148,7 @@ else
   fi
 
   if [ "$HAVE_COMPATIBLE_BIN" -eq 0 ] && [ -f "$BUNDLED_CHERRI" ] && [ "$UPDATE" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
-    if validate_cherri_bin "$BUNDLED_CHERRI"; then
+    if validate_cherri_installation "$BUNDLED_CHERRI" "$BUNDLED_CHERRI_MIGRATE"; then
       echo "Using compatible bundled Cherri: $BUNDLED_CHERRI"
       HAVE_COMPATIBLE_BIN=1
     else
@@ -136,7 +161,7 @@ else
       echo "Cannot install or update Cherri in offline mode: no compatible cached or bundled binary available." >&2
       exit 1
     fi
-    for INSTALL_FILE in "$CACHED_CHERRI" "$CACHED_CHERRI.commit" "$CACHED_CHERRI.sha256"; do
+    for INSTALL_FILE in "$CACHED_CHERRI" "$CACHED_CHERRI.commit" "$CACHED_CHERRI.sha256" "$CACHED_CHERRI_MIGRATE" "$CACHED_CHERRI_MIGRATE.commit" "$CACHED_CHERRI_MIGRATE.sha256"; do
       if [ -d "$INSTALL_FILE" ]; then
         echo "[CHERRI_INSTALL_PATH_INVALID] Expected an install file, found a directory: $INSTALL_FILE" >&2
         exit 1
@@ -146,6 +171,7 @@ else
     BIN_STAGE=$(mktemp -d "$CHERRI_HOME/bin/.cherri-install.XXXXXX")
     TMP_BIN="$BIN_STAGE/candidate"
     TMP_COMMIT="$TMP_BIN.commit"
+    TMP_MIGRATION="$BIN_STAGE/candidate-migrate"
 
     if [ -n "${CHERRI_PREBUILT_URL:-}" ]; then
       if ! is_hex_len "${CHERRI_PREBUILT_SHA256:-}" 64; then
@@ -163,13 +189,35 @@ else
       fi
       # Verify downloaded bytes before chmod or executing capabilities/version.
       verify_cherri_checksum "$TMP_BIN" "$CHERRI_PREBUILT_SHA256"
+      if [ -n "${CHERRI_MIGRATE_PREBUILT_URL:-}" ]; then
+        if ! is_hex_len "${CHERRI_MIGRATE_PREBUILT_SHA256:-}" 64; then
+          echo "[CHERRI_MIGRATOR_CHECKSUM_REQUIRED] CHERRI_MIGRATE_PREBUILT_SHA256 must authenticate the migration download." >&2
+          exit 1
+        fi
+        if command -v wget >/dev/null 2>&1; then
+          wget -q -O "$TMP_MIGRATION" "$CHERRI_MIGRATE_PREBUILT_URL"
+        elif command -v curl >/dev/null 2>&1; then
+          curl -fsSL "$CHERRI_MIGRATE_PREBUILT_URL" -o "$TMP_MIGRATION"
+        else
+          echo "Need wget or curl to download the migration tool." >&2
+          exit 1
+        fi
+        verify_cherri_checksum "$TMP_MIGRATION" "$CHERRI_MIGRATE_PREBUILT_SHA256"
+      elif validate_cherri_migration_bin "$CACHED_CHERRI_MIGRATE" 2>/dev/null; then
+        # A same-source update can retain its already authenticated companion.
+        cp "$CACHED_CHERRI_MIGRATE" "$TMP_MIGRATION"
+      elif validate_cherri_migration_bin "$BUNDLED_CHERRI_MIGRATE" 2>/dev/null; then
+        cp "$BUNDLED_CHERRI_MIGRATE" "$TMP_MIGRATION"
+      else
+        echo "[CHERRI_MIGRATOR_DOWNLOAD_REQUIRED] Provide CHERRI_MIGRATE_PREBUILT_URL and its SHA-256 for the exact pinned migration tool." >&2
+        exit 1
+      fi
       printf '%s\n' "$CHERRI_REF" > "$TMP_COMMIT"
+      printf '%s\n' "$CHERRI_REF" > "$TMP_MIGRATION.commit"
     else
       missing=""
       command -v git >/dev/null 2>&1 || missing="$missing git"
-      if [ ! -f "$CHERRI_REPO/.cherri-prebuilt-bin" ]; then
-        command -v go >/dev/null 2>&1 || missing="$missing go"
-      fi
+      command -v go >/dev/null 2>&1 || missing="$missing go"
       if [ -n "$missing" ]; then
         if command -v apk >/dev/null 2>&1; then
           echo "Installing Alpine build dependencies:$missing ca-certificates"
@@ -182,12 +230,14 @@ else
 
       SRC="$CHERRI_HOME/src"
       if [ ! -e "$SRC" ]; then
-        git clone "$CHERRI_REPO" "$SRC"
+        git --no-replace-objects clone --no-checkout "$CHERRI_REPO" "$SRC"
+        git --no-replace-objects -C "$SRC" config core.autocrlf false
       elif [ ! -d "$SRC/.git" ]; then
         echo "[CHERRI_SOURCE_UNMANAGED] Refusing to replace a non-clone source cache: $SRC" >&2
         exit 1
       else
-        if ! SOURCE_STATE=$(git -C "$SRC" status --porcelain); then
+        validate_cherri_git_index "$SRC" SOURCE
+        if ! SOURCE_STATE=$(git --no-replace-objects -C "$SRC" status --porcelain); then
           echo "[CHERRI_SOURCE_GIT_INVALID] Cannot verify source cache state; active installation unchanged." >&2
           exit 1
         fi
@@ -195,32 +245,39 @@ else
           echo "[CHERRI_SOURCE_DIRTY] Source cache has local changes; preserve or commit them before setup." >&2
           exit 1
         fi
-        git -C "$SRC" fetch origin "$CHERRI_REF" 2>/dev/null || git -C "$SRC" fetch origin
+        git --no-replace-objects -C "$SRC" fetch origin "$CHERRI_REF" 2>/dev/null || git --no-replace-objects -C "$SRC" fetch origin
       fi
-      git -C "$SRC" checkout --detach "$CHERRI_REF" 2>/dev/null || git -C "$SRC" checkout "$CHERRI_REF"
+      git --no-replace-objects -C "$SRC" checkout --detach "$CHERRI_REF" 2>/dev/null || git --no-replace-objects -C "$SRC" checkout "$CHERRI_REF"
 
-      ACTUAL_SRC_SHA=$(git -C "$SRC" rev-parse HEAD)
+      ACTUAL_SRC_SHA=$(git --no-replace-objects -C "$SRC" rev-parse HEAD)
       if is_hex_len "$CHERRI_REF" 40 && [ "$ACTUAL_SRC_SHA" != "$CHERRI_REF" ]; then
         echo "Source checkout SHA mismatch: expected $CHERRI_REF, got $ACTUAL_SRC_SHA" >&2
         exit 1
       fi
+      validate_cherri_git_index "$SRC" SOURCE
 
       echo "Building Cherri ($ACTUAL_SRC_SHA) for $(uname -s)/$(uname -m)..."
-      if [ -f "$SRC/.cherri-prebuilt-bin" ]; then
-        cp "$SRC/.cherri-prebuilt-bin" "$TMP_BIN"
-      else
-        (
-          cd "$SRC"
-          CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o "$TMP_BIN" .
-        )
+      (
+        cd "$SRC"
+        CGO_ENABLED=0 GIT_NO_REPLACE_OBJECTS=1 go build -buildvcs=true -trimpath -ldflags='-s -w' -o "$TMP_BIN" .
+        CGO_ENABLED=0 GIT_NO_REPLACE_OBJECTS=1 go build -buildvcs=true -trimpath -ldflags='-s -w' -o "$TMP_MIGRATION" ./cmd/cherri-migrate
+      )
+      validate_cherri_git_index "$SRC" SOURCE
+      if ! BUILT_SRC_SHA=$(git --no-replace-objects -C "$SRC" rev-parse HEAD) ||
+         ! BUILT_SRC_STATE=$(git --no-replace-objects -C "$SRC" status --porcelain) ||
+         [ "$BUILT_SRC_SHA" != "$ACTUAL_SRC_SHA" ] || [ -n "$BUILT_SRC_STATE" ]; then
+        echo "[CHERRI_SOURCE_CHANGED] Source changed while building the tool pair; active installation unchanged." >&2
+        exit 1
       fi
       printf '%s\n' "$ACTUAL_SRC_SHA" > "$TMP_COMMIT"
+      printf '%s\n' "$ACTUAL_SRC_SHA" > "$TMP_MIGRATION.commit"
     fi
 
     cherri_file_sha256 "$TMP_BIN" > "$TMP_BIN.sha256"
-    chmod +x "$TMP_BIN"
-    if ! validate_cherri_bin "$TMP_BIN"; then
-      echo "Newly built/downloaded Cherri binary failed compatibility validation; active installation unchanged." >&2
+    cherri_file_sha256 "$TMP_MIGRATION" > "$TMP_MIGRATION.sha256"
+    chmod +x "$TMP_BIN" "$TMP_MIGRATION"
+    if ! validate_cherri_installation "$TMP_BIN" "$TMP_MIGRATION"; then
+      echo "Newly built/downloaded Cherri tool pair failed compatibility validation; active installation unchanged." >&2
       exit 1
     fi
   fi
@@ -229,7 +286,7 @@ fi
 # Validate an existing docs checkout or prepare a separate pinned candidate.
 DOCS_VALID=0
 if [ -d "$CHERRI_DOCS_DIR" ] && [ "$UPDATE" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
-  if validate_docs_dir "$CHERRI_DOCS_DIR"; then
+  if validate_cherri_installed_docs "$CHERRI_DOCS_DIR"; then
     DOCS_VALID=1
   else
     if [ "$OFFLINE" = "1" ]; then
@@ -241,7 +298,7 @@ fi
 
 if [ "$DOCS_VALID" -eq 0 ]; then
   if [ "$OFFLINE" = "1" ]; then
-    validate_docs_dir "$CHERRI_DOCS_DIR"
+    validate_cherri_installed_docs "$CHERRI_DOCS_DIR"
   else
     if ! command -v git >/dev/null 2>&1; then
       if command -v apk >/dev/null 2>&1; then
@@ -257,7 +314,8 @@ if [ "$DOCS_VALID" -eq 0 ]; then
         echo "[CHERRI_DOCS_UNMANAGED] Refusing to replace non-clone or linked-worktree documentation: $CHERRI_DOCS_DIR" >&2
         exit 1
       fi
-      if ! DOCS_STATE=$(git -C "$CHERRI_DOCS_DIR" status --porcelain); then
+      validate_cherri_git_index "$CHERRI_DOCS_DIR" DOCS
+      if ! DOCS_STATE=$(git --no-replace-objects -C "$CHERRI_DOCS_DIR" status --porcelain); then
         echo "[CHERRI_DOCS_GIT_INVALID] Cannot verify documentation state; active installation unchanged." >&2
         exit 1
       fi
@@ -270,9 +328,10 @@ if [ "$DOCS_VALID" -eq 0 ]; then
     DOCS_PARENT=$(dirname -- "$CHERRI_DOCS_DIR")
     mkdir -p "$DOCS_PARENT"
     DOCS_STAGE=$(mktemp -d "$DOCS_PARENT/.cherri-docs.XXXXXX")
-    git clone "$CHERRI_DOCS_REPO" "$DOCS_STAGE/candidate"
-    git -C "$DOCS_STAGE/candidate" checkout --detach "$CHERRI_DOCS_REF" 2>/dev/null || git -C "$DOCS_STAGE/candidate" checkout "$CHERRI_DOCS_REF"
-    validate_docs_dir "$DOCS_STAGE/candidate"
+    git --no-replace-objects clone --no-checkout "$CHERRI_DOCS_REPO" "$DOCS_STAGE/candidate"
+    git --no-replace-objects -C "$DOCS_STAGE/candidate" config core.autocrlf false
+    git --no-replace-objects -C "$DOCS_STAGE/candidate" checkout --detach "$CHERRI_DOCS_REF" 2>/dev/null || git --no-replace-objects -C "$DOCS_STAGE/candidate" checkout "$CHERRI_DOCS_REF"
+    validate_cherri_installed_docs "$DOCS_STAGE/candidate"
   fi
 fi
 
@@ -281,13 +340,22 @@ if [ -n "$BIN_STAGE" ]; then
   if [ -e "$CACHED_CHERRI" ] || [ -L "$CACHED_CHERRI" ]; then OLD_BIN_PRESENT=1; fi
   if [ -e "$CACHED_CHERRI.commit" ] || [ -L "$CACHED_CHERRI.commit" ]; then OLD_COMMIT_PRESENT=1; fi
   if [ -e "$CACHED_CHERRI.sha256" ] || [ -L "$CACHED_CHERRI.sha256" ]; then OLD_CHECKSUM_PRESENT=1; fi
+  if [ -e "$CACHED_CHERRI_MIGRATE" ] || [ -L "$CACHED_CHERRI_MIGRATE" ]; then OLD_MIGRATION_PRESENT=1; fi
+  if [ -e "$CACHED_CHERRI_MIGRATE.commit" ] || [ -L "$CACHED_CHERRI_MIGRATE.commit" ]; then OLD_MIGRATION_COMMIT_PRESENT=1; fi
+  if [ -e "$CACHED_CHERRI_MIGRATE.sha256" ] || [ -L "$CACHED_CHERRI_MIGRATE.sha256" ]; then OLD_MIGRATION_CHECKSUM_PRESENT=1; fi
   BIN_PROMOTING=1
   if [ "$OLD_BIN_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI" "$BIN_STAGE/previous"; fi
   if [ "$OLD_COMMIT_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI.commit" "$BIN_STAGE/previous.commit"; fi
   if [ "$OLD_CHECKSUM_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI.sha256" "$BIN_STAGE/previous.sha256"; fi
+  if [ "$OLD_MIGRATION_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI_MIGRATE" "$BIN_STAGE/previous-migrate"; fi
+  if [ "$OLD_MIGRATION_COMMIT_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI_MIGRATE.commit" "$BIN_STAGE/previous-migrate.commit"; fi
+  if [ "$OLD_MIGRATION_CHECKSUM_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI_MIGRATE.sha256" "$BIN_STAGE/previous-migrate.sha256"; fi
   mv "$TMP_BIN" "$CACHED_CHERRI"
   mv "$TMP_COMMIT" "$CACHED_CHERRI.commit"
   mv "$TMP_BIN.sha256" "$CACHED_CHERRI.sha256"
+  mv "$TMP_MIGRATION" "$CACHED_CHERRI_MIGRATE"
+  mv "$TMP_MIGRATION.commit" "$CACHED_CHERRI_MIGRATE.commit"
+  mv "$TMP_MIGRATION.sha256" "$CACHED_CHERRI_MIGRATE.sha256"
 fi
 if [ -n "$DOCS_STAGE" ]; then
   if [ -e "$CHERRI_DOCS_DIR" ] || [ -L "$CHERRI_DOCS_DIR" ]; then OLD_DOCS_PRESENT=1; fi
@@ -299,18 +367,26 @@ fi
 if [ -n "$BIN_STAGE" ]; then
   # A damaged newly promoted cache must roll back, not appear successful by
   # selecting an unrelated compatible bundled or PATH compiler.
-  if ! validate_cherri_bin "$CACHED_CHERRI"; then
-    echo "[CHERRI_INSTALL_PROMOTED_INVALID] Promoted compiler failed validation; restoring the preceding installation." >&2
+  if ! validate_cherri_installation "$CACHED_CHERRI" "$CACHED_CHERRI_MIGRATE"; then
+    echo "[CHERRI_INSTALL_PROMOTED_INVALID] Promoted tool pair failed validation; restoring the preceding installation." >&2
     exit 1
   fi
   BIN=$CACHED_CHERRI
 else
-  BIN=$(resolve_cherri) || { echo "No compatible Cherri binary found after setup." >&2; exit 1; }
+  BIN=$(resolve_cherri_installation) || { echo "No compatible Cherri binary found after setup." >&2; exit 1; }
+fi
+SELECTED_MIGRATION=$(cherri_migration_for_compiler "$BIN")
+if [ -n "$BIN_STAGE" ] && [ "$SELECTED_MIGRATION" != "$CACHED_CHERRI_MIGRATE" ]; then
+  if ! validate_cherri_installation "$BIN" "$SELECTED_MIGRATION"; then
+    echo "[CHERRI_INSTALL_SELECTED_INVALID] The explicitly selected migration tool is incompatible; restoring the preceding installation." >&2
+    exit 1
+  fi
 fi
 "$BIN" --version
 if [ -d "$CHERRI_DOCS_DIR" ]; then
-  validate_docs_dir "$CHERRI_DOCS_DIR"
+  validate_cherri_installed_docs "$CHERRI_DOCS_DIR"
   printf 'Docs ready: %s\n' "$CHERRI_DOCS_DIR"
 fi
 INSTALL_COMMITTED=1
 printf 'Cherri ready: %s\n' "$BIN"
+printf 'Migration ready: %s\n' "$SELECTED_MIGRATION"

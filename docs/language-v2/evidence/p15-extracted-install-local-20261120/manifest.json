@@ -1,0 +1,1539 @@
+{
+  "format_version": 1,
+  "created_utc": "2026-11-20T07:15:49.707250+00:00",
+  "collection_source": "454d45575ab23eb70573de442e0f3c6261ed89f7",
+  "base_source": "059d6bf45ebc27bf58a695c1f5cc016b511b069b",
+  "scope": "Historical local component attempts only. No complete RP42/RP44/RP45 source-bound Linux result, final published tuple, Apple/runtime, or 179 closure is asserted. Original failure and partial attempts retain their original source and bytes.",
+  "archive": {
+    "path": "original-local-receipts.zip",
+    "bytes": 398514,
+    "sha256": "ff7e635939e2c8f76797f9c98506cbc61d4b5cc7f3ebc9116b1f50b689b5617f"
+  },
+  "attempts": [
+    {
+      "directory": "packaging-initial-baseline",
+      "source_before": "e408ec0be3c6057a279cf5b26d33377b5041ea9b",
+      "source_after": "e408ec0be3c6057a279cf5b26d33377b5041ea9b",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags|TestP15RP44ExtractedCapabilitiesRejection)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 43.0,
+      "passed_events": 0,
+      "failed_events": 3,
+      "skipped_events": 0,
+      "note": "Test fixture preparation failure: linked worktree did not embed the required clean Go VCS identity. No installed-tool success is inferred.",
+      "files": [
+        {
+          "path": "packaging-initial-baseline/command.json",
+          "bytes": 542,
+          "sha256": "53e287c3b76bc37fc0564f7c8fe7bf7139de7bd34d815c309fa9f4ec344340ff"
+        },
+        {
+          "path": "packaging-initial-baseline/process.json",
+          "bytes": 1283,
+          "sha256": "bd6a8bc4becedb0a4bf73a9fad7cb6ae82fb9eddc6415bc5e048aa44a88e733a"
+        },
+        {
+          "path": "packaging-initial-baseline/go-test.jsonl",
+          "bytes": 4786,
+          "sha256": "7e9d2c43c0c4035797d7882001d7e57d389f0e1cf05c712005f2e23db7ecb1c2"
+        },
+        {
+          "path": "packaging-initial-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-identity-bound-baseline",
+      "source_before": "84dee97ae64b091dbb46836c1d5c071a8d049c7e",
+      "source_after": "84dee97ae64b091dbb46836c1d5c071a8d049c7e",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags|TestP15RP44ExtractedCapabilitiesRejection)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 86.0,
+      "passed_events": 2,
+      "failed_events": 7,
+      "skipped_events": 0,
+      "note": "Actual CLI flag parsing failure after normal-clone identity preparation; other fixture preparation errors are retained separately.",
+      "files": [
+        {
+          "path": "packaging-identity-bound-baseline/command.json",
+          "bytes": 542,
+          "sha256": "906d816095ea076e4d42787ab138c21ca556f3531ab20c246fc1f0938b22eb53"
+        },
+        {
+          "path": "packaging-identity-bound-baseline/process.json",
+          "bytes": 1655,
+          "sha256": "ad24f66ff04f1cc9dc560eefe6a9f42d8a19d08d3526cb6c90a9185878d06069"
+        },
+        {
+          "path": "packaging-identity-bound-baseline/go-test.jsonl",
+          "bytes": 12334,
+          "sha256": "2c874100a8c05710e76cc642d4e5b0a4b1dd73648192d0e87bf2574fe6a241b0"
+        },
+        {
+          "path": "packaging-identity-bound-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-extracted-baseline",
+      "source_before": "61f00e9b9f9dc6ea2d357fa8b9b905e74fdcd80f",
+      "source_after": "61f00e9b9f9dc6ea2d357fa8b9b905e74fdcd80f",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP44ExtractedCapabilitiesRejection)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 130.89100000000326,
+      "passed_events": 0,
+      "failed_events": 8,
+      "skipped_events": 0,
+      "note": "Actual missing migration companion plus Windows shell-fixture failures. This is not a completed installation scenario.",
+      "files": [
+        {
+          "path": "packaging-extracted-baseline/command.json",
+          "bytes": 506,
+          "sha256": "d06d98b9900dd114a1652a9890298422c006d7a7f7e6a9a9ad19fb11000277c6"
+        },
+        {
+          "path": "packaging-extracted-baseline/process.json",
+          "bytes": 1604,
+          "sha256": "e7ca52c03f76325fb94ed3935728aba01044cdd7d227644523c389b75ea4a03a"
+        },
+        {
+          "path": "packaging-extracted-baseline/go-test.jsonl",
+          "bytes": 21551,
+          "sha256": "ea718e723fbde17c23226c815e7e40b1ec25fd6e8e83d46506219e4f009b7554"
+        },
+        {
+          "path": "packaging-extracted-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-shell-bound-baseline",
+      "source_before": "c7a54aee1982808019da8b7f350eb4fa12309a78",
+      "source_after": "c7a54aee1982808019da8b7f350eb4fa12309a78",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP44ExtractedCapabilitiesRejection)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 261.3280000000377,
+      "passed_events": 9,
+      "failed_events": 12,
+      "skipped_events": 0,
+      "note": "Actual missing companion and permissive capability validation failures; one test used an unsupported -oPATH spelling and was corrected to documented -o=VALUE.",
+      "files": [
+        {
+          "path": "packaging-shell-bound-baseline/command.json",
+          "bytes": 506,
+          "sha256": "19771a449c401b73d9cb34c46f62e3c3210d83a6d8e19da0b9e252b02cb660fe"
+        },
+        {
+          "path": "packaging-shell-bound-baseline/process.json",
+          "bytes": 2461,
+          "sha256": "e735859b97e4e32d45b15ee44d7301d570011cfba75a368b95824299906f1561"
+        },
+        {
+          "path": "packaging-shell-bound-baseline/go-test.jsonl",
+          "bytes": 1630871,
+          "sha256": "82fec74ca43ce653dfb99b0a26cf90821df017c5e3e9d5c9d1ae9928cb2c9722"
+        },
+        {
+          "path": "packaging-shell-bound-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-migration-flags-green",
+      "source_before": "af959dffdf686fb725ef0e7998fc5dd1d293c479",
+      "source_after": "af959dffdf686fb725ef0e7998fc5dd1d293c479",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP42MigrationDocumentedFlags)$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 32.57799999997951,
+      "passed_events": 7,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Actual migration preview/check/write flag ordering controls passed after the CLI parser repair.",
+      "files": [
+        {
+          "path": "packaging-migration-flags-green/command.json",
+          "bytes": 463,
+          "sha256": "1e39755e8d71a92ac443280a38ea97199479dd6becfdbc0f0551009985e00517"
+        },
+        {
+          "path": "packaging-migration-flags-green/process.json",
+          "bytes": 1490,
+          "sha256": "5c25bb858b062ff359aa0ea78f377a63215478d94fc311937a2cdfb5a31152a7"
+        },
+        {
+          "path": "packaging-migration-flags-green/go-test.jsonl",
+          "bytes": 6320,
+          "sha256": "2f9f08a26b59afb17b3193b7e842606be835667f953018f2a88a87494e77f869"
+        },
+        {
+          "path": "packaging-migration-flags-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-raw-json-baseline",
+      "source_before": "6737a718ab1e82156ca76cf535e1bd0b74d29a98",
+      "source_after": "6737a718ab1e82156ca76cf535e1bd0b74d29a98",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP44ExtractedCapabilitiesRejection$/^(duplicate_escaped_schema|invalid_escape|invalid_number|unpaired_surrogate|invalid_utf8|raw_nul|multiple_objects)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 107.53100000001723,
+      "passed_events": 0,
+      "failed_events": 8,
+      "skipped_events": 0,
+      "note": "Actual malformed/raw-byte capabilities responses were incorrectly accepted before the strict JSON repair.",
+      "files": [
+        {
+          "path": "packaging-raw-json-baseline/command.json",
+          "bytes": 583,
+          "sha256": "479a67d68aa978dba9ef1113e5a2a988fa750148610782c030ff3f0e99b37ca9"
+        },
+        {
+          "path": "packaging-raw-json-baseline/process.json",
+          "bytes": 1712,
+          "sha256": "cb053923a186e31bd1419378f4b05bd16bccf6cd574fc6e1fb12b5ea7694c7f4"
+        },
+        {
+          "path": "packaging-raw-json-baseline/go-test.jsonl",
+          "bytes": 97255,
+          "sha256": "83d18a4e58a799df7799d63c0383162991f68b00aec9f78446975319476ba12a"
+        },
+        {
+          "path": "packaging-raw-json-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-strict-json-green",
+      "source_before": "55f0398d2794c6f730976c5e954a5a13031918aa",
+      "source_after": "55f0398d2794c6f730976c5e954a5a13031918aa",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP44ExtractedCapabilitiesRejection$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 116.98399999999674,
+      "passed_events": 21,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Actual strict JSON capabilities negative controls and healthy control passed.",
+      "files": [
+        {
+          "path": "packaging-strict-json-green/command.json",
+          "bytes": 467,
+          "sha256": "f7f952161428b4d88440061e5d4b755bf1a9b0c7937fb410aec1ce8bab518172"
+        },
+        {
+          "path": "packaging-strict-json-green/process.json",
+          "bytes": 2450,
+          "sha256": "8617baf4395317db010b4c13e2908576ee0cd258da9946c37c4507c2d21dcd53"
+        },
+        {
+          "path": "packaging-strict-json-green/go-test.jsonl",
+          "bytes": 110083,
+          "sha256": "0382257c22bbd02ecca94cb719b24025a1e58988cde4e0df9c25ddb4f65e6ae8"
+        },
+        {
+          "path": "packaging-strict-json-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-identity-ownership-baseline",
+      "source_before": "76d5220c52c3596c1dac14e448998125dad13839",
+      "source_after": "76d5220c52c3596c1dac14e448998125dad13839",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 171.10899999999674,
+      "passed_events": 0,
+      "failed_events": 12,
+      "skipped_events": 0,
+      "note": "Actual installed-role/source/digest, missing companion and Git replacement controls failed before ownership repair.",
+      "files": [
+        {
+          "path": "packaging-identity-ownership-baseline/command.json",
+          "bytes": 539,
+          "sha256": "4b0b543d2943c8d5f739773231ef692cc3a560cd400fd85cc95d408a0741e0df"
+        },
+        {
+          "path": "packaging-identity-ownership-baseline/process.json",
+          "bytes": 1863,
+          "sha256": "8e3f7a76c7c6fa107c06e171d30468cd74a09f3b21dfecb40a3a067cf89ed658"
+        },
+        {
+          "path": "packaging-identity-ownership-baseline/go-test.jsonl",
+          "bytes": 131581,
+          "sha256": "d0ad820cde59f6f8ec8594c321da67fa083de8e81a451fe7d5934fde5d069fdb"
+        },
+        {
+          "path": "packaging-identity-ownership-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-identity-ownership-green",
+      "source_before": "9c06baceaa1e516c86c7cd974c933ad6146cb9c4",
+      "source_after": "9c06baceaa1e516c86c7cd974c933ad6146cb9c4",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements|TestP15RP44ExtractedCapabilitiesRejection|TestP15RP42MigrationDocumentedFlags)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 441.5,
+      "passed_events": 36,
+      "failed_events": 4,
+      "skipped_events": 0,
+      "note": "Partial replay: 36 passes and four failures. Three replacement assertions used text-normalized CRLF bytes; original raw output is retained. Directory name does not designate a successful attempt.",
+      "files": [
+        {
+          "path": "packaging-identity-ownership-green/command.json",
+          "bytes": 617,
+          "sha256": "adab21a5978d5a50aabbd278c1909d8ac90c6ecfe36e8a0de9887471cd10848b"
+        },
+        {
+          "path": "packaging-identity-ownership-green/process.json",
+          "bytes": 3708,
+          "sha256": "97e2d96c0eeec34b94f77e8e735ca578abbce064e2a3c53d9799b8911a6afd93"
+        },
+        {
+          "path": "packaging-identity-ownership-green/go-test.jsonl",
+          "bytes": 224728,
+          "sha256": "eef68fa1c53d583a0b42102e7368e50106bcfe8d69bf304aae5ba8e31d458dd1"
+        },
+        {
+          "path": "packaging-identity-ownership-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-order-docs-baseline",
+      "source_before": "4faa073460281e1a1fb7fbf8a9877ead6033a7a8",
+      "source_after": "4faa073460281e1a1fb7fbf8a9877ead6033a7a8",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP45IdentityValidationOrder|TestP15RP44InstalledDocsIdentity|TestP15RP45PackageIgnoresGitReplacements)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 189.28099999995902,
+      "passed_events": 7,
+      "failed_events": 7,
+      "skipped_events": 0,
+      "note": "Actual pre-execution receipt ordering, borrowed wrapper identity and modified docs failures; the platform case initially failed fixture construction and is not causal platform proof.",
+      "files": [
+        {
+          "path": "packaging-order-docs-baseline/command.json",
+          "bytes": 536,
+          "sha256": "b267b8d02043353baf5d3855df16907dffdd817d04386365aa0ba0e58cea515c"
+        },
+        {
+          "path": "packaging-order-docs-baseline/process.json",
+          "bytes": 1987,
+          "sha256": "6332434297cf76d8b169ea658dff25c0c999040838e6c8f513b38eecd5d31219"
+        },
+        {
+          "path": "packaging-order-docs-baseline/go-test.jsonl",
+          "bytes": 46698,
+          "sha256": "51f7db33811528cf7035c085af7a781ccd479b7d6b91fc8a8ae88a6a464cd690"
+        },
+        {
+          "path": "packaging-order-docs-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-platform-baseline",
+      "source_before": "467d12d3219a7a3825659545908358b94d3b733a",
+      "source_after": "467d12d3219a7a3825659545908358b94d3b733a",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP45IdentityValidationOrder$/^different_platform_metadata$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 91.10899999999674,
+      "passed_events": 0,
+      "failed_events": 2,
+      "skipped_events": 0,
+      "note": "Corrected platform fixture produced the actual incompatible-pair rejection failure.",
+      "files": [
+        {
+          "path": "packaging-platform-baseline/command.json",
+          "bytes": 490,
+          "sha256": "f41e4ed25cff756e3bf269261ce738cd0f7784cf32f82685c0e3b25579779a1d"
+        },
+        {
+          "path": "packaging-platform-baseline/process.json",
+          "bytes": 1220,
+          "sha256": "0c5b08cba3bce6a8b6b4f51c5834003b8ee59bd7d127347af308bebe5481bec4"
+        },
+        {
+          "path": "packaging-platform-baseline/go-test.jsonl",
+          "bytes": 10180,
+          "sha256": "3b084e93c65b402ed56b25c8cfaefb094f7008bdc82aba0b8fe4fba126f361ae"
+        },
+        {
+          "path": "packaging-platform-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-order-docs-green",
+      "source_before": "31b210ffcdaa7d254d45d9cea918860fac8cf4f8",
+      "source_after": "31b210ffcdaa7d254d45d9cea918860fac8cf4f8",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP45IdentityValidationOrder|TestP15RP44InstalledDocsIdentity|TestP15RP45InstalledBinaryOwnership)$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 254.71899999998277,
+      "passed_events": 15,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Actual receipt-before-execution, exact source/role/platform/docs and replacement controls passed after the bounded repairs.",
+      "files": [
+        {
+          "path": "packaging-order-docs-green/command.json",
+          "bytes": 531,
+          "sha256": "c402a23a01ad0278a853ac315b30ada882d3d2650f8c0474269d776fedf7e8b4"
+        },
+        {
+          "path": "packaging-order-docs-green/process.json",
+          "bytes": 2093,
+          "sha256": "0e50507e4cd36ea1b12925bbc0e88210cd30059122178e8618d35116f0b34b59"
+        },
+        {
+          "path": "packaging-order-docs-green/go-test.jsonl",
+          "bytes": 120427,
+          "sha256": "9a6b5ab7398078b1c82b3705a6f2b4bfe07ab71c3f24ab44e4f44ec468a925bb"
+        },
+        {
+          "path": "packaging-order-docs-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-selected-companion-baseline",
+      "source_before": "5855d081a0e9d6bb10348ed14378d59ef5362176",
+      "source_after": "5855d081a0e9d6bb10348ed14378d59ef5362176",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP45ExtractedInstallAndRollback$/^explicit_migration_override_(missing|wrong_role)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 124.21900000004098,
+      "passed_events": 0,
+      "failed_events": 3,
+      "skipped_events": 0,
+      "note": "Actual successful update incorrectly reported readiness when an explicit selected migration override was missing or had the wrong role.",
+      "files": [
+        {
+          "path": "packaging-selected-companion-baseline/command.json",
+          "bytes": 515,
+          "sha256": "a38ccf9a4fb8f8003a2a48be7383312868d3a6fd7aa3d427d72063da05619841"
+        },
+        {
+          "path": "packaging-selected-companion-baseline/process.json",
+          "bytes": 1348,
+          "sha256": "5aca54d0689a6d0e3987de3af330af2139af05fd457a54d74a33c1c42a977c1b"
+        },
+        {
+          "path": "packaging-selected-companion-baseline/go-test.jsonl",
+          "bytes": 10506,
+          "sha256": "c91745acedf24606d64e9b7d9f110dcd8a7ef3733695bb722f4b9b4e3e02bd86"
+        },
+        {
+          "path": "packaging-selected-companion-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-atomic-install-green",
+      "source_before": "05a0bb54475015d8eebac03caf449d069656ec7c",
+      "source_after": "05a0bb54475015d8eebac03caf449d069656ec7c",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP45ExtractedInstallAndRollback$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 272.84399999998277,
+      "passed_events": 12,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Actual source-built pair, exact pinned source after branch advancement, checksum failures, handled post-rename interruptions, override rejection and successful update passed. No power-loss or concurrent-reader guarantee.",
+      "files": [
+        {
+          "path": "packaging-atomic-install-green/command.json",
+          "bytes": 464,
+          "sha256": "3f65811811028eae5847a5856000b086763743ce87d8cd7dcb7434777fad909a"
+        },
+        {
+          "path": "packaging-atomic-install-green/process.json",
+          "bytes": 1975,
+          "sha256": "4393a70112c5e7918bbb089cb12e9147e9c6c20c94bb055a7c5dd69ce75c1def"
+        },
+        {
+          "path": "packaging-atomic-install-green/go-test.jsonl",
+          "bytes": 26455,
+          "sha256": "69da58e2232b0c0e4017a48bcfea825d6554e9376817e2d255c8856bb146ce41"
+        },
+        {
+          "path": "packaging-atomic-install-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-index-lock-baseline",
+      "source_before": "a992c7fe75576bd2b431cefcd4dc05d1bc3ef558",
+      "source_after": "a992c7fe75576bd2b431cefcd4dc05d1bc3ef558",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP44GitIndexDocsIntegrity|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 323.43799999996554,
+      "passed_events": 1,
+      "failed_events": 10,
+      "skipped_events": 0,
+      "note": "Actual assume-unchanged/skip-worktree source and docs concealment and post-mkdir signal lock leaks; existing foreign owner control passed.",
+      "files": [
+        {
+          "path": "packaging-index-lock-baseline/command.json",
+          "bytes": 529,
+          "sha256": "47b834737370fdc166d766e3fee0e42cce837e73e637232ec70a6454e6c3272d"
+        },
+        {
+          "path": "packaging-index-lock-baseline/process.json",
+          "bytes": 1747,
+          "sha256": "d7ed1ec9f2d8c1b29cc6773795e15eceac06449b78e1f0b6b5cb7f8057167aa7"
+        },
+        {
+          "path": "packaging-index-lock-baseline/go-test.jsonl",
+          "bytes": 48567,
+          "sha256": "7a082492e09375bc4f8e7f81fd38d9eb425cd811314ce6c80d6ef46d28622d61"
+        },
+        {
+          "path": "packaging-index-lock-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-index-lock-green",
+      "source_before": "f735eaada89d81256596378ebcde297dea0bb866",
+      "source_after": "f735eaada89d81256596378ebcde297dea0bb866",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP44GitIndexDocsIntegrity|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 290.23399999999674,
+      "passed_events": 10,
+      "failed_events": 1,
+      "skipped_events": 0,
+      "note": "Partial replay: ten passes; one test cleanup used combined Git flag clearing, which left skip-worktree set. Original failure retained; production repair was not weakened.",
+      "files": [
+        {
+          "path": "packaging-index-lock-green/command.json",
+          "bytes": 529,
+          "sha256": "decd3e5359a430329fa0e1f68106a9f0f95d7265138c4fc058e8ef69258089c7"
+        },
+        {
+          "path": "packaging-index-lock-green/process.json",
+          "bytes": 1747,
+          "sha256": "5141eabd88d0aefa9362f3d2e84acc2b70091bcaf4f1a838e6e9b186c066523b"
+        },
+        {
+          "path": "packaging-index-lock-green/go-test.jsonl",
+          "bytes": 28247,
+          "sha256": "a4d7c006ad70851b9b37d4351194ab401abaee4407832a889cad1847842e3477"
+        },
+        {
+          "path": "packaging-index-lock-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-index-lock-cleanup-green",
+      "source_before": "17328337c6cff17cfc2f43b6332c05089a06342f",
+      "source_after": "17328337c6cff17cfc2f43b6332c05089a06342f",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP44GitIndexDocsIntegrity|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 299.10899999999674,
+      "passed_events": 11,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Same eleven actual source/docs/lock controls passed after correcting only the test cleanup to two Git commands.",
+      "files": [
+        {
+          "path": "packaging-index-lock-cleanup-green/command.json",
+          "bytes": 529,
+          "sha256": "af00b7356a1c10465509de7ddeca48167dec8581111067db4fb46a9bda5130c0"
+        },
+        {
+          "path": "packaging-index-lock-cleanup-green/process.json",
+          "bytes": 1744,
+          "sha256": "0d4c96bc6e6aa19807d13698b1a0a66cae3038ab83c518a541a2b28788e2ce0b"
+        },
+        {
+          "path": "packaging-index-lock-cleanup-green/go-test.jsonl",
+          "bytes": 24212,
+          "sha256": "6b092acb167409bf46b7b0eb70441927081fc5d9119f0c98b1308d013ab76ad8"
+        },
+        {
+          "path": "packaging-index-lock-cleanup-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-old-consumer-self-test-baseline",
+      "source_before": "1b1d45231918daa11fd595c3b6debcb77b1ba475",
+      "source_after": "1b1d45231918daa11fd595c3b6debcb77b1ba475",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP45ExtractedRuntimePair$/^controlled_installation_self_test$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 108.51600000000326,
+      "passed_events": 0,
+      "failed_events": 2,
+      "skipped_events": 0,
+      "note": "Actual shipped consumer reached the old fake prebuilt source fixture and failed because it lacked a real Go module. The consumer was then adapted to actual same-source tools with explicitly controlled download transport.",
+      "files": [
+        {
+          "path": "packaging-old-consumer-self-test-baseline/command.json",
+          "bytes": 493,
+          "sha256": "efbdb46043546ca78c4c671192c7968cef286b21d89367704a8cf362ba30ade2"
+        },
+        {
+          "path": "packaging-old-consumer-self-test-baseline/process.json",
+          "bytes": 1224,
+          "sha256": "515616c155bd9625e88272dbbf4e1ef26890e200a60045610a3b8faec7d1dc10"
+        },
+        {
+          "path": "packaging-old-consumer-self-test-baseline/go-test.jsonl",
+          "bytes": 10114,
+          "sha256": "e3bf67cf48e7713076477f6301a131f02f4a4479274e01fd9ecc1eb3cfe36efa"
+        },
+        {
+          "path": "packaging-old-consumer-self-test-baseline/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-runtime-pair-consumer-green",
+      "source_before": "224990efa28915e6ac68b8518c20368ecffa1b0c",
+      "source_after": "224990efa28915e6ac68b8518c20368ecffa1b0c",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^TestP15RP45ExtractedRuntimePair$",
+        "."
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 244.06199999997625,
+      "passed_events": 3,
+      "failed_events": 2,
+      "skipped_events": 0,
+      "note": "Partial replay: three leaf passes, including all ten controlled actual-pair self-test scenarios; offline install assertion failed only because it compared Windows and MSYS spellings of the same file. No full runtime-pair pass is attributed to this attempt.",
+      "files": [
+        {
+          "path": "packaging-runtime-pair-consumer-green/command.json",
+          "bytes": 457,
+          "sha256": "ba2814a2fe1bc5823bb3bf9b877df17ea34b0da77021a34059203494aff497b8"
+        },
+        {
+          "path": "packaging-runtime-pair-consumer-green/process.json",
+          "bytes": 1401,
+          "sha256": "a3c93269814d160a850439892c56172310a5e203567f09829b3753fefa643114"
+        },
+        {
+          "path": "packaging-runtime-pair-consumer-green/go-test.jsonl",
+          "bytes": 17022,
+          "sha256": "d676e6220421a536451429c7af08df06cfc6c1c4597537604c19347e2c7a0160"
+        },
+        {
+          "path": "packaging-runtime-pair-consumer-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-selection-consumer-green",
+      "source_before": "877c8ebe2e6537f80a9244db2a9c54d6a3e008df",
+      "source_after": "877c8ebe2e6537f80a9244db2a9c54d6a3e008df",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP44ExtractedCacheAndBundleSelection|TestP15RP44ExtractedCompatibilityConsumer)$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 385.10899999999674,
+      "passed_events": 9,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Actual current/outdated cache/bundle/explicit selection and the shipped compatibility consumer passed with real same-source compiler and companion plus generated disposable docs.",
+      "files": [
+        {
+          "path": "packaging-selection-consumer-green/command.json",
+          "bytes": 513,
+          "sha256": "ac30b052d6fd56d5ba11fc1a8f53e7ff1a58735eee1620592a1b3ba0f09b33ea"
+        },
+        {
+          "path": "packaging-selection-consumer-green/process.json",
+          "bytes": 1807,
+          "sha256": "ccbf0fe27c001d025ed8ac904e5e7785083a7dfd144c11c8b56d3bf62403e2c7"
+        },
+        {
+          "path": "packaging-selection-consumer-green/go-test.jsonl",
+          "bytes": 34555,
+          "sha256": "eb4284c77751e7737846b108f6fe4a38a25e61907d7316c3f1d13721b44ca1e9"
+        },
+        {
+          "path": "packaging-selection-consumer-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-strict-intake-controls",
+      "source_before": "51dd44c0e9e492dcca8ee0a941bc4848ed1ac1d3",
+      "source_after": "51dd44c0e9e492dcca8ee0a941bc4848ed1ac1d3",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "-run",
+        "^TestExtractedInstall(ProducerInventory|EventParserControls)$",
+        "./tools/language-acceptance"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 9.39000000001397,
+      "passed_events": 146,
+      "failed_events": 4,
+      "skipped_events": 0,
+      "note": "Synthetic parser controls passed; four inventory failures exposed a new producer tier spelling mismatch. Immutable contracts were not changed.",
+      "files": [
+        {
+          "path": "packaging-strict-intake-controls/command.json",
+          "bytes": 511,
+          "sha256": "290acda82e37b8fa6c5ca0ad334c6eeea513def6509794b24adc7c089d6dcd53"
+        },
+        {
+          "path": "packaging-strict-intake-controls/process.json",
+          "bytes": 15788,
+          "sha256": "625724a2e82356ee16afb188cbe2b83980d992e7bb25e5f8767acf8b737e3745"
+        },
+        {
+          "path": "packaging-strict-intake-controls/go-test.jsonl",
+          "bytes": 176896,
+          "sha256": "56c495ae5ca8af18a40c2c46052a5afedb3468d9ba91d7bd68f2a7b1ab66305c"
+        },
+        {
+          "path": "packaging-strict-intake-controls/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-strict-intake-controls-green",
+      "source_before": "9c06dbf370ac0b7113d3e7a322c7b9671ab77664",
+      "source_after": "9c06dbf370ac0b7113d3e7a322c7b9671ab77664",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "-run",
+        "^TestExtractedInstall(ProducerInventory|EventParserControls)$",
+        "./tools/language-acceptance"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 7.437999999965541,
+      "passed_events": 150,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "All 150 synthetic parser and inventory controls passed after using the existing canonical skill-package tier. No actual complete requirement credit follows from synthetic events.",
+      "files": [
+        {
+          "path": "packaging-strict-intake-controls-green/command.json",
+          "bytes": 511,
+          "sha256": "9c61db34a776e3d77371618230a8b4a1454818a8999e7a25c03a478253d68975"
+        },
+        {
+          "path": "packaging-strict-intake-controls-green/process.json",
+          "bytes": 15786,
+          "sha256": "75ff9b0d353f24d69fbd2662914b661f45d4594e7520317852c4215f536f04c8"
+        },
+        {
+          "path": "packaging-strict-intake-controls-green/go-test.jsonl",
+          "bytes": 175123,
+          "sha256": "ddfdc5ff2d8213964e8cecd1d49154bcff6909cc2a1d61c1e11b0342fb9e73c7"
+        },
+        {
+          "path": "packaging-strict-intake-controls-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "directory": "packaging-runtime-pair-ownership-green",
+      "source_before": "9c06dbf370ac0b7113d3e7a322c7b9671ab77664",
+      "source_after": "9c06dbf370ac0b7113d3e7a322c7b9671ab77664",
+      "clean_before": true,
+      "clean_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15RP45InstalledBinaryOwnership|TestP15RP45ExtractedRuntimePair)$",
+        "."
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 340.2969999999623,
+      "passed_events": 10,
+      "failed_events": 0,
+      "skipped_events": 0,
+      "note": "Final actual runtime-pair and installed ownership replay. Status must be read from the retained process receipt, never inferred from this directory name.",
+      "files": [
+        {
+          "path": "packaging-runtime-pair-ownership-green/command.json",
+          "bytes": 495,
+          "sha256": "c774da4b0857ca6e8b6485f41a453b589dc65fec508a495c5cc707fae6ec333a"
+        },
+        {
+          "path": "packaging-runtime-pair-ownership-green/process.json",
+          "bytes": 1762,
+          "sha256": "befcf27abe486bb52b79a998bd0ae1a55164a4703b3f9ec339263b1bcd60897e"
+        },
+        {
+          "path": "packaging-runtime-pair-ownership-green/go-test.jsonl",
+          "bytes": 107909,
+          "sha256": "248aad916d1ad5650a09b87b357786fbf511def6760425179c69decea663d4c4"
+        },
+        {
+          "path": "packaging-runtime-pair-ownership-green/go-test.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "packaging-initial-baseline/command.json",
+      "bytes": 542,
+      "sha256": "53e287c3b76bc37fc0564f7c8fe7bf7139de7bd34d815c309fa9f4ec344340ff"
+    },
+    {
+      "path": "packaging-initial-baseline/process.json",
+      "bytes": 1283,
+      "sha256": "bd6a8bc4becedb0a4bf73a9fad7cb6ae82fb9eddc6415bc5e048aa44a88e733a"
+    },
+    {
+      "path": "packaging-initial-baseline/go-test.jsonl",
+      "bytes": 4786,
+      "sha256": "7e9d2c43c0c4035797d7882001d7e57d389f0e1cf05c712005f2e23db7ecb1c2"
+    },
+    {
+      "path": "packaging-initial-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-identity-bound-baseline/command.json",
+      "bytes": 542,
+      "sha256": "906d816095ea076e4d42787ab138c21ca556f3531ab20c246fc1f0938b22eb53"
+    },
+    {
+      "path": "packaging-identity-bound-baseline/process.json",
+      "bytes": 1655,
+      "sha256": "ad24f66ff04f1cc9dc560eefe6a9f42d8a19d08d3526cb6c90a9185878d06069"
+    },
+    {
+      "path": "packaging-identity-bound-baseline/go-test.jsonl",
+      "bytes": 12334,
+      "sha256": "2c874100a8c05710e76cc642d4e5b0a4b1dd73648192d0e87bf2574fe6a241b0"
+    },
+    {
+      "path": "packaging-identity-bound-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-extracted-baseline/command.json",
+      "bytes": 506,
+      "sha256": "d06d98b9900dd114a1652a9890298422c006d7a7f7e6a9a9ad19fb11000277c6"
+    },
+    {
+      "path": "packaging-extracted-baseline/process.json",
+      "bytes": 1604,
+      "sha256": "e7ca52c03f76325fb94ed3935728aba01044cdd7d227644523c389b75ea4a03a"
+    },
+    {
+      "path": "packaging-extracted-baseline/go-test.jsonl",
+      "bytes": 21551,
+      "sha256": "ea718e723fbde17c23226c815e7e40b1ec25fd6e8e83d46506219e4f009b7554"
+    },
+    {
+      "path": "packaging-extracted-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-shell-bound-baseline/command.json",
+      "bytes": 506,
+      "sha256": "19771a449c401b73d9cb34c46f62e3c3210d83a6d8e19da0b9e252b02cb660fe"
+    },
+    {
+      "path": "packaging-shell-bound-baseline/process.json",
+      "bytes": 2461,
+      "sha256": "e735859b97e4e32d45b15ee44d7301d570011cfba75a368b95824299906f1561"
+    },
+    {
+      "path": "packaging-shell-bound-baseline/go-test.jsonl",
+      "bytes": 1630871,
+      "sha256": "82fec74ca43ce653dfb99b0a26cf90821df017c5e3e9d5c9d1ae9928cb2c9722"
+    },
+    {
+      "path": "packaging-shell-bound-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-migration-flags-green/command.json",
+      "bytes": 463,
+      "sha256": "1e39755e8d71a92ac443280a38ea97199479dd6becfdbc0f0551009985e00517"
+    },
+    {
+      "path": "packaging-migration-flags-green/process.json",
+      "bytes": 1490,
+      "sha256": "5c25bb858b062ff359aa0ea78f377a63215478d94fc311937a2cdfb5a31152a7"
+    },
+    {
+      "path": "packaging-migration-flags-green/go-test.jsonl",
+      "bytes": 6320,
+      "sha256": "2f9f08a26b59afb17b3193b7e842606be835667f953018f2a88a87494e77f869"
+    },
+    {
+      "path": "packaging-migration-flags-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-raw-json-baseline/command.json",
+      "bytes": 583,
+      "sha256": "479a67d68aa978dba9ef1113e5a2a988fa750148610782c030ff3f0e99b37ca9"
+    },
+    {
+      "path": "packaging-raw-json-baseline/process.json",
+      "bytes": 1712,
+      "sha256": "cb053923a186e31bd1419378f4b05bd16bccf6cd574fc6e1fb12b5ea7694c7f4"
+    },
+    {
+      "path": "packaging-raw-json-baseline/go-test.jsonl",
+      "bytes": 97255,
+      "sha256": "83d18a4e58a799df7799d63c0383162991f68b00aec9f78446975319476ba12a"
+    },
+    {
+      "path": "packaging-raw-json-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-strict-json-green/command.json",
+      "bytes": 467,
+      "sha256": "f7f952161428b4d88440061e5d4b755bf1a9b0c7937fb410aec1ce8bab518172"
+    },
+    {
+      "path": "packaging-strict-json-green/process.json",
+      "bytes": 2450,
+      "sha256": "8617baf4395317db010b4c13e2908576ee0cd258da9946c37c4507c2d21dcd53"
+    },
+    {
+      "path": "packaging-strict-json-green/go-test.jsonl",
+      "bytes": 110083,
+      "sha256": "0382257c22bbd02ecca94cb719b24025a1e58988cde4e0df9c25ddb4f65e6ae8"
+    },
+    {
+      "path": "packaging-strict-json-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-identity-ownership-baseline/command.json",
+      "bytes": 539,
+      "sha256": "4b0b543d2943c8d5f739773231ef692cc3a560cd400fd85cc95d408a0741e0df"
+    },
+    {
+      "path": "packaging-identity-ownership-baseline/process.json",
+      "bytes": 1863,
+      "sha256": "8e3f7a76c7c6fa107c06e171d30468cd74a09f3b21dfecb40a3a067cf89ed658"
+    },
+    {
+      "path": "packaging-identity-ownership-baseline/go-test.jsonl",
+      "bytes": 131581,
+      "sha256": "d0ad820cde59f6f8ec8594c321da67fa083de8e81a451fe7d5934fde5d069fdb"
+    },
+    {
+      "path": "packaging-identity-ownership-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-identity-ownership-green/command.json",
+      "bytes": 617,
+      "sha256": "adab21a5978d5a50aabbd278c1909d8ac90c6ecfe36e8a0de9887471cd10848b"
+    },
+    {
+      "path": "packaging-identity-ownership-green/process.json",
+      "bytes": 3708,
+      "sha256": "97e2d96c0eeec34b94f77e8e735ca578abbce064e2a3c53d9799b8911a6afd93"
+    },
+    {
+      "path": "packaging-identity-ownership-green/go-test.jsonl",
+      "bytes": 224728,
+      "sha256": "eef68fa1c53d583a0b42102e7368e50106bcfe8d69bf304aae5ba8e31d458dd1"
+    },
+    {
+      "path": "packaging-identity-ownership-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-order-docs-baseline/command.json",
+      "bytes": 536,
+      "sha256": "b267b8d02043353baf5d3855df16907dffdd817d04386365aa0ba0e58cea515c"
+    },
+    {
+      "path": "packaging-order-docs-baseline/process.json",
+      "bytes": 1987,
+      "sha256": "6332434297cf76d8b169ea658dff25c0c999040838e6c8f513b38eecd5d31219"
+    },
+    {
+      "path": "packaging-order-docs-baseline/go-test.jsonl",
+      "bytes": 46698,
+      "sha256": "51f7db33811528cf7035c085af7a781ccd479b7d6b91fc8a8ae88a6a464cd690"
+    },
+    {
+      "path": "packaging-order-docs-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-platform-baseline/command.json",
+      "bytes": 490,
+      "sha256": "f41e4ed25cff756e3bf269261ce738cd0f7784cf32f82685c0e3b25579779a1d"
+    },
+    {
+      "path": "packaging-platform-baseline/process.json",
+      "bytes": 1220,
+      "sha256": "0c5b08cba3bce6a8b6b4f51c5834003b8ee59bd7d127347af308bebe5481bec4"
+    },
+    {
+      "path": "packaging-platform-baseline/go-test.jsonl",
+      "bytes": 10180,
+      "sha256": "3b084e93c65b402ed56b25c8cfaefb094f7008bdc82aba0b8fe4fba126f361ae"
+    },
+    {
+      "path": "packaging-platform-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-order-docs-green/command.json",
+      "bytes": 531,
+      "sha256": "c402a23a01ad0278a853ac315b30ada882d3d2650f8c0474269d776fedf7e8b4"
+    },
+    {
+      "path": "packaging-order-docs-green/process.json",
+      "bytes": 2093,
+      "sha256": "0e50507e4cd36ea1b12925bbc0e88210cd30059122178e8618d35116f0b34b59"
+    },
+    {
+      "path": "packaging-order-docs-green/go-test.jsonl",
+      "bytes": 120427,
+      "sha256": "9a6b5ab7398078b1c82b3705a6f2b4bfe07ab71c3f24ab44e4f44ec468a925bb"
+    },
+    {
+      "path": "packaging-order-docs-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-selected-companion-baseline/command.json",
+      "bytes": 515,
+      "sha256": "a38ccf9a4fb8f8003a2a48be7383312868d3a6fd7aa3d427d72063da05619841"
+    },
+    {
+      "path": "packaging-selected-companion-baseline/process.json",
+      "bytes": 1348,
+      "sha256": "5aca54d0689a6d0e3987de3af330af2139af05fd457a54d74a33c1c42a977c1b"
+    },
+    {
+      "path": "packaging-selected-companion-baseline/go-test.jsonl",
+      "bytes": 10506,
+      "sha256": "c91745acedf24606d64e9b7d9f110dcd8a7ef3733695bb722f4b9b4e3e02bd86"
+    },
+    {
+      "path": "packaging-selected-companion-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-atomic-install-green/command.json",
+      "bytes": 464,
+      "sha256": "3f65811811028eae5847a5856000b086763743ce87d8cd7dcb7434777fad909a"
+    },
+    {
+      "path": "packaging-atomic-install-green/process.json",
+      "bytes": 1975,
+      "sha256": "4393a70112c5e7918bbb089cb12e9147e9c6c20c94bb055a7c5dd69ce75c1def"
+    },
+    {
+      "path": "packaging-atomic-install-green/go-test.jsonl",
+      "bytes": 26455,
+      "sha256": "69da58e2232b0c0e4017a48bcfea825d6554e9376817e2d255c8856bb146ce41"
+    },
+    {
+      "path": "packaging-atomic-install-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-index-lock-baseline/command.json",
+      "bytes": 529,
+      "sha256": "47b834737370fdc166d766e3fee0e42cce837e73e637232ec70a6454e6c3272d"
+    },
+    {
+      "path": "packaging-index-lock-baseline/process.json",
+      "bytes": 1747,
+      "sha256": "d7ed1ec9f2d8c1b29cc6773795e15eceac06449b78e1f0b6b5cb7f8057167aa7"
+    },
+    {
+      "path": "packaging-index-lock-baseline/go-test.jsonl",
+      "bytes": 48567,
+      "sha256": "7a082492e09375bc4f8e7f81fd38d9eb425cd811314ce6c80d6ef46d28622d61"
+    },
+    {
+      "path": "packaging-index-lock-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-index-lock-green/command.json",
+      "bytes": 529,
+      "sha256": "decd3e5359a430329fa0e1f68106a9f0f95d7265138c4fc058e8ef69258089c7"
+    },
+    {
+      "path": "packaging-index-lock-green/process.json",
+      "bytes": 1747,
+      "sha256": "5141eabd88d0aefa9362f3d2e84acc2b70091bcaf4f1a838e6e9b186c066523b"
+    },
+    {
+      "path": "packaging-index-lock-green/go-test.jsonl",
+      "bytes": 28247,
+      "sha256": "a4d7c006ad70851b9b37d4351194ab401abaee4407832a889cad1847842e3477"
+    },
+    {
+      "path": "packaging-index-lock-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-index-lock-cleanup-green/command.json",
+      "bytes": 529,
+      "sha256": "af00b7356a1c10465509de7ddeca48167dec8581111067db4fb46a9bda5130c0"
+    },
+    {
+      "path": "packaging-index-lock-cleanup-green/process.json",
+      "bytes": 1744,
+      "sha256": "0d4c96bc6e6aa19807d13698b1a0a66cae3038ab83c518a541a2b28788e2ce0b"
+    },
+    {
+      "path": "packaging-index-lock-cleanup-green/go-test.jsonl",
+      "bytes": 24212,
+      "sha256": "6b092acb167409bf46b7b0eb70441927081fc5d9119f0c98b1308d013ab76ad8"
+    },
+    {
+      "path": "packaging-index-lock-cleanup-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-old-consumer-self-test-baseline/command.json",
+      "bytes": 493,
+      "sha256": "efbdb46043546ca78c4c671192c7968cef286b21d89367704a8cf362ba30ade2"
+    },
+    {
+      "path": "packaging-old-consumer-self-test-baseline/process.json",
+      "bytes": 1224,
+      "sha256": "515616c155bd9625e88272dbbf4e1ef26890e200a60045610a3b8faec7d1dc10"
+    },
+    {
+      "path": "packaging-old-consumer-self-test-baseline/go-test.jsonl",
+      "bytes": 10114,
+      "sha256": "e3bf67cf48e7713076477f6301a131f02f4a4479274e01fd9ecc1eb3cfe36efa"
+    },
+    {
+      "path": "packaging-old-consumer-self-test-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-runtime-pair-consumer-green/command.json",
+      "bytes": 457,
+      "sha256": "ba2814a2fe1bc5823bb3bf9b877df17ea34b0da77021a34059203494aff497b8"
+    },
+    {
+      "path": "packaging-runtime-pair-consumer-green/process.json",
+      "bytes": 1401,
+      "sha256": "a3c93269814d160a850439892c56172310a5e203567f09829b3753fefa643114"
+    },
+    {
+      "path": "packaging-runtime-pair-consumer-green/go-test.jsonl",
+      "bytes": 17022,
+      "sha256": "d676e6220421a536451429c7af08df06cfc6c1c4597537604c19347e2c7a0160"
+    },
+    {
+      "path": "packaging-runtime-pair-consumer-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-selection-consumer-green/command.json",
+      "bytes": 513,
+      "sha256": "ac30b052d6fd56d5ba11fc1a8f53e7ff1a58735eee1620592a1b3ba0f09b33ea"
+    },
+    {
+      "path": "packaging-selection-consumer-green/process.json",
+      "bytes": 1807,
+      "sha256": "ccbf0fe27c001d025ed8ac904e5e7785083a7dfd144c11c8b56d3bf62403e2c7"
+    },
+    {
+      "path": "packaging-selection-consumer-green/go-test.jsonl",
+      "bytes": 34555,
+      "sha256": "eb4284c77751e7737846b108f6fe4a38a25e61907d7316c3f1d13721b44ca1e9"
+    },
+    {
+      "path": "packaging-selection-consumer-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-strict-intake-controls/command.json",
+      "bytes": 511,
+      "sha256": "290acda82e37b8fa6c5ca0ad334c6eeea513def6509794b24adc7c089d6dcd53"
+    },
+    {
+      "path": "packaging-strict-intake-controls/process.json",
+      "bytes": 15788,
+      "sha256": "625724a2e82356ee16afb188cbe2b83980d992e7bb25e5f8767acf8b737e3745"
+    },
+    {
+      "path": "packaging-strict-intake-controls/go-test.jsonl",
+      "bytes": 176896,
+      "sha256": "56c495ae5ca8af18a40c2c46052a5afedb3468d9ba91d7bd68f2a7b1ab66305c"
+    },
+    {
+      "path": "packaging-strict-intake-controls/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-strict-intake-controls-green/command.json",
+      "bytes": 511,
+      "sha256": "9c61db34a776e3d77371618230a8b4a1454818a8999e7a25c03a478253d68975"
+    },
+    {
+      "path": "packaging-strict-intake-controls-green/process.json",
+      "bytes": 15786,
+      "sha256": "75ff9b0d353f24d69fbd2662914b661f45d4594e7520317852c4215f536f04c8"
+    },
+    {
+      "path": "packaging-strict-intake-controls-green/go-test.jsonl",
+      "bytes": 175123,
+      "sha256": "ddfdc5ff2d8213964e8cecd1d49154bcff6909cc2a1d61c1e11b0342fb9e73c7"
+    },
+    {
+      "path": "packaging-strict-intake-controls-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-runtime-pair-ownership-green/command.json",
+      "bytes": 495,
+      "sha256": "c774da4b0857ca6e8b6485f41a453b589dc65fec508a495c5cc707fae6ec333a"
+    },
+    {
+      "path": "packaging-runtime-pair-ownership-green/process.json",
+      "bytes": 1762,
+      "sha256": "befcf27abe486bb52b79a998bd0ae1a55164a4703b3f9ec339263b1bcd60897e"
+    },
+    {
+      "path": "packaging-runtime-pair-ownership-green/go-test.jsonl",
+      "bytes": 107909,
+      "sha256": "248aad916d1ad5650a09b87b357786fbf511def6760425179c69decea663d4c4"
+    },
+    {
+      "path": "packaging-runtime-pair-ownership-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "packaging-index-cleanup-diagnosis.json",
+      "bytes": 458,
+      "sha256": "8101520a8ab494cb7e807557cfb952ea3fcc1a00ec85180ce81b7eb2343319f1"
+    }
+  ]
+}

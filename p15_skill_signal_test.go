@@ -42,7 +42,7 @@ func TestP15K03HandledSignalRestoresFiles(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
-			f.seedActualPair(t, roundTripBinary(t))
+			f.seedActualPair(t, p15InstallActualCompiler(t))
 			cache := filepath.Join(f.home, "bin", "cherri")
 			p15InstallWrite(t, cache+".sha256", []byte(fmt.Sprintf("%x\n", sha256.Sum256(p15InstallRead(t, cache)))))
 			old := p15InstallState(t, f)
@@ -58,6 +58,10 @@ func TestP15K03HandledSignalRestoresFiles(t *testing.T) {
 			env := p15InstallEnvCopy(f.env)
 			env["CHERRI_PREBUILT_URL"], env["CHERRI_PREBUILT_SHA256"] = url, fmt.Sprintf("%x", sha256.Sum256(candidate))
 			env["CHERRI_DOCS_REF"] = f.advanceGoodDocs(t)
+			if tc.fresh {
+				migrationURL, _ := p15InstallServer(t, old.migration)
+				env["CHERRI_MIGRATE_PREBUILT_URL"], env["CHERRI_MIGRATE_PREBUILT_SHA256"] = migrationURL, fmt.Sprintf("%x", sha256.Sum256(old.migration))
+			}
 			shimDir := filepath.Join(t.TempDir(), "shim")
 			marker := filepath.Join(f.home, "signal-after-real-move")
 			shim := "#!/bin/sh\nset -e\n" + p15InstallShellQuote(p15InstallRealCommand(t, "mv")) + " \"$@\"\ncase \"$1\" in\n" + tc.pattern + ")\nprintf 'REAL_MOVE_COMPLETED\\n' > " + p15InstallShellQuote(marker) + "\nkill -s TERM \"$PPID\"\n;;\nesac\n"
@@ -74,7 +78,7 @@ func TestP15K03HandledSignalRestoresFiles(t *testing.T) {
 				t.Errorf("signal control downloaded %d times", requests.Load())
 			}
 			if tc.fresh {
-				for _, p := range []string{cache, cache + ".commit", cache + ".sha256", filepath.Join(f.home, "docs")} {
+				for _, p := range []string{cache, cache + ".commit", cache + ".sha256", filepath.Join(f.home, "bin", "cherri-migrate"), filepath.Join(f.home, "bin", "cherri-migrate.commit"), filepath.Join(f.home, "bin", "cherri-migrate.sha256"), filepath.Join(f.home, "docs")} {
 					if _, err := os.Stat(p); !os.IsNotExist(err) {
 						t.Errorf("interrupted fresh install left active artifact %s: %v", p, err)
 					}
@@ -93,12 +97,10 @@ func TestP15K03HandledSignalRestoresFiles(t *testing.T) {
 
 func TestP15K03PromotedCacheCannotFallBack(t *testing.T) {
 	f := p15NewInstallFixture(t)
-	f.seedActualPair(t, roundTripBinary(t))
+	f.seedActualPair(t, p15InstallActualCompiler(t))
 	old := p15InstallState(t, f)
 	bundle := filepath.Join(f.skill, "bin", "cherri")
-	p15InstallWrite(t, bundle, old.binary)
-	p15InstallWrite(t, bundle+".commit", old.commit)
-	p15InstallWrite(t, bundle+".sha256", []byte(fmt.Sprintf("%x\n", sha256.Sum256(old.binary))))
+	p15InstallCopyPair(t, filepath.Join(f.home, "bin"), filepath.Dir(bundle))
 	candidate := p15InstallCandidate(t, f.root)
 	url, _ := p15InstallServer(t, candidate)
 	env := p15InstallEnvCopy(f.env)

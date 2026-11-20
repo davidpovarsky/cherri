@@ -15,6 +15,7 @@ import re
 import stat
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 PREFIX = "cherri-shortcuts/"
@@ -41,10 +42,10 @@ def canonical(value):
 def committed_files(repo, commit):
     if not SHA.fullmatch(commit):
         raise ValueError("skill commit must be an immutable 40-character SHA")
-    actual = checked(["git", "rev-parse", commit + "^{commit}"], repo).decode().strip()
+    actual = checked(["git", "--no-replace-objects", "rev-parse", commit + "^{commit}"], repo).decode().strip()
     if actual != commit:
         raise ValueError("skill commit resolution mismatch")
-    tree = checked(["git", "ls-tree", "-r", "-z", commit, "--",
+    tree = checked(["git", "--no-replace-objects", "ls-tree", "-r", "-z", commit, "--",
                     "skills/cherri-shortcuts", "LICENSE"], repo)
     files = {}
     for entry in tree.split(b"\0"):
@@ -60,11 +61,13 @@ def committed_files(repo, commit):
         else:
             name = PREFIX + path.removeprefix("skills/cherri-shortcuts/")
         if name in (RECEIPT, PREFIX + "bin/cherri", PREFIX + "bin/cherri.commit",
-                    PREFIX + "bin/cherri.sha256"):
+                    PREFIX + "bin/cherri.sha256", PREFIX + "bin/cherri-migrate",
+                    PREFIX + "bin/cherri-migrate.commit", PREFIX + "bin/cherri-migrate.sha256"):
             raise ValueError("reserved generated package path: " + name)
-        files[name] = (checked(["git", "cat-file", "blob", oid], repo), int(mode, 8))
+        files[name] = (checked(["git", "--no-replace-objects", "cat-file", "blob", oid], repo), int(mode, 8))
     required = [PREFIX + p for p in ("SKILL.md", "compatibility-manifest.json",
                 "scripts/setup.sh", "scripts/self-test.sh", "scripts/common.sh",
+                "scripts/json-object.awk", "scripts/installation.sh",
                 "scripts/build.sh", "scripts/prepare-edit.sh", "LICENSE.cherri")]
     if not all(path in files for path in required):
         raise ValueError("committed Skill package is incomplete")
@@ -78,17 +81,28 @@ def committed_files(repo, commit):
     return files, manifest
 
 
-def inspect_binary(path, expected, go):
+def inspect_binary(path, expected, go, main_package="github.com/electrikmilk/cherri"):
     data = Path(path).read_bytes()
-    output = checked([go, "version", "-m", str(path)]).decode("utf-8", errors="strict")
+    # Inspect the same owned snapshot whose bytes and digest will be packaged.
+    with tempfile.TemporaryDirectory(prefix="cherri-package-identity-") as temporary:
+        snapshot = Path(temporary) / "tool"
+        snapshot.write_bytes(data)
+        output = checked([go, "version", "-m", str(snapshot)]).decode("utf-8", errors="strict")
     settings = {}
+    actual_package = None
     for line in output.splitlines():
         fields = line.strip().split(None, 1)
+        if len(fields) == 2 and fields[0] == "path":
+            if actual_package is not None:
+                raise ValueError("duplicate binary main package")
+            actual_package = fields[1]
         if len(fields) == 2 and fields[0] == "build" and "=" in fields[1]:
             key, value = fields[1].split("=", 1)
             if key in settings:
                 raise ValueError("duplicate binary build setting: " + key)
             settings[key] = value
+    if actual_package != main_package:
+        raise ValueError("binary main package mismatch: expected " + main_package + ", got " + str(actual_package))
     if settings.get("vcs") != "git" or settings.get("vcs.modified") != "false":
         raise ValueError("runtime binary lacks clean Git build provenance")
     if settings.get("vcs.revision") != expected:
@@ -98,29 +112,38 @@ def inspect_binary(path, expected, go):
         raise ValueError("runtime binary platform provenance missing")
     return data, {"compilerCommit": expected, "sha256": digest(data),
                   "goos": settings["GOOS"], "goarch": settings["GOARCH"],
-                  "vcsModified": False}
+                  "vcsModified": False, "modulePath": actual_package}
 
 
-def expected_package(repo, commit, kind, compiler=None, go="go"):
+def expected_package(repo, commit, kind, compiler=None, go="go", migrator=None):
     files, manifest = committed_files(repo, commit)
     runtime = None
     if kind == "runtime":
         if not compiler:
             raise ValueError("runtime package requires a trusted compiler file")
         data, runtime = inspect_binary(Path(compiler).resolve(), manifest["compilerCommit"], go)
-        files[PREFIX + "bin/cherri"] = (data, stat.S_IFREG | 0o755)
-        files[PREFIX + "bin/cherri.commit"] = (
-            (manifest["compilerCommit"] + "\n").encode(), stat.S_IFREG | 0o644)
-        files[PREFIX + "bin/cherri.sha256"] = (
-            (digest(data) + "\n").encode(), stat.S_IFREG | 0o644)
-    elif kind != "source" or compiler:
-        raise ValueError("source package cannot contain a runtime compiler")
+        if not migrator:
+            raise ValueError("runtime package requires a trusted migration tool file")
+        migration_data, migration_identity = inspect_binary(
+            Path(migrator).resolve(), manifest["compilerCommit"], go,
+            "github.com/electrikmilk/cherri/cmd/cherri-migrate")
+        if any(runtime[key] != migration_identity[key] for key in ("goos", "goarch")):
+            raise ValueError("compiler and migration tool platforms differ")
+        runtime["migration"] = migration_identity
+        for name, tool_data in (("cherri", data), ("cherri-migrate", migration_data)):
+            files[PREFIX + "bin/" + name] = (tool_data, stat.S_IFREG | 0o755)
+            files[PREFIX + "bin/" + name + ".commit"] = (
+                (manifest["compilerCommit"] + "\n").encode(), stat.S_IFREG | 0o644)
+            files[PREFIX + "bin/" + name + ".sha256"] = (
+                (digest(tool_data) + "\n").encode(), stat.S_IFREG | 0o644)
+    elif kind != "source" or compiler or migrator:
+        raise ValueError("source package cannot contain runtime tools")
     receipt = {"schemaVersion": 1, "kind": kind, "skillCommit": commit,
                "compilerCommit": manifest["compilerCommit"],
                "docsCommit": manifest["docsCommit"], "runtime": runtime,
                "files": [{"path": name, "sha256": digest(data), "bytes": len(data),
                           "mode": oct(mode)} for name, (data, mode) in sorted(files.items())],
-               "scope": "Exact committed package bytes and clean compiler source provenance; "
+               "scope": "Exact committed package bytes and clean compiler/migration source and role provenance; "
                         "unpacked execution, installation and signing require separate tests."}
     files[RECEIPT] = (canonical(receipt), stat.S_IFREG | 0o644)
     return files, receipt
@@ -181,6 +204,7 @@ def main():
     parser.add_argument("--skill-commit", required=True)
     parser.add_argument("--kind", choices=("source", "runtime"), required=True)
     parser.add_argument("--compiler", type=Path)
+    parser.add_argument("--migrator", type=Path)
     parser.add_argument("--go", default="go")
     parser.add_argument("--archive", type=Path, required=True)
     parser.add_argument("--unpack", type=Path)
@@ -188,7 +212,7 @@ def main():
     args = parser.parse_args()
     try:
         files, receipt = expected_package(args.repo, args.skill_commit, args.kind,
-                                          args.compiler, args.go)
+                                          args.compiler, args.go, args.migrator)
         if args.operation == "create":
             create_archive(args.archive, files)
         verify_archive(args.archive, files, args.unpack)

@@ -1,0 +1,282 @@
+{
+  "format_version": 1,
+  "collection_source": "95611881917b8b80f1b00958070984ff76f98f88",
+  "created_utc": "2026-11-20T07:37:44.707864+00:00",
+  "scope": "First Linux formal run remains FAILED at source8dda. BusyBox byte controls and original inner scenarios are separate observations. Current clean RP42 local full strict producer passed at956; RP44/RP45 full strict replay and all final integrated/release gates remain pending.",
+  "archive": {
+    "path": "original-followup-receipts.zip",
+    "bytes": 725994,
+    "sha256": "2723fd7d970d8e6af9448c2b870fbbd44a6c08cd2412c4cfb312158e25b43b1e"
+  },
+  "local_attempts": [
+    {
+      "directory": "packaging-actual-rp42-intake-green",
+      "source": "6dfaa735da01a280b507b833d3b7944f5e2bcc12",
+      "outer_exit_code": 1,
+      "outer_pass_events": 206,
+      "outer_fail_events": 4,
+      "outer_skip_events": 0,
+      "outer_seconds": 130.43799999996554,
+      "outer_raw_sha256": "410e9eef27dc3e05691ccbaef99993e7f4994895166f71fedd2f14503f4bcb8d",
+      "inner_exit_code": 0,
+      "inner_pass_events": 14,
+      "inner_seconds": 102.7348313,
+      "inner_raw_sha256": "522d6351e6ff734988009f303d00b0176dd945fb3795c58731852a465701f5e4",
+      "immutable_source_blobs": 64
+    },
+    {
+      "directory": "packaging-actual-rp42-tier-oracle-green",
+      "source": "95611881917b8b80f1b00958070984ff76f98f88",
+      "outer_exit_code": 0,
+      "outer_pass_events": 210,
+      "outer_fail_events": 0,
+      "outer_skip_events": 0,
+      "outer_seconds": 113.59399999998277,
+      "outer_raw_sha256": "2dc9534f8e757d519db060e5026de740439c457d832d74967ba2629c2b10d91d",
+      "inner_exit_code": 0,
+      "inner_pass_events": 14,
+      "inner_seconds": 84.583394,
+      "inner_raw_sha256": "de38d915891f16de8915be1211eb643108f9e454edb9acd0a4f5e7478f7a0187",
+      "immutable_source_blobs": 64
+    }
+  ],
+  "linux_run": {
+    "source": "8ddaefb0a9fdc9d2ad91ad4d5f7032504c402ebe",
+    "workflow_run": 44694030530,
+    "attempt": 1,
+    "formal_run_conclusion": "failure",
+    "verified_immutable_source_blobs": 64,
+    "rows": [
+      {
+        "requirement": "RP42",
+        "root_pass_events": 14,
+        "root_seconds": 83.181096398,
+        "root_exit_code": 0,
+        "root_raw_sha256": "bc7bac6b21a2326ab84390980f02997e2b7e1bde359aa6a8bdfd6677ffb0bb9a",
+        "formal_outer_status": "FAILED",
+        "root_scope_only": true
+      },
+      {
+        "requirement": "RP44",
+        "root_pass_events": 39,
+        "root_seconds": 87.731406625,
+        "root_exit_code": 0,
+        "root_raw_sha256": "87a92289ae31de2fbf2be6703e3db1fe2cf1008c64d4fedffdec2a79cee3242e",
+        "formal_outer_status": "FAILED",
+        "root_scope_only": true
+      },
+      {
+        "requirement": "RP45",
+        "root_pass_events": 41,
+        "root_seconds": 137.837122632,
+        "root_exit_code": 0,
+        "root_raw_sha256": "2c92ef92afcb0e48dc8a804645dfb832bd1761dd90808a2725063b7fc84a696c",
+        "formal_outer_status": "FAILED",
+        "root_scope_only": true
+      }
+    ],
+    "scope": "Original inner scenario execution only. Outer formal acceptance failed and these raw receipts are not promoted or rebound.",
+    "verified_utc": "2026-11-20T07:29:34.424623+00:00"
+  },
+  "busybox": {
+    "source": "8ddaefb0a9fdc9d2ad91ad4d5f7032504c402ebe",
+    "run_id": 44694030530,
+    "artifact_id": 14609951498,
+    "zip_bytes": 4095,
+    "zip_sha256": "e56b311cbf18b0a2946cc9710b8ecbb108ce1d2fe7baed12fe08b1c9f14dbabb",
+    "elapsed_seconds": 4.470009401999999,
+    "exit_code": 0,
+    "verified_source_blobs": 4,
+    "image_id": "sha256:49340b346798875b5592e5d420241f2f9cfba5f47e62ebb1446a1b34734e898f",
+    "stdout": "BusyBox v1.37.0 (2025-11-21 22:40:56 UTC) multi-call binary.\nCHERRI_JSON_BOUNDARY_CONTROLS pass=10 scope=synthetic_parser_only\n",
+    "scope": "Actual Alpine BusyBox execution of synthetic byte-parser controls only; no formal requirement or native Shortcut credit.",
+    "verified_utc": "2026-11-20T07:22:43.431910+00:00"
+  },
+  "files": [
+    {
+      "path": "linux-44694030530/RP44-original.zip",
+      "bytes": 31659,
+      "sha256": "b8d671c7322686c839d5dfcdbca54bf6f4c5568c709b9238c0c8d9cd5dc5420f"
+    },
+    {
+      "path": "linux-44694030530/RP45-original.zip",
+      "bytes": 37786,
+      "sha256": "a0cb4fedec277d2f965fc9888c6ba9a0556ffaf6dcfca1fcb499ea42c15bc7f9"
+    },
+    {
+      "path": "linux-44694030530/RP42-original.zip",
+      "bytes": 199271,
+      "sha256": "ddcf83d2de666abb41565f8ceb5f402738b67ae200dd17c9df858e45badf0f73"
+    },
+    {
+      "path": "linux-44694030530/busybox-original.zip",
+      "bytes": 4095,
+      "sha256": "e56b311cbf18b0a2946cc9710b8ecbb108ce1d2fe7baed12fe08b1c9f14dbabb"
+    },
+    {
+      "path": "linux-44694030530/run-terminal-original.json",
+      "bytes": 12479,
+      "sha256": "334650208d808d05771780345fdc419b02becc077c979881178999d0fad975e5"
+    },
+    {
+      "path": "linux-44694030530/jobs-terminal-original.json",
+      "bytes": 9827,
+      "sha256": "f9ff0291bae0ff174be41428924e47d08914f2ce49cc1ab2f405dccc7607279b"
+    },
+    {
+      "path": "linux-44694030530/artifacts-terminal-original.json",
+      "bytes": 3139,
+      "sha256": "a05fda043775e9096f8b6321aa03248185b4aca1e9e8de4cf76298f66ff4e2be"
+    },
+    {
+      "path": "linux-44694030530/initial-failure-analysis.json",
+      "bytes": 10229,
+      "sha256": "a3e964493da977e59a1718efc85fed5d7075e015c975049c5d415e32bf6f2e44"
+    },
+    {
+      "path": "linux-44694030530/inner-root-source-verification.json",
+      "bytes": 1322,
+      "sha256": "d02cd54cd1e54c97cf7c829cbe5e8a001ad8e6e1502ea5f306c6c2297eb3e4c9"
+    },
+    {
+      "path": "linux-44694030530/job-log-digests.json",
+      "bytes": 664,
+      "sha256": "03e01146ab695261750847f732a3a0885abbd42a9a0a338e6870e9a3b573c3c3"
+    },
+    {
+      "path": "linux-44694030530/busybox-verification.json",
+      "bytes": 744,
+      "sha256": "bb5b9f0f101251973837ea2a4c65b7fbd8f849591db7995318591cc5f4a9e9bc"
+    },
+    {
+      "path": "linux-44694030530/busybox-artifact-original.json",
+      "bytes": 781,
+      "sha256": "62249b6ca0deb443530883ac610d14a38a08ab27bafeda7ea31ae21e40db96c6"
+    },
+    {
+      "path": "linux-44694030530/RP42-job-original.log",
+      "bytes": 55974,
+      "sha256": "0389238b27e9adf2853d6177fbb328f9366f52a66df502a1f0a666136a2bdb68"
+    },
+    {
+      "path": "linux-44694030530/RP44-job-original.log",
+      "bytes": 55970,
+      "sha256": "8105a74e84fc04bdfb363130d3f7b47834c809930946cfb06b2fad3d0eef00a7"
+    },
+    {
+      "path": "linux-44694030530/RP45-job-original.log",
+      "bytes": 55974,
+      "sha256": "c0e4efad74285039e62961e139e6fb3b61f474b01f271d9235ca96776f65ab6a"
+    },
+    {
+      "path": "linux-44694030530/busybox-job-original.log",
+      "bytes": 26189,
+      "sha256": "c525f7c8d6d9fbc5b9a99021bd0085d6784fc32e96bb88839fb399f1bb2e65b2"
+    },
+    {
+      "path": "publication/push.json",
+      "bytes": 1142,
+      "sha256": "e7b70e5accc47d8fe7dd2c65f66ea132da3e3c738a345f2dd9a1d125f99490c8"
+    },
+    {
+      "path": "publication/registration.json",
+      "bytes": 1132,
+      "sha256": "6e41c294b938ecdacca79dd9cc5360d0391dd34a6dfcd9c9c5554627a31b960b"
+    },
+    {
+      "path": "publication/dispatch-intent.json",
+      "bytes": 452,
+      "sha256": "a635d00031d136b2443c86122d0b12134e8ae092152d0168f0eb8f0d40dea6aa"
+    },
+    {
+      "path": "publication/dispatch-result.json",
+      "bytes": 560,
+      "sha256": "d06ad687ddb1204bd41fa180d51eb301e2222efccda01360dbfe6abd9e4b6695"
+    },
+    {
+      "path": "publication/manual-run-verification.json",
+      "bytes": 1222,
+      "sha256": "2814386040089bbfc7a31f1e31d26d7d76415d44278fe48efb95055e55dadc0c"
+    },
+    {
+      "path": "publication/manual-runs-original.json",
+      "bytes": 12512,
+      "sha256": "728f867b10bd3be3d95284b51d6fd605515d72704132a09f54b39dc31484bfd4"
+    },
+    {
+      "path": "publication/manual-jobs-initial-original.json",
+      "bytes": 8852,
+      "sha256": "1d063b238d9df6d087afc291819caa28a4fcc10bb241efc8aefba1d70601b7b7"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/command.json",
+      "bytes": 544,
+      "sha256": "c7b99ee2903c49756b6cef926c42eab902ced2e96370ca8baa04b40b3f01895e"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/go-test.jsonl",
+      "bytes": 247612,
+      "sha256": "410e9eef27dc3e05691ccbaef99993e7f4994895166f71fedd2f14503f4bcb8d"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/process.json",
+      "bytes": 20578,
+      "sha256": "1b83cec44c152038940ed2ae09c3942ac7befb1cda9269f558dea058cb2c56d5"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/actual-artifacts/rp42-1006743614/rp42-go.jsonl",
+      "bytes": 1545691,
+      "sha256": "522d6351e6ff734988009f303d00b0176dd945fb3795c58731852a465701f5e4"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/actual-artifacts/rp42-1006743614/rp42-process.json",
+      "bytes": 12428,
+      "sha256": "2dbc38a48f33dcd0b04d7a4cc376c935634091b2fb7e5d1d06d50321c1e21a10"
+    },
+    {
+      "path": "local/packaging-actual-rp42-intake-green/actual-artifacts/rp42-1006743614/rp42-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/command.json",
+      "bytes": 544,
+      "sha256": "cf9f8ae73cbe73ea9f8c585ce846fc2df9752c979b80b3db2953ce4cbdff7926"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/go-test.jsonl",
+      "bytes": 247106,
+      "sha256": "2dc9534f8e757d519db060e5026de740439c457d832d74967ba2629c2b10d91d"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/process.json",
+      "bytes": 20575,
+      "sha256": "2e43e260eca2ec315de11bb84b47b610d4c2431aca385a484aec637069151300"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/actual-artifacts/rp42-592884334/rp42-go.jsonl",
+      "bytes": 1545505,
+      "sha256": "de38d915891f16de8915be1211eb643108f9e454edb9acd0a4f5e7478f7a0187"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/actual-artifacts/rp42-592884334/rp42-process.json",
+      "bytes": 12427,
+      "sha256": "e0ca945ee32b9a979273e4c856d3c43132b997d94ad9615b796b5c812f3bc9ba"
+    },
+    {
+      "path": "local/packaging-actual-rp42-tier-oracle-green/actual-artifacts/rp42-592884334/rp42-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

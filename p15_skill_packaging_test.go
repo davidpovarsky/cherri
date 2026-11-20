@@ -32,8 +32,15 @@ func p15PackageRun(t *testing.T, root string, args ...string) (string, error) {
 	return string(out), err
 }
 
-func p15PackageBuild(t *testing.T, root, commit string) string {
+func p15PackageBuild(t *testing.T, root, commit string, packagePaths ...string) string {
 	t.Helper()
+	packagePath := "."
+	if len(packagePaths) > 1 {
+		t.Fatal("one Go main package is required")
+	}
+	if len(packagePaths) == 1 {
+		packagePath = packagePaths[0]
+	}
 	tmp := t.TempDir()
 	clone := filepath.Join(tmp, "source")
 	p15InstallGit(t, root, "clone", "--quiet", "--shared", "--no-checkout", root, clone)
@@ -48,9 +55,9 @@ func p15PackageBuild(t *testing.T, root, commit string) string {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "go", "build", "-buildvcs=true", "-trimpath", "-o", binary, ".")
+	cmd := exec.CommandContext(ctx, "go", "build", "-buildvcs=true", "-trimpath", "-o", binary, packagePath)
 	cmd.Dir = clone
-	cmd.Env = append(p15InstallEnv(nil), "GOFLAGS=", "GOWORK=off")
+	cmd.Env = append(p15InstallEnv(nil), "GOFLAGS=", "GOWORK=off", "GIT_NO_REPLACE_OBJECTS=1")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("actual clean compiler build: %v\n%s", err, out)
 	}
@@ -136,9 +143,10 @@ func TestP15K01UnpackedPackageContract(t *testing.T) {
 	}
 	pin := manifest["compilerCommit"].(string)
 	binary := p15PackageBuild(t, root, pin)
+	migration := p15PackageBuild(t, root, pin, "./cmd/cherri-migrate")
 	tmp := t.TempDir()
 	archive := filepath.Join(tmp, "runtime.zip")
-	args := []string{"--repo", root, "--skill-commit", head, "--kind", "runtime", "--compiler", binary}
+	args := []string{"--repo", root, "--skill-commit", head, "--kind", "runtime", "--compiler", binary, "--migrator", migration}
 	create := append([]string{"create"}, args...)
 	create = append(create, "--archive", archive)
 	if out, err := p15PackageRun(t, root, create...); err != nil {
@@ -158,6 +166,14 @@ func TestP15K01UnpackedPackageContract(t *testing.T) {
 		}
 		if string(p15InstallRead(t, filepath.Join(skill, "bin", "cherri.commit"))) != pin+"\n" {
 			t.Fatal("unpacked binary commit receipt differs")
+		}
+		for _, tool := range []struct{ name, input, role string }{{"cherri", binary, "github.com/electrikmilk/cherri"}, {"cherri-migrate", migration, "github.com/electrikmilk/cherri/cmd/cherri-migrate"}} {
+			path := filepath.Join(skill, "bin", tool.name)
+			data := p15InstallRead(t, path)
+			if sha256.Sum256(data) != sha256.Sum256(p15InstallRead(t, tool.input)) || string(p15InstallRead(t, path+".commit")) != pin+"\n" || string(p15InstallRead(t, path+".sha256")) != fmt.Sprintf("%x\n", sha256.Sum256(data)) {
+				t.Fatalf("unpacked %s bytes/source/digest differ", tool.name)
+			}
+			p15ExtractedRequireRole(t, path, pin, tool.role)
 		}
 		env := map[string]string{"SKILL_DIR": filepath.ToSlash(skill),
 			"CHERRI_HOME": filepath.ToSlash(filepath.Join(t.TempDir(), "empty-home")),
@@ -311,7 +327,7 @@ func TestP15K01UnpackedPackageContract(t *testing.T) {
 		wrong := p15PackageBuild(t, root, head)
 		path := filepath.Join(t.TempDir(), "wrong-source.zip")
 		out, err := p15PackageRun(t, root, "create", "--repo", root, "--skill-commit", head,
-			"--kind", "runtime", "--compiler", wrong, "--archive", path)
+			"--kind", "runtime", "--compiler", wrong, "--migrator", migration, "--archive", path)
 		if err == nil || !strings.Contains(out, "compiler revision mismatch") {
 			t.Fatalf("real current-HEAD binary falsely matched manifest pin: %v\n%s", err, out)
 		}
