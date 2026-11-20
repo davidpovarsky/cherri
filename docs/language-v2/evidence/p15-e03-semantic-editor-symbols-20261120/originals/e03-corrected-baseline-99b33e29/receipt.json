@@ -1,0 +1,67 @@
+{
+  "source": "99b33e29119374c42cacb3acd710c863a1dd3781",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E03",
+    "./internal/language/service"
+  ],
+  "status_before": "",
+  "free_before": 39159922688,
+  "started_at": "2026-11-20T13:34:30.924441+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 12.327999999979511,
+  "completed_at": "2026-11-20T13:34:43.258556+00:00",
+  "status_after": "",
+  "head_after": "99b33e29119374c42cacb3acd710c863a1dd3781",
+  "free_after": 39125430272,
+  "named_counts": {
+    "pass": 19,
+    "fail": 22
+  },
+  "failed_names": [
+    "TestP15E03ExactScopedSymbols/inner_shadow",
+    "TestP15E03ExactScopedSymbols",
+    "TestP15E03NonSymbolPositions/quoted_literal",
+    "TestP15E03NonSymbolPositions/line_comment",
+    "TestP15E03NonSymbolPositions/fstring_literal",
+    "TestP15E03NonSymbolPositions/dictionary_key",
+    "TestP15E03NonSymbolPositions/canonical_named_label",
+    "TestP15E03NonSymbolPositions/record_member_name",
+    "TestP15E03NonSymbolPositions/type_annotation",
+    "TestP15E03NonSymbolPositions/invalid_column_is_not_clamped",
+    "TestP15E03NonSymbolPositions",
+    "TestP15E03AuthoredSignatureOwnership/function_shadows_action",
+    "TestP15E03AuthoredSignatureOwnership/authored_function_hover",
+    "TestP15E03AuthoredSignatureOwnership/local_variable_hover",
+    "TestP15E03AuthoredSignatureOwnership",
+    "TestP15E03RenameMustNotCapture/same_scope_duplicate",
+    "TestP15E03RenameMustNotCapture/selected_reference_captured",
+    "TestP15E03RenameMustNotCapture/unselected_reference_captured",
+    "TestP15E03RenameMustNotCapture/canonical_call_captured",
+    "TestP15E03RenameMustNotCapture",
+    "TestP15E03NamedParameterRenameOwnership",
+    "TestP15E03UnusedSameScopeRenameCollision"
+  ],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 67899,
+      "sha256": "d3c97d5175e90dfa915d0e0a899d2fee9d74d5a6b23d47c5d97234b6bf84fbbf"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
