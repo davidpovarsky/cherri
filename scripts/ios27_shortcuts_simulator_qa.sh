@@ -1046,87 +1046,23 @@ print("Available iPad simulators:", ", ".join(summary) if summary else "none")
 PY
 rm -f "$QA_SCRATCH_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ARTIFACT_DIR/sim-devicetypes.json" "$ARTIFACT_DIR/sim-devices.json"
 
+# Liveness diagnostics have one monotonic budget and never replace the signed
+# import, callback, or exact runtime oracle below.
 simctl_getenv_ok() {
-  local target_udid="$1"
-  python3 - "$target_udid" <<'PY' >/dev/null 2>&1
-import os, signal, subprocess, sys
-u = sys.argv[1]
-p = subprocess.Popen(
-    ["xcrun", "simctl", "getenv", u, "HOME"],
-    stdin=subprocess.DEVNULL,
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-    start_new_session=True,
-)
-try:
-    sys.exit(p.wait(timeout=15))
-except subprocess.TimeoutExpired:
-    try:
-        os.killpg(p.pid, signal.SIGKILL)
-    except Exception:
-        pass
-    try:
-        p.wait(timeout=3)
-    except Exception:
-        pass
-    sys.exit(124)
-PY
+  python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/simulator_session_recovery.py" probe \
+    --udid "$1" --scratch "$QA_SCRATCH_DIR" >/dev/null 2>&1
 }
 
 wait_for_springboard_display() {
-  local target_udid="$1"
-  local max_wait="${2:-90}"
-  local probe_png="$QA_SCRATCH_DIR/springboard-probe.png"
-  local elapsed=0
-  local bytes=0
-  while [ "$elapsed" -le "$max_wait" ]; do
-    rm -f "$probe_png"
-    if simctl_getenv_ok "$target_udid"; then
-      python3 - "$target_udid" "$probe_png" <<'PY' >/dev/null 2>&1 || true
-import os, signal, subprocess, sys
-p = subprocess.Popen(["xcrun", "simctl", "io", sys.argv[1], "screenshot", sys.argv[2]], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
-try:
-    p.wait(timeout=25)
-except subprocess.TimeoutExpired:
-    try: os.killpg(p.pid, signal.SIGKILL)
-    except Exception: pass
-PY
-      if [ -f "$probe_png" ]; then
-        bytes="$(wc -c < "$probe_png" | tr -d '[:space:]')"
-        if [ "${bytes:-0}" -ge 85000 ]; then
-          rm -f "$probe_png"
-          return 0
-        fi
-      fi
-    fi
-    [ "$elapsed" -ge "$max_wait" ] && break
-    sleep 5
-    elapsed=$((elapsed + 5))
-  done
-  rm -f "$probe_png"
-  echo "wait_for_springboard_display(${max_wait}s) last_screenshot_bytes=${bytes:-0}"
-  return 1
+  python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/simulator_session_recovery.py" display \
+    --udid "$1" --scratch "$QA_SCRATCH_DIR" --display-budget "${2:-90}"
 }
 
 ensure_sim_session_ready() {
-  local target_udid="$1"
-  local force_reboot="${2:-0}"
-  if [ "$force_reboot" -ne 1 ] && simctl_getenv_ok "$target_udid"; then
-    return 0
-  fi
-  echo "Simulator session recovery triggered (force_reboot=$force_reboot); rebooting <UDID> cleanly..."
-  xcrun simctl shutdown "$target_udid" >/dev/null 2>&1 || true
-  sleep 2
-  xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
-  xcrun simctl bootstatus "$target_udid" -b >/dev/null 2>&1 || true
-  open -g -a Simulator --args -CurrentDeviceUDID "$target_udid" >/dev/null 2>&1 || true
-  sleep 3
-  local retry_rc=0
-  simctl_getenv_ok "$target_udid" || retry_rc=$?
-  local sb_rc=0
-  wait_for_springboard_display "$target_udid" 90 || sb_rc=$?
-  echo "Simulator session post-reboot check getenv_rc=$retry_rc springboard_rc=$sb_rc"
-  return 0
+  python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/simulator_session_recovery.py" recover \
+    --udid "$1" --scratch "$QA_SCRATCH_DIR" --force-reboot "${2:-0}" \
+    --receipt "$ARTIFACT_DIR/runtime/simulator-session-recovery.json" \
+    --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID"
 }
 
 simctl_openurl_resilient() {
