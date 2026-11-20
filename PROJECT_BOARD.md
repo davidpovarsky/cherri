@@ -157,3 +157,7 @@ Actual clean-source production passed 135 outer / 14 child named tests on 6bdddd
 ## 2026-11-20 U01 original-object hardening
 
 Clean 06c5c2fa completed 140 outer and 19 actual root events after a real four-operation isolated replacement-ref counterexample. Fifty source blobs and three original artifact references independently audited. Repository U01 component only; all final/native/other-ID gates remain unchanged. See docs/language-v2/p15-u01-original-object-hardening-20261120.md.
+
+## 2026-11-20 R4 intermediate preflight audit
+
+Three original failed combined invocations retained without recategorization. At0dc, five completed RP11/RP16/U01 records independently verified against92 distinct source blobs. F03 and schema focused clean replays pass; RP03 child completion and full final suite remain open. See docs/language-v2/p15-r4-intermediate-preflights-20261120.md.
