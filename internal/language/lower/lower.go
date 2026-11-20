@@ -1366,14 +1366,21 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.bindings = savedBindings
 
 		if !hasReturn {
-			l.emitAction(&ir.NativeActionNode{
-				NodeID:          l.GenerateUUID(),
-				AppleIdentifier: "is.workflow.actions.nothing",
-			})
-			l.emitAction(&ir.NativeActionNode{
-				NodeID:          l.GenerateUUID(),
-				AppleIdentifier: "is.workflow.actions.output",
-			})
+			if optionalFunctionParameter(fn.ReturnType) {
+				// Preserve the existing implicit no-value return with the same
+				// explicit presence protocol as authored `return none`.
+				carrier := l.optionalCarrier(nil, "0", "has_value", "value", "_cherri_optional_result_v1")
+				l.emitAction(&ir.NativeActionNode{NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.output", Parameters: map[string]interface{}{"WFOutput": carrier}})
+			} else {
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          l.GenerateUUID(),
+					AppleIdentifier: "is.workflow.actions.nothing",
+				})
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          l.GenerateUUID(),
+					AppleIdentifier: "is.workflow.actions.output",
+				})
+			}
 		}
 
 		l.emitIfEnd(fnGroupUUID, "", "")
@@ -2607,6 +2614,12 @@ func (l *Lowerer) lowerConditionOperand(expr syntax.Expression) (val any, isNumS
 }
 
 func (l *Lowerer) lowerConditionClause(expr syntax.Expression, allowUnaryAnyValue bool) (map[string]any, error) {
+	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
+		if err != nil {
+			return nil, err
+		}
+		return map[string]any{"WFCondition": code, "WFConditionalActionString": "0", "WFInput": map[string]any{"Type": "Variable", "Variable": input}}, nil
+	}
 	if unaryExpr, ok := expr.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
 		if binExpr, okB := unaryExpr.Operand.(*syntax.BinaryExpr); okB {
 			var negOp syntax.TokenType
@@ -2966,8 +2979,14 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 	var enumVal any
 	var opType backend.ConditionOperandType = backend.OperandDefault
 
-	// Check if Condition is a comparison BinaryExpr
-	if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
+	// Compiler-owned optional presence has its own exact Text comparison.
+	presenceInput, presenceCode, presenceCondition, presenceErr := l.lowerOptionalNoneCondition(stmt.Condition)
+	if presenceErr != nil {
+		return nil, presenceErr
+	}
+	if presenceCondition {
+		input, condCode, compareVal, opType = presenceInput, presenceCode, "0", backend.OperandString
+	} else if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
 		var code int
 		isComp := true
 		switch binExpr.Op {
@@ -3563,6 +3582,12 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	}
 	if value, resolved := l.enumValues[expr]; resolved {
 		return value, nil
+	}
+	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
+		if err != nil {
+			return nil, err
+		}
+		return l.materializeOptionalPredicate(input, code), nil
 	}
 
 	switch e := expr.(type) {
