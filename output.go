@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -71,57 +72,24 @@ func getOutputPath(name string) string {
 	return fmt.Sprintf("%s%s", relativePath, name)
 }
 
-// createShortcut writes the Shortcut files to disk and signs them if the unsigned argument is not unused.
+// createShortcut commits the requested output only after encoding and signing succeed.
 func createShortcut() {
 	outputPath = getOutputPath(workflowName + ".shortcut")
-	var relativeFile = fmt.Sprintf("%s%s", relativePath, workflowName)
-	if args.Using("debug") {
-		writeShortcut(relativeFile+".plist", workflowName+".plist")
-	}
-	writeShortcut(relativeFile+unsignedEnd, workflowName+unsignedEnd)
-
-	inputPath = fmt.Sprintf("%s%s%s", relativePath, workflowName, unsignedEnd)
-
-	if !args.Using("skip-sign") {
-		switch {
-		case args.Using("signing-server"):
-			useSigningService(&SigningService{
-				name: "Custom Signing Server URL",
-				url:  args.Value("signing-server"),
-			})
-		case args.Using("hubsign"):
-			useHubSign()
-		default:
-			sign()
-		}
-
-		removeUnsigned()
-
-		if args.Using("open") {
-			openShortcut()
-		}
-	} else if hasExplicitOutput() && outputPath != inputPath {
-		if err := os.Rename(inputPath, outputPath); err != nil {
-			if data, errRead := os.ReadFile(inputPath); errRead == nil {
-				_ = os.WriteFile(outputPath, data, 0644)
-				_ = os.Remove(inputPath)
-			}
-		}
+	handle(writeLegacyShortcutOutput(outputPath))
+	if !args.Using("skip-sign") && args.Using("open") {
+		openShortcut()
 	}
 }
 
 // writeShortcut encodes shortcut by writing plist data at path.
-func writeShortcut(path string, debug string) {
+func writeShortcut(path string, debug string) error {
 	var writeDebugOutput = args.Using("debug")
 	if writeDebugOutput {
 		fmt.Printf("Writing to %s...", debug)
 	}
 
-	var unsignedFile, unsignedFileErr = os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	handle(unsignedFileErr)
-	defer unsignedFile.Close()
-
-	var plistEncoder = plist.NewEncoder(unsignedFile)
+	var encoded bytes.Buffer
+	var plistEncoder = plist.NewEncoder(&encoded)
 	if args.Using("debug") {
 		plistEncoder.Indent("\t")
 	}
@@ -131,12 +99,17 @@ func writeShortcut(path string, debug string) {
 		payload = mergeWorkflowHeaderMapWithDialect("legacy", importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
 	}
 
-	var encodeErr = plistEncoder.Encode(payload)
-	handle(encodeErr)
+	if err := plistEncoder.Encode(payload); err != nil {
+		return fmt.Errorf("plist encoding error: %w", err)
+	}
+	if err := atomicWriteFile(path, encoded.Bytes(), 0644); err != nil {
+		return err
+	}
 
 	if writeDebugOutput {
 		fmt.Println(ansi("Done.", green))
 	}
+	return nil
 }
 
 func openShortcut() {

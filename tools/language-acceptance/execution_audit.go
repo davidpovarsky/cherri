@@ -273,6 +273,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = safeImportEditScope
 		}
+		if row.ID == "RP43" {
+			row.TestNames = append([]string{}, outputSigningTests...)
+			row.ProductionPath = append([]string{}, outputSigningProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = outputSigningScope
+		}
 		if scenario, found := extractedInstallScenarios[row.ID]; found {
 			row.TestNames = append([]string{}, scenario.Tests...)
 			row.ProductionPath = append([]string{}, extractedInstallProductionPaths...)
