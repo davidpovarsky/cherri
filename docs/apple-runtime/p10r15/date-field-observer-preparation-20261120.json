@@ -1,0 +1,159 @@
+{
+  "schema_version": "1",
+  "component": "Date field parameter serialization observer preparation",
+  "implementation_sha": "3e9ab30a97d8ae37fa22bf13512f832835951274",
+  "base_sha": "744d2d834f8772da4a368ae2a0de7d455a9e89c5",
+  "source_clean_before_and_after": true,
+  "source_files": [
+    {
+      "path": ".github/workflows/macos-shortcuts-deep-extract.yml",
+      "sha256": "92b55e770d06c6eccf25e9499317b349d0c36a2f2c749099e51605aee5186d50"
+    },
+    {
+      "path": "tools/shortcut-runtime/observe_literal_object_character.py",
+      "sha256": "0415b2b4d86b740eca0bd89589b7ef18709d379178ef9c7b2d47d83b367f6fdd"
+    },
+    {
+      "path": "tools/shortcut-runtime/jxa/observe_json_container_null.js",
+      "sha256": "2e8274e9e43ba22b83f73f142d7a0fb8096c394cd9896f93882a28786ce3834c"
+    },
+    {
+      "path": "tools/shortcut-runtime/fixtures/date-field-compiled-controls.json",
+      "sha256": "6978f99988123cb91be759648ca5fc476ae83a02ea33e8e3481c6b4a4275edf6"
+    },
+    {
+      "path": "tools/shortcut-runtime/test_date_field_observer.js",
+      "sha256": "9cd35910571e4634e349a456f822e9be444b5f743710af69c4d2d36b26c8c697"
+    },
+    {
+      "path": "tools/shortcut-runtime/test_date_field_observer.py",
+      "sha256": "fec25246585a907d2ad49bd3be9eae580bbc80086fb6eb8d6d0336ea36bc38f8"
+    }
+  ],
+  "local_verification": {
+    "receipt_sha256": "00436b9c0dddf92d987542e463b95c0345548a9ab2aa9184c50bfc0bc37b3d5b",
+    "node_mock_assertions": {
+      "original_json": 109,
+      "date_driver": 68,
+      "total": 177
+    },
+    "python_controls": 10,
+    "actual_git_input_pins": 5,
+    "commands": [
+      {
+        "name": "syntax",
+        "exitCode": 0,
+        "seconds": 0.125,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-json-controls",
+        "exitCode": 0,
+        "seconds": 0.25,
+        "stdoutSha256": "042f852e6d387918e9d854fd5087ca4f1dbcf1b35574ca96e4620d08efbd35f4",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "date-controls",
+        "exitCode": 0,
+        "seconds": 0.203,
+        "stdoutSha256": "0d3cfdeb975a55f2ee9213f5c84a663c5cb95327b5127f926f140858eb35d439",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "python-controls",
+        "exitCode": 0,
+        "seconds": 1.36,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "80fa1e402773d1eca57b425384513948e8dc88677f09ef3e5b67d50967ab6d0b"
+      },
+      {
+        "name": "actual-git-source-closure",
+        "exitCode": 0,
+        "seconds": 0.704,
+        "stdoutSha256": "757e49503e1634554e00d674d62e16f9d7c766065ca1da16e3a99bcdc12a7546",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "native_observation": "NOT_RUN"
+  },
+  "specimen_basis": {
+    "compiler_source_sha": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+    "runtime_source_sha": "7f044196d042dcdbbcc7401dcc96177f059b0db3",
+    "failed_native_run_id": "44680412319",
+    "original_fixture_sha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+    "local_unsigned_sha256": "2c7b10160a569845c47327e5daee68388c4a26041ba1759ca78f497b2dad4c0a",
+    "scope": "Exact retained local compilation of the same production/fixture source; not downloaded native unsigned bytes.",
+    "retained_native_runtime_proof": "docs/apple-runtime/p10r15/date-difference-native-44680412319.json"
+  },
+  "observer_contract": {
+    "direct_state_specimens": 6,
+    "action_copy_cases": 8,
+    "action_parameter_observations": 14,
+    "maximum_hops_per_state": 3,
+    "source_actions": [
+      "is.workflow.actions.gettimebetweendates",
+      "is.workflow.actions.format.date"
+    ],
+    "parameters": [
+      "WFTimeUntilFromDate",
+      "WFInput",
+      "WFDate"
+    ],
+    "variants": [
+      "actual compiled bare ActionOutput attachments",
+      "same references inside WFTextTokenString with exact {0, 1} attachment range",
+      "only first or only second interval field wrapped",
+      "original specified-date literal positive control",
+      "both interval fields absent",
+      "original successful formatTimestamp wrapper",
+      "same formatTimestamp input as bare attachment"
+    ],
+    "native_handoff": "Unmodified native serializedRepresentation object; typed JSON snapshots never feed the next initializer.",
+    "known_apis": [
+      "WFBundledActionProvider.createAllAvailableActionsIncludingMissingActions",
+      "action.parameters",
+      "action.copyWithSerializedParameters",
+      "action.parameterStateForKey",
+      "parameter.singleStateClass",
+      "parameter.defaultSerializedRepresentation",
+      "initWithSerializedRepresentation:variableProvider:parameter:",
+      "state.serializedRepresentation"
+    ],
+    "not_performed": [
+      "Shortcut execution",
+      "Date difference action execution",
+      "HTTP execution",
+      "production codec change",
+      "golden/expected output change",
+      "formal requirement promotion"
+    ],
+    "failure_truth": "Every parameter retains actual availability, state presence and per-hop errors. OBSERVED means diagnostic execution, not specimen acceptance/fidelity."
+  },
+  "workflow": {
+    "path": ".github/workflows/macos-shortcuts-deep-extract.yml",
+    "suggested_inputs": {
+      "date_field_parameter_only": true,
+      "json_container_null_only": false,
+      "literal_object_character_only": false,
+      "literal_observer_runner": "macos-15-intel"
+    },
+    "job_timeout_minutes": 10,
+    "step_timeout_minutes": 5,
+    "process_timeout_seconds": 120,
+    "artifact": "date-parameter-native-observation",
+    "retention_days": 14,
+    "source_and_input_binding": "Exact clean Git source plus selected script and fixed fixture/probe input blobs; pinned external prelude; fresh output directory."
+  },
+  "prior_gate_failure": {
+    "status": "LOCAL_SOURCE_FORMAT_GATE_FAILED",
+    "cause": "Additional blank line at the shared JXA file end; removed before source commit. Original control logs and formatting failure retained.",
+    "semantic_test_failure": false
+  },
+  "evidence_status": {
+    "native_observation": "NOT_RUN",
+    "shortcut_runtime": "NOT_RUN",
+    "formal_requirements_proved": []
+  }
+}
