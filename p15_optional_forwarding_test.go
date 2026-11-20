@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/service"
 )
 
@@ -28,6 +29,45 @@ func p15OptionalForwardingCases() []p15OptionalForwardingCase {
 			"function echo(value:" + tc.typ + "?)->" + tc.typ + "?{return value}\ngetVariable(echo(echo(" + tc.argument + ")))"})
 	}
 	return cases
+}
+
+func TestP15OptionalForwardingRequiresOwnedPresence(t *testing.T) {
+	const opaque = `native.action("is.workflow.actions.nothing",{})`
+	for _, tc := range []p15OptionalForwardingCase{
+		{"opaque_argument", "function echo(value:Text?)->Text?{return value}\ngetVariable(echo(" + opaque + "))"},
+		{"opaque_return", "function absent(seed:Text)->Text?{return " + opaque + "}\ngetVariable(absent(\"SEED\"))"},
+		{"opaque_binding", "let candidate:Text?=" + opaque + "\ngetVariable(candidate)"},
+		{"opaque_assignment", "var candidate:Text?=none\ncandidate=" + opaque + "\ngetVariable(candidate)"},
+		{"opaque_default", "function echo(value:Text?=" + opaque + ")->Text?{return value}\ngetVariable(echo())"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			check := func(diagnostics []analysis.Diagnostic) {
+				t.Helper()
+				var errors []analysis.Diagnostic
+				for _, d := range diagnostics {
+					if d.Severity == analysis.SeverityError {
+						errors = append(errors, d)
+					}
+				}
+				start := strings.Index(tc.source, opaque)
+				if len(errors) != 1 || errors[0].Code != analysis.CodeTargetValueShape ||
+					errors[0].Span.Start.ByteOffset != start || errors[0].Span.End.ByteOffset != start+len(opaque) ||
+					!strings.Contains(errors[0].Message, "compiler-owned") || !strings.Contains(errors[0].Message, "presence") {
+					t.Errorf("opaque native output must not fabricate Optional presence: %#v", errors)
+				}
+			}
+			check(p15TypeDiagnostics(t, tc.source))
+			svc := service.NewService(nil)
+			uri := "file:///p15-optional-presence-" + tc.name + ".cherri"
+			svc.OpenDocument(uri, 1, tc.source)
+			diagnostics, _ := svc.Analyze(uri)
+			check(diagnostics)
+			raw, err := CompileSourceToPlist("p15-optional-presence.cherri", tc.source)
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
+				t.Errorf("opaque optional boundary emitted bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
 }
 
 // These public-route controls establish the unsupported semantic boundary on
