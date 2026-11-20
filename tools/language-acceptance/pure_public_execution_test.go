@@ -199,7 +199,7 @@ func TestPurePublicActualProductionEvidence(t *testing.T) {
 		Scope        string
 	}{purePublicTests, purePublicTiers, purePublicScope}
 	runner := NewRunner()
-	runner.artifactDir = os.Getenv("CHERRI_NATIVE_PATHS_EVIDENCE_OUTPUT")
+	runner.artifactDir = os.Getenv("CHERRI_PURE_PUBLIC_EVIDENCE_OUTPUT")
 	if runner.artifactDir == "" {
 		runner.artifactDir = t.TempDir()
 	}
