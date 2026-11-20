@@ -1,0 +1,286 @@
+{
+  "formatVersion": 1,
+  "mode": "actual-installed-public-site",
+  "implementationSha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "compilerCommit": "cdc8be2c000698dddbe73185f69d8fd94273e1d6",
+  "docsCommit": "2bc5f6992cd252f287530b039ee393b1b50ee39e",
+  "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "macroFingerprint": "3741bc7d242876d3ed6e65c77258f97220823184e767bf93aa3e6c2d848a4867",
+  "sourceOrigin": "https://github.com/davidpovarsky/cherri.git",
+  "docsOrigin": "https://github.com/davidpovarsky/cherrilang.org.git",
+  "sourceClean": true,
+  "docsClean": true,
+  "sourceDirectory": "/home/runner/work/cherri/cherri/cherri",
+  "installedSkill": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+  "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+  "sourceFiles": [
+    {
+      "path": "fork-language/index.md",
+      "sha256": "6ea0de619997b6de17ebda54614417903542eb31dae005965063abea703f291f"
+    },
+    {
+      "path": "fork-language/guide.md",
+      "sha256": "6a8d82f9c8737d032edcf8de1a9d4b3b50f504f3f31481dbc3e7078ec5653611"
+    },
+    {
+      "path": "fork-language/actions.md",
+      "sha256": "650bea59aaf9262e4b036e4da455b2b5cca8de8447d6c99153889549ecd182f0"
+    },
+    {
+      "path": "fork-language/migration.md",
+      "sha256": "6348051c820e9e113d83db444a2762de83a873b0d1fbe8958e049092059303f1"
+    }
+  ],
+  "skillFiles": [
+    {
+      "path": "scripts/search-docs.sh",
+      "sha256": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8"
+    },
+    {
+      "path": "scripts/common.sh",
+      "sha256": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5"
+    },
+    {
+      "path": "compatibility-manifest.json",
+      "sha256": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a"
+    }
+  ],
+  "searchCases": [
+    {
+      "name": "active-empty",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutSHA256": "ac690845aca9937388b9c65b03abaa4b47fc09ed3a6fee181739b2f74e441fbe",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "active-show",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "show"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutSHA256": "876997c164fd7a70c2b02ce0c9bdcbd40bf2123f7d48606250b1862283ce0df3",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "legacy-empty",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "--legacy-reference"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutSHA256": "ae3de0254361aca7d790ce9c71bdab0ef684db2e7c4d2e4feace8ffc9b362fb9",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "legacy-query",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "--legacy-reference",
+        "action"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutSHA256": "65608f4c1a0c12db3cbfaad7e914eb9a15956e7388a824a2d6623e6019c8fdd3",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "absent-query",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "CHERRI_D03_NO_MATCH_6ce5e096b6a7"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "invalid-regex",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "["
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 2,
+      "timedOut": false,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "edf1e523526a7ff1f55e76a9ce5212f46cf3c1c697c42efdc591611f1169a799"
+    },
+    {
+      "name": "missing-current",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "CHERRI_D03_HISTORICAL_SENTINEL_49CE"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/tmp/cherri-d03-consumer-sxxf6o94/missing-current-docs",
+      "exitCode": 1,
+      "timedOut": false,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "0f5f71fdbd955864841d57aaf346ecc3d015d867edd11db2c6dd47318c1d1cb8"
+    },
+    {
+      "name": "restored-active",
+      "command": [
+        "/usr/bin/sh",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts/scripts/search-docs.sh",
+        "show"
+      ],
+      "cwd": "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+      "docsDirectory": "/home/runner/work/cherri/cherri/cherrilang.org",
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutSHA256": "876997c164fd7a70c2b02ce0c9bdcbd40bf2123f7d48606250b1862283ce0df3",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "httpObservations": [
+    {
+      "route": "",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/",
+      "status": 200,
+      "bytes": 12258,
+      "sha256": "ea7c73611d6a2b3ec26fb2a47ca6cc3d6dfad47fe03c20f17394a24fd7c6673f",
+      "artifact": "published-home.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "ETag": "\"6affa045-2fe2\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "5088:317B22:1433C:169CE:6AFFA19E"
+      }
+    },
+    {
+      "route": "fork-language/",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/fork-language/",
+      "status": 200,
+      "bytes": 14205,
+      "sha256": "e8ab6216c53814878d5a7531a41e53b83b3c004d37bbc202d46af4c751e40e7b",
+      "artifact": "published-index.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "ETag": "\"6affa045-377d\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "26F6:4EFC8:5A5830:72DF3E:6AFFA19E"
+      }
+    },
+    {
+      "route": "fork-language/guide",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/fork-language/guide",
+      "status": 200,
+      "bytes": 39009,
+      "sha256": "2410c4bf23c155b1992aed6b0bdcf52a02101287e083416cb55a56789793e9b7",
+      "artifact": "published-guide.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "ETag": "\"6affa045-9861\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "3256:F71C3:5DC581:7649AA:6AFFA19E"
+      }
+    },
+    {
+      "route": "fork-language/actions",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/fork-language/actions",
+      "status": 200,
+      "bytes": 798039,
+      "sha256": "2aa3d6a66381138b20c22ba26a1d2f6d47284bef7473a535a44e8e6e60059b99",
+      "artifact": "published-actions.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "ETag": "\"6affa045-c2d57\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "8D12:390658:5F31A1:77B40E:6AFFA199"
+      }
+    },
+    {
+      "route": "fork-language/migration",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/fork-language/migration",
+      "status": 200,
+      "bytes": 19844,
+      "sha256": "af0e62fe863255710ff726c0771e1d97fcc907900aee0af2177d27b6fb88be7b",
+      "artifact": "published-migration.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "ETag": "\"6affa045-4d84\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "B4F0:1676D1:9FD18F:B33A8F:6AFFA19E"
+      }
+    },
+    {
+      "route": "assets/js/search-data.json",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/assets/js/search-data.json",
+      "status": 200,
+      "bytes": 218366,
+      "sha256": "88d72dd906296fde8acbbf044e52cd42c3e8344e86c57db4bd2634b9f3eee3d0",
+      "artifact": "published-search-data.json",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "\"6affa045-354fe\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "F568:4EFC8:5A587A:72DF9A:6AFFA19F"
+      }
+    },
+    {
+      "route": "assets/preview.js",
+      "url": "https://davidpovarsky.github.io/cherrilang.org/assets/preview.js",
+      "status": 200,
+      "bytes": 1528,
+      "sha256": "a61c7dc57a7135beb6e7e77f08e92237063f95c7ab730f43ab21a8908641f091",
+      "artifact": "published-preview.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "ETag": "\"6affa045-5f8\"",
+        "Last-Modified": "Fri, 20 Nov 2026 01:20:05 GMT",
+        "x-github-request-id": "FB92:3A31D6:5CDF27:756130:6AFFA19E"
+      }
+    }
+  ],
+  "before": {
+    "docs/fork-language/index.md": "6ea0de619997b6de17ebda54614417903542eb31dae005965063abea703f291f",
+    "docs/fork-language/guide.md": "6a8d82f9c8737d032edcf8de1a9d4b3b50f504f3f31481dbc3e7078ec5653611",
+    "docs/fork-language/actions.md": "650bea59aaf9262e4b036e4da455b2b5cca8de8447d6c99153889549ecd182f0",
+    "docs/fork-language/migration.md": "6348051c820e9e113d83db444a2762de83a873b0d1fbe8958e049092059303f1",
+    "skill/scripts/search-docs.sh": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8",
+    "skill/scripts/common.sh": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5",
+    "skill/compatibility-manifest.json": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a"
+  },
+  "after": {
+    "docs/fork-language/index.md": "6ea0de619997b6de17ebda54614417903542eb31dae005965063abea703f291f",
+    "docs/fork-language/guide.md": "6a8d82f9c8737d032edcf8de1a9d4b3b50f504f3f31481dbc3e7078ec5653611",
+    "docs/fork-language/actions.md": "650bea59aaf9262e4b036e4da455b2b5cca8de8447d6c99153889549ecd182f0",
+    "docs/fork-language/migration.md": "6348051c820e9e113d83db444a2762de83a873b0d1fbe8958e049092059303f1",
+    "skill/scripts/search-docs.sh": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8",
+    "skill/scripts/common.sh": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5",
+    "skill/compatibility-manifest.json": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a"
+  },
+  "siteBuildSHA256": "95e995b53beaf318eff7da6e3e4093f54200eefb1fea29323bae9ecd153b5fd5",
+  "siteControlsSHA256": "018d7fbe3d43887c3c3c26523b6209c75d297c0b31bc2cca8742025ca2e68574",
+  "deploymentSHA256": "049c1fa6568e22e300e49a4f0126a9887c12a08f8d55bc767ac7ee83fc331a37",
+  "observedAtUTC": "2026-11-20T01:25:51.654702+00:00",
+  "elapsedSeconds": 1.2696759800000166
+}

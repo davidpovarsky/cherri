@@ -1,0 +1,179 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-d03-published-installed-documentation",
+      "requirements": [
+        "D03"
+      ],
+      "tier": "docs",
+      "implementation_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+      "test_id": "tools/p10r15:verify_documentation_consumers",
+      "command": [
+        "python3",
+        "tools/p10r15/verify_documentation_consumers.py",
+        "--source",
+        "/home/runner/work/cherri/cherri/cherri",
+        "--skill",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/installed/cherri-shortcuts",
+        "--docs",
+        "/home/runner/work/cherri/cherri/cherrilang.org",
+        "--implementation-sha",
+        "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+        "--site-build",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/cherri-docs-site-evidence.json",
+        "--site-controls",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/cherri-docs-site-controls.json",
+        "--deployment",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/documentation-site-deployment.json",
+        "--output",
+        "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "published_current_docs": "true",
+        "installed_skill_current_docs": "true",
+        "historical_docs_explicit_only": "true"
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/docs-index.md",
+          "sha256": "6ea0de619997b6de17ebda54614417903542eb31dae005965063abea703f291f"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/docs-guide.md",
+          "sha256": "6a8d82f9c8737d032edcf8de1a9d4b3b50f504f3f31481dbc3e7078ec5653611"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/docs-actions.md",
+          "sha256": "650bea59aaf9262e4b036e4da455b2b5cca8de8447d6c99153889549ecd182f0"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/docs-migration.md",
+          "sha256": "6348051c820e9e113d83db444a2762de83a873b0d1fbe8958e049092059303f1"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/installed-search-docs.sh.txt",
+          "sha256": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/installed-common.sh.txt",
+          "sha256": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/documentation-compatibility-manifest.json",
+          "sha256": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/documentation-site-build.json",
+          "sha256": "95e995b53beaf318eff7da6e3e4093f54200eefb1fea29323bae9ecd153b5fd5"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/documentation-site-controls.json",
+          "sha256": "018d7fbe3d43887c3c3c26523b6209c75d297c0b31bc2cca8742025ca2e68574"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/documentation-site-deployment.json",
+          "sha256": "049c1fa6568e22e300e49a4f0126a9887c12a08f8d55bc767ac7ee83fc331a37"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/active-empty.stdout.log",
+          "sha256": "ac690845aca9937388b9c65b03abaa4b47fc09ed3a6fee181739b2f74e441fbe"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/active-empty.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/active-show.stdout.log",
+          "sha256": "876997c164fd7a70c2b02ce0c9bdcbd40bf2123f7d48606250b1862283ce0df3"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/active-show.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/legacy-empty.stdout.log",
+          "sha256": "ae3de0254361aca7d790ce9c71bdab0ef684db2e7c4d2e4feace8ffc9b362fb9"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/legacy-empty.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/legacy-query.stdout.log",
+          "sha256": "65608f4c1a0c12db3cbfaad7e914eb9a15956e7388a824a2d6623e6019c8fdd3"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/legacy-query.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/absent-query.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/absent-query.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/invalid-regex.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/invalid-regex.stderr.log",
+          "sha256": "edf1e523526a7ff1f55e76a9ce5212f46cf3c1c697c42efdc591611f1169a799"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/missing-current.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/missing-current.stderr.log",
+          "sha256": "0f5f71fdbd955864841d57aaf346ecc3d015d867edd11db2c6dd47318c1d1cb8"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/restored-active.stdout.log",
+          "sha256": "876997c164fd7a70c2b02ce0c9bdcbd40bf2123f7d48606250b1862283ce0df3"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/restored-active.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-home.html",
+          "sha256": "ea7c73611d6a2b3ec26fb2a47ca6cc3d6dfad47fe03c20f17394a24fd7c6673f"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-index.html",
+          "sha256": "e8ab6216c53814878d5a7531a41e53b83b3c004d37bbc202d46af4c751e40e7b"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-guide.html",
+          "sha256": "2410c4bf23c155b1992aed6b0bdcf52a02101287e083416cb55a56789793e9b7"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-actions.html",
+          "sha256": "2aa3d6a66381138b20c22ba26a1d2f6d47284bef7473a535a44e8e6e60059b99"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-migration.html",
+          "sha256": "af0e62fe863255710ff726c0771e1d97fcc907900aee0af2177d27b6fb88be7b"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-search-data.json",
+          "sha256": "88d72dd906296fde8acbbf044e52cd42c3e8344e86c57db4bd2634b9f3eee3d0"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/published-preview.js",
+          "sha256": "a61c7dc57a7135beb6e7e77f08e92237063f95c7ab730f43ab21a8908641f091"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-d03-44653538935-1/verified/consumer/documentation-consumers.json",
+          "sha256": "8a90b117d153077a5c91dc90dbc37142daba316470acb55580e73da1dff4f8f6"
+        }
+      ],
+      "detail": "Actual installed pinned Skill searches and live public bytes equal the pinned docs deployment; app integration is a separate required producer."
+    }
+  ]
+}

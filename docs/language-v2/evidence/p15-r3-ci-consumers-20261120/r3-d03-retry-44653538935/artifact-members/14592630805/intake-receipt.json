@@ -1,0 +1,38 @@
+{
+  "app_integration_executed": false,
+  "closure_complete": false,
+  "collector_evidence_sha256": "a4155db47ebd1a2f8288ae93a76b47ee3a041b85a67f2fc3ac9e557d189fd252",
+  "d03_complete": false,
+  "documentation_record_accepted": true,
+  "implementation_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "original_references_unchanged": true,
+  "report": {
+    "timestamp": "2026-11-20T01:26:05Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+    "total_cases": 1,
+    "passed_cases": 0,
+    "failed_cases": 1,
+    "skipped_cases": 0,
+    "validation_errors": [
+      "requirement D03 has unsatisfied local tier"
+    ],
+    "results": [
+      {
+        "id": "D03",
+        "group": "docs",
+        "requirement": "Active fork docs separated from upstream reference",
+        "test_level": "docs+integration",
+        "executed_levels": [
+          "docs"
+        ],
+        "passed": false,
+        "status": "FAILED",
+        "detail": "Local required tier not satisfied"
+      }
+    ]
+  },
+  "status": "PASS_D03_DOCS_PRODUCER_INTAKE_ONLY"
+}

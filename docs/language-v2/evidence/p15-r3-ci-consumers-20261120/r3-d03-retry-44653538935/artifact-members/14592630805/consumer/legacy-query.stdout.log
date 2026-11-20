@@ -1,0 +1,80 @@
+/home/runner/work/cherri/cherri/cherrilang.org/language/comments.md:56:Use the `--comments` (`-c`) argument to include your comments as actions. If you do, do not add a `*` to the front of a line in multiline comments; it will make its way into the Shortcut.
+/home/runner/work/cherri/cherri/cherrilang.org/language/comments.md:60:You can use the comment action to explicitly add a comment action without including your slash syntax comments.
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:2:title: Actions
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:9:# Actions
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:11:Actions in Cherri are intended to be easier to use, as in some cases, single actions have been split up into multiple
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:12:actions to reduce the number of arguments and complexity. Some arguments are optional, and some are required.
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:14:Actions can be used just like you would call a function in another language
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:20:## Standard Actions
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:22:Below are categories of standard Shortcut actions currently supported. Keep in mind that actions in each category, other than the basic actions, need to be included.
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:24:[Please report incomplete or non-working actions](https://github.com/electrikmilk/cherri/issues)
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:26:## Can I contribute actions, even non-standard actions?
+/home/runner/work/cherri/cherri/cherrilang.org/language/actions.md:30:[Learn more about contributing actions]({{ '/compiler/actions' | relative_url }})
+/home/runner/work/cherri/cherri/cherrilang.org/language/references.md:13:Some Shortcut actions accept files or media items that are bound to a specific device — for example, a specific file in iCloud Drive or a song in your Music library. These values cannot be written by hand; they must be captured from a Shortcut that already has them configured.
+/home/runner/work/cherri/cherri/cherrilang.org/language/references.md:27:Open the Shortcuts app on your Apple device and add the file or media argument to the relevant action in your Shortcut. This is required because only the Shortcuts app can resolve and embed the device-specific identifiers for these values.
+/home/runner/work/cherri/cherri/cherrilang.org/language/references.md:56:## Using references in actions
+/home/runner/work/cherri/cherri/cherrilang.org/language/references.md:58:Pass the reference identifier as an argument to any action that accepts it:
+/home/runner/work/cherri/cherri/cherrilang.org/language/references.md:83:| `identifier` | Name used to refer to this value in action arguments. Derived from the file or media item name when extracted. Feel free to change it, just be sure to also rename usages of it. |
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:2:title: Action Definitions
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:8:# Action Definitions
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:19:To define a Shortcut action raw, in the same reusable way as the [standard Shortcut actions]({{ '/language/actions' | relative_url }}) in the compiler, use the following syntax:
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:22:action 'com.example.app.action' myCustomAction()
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:24:myCustomAction()
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:27:A raw text `WFWorkflowActionIdentifier` is required between `action` and the identifier of the action.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:29:The only exception to this is for Shortcuts actions that start with `is.workflow.actions`. If the identifier namespaces are less than 4, we assume it is a classic Shortcuts action for the convenience of defining them.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:31:You may see `#builtin` for an action definition printed by the compiler. These actions are internally defined in the compiler and require compile-time processing that either cannot practically be abstracted to Cherri or hasn't yet been implemented.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:35:To find the identifier and parameters for an action from a Shortcut not implemented in Cherri, see [parsing out action data from a raw Shortcut]({{ '/faq#how-do-i-use-non-standard-actions' | relative_url }}).
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:39:Attributes may be added in the following order after `action`:
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:41:- `default` - For decompilation, if multiple action definitions use the same identifier, use this action by default if no other actions match better.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:42:- `mac`: - macOS-only action _OR_ `!mac`: non macOS action, iOS/iPadOS only.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:47:The syntax for the action arguments is the same as [functions]({{ '/language/functions#defining-arguments' | relative_url }}), and you can also set an [output type]({{ '/language/custom-actions#output-type' | relative_url }}).
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:52:action 'com.example.app.action' myCustomAction(variable file: 'WFInput'): bool
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:55:myCustomAction(@file)
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:60:To add extra parameters in the same way as a [raw action]({{ '/language/raw-actions' | relative_url }}), add a dictionary after the definition and an optional output type.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:63:action 'com.example.app.action' myCustomAction(variable file: 'WFInput'): bool {
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:64:    "WFActionParameterName": true
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:70:Below is an example using the **Show Alert** action.
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:73:action 'alert' showAlert(
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:74:    text message: 'WFAlertActionMessage',
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:75:    text ?title: 'WFAlertActionTitle',
+/home/runner/work/cherri/cherri/cherrilang.org/language/action-definitions.md:76:    bool ?cancelButton: 'WFAlertActionCancelButtonShown' = true
+/home/runner/work/cherri/cherri/cherrilang.org/language/control-flow.md:37:Precede the first condition with the optional `legacy` keyword to emit `WFConditionalLegacyComparisonBehavior` on the conditional action, matching how modern Shortcuts clients re-save older conditionals:
+/home/runner/work/cherri/cherri/cherrilang.org/language/control-flow.md:168:## Automatic nothing actions at the end
+/home/runner/work/cherri/cherri/cherrilang.org/language/control-flow.md:170:The `nothing()` actions are automatically added to the ending block of any statement. This ensures the control flow block does not store any output to reduce memory usage.
+/home/runner/work/cherri/cherri/cherrilang.org/language/control-flow.md:181:#include 'actions/network'
+/home/runner/work/cherri/cherri/cherrilang.org/language/control-flow.md:196:#include 'actions/device'
+/home/runner/work/cherri/cherri/cherrilang.org/language/control-flow.md:197:#include 'actions/sharing'
+/home/runner/work/cherri/cherri/cherrilang.org/language/menus.md:34:Create a variable with a `list()` action as its value.
+/home/runner/work/cherri/cherri/cherrilang.org/language/menus.md:42:Then, use the `chooseFromList()` action with the list and prompt.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:23:If an action produces an output you will not use, consider adding the `nothing()` action after it. This will clear the current output, reducing runtime memory.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:37:We use the **Set Variable** action to set the variable `someArray` with no value.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:39:Then, for each value, we will create the appropriate action and input it into an **Add to Variable** action to add that value to the variable `someArray`.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:45:Shortcuts will run a Dictionary action and move on, but for an array, Shortcuts will need to run through adding each value you have pre-defined for the array to contain to the assigned variable. Depending on if you have large pre-defined values (multiple dictionaries, etc.) and how many of them you have, this may impact runtime performance.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:47:To be clear, this does not at all impact creating an empty array and then later in your Shortcut adding values to it, this is primarily to address pre-defined top of Shortcut arrays or adding to an array that already exists at the top of your Shortcut, as your Shortcut may then take slightly longer to start or perform actions while adding a lot of items to an array that you pre-defined.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:51:Notes on reducing the action count and file size of compiled Shortcuts.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:55:Using constants when applicable allows you to reference the output of an action instead of assigning it to a variable. For every variable you never mutate the value of, you can reduce your Shortcut by 1 action. This is not a lot if you have one variable, but it adds up the more variables you add to a Shortcut.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:62:Setting a value that will never change to a variable uses more actions and likely more memory at runtime to store the variable. Use the existing output of an action, do not assign it to a variable unless you will need to modify the output.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:71:If an action has an optional argument and/or default value, avoid filling it in unless you need to specify a value. If you must fill it in with its default value to set the value of an argument after it, use `nil` as the value instead. This will prevent the parameter from being set with any default value, resulting in a smaller Shortcut.
+/home/runner/work/cherri/cherri/cherrilang.org/language/best-practices.md:73:Keep in mind, that setting the value of an action argument to `nil` or not setting it if it has a default value or is optional, depending on the parameter, does not mean that the value for that argument will be empty in the Shortcut, but rather that it will use the default value for that argument.
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:19:Initialize a variable using the syntax below. Variables work just like they do in Shortcuts. This creates a **Set Variable** action and assigns the value to a **Text** action containing "value".
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:126:Constants are the implementation of Magic Variables, as they cannot be modified. When referenced, the output of the action assigned to the constant is used (magic variable) instead of inserting a reference to a variable to which the action output has been saved.
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:138:Array constants are not allowed, as creating an array value involves adding to a variable, and action outputs cannot be added to. Variable reference constants are also not allowed, as the value of a variable can change.
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:178:The `Ask` global may be used for an action argument to prompt the user for input, or it can be used in an inline text variable to prompt for input or to complete text.
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:180:It cannot be used as a variable value, as there is no criteria for a variable value in Shortcuts to prompt the user; it must be an action argument or an inline variable reference in a string for them to complete or edit.
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:187:Keep in mind that Shortcuts may be picky about the usage of this global for an action argument.
+/home/runner/work/cherri/cherri/cherrilang.org/language/variables-constants-globals.md:191:The prompt for an `Ask` used for an action argument can be set using the following syntax:
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:2:title: Raw Actions
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:8:# Raw Actions
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:11:You can write a singular definition of an action with custom parameters not defined inside Cherri, in Cherri.
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:19:## Defining an action
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:21:Actions are primarily composed of an identifier and, optionally, parameters. To add an action to your Shortcut raw, provide a string of the action `WFWorkflowActionIdentifier`. Then, optionally provide a dictionary for each of the required `WFWorkflowActionParameters` of the action.
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:24:rawAction("is.workflow.actions.alert", {
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:25:     "WFAlertActionMessage": "Hello, world!",
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:26:     "WFAlertActionCancelButtonShown": false
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:30:This defines an alert action with the message `Hello World!`. This action is already defined in Cherri using the `alert()` action. Still, this example demonstrates a simple way actions not implemented in Cherri can be used.
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:32:However, there is an alternative called [action definitions]({{ '/language/action-definitions' | relative_url }}), which creates reusable action definitions in the same way as the standard actions.
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:36:To find the identifier and parameters for an action from a Shortcut not implemented in Cherri, see [parsing out action data from a raw Shortcut]({{ '/faq#how-do-i-use-non-standard-actions' | relative_url }}).
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:44:rawAction("is.workflow.actions.documentpicker.save", {
+/home/runner/work/cherri/cherri/cherrilang.org/language/raw-actions.md:49:Again, just like with the `alert()` action, there is already a `saveFile()` action; this is only an example.
+/home/runner/work/cherri/cherri/cherrilang.org/language/vcards.md:17:You can easily create a vCard Text action using the built-in action `makeVCard()`.
+/home/runner/work/cherri/cherri/cherrilang.org/language/vcards.md:27:The example below uses this built-in action to make a vCard menu.

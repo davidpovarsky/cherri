@@ -1,0 +1,133 @@
+{
+  "format_version": 1,
+  "requirement": "BRG06",
+  "source_commit": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "compiler_state.go",
+      "sha256": "5874cb7c6e5f7196f95c5a991b2debb5499cc25980818e6c2409021f2ebdac80"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "b109cd9555f2f6e49f91828c5d8b3d7772e596f2584320a4318034c48d4ed9c9"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "3c32c9088d2f929d4d5ce18630f9790a69e9a8867cc6db8c5ed1ac85610e47b5"
+    },
+    {
+      "path": "language_registry_adapter.go",
+      "sha256": "a7a22d65cb058f9e8113d2961bb66bdd09884a5829b0db6e90e40dc0a9ba81bf"
+    },
+    {
+      "path": "mobile_compiler.go",
+      "sha256": "27195dbe657b251d9e27d9b31ddce295c91e08650cfe7261a351d78e37372ec7"
+    },
+    {
+      "path": "ios_bridge.go",
+      "sha256": "6f3baec33cc1619cefd08f70253c74c89b3f4b319724bf4de7d77095bded8a77"
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "sha256": "ac6ae27ca33b2fdb9148df03ab1a9409a8cc8bf078a9c1e88f39325db7ca3345"
+    },
+    {
+      "path": "internal/language/service/registry_lifetime.go",
+      "sha256": "5e2fa8ae481bf5501c23531adedbe71edbefeb522cd3d06db4447acf2e2333e5"
+    },
+    {
+      "path": "internal/language/schema/registry_clone.go",
+      "sha256": "068220c9bf1a0067343dc13698a3883def14bccaa3629fc21315f2bb09c5c908"
+    },
+    {
+      "path": "internal/language/assets/cache.go",
+      "sha256": "116f6704b59e0f1761e19b7244b9945e7b0c5ac30a493537bcf145e87c44dbf8"
+    },
+    {
+      "path": "hybrid_import.go",
+      "sha256": "e5418f8ba31028da3e2f96a7e269916f62d8230bf1e997f6bc0be24db2941c6f"
+    },
+    {
+      "path": "semantic_import_planner.go",
+      "sha256": "0e304f7843a69de7375386d133268446c0bb4b213cfd0e19a3b7f3f0e65c2ab5"
+    },
+    {
+      "path": "reverse_action_registry.go",
+      "sha256": "42698854526a322839b292fcc5d0d91c2924b0868c4385976bd6e9bfd577d0a8"
+    },
+    {
+      "path": "p15_backend_import_state_test.go",
+      "sha256": "6a196e69e2782b19e1dee158289c0b794cdbb7bcac93286da1aae003d972d88a"
+    },
+    {
+      "path": "p15_backend_state_panic_test.go",
+      "sha256": "e0e04f1602b1edc4ce09da4bde99ddc47578e5274638d5df97c6df18ea79b201"
+    },
+    {
+      "path": "p15_backend_state_concurrency_test.go",
+      "sha256": "db0f403b64a5befa50ce0ef71d5d487fe625ccd0aca93a5e29e07f67f20fdd42"
+    },
+    {
+      "path": "p15_state_race_enabled_test.go",
+      "sha256": "298b5af3fb95351a64c387d955f2ac44f4679ab51b2518ff946190a4f2586cb2"
+    },
+    {
+      "path": "p15_state_race_disabled_test.go",
+      "sha256": "feb7e5e60ed86ab51df6d5f5fb32e3f482969411bccad18fd04e22dcbfa03efa"
+    },
+    {
+      "path": "tools/language-acceptance/run_state_race.py",
+      "sha256": "b9dc53a63fdbbee33d11711a2f7e4cfe6e7887f74894965a4b123f79851e2499"
+    },
+    {
+      "path": ".github/workflows/p10r15-state-race.yml",
+      "sha256": "c74a51afca05dc2e2f6a203d97f0220b2915d448a79e7fa9d23d7c2df1852ea4"
+    },
+    {
+      "path": "p15_cli_acceptance_test.go",
+      "sha256": "40b536a6776072f07177c5f87cd52171a347c06e0ab342bb9a85062218a6fd87"
+    },
+    {
+      "path": "main.go",
+      "sha256": "35cd76f2bb78d077fa6aa84ea32ba7166657725b16fe5010075202d5c7a063c8"
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "sha256": "08cf527779528e4459943d35f3450f037bd985dcfa1003fe0ab65fe1996332a3"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestP15CLIAnalysisHasNoExternalEffects)$"
+  ],
+  "required_tests": [
+    "TestP15CLIAnalysisHasNoExternalEffects"
+  ],
+  "discovered_tests": [
+    "TestP15CLIAnalysisHasNoExternalEffects"
+  ],
+  "started_utc": "2026-11-20T01:20:26.347707987Z",
+  "finished_utc": "2026-11-20T01:20:28.167159757Z",
+  "elapsed_seconds": 1.819455836,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "ee4dc3d2113aa1178020850044934ed2ee084475251d7c2e88ac01f2ed73fd38",
+  "raw_bytes": 1243,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "",
+  "benchmark_bytes": 0
+}

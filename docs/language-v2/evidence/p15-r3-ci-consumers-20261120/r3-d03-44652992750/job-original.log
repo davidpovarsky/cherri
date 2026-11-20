@@ -1,0 +1,428 @@
+installed-public-documentation	Set up job	﻿2026-11-20T01:21:21.8159662Z Current runner version: '2.338.2'
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8179391Z ##[group]Runner Image Provisioner
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8180178Z Hosted Compute Agent
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8180614Z Version: 20261103.629
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8181336Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8181968Z Build Date: 2026-11-03T17:26:59Z
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8182486Z Worker ID: {71420e5b-a546-4d42-b0fd-6c4db0d86e1c}
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8183060Z Region: us-west-2
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8183695Z Cloud: AWS
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8184092Z ##[endgroup]
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8185134Z ##[group]Operating System
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8185592Z Ubuntu
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8185996Z 26.04.1
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8186378Z LTS
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8186764Z ##[endgroup]
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8187188Z ##[group]Runner Image
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8187641Z Image: ubuntu-26.04
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8188077Z Version: 20261111.82.6
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8188926Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.82/images/ubuntu/Ubuntu2604-Readme.md
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8190341Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.82
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8191100Z ##[endgroup]
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8192024Z ##[group]GITHUB_TOKEN Permissions
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8194067Z Actions: read
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8194526Z Contents: read
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8194951Z Metadata: read
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8195373Z ##[endgroup]
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8196929Z Secret source: Actions
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8197618Z Cache mode: write
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8198224Z Prepare workflow directory
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8574189Z Prepare all required actions
+installed-public-documentation	Set up job	2026-11-20T01:21:21.8611942Z Getting action download info
+installed-public-documentation	Set up job	2026-11-20T01:21:22.2794343Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+installed-public-documentation	Set up job	2026-11-20T01:21:24.7127687Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+installed-public-documentation	Set up job	2026-11-20T01:21:24.8989576Z Download action repository 'actions/setup-go@v6' (SHA:924ae3a1cded613372ab5595356fb5720e22ba16)
+installed-public-documentation	Set up job	2026-11-20T01:21:25.2252961Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+installed-public-documentation	Set up job	2026-11-20T01:21:25.5799549Z Complete job name: installed-public-documentation
+installed-public-documentation	Run actions/checkout@v6	﻿2026-11-20T01:21:25.6544218Z ##[group]Run actions/checkout@v6
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6545420Z with:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6546122Z   fetch-depth: 0
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6546883Z   path: cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6547626Z   persist-credentials: false
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6548466Z   repository: davidpovarsky/cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6555499Z   token: ***
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6556244Z   ssh-strict: true
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6556973Z   ssh-user: git
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6557652Z   clean: true
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6558370Z   sparse-checkout-cone-mode: true
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6559234Z   fetch-tags: false
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6560054Z   show-progress: true
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6560774Z   lfs: false
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6561442Z   submodules: false
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6562214Z   set-safe-directory: true
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6563057Z   allow-unsafe-pr-checkout: false
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6564208Z env:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6564900Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6566085Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:25.6567324Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6651984Z Syncing repository: davidpovarsky/cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6654020Z ##[group]Getting Git version info
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6654660Z Working directory is '/home/runner/work/cherri/cherri/cherri'
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6655378Z [command]/usr/bin/git version
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6655738Z git version 2.56.1
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6656856Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6661128Z Temporarily overriding HOME='/home/runner/work/_temp/33b73ffe-ad54-468b-9072-7b5d5a664b97' before making global git config changes
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6662196Z Adding repository directory to the temporary git global config as a safe directory
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.6662823Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri/cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7008562Z ##[group]Determining repository object format
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7009697Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7010377Z ##[group]Initializing the repository
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7011045Z [command]/usr/bin/git init /home/runner/work/cherri/cherri/cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7861931Z hint: Using 'master' as the name for the initial branch. This default branch name
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7862986Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7863748Z hint: to use in all of your new repositories, which will suppress this warning,
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7864182Z hint: call:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7864450Z hint:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7864842Z hint: 	git config --global init.defaultBranch <name>
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7865206Z hint:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7865548Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7866120Z hint: 'development'. The just-created branch can be renamed via this command:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7866569Z hint:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7866834Z hint: 	git branch -m <name>
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7867131Z hint:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7867510Z hint: Disable this message with "git config set advice.defaultBranchName false"
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7872797Z Initialized empty Git repository in /home/runner/work/cherri/cherri/cherri/.git/
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7882337Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7929185Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7929918Z ##[group]Disabling automatic garbage collection
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7931930Z [command]/usr/bin/git config --local gc.auto 0
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7954753Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7955401Z ##[group]Setting up auth
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7955977Z Removing SSH command configuration
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7959387Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:29.7982032Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1560624Z Removing HTTP extra header
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1565829Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1589758Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1764556Z Removing includeIf entries pointing to credentials config files
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1771980Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1799460Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1973219Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.1999657Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.2019800Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.2041863Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cherri/.git.path /github/runner_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.2094546Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cherri/.git/worktrees/*.path /github/runner_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.2109705Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.2110155Z ##[group]Fetching the repository
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:30.2110747Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8438454Z From https://github.com/davidpovarsky/cherri
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8439164Z  * [new branch]        addon/pure-apple-actions-pack-20261022 -> origin/addon/pure-apple-actions-pack-20261022
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8439813Z  * [new branch]        agent/actions-app-external-shortcutkit-builder -> origin/agent/actions-app-external-shortcutkit-builder
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8440480Z  * [new branch]        agent/actions-app-extract-20261022 -> origin/agent/actions-app-extract-20261022
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8441064Z  * [new branch]        agent/apple-runtime-extraction-v2 -> origin/agent/apple-runtime-extraction-v2
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8441634Z  * [new branch]        agent/canonical-backend-production-cutover -> origin/agent/canonical-backend-production-cutover
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8442310Z  * [new branch]        agent/canonical-backend-recovery -> origin/agent/canonical-backend-recovery
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8442851Z  * [new branch]        agent/cherri-p10-apple-actions-coverage -> origin/agent/cherri-p10-apple-actions-coverage
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8443712Z  * [new branch]        agent/cherri-p10-parity-integration-20261020 -> origin/agent/cherri-p10-parity-integration-20261020
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8444471Z  * [new branch]        agent/cherri-p10r10-semantic-import-unification-20261111 -> origin/agent/cherri-p10r10-semantic-import-unification-20261111
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8445217Z  * [new branch]        agent/cherri-p10r11-action-wire-semantic-truth-20261112 -> origin/agent/cherri-p10r11-action-wire-semantic-truth-20261112
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8445989Z  * [new branch]        agent/cherri-p10r12-control-regions-complex-params-20261113 -> origin/agent/cherri-p10r12-control-regions-complex-params-20261113
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8446859Z  * [new branch]        agent/cherri-p10r13-simulator-debug-fidelity-20261115 -> origin/agent/cherri-p10r13-simulator-debug-fidelity-20261115
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8447634Z  * [new branch]        agent/cherri-p10r14-signed-shortcut-runtime-20261115 -> origin/agent/cherri-p10r14-signed-shortcut-runtime-20261115
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8448491Z  * [new branch]        agent/cherri-p10r15-apple-20261119 -> origin/agent/cherri-p10r15-apple-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8449186Z  * [new branch]        agent/cherri-p10r15-ax-publication-20261118 -> origin/agent/cherri-p10r15-ax-publication-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8449882Z  * [new branch]        agent/cherri-p10r15-chatgpt-gates-20261118 -> origin/agent/cherri-p10r15-chatgpt-gates-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8450545Z  * [new branch]        agent/cherri-p10r15-completion-20261119 -> origin/agent/cherri-p10r15-completion-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8451147Z  * [new branch]        agent/cherri-p10r15-completion-r2-20261119 -> origin/agent/cherri-p10r15-completion-r2-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8451728Z  * [new branch]        agent/cherri-p10r15-completion-r3-20261119 -> origin/agent/cherri-p10r15-completion-r3-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8452333Z  * [new branch]        agent/cherri-p10r15-consumer-k4-20261119 -> origin/agent/cherri-p10r15-consumer-k4-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8452919Z  * [new branch]        agent/cherri-p10r15-continuation-20261119 -> origin/agent/cherri-p10r15-continuation-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8453651Z  * [new branch]        agent/cherri-p10r15-file-carrier-20261120 -> origin/agent/cherri-p10r15-file-carrier-20261120
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8454312Z  * [new branch]        agent/cherri-p10r15-integration-gates-20261118 -> origin/agent/cherri-p10r15-integration-gates-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8454923Z  * [new branch]        agent/cherri-p10r15-ios-ui-20261118 -> origin/agent/cherri-p10r15-ios-ui-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8455436Z  * [new branch]        agent/cherri-p10r15-local-ocr-20261118 -> origin/agent/cherri-p10r15-local-ocr-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8456180Z  * [new branch]        agent/cherri-p10r15-native-collection-r5-20261118 -> origin/agent/cherri-p10r15-native-collection-r5-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8456988Z  * [new branch]        agent/cherri-p10r15-native-diagnostics-r2-20261118 -> origin/agent/cherri-p10r15-native-diagnostics-r2-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8457888Z  * [new branch]        agent/cherri-p10r15-native-macros-r4-20261118 -> origin/agent/cherri-p10r15-native-macros-r4-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8458718Z  * [new branch]        agent/cherri-p10r15-native-pilots-r3-20261118 -> origin/agent/cherri-p10r15-native-pilots-r3-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8459487Z  * [new branch]        agent/cherri-p10r15-native-resume-20261119 -> origin/agent/cherri-p10r15-native-resume-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8460348Z  * [new branch]        agent/cherri-p10r15-paginate-native-r1-20261118 -> origin/agent/cherri-p10r15-paginate-native-r1-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8461271Z  * [new branch]        agent/cherri-p10r15-project-closure-20261118 -> origin/agent/cherri-p10r15-project-closure-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8462102Z  * [new branch]        agent/cherri-p10r15-retry-probes-20261118 -> origin/agent/cherri-p10r15-retry-probes-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8463114Z  * [new branch]        agent/cherri-p10r15-signed-evidence-fix-20261118 -> origin/agent/cherri-p10r15-signed-evidence-fix-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8464136Z  * [new branch]        agent/cherri-p10r15-stat-fix-20261118 -> origin/agent/cherri-p10r15-stat-fix-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8464980Z  * [new branch]        agent/cherri-p10r15-storage-cross-run-20261118 -> origin/agent/cherri-p10r15-storage-cross-run-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8465974Z  * [new branch]        agent/cherri-p10r15-storage-native-r1-20261118 -> origin/agent/cherri-p10r15-storage-native-r1-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8466830Z  * [new branch]        agent/cherri-p10r15-validation-r1-20261118 -> origin/agent/cherri-p10r15-validation-r1-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8467696Z  * [new branch]        agent/cherri-p10r6-real-shortcuts-20261110 -> origin/agent/cherri-p10r6-real-shortcuts-20261110
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8468610Z  * [new branch]        agent/cherri-p10r7-verified-semantic-fidelity-20261110 -> origin/agent/cherri-p10r7-verified-semantic-fidelity-20261110
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8469627Z  * [new branch]        agent/cherri-p10r8-complete-native-fidelity-20261111 -> origin/agent/cherri-p10r8-complete-native-fidelity-20261111
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8470830Z  * [new branch]        agent/cherri-p10r9-unified-engine-hybrid-import-20261111 -> origin/agent/cherri-p10r9-unified-engine-hybrid-import-20261111
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8471701Z  * [new branch]        agent/cherri-v2-legacy-parity -> origin/agent/cherri-v2-legacy-parity
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8472392Z  * [new branch]        agent/cherri-v2-product-completion -> origin/agent/cherri-v2-product-completion
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8473035Z  * [new branch]        agent/ios-app-foundation -> origin/agent/ios-app-foundation
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8473876Z  * [new branch]        agent/ios27-shortcuts-runtime-poc -> origin/agent/ios27-shortcuts-runtime-poc
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8474639Z  * [new branch]        agent/language-redesign -> origin/agent/language-redesign
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8475288Z  * [new branch]        agent/lumen-ios27-storage-20261025 -> origin/agent/lumen-ios27-storage-20261025
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8475988Z  * [new branch]        agent/lumen-main-text-fix-20261025 -> origin/agent/lumen-main-text-fix-20261025
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8476711Z  * [new branch]        agent/lumen-runtime-validation-20261024 -> origin/agent/lumen-runtime-validation-20261024
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8477565Z  * [new branch]        agent/shared-shortcuts-engine-v2-repair -> origin/agent/shared-shortcuts-engine-v2-repair
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8478377Z  * [new branch]        agent/shared-shortcuts-engine-v2-round3 -> origin/agent/shared-shortcuts-engine-v2-round3
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8479270Z  * [new branch]        agent/shared-shortcuts-engine-v2-round3-closure -> origin/agent/shared-shortcuts-engine-v2-round3-closure
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8480223Z  * [new branch]        agent/shortcut-corpus-acquisition -> origin/agent/shortcut-corpus-acquisition
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8480903Z  * [new branch]        agent/shortcut-corpus-platform -> origin/agent/shortcut-corpus-platform
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8481725Z  * [new branch]        agent/shortcut-corpus-roundtrip-hardening -> origin/agent/shortcut-corpus-roundtrip-hardening
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8482542Z  * [new branch]        agent/sign-mot-getroutes-shortcut-20261017 -> origin/agent/sign-mot-getroutes-shortcut-20261017
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8483294Z  * [new branch]        agent/team-orchestration-20261018 -> origin/agent/team-orchestration-20261018
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8484148Z  * [new branch]        agent/transit-18-case-simulator-20261101 -> origin/agent/transit-18-case-simulator-20261101
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8484906Z  * [new branch]        apple-actions-pack-pure-core-20261022 -> origin/apple-actions-pack-pure-core-20261022
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8485608Z  * [new branch]        chatgpt/mozilla-reader-build -> origin/chatgpt/mozilla-reader-build
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8486103Z  * [new branch]        cloud-cherri-relay      -> origin/cloud-cherri-relay
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8486753Z  * [new branch]        cloud-cherri-request/compile-20261014-maplookup-a8c2f9 -> origin/cloud-cherri-request/compile-20261014-maplookup-a8c2f9
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8487522Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-maps-4ca89d -> origin/cloud-cherri-request/compile-20261014-zip-maps-4ca89d
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8488359Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-maps-84de72 -> origin/cloud-cherri-request/compile-20261014-zip-maps-84de72
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8489122Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v1 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v1
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8489780Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v2 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v2
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8490747Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v3 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v3
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8491456Z  * [new branch]        cloud-cherri-request/compile-smoketest-20261014 -> origin/cloud-cherri-request/compile-smoketest-20261014
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8492285Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-map168-d7b820 -> origin/cloud-cherri-request/sign-20261014-zip-map168-d7b820
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8492984Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-navigator-icons -> origin/cloud-cherri-request/sign-20261014-zip-navigator-icons
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8493838Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-navigator-v1 -> origin/cloud-cherri-request/sign-20261014-zip-navigator-v1
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8494476Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-share -> origin/cloud-cherri-request/sign-20261014-zip-share
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8495120Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-share-headless -> origin/cloud-cherri-request/sign-20261014-zip-share-headless
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8495801Z  * [new branch]        cloud-cherri-request/sign-mactest-20261014 -> origin/cloud-cherri-request/sign-mactest-20261014
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8496425Z  * [new branch]        cloud-cherri-request/sign-smoketest-20261014 -> origin/cloud-cherri-request/sign-smoketest-20261014
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8497082Z  * [new branch]        cloud-cherri-request/simulate-smoketest-20261014 -> origin/cloud-cherri-request/simulate-smoketest-20261014
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8497794Z  * [new branch]        cloud-cherri-requests   -> origin/cloud-cherri-requests
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8498560Z  * [new branch]        codex/local-backup-20261109/agent/lumen-ios27-storage-20261025 -> origin/codex/local-backup-20261109/agent/lumen-ios27-storage-20261025
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8499439Z  * [new branch]        experiment/macos-shortcuts-engine-probe -> origin/experiment/macos-shortcuts-engine-probe
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8500296Z  * [new branch]        handoff/cherri-p10r15-20261119 -> origin/handoff/cherri-p10r15-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8500853Z  * [new branch]        main                    -> origin/main
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8501448Z  * [new branch]        probe/cherri-p10r15-state-race-20261119 -> origin/probe/cherri-p10r15-state-race-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8502288Z  * [new branch]        staging/cherri-p10r15-asset-service-20261119 -> origin/staging/cherri-p10r15-asset-service-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8503162Z  * [new branch]        staging/cherri-p10r15-binding-defaults-20261119 -> origin/staging/cherri-p10r15-binding-defaults-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8504222Z  * [new branch]        staging/cherri-p10r15-binding-native-20261119 -> origin/staging/cherri-p10r15-binding-native-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8505204Z  * [new branch]        staging/cherri-p10r15-binding-producers-20261119 -> origin/staging/cherri-p10r15-binding-producers-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8506139Z  * [new branch]        staging/cherri-p10r15-ci-consumers-20261119 -> origin/staging/cherri-p10r15-ci-consumers-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8507083Z  * [new branch]        staging/cherri-p10r15-collect-count-proof-20261118 -> origin/staging/cherri-p10r15-collect-count-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8508003Z  * [new branch]        staging/cherri-p10r15-compiler-7b0100a-20261119 -> origin/staging/cherri-p10r15-compiler-7b0100a-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8508918Z  * [new branch]        staging/cherri-p10r15-compiler-8b3fcf7-20261119 -> origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8510011Z  * [new branch]        staging/cherri-p10r15-compiler-b34ae47-20261119 -> origin/staging/cherri-p10r15-compiler-b34ae47-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8510884Z  * [new branch]        staging/cherri-p10r15-compiler-b97ae75-20261119 -> origin/staging/cherri-p10r15-compiler-b97ae75-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8511829Z  * [new branch]        staging/cherri-p10r15-consumer-28bc5fa-20261119 -> origin/staging/cherri-p10r15-consumer-28bc5fa-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8512494Z  * [new branch]        staging/cherri-p10r15-consumer-7546d02-20261119 -> origin/staging/cherri-p10r15-consumer-7546d02-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8513108Z  * [new branch]        staging/cherri-p10r15-custom-codec-20261119 -> origin/staging/cherri-p10r15-custom-codec-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8514148Z  * [new branch]        staging/cherri-p10r15-custom-codec-contracts-20261119 -> origin/staging/cherri-p10r15-custom-codec-contracts-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8514856Z  * [new branch]        staging/cherri-p10r15-debug-export-file-20261119 -> origin/staging/cherri-p10r15-debug-export-file-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8515539Z  * [new branch]        staging/cherri-p10r15-declaration-trigger-20261119 -> origin/staging/cherri-p10r15-declaration-trigger-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8516246Z  * [new branch]        staging/cherri-p10r15-distance-native-proof-20261118 -> origin/staging/cherri-p10r15-distance-native-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8516902Z  * [new branch]        staging/cherri-p10r15-docs-intake-20261119 -> origin/staging/cherri-p10r15-docs-intake-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8517540Z  * [new branch]        staging/cherri-p10r15-evidence-go-isolation-20261119 -> origin/staging/cherri-p10r15-evidence-go-isolation-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8518247Z  * [new branch]        staging/cherri-p10r15-evidence-r11-20261118 -> origin/staging/cherri-p10r15-evidence-r11-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8518890Z  * [new branch]        staging/cherri-p10r15-f04-native-20261119 -> origin/staging/cherri-p10r15-f04-native-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8519544Z  * [new branch]        staging/cherri-p10r15-f04-native-boundary-20261119 -> origin/staging/cherri-p10r15-f04-native-boundary-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8520251Z  * [new branch]        staging/cherri-p10r15-f04-record-empty-20261119 -> origin/staging/cherri-p10r15-f04-record-empty-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8520878Z  * [new branch]        staging/cherri-p10r15-file-extension-20261119 -> origin/staging/cherri-p10r15-file-extension-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8521590Z  * [new branch]        staging/cherri-p10r15-import-foreground-20261119 -> origin/staging/cherri-p10r15-import-foreground-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8522344Z  * [new branch]        staging/cherri-p10r15-import-foreground-25599d4-20261119 -> origin/staging/cherri-p10r15-import-foreground-25599d4-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8523002Z  * [new branch]        staging/cherri-p10r15-index-proof-20261118 -> origin/staging/cherri-p10r15-index-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8523751Z  * [new branch]        staging/cherri-p10r15-integration-20261119 -> origin/staging/cherri-p10r15-integration-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8524381Z  * [new branch]        staging/cherri-p10r15-ios-docs-canonical-20261119 -> origin/staging/cherri-p10r15-ios-docs-canonical-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8525103Z  * [new branch]        staging/cherri-p10r15-ios-docs-d37b433-20261119 -> origin/staging/cherri-p10r15-ios-docs-d37b433-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8525999Z  * [new branch]        staging/cherri-p10r15-ios-docs-evidence-20261119 -> origin/staging/cherri-p10r15-ios-docs-evidence-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8526952Z  * [new branch]        staging/cherri-p10r15-ios-docs-wired-20261119 -> origin/staging/cherri-p10r15-ios-docs-wired-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8527892Z  * [new branch]        staging/cherri-p10r15-ios-startup-20261119 -> origin/staging/cherri-p10r15-ios-startup-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8528774Z  * [new branch]        staging/cherri-p10r15-ios-startup-ddc6c02-20261119 -> origin/staging/cherri-p10r15-ios-startup-ddc6c02-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8529740Z  * [new branch]        staging/cherri-p10r15-lang002-reference-20261119 -> origin/staging/cherri-p10r15-lang002-reference-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8530676Z  * [new branch]        staging/cherri-p10r15-legacy-inline-proof-20261118 -> origin/staging/cherri-p10r15-legacy-inline-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8531682Z  * [new branch]        staging/cherri-p10r15-legacy-native-numbers-20261119 -> origin/staging/cherri-p10r15-legacy-native-numbers-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8532722Z  * [new branch]        staging/cherri-p10r15-local-contracts-20261119 -> origin/staging/cherri-p10r15-local-contracts-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8533860Z  * [new branch]        staging/cherri-p10r15-local-scenarios-20261119 -> origin/staging/cherri-p10r15-local-scenarios-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8535047Z  * [new branch]        staging/cherri-p10r15-menus-asset-fixture-20261119 -> origin/staging/cherri-p10r15-menus-asset-fixture-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8536011Z  * [new branch]        staging/cherri-p10r15-module-contracts-20261119 -> origin/staging/cherri-p10r15-module-contracts-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8536980Z  * [new branch]        staging/cherri-p10r15-native-audit-proof-20261118 -> origin/staging/cherri-p10r15-native-audit-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8538033Z  * [new branch]        staging/cherri-p10r15-native-boundary-20261119 -> origin/staging/cherri-p10r15-native-boundary-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8538926Z  * [new branch]        staging/cherri-p10r15-native-boundary-f7f1447-20261119 -> origin/staging/cherri-p10r15-native-boundary-f7f1447-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8539662Z  * [new branch]        staging/cherri-p10r15-native-reporting-proof-20261118 -> origin/staging/cherri-p10r15-native-reporting-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8540359Z  * [new branch]        staging/cherri-p10r15-number-coercion-20261118 -> origin/staging/cherri-p10r15-number-coercion-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8541042Z  * [new branch]        staging/cherri-p10r15-number-coercion-native-20261119 -> origin/staging/cherri-p10r15-number-coercion-native-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8541788Z  * [new branch]        staging/cherri-p10r15-number-coercion-proof-20261118 -> origin/staging/cherri-p10r15-number-coercion-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8542491Z  * [new branch]        staging/cherri-p10r15-output-isolation-20261119 -> origin/staging/cherri-p10r15-output-isolation-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8543167Z  * [new branch]        staging/cherri-p10r15-presence-proof-20261118 -> origin/staging/cherri-p10r15-presence-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8544379Z  * [new branch]        staging/cherri-p10r15-promotion-package-fix-20261119 -> origin/staging/cherri-p10r15-promotion-package-fix-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8545093Z  * [new branch]        staging/cherri-p10r15-prompt-number-proof-20261118 -> origin/staging/cherri-p10r15-prompt-number-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8545761Z  * [new branch]        staging/cherri-p10r15-registry-proof-20261118 -> origin/staging/cherri-p10r15-registry-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8546500Z  * [new branch]        staging/cherri-p10r15-required-encodings-20261119 -> origin/staging/cherri-p10r15-required-encodings-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8547108Z  * [new branch]        staging/cherri-p10r15-source-r10-20261118 -> origin/staging/cherri-p10r15-source-r10-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8547762Z  * [new branch]        staging/cherri-p10r15-storage-retry-contracts-20261119 -> origin/staging/cherri-p10r15-storage-retry-contracts-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8548527Z  * [new branch]        staging/cherri-p10r15-supplemental-acceptance-20261119 -> origin/staging/cherri-p10r15-supplemental-acceptance-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8549235Z  * [new branch]        staging/cherri-p10r15-supplemental-meta-20261119 -> origin/staging/cherri-p10r15-supplemental-meta-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8549917Z  * [new branch]        staging/cherri-p10r15-supplemental-next-20261119 -> origin/staging/cherri-p10r15-supplemental-next-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8550563Z  * [new branch]        staging/cherri-p10r15-unicode-diagnostic-20261119 -> origin/staging/cherri-p10r15-unicode-diagnostic-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8551329Z  * [new branch]        staging/cherri-p10r15-unicode-proof-20261118 -> origin/staging/cherri-p10r15-unicode-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8552155Z  * [new branch]        staging/cherri-p10r15-variadic-proof-20261118 -> origin/staging/cherri-p10r15-variadic-proof-20261118
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8552854Z  * [new branch]        sync/upstream-2026-10   -> origin/sync/upstream-2026-10
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8553732Z  * [new branch]        upstream-pure-cherri-original-20261022 -> origin/upstream-pure-cherri-original-20261022
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8555305Z [command]/usr/bin/git branch --list --remote origin/agent/cherri-p10r15-completion-r3-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8556086Z   origin/agent/cherri-p10r15-completion-r3-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8558777Z [command]/usr/bin/git rev-parse refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8559258Z 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8560142Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8560641Z ##[group]Determining the checkout info
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8561048Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8561290Z [command]/usr/bin/git sparse-checkout disable
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8565580Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8585370Z ##[group]Checking out the ref
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:31.8587703Z [command]/usr/bin/git checkout --progress --force -B agent/cherri-p10r15-completion-r3-20261119 refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1379391Z Switched to a new branch 'agent/cherri-p10r15-completion-r3-20261119'
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1383494Z branch 'agent/cherri-p10r15-completion-r3-20261119' set up to track 'origin/agent/cherri-p10r15-completion-r3-20261119'.
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1405476Z ##[endgroup]
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1452797Z [command]/usr/bin/git log -1 --format=%H
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1469351Z 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1478785Z ##[group]Removing auth
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1479138Z Removing SSH command configuration
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1480313Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1503807Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1697299Z Removing HTTP extra header
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1700545Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1726055Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1907363Z Removing includeIf entries pointing to credentials config files
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1907939Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1931508Z includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1932120Z includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1932713Z includeif.gitdir:/github/workspace/cherri/.git.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1933058Z includeif.gitdir:/github/workspace/cherri/.git/worktrees/*.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1938498Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1952812Z /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1959464Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1982119Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.1996863Z /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2002027Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2027362Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cherri/.git.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2041788Z /github/runner_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2047191Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cherri/.git.path /github/runner_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2068833Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cherri/.git/worktrees/*.path
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2083109Z /github/runner_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2089092Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cherri/.git/worktrees/*.path /github/runner_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2111491Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2287453Z Removing credentials config '/home/runner/work/_temp/git-credentials-21cabff7-d7ec-4ed3-b79e-2c5629e76656.config'
+installed-public-documentation	Run actions/checkout@v6	2026-11-20T01:21:32.2304633Z ##[endgroup]
+installed-public-documentation	Run actions/setup-python@v5	﻿2026-11-20T01:21:32.2488762Z ##[group]Run actions/setup-python@v5
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2489087Z with:
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2489341Z   python-version: 3.x
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2489582Z   check-latest: false
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2491589Z   token: ***
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2491836Z   update-environment: true
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2492098Z   allow-prereleases: false
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2492327Z   freethreaded: false
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2492546Z env:
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2492760Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2493110Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.2493668Z ##[endgroup]
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.3575500Z ##[group]Installed versions
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.8870572Z (node:2462) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.8871877Z (Use `node --trace-deprecation ...` to show where the warning was created)
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.8872427Z Successfully set up CPython (3.15.2)
+installed-public-documentation	Run actions/setup-python@v5	2026-11-20T01:21:32.8873156Z ##[endgroup]
+installed-public-documentation	Initialize the run-owned temporary directory	﻿2026-11-20T01:21:32.8979961Z ##[group]Run printf 'CHERRI_D03_RUN_ROOT=%s/cherri-d03-%s-%s\n' \
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:32.8980850Z ^[[36;1mprintf 'CHERRI_D03_RUN_ROOT=%s/cherri-d03-%s-%s\n' \^[[0m
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:32.8981476Z ^[[36;1m  "$RUNNER_TEMP" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"^[[0m
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0156711Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0157167Z env:
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0157659Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0158013Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0158386Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0158759Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0159150Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0159499Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0159826Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0160284Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+installed-public-documentation	Initialize the run-owned temporary directory	2026-11-20T01:21:33.0160574Z ##[endgroup]
+installed-public-documentation	Preserve the exact canonical compiler origin	﻿2026-11-20T01:21:33.0953000Z ##[group]Run git remote set-url origin https://github.com/davidpovarsky/cherri.git
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0954121Z ^[[36;1mgit remote set-url origin https://github.com/davidpovarsky/cherri.git^[[0m
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0973124Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0973619Z env:
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0973881Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0974265Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0974665Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0975061Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0975442Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0975783Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0976126Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0976487Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0976975Z   CHERRI_D03_RUN_ROOT: /home/runner/work/_temp/cherri-d03-44652992750-1
+installed-public-documentation	Preserve the exact canonical compiler origin	2026-11-20T01:21:33.0977302Z ##[endgroup]
+installed-public-documentation	Verify public receipt transport controls	﻿2026-11-20T01:21:33.1056280Z ##[group]Run python3 -m unittest discover -s tools/p10r15 -p test_prepare_documentation_consumer_ci.py -v
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1056898Z ^[[36;1mpython3 -m unittest discover -s tools/p10r15 -p test_prepare_documentation_consumer_ci.py -v^[[0m
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1072827Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1073162Z env:
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1073541Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1073911Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1074303Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1074652Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1075034Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1075364Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1075735Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1076129Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1076577Z   CHERRI_D03_RUN_ROOT: /home/runner/work/_temp/cherri-d03-44652992750-1
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:33.1076888Z ##[endgroup]
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7086029Z test_deployment_and_artifact_identity_faults_rejected (test_prepare_documentation_consumer_ci.PublicationInputs.test_deployment_and_artifact_identity_faults_rejected) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7227400Z test_digest_failure_never_extracts_or_publishes_input (test_prepare_documentation_consumer_ci.PublicationInputs.test_digest_failure_never_extracts_or_publishes_input) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7437271Z test_exact_public_bytes_retained_without_consumer_credit (test_prepare_documentation_consumer_ci.PublicationInputs.test_exact_public_bytes_retained_without_consumer_credit) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7558280Z test_exact_two_file_archive_rejects_unsafe_shapes (test_prepare_documentation_consumer_ci.PublicationInputs.test_exact_two_file_archive_rejects_unsafe_shapes) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7664807Z test_input_bounds_and_noncanonical_encoding (test_prepare_documentation_consumer_ci.PublicationInputs.test_input_bounds_and_noncanonical_encoding) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7804116Z test_metadata_rerun_race_fails_before_verified_publication (test_prepare_documentation_consumer_ci.PublicationInputs.test_metadata_rerun_race_fails_before_verified_publication) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7959433Z test_real_source_revision_and_clean_checkout_required (test_prepare_documentation_consumer_ci.PublicationInputs.test_real_source_revision_and_clean_checkout_required) ... ok
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7960103Z 
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7960271Z ----------------------------------------------------------------------
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7960604Z Ran 7 tests in 0.156s
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7960711Z 
+installed-public-documentation	Verify public receipt transport controls	2026-11-20T01:21:34.7960841Z OK
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	﻿2026-11-20T01:21:34.8129559Z ##[group]Run python3 tools/p10r15/prepare_documentation_consumer_ci.py --source "$PWD" --implementation-sha "$GITHUB_SHA" --output "$CHERRI_D03_RUN_ROOT"
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8130356Z ^[[36;1mpython3 tools/p10r15/prepare_documentation_consumer_ci.py --source "$PWD" --implementation-sha "$GITHUB_SHA" --output "$CHERRI_D03_RUN_ROOT"^[[0m
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8148219Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8148594Z env:
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8148812Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8149122Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8149541Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8149884Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8150259Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8150574Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8150883Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8151307Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8151658Z   CHERRI_D03_RUN_ROOT: /home/runner/work/_temp/cherri-d03-44652992750-1
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8151986Z   CHERRI_D03_DEPLOYMENT_RUN_ID: 44652711917
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8158922Z   CHERRI_D03_PUBLICATION_ZIP_BASE64: UEsDBBQACAAIAHcKdF0AAAAAAAAAAAAAAAAeAAAAY2hlcnJpLWRvY3Mtc2l0ZS1ldmlkZW5jZS5qc29ujVRNb9QwEL3vr4hyhq4z/t4bqkBCqkTF1wVxGHvGidVssnKSCoT47yjZoi0UpN7sGb8Zz3vP/rGrqjqN5YjzZy5THof6UMGLNRpw4k+lrw9VvY8dl5J7HNqrsbT1lj8toc8R5zwO70pu84qsu3k+TYf9nvA+02m8xzLdfb9q89wt4SqPZ2RcSuFh/sBYYvd+XGae6kP1ZVdV1b97PQ3v01juXq67BVt+1qE9xvWu0/MOt0umZ9Y95rZsNNS7qvq6TXjPJafMdDNG7G/ycLcO6OyW6/I0jyVH7M8EvB7mkjcGxJanMU7X4/GY55VQCFEn4z1EAg0JnNVSBCE9s/QyNEGLdcUPzI7HU+65XPCRogsMUQhhvCOiwFY2bq1JLpFXYCU3ZM74aVxK5I+F+bpnXBWdy8KPUu85ceEh8ocOQZu1g9EiMGqPmDwYYBWENKwIldYBgo4RHbFTypKJ3jdaOue18hypcZDEuXPhgbgwvdpEul1FPWzOfCrgVTcf+/+hLvcCREkGjZGuaaQLICJAQDDYECRDyoJTgZNVVqKWGpVix4aNENoH7x8Y2TR6OxB/u5R2jiwQeWHAm0TsMIaQhFKsIZKCKNnJtZyJ2lJQgcBIFXySzCzpYeQpdnzEN3louZxKHuZHr4Ci0coJa4KTIEKjWRhQ0idBjm0QErhJZICEhND4IAwGE61HrZwXqH87V1rVhGgJFDhrSDIZNjpaC9olbwGEA9k4xdbYkLxElGwikFMOlTP2YukB53zPZ6Kvx2VY3aWF/kOGiztyO+C8lM3WGsQjKi921+fwWdW/3wI0Z0ye+Xb9aKaOqT5UCfuJdz93vwBQSwcIZk25LnUCAAC4BAAAUEsDBBQACAAIAHcKdF0AAAAAAAAAAAAAAAAeAAAAY2hlcnJpLWRvY3Mtc2l0ZS1jb250cm9scy5qc29urZO9b5xAEMX7+ytGNG5MboGDAyQ3+ZBSpHKUNJaLYXfgJoZdvB9xLMv/e7RwF7uIHJ2UBjErvfd+87T7tAFIemMn9N/JOjY6aSG7jKfKSPfBTBP7pIUk72TZV02TS5WXeZ/X+7IQnSgaoqIpuqwrRfyjZNFKM808kn3RSyXrjnIphKiaWinV0b7I6uip6l41u3xfUKaqVT+jc6SSFqpl7JHHZRTL6O54nl/NaD33KL27JueNJfXpF0o/PiYteBvoSKS9NaNLWrjZAAA8LV+ARONEkfDAUcwSx9Sa4CllnSrqMYw+dYRWHha2RWPpB0m/IJwSlnPFOGjjPMvo+HFVw6oG1nIMihwgvGTBktXCdkQ9BBxoa/EhRenZaJcsvs+XfwdebVNLLiI+sD+Y4NPZmsiWdujoXOCvK+jqCN+uv4Ay5EAbDxP6uIJ38DpgpX8bU45M+lRhauk+kPuvuGvAC+poUAFqBcER+APBT7LcM6kTetzsH91O7BzrIT2YiVIM/mBsHEl7+3gu5mczEcw4EIwo79xSYtB8HwhksDaWMwRWBIs7zIa1P4OOJxzOru594Hgx2ROwg6Mf4Ikr0rawja/Qu+0p7viG3s16eJtPYWRSqURt9PKi1gud9qwHsrONG55JbEkrsqRgtToWapyHPykwkUeFHlt4FeSubi6UrMpdLfZVVxe56LKSRJXviqYXqqZ9J4qcsl5VuRJF3mVNJyrsKrlvsNzVjcDy4vYSHA8afbDkrm5uj/tvAG43z5vfUEsHCAyvy7BAAgAARgUAAFBLAQItAxQACAAIAHcKdF1mTbkudQIAALgEAAAeAAAAAAAAAAAAIACkgQAAAABjaGVycmktZG9jcy1zaXRlLWV2aWRlbmNlLmpzb25QSwECLQMUAAgACAB3CnRdDK/LsEACAABGBQAAHgAAAAAAAAAAACAApIHBAgAAY2hlcnJpLWRvY3Mtc2l0ZS1jb250cm9scy5qc29uUEsFBgAAAAACAAIAmAAAAE0FAAAAAA==
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:34.8165966Z ##[endgroup]
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:35.2372944Z {"status": "D03_PREPARATION_BLOCKED", "code": "HTTPError", "formalAcceptanceGranted": false}
+installed-public-documentation	Verify original Pages ZIP and current deployment metadata	2026-11-20T01:21:35.2506408Z ##[error]Process completed with exit code 1.
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	﻿2026-11-20T01:21:35.2599363Z ##[group]Run actions/upload-artifact@v4
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2599637Z with:
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2599935Z   name: p10r15-documentation-consumers-44652992750
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2600282Z   path: /home/runner/work/_temp/cherri-d03-44652992750-1/verified/
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2600611Z   if-no-files-found: warn
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2600862Z   retention-days: 14
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2601077Z   compression-level: 6
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2601324Z   overwrite: false
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2601546Z   include-hidden-files: false
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2601776Z env:
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2602021Z   PYTHONDONTWRITEBYTECODE: 1
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2602336Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2602734Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2603092Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2603668Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2604051Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2604584Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2604922Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2605276Z   CHERRI_D03_RUN_ROOT: /home/runner/work/_temp/cherri-d03-44652992750-1
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.2605884Z ##[endgroup]
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.3870717Z (node:2623) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.3871544Z (Use `node --trace-deprecation ...` to show where the warning was created)
+installed-public-documentation	Retain only verified public inputs and unchanged consumer evidence	2026-11-20T01:21:35.3896610Z ##[warning]No files were found with the provided path: /home/runner/work/_temp/cherri-d03-44652992750-1/verified/. No artifacts will be uploaded.
+installed-public-documentation	Post Run actions/checkout@v6	﻿2026-11-20T01:21:35.4082448Z Post job cleanup.
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4753778Z [command]/usr/bin/git version
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4785307Z git version 2.56.1
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4812359Z Temporarily overriding HOME='/home/runner/work/_temp/a6df78ef-0554-4823-8467-84e767f4ce3e' before making global git config changes
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4813524Z Adding repository directory to the temporary git global config as a safe directory
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4815683Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri/cherri
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4840183Z Removing SSH command configuration
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4845013Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.4868785Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.5079735Z Removing HTTP extra header
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.5081758Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.5104842Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.5289080Z Removing includeIf entries pointing to credentials config files
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.5294043Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+installed-public-documentation	Post Run actions/checkout@v6	2026-11-20T01:21:35.5318034Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+installed-public-documentation	Complete job	﻿2026-11-20T01:21:35.5639468Z Cleaning up orphan processes
+installed-public-documentation	Complete job	2026-11-20T01:21:35.5909534Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

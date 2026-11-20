@@ -1,0 +1,2128 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-20T01:15:11.009870+00:00",
+  "masterAsanaTask": "1220544599390563",
+  "sourceSha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "worktreeDirtyBeforeExecution": false,
+  "sourceFingerprint": "b0fd813e05f3392e3657810e811174a8aac8331b9f8c7ff3b68331108d876555",
+  "generatorSHA256": "dd8d568c9df4af3b8a090eaf5d50293777eb95f1d7a2f0885d6e445af185532a",
+  "buildCommand": [
+    "go",
+    "build",
+    "-trimpath",
+    "-o",
+    "<temporary-compiler>",
+    "."
+  ],
+  "goVersion": "go version go1.24.13 linux/amd64",
+  "compilerSHA256": "5ff61c82a090694cf7984cbd497bfc1835a74dd386c081e5f15b6ccbb2665921",
+  "languageVersion": "2.0",
+  "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+  "macroFingerprint": "3741bc7d242876d3ed6e65c77258f97220823184e767bf93aa3e6c2d848a4867",
+  "nativeCatalogCount": 505,
+  "compilerMacroCount": 15,
+  "compilerMacros": [
+    {
+      "id": "debugAssert",
+      "callableName": "debugAssert",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.conditional",
+      "primaryParameterId": "condition",
+      "parameters": [
+        {
+          "id": "condition",
+          "label": "condition",
+          "displayName": "Condition",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": false,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "omissionPolicy": "emit",
+          "wireKey": "WFInput",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "message",
+          "label": "message",
+          "displayName": "Message",
+          "type": "text",
+          "rawType": "string",
+          "optional": true,
+          "acceptedForms": [
+            "string",
+            "interpolation",
+            "expression",
+            "reference"
+          ],
+          "default": "Assertion failed",
+          "omissionPolicy": "omit",
+          "wireKey": "WFAlertActionMessage",
+          "codec": "textToken",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFAlertActionMessage",
+        "WFInput"
+      ],
+      "docs": {
+        "title": "Assert Condition",
+        "description": "Stop the Shortcut with a message when the condition is false.",
+        "category": "debug",
+        "insertionSnippet": "debugAssert(condition: <#bool#>)"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugClearLogs",
+      "callableName": "debugClearLogs",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.setvariable",
+      "parameters": null,
+      "docs": {
+        "title": "Clear Debug Logs",
+        "description": "Reset the execution-local debug log to an empty value.",
+        "category": "debug",
+        "insertionSnippet": "debugClearLogs()"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugExport",
+      "callableName": "debugExport",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.setitemname",
+      "primaryParameterId": "format",
+      "parameters": [
+        {
+          "id": "format",
+          "label": "format",
+          "displayName": "Format",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "json",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportFormat",
+          "enumValues": [
+            "json",
+            "text"
+          ],
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "includeDates",
+          "label": "includeDates",
+          "displayName": "Include Dates (unsupported)",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportDates",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "includeTypes",
+          "label": "includeTypes",
+          "displayName": "Include Native Types",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "true",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportTypes",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "redactSensitive",
+          "label": "redactSensitive",
+          "displayName": "Redact All Payloads",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "true",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportRedact",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "outputType": "File",
+      "rawOutputType": "variable",
+      "docs": {
+        "title": "Export Local Debug File",
+        "description": "Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. Dates/labels are not collected; includeDates:true is rejected. Options are compile-time literals. Native runtime acceptance remains required.",
+        "category": "debug",
+        "insertionSnippet": "debugExport()"
+      },
+      "builtin": true,
+      "compilerConstruct": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugExportTrace",
+      "callableName": "debugExportTrace",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.gettext",
+      "primaryParameterId": "runId",
+      "parameters": [
+        {
+          "id": "runId",
+          "label": "runId",
+          "displayName": "Run ID",
+          "type": "text",
+          "rawType": "string",
+          "optional": true,
+          "acceptedForms": [
+            "string"
+          ],
+          "default": "cherri-qa-run",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugTraceRunID",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugTraceRunID"
+      ],
+      "outputType": "text",
+      "rawOutputType": "string",
+      "docs": {
+        "title": "Export QA Structured Trace Snapshot",
+        "description": "Combine the execution-local QA trace buffer into a deterministic JSON envelope for QA inspection or callback export without mutating __cherri_debug_log.",
+        "category": "debug",
+        "insertionSnippet": "debugExportTrace(runId: \"qa-run-1\")"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugFinish",
+      "callableName": "debugFinish",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.previewdocument",
+      "primaryParameterId": "withDates",
+      "parameters": [
+        {
+          "id": "withDates",
+          "label": "withDates",
+          "displayName": "With Dates",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugWithDates",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "showLogsAsText",
+          "label": "showLogsAsText",
+          "displayName": "Show Logs As Text",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugShowLogsAsText",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugShowLogsAsText",
+        "WFDebugWithDates"
+      ],
+      "docs": {
+        "title": "Finish Debug Session",
+        "description": "Preview native objects with optional Creation Date names or display text with showLogsAsText.",
+        "category": "debug",
+        "insertionSnippet": "debugFinish()"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugLog",
+      "callableName": "debugLog",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.appendvariable",
+      "primaryParameterId": "withDates",
+      "parameters": [
+        {
+          "id": "withDates",
+          "label": "withDates",
+          "displayName": "With Dates",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugWithDates",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "showLogs",
+          "label": "showLogs",
+          "displayName": "Show Logs",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugShowLogs",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "showLogsAsText",
+          "label": "showLogsAsText",
+          "displayName": "Show Logs As Text",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugShowLogsAsText",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugShowLogs",
+        "WFDebugShowLogsAsText",
+        "WFDebugWithDates",
+        "WFVariableName"
+      ],
+      "outputType": "text",
+      "rawOutputType": "string",
+      "docs": {
+        "title": "Debug Log",
+        "description": "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.",
+        "category": "debug",
+        "insertionSnippet": "debugLog()"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugLogPrevious",
+      "callableName": "debugLogPrevious",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.appendvariable",
+      "primaryParameterId": "withDates",
+      "parameters": [
+        {
+          "id": "withDates",
+          "label": "withDates",
+          "displayName": "With Dates",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugWithDates",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "showLogs",
+          "label": "showLogs",
+          "displayName": "Show Logs",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugShowLogs",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "showLogsAsText",
+          "label": "showLogsAsText",
+          "displayName": "Show Logs As Text",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugShowLogsAsText",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugShowLogs",
+        "WFDebugShowLogsAsText",
+        "WFDebugWithDates"
+      ],
+      "outputType": "text",
+      "rawOutputType": "string",
+      "docs": {
+        "title": "Log Previous Result",
+        "description": "Alias for debugLog with optional withDates/showLogs/showLogsAsText.",
+        "category": "debug",
+        "insertionSnippet": "debugLogPrevious()"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugShowLogs",
+      "callableName": "debugShowLogs",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.previewdocument",
+      "primaryParameterId": "withDates",
+      "parameters": [
+        {
+          "id": "withDates",
+          "label": "withDates",
+          "displayName": "With Dates",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugWithDates",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "showLogsAsText",
+          "label": "showLogsAsText",
+          "displayName": "Show Logs As Text",
+          "type": "bool",
+          "rawType": "bool",
+          "optional": true,
+          "acceptedForms": [
+            "bool",
+            "expression",
+            "reference"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugShowLogsAsText",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugShowLogsAsText",
+        "WFDebugWithDates"
+      ],
+      "docs": {
+        "title": "Show Debug Logs",
+        "description": "Preview native objects, naming items by Creation Date when enabled; use showLogsAsText for text formatting.",
+        "category": "debug",
+        "insertionSnippet": "debugShowLogs()"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugStartTimer",
+      "callableName": "debugStartTimer",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.date",
+      "primaryParameterId": "label",
+      "parameters": [
+        {
+          "id": "label",
+          "label": "label",
+          "displayName": "Label",
+          "type": "text",
+          "rawType": "string",
+          "optional": false,
+          "acceptedForms": [
+            "string",
+            "interpolation",
+            "expression",
+            "reference"
+          ],
+          "omissionPolicy": "emit",
+          "wireKey": "WFDebugTimerLabel",
+          "codec": "textToken",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugTimerLabel"
+      ],
+      "docs": {
+        "title": "Start Debug Timer",
+        "description": "Remember the current time under a compile-time label.",
+        "category": "debug",
+        "insertionSnippet": "debugStartTimer(label: <#text#>)"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugStopTimer",
+      "callableName": "debugStopTimer",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.gettimebetweendates",
+      "primaryParameterId": "label",
+      "parameters": [
+        {
+          "id": "label",
+          "label": "label",
+          "displayName": "Label",
+          "type": "text",
+          "rawType": "string",
+          "optional": false,
+          "acceptedForms": [
+            "string",
+            "interpolation",
+            "expression",
+            "reference"
+          ],
+          "omissionPolicy": "emit",
+          "wireKey": "WFDebugTimerLabel",
+          "codec": "textToken",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugTimerLabel"
+      ],
+      "outputType": "number",
+      "rawOutputType": "float",
+      "docs": {
+        "title": "Stop Debug Timer",
+        "description": "Measure elapsed seconds and append the result to the execution-local log.",
+        "category": "debug",
+        "insertionSnippet": "debugStopTimer(label: <#text#>)"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugTrace",
+      "callableName": "debugTrace",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.appendvariable",
+      "primaryParameterId": "value",
+      "parameters": [
+        {
+          "id": "value",
+          "label": "value",
+          "displayName": "Value",
+          "type": "text",
+          "rawType": "string",
+          "optional": false,
+          "acceptedForms": [
+            "string",
+            "interpolation",
+            "expression",
+            "reference"
+          ],
+          "omissionPolicy": "emit",
+          "wireKey": "WFInput",
+          "codec": "textToken",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFInput"
+      ],
+      "outputType": "text",
+      "rawOutputType": "string",
+      "docs": {
+        "title": "Trace Value and Time",
+        "description": "Append current time followed by a value to the execution-local debug log.",
+        "category": "debug",
+        "insertionSnippet": "debugTrace(value: <#text#>)"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugTraceEvent",
+      "callableName": "debugTraceEvent",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.appendvariable",
+      "primaryParameterId": "stage",
+      "parameters": [
+        {
+          "id": "stage",
+          "label": "stage",
+          "displayName": "Stage",
+          "type": "text",
+          "rawType": "string",
+          "optional": false,
+          "acceptedForms": [
+            "string"
+          ],
+          "omissionPolicy": "emit",
+          "wireKey": "WFDebugTraceStage",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "label",
+          "label": "label",
+          "displayName": "Label",
+          "type": "text",
+          "rawType": "string",
+          "optional": true,
+          "acceptedForms": [
+            "string"
+          ],
+          "default": "",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugTraceLabel",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "emittedKeys": [
+        "WFDebugTraceLabel",
+        "WFDebugTraceStage"
+      ],
+      "outputType": "text",
+      "rawOutputType": "string",
+      "docs": {
+        "title": "Record QA Structured Trace Event",
+        "description": "Append a structured JSONL trace record (stage, label, step sequence, and CurrentDate timestamp) to the execution-local QA trace buffer without mutating __cherri_debug_log.",
+        "category": "debug",
+        "insertionSnippet": "debugTraceEvent(stage: \"after\", label: \"step-1\")"
+      },
+      "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "measure",
+      "callableName": "measure",
+      "module": "debug",
+      "appleIdentifier": "",
+      "primaryParameterId": "label",
+      "parameters": [
+        {
+          "id": "label",
+          "label": "label",
+          "displayName": "Label",
+          "type": "text",
+          "rawType": "string",
+          "optional": false,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "outputType": "AnyContent",
+      "docs": {
+        "title": "Measure Block",
+        "description": "V2 scoped value block. Evaluate once, log elapsed seconds through existing native timers, and return the original typed value. Runtime timing accuracy remains platform-dependent.",
+        "category": "debug",
+        "insertionSnippet": "measure(\"label\") { <#expression#> }"
+      },
+      "builtin": true,
+      "compilerConstruct": true,
+      "scopedBlock": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "paginate",
+      "callableName": "paginate",
+      "module": "web",
+      "appleIdentifier": "is.workflow.actions.getvariable",
+      "primaryParameterId": "startURL",
+      "parameters": [
+        {
+          "id": "startURL",
+          "label": "startURL",
+          "displayName": "Initial HTTP(S) URL",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": false,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateStartURL",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "itemsKey",
+          "label": "itemsKey",
+          "displayName": "Dictionary items key",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "items",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateItemsKey",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "nextKey",
+          "label": "nextKey",
+          "displayName": "Next URL or sibling filename key",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "next",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateNextKey",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "maxPages",
+          "label": "maxPages",
+          "displayName": "Maximum native GET invocations (0..100)",
+          "type": "Number",
+          "rawType": "number",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "20",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateMaxPages",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "maxItems",
+          "label": "maxItems",
+          "displayName": "Maximum returned Dictionary items (0..10000)",
+          "type": "Number",
+          "rawType": "number",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "1000",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateMaxItems",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "outputType": "List<Map<Text, AnyContent>>",
+      "rawOutputType": "array",
+      "docs": {
+        "title": "Paginate Bounded Dictionary Pages",
+        "description": "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+        "category": "web",
+        "insertionSnippet": "paginate(\"https://example.invalid/pages/one.json\")"
+      },
+      "builtin": true,
+      "compilerConstruct": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "require",
+      "callableName": "require",
+      "module": "control",
+      "appleIdentifier": "is.workflow.actions.getvariable",
+      "primaryParameterId": "value",
+      "parameters": [
+        {
+          "id": "value",
+          "label": "value",
+          "displayName": "Value",
+          "type": "AnyContent",
+          "rawType": "variable",
+          "optional": false,
+          "omissionPolicy": "emit",
+          "wireKey": "WFInput",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "type",
+          "label": "type",
+          "displayName": "Native Category",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "omissionPolicy": "omit",
+          "wireKey": "WFRequireType",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "nonEmpty",
+          "label": "nonEmpty",
+          "displayName": "Nonempty",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "omissionPolicy": "omit",
+          "wireKey": "WFRequireNonEmpty",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "message",
+          "label": "message",
+          "displayName": "Failure Message",
+          "type": "Text",
+          "rawType": "string",
+          "optional": true,
+          "omissionPolicy": "omit",
+          "wireKey": "WFAlertActionMessage",
+          "codec": "textToken",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "outputType": "AnyContent",
+      "rawOutputType": "variable",
+      "docs": {
+        "title": "Require Typed Value",
+        "description": "Validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.",
+        "category": "control",
+        "insertionSnippet": "require(<#value#>, nonEmpty: true)"
+      },
+      "builtin": true,
+      "compilerConstruct": true,
+      "evidenceStatus": "inferred"
+    }
+  ],
+  "scope": "SYNTHETIC_CLI_STRUCTURAL_AND_LOSSLESS_NATIVE_ONLY",
+  "canonicalDocs": {
+    "generatedFromThisSource": true,
+    "macroFingerprintMatches": true,
+    "sha256": "950d9a9fd3a6d9a4fa37c9c0eba8e3e9b65c8f145e4ebc64ade001305dc45262"
+  },
+  "nativeMetadata": {
+    "source": "docs/apple-runtime/macos-27/builtin-actions.json",
+    "sha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+    "canonicalTypeWitness": "is.workflow.actions.getitemtype",
+    "contractMatches": true
+  },
+  "compiles": [
+    {
+      "id": "require_v2_debug",
+      "kind": "require",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let original = text(\"P15 ledger original שלום 🍒\")\ndebugLog()\nlet checked = require(original, type: \"text\", nonEmpty: true, message: \"P15 semantic guard\")\ngetVariable(checked)\n",
+      "sourceSHA256": "b0aba086a8a9f76c97d52a944083d2018d6c35ebc4f30db3cd1c73e873ee72d6",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/require_v2_debug/source.cherri",
+        "--output=<synthetic-fixtures>/require_v2_debug/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "3d875d99dbc77114ff6a60481e318bbf1b2befcba230a3ce9f4dfd0b538f4486",
+      "nativeActionCount": 21,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 3,
+        "is.workflow.actions.appendvariable": 1,
+        "is.workflow.actions.conditional": 6,
+        "is.workflow.actions.count": 2,
+        "is.workflow.actions.exit": 3,
+        "is.workflow.actions.getitemtype": 2,
+        "is.workflow.actions.gettext": 2,
+        "is.workflow.actions.getvariable": 2
+      },
+      "structuralChecks": {
+        "oneOriginalProducer": true,
+        "originalUUIDPassthrough": true,
+        "canonicalGetType": true,
+        "semanticGuardRetained": true,
+        "diagnosticProfile": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "require_v2_release",
+      "kind": "require",
+      "dialect": "v2",
+      "profile": "release",
+      "source": "let original = text(\"P15 ledger original שלום 🍒\")\ndebugLog()\nlet checked = require(original, type: \"text\", nonEmpty: true, message: \"P15 semantic guard\")\ngetVariable(checked)\n",
+      "sourceSHA256": "b0aba086a8a9f76c97d52a944083d2018d6c35ebc4f30db3cd1c73e873ee72d6",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/require_v2_release/source.cherri",
+        "--output=<synthetic-fixtures>/require_v2_release/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=release",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "1cf13db83133264b45a026041498e2dd946ae4075777c7754c6f3c226cc6a4ca",
+      "nativeActionCount": 20,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 3,
+        "is.workflow.actions.conditional": 6,
+        "is.workflow.actions.count": 2,
+        "is.workflow.actions.exit": 3,
+        "is.workflow.actions.getitemtype": 2,
+        "is.workflow.actions.gettext": 2,
+        "is.workflow.actions.getvariable": 2
+      },
+      "structuralChecks": {
+        "oneOriginalProducer": true,
+        "originalUUIDPassthrough": true,
+        "canonicalGetType": true,
+        "semanticGuardRetained": true,
+        "diagnosticProfile": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "require_legacy_debug",
+      "kind": "require",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "const original = text(\"P15 ledger original שלום 🍒\")\ndebugLog()\nconst checked = require(original, \"text\", true, \"P15 semantic guard\")\ngetVariable(checked)\n",
+      "sourceSHA256": "9945c7aa42522d50fb851c8c229a4dac4b32081fd1ec90404ec6448b2ff257e8",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/require_legacy_debug/source.cherri",
+        "--output=<synthetic-fixtures>/require_legacy_debug/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "c5d7fd93822dfb77847343ed8ad8dfa4a3eb333b129c6dacfc4eefa27adbfc69",
+      "nativeActionCount": 21,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 3,
+        "is.workflow.actions.appendvariable": 1,
+        "is.workflow.actions.conditional": 6,
+        "is.workflow.actions.count": 2,
+        "is.workflow.actions.exit": 3,
+        "is.workflow.actions.getitemtype": 2,
+        "is.workflow.actions.gettext": 2,
+        "is.workflow.actions.getvariable": 2
+      },
+      "structuralChecks": {
+        "oneOriginalProducer": true,
+        "originalUUIDPassthrough": true,
+        "canonicalGetType": true,
+        "semanticGuardRetained": true,
+        "diagnosticProfile": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "require_legacy_release",
+      "kind": "require",
+      "dialect": "legacy",
+      "profile": "release",
+      "source": "const original = text(\"P15 ledger original שלום 🍒\")\ndebugLog()\nconst checked = require(original, \"text\", true, \"P15 semantic guard\")\ngetVariable(checked)\n",
+      "sourceSHA256": "9945c7aa42522d50fb851c8c229a4dac4b32081fd1ec90404ec6448b2ff257e8",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/require_legacy_release/source.cherri",
+        "--output=<synthetic-fixtures>/require_legacy_release/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=release",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "9f1788a3d3d5b480c14a74aefaba9fe398a08cc2a926665090bc61ac07ee1219",
+      "nativeActionCount": 20,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 3,
+        "is.workflow.actions.conditional": 6,
+        "is.workflow.actions.count": 2,
+        "is.workflow.actions.exit": 3,
+        "is.workflow.actions.getitemtype": 2,
+        "is.workflow.actions.gettext": 2,
+        "is.workflow.actions.getvariable": 2
+      },
+      "structuralChecks": {
+        "oneOriginalProducer": true,
+        "originalUUIDPassthrough": true,
+        "canonicalGetType": true,
+        "semanticGuardRetained": true,
+        "diagnosticProfile": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_v2_debug",
+      "kind": "measure",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let result = measure(\"P15 typed שלום\") {\n    let payload = {\"flag\": false, \"nested\": [1, {\"name\": \"typed\"}]}\n    payload\n}\ngetVariable(result)\n",
+      "sourceSHA256": "ea344a273d1b02009310382f30292b37917ac7aec084458baed6c6213c9f7932",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_v2_debug/source.cherri",
+        "--output=<synthetic-fixtures>/measure_v2_debug/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "cb3c9f8b8ff8e735c81631850c1ffb19213f5a828d3276b443afaf4a547bfeda",
+      "nativeActionCount": 7,
+      "nativeActionIDs": {
+        "is.workflow.actions.appendvariable": 1,
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.gettimebetweendates": 1,
+        "is.workflow.actions.getvariable": 3,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "oneTypedBodyProducer": true,
+        "originalUUIDPassthrough": true,
+        "noTextNumberCoercion": true,
+        "timerProfile": true,
+        "releaseNoDiagnosticAppend": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_v2_release",
+      "kind": "measure",
+      "dialect": "v2",
+      "profile": "release",
+      "source": "let result = measure(\"P15 typed שלום\") {\n    let payload = {\"flag\": false, \"nested\": [1, {\"name\": \"typed\"}]}\n    payload\n}\ngetVariable(result)\n",
+      "sourceSHA256": "ea344a273d1b02009310382f30292b37917ac7aec084458baed6c6213c9f7932",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_v2_release/source.cherri",
+        "--output=<synthetic-fixtures>/measure_v2_release/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=release",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "e0a8e1c19040e4ebc474daa5f7c71cce3cec42a2614313837f97ad2ed5a1561a",
+      "nativeActionCount": 3,
+      "nativeActionIDs": {
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.getvariable": 2
+      },
+      "structuralChecks": {
+        "oneTypedBodyProducer": true,
+        "originalUUIDPassthrough": true,
+        "noTextNumberCoercion": true,
+        "timerProfile": true,
+        "releaseNoDiagnosticAppend": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_legacy_debug",
+      "kind": "measure",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "const result = measure(\"P15 typed שלום\") {\n    const payload = {\"flag\": false, \"nested\": [1, {\"name\": \"typed\"}]}\n    yield payload\n}\ngetVariable(result)\n",
+      "sourceSHA256": "f92def7306044a1c6265bfc254e7a874bb03cdf8145eeeada9baa115ef7edc36",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_legacy_debug/source.cherri",
+        "--output=<synthetic-fixtures>/measure_legacy_debug/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "39e8efee6fbd6afbf5cc6923a529016e457634a1a25873b395d027c1939a6286",
+      "nativeActionCount": 7,
+      "nativeActionIDs": {
+        "is.workflow.actions.appendvariable": 1,
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.gettimebetweendates": 1,
+        "is.workflow.actions.getvariable": 3,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "oneTypedBodyProducer": true,
+        "originalUUIDPassthrough": true,
+        "noTextNumberCoercion": true,
+        "timerProfile": true,
+        "releaseNoDiagnosticAppend": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_legacy_release",
+      "kind": "measure",
+      "dialect": "legacy",
+      "profile": "release",
+      "source": "const result = measure(\"P15 typed שלום\") {\n    const payload = {\"flag\": false, \"nested\": [1, {\"name\": \"typed\"}]}\n    yield payload\n}\ngetVariable(result)\n",
+      "sourceSHA256": "f92def7306044a1c6265bfc254e7a874bb03cdf8145eeeada9baa115ef7edc36",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_legacy_release/source.cherri",
+        "--output=<synthetic-fixtures>/measure_legacy_release/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=release",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "56bc22c01396e6ef82ec0aa0915372c4941e8141b24bc61f346b2ae2dfc0d66b",
+      "nativeActionCount": 3,
+      "nativeActionIDs": {
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.getvariable": 2
+      },
+      "structuralChecks": {
+        "oneTypedBodyProducer": true,
+        "originalUUIDPassthrough": true,
+        "noTextNumberCoercion": true,
+        "timerProfile": true,
+        "releaseNoDiagnosticAppend": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "collect_v2_0",
+      "kind": "collect",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let result = for item in [] { yield item }\ngetVariable(result)\n",
+      "sourceSHA256": "f8675e2411fac9ab8f0379aa96bb49b8b89034fc5c2fdb85a0bfdf17071b9a87",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/collect_v2_0/source.cherri",
+        "--output=<synthetic-fixtures>/collect_v2_0/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "3041c2b5312148e6393603fd2e7a5a5aced620011e564a8f8089af55f5cf0c70",
+      "nativeActionCount": 8,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 3,
+        "is.workflow.actions.nothing": 1,
+        "is.workflow.actions.repeat.each": 2,
+        "is.workflow.actions.setvariable": 2
+      },
+      "structuralChecks": {
+        "pairedRepeatRegion": true,
+        "consumerUsesRepeatResults": true,
+        "noAccumulator": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "collect_v2_1",
+      "kind": "collect",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let result = for item in [0] { yield item }\ngetVariable(result)\n",
+      "sourceSHA256": "1087da25dc32de3ce33f75d614d8144da080be2fbde4eb39359769730e2e4b28",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/collect_v2_1/source.cherri",
+        "--output=<synthetic-fixtures>/collect_v2_1/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "f29978e803b4b154950b3447376c8fea1456b414c5bbe6bf81a5ab56c601e68c",
+      "nativeActionCount": 7,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 2,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.number": 1,
+        "is.workflow.actions.repeat.each": 2,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "pairedRepeatRegion": true,
+        "consumerUsesRepeatResults": true,
+        "noAccumulator": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "collect_v2_100",
+      "kind": "collect",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let result = for item in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99] { yield item }\ngetVariable(result)\n",
+      "sourceSHA256": "633eccd830b8696e1760bad7bffab29d116f30ebccc536f2014dea4afa9651a2",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/collect_v2_100/source.cherri",
+        "--output=<synthetic-fixtures>/collect_v2_100/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "9683759f0ec247d2a90612742ca7ff137093ac8742c6dbed306e81b264ba0056",
+      "nativeActionCount": 106,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 2,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.number": 100,
+        "is.workflow.actions.repeat.each": 2,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "pairedRepeatRegion": true,
+        "consumerUsesRepeatResults": true,
+        "noAccumulator": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "collect_v2_dictionary",
+      "kind": "collect",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let result = for item in [1, 2] { yield {\"name\": \"typed\", \"flag\": false} }\ngetVariable(result)\n",
+      "sourceSHA256": "421d705ebbcac1fa3b52b184187a2512cc767c1a5867c2373ae9d686e6fed334",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/collect_v2_dictionary/source.cherri",
+        "--output=<synthetic-fixtures>/collect_v2_dictionary/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "5cdce4f1244fb96e4d300df96cf400e0f65d4564d8a96852d131fdec3a0c6326",
+      "nativeActionCount": 8,
+      "nativeActionIDs": {
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.getvariable": 1,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.number": 2,
+        "is.workflow.actions.repeat.each": 2,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "pairedRepeatRegion": true,
+        "consumerUsesRepeatResults": true,
+        "noAccumulator": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_legacy_empty_rejected",
+      "kind": "negative",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "measure(\"empty\") {}\n",
+      "sourceSHA256": "811f38a791cac57b9f1675515f90a6aa2023434231a6b059641f376ebdfe7c73",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_legacy_empty_rejected/source.cherri",
+        "--output=<synthetic-fixtures>/measure_legacy_empty_rejected/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 1,
+      "diagnosticTail": "Error: E_BLOCK_VALUE_REQUIRED: measure requires a final value-producing call or final yield (1:19)\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "expectedDiagnostic": "E_BLOCK_VALUE_REQUIRED",
+      "noArtifact": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_legacy_control_value_rejected",
+      "kind": "negative",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "measure(\"control\") {\nconst value = if 1 == 1 {\ntext(\"body\")\n}\nyield value\n}\n",
+      "sourceSHA256": "ba01deae9a8943fe49d9bf3d2c7d2851c890261b53c043a431b971ae831314fe",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_legacy_control_value_rejected/source.cherri",
+        "--output=<synthetic-fixtures>/measure_legacy_control_value_rejected/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 1,
+      "diagnosticTail": "Error: E_BLOCK_LEGACY_CONTROL_VALUE: use a local variable and final yield; a Legacy control-result declaration inside a scoped body is not yet supported (2:15)\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "expectedDiagnostic": "E_BLOCK_LEGACY_CONTROL_VALUE",
+      "noArtifact": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "measure_v2_empty_rejected",
+      "kind": "negative",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "let result = measure(\"empty\") {}\n",
+      "sourceSHA256": "39d62d99ee936d1c416b82a2353c5ce07b9ef88445e47ce9f13643fc7f1dff38",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/measure_v2_empty_rejected/source.cherri",
+        "--output=<synthetic-fixtures>/measure_v2_empty_rejected/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 1,
+      "diagnosticTail": "Compilation error: semantic error [E_BLOCK_VALUE_REQUIRED]: measure currently requires a final expression or final yield; empty/void blocks are unsupported at <synthetic-fixtures>/measure_v2_empty_rejected/source.cherri:1:31-1:33\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "expectedDiagnostic": "E_BLOCK_VALUE_REQUIRED",
+      "noArtifact": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate_v2",
+      "kind": "paginate",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 3, 6)\n",
+      "sourceSHA256": "c2d102ceaeac5aad6713ba85c6d205117be662d57af2fef507fe6e5cae3dd490",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/paginate_v2/source.cherri",
+        "--output=<synthetic-fixtures>/paginate_v2/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "943cdf069ed8719478b4ab0824246ad30bdeb8519c3d09b2ca1954d8de1eafe9",
+      "nativeActionCount": 182,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 19,
+        "is.workflow.actions.appendvariable": 2,
+        "is.workflow.actions.conditional": 70,
+        "is.workflow.actions.count": 8,
+        "is.workflow.actions.detect.dictionary": 1,
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.downloadurl": 1,
+        "is.workflow.actions.exit": 19,
+        "is.workflow.actions.getitemfromlist": 1,
+        "is.workflow.actions.getitemtype": 5,
+        "is.workflow.actions.gettext": 4,
+        "is.workflow.actions.getvalueforkey": 3,
+        "is.workflow.actions.getvariable": 14,
+        "is.workflow.actions.hash": 4,
+        "is.workflow.actions.list": 2,
+        "is.workflow.actions.number": 3,
+        "is.workflow.actions.repeat.count": 2,
+        "is.workflow.actions.repeat.each": 6,
+        "is.workflow.actions.setvariable": 17
+      },
+      "structuralChecks": {
+        "oneGETNode": true,
+        "explicitPageBudget": true,
+        "nativeCycleHash": true,
+        "typedDictionaryWitness": true,
+        "semanticFailureStops": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate-zero_v2",
+      "kind": "paginate-zero",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 0, 6)\n",
+      "sourceSHA256": "c084ab94c6b86f41ca9e836363e0c378c2235a605a770efa07d091267aa9e669",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/paginate-zero_v2/source.cherri",
+        "--output=<synthetic-fixtures>/paginate-zero_v2/output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "2dc288967cd5a2eb99900e4116a07d1551d1e47e0b3e0989742acb95fd7cabee",
+      "nativeActionCount": 3,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 1,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "zeroBudgetNoGET": true,
+        "zeroBudgetNoLoop": true,
+        "explicitEmptyResult": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate_legacy",
+      "kind": "paginate",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 3, 6)\n",
+      "sourceSHA256": "c2d102ceaeac5aad6713ba85c6d205117be662d57af2fef507fe6e5cae3dd490",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/paginate_legacy/source.cherri",
+        "--output=<synthetic-fixtures>/paginate_legacy/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "\nWarning: Value for action argument 'itemsKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., rawtext ?itemsKey = \"items\", ..., ..., ...): array\n``` (1:59)\n\n\nWarning: Value for action argument 'nextKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., ..., rawtext ?nextKey = \"next\", ..., ...): array\n``` (1:67)\n\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "b894d68080541ca6427460dad04dbc336d4f03208231b51a40ea675ebf1f961f",
+      "nativeActionCount": 182,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 19,
+        "is.workflow.actions.appendvariable": 2,
+        "is.workflow.actions.conditional": 70,
+        "is.workflow.actions.count": 8,
+        "is.workflow.actions.detect.dictionary": 1,
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.downloadurl": 1,
+        "is.workflow.actions.exit": 19,
+        "is.workflow.actions.getitemfromlist": 1,
+        "is.workflow.actions.getitemtype": 5,
+        "is.workflow.actions.gettext": 4,
+        "is.workflow.actions.getvalueforkey": 3,
+        "is.workflow.actions.getvariable": 14,
+        "is.workflow.actions.hash": 4,
+        "is.workflow.actions.list": 2,
+        "is.workflow.actions.number": 3,
+        "is.workflow.actions.repeat.count": 2,
+        "is.workflow.actions.repeat.each": 6,
+        "is.workflow.actions.setvariable": 17
+      },
+      "structuralChecks": {
+        "oneGETNode": true,
+        "explicitPageBudget": true,
+        "nativeCycleHash": true,
+        "typedDictionaryWitness": true,
+        "semanticFailureStops": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate-zero_legacy",
+      "kind": "paginate-zero",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 0, 6)\n",
+      "sourceSHA256": "c084ab94c6b86f41ca9e836363e0c378c2235a605a770efa07d091267aa9e669",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>/paginate-zero_legacy/source.cherri",
+        "--output=<synthetic-fixtures>/paginate-zero_legacy/output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "\nWarning: Value for action argument 'itemsKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., rawtext ?itemsKey = \"items\", ..., ..., ...): array\n``` (1:59)\n\n\nWarning: Value for action argument 'nextKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., ..., rawtext ?nextKey = \"next\", ..., ...): array\n``` (1:67)\n\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "88b8df778f177c54f7d95ef4befe5fbc5803f280bcb5c36cb41b4affec6c9dc5",
+      "nativeActionCount": 3,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 1,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "zeroBudgetNoGET": true,
+        "zeroBudgetNoLoop": true,
+        "explicitEmptyResult": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "causalMutations": [
+    {
+      "case": "require_v2_debug",
+      "mutation": "wrong_type_action",
+      "intendedCheck": "canonicalGetType",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "require_v2_release",
+      "mutation": "lost_output_uuid",
+      "intendedCheck": "originalUUIDPassthrough",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "measure_v2_debug",
+      "mutation": "duplicate_body",
+      "intendedCheck": "oneTypedBodyProducer",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "measure_v2_release",
+      "mutation": "retained_release_timer",
+      "intendedCheck": "timerProfile",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "measure_legacy_debug",
+      "mutation": "scoped_alias_cycle",
+      "intendedCheck": "originalUUIDPassthrough",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "measure_legacy_release",
+      "mutation": "scoped_result_coercion",
+      "intendedCheck": "originalUUIDPassthrough",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "collect_v2_1",
+      "mutation": "wrong_repeat_result",
+      "intendedCheck": "consumerUsesRepeatResults",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    },
+    {
+      "case": "paginate_v2",
+      "mutation": "page_budget_changed",
+      "intendedCheck": "explicitPageBudget",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
+    }
+  ],
+  "crossCaseChecks": {
+    "constantCollectionLoopActionCount": true,
+    "collectionLoopActionCounts": [
+      4,
+      4,
+      4
+    ],
+    "collectionTotalActionCounts": [
+      8,
+      7,
+      106
+    ],
+    "numericInputActionCounts": [
+      0,
+      1,
+      100
+    ],
+    "typedNumericInputCountsMatch": true,
+    "requireGuardCountsDebugRelease": {
+      "legacy": true,
+      "v2": true
+    }
+  },
+  "requirements": [
+    {
+      "feature": "require",
+      "asanaTask": "1220544599477512",
+      "name": "Typed require",
+      "acceptanceRequirement": "Return the original typed object after semantic validation; failure stops with the supplied message.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "require"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
+      "executedCases": [
+        "require_v2_debug",
+        "require_v2_release",
+        "require_legacy_debug",
+        "require_legacy_release"
+      ],
+      "externalPrerequisites": [],
+      "limitations": [
+        "Full false/zero/null/empty/native-object matrix and native failure/cancel proof are not established by this ledger."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "label",
+      "asanaTask": "1220544718902445",
+      "name": "debugLog labels",
+      "acceptanceRequirement": "Stable per-entry labels without replacing the original raw object or its downstream UUID.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "debugLog"
+      ],
+      "canonicalContractObservation": "LABEL_PARAMETER_ABSENT",
+      "executedCases": [],
+      "externalPrerequisites": [
+        "Native file/object identity and six-mode label acceptance"
+      ],
+      "limitations": [
+        "Per-entry metadata and bounded source contracts are implemented; signed File-carrier byte identity still requires repair and acceptance."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "export",
+      "asanaTask": "1220544665232213",
+      "name": "Local debugExport",
+      "acceptanceRequirement": "Local returned file; typed JSON/text or explicit opaque placeholders; safe escaping and default redaction.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "debugExport"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
+      "executedCases": [],
+      "externalPrerequisites": [
+        "Apple returned-file/UTF-8/cardinality runtime evidence"
+      ],
+      "limitations": [
+        "Local File export source supports default full redaction and explicit Text-only base64 payloads; structured types, dates/labels, selective redaction and native acceptance remain open. QA debugExportTrace is separate."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "blocks",
+      "asanaTask": "1220544718901241",
+      "name": "Shared typed block facility",
+      "acceptanceRequirement": "Scoped typed block/IR, one evaluation, shadowing, value/void, nesting and explicit unavailable-dialect diagnostics.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "measure"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
+      "executedCases": [
+        "measure_v2_debug",
+        "measure_v2_release",
+        "measure_legacy_debug",
+        "measure_legacy_release",
+        "measure_legacy_empty_rejected",
+        "measure_legacy_control_value_rejected",
+        "measure_v2_empty_rejected"
+      ],
+      "externalPrerequisites": [],
+      "limitations": [
+        "V2 and Legacy share the once-body/typed-result measure policy. General parameterized/void/early-error blocks and Legacy control-result declarations remain open."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "measure",
+      "asanaTask": "1220544665232149",
+      "name": "Measure typed value",
+      "acceptanceRequirement": "Evaluate the body once, preserve its native result and remove only timing instrumentation in Release.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "measure"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
+      "executedCases": [
+        "measure_v2_debug",
+        "measure_v2_release",
+        "measure_legacy_debug",
+        "measure_legacy_release"
+      ],
+      "externalPrerequisites": [
+        "Apple timing accuracy and error/cancel observation"
+      ],
+      "limitations": [
+        "Legacy uses a final yield or value-producing call through existing structured tokens. Structural UUID/timer checks are not native elapsed-time, abort or cancellation proof."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "collect",
+      "asanaTask": "1220544651247337",
+      "name": "Typed collection",
+      "acceptanceRequirement": "Use existing native Repeat Results without a second accumulator or standalone alias; account separately for typed input construction.",
+      "status": "OPEN",
+      "implementationState": "EXISTING_V2_CONSTRUCT",
+      "canonicalDescriptors": [],
+      "canonicalContractObservation": "EXISTING_FOR_YIELD_CONSTRUCT_NO_COLLECT_ALIAS",
+      "executedCases": [
+        "collect_v2_0",
+        "collect_v2_1",
+        "collect_v2_100",
+        "collect_v2_dictionary"
+      ],
+      "externalPrerequisites": [
+        "Native empty/mixed/nested collection shape and performance observation"
+      ],
+      "limitations": [
+        "No standalone collect alias is introduced. Compiled Repeat Results does not prove runtime flattening behavior."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "cache",
+      "asanaTask": "1220544665232085",
+      "name": "Persistent TTL cache",
+      "acceptanceRequirement": "Explicit namespace/scope/TTL and honest serialization, invalidation, clock and permission behavior.",
+      "status": "OPEN",
+      "implementationState": "IMPLEMENTATION_GAP_AND_NATIVE_PREREQUISITE",
+      "canonicalDescriptors": [],
+      "canonicalContractObservation": "NO_CANONICAL_DESCRIPTOR",
+      "executedCases": [],
+      "externalPrerequisites": [
+        "Stored Content cross-run/restart/global-local readback",
+        "Physical iPad persistence/background proof"
+      ],
+      "limitations": [
+        "Existing storage definitions are prerequisites, not a cache implementation; current storeValue exposes text."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "retry",
+      "asanaTask": "1220544651247273",
+      "name": "Bounded retry",
+      "acceptanceRequirement": "Bounded attempts/backoff with actual transport/status/permission/cancel classification and idempotence safeguards.",
+      "status": "OPEN",
+      "implementationState": "IMPLEMENTATION_GAP_AND_NATIVE_PREREQUISITE",
+      "canonicalDescriptors": [],
+      "canonicalContractObservation": "NO_CANONICAL_DESCRIPTOR",
+      "executedCases": [],
+      "externalPrerequisites": [
+        "Recoverable native error/status contract and signed synthetic endpoint probes"
+      ],
+      "limitations": [
+        "No evidence establishes catchable transport failures; Alert plus Stop Shortcut is not exception handling."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "paginate",
+      "asanaTask": "1220544665232021",
+      "name": "Bounded pagination",
+      "acceptanceRequirement": "Explicit limits/cursor termination, typed aggregation and malformed/error/rate-limit/credential safeguards.",
+      "status": "OPEN",
+      "implementationState": "BOUNDED_GET_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "paginate"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
+      "executedCases": [
+        "paginate_v2",
+        "paginate_legacy",
+        "paginate-zero_v2",
+        "paginate-zero_legacy"
+      ],
+      "externalPrerequisites": [
+        "Signed synthetic multi-page HTTP/schema/error observation"
+      ],
+      "limitations": [
+        "The shared bounded GET/body-cursor implementation has page/item limits and cycle guards. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "profiles",
+      "asanaTask": "1220544607463126",
+      "name": "Debug and Release",
+      "acceptanceRequirement": "Compile-time diagnostic removal while retaining semantic require checks and original native producers.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "debugLog",
+        "require",
+        "measure"
+      ],
+      "canonicalContractObservation": "CROSS_CUTTING_COMPILER_CONTRACT",
+      "executedCases": [
+        "require_v2_debug",
+        "require_v2_release",
+        "require_legacy_debug",
+        "require_legacy_release",
+        "measure_v2_debug",
+        "measure_v2_release",
+        "measure_legacy_debug",
+        "measure_legacy_release"
+      ],
+      "externalPrerequisites": [
+        "Native result equivalence and debug-mode acceptance"
+      ],
+      "limitations": [
+        "The controlled compiler comparisons cover declared fixtures; they do not establish every diagnostic or runtime path."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    },
+    {
+      "feature": "qa",
+      "asanaTask": "1220544718902349",
+      "name": "Macro QA and consumers",
+      "acceptanceRequirement": "Generated evidence, canonical metadata/docs and coherent Skill/iOS/remote consumer acceptance.",
+      "status": "OPEN",
+      "implementationState": "PARTIAL_EVIDENCE",
+      "canonicalDescriptors": [],
+      "canonicalContractObservation": "CROSS_CUTTING_COMPILER_CONTRACT",
+      "executedCases": [
+        "require_v2_debug",
+        "require_v2_release",
+        "require_legacy_debug",
+        "require_legacy_release",
+        "measure_v2_debug",
+        "measure_v2_release",
+        "measure_legacy_debug",
+        "measure_legacy_release",
+        "collect_v2_0",
+        "collect_v2_1",
+        "collect_v2_100",
+        "collect_v2_dictionary",
+        "measure_legacy_empty_rejected",
+        "measure_legacy_control_value_rejected",
+        "measure_v2_empty_rejected",
+        "paginate_v2",
+        "paginate-zero_v2",
+        "paginate_legacy",
+        "paginate-zero_legacy"
+      ],
+      "externalPrerequisites": [
+        "Final pinned consumer tuple and signed/physical acceptance evidence"
+      ],
+      "limitations": [
+        "This ledger builds and tests a compiler; it does not install a Skill, update a provider or execute on Apple."
+      ],
+      "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+      "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+    }
+  ],
+  "privacy": {
+    "privateCorpusRead": false,
+    "signerUsed": false,
+    "networkFixtureExecuted": false,
+    "liveConsumerChanged": false
+  },
+  "summary": {
+    "asanaChildren": 11,
+    "open": 11,
+    "closed": 0,
+    "compilerMacros": 15,
+    "compileChecks": 19,
+    "compilePassed": 19,
+    "causalMutationChecks": 8,
+    "structuralExecutionVerdict": "PASS",
+    "releaseCompletion": "OPEN"
+  },
+  "observationsSHA256": "c23abbb082f5a2e71d9eb187c1c5f197d4672966f98aca6168725e16fdbbffab"
+}

@@ -1,0 +1,125 @@
+{
+  "format_version": 1,
+  "requirement": "RP51",
+  "source_commit": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "internal/language/assets/cache.go",
+      "sha256": "116f6704b59e0f1761e19b7244b9945e7b0c5ac30a493537bcf145e87c44dbf8"
+    },
+    {
+      "path": "internal/language/workspace/resource.go",
+      "sha256": "6f0152c71f439527de8f74d1ce65d4484098fc3198aa77a9628eacf1acb75f76"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "28ba0d1cd9ff1bca0486e51d19e47dd1726c6b0ce82a7c3fa822c349e16e40e1"
+    },
+    {
+      "path": "internal/language/analysis/registry_lifetime.go",
+      "sha256": "52d408b78f3ff80faa84c5244d5fcdf63043076b413036b25d8e110a9649b226"
+    },
+    {
+      "path": "internal/language/analysis/resolved_actions.go",
+      "sha256": "9773452cdf6f59779486baa15e67f20c2c740e8a251bf65175742fcb166b5e3d"
+    },
+    {
+      "path": "internal/language/analysis/module_imports.go",
+      "sha256": "9a033e401cf7dd34e540aad230085a3c5da4437ad1022bf0d9ea6f12e3bd4f70"
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "sha256": "ac6ae27ca33b2fdb9148df03ab1a9409a8cc8bf078a9c1e88f39325db7ca3345"
+    },
+    {
+      "path": "internal/language/service/asset_analysis.go",
+      "sha256": "e3da08707ac7dafeb0e80edaa49278f5c95917bc5c59b2b22704ef1edfbf28c3"
+    },
+    {
+      "path": "internal/language/lsp/server.go",
+      "sha256": "467e83e432e5e345ed53e9efbba6cca28586f437fee0a584d516c71de413dfeb"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "b4fc3531478c91e0701223bbbae2949ba6cef01fd8be47b57196af0ff8107fd9"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "74f68cf258dcf7268627702ba5ed73a5993d8e4d030dbc65995529578adbe824"
+    },
+    {
+      "path": "embedded_assets.go",
+      "sha256": "8301a54bc37828ad31158a9183466930d740e2ad3eac4e720d6a6ff52fa9a9d0"
+    },
+    {
+      "path": "action.go",
+      "sha256": "e896b3d3aad87ab42d45c616338f2f6f6e2dbb04344e559fc1ab609e83b5ac7b"
+    },
+    {
+      "path": "build_profile.go",
+      "sha256": "d7b989e168574487126bd73c039fea78ee86cc0057a1c68a16280c60a00dc4b9"
+    },
+    {
+      "path": "actions_std.go",
+      "sha256": "a13c4c9319ad00d6335948cdf4177f6ac6022ac854dc8869f71c90ec396c5bb4"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "b109cd9555f2f6e49f91828c5d8b3d7772e596f2584320a4318034c48d4ed9c9"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "3c32c9088d2f929d4d5ce18630f9790a69e9a8867cc6db8c5ed1ac85610e47b5"
+    },
+    {
+      "path": "p15_asset_dependency_baseline_test.go",
+      "sha256": "e202c038eaf81c363882ff942e5b134883163d2f920167a349c4bd62439c3b82"
+    },
+    {
+      "path": "p15_embedded_asset_acceptance_test.go",
+      "sha256": "9d072a24ade84a74328d5ed6b1d84fc8fea2e24c1044e715e76e5a6a43a6c1a3"
+    },
+    {
+      "path": "p15_editor_performance_test.go",
+      "sha256": "6ce4d2abc6f190d443ec409dc559143d5c47a7838c841e7c947385dfb6794931"
+    },
+    {
+      "path": "p15_editor_clock_windows_test.go",
+      "sha256": "8ad6d007f4c369cc7672d1153d331b9e9419adb212a9f44aa1d40929ecf0b50f"
+    },
+    {
+      "path": "p15_editor_clock_other_test.go",
+      "sha256": "1567a0570204ae7714b4daea5568cf4702c6faf3dcaa995c177f35d3b16376db"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestP15E08EditorPerformanceFixtures)$"
+  ],
+  "required_tests": [
+    "TestP15E08EditorPerformanceFixtures"
+  ],
+  "discovered_tests": [
+    "TestP15E08EditorPerformanceFixtures"
+  ],
+  "started_utc": "2026-11-20T01:19:23.108637375Z",
+  "finished_utc": "2026-11-20T01:19:32.775425182Z",
+  "elapsed_seconds": 9.666791322,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "cb57b7baea226c8a45b7bde4ae72f232119270c8db1e6a9e4cd2cee34f3592b9",
+  "raw_bytes": 71074,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "d0a917d8788ed72b187c294820693c1b556db0d7ca1e015f0688a6b0d2cc822b",
+  "benchmark_bytes": 54226
+}

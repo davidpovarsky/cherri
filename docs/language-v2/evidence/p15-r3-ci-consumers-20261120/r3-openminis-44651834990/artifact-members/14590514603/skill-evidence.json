@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-K01-skill-package",
+      "requirements": [
+        "K01"
+      ],
+      "tier": "skill-package",
+      "implementation_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+      "test_id": "github.com/electrikmilk/cherri:TestP15K01UnpackedPackageContract",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "6m0s",
+        ".",
+        "-run",
+        "^(TestP15K01UnpackedPackageContract)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15K01UnpackedPackageContract"
+      },
+      "detail": "Executed production tests: TestP15K01UnpackedPackageContract"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T01:18:51Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "K01",
+        "group": "skill",
+        "requirement": "Complete updated package and unpacked self-test",
+        "test_level": "skill-package",
+        "executed_levels": [
+          "skill-package"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only committed source/runtime ZIP inventory, actual clean pinned compiler provenance, unpacked real CLI self-test and rejected archive/source corruption. No remote installation, native runtime, signing or broad repair/release closure.",
+  "source_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "source_tree_clean": true
+}

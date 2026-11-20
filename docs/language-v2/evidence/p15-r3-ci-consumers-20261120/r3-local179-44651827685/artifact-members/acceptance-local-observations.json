@@ -1,0 +1,182 @@
+{
+  "observations": [
+    {
+      "id": "B01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Repository on branch agent/shared-shortcuts-engine-v2-repair; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded",
+      "coverage_gap": "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees."
+    },
+    {
+      "id": "U01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact",
+      "coverage_gap": "Declaration/document existence does not establish preservation against the upstream baseline."
+    },
+    {
+      "id": "T01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Default values retained across lowering and wire emission",
+      "coverage_gap": "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently."
+    },
+    {
+      "id": "T05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "observed_smoke_detail": "Executed production tests: TestP15T05PresenceBinding, TestP15T05PresenceNativeWire, TestP15T05AuthoredNullRejected",
+      "coverage_gap": "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved."
+    },
+    {
+      "id": "L01",
+      "passed": true,
+      "historically_claimed_levels": [],
+      "observed_smoke_detail": "Executed production tests: TestP15L01NestedDictionaryShape, TestP15L01NestedDictionaryOracleRejectsCorruption, TestP15L01UnverifiedNativeNestedLiteralFailsClosed, TestP15L01InferredNestedNativeListFailsClosed; explicit Dictionary arrays preserve empty/false/zero/text/map shape. Direct and inferred List-valued native rows fail closed; dynamic AnyContent and standalone native List\u003cList\u003e runtime hierarchy remain UNVERIFIED.",
+      "coverage_gap": "Nonempty lowering does not assert nested shape, cardinality, or order."
+    },
+    {
+      "id": "N03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Equality operators lowered to case-sensitive comparison logic",
+      "coverage_gap": "Nonempty IR does not prove case-sensitive equality or comparison migration."
+    },
+    {
+      "id": "F04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Value-producing repeat/for loops collect yielded elements via repeat end action OutputUUID",
+      "coverage_gap": "A repeat-end UUID does not prove one semantic collected element per iteration."
+    },
+    {
+      "id": "FN04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "Dispatcher verifies __cherri_fn_call + __cherri_fn + __cherri_args + __cherri_present before branching",
+      "coverage_gap": "Action count does not inspect dispatcher envelope validation."
+    },
+    {
+      "id": "FN05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Function arguments and return values mapped cleanly through structured dictionary transport",
+      "coverage_gap": "Text/number lowering does not exercise structured argument/result transport."
+    },
+    {
+      "id": "M02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "Explicit return emits is.workflow.actions.output and Void fallthrough omits output",
+      "coverage_gap": "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior."
+    },
+    {
+      "id": "E01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "LanguageService returns 536 contextual completion items including expected candidates",
+      "coverage_gap": "A small completion set does not cover contextual labels, enums, compatible variables, or UI."
+    },
+    {
+      "id": "E02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "Service provides 3 independent diagnostics with ranges without crash or flood",
+      "coverage_gap": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior."
+    },
+    {
+      "id": "E03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "Scoped rename updates only target symbol binding and references",
+      "coverage_gap": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior."
+    },
+    {
+      "id": "E05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "DocumentCache rejects stale out-of-order document versions",
+      "coverage_gap": "One out-of-order document update does not test cancellation and stale response publication."
+    },
+    {
+      "id": "E06",
+      "passed": true,
+      "historically_claimed_levels": [
+        "protocol"
+      ],
+      "observed_smoke_detail": "UTF-16 diagnostic columns match exact Cocoa NSRange after Hebrew and surrogate pair emoji",
+      "coverage_gap": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface."
+    },
+    {
+      "id": "CI02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "CherriRuntimePOC fixture lowers to valid Apple Shortcuts actions",
+      "coverage_gap": "Nonempty IR for a runtime fixture is not an iOS runtime execution."
+    },
+    {
+      "id": "CI03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Verified current commit SHA: 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+      "coverage_gap": "A 40-character local SHA does not prove final workflow head/checkout provenance."
+    },
+    {
+      "id": "CI04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "security",
+        "repository"
+      ],
+      "observed_smoke_detail": "No credentials or private signing materials in repository",
+      "coverage_gap": "Absence of private_key.pem is not a private-corpus, credentials, or signing audit."
+    },
+    {
+      "id": "END01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Working branch checked; status output length: 0",
+      "coverage_gap": "Successful git status does not establish a clean tree, pushed branches, artifacts, or delivery provenance."
+    }
+  ],
+  "schema_version": "1",
+  "scope": "Historical smoke assertions only; not formal acceptance tier evidence",
+  "source_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c"
+}

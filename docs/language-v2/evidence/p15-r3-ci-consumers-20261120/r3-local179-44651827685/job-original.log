@@ -1,0 +1,886 @@
+local-179	Set up job	﻿2026-11-20T01:12:11.3686129Z Current runner version: '2.338.2'
+local-179	Set up job	2026-11-20T01:12:11.3707875Z ##[group]Runner Image Provisioner
+local-179	Set up job	2026-11-20T01:12:11.3708560Z Hosted Compute Agent
+local-179	Set up job	2026-11-20T01:12:11.3709129Z Version: 20261103.629
+local-179	Set up job	2026-11-20T01:12:11.3709694Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+local-179	Set up job	2026-11-20T01:12:11.3710330Z Build Date: 2026-11-03T17:26:59Z
+local-179	Set up job	2026-11-20T01:12:11.3710921Z Worker ID: {ddfb6865-cebc-4094-8768-6cb6bd906317}
+local-179	Set up job	2026-11-20T01:12:11.3711495Z Region: eastus2
+local-179	Set up job	2026-11-20T01:12:11.3712000Z Cloud: Azure
+local-179	Set up job	2026-11-20T01:12:11.3712443Z ##[endgroup]
+local-179	Set up job	2026-11-20T01:12:11.3714253Z ##[group]Operating System
+local-179	Set up job	2026-11-20T01:12:11.3714837Z Ubuntu
+local-179	Set up job	2026-11-20T01:12:11.3715277Z 26.04.1
+local-179	Set up job	2026-11-20T01:12:11.3715750Z LTS
+local-179	Set up job	2026-11-20T01:12:11.3717023Z ##[endgroup]
+local-179	Set up job	2026-11-20T01:12:11.3717750Z ##[group]Runner Image
+local-179	Set up job	2026-11-20T01:12:11.3718498Z Image: ubuntu-26.04
+local-179	Set up job	2026-11-20T01:12:11.3719145Z Version: 20261111.196.1
+local-179	Set up job	2026-11-20T01:12:11.3720455Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+local-179	Set up job	2026-11-20T01:12:11.3721918Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+local-179	Set up job	2026-11-20T01:12:11.3722853Z ##[endgroup]
+local-179	Set up job	2026-11-20T01:12:11.3723814Z ##[group]GITHUB_TOKEN Permissions
+local-179	Set up job	2026-11-20T01:12:11.3725739Z Actions: read
+local-179	Set up job	2026-11-20T01:12:11.3726468Z Contents: read
+local-179	Set up job	2026-11-20T01:12:11.3727031Z Metadata: read
+local-179	Set up job	2026-11-20T01:12:11.3727495Z ##[endgroup]
+local-179	Set up job	2026-11-20T01:12:11.3729142Z Secret source: Actions
+local-179	Set up job	2026-11-20T01:12:11.3730016Z Cache mode: write
+local-179	Set up job	2026-11-20T01:12:11.3730610Z Prepare workflow directory
+local-179	Set up job	2026-11-20T01:12:11.4192192Z Prepare all required actions
+local-179	Set up job	2026-11-20T01:12:11.4232182Z Getting action download info
+local-179	Set up job	2026-11-20T01:12:11.6594705Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+local-179	Set up job	2026-11-20T01:12:12.0527600Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+local-179	Set up job	2026-11-20T01:12:12.1302272Z Download action repository 'actions/setup-go@v3' (SHA:be3c94b385c4f180051c996d336f57a34c397495)
+local-179	Set up job	2026-11-20T01:12:12.2933559Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+local-179	Set up job	2026-11-20T01:12:12.4910885Z Complete job name: local-179
+local-179	Run actions/checkout@v6	﻿2026-11-20T01:12:12.5558842Z ##[group]Run actions/checkout@v6
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5559825Z with:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5560229Z   fetch-depth: 0
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5560618Z   path: cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5561035Z   persist-credentials: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5561488Z   repository: davidpovarsky/cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5564889Z   token: ***
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5565274Z   ssh-strict: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5565704Z   ssh-user: git
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5566310Z   clean: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5566708Z   sparse-checkout-cone-mode: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5567178Z   fetch-tags: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5567567Z   show-progress: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5567964Z   lfs: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5568324Z   submodules: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5568718Z   set-safe-directory: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5569177Z   allow-unsafe-pr-checkout: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5569879Z env:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5570484Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5571205Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5572024Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5572864Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5573531Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5573972Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:12.5574398Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0249605Z Syncing repository: davidpovarsky/cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0252747Z ##[group]Getting Git version info
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0254289Z Working directory is '/home/runner/work/cherri/cherri/cherri'
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0256862Z [command]/usr/bin/git version
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0264421Z git version 2.56.1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0284908Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0297943Z Temporarily overriding HOME='/home/runner/work/_temp/2a247fc6-526d-49aa-9150-fe48ffa0b8d7' before making global git config changes
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0302016Z Adding repository directory to the temporary git global config as a safe directory
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0306138Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri/cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0364036Z ##[group]Determining repository object format
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0369929Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0372495Z ##[group]Initializing the repository
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0374533Z [command]/usr/bin/git init /home/runner/work/cherri/cherri/cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0623732Z hint: Using 'master' as the name for the initial branch. This default branch name
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0626968Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0629782Z hint: to use in all of your new repositories, which will suppress this warning,
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0632136Z hint: call:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0633447Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0634992Z hint: 	git config --global init.defaultBranch <name>
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0637054Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0638796Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0641543Z hint: 'development'. The just-created branch can be renamed via this command:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0643865Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0645107Z hint: 	git branch -m <name>
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0646631Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0648366Z hint: Disable this message with "git config set advice.defaultBranchName false"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0651580Z Initialized empty Git repository in /home/runner/work/cherri/cherri/cherri/.git/
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0656339Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0703480Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0710408Z ##[group]Disabling automatic garbage collection
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0712376Z [command]/usr/bin/git config --local gc.auto 0
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0768607Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0770697Z ##[group]Setting up auth
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0772602Z Removing SSH command configuration
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0774789Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.0859297Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1249686Z Removing HTTP extra header
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1255869Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1286569Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1518956Z Removing includeIf entries pointing to credentials config files
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1521088Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1548312Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1779781Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1813340Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1842318Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1881859Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cherri/.git.path /github/runner_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1910156Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cherri/.git/worktrees/*.path /github/runner_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1935374Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1937541Z ##[group]Fetching the repository
+local-179	Run actions/checkout@v6	2026-11-20T01:12:13.1943592Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5616592Z From https://github.com/davidpovarsky/cherri
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5617380Z  * [new branch]        addon/pure-apple-actions-pack-20261022 -> origin/addon/pure-apple-actions-pack-20261022
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5618056Z  * [new branch]        agent/actions-app-external-shortcutkit-builder -> origin/agent/actions-app-external-shortcutkit-builder
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5618722Z  * [new branch]        agent/actions-app-extract-20261022 -> origin/agent/actions-app-extract-20261022
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5619300Z  * [new branch]        agent/apple-runtime-extraction-v2 -> origin/agent/apple-runtime-extraction-v2
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5620185Z  * [new branch]        agent/canonical-backend-production-cutover -> origin/agent/canonical-backend-production-cutover
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5621117Z  * [new branch]        agent/canonical-backend-recovery -> origin/agent/canonical-backend-recovery
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5621962Z  * [new branch]        agent/cherri-p10-apple-actions-coverage -> origin/agent/cherri-p10-apple-actions-coverage
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5622861Z  * [new branch]        agent/cherri-p10-parity-integration-20261020 -> origin/agent/cherri-p10-parity-integration-20261020
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5624046Z  * [new branch]        agent/cherri-p10r10-semantic-import-unification-20261111 -> origin/agent/cherri-p10r10-semantic-import-unification-20261111
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5625333Z  * [new branch]        agent/cherri-p10r11-action-wire-semantic-truth-20261112 -> origin/agent/cherri-p10r11-action-wire-semantic-truth-20261112
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5626827Z  * [new branch]        agent/cherri-p10r12-control-regions-complex-params-20261113 -> origin/agent/cherri-p10r12-control-regions-complex-params-20261113
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5628380Z  * [new branch]        agent/cherri-p10r13-simulator-debug-fidelity-20261115 -> origin/agent/cherri-p10r13-simulator-debug-fidelity-20261115
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5629553Z  * [new branch]        agent/cherri-p10r14-signed-shortcut-runtime-20261115 -> origin/agent/cherri-p10r14-signed-shortcut-runtime-20261115
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5630664Z  * [new branch]        agent/cherri-p10r15-apple-20261119 -> origin/agent/cherri-p10r15-apple-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5631736Z  * [new branch]        agent/cherri-p10r15-ax-publication-20261118 -> origin/agent/cherri-p10r15-ax-publication-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5632761Z  * [new branch]        agent/cherri-p10r15-chatgpt-gates-20261118 -> origin/agent/cherri-p10r15-chatgpt-gates-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5633695Z  * [new branch]        agent/cherri-p10r15-completion-20261119 -> origin/agent/cherri-p10r15-completion-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5634633Z  * [new branch]        agent/cherri-p10r15-completion-r2-20261119 -> origin/agent/cherri-p10r15-completion-r2-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5635621Z  * [new branch]        agent/cherri-p10r15-completion-r3-20261119 -> origin/agent/cherri-p10r15-completion-r3-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5637362Z  * [new branch]        agent/cherri-p10r15-consumer-k4-20261119 -> origin/agent/cherri-p10r15-consumer-k4-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5638319Z  * [new branch]        agent/cherri-p10r15-continuation-20261119 -> origin/agent/cherri-p10r15-continuation-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5639547Z  * [new branch]        agent/cherri-p10r15-file-carrier-20261120 -> origin/agent/cherri-p10r15-file-carrier-20261120
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5640760Z  * [new branch]        agent/cherri-p10r15-integration-gates-20261118 -> origin/agent/cherri-p10r15-integration-gates-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5641881Z  * [new branch]        agent/cherri-p10r15-ios-ui-20261118 -> origin/agent/cherri-p10r15-ios-ui-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5642434Z  * [new branch]        agent/cherri-p10r15-local-ocr-20261118 -> origin/agent/cherri-p10r15-local-ocr-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5643065Z  * [new branch]        agent/cherri-p10r15-native-collection-r5-20261118 -> origin/agent/cherri-p10r15-native-collection-r5-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5643788Z  * [new branch]        agent/cherri-p10r15-native-diagnostics-r2-20261118 -> origin/agent/cherri-p10r15-native-diagnostics-r2-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5644475Z  * [new branch]        agent/cherri-p10r15-native-macros-r4-20261118 -> origin/agent/cherri-p10r15-native-macros-r4-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5645190Z  * [new branch]        agent/cherri-p10r15-native-pilots-r3-20261118 -> origin/agent/cherri-p10r15-native-pilots-r3-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5645860Z  * [new branch]        agent/cherri-p10r15-native-resume-20261119 -> origin/agent/cherri-p10r15-native-resume-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5647079Z  * [new branch]        agent/cherri-p10r15-paginate-native-r1-20261118 -> origin/agent/cherri-p10r15-paginate-native-r1-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5647775Z  * [new branch]        agent/cherri-p10r15-project-closure-20261118 -> origin/agent/cherri-p10r15-project-closure-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5648378Z  * [new branch]        agent/cherri-p10r15-retry-probes-20261118 -> origin/agent/cherri-p10r15-retry-probes-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5649002Z  * [new branch]        agent/cherri-p10r15-signed-evidence-fix-20261118 -> origin/agent/cherri-p10r15-signed-evidence-fix-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5649628Z  * [new branch]        agent/cherri-p10r15-stat-fix-20261118 -> origin/agent/cherri-p10r15-stat-fix-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5650243Z  * [new branch]        agent/cherri-p10r15-storage-cross-run-20261118 -> origin/agent/cherri-p10r15-storage-cross-run-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5650908Z  * [new branch]        agent/cherri-p10r15-storage-native-r1-20261118 -> origin/agent/cherri-p10r15-storage-native-r1-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5651541Z  * [new branch]        agent/cherri-p10r15-validation-r1-20261118 -> origin/agent/cherri-p10r15-validation-r1-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5652307Z  * [new branch]        agent/cherri-p10r6-real-shortcuts-20261110 -> origin/agent/cherri-p10r6-real-shortcuts-20261110
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5653019Z  * [new branch]        agent/cherri-p10r7-verified-semantic-fidelity-20261110 -> origin/agent/cherri-p10r7-verified-semantic-fidelity-20261110
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5653793Z  * [new branch]        agent/cherri-p10r8-complete-native-fidelity-20261111 -> origin/agent/cherri-p10r8-complete-native-fidelity-20261111
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5654579Z  * [new branch]        agent/cherri-p10r9-unified-engine-hybrid-import-20261111 -> origin/agent/cherri-p10r9-unified-engine-hybrid-import-20261111
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5655249Z  * [new branch]        agent/cherri-v2-legacy-parity -> origin/agent/cherri-v2-legacy-parity
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5655792Z  * [new branch]        agent/cherri-v2-product-completion -> origin/agent/cherri-v2-product-completion
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5656462Z  * [new branch]        agent/ios-app-foundation -> origin/agent/ios-app-foundation
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5656978Z  * [new branch]        agent/ios27-shortcuts-runtime-poc -> origin/agent/ios27-shortcuts-runtime-poc
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5657471Z  * [new branch]        agent/language-redesign -> origin/agent/language-redesign
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5657957Z  * [new branch]        agent/lumen-ios27-storage-20261025 -> origin/agent/lumen-ios27-storage-20261025
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5658492Z  * [new branch]        agent/lumen-main-text-fix-20261025 -> origin/agent/lumen-main-text-fix-20261025
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5659066Z  * [new branch]        agent/lumen-runtime-validation-20261024 -> origin/agent/lumen-runtime-validation-20261024
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5659692Z  * [new branch]        agent/shared-shortcuts-engine-v2-repair -> origin/agent/shared-shortcuts-engine-v2-repair
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5660457Z  * [new branch]        agent/shared-shortcuts-engine-v2-round3 -> origin/agent/shared-shortcuts-engine-v2-round3
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5661139Z  * [new branch]        agent/shared-shortcuts-engine-v2-round3-closure -> origin/agent/shared-shortcuts-engine-v2-round3-closure
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5661787Z  * [new branch]        agent/shortcut-corpus-acquisition -> origin/agent/shortcut-corpus-acquisition
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5662331Z  * [new branch]        agent/shortcut-corpus-platform -> origin/agent/shortcut-corpus-platform
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5662930Z  * [new branch]        agent/shortcut-corpus-roundtrip-hardening -> origin/agent/shortcut-corpus-roundtrip-hardening
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5663588Z  * [new branch]        agent/sign-mot-getroutes-shortcut-20261017 -> origin/agent/sign-mot-getroutes-shortcut-20261017
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5664189Z  * [new branch]        agent/team-orchestration-20261018 -> origin/agent/team-orchestration-20261018
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5664769Z  * [new branch]        agent/transit-18-case-simulator-20261101 -> origin/agent/transit-18-case-simulator-20261101
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5665386Z  * [new branch]        apple-actions-pack-pure-core-20261022 -> origin/apple-actions-pack-pure-core-20261022
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5666063Z  * [new branch]        chatgpt/mozilla-reader-build -> origin/chatgpt/mozilla-reader-build
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5666522Z  * [new branch]        cloud-cherri-relay      -> origin/cloud-cherri-relay
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5667132Z  * [new branch]        cloud-cherri-request/compile-20261014-maplookup-a8c2f9 -> origin/cloud-cherri-request/compile-20261014-maplookup-a8c2f9
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5667916Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-maps-4ca89d -> origin/cloud-cherri-request/compile-20261014-zip-maps-4ca89d
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5668721Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-maps-84de72 -> origin/cloud-cherri-request/compile-20261014-zip-maps-84de72
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5669515Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v1 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5670220Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v2 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v2
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5671070Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v3 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v3
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5671978Z  * [new branch]        cloud-cherri-request/compile-smoketest-20261014 -> origin/cloud-cherri-request/compile-smoketest-20261014
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5673164Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-map168-d7b820 -> origin/cloud-cherri-request/sign-20261014-zip-map168-d7b820
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5674409Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-navigator-icons -> origin/cloud-cherri-request/sign-20261014-zip-navigator-icons
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5675643Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-navigator-v1 -> origin/cloud-cherri-request/sign-20261014-zip-navigator-v1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5676911Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-share -> origin/cloud-cherri-request/sign-20261014-zip-share
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5678063Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-share-headless -> origin/cloud-cherri-request/sign-20261014-zip-share-headless
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5678804Z  * [new branch]        cloud-cherri-request/sign-mactest-20261014 -> origin/cloud-cherri-request/sign-mactest-20261014
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5679582Z  * [new branch]        cloud-cherri-request/sign-smoketest-20261014 -> origin/cloud-cherri-request/sign-smoketest-20261014
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5680613Z  * [new branch]        cloud-cherri-request/simulate-smoketest-20261014 -> origin/cloud-cherri-request/simulate-smoketest-20261014
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5681188Z  * [new branch]        cloud-cherri-requests   -> origin/cloud-cherri-requests
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5681971Z  * [new branch]        codex/local-backup-20261109/agent/lumen-ios27-storage-20261025 -> origin/codex/local-backup-20261109/agent/lumen-ios27-storage-20261025
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5682711Z  * [new branch]        experiment/macos-shortcuts-engine-probe -> origin/experiment/macos-shortcuts-engine-probe
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5683266Z  * [new branch]        handoff/cherri-p10r15-20261119 -> origin/handoff/cherri-p10r15-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5683669Z  * [new branch]        main                    -> origin/main
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5684139Z  * [new branch]        probe/cherri-p10r15-state-race-20261119 -> origin/probe/cherri-p10r15-state-race-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5684938Z  * [new branch]        staging/cherri-p10r15-asset-service-20261119 -> origin/staging/cherri-p10r15-asset-service-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5685616Z  * [new branch]        staging/cherri-p10r15-binding-defaults-20261119 -> origin/staging/cherri-p10r15-binding-defaults-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5686447Z  * [new branch]        staging/cherri-p10r15-binding-native-20261119 -> origin/staging/cherri-p10r15-binding-native-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5687126Z  * [new branch]        staging/cherri-p10r15-binding-producers-20261119 -> origin/staging/cherri-p10r15-binding-producers-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5687795Z  * [new branch]        staging/cherri-p10r15-ci-consumers-20261119 -> origin/staging/cherri-p10r15-ci-consumers-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5688473Z  * [new branch]        staging/cherri-p10r15-collect-count-proof-20261118 -> origin/staging/cherri-p10r15-collect-count-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5689170Z  * [new branch]        staging/cherri-p10r15-compiler-7b0100a-20261119 -> origin/staging/cherri-p10r15-compiler-7b0100a-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5689836Z  * [new branch]        staging/cherri-p10r15-compiler-8b3fcf7-20261119 -> origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5690492Z  * [new branch]        staging/cherri-p10r15-compiler-b34ae47-20261119 -> origin/staging/cherri-p10r15-compiler-b34ae47-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5691148Z  * [new branch]        staging/cherri-p10r15-compiler-b97ae75-20261119 -> origin/staging/cherri-p10r15-compiler-b97ae75-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5691804Z  * [new branch]        staging/cherri-p10r15-consumer-28bc5fa-20261119 -> origin/staging/cherri-p10r15-consumer-28bc5fa-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5692728Z  * [new branch]        staging/cherri-p10r15-consumer-7546d02-20261119 -> origin/staging/cherri-p10r15-consumer-7546d02-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5693760Z  * [new branch]        staging/cherri-p10r15-custom-codec-20261119 -> origin/staging/cherri-p10r15-custom-codec-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5694832Z  * [new branch]        staging/cherri-p10r15-custom-codec-contracts-20261119 -> origin/staging/cherri-p10r15-custom-codec-contracts-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5695674Z  * [new branch]        staging/cherri-p10r15-debug-export-file-20261119 -> origin/staging/cherri-p10r15-debug-export-file-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5696563Z  * [new branch]        staging/cherri-p10r15-declaration-trigger-20261119 -> origin/staging/cherri-p10r15-declaration-trigger-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5697310Z  * [new branch]        staging/cherri-p10r15-distance-native-proof-20261118 -> origin/staging/cherri-p10r15-distance-native-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5698001Z  * [new branch]        staging/cherri-p10r15-docs-intake-20261119 -> origin/staging/cherri-p10r15-docs-intake-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5698686Z  * [new branch]        staging/cherri-p10r15-evidence-go-isolation-20261119 -> origin/staging/cherri-p10r15-evidence-go-isolation-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5699362Z  * [new branch]        staging/cherri-p10r15-evidence-r11-20261118 -> origin/staging/cherri-p10r15-evidence-r11-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5700029Z  * [new branch]        staging/cherri-p10r15-f04-native-20261119 -> origin/staging/cherri-p10r15-f04-native-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5701115Z  * [new branch]        staging/cherri-p10r15-f04-native-boundary-20261119 -> origin/staging/cherri-p10r15-f04-native-boundary-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5702107Z  * [new branch]        staging/cherri-p10r15-f04-record-empty-20261119 -> origin/staging/cherri-p10r15-f04-record-empty-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5702777Z  * [new branch]        staging/cherri-p10r15-file-extension-20261119 -> origin/staging/cherri-p10r15-file-extension-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5703730Z  * [new branch]        staging/cherri-p10r15-import-foreground-20261119 -> origin/staging/cherri-p10r15-import-foreground-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5704508Z  * [new branch]        staging/cherri-p10r15-import-foreground-25599d4-20261119 -> origin/staging/cherri-p10r15-import-foreground-25599d4-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5705377Z  * [new branch]        staging/cherri-p10r15-index-proof-20261118 -> origin/staging/cherri-p10r15-index-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5706194Z  * [new branch]        staging/cherri-p10r15-integration-20261119 -> origin/staging/cherri-p10r15-integration-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5706871Z  * [new branch]        staging/cherri-p10r15-ios-docs-canonical-20261119 -> origin/staging/cherri-p10r15-ios-docs-canonical-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5707575Z  * [new branch]        staging/cherri-p10r15-ios-docs-d37b433-20261119 -> origin/staging/cherri-p10r15-ios-docs-d37b433-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5708266Z  * [new branch]        staging/cherri-p10r15-ios-docs-evidence-20261119 -> origin/staging/cherri-p10r15-ios-docs-evidence-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5709258Z  * [new branch]        staging/cherri-p10r15-ios-docs-wired-20261119 -> origin/staging/cherri-p10r15-ios-docs-wired-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5710085Z  * [new branch]        staging/cherri-p10r15-ios-startup-20261119 -> origin/staging/cherri-p10r15-ios-startup-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5710757Z  * [new branch]        staging/cherri-p10r15-ios-startup-ddc6c02-20261119 -> origin/staging/cherri-p10r15-ios-startup-ddc6c02-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5711455Z  * [new branch]        staging/cherri-p10r15-lang002-reference-20261119 -> origin/staging/cherri-p10r15-lang002-reference-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5712163Z  * [new branch]        staging/cherri-p10r15-legacy-inline-proof-20261118 -> origin/staging/cherri-p10r15-legacy-inline-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5712900Z  * [new branch]        staging/cherri-p10r15-legacy-native-numbers-20261119 -> origin/staging/cherri-p10r15-legacy-native-numbers-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5713762Z  * [new branch]        staging/cherri-p10r15-local-contracts-20261119 -> origin/staging/cherri-p10r15-local-contracts-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5714595Z  * [new branch]        staging/cherri-p10r15-local-scenarios-20261119 -> origin/staging/cherri-p10r15-local-scenarios-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5715287Z  * [new branch]        staging/cherri-p10r15-menus-asset-fixture-20261119 -> origin/staging/cherri-p10r15-menus-asset-fixture-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5716141Z  * [new branch]        staging/cherri-p10r15-module-contracts-20261119 -> origin/staging/cherri-p10r15-module-contracts-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5716849Z  * [new branch]        staging/cherri-p10r15-native-audit-proof-20261118 -> origin/staging/cherri-p10r15-native-audit-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5717541Z  * [new branch]        staging/cherri-p10r15-native-boundary-20261119 -> origin/staging/cherri-p10r15-native-boundary-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5718259Z  * [new branch]        staging/cherri-p10r15-native-boundary-f7f1447-20261119 -> origin/staging/cherri-p10r15-native-boundary-f7f1447-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5719021Z  * [new branch]        staging/cherri-p10r15-native-reporting-proof-20261118 -> origin/staging/cherri-p10r15-native-reporting-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5719728Z  * [new branch]        staging/cherri-p10r15-number-coercion-20261118 -> origin/staging/cherri-p10r15-number-coercion-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5720424Z  * [new branch]        staging/cherri-p10r15-number-coercion-native-20261119 -> origin/staging/cherri-p10r15-number-coercion-native-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5721641Z  * [new branch]        staging/cherri-p10r15-number-coercion-proof-20261118 -> origin/staging/cherri-p10r15-number-coercion-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5722776Z  * [new branch]        staging/cherri-p10r15-output-isolation-20261119 -> origin/staging/cherri-p10r15-output-isolation-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5723697Z  * [new branch]        staging/cherri-p10r15-presence-proof-20261118 -> origin/staging/cherri-p10r15-presence-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5724407Z  * [new branch]        staging/cherri-p10r15-promotion-package-fix-20261119 -> origin/staging/cherri-p10r15-promotion-package-fix-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5725139Z  * [new branch]        staging/cherri-p10r15-prompt-number-proof-20261118 -> origin/staging/cherri-p10r15-prompt-number-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5725816Z  * [new branch]        staging/cherri-p10r15-registry-proof-20261118 -> origin/staging/cherri-p10r15-registry-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5726826Z  * [new branch]        staging/cherri-p10r15-required-encodings-20261119 -> origin/staging/cherri-p10r15-required-encodings-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5727489Z  * [new branch]        staging/cherri-p10r15-source-r10-20261118 -> origin/staging/cherri-p10r15-source-r10-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5728171Z  * [new branch]        staging/cherri-p10r15-storage-retry-contracts-20261119 -> origin/staging/cherri-p10r15-storage-retry-contracts-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5728934Z  * [new branch]        staging/cherri-p10r15-supplemental-acceptance-20261119 -> origin/staging/cherri-p10r15-supplemental-acceptance-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5729661Z  * [new branch]        staging/cherri-p10r15-supplemental-meta-20261119 -> origin/staging/cherri-p10r15-supplemental-meta-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5730347Z  * [new branch]        staging/cherri-p10r15-supplemental-next-20261119 -> origin/staging/cherri-p10r15-supplemental-next-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5731049Z  * [new branch]        staging/cherri-p10r15-unicode-diagnostic-20261119 -> origin/staging/cherri-p10r15-unicode-diagnostic-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5731731Z  * [new branch]        staging/cherri-p10r15-unicode-proof-20261118 -> origin/staging/cherri-p10r15-unicode-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5732377Z  * [new branch]        staging/cherri-p10r15-variadic-proof-20261118 -> origin/staging/cherri-p10r15-variadic-proof-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5733067Z  * [new branch]        sync/upstream-2026-10   -> origin/sync/upstream-2026-10
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5733560Z  * [new branch]        upstream-pure-cherri-original-20261022 -> origin/upstream-pure-cherri-original-20261022
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5734812Z [command]/usr/bin/git branch --list --remote origin/agent/cherri-p10r15-completion-r3-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5735273Z   origin/agent/cherri-p10r15-completion-r3-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5736090Z [command]/usr/bin/git rev-parse refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5736480Z 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5737078Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5737386Z ##[group]Determining the checkout info
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5737715Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5737913Z [command]/usr/bin/git sparse-checkout disable
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5756947Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5781829Z ##[group]Checking out the ref
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.5784996Z [command]/usr/bin/git checkout --progress --force -B agent/cherri-p10r15-completion-r3-20261119 refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9077053Z Switched to a new branch 'agent/cherri-p10r15-completion-r3-20261119'
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9082280Z branch 'agent/cherri-p10r15-completion-r3-20261119' set up to track 'origin/agent/cherri-p10r15-completion-r3-20261119'.
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9123555Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9171496Z [command]/usr/bin/git log -1 --format=%H
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9194797Z 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9207497Z ##[group]Removing auth
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9208241Z Removing SSH command configuration
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9214719Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9238420Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9480825Z Removing HTTP extra header
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9484981Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9514129Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9748966Z Removing includeIf entries pointing to credentials config files
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9754054Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9781585Z includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9792058Z includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9792811Z includeif.gitdir:/github/workspace/cherri/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9793389Z includeif.gitdir:/github/workspace/cherri/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9794954Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9813625Z /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9827204Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9872456Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9887118Z /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9892816Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9931971Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cherri/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9953799Z /github/runner_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9961443Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cherri/.git.path /github/runner_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:14.9991233Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cherri/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.0011686Z /github/runner_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.0019792Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cherri/.git/worktrees/*.path /github/runner_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.0055792Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.0287171Z Removing credentials config '/home/runner/work/_temp/git-credentials-a0eff769-492b-4a2a-a3f1-86db3ed0d1f8.config'
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.0296858Z ##[endgroup]
+local-179	Set up Python	﻿2026-11-20T01:12:15.0495241Z ##[group]Run actions/setup-python@v5
+local-179	Set up Python	2026-11-20T01:12:15.0495495Z with:
+local-179	Set up Python	2026-11-20T01:12:15.0495672Z   python-version: 3.x
+local-179	Set up Python	2026-11-20T01:12:15.0495864Z   check-latest: false
+local-179	Set up Python	2026-11-20T01:12:15.0498018Z   token: ***
+local-179	Set up Python	2026-11-20T01:12:15.0498202Z   update-environment: true
+local-179	Set up Python	2026-11-20T01:12:15.0498412Z   allow-prereleases: false
+local-179	Set up Python	2026-11-20T01:12:15.0498621Z   freethreaded: false
+local-179	Set up Python	2026-11-20T01:12:15.0498800Z env:
+local-179	Set up Python	2026-11-20T01:12:15.0499195Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Set up Python	2026-11-20T01:12:15.0499541Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Set up Python	2026-11-20T01:12:15.0499914Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Set up Python	2026-11-20T01:12:15.0500300Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Set up Python	2026-11-20T01:12:15.0500598Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Set up Python	2026-11-20T01:12:15.0500798Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Set up Python	2026-11-20T01:12:15.0500983Z ##[endgroup]
+local-179	Set up Python	2026-11-20T01:12:15.1571600Z ##[group]Installed versions
+local-179	Set up Python	2026-11-20T01:12:15.1720174Z (node:2306) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+local-179	Set up Python	2026-11-20T01:12:15.1720971Z (Use `node --trace-deprecation ...` to show where the warning was created)
+local-179	Set up Python	2026-11-20T01:12:15.1721418Z Successfully set up CPython (3.15.2)
+local-179	Set up Python	2026-11-20T01:12:15.1721853Z ##[endgroup]
+local-179	Resolve the exact checked-in documentation pin	﻿2026-11-20T01:12:15.1871415Z ##[group]Run python3 - <<'PY'
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1871855Z ^[[36;1mpython3 - <<'PY'^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1872166Z ^[[36;1mimport json, os, re^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1872492Z ^[[36;1mfrom pathlib import Path^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1873126Z ^[[36;1mmanifest = json.loads(Path('skills/cherri-shortcuts/compatibility-manifest.json').read_text())^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1874033Z ^[[36;1massert manifest['docsRepo'] == 'https://github.com/davidpovarsky/cherrilang.org.git'^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1874722Z ^[[36;1massert re.fullmatch(r'[0-9a-f]{40}', manifest['docsCommit'])^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1875278Z ^[[36;1mwith open(os.environ['GITHUB_OUTPUT'], 'a') as stream:^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1875805Z ^[[36;1m    stream.write('docs_sha=' + manifest['docsCommit'] + '\n')^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.1876456Z ^[[36;1mPY^[[0m
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2089426Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2089750Z env:
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2089997Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2090431Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2090801Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2091195Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2091503Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2091711Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2091952Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2092336Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2092669Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2092955Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2093270Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2093555Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Resolve the exact checked-in documentation pin	2026-11-20T01:12:15.2093803Z ##[endgroup]
+local-179	Run actions/checkout@v6	﻿2026-11-20T01:12:15.2834981Z ##[group]Run actions/checkout@v6
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2835206Z with:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2835386Z   repository: davidpovarsky/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2835632Z   ref: 2bc5f6992cd252f287530b039ee393b1b50ee39e
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2835854Z   fetch-depth: 0
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2836260Z   path: cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2836460Z   persist-credentials: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2838451Z   token: ***
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2838622Z   ssh-strict: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2838785Z   ssh-user: git
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2838945Z   clean: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2839117Z   sparse-checkout-cone-mode: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2839332Z   fetch-tags: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2839498Z   show-progress: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2839666Z   lfs: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2839820Z   submodules: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2839987Z   set-safe-directory: true
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2840188Z   allow-unsafe-pr-checkout: false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2840383Z env:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2840597Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2841135Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2841511Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2841896Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2842193Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2842393Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2842627Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2842957Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2843272Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2843557Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2843842Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2844137Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.2844395Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3550304Z Syncing repository: davidpovarsky/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3558288Z ##[group]Getting Git version info
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3560667Z Working directory is '/home/runner/work/cherri/cherri/cherrilang.org'
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3580489Z [command]/usr/bin/git version
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3617862Z git version 2.56.1
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3635199Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3646793Z Temporarily overriding HOME='/home/runner/work/_temp/b9ccaa7e-2dfd-4fc2-ba0a-088202e5c794' before making global git config changes
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3648071Z Adding repository directory to the temporary git global config as a safe directory
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3652135Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3681556Z ##[group]Determining repository object format
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3683835Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3684303Z ##[group]Initializing the repository
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3688270Z [command]/usr/bin/git init /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3731444Z hint: Using 'master' as the name for the initial branch. This default branch name
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3732597Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3733413Z hint: to use in all of your new repositories, which will suppress this warning,
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3734036Z hint: call:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3734429Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3734871Z hint: 	git config --global init.defaultBranch <name>
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3735361Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3735858Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3736923Z hint: 'development'. The just-created branch can be renamed via this command:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3737528Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3737891Z hint: 	git branch -m <name>
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3738316Z hint:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3738928Z hint: Disable this message with "git config set advice.defaultBranchName false"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3740165Z Initialized empty Git repository in /home/runner/work/cherri/cherri/cherrilang.org/.git/
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3741847Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3774102Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3774593Z ##[group]Disabling automatic garbage collection
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3778125Z [command]/usr/bin/git config --local gc.auto 0
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3806263Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3806708Z ##[group]Setting up auth
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3807854Z Removing SSH command configuration
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3813607Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.3844215Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4109637Z Removing HTTP extra header
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4116668Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4149783Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4403797Z Removing includeIf entries pointing to credentials config files
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4412407Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4443054Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4685557Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4721695Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git.path /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4750511Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4793587Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cherrilang.org/.git.path /github/runner_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4822671Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/cherrilang.org/.git/worktrees/*.path /github/runner_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4847625Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4847952Z ##[group]Fetching the repository
+local-179	Run actions/checkout@v6	2026-11-20T01:12:15.4854503Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1719191Z From https://github.com/davidpovarsky/cherrilang.org
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1720099Z  * [new branch]      agent/action-docs-sync -> origin/agent/action-docs-sync
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1720882Z  * [new branch]      agent/batch14-action-docs -> origin/agent/batch14-action-docs
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1721758Z  * [new branch]      agent/canonical-backend-recovery-docs -> origin/agent/canonical-backend-recovery-docs
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1722782Z  * [new branch]      agent/cherri-p10r15-docs-completion-20261119 -> origin/agent/cherri-p10r15-docs-completion-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1723788Z  * [new branch]      agent/cherri-p10r15-docs-contracts-20261118 -> origin/agent/cherri-p10r15-docs-contracts-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1724730Z  * [new branch]      agent/cherri-p10r15-docs-final-b34ae47-20261119 -> origin/agent/cherri-p10r15-docs-final-b34ae47-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1725358Z  * [new branch]      agent/cherri-p10r15-docs-release-20261118 -> origin/agent/cherri-p10r15-docs-release-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1726390Z  * [new branch]      agent/cherri-p10r15-docs-release-20261119 -> origin/agent/cherri-p10r15-docs-release-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1726949Z  * [new branch]      agent/cherri-p10r15-docs-s3-20261119 -> origin/agent/cherri-p10r15-docs-s3-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1727431Z  * [new branch]      agent/cherri-p10r15-docs-s4-20261119 -> origin/agent/cherri-p10r15-docs-s4-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1727938Z  * [new branch]      agent/cherri-p10r15-docs-sync-20261118 -> origin/agent/cherri-p10r15-docs-sync-20261118
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1728449Z  * [new branch]      agent/cherri-p10r15-fork-site-20261119 -> origin/agent/cherri-p10r15-fork-site-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1728927Z  * [new branch]      agent/cherri-v2-product-docs -> origin/agent/cherri-v2-product-docs
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1729324Z  * [new branch]      agent/language-v2-docs -> origin/agent/language-v2-docs
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1729737Z  * [new branch]      codex/local-backup-20261109/main -> origin/codex/local-backup-20261109/main
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1730513Z  * [new branch]      main                   -> origin/main
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1730793Z  * [new branch]      selfdoc                -> origin/selfdoc
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1731233Z  * [new branch]      staging/cherri-p10r15-docs-daa5885-20261119 -> origin/staging/cherri-p10r15-docs-daa5885-20261119
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1732160Z [command]/usr/bin/git rev-parse --verify --quiet 2bc5f6992cd252f287530b039ee393b1b50ee39e^{object}
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1755405Z 2bc5f6992cd252f287530b039ee393b1b50ee39e
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1759496Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1759834Z ##[group]Determining the checkout info
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1760512Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1763844Z [command]/usr/bin/git sparse-checkout disable
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1800058Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1826283Z ##[group]Checking out the ref
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1829970Z [command]/usr/bin/git checkout --progress --force 2bc5f6992cd252f287530b039ee393b1b50ee39e
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1998182Z Note: switching to '2bc5f6992cd252f287530b039ee393b1b50ee39e'.
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1998561Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1998848Z You are in 'detached HEAD' state. You can look around, make experimental
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1999263Z changes and commit them, and you can discard any commits you make in this
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1999633Z state without impacting any branches by switching back to a branch.
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1999835Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.1999988Z If you want to create a new branch to retain commits you create, you may
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2000330Z do so (now or later) by using -c with the switch command. Example:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2000531Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2000620Z   git switch -c <new-branch-name>
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2000760Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2000840Z Or undo this operation with:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2000970Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2001041Z   git switch -
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2001151Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2001330Z Turn off this advice by setting config variable advice.detachedHead to false
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2001558Z 
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2001743Z HEAD is now at 2bc5f69 docs: pin R3 compiler and regenerate native action reference
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2005538Z ##[endgroup]
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2039336Z [command]/usr/bin/git log -1 --format=%H
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2061097Z 2bc5f6992cd252f287530b039ee393b1b50ee39e
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2068565Z ##[group]Removing auth
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2068920Z Removing SSH command configuration
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2071964Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2099867Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2334716Z Removing HTTP extra header
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2339805Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2367710Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2596666Z Removing includeIf entries pointing to credentials config files
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2600604Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2622104Z includeif.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2622820Z includeif.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2623483Z includeif.gitdir:/github/workspace/cherrilang.org/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2624049Z includeif.gitdir:/github/workspace/cherrilang.org/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2638703Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2654194Z /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2663344Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git.path /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2694432Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2716152Z /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2723962Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/cherrilang.org/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2753359Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cherrilang.org/.git.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2772349Z /github/runner_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2778971Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cherrilang.org/.git.path /github/runner_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2807769Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/cherrilang.org/.git/worktrees/*.path
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2826600Z /github/runner_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2832364Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/cherrilang.org/.git/worktrees/*.path /github/runner_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.2861194Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.3087304Z Removing credentials config '/home/runner/work/_temp/git-credentials-c181e477-b8a6-44e5-9d52-9e97ca4b6a16.config'
+local-179	Run actions/checkout@v6	2026-11-20T01:12:16.3095126Z ##[endgroup]
+local-179	Preserve the exact declared documentation origin	﻿2026-11-20T01:12:16.3197577Z ##[group]Run git -C "$CHERRI_D03_DOCS_REPO" remote set-url origin https://github.com/davidpovarsky/cherrilang.org.git
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3198214Z ^[[36;1mgit -C "$CHERRI_D03_DOCS_REPO" remote set-url origin https://github.com/davidpovarsky/cherrilang.org.git^[[0m
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3241988Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3242269Z env:
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3242501Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3242846Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3243221Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3243608Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3243907Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3244117Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3244358Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3244729Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3245046Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3245333Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3245613Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3246085Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Preserve the exact declared documentation origin	2026-11-20T01:12:16.3246348Z ##[endgroup]
+local-179	Set up Go	﻿2026-11-20T01:12:16.3369049Z ##[group]Run actions/setup-go@v3
+local-179	Set up Go	2026-11-20T01:12:16.3369262Z with:
+local-179	Set up Go	2026-11-20T01:12:16.3369422Z   go-version: 1.24
+local-179	Set up Go	2026-11-20T01:12:16.3369595Z   check-latest: false
+local-179	Set up Go	2026-11-20T01:12:16.3371505Z   token: ***
+local-179	Set up Go	2026-11-20T01:12:16.3371664Z   cache: false
+local-179	Set up Go	2026-11-20T01:12:16.3371832Z env:
+local-179	Set up Go	2026-11-20T01:12:16.3372051Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Set up Go	2026-11-20T01:12:16.3372545Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Set up Go	2026-11-20T01:12:16.3372920Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Set up Go	2026-11-20T01:12:16.3373307Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Set up Go	2026-11-20T01:12:16.3373602Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Set up Go	2026-11-20T01:12:16.3373808Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Set up Go	2026-11-20T01:12:16.3374045Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Set up Go	2026-11-20T01:12:16.3374368Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Set up Go	2026-11-20T01:12:16.3374716Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Set up Go	2026-11-20T01:12:16.3374998Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Set up Go	2026-11-20T01:12:16.3375284Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Set up Go	2026-11-20T01:12:16.3375573Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Set up Go	2026-11-20T01:12:16.3375823Z ##[endgroup]
+local-179	Set up Go	2026-11-20T01:12:16.4249960Z Setup go version spec 1.24
+local-179	Set up Go	2026-11-20T01:12:16.4484338Z Found in cache @ /opt/hostedtoolcache/go/1.24.13/x64
+local-179	Set up Go	2026-11-20T01:12:16.4487211Z Added go to the path
+local-179	Set up Go	2026-11-20T01:12:17.1331004Z Successfully set up Go version 1.24
+local-179	Set up Go	2026-11-20T01:12:17.1393902Z go version go1.24.13 linux/amd64
+local-179	Set up Go	2026-11-20T01:12:17.1394081Z 
+local-179	Set up Go	2026-11-20T01:12:17.1398973Z ##[group]go env
+local-179	Set up Go	2026-11-20T01:12:17.3060895Z AR='ar'
+local-179	Set up Go	2026-11-20T01:12:17.3061222Z CC='gcc'
+local-179	Set up Go	2026-11-20T01:12:17.3061532Z CGO_CFLAGS='-O2 -g'
+local-179	Set up Go	2026-11-20T01:12:17.3061803Z CGO_CPPFLAGS=''
+local-179	Set up Go	2026-11-20T01:12:17.3062004Z CGO_CXXFLAGS='-O2 -g'
+local-179	Set up Go	2026-11-20T01:12:17.3062195Z CGO_ENABLED='1'
+local-179	Set up Go	2026-11-20T01:12:17.3062387Z CGO_FFLAGS='-O2 -g'
+local-179	Set up Go	2026-11-20T01:12:17.3062556Z CGO_LDFLAGS='-O2 -g'
+local-179	Set up Go	2026-11-20T01:12:17.3062731Z CXX='g++'
+local-179	Set up Go	2026-11-20T01:12:17.3062895Z GCCGO='gccgo'
+local-179	Set up Go	2026-11-20T01:12:17.3063062Z GO111MODULE=''
+local-179	Set up Go	2026-11-20T01:12:17.3063233Z GOAMD64='v1'
+local-179	Set up Go	2026-11-20T01:12:17.3063398Z GOARCH='amd64'
+local-179	Set up Go	2026-11-20T01:12:17.3063564Z GOAUTH='netrc'
+local-179	Set up Go	2026-11-20T01:12:17.3063728Z GOBIN=''
+local-179	Set up Go	2026-11-20T01:12:17.3063939Z GOCACHE='/home/runner/.cache/go-build'
+local-179	Set up Go	2026-11-20T01:12:17.3064159Z GOCACHEPROG=''
+local-179	Set up Go	2026-11-20T01:12:17.3064316Z GODEBUG=''
+local-179	Set up Go	2026-11-20T01:12:17.3064514Z GOENV='/home/runner/.config/go/env'
+local-179	Set up Go	2026-11-20T01:12:17.3064716Z GOEXE=''
+local-179	Set up Go	2026-11-20T01:12:17.3064867Z GOEXPERIMENT=''
+local-179	Set up Go	2026-11-20T01:12:17.3065051Z GOFIPS140='off'
+local-179	Set up Go	2026-11-20T01:12:17.3065217Z GOFLAGS=''
+local-179	Set up Go	2026-11-20T01:12:17.3065758Z GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build1072500285=/tmp/go-build -gno-record-gcc-switches'
+local-179	Set up Go	2026-11-20T01:12:17.3066495Z GOHOSTARCH='amd64'
+local-179	Set up Go	2026-11-20T01:12:17.3066682Z GOHOSTOS='linux'
+local-179	Set up Go	2026-11-20T01:12:17.3066863Z GOINSECURE=''
+local-179	Set up Go	2026-11-20T01:12:17.3067022Z GOMOD='/dev/null'
+local-179	Set up Go	2026-11-20T01:12:17.3067208Z GOMODCACHE='/home/runner/go/pkg/mod'
+local-179	Set up Go	2026-11-20T01:12:17.3067412Z GONOPROXY=''
+local-179	Set up Go	2026-11-20T01:12:17.3067569Z GONOSUMDB=''
+local-179	Set up Go	2026-11-20T01:12:17.3067733Z GOOS='linux'
+local-179	Set up Go	2026-11-20T01:12:17.3067899Z GOPATH='/home/runner/go'
+local-179	Set up Go	2026-11-20T01:12:17.3068103Z GOPRIVATE=''
+local-179	Set up Go	2026-11-20T01:12:17.3068318Z GOPROXY='https://proxy.golang.org,direct'
+local-179	Set up Go	2026-11-20T01:12:17.3068590Z GOROOT='/opt/hostedtoolcache/go/1.24.13/x64'
+local-179	Set up Go	2026-11-20T01:12:17.3068838Z GOSUMDB='sum.golang.org'
+local-179	Set up Go	2026-11-20T01:12:17.3069036Z GOTELEMETRY='local'
+local-179	Set up Go	2026-11-20T01:12:17.3069280Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+local-179	Set up Go	2026-11-20T01:12:17.3069532Z GOTMPDIR=''
+local-179	Set up Go	2026-11-20T01:12:17.3069696Z GOTOOLCHAIN='auto'
+local-179	Set up Go	2026-11-20T01:12:17.3069964Z GOTOOLDIR='/opt/hostedtoolcache/go/1.24.13/x64/pkg/tool/linux_amd64'
+local-179	Set up Go	2026-11-20T01:12:17.3070269Z GOVCS=''
+local-179	Set up Go	2026-11-20T01:12:17.3070449Z GOVERSION='go1.24.13'
+local-179	Set up Go	2026-11-20T01:12:17.3070862Z GOWORK=''
+local-179	Set up Go	2026-11-20T01:12:17.3071026Z PKG_CONFIG='pkg-config'
+local-179	Set up Go	2026-11-20T01:12:17.3071135Z 
+local-179	Set up Go	2026-11-20T01:12:17.3071431Z ##[endgroup]
+local-179	Build the current production compiler	﻿2026-11-20T01:12:17.3159024Z ##[group]Run go build -o cherri .
+local-179	Build the current production compiler	2026-11-20T01:12:17.3159292Z ^[[36;1mgo build -o cherri .^[[0m
+local-179	Build the current production compiler	2026-11-20T01:12:17.3202786Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+local-179	Build the current production compiler	2026-11-20T01:12:17.3203231Z env:
+local-179	Build the current production compiler	2026-11-20T01:12:17.3203465Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Build the current production compiler	2026-11-20T01:12:17.3203844Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Build the current production compiler	2026-11-20T01:12:17.3204234Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Build the current production compiler	2026-11-20T01:12:17.3204626Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Build the current production compiler	2026-11-20T01:12:17.3204923Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Build the current production compiler	2026-11-20T01:12:17.3205122Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Build the current production compiler	2026-11-20T01:12:17.3205358Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Build the current production compiler	2026-11-20T01:12:17.3205685Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Build the current production compiler	2026-11-20T01:12:17.3206200Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Build the current production compiler	2026-11-20T01:12:17.3206531Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Build the current production compiler	2026-11-20T01:12:17.3206814Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Build the current production compiler	2026-11-20T01:12:17.3207112Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Build the current production compiler	2026-11-20T01:12:17.3207362Z ##[endgroup]
+local-179	Build the current production compiler	2026-11-20T01:12:17.5125069Z go: downloading github.com/electrikmilk/args-parser v1.1.3
+local-179	Build the current production compiler	2026-11-20T01:12:17.5548630Z go: downloading github.com/glebarez/go-sqlite v1.22.0
+local-179	Build the current production compiler	2026-11-20T01:12:17.5639720Z go: downloading github.com/go-git/go-git/v5 v5.16.3
+local-179	Build the current production compiler	2026-11-20T01:12:17.5707926Z go: downloading github.com/google/uuid v1.6.0
+local-179	Build the current production compiler	2026-11-20T01:12:17.6308591Z go: downloading howett.net/plist v1.0.1
+local-179	Build the current production compiler	2026-11-20T01:12:18.6299270Z go: downloading golang.org/x/sys v0.37.0
+local-179	Build the current production compiler	2026-11-20T01:12:18.6591286Z go: downloading modernc.org/libc v1.37.6
+local-179	Build the current production compiler	2026-11-20T01:12:18.8580945Z go: downloading modernc.org/sqlite v1.28.0
+local-179	Build the current production compiler	2026-11-20T01:12:19.7346761Z go: downloading dario.cat/mergo v1.0.2
+local-179	Build the current production compiler	2026-11-20T01:12:19.7381619Z go: downloading github.com/ProtonMail/go-crypto v1.3.0
+local-179	Build the current production compiler	2026-11-20T01:12:19.7875452Z go: downloading github.com/go-git/go-billy/v5 v5.6.2
+local-179	Build the current production compiler	2026-11-20T01:12:19.8950683Z go: downloading github.com/sergi/go-diff v1.4.0
+local-179	Build the current production compiler	2026-11-20T01:12:21.2852248Z go: downloading github.com/dustin/go-humanize v1.0.1
+local-179	Build the current production compiler	2026-11-20T01:12:21.3025160Z go: downloading github.com/mattn/go-isatty v0.0.20
+local-179	Build the current production compiler	2026-11-20T01:12:21.3191441Z go: downloading modernc.org/mathutil v1.6.0
+local-179	Build the current production compiler	2026-11-20T01:12:21.3490434Z go: downloading modernc.org/memory v1.7.2
+local-179	Build the current production compiler	2026-11-20T01:12:21.3885067Z go: downloading golang.org/x/crypto v0.43.0
+local-179	Build the current production compiler	2026-11-20T01:12:21.6211131Z go: downloading github.com/cyphar/filepath-securejoin v0.5.1
+local-179	Build the current production compiler	2026-11-20T01:12:21.6231804Z go: downloading github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376
+local-179	Build the current production compiler	2026-11-20T01:12:21.6371704Z go: downloading github.com/pjbgf/sha1cd v0.5.0
+local-179	Build the current production compiler	2026-11-20T01:12:21.6409117Z go: downloading github.com/emirpasic/gods v1.18.1
+local-179	Build the current production compiler	2026-11-20T01:12:21.6556992Z go: downloading github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
+local-179	Build the current production compiler	2026-11-20T01:12:21.9184115Z go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+local-179	Build the current production compiler	2026-11-20T01:12:21.9195667Z go: downloading github.com/cloudflare/circl v1.6.1
+local-179	Build the current production compiler	2026-11-20T01:12:22.2689911Z go: downloading gopkg.in/warnings.v0 v0.1.2
+local-179	Build the current production compiler	2026-11-20T01:12:22.2751550Z go: downloading github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8
+local-179	Build the current production compiler	2026-11-20T01:12:22.2830168Z go: downloading github.com/kevinburke/ssh_config v1.4.0
+local-179	Build the current production compiler	2026-11-20T01:12:22.2848968Z go: downloading github.com/skeema/knownhosts v1.3.2
+local-179	Build the current production compiler	2026-11-20T01:12:22.2946225Z go: downloading github.com/xanzy/ssh-agent v0.3.3
+local-179	Build the current production compiler	2026-11-20T01:12:22.3006938Z go: downloading golang.org/x/net v0.46.0
+local-179	Build the current production compiler	2026-11-20T01:12:22.4125683Z go: downloading github.com/klauspost/cpuid/v2 v2.3.0
+local-179	Execute all 179 local obligations without inherited closure	﻿2026-11-20T01:12:44.5373953Z ##[group]Run set -euo pipefail
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5374279Z ^[[36;1mset -euo pipefail^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5374502Z ^[[36;1mmkdir -p "$CHERRI_LOCAL_ACCEPTANCE_OUT"^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5374747Z ^[[36;1mpython3 - <<'PY'^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5374976Z ^[[36;1mimport datetime, hashlib, json, os, subprocess^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5375245Z ^[[36;1mfrom pathlib import Path^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5375674Z ^[[36;1mroot, docs = Path.cwd(), Path(os.environ['CHERRI_DOCS_DIR'])^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5376228Z ^[[36;1mout = Path(os.environ['CHERRI_LOCAL_ACCEPTANCE_OUT'])^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5376652Z ^[[36;1mdef git(path, *args):^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5377003Z ^[[36;1m    return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5377338Z ^[[36;1mexpected = {^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5377697Z ^[[36;1m    'acceptance-contract.json': '9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e',^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5378258Z ^[[36;1m    'repair-regression-plan.json': 'eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5',^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5378867Z ^[[36;1m    'backend-recovery-gates.json': 'e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c',^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5379237Z ^[[36;1m}^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5379599Z ^[[36;1mcontracts = {name: hashlib.sha256((root / 'tests/language-v2' / name).read_bytes()).hexdigest() for name in expected}^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5380008Z ^[[36;1massert contracts == expected^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5380372Z ^[[36;1mmanifest_bytes = (root / 'skills/cherri-shortcuts/compatibility-manifest.json').read_bytes()^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5380761Z ^[[36;1mmanifest = json.loads(manifest_bytes)^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5381065Z ^[[36;1massert git(root, 'rev-parse', 'HEAD') == os.environ['GITHUB_SHA']^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5381414Z ^[[36;1massert git(docs, 'rev-parse', 'HEAD') == manifest['docsCommit']^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5381774Z ^[[36;1massert git(docs, 'remote', 'get-url', 'origin') == manifest['docsRepo']^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5382182Z ^[[36;1massert not git(root, 'status', '--porcelain') and not git(docs, 'status', '--porcelain')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5382664Z ^[[36;1massert not os.environ.get('CHERRI_P10R10_CORPUS') and not os.environ.get('CHERRI_P10R10_CORPUS_DIR')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5383035Z ^[[36;1mreceipt = {^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5383296Z ^[[36;1m    'schemaVersion': 1, 'implementationSha': os.environ['GITHUB_SHA'],^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5383717Z ^[[36;1m    'docsSha': manifest['docsCommit'], 'consumerCompilerPin': manifest['compilerCommit'],^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5384202Z ^[[36;1m    'manifestSha256': hashlib.sha256(manifest_bytes).hexdigest(), 'contractDigests': contracts,^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5384654Z ^[[36;1m    'compilerSha256': hashlib.sha256((root / 'cherri').read_bytes()).hexdigest(),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5385081Z ^[[36;1m    'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5385498Z ^[[36;1m    'startedUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5385876Z ^[[36;1m    'sourceCleanBefore': True, 'docsCleanBefore': True,^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5386868Z ^[[36;1m    'scope': 'actual local179 diagnostic execution; final/native/consumer closure remains independently required',^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5387381Z ^[[36;1m    'publicFixtureSigningOptIn': os.environ['CHERRI_K05_LIVE_SIGNING'] == '1',^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5387730Z ^[[36;1m    'privateCorpusRequested': False,^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5388150Z ^[[36;1m    'command': ['go', 'run', './tools/language-acceptance', '--phase', 'local', '--out', str(out / 'acceptance-report.json')],^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5388541Z ^[[36;1m}^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5388801Z ^[[36;1m(out / 'process-start.json').write_text(json.dumps(receipt, indent=2) + '\n')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5389108Z ^[[36;1mPY^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5389267Z ^[[36;1mset +e^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5389476Z ^[[36;1mtimeout --signal=TERM --kill-after=30s 80m \^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5389773Z ^[[36;1m  go run ./tools/language-acceptance --phase local \^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5390261Z ^[[36;1m  --out "$CHERRI_LOCAL_ACCEPTANCE_OUT/acceptance-report.json" \^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5390584Z ^[[36;1m  2>&1 | tee "$CHERRI_LOCAL_ACCEPTANCE_OUT/runner.log"^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5390850Z ^[[36;1mrunner_status="${PIPESTATUS[0]}"^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5391069Z ^[[36;1mset -e^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5391408Z ^[[36;1mCHERRI_LOCAL_RUNNER_EXIT="$runner_status" python3 - <<'PY'^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5391724Z ^[[36;1mimport datetime, hashlib, json, os, subprocess^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5391978Z ^[[36;1mfrom pathlib import Path^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5392238Z ^[[36;1mout = Path(os.environ['CHERRI_LOCAL_ACCEPTANCE_OUT'])^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5392566Z ^[[36;1mreceipt = json.loads((out / 'process-start.json').read_text())^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5392846Z ^[[36;1mdef git(path, *args):^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5393158Z ^[[36;1m    return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5393492Z ^[[36;1mreceipt.update({^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5393791Z ^[[36;1m    'finishedUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5394165Z ^[[36;1m    'exitCode': int(os.environ['CHERRI_LOCAL_RUNNER_EXIT']),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5394668Z ^[[36;1m    'sourceUnchanged': git(Path.cwd(), 'rev-parse', 'HEAD') == receipt['implementationSha'] and not git(Path.cwd(), 'status', '--porcelain'),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5395385Z ^[[36;1m    'docsUnchanged': git(os.environ['CHERRI_DOCS_DIR'], 'rev-parse', 'HEAD') == receipt['docsSha'] and not git(os.environ['CHERRI_DOCS_DIR'], 'status', '--porcelain'),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5396181Z ^[[36;1m    'runnerLogSha256': hashlib.sha256((out / 'runner.log').read_bytes()).hexdigest(),^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5396498Z ^[[36;1m})^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5396697Z ^[[36;1mreport_path = out / 'acceptance-report.json'^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5396985Z ^[[36;1mreceipt['reportPresent'] = report_path.is_file()^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5397248Z ^[[36;1mif report_path.is_file():^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5397490Z ^[[36;1m    report = json.loads(report_path.read_text())^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5397833Z ^[[36;1m    receipt['reportSha256'] = hashlib.sha256(report_path.read_bytes()).hexdigest()^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5398414Z ^[[36;1m    receipt['reportedCounts'] = {key: report.get(key) for key in ('total_cases', 'passed_cases', 'failed_cases', 'skipped_cases', 'closure_complete')}^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5399019Z ^[[36;1m    receipt['all179Reported'] = report.get('total_cases') == 179 and len(report.get('results', [])) == 179^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5399392Z ^[[36;1melse:^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5399570Z ^[[36;1m    receipt['all179Reported'] = False^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5399904Z ^[[36;1m(out / 'process-result.json').write_text(json.dumps(receipt, indent=2) + '\n')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5400277Z ^[[36;1mwith open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5400597Z ^[[36;1m    stream.write('## Actual local179 diagnostic run\n\n')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5400934Z ^[[36;1m    stream.write('```json\n' + json.dumps(receipt, indent=2) + '\n```\n')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5401435Z ^[[36;1m    stream.write('\nThis workflow does not grant iOS runtime, private corpus, deployment, AI quality, or final179 closure.\n')^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5401936Z ^[[36;1massert receipt['sourceUnchanged'] and receipt['docsUnchanged']^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5402345Z ^[[36;1massert receipt['all179Reported'], 'Runner ended before a complete 179-row report'^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5402665Z ^[[36;1mPY^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5402932Z ^[[36;1m# Preserve the real local-runner result. Pending local obligations remain^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5403317Z ^[[36;1m# visible in the report and never confer final acceptance closure.^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5403614Z ^[[36;1mexit "$runner_status"^[[0m
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5447354Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5447636Z env:
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5447868Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5448355Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5448733Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5449130Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5449430Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5449740Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5449981Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5450304Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5450617Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5450905Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5451191Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5451484Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5453625Z   GH_TOKEN: ***
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:44.5453810Z ##[endgroup]
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:45.3304472Z Loaded verified acceptance contracts (94 acceptance, 52 repair, 33 gates)
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:45.3305234Z Executing Acceptance Contract runner (phase: local)...
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:12:45.3305521Z 
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5773148Z ==================================================
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5776586Z ACCEPTANCE RESULTS SUMMARY (Phase: local):
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5776929Z Total Requirements: 179
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5777190Z Passed:             95
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5777422Z Failed:             2
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5777639Z Skipped / Pending:  82
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5777868Z Closure Complete:   false
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5778435Z Report written to:  /home/runner/work/cherri/cherri/local-acceptance/acceptance-report.json
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5780003Z VALIDATION ERROR:   acceptance validation failed: case RP02 failed: Production tests failed or were not discovered: process=exit status 1; missing=[TestMeta_UnitAndNativeCannotSatisfyIOSInFinal]; scanner=<nil>; output_tail={"Time":"2026-11-20T01:17:29.287714838Z","Action":"start","Package":"github.com/electrikmilk/cherri/tools/language-acceptance"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5781375Z {"Time":"2026-11-20T01:17:29.289936083Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5782341Z {"Time":"2026-11-20T01:17:29.289951035Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection","Output":"=== RUN   TestMeta_WeakTestLevelRejection\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5783755Z {"Time":"2026-11-20T01:17:29.289986828Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection","Output":"--- PASS: TestMeta_WeakTestLevelRejection (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5785310Z {"Time":"2026-11-20T01:17:29.289991856Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5786750Z {"Time":"2026-11-20T01:17:29.289998445Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5788105Z {"Time":"2026-11-20T01:17:29.290002401Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Output":"=== RUN   TestMeta_UnitAndNativeCannotSatisfyIOSInFinal\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5793594Z {"Time":"2026-11-20T01:17:29.290298258Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Output":"    main_test.go:602: expected full evidence to pass all tiers, got error: evidence validation failed: numeric/function record rec1 substitutes an unexecuted producer or tier for FN01; test_id \"tools/language-acceptance:runFunctions\" in record rec1 is not authorized for requirement FN01; numeric/function record rec2 substitutes an unexecuted producer or tier for FN01; test_id \"tools/language-acceptance:runFunctions\" in record rec2 is not authorized for requirement FN01; requirement FN01 has failed evidence record\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5797996Z {"Time":"2026-11-20T01:17:29.290436973Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Output":"--- FAIL: TestMeta_UnitAndNativeCannotSatisfyIOSInFinal (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5800104Z {"Time":"2026-11-20T01:17:29.29044829Z","Action":"fail","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5801683Z {"Time":"2026-11-20T01:17:29.290467478Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5803614Z {"Time":"2026-11-20T01:17:29.290475099Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected","Output":"=== RUN   TestMeta_FalsePassedClaimWithMissingTiersRejected\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5805109Z {"Time":"2026-11-20T01:17:29.290505454Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected","Output":"--- PASS: TestMeta_FalsePassedClaimWithMissingTiersRejected (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5806650Z {"Time":"2026-11-20T01:17:29.290512625Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5807705Z {"Time":"2026-11-20T01:17:29.29054349Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5809129Z {"Time":"2026-11-20T01:17:29.290548748Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA","Output":"=== RUN   TestP15RP02ParserOnlyAndForeignSHA\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5810446Z {"Time":"2026-11-20T01:17:29.290985523Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA","Output":"--- PASS: TestP15RP02ParserOnlyAndForeignSHA (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5811481Z {"Time":"2026-11-20T01:17:29.290994807Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5812275Z {"Time":"2026-11-20T01:17:29.290999353Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5813146Z {"Time":"2026-11-20T01:17:29.291303933Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\tgithub.com/electrikmilk/cherri/tools/language-acceptance\t0.003s\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5813997Z {"Time":"2026-11-20T01:17:29.291314869Z","Action":"fail","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Elapsed":0.004}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5814827Z ; case BRG04 failed: Production tests failed or were not discovered: process=exit status 1; missing=[TestMeta_UnitAndNativeCannotSatisfyIOSInFinal]; scanner=<nil>; output_tail=an-array\"}"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5816307Z {"Time":"2026-11-20T01:20:23.664990203Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}","Output":"=== RUN   TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5818009Z {"Time":"2026-11-20T01:20:23.665262455Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}","Output":"--- PASS: TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"} (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5819551Z {"Time":"2026-11-20T01:20:23.665271358Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5820902Z {"Time":"2026-11-20T01:20:23.665585772Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed","Output":"--- PASS: TestP15VerificationMalformedProducerFailsClosed (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5822068Z {"Time":"2026-11-20T01:20:23.665602667Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5822966Z {"Time":"2026-11-20T01:20:23.665607514Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5823963Z {"Time":"2026-11-20T01:20:23.66561201Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs","Output":"=== RUN   TestP15VerificationCLIInvalidInputs\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5824977Z {"Time":"2026-11-20T01:20:23.921721262Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5826319Z {"Time":"2026-11-20T01:20:23.921748312Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/false_result\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5828163Z {"Time":"2026-11-20T01:20:23.930736227Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/false_result (0.01s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5829311Z {"Time":"2026-11-20T01:20:23.930760392Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result","Elapsed":0.01}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5830263Z {"Time":"2026-11-20T01:20:23.930769135Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5832304Z {"Time":"2026-11-20T01:20:23.93077227Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/contradictory_status\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5834799Z {"Time":"2026-11-20T01:20:23.94022422Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/contradictory_status (0.01s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5836904Z {"Time":"2026-11-20T01:20:23.940241165Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status","Elapsed":0.01}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5837877Z {"Time":"2026-11-20T01:20:23.940528425Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5838973Z {"Time":"2026-11-20T01:20:23.940538119Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/duplicate_id\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5840276Z {"Time":"2026-11-20T01:20:23.949486506Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/duplicate_id (0.01s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5841567Z {"Time":"2026-11-20T01:20:23.949503491Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id","Elapsed":0.01}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5842572Z {"Time":"2026-11-20T01:20:23.94951Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5843698Z {"Time":"2026-11-20T01:20:23.949513525Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/unknown_id\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5844979Z {"Time":"2026-11-20T01:20:23.958208107Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/unknown_id (0.01s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5846368Z {"Time":"2026-11-20T01:20:23.958222559Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id","Elapsed":0.01}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5847504Z {"Time":"2026-11-20T01:20:23.958229118Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5848570Z {"Time":"2026-11-20T01:20:23.958241186Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/missing_id\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5849844Z {"Time":"2026-11-20T01:20:23.967071618Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/missing_id (0.01s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5850965Z {"Time":"2026-11-20T01:20:23.967088954Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id","Elapsed":0.01}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5851901Z {"Time":"2026-11-20T01:20:23.967096685Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5853031Z {"Time":"2026-11-20T01:20:23.96710017Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/malformed_evidence\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5854407Z {"Time":"2026-11-20T01:20:23.970332114Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/malformed_evidence (0.00s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5855592Z {"Time":"2026-11-20T01:20:23.970343681Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence","Elapsed":0}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5856848Z {"Time":"2026-11-20T01:20:23.971895002Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs","Output":"--- PASS: TestP15VerificationCLIInvalidInputs (0.31s)\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5857891Z {"Time":"2026-11-20T01:20:23.971910054Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs","Elapsed":0.31}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5858690Z {"Time":"2026-11-20T01:20:23.971915683Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5859681Z {"Time":"2026-11-20T01:20:23.972833237Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\tgithub.com/electrikmilk/cherri/tools/language-acceptance\t0.679s\n"}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5860514Z {"Time":"2026-11-20T01:20:23.972845305Z","Action":"fail","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Elapsed":0.679}
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5860983Z 
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5861078Z ==================================================
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.5861309Z exit status 1
+local-179	Execute all 179 local obligations without inherited closure	2026-11-20T01:22:03.6354057Z ##[error]Process completed with exit code 1.
+local-179	Retain actual report and process evidence on success or failure	﻿2026-11-20T01:22:03.6423254Z ##[group]Run actions/upload-artifact@v4
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6423500Z with:
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6423688Z   name: p10r15-local-acceptance-44651827685
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6423923Z   path: local-acceptance/
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6424120Z   if-no-files-found: error
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6424307Z   retention-days: 14
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6424482Z   compression-level: 6
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6424656Z   overwrite: false
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6424828Z   include-hidden-files: false
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6425014Z env:
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6425231Z   CHERRI_DOCS_DIR: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6425572Z   CHERRI_D03_DOCS_REPO: /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6426176Z   CHERRI_LOCAL_ACCEPTANCE_OUT: /home/runner/work/cherri/cherri/local-acceptance
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6426574Z   CHERRI_K05_EVIDENCE_DIR: /home/runner/work/cherri/cherri/local-acceptance/k05
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6426876Z   CHERRI_K05_LIVE_SIGNING: 1
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6427076Z   PYTHONDONTWRITEBYTECODE: 1
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6427348Z   pythonLocation: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6427672Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib/pkgconfig
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6427993Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6428287Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6428575Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.15.2/x64
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6428862Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.15.2/x64/lib
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.6429122Z ##[endgroup]
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.7806770Z (node:71575) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.7807383Z (Use `node --trace-deprecation ...` to show where the warning was created)
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.7956453Z With the provided path, there will be 53 files uploaded
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.7957141Z Artifact name is valid!
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:03.7957435Z Root directory input is valid!
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.0325639Z Beginning upload of artifact content to blob storage
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.1130454Z (node:71575) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.1534763Z Uploaded bytes 296281
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.1653719Z Finished uploading artifact content to blob storage!
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.1654799Z SHA256 digest of uploaded artifact zip is 0191d1c5c1d6006b54aeccb1f376988bd1bacee69203919784982e88a57eb462
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.1655843Z Finalizing artifact upload
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.5047055Z Artifact p10r15-local-acceptance-44651827685.zip successfully finalized. Artifact ID 14592460171
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.5048280Z Artifact p10r15-local-acceptance-44651827685 has been successfully uploaded! Final size is 296281 bytes. Artifact ID is 14592460171
+local-179	Retain actual report and process evidence on success or failure	2026-11-20T01:22:04.5053505Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/44651827685/artifacts/14592460171
+local-179	Post Run actions/checkout@v6	﻿2026-11-20T01:22:04.5247496Z Post job cleanup.
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.5976661Z [command]/usr/bin/git version
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.5997840Z git version 2.56.1
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6030190Z Temporarily overriding HOME='/home/runner/work/_temp/06a07318-358e-46c6-af06-4713b7d6def2' before making global git config changes
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6035253Z Adding repository directory to the temporary git global config as a safe directory
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6047490Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri/cherrilang.org
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6086894Z Removing SSH command configuration
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6092812Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6126594Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6390887Z Removing HTTP extra header
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6396728Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6432818Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6693955Z Removing includeIf entries pointing to credentials config files
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6700897Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.6732580Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+local-179	Post Run actions/checkout@v6	﻿2026-11-20T01:22:04.7113611Z Post job cleanup.
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7873884Z [command]/usr/bin/git version
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7912561Z git version 2.56.1
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7947107Z Temporarily overriding HOME='/home/runner/work/_temp/5670ae71-347d-4eca-b0f4-2c8fb53f91b2' before making global git config changes
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7948542Z Adding repository directory to the temporary git global config as a safe directory
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7952577Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri/cherri
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7986670Z Removing SSH command configuration
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.7992890Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8030166Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8294915Z Removing HTTP extra header
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8300245Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8340205Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8601089Z Removing includeIf entries pointing to credentials config files
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8607497Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+local-179	Post Run actions/checkout@v6	2026-11-20T01:22:04.8639769Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+local-179	Complete job	﻿2026-11-20T01:22:04.9029540Z Cleaning up orphan processes
+local-179	Complete job	2026-11-20T01:22:04.9333942Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-go@v3, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

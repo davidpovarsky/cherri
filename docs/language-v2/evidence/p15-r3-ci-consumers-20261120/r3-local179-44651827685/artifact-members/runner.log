@@ -1,0 +1,72 @@
+Loaded verified acceptance contracts (94 acceptance, 52 repair, 33 gates)
+Executing Acceptance Contract runner (phase: local)...
+
+==================================================
+ACCEPTANCE RESULTS SUMMARY (Phase: local):
+Total Requirements: 179
+Passed:             95
+Failed:             2
+Skipped / Pending:  82
+Closure Complete:   false
+Report written to:  /home/runner/work/cherri/cherri/local-acceptance/acceptance-report.json
+VALIDATION ERROR:   acceptance validation failed: case RP02 failed: Production tests failed or were not discovered: process=exit status 1; missing=[TestMeta_UnitAndNativeCannotSatisfyIOSInFinal]; scanner=<nil>; output_tail={"Time":"2026-11-20T01:17:29.287714838Z","Action":"start","Package":"github.com/electrikmilk/cherri/tools/language-acceptance"}
+{"Time":"2026-11-20T01:17:29.289936083Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection"}
+{"Time":"2026-11-20T01:17:29.289951035Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection","Output":"=== RUN   TestMeta_WeakTestLevelRejection\n"}
+{"Time":"2026-11-20T01:17:29.289986828Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection","Output":"--- PASS: TestMeta_WeakTestLevelRejection (0.00s)\n"}
+{"Time":"2026-11-20T01:17:29.289991856Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_WeakTestLevelRejection","Elapsed":0}
+{"Time":"2026-11-20T01:17:29.289998445Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal"}
+{"Time":"2026-11-20T01:17:29.290002401Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Output":"=== RUN   TestMeta_UnitAndNativeCannotSatisfyIOSInFinal\n"}
+{"Time":"2026-11-20T01:17:29.290298258Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Output":"    main_test.go:602: expected full evidence to pass all tiers, got error: evidence validation failed: numeric/function record rec1 substitutes an unexecuted producer or tier for FN01; test_id \"tools/language-acceptance:runFunctions\" in record rec1 is not authorized for requirement FN01; numeric/function record rec2 substitutes an unexecuted producer or tier for FN01; test_id \"tools/language-acceptance:runFunctions\" in record rec2 is not authorized for requirement FN01; requirement FN01 has failed evidence record\n"}
+{"Time":"2026-11-20T01:17:29.290436973Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Output":"--- FAIL: TestMeta_UnitAndNativeCannotSatisfyIOSInFinal (0.00s)\n"}
+{"Time":"2026-11-20T01:17:29.29044829Z","Action":"fail","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal","Elapsed":0}
+{"Time":"2026-11-20T01:17:29.290467478Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected"}
+{"Time":"2026-11-20T01:17:29.290475099Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected","Output":"=== RUN   TestMeta_FalsePassedClaimWithMissingTiersRejected\n"}
+{"Time":"2026-11-20T01:17:29.290505454Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected","Output":"--- PASS: TestMeta_FalsePassedClaimWithMissingTiersRejected (0.00s)\n"}
+{"Time":"2026-11-20T01:17:29.290512625Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestMeta_FalsePassedClaimWithMissingTiersRejected","Elapsed":0}
+{"Time":"2026-11-20T01:17:29.29054349Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA"}
+{"Time":"2026-11-20T01:17:29.290548748Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA","Output":"=== RUN   TestP15RP02ParserOnlyAndForeignSHA\n"}
+{"Time":"2026-11-20T01:17:29.290985523Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA","Output":"--- PASS: TestP15RP02ParserOnlyAndForeignSHA (0.00s)\n"}
+{"Time":"2026-11-20T01:17:29.290994807Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15RP02ParserOnlyAndForeignSHA","Elapsed":0}
+{"Time":"2026-11-20T01:17:29.290999353Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\n"}
+{"Time":"2026-11-20T01:17:29.291303933Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\tgithub.com/electrikmilk/cherri/tools/language-acceptance\t0.003s\n"}
+{"Time":"2026-11-20T01:17:29.291314869Z","Action":"fail","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Elapsed":0.004}
+; case BRG04 failed: Production tests failed or were not discovered: process=exit status 1; missing=[TestMeta_UnitAndNativeCannotSatisfyIOSInFinal]; scanner=<nil>; output_tail=an-array\"}"}
+{"Time":"2026-11-20T01:20:23.664990203Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}","Output":"=== RUN   TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}\n"}
+{"Time":"2026-11-20T01:20:23.665262455Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}","Output":"--- PASS: TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"} (0.00s)\n"}
+{"Time":"2026-11-20T01:20:23.665271358Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}","Elapsed":0}
+{"Time":"2026-11-20T01:20:23.665585772Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed","Output":"--- PASS: TestP15VerificationMalformedProducerFailsClosed (0.00s)\n"}
+{"Time":"2026-11-20T01:20:23.665602667Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationMalformedProducerFailsClosed","Elapsed":0}
+{"Time":"2026-11-20T01:20:23.665607514Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs"}
+{"Time":"2026-11-20T01:20:23.66561201Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs","Output":"=== RUN   TestP15VerificationCLIInvalidInputs\n"}
+{"Time":"2026-11-20T01:20:23.921721262Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result"}
+{"Time":"2026-11-20T01:20:23.921748312Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/false_result\n"}
+{"Time":"2026-11-20T01:20:23.930736227Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/false_result (0.01s)\n"}
+{"Time":"2026-11-20T01:20:23.930760392Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/false_result","Elapsed":0.01}
+{"Time":"2026-11-20T01:20:23.930769135Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status"}
+{"Time":"2026-11-20T01:20:23.93077227Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/contradictory_status\n"}
+{"Time":"2026-11-20T01:20:23.94022422Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/contradictory_status (0.01s)\n"}
+{"Time":"2026-11-20T01:20:23.940241165Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/contradictory_status","Elapsed":0.01}
+{"Time":"2026-11-20T01:20:23.940528425Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id"}
+{"Time":"2026-11-20T01:20:23.940538119Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/duplicate_id\n"}
+{"Time":"2026-11-20T01:20:23.949486506Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/duplicate_id (0.01s)\n"}
+{"Time":"2026-11-20T01:20:23.949503491Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/duplicate_id","Elapsed":0.01}
+{"Time":"2026-11-20T01:20:23.94951Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id"}
+{"Time":"2026-11-20T01:20:23.949513525Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/unknown_id\n"}
+{"Time":"2026-11-20T01:20:23.958208107Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/unknown_id (0.01s)\n"}
+{"Time":"2026-11-20T01:20:23.958222559Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/unknown_id","Elapsed":0.01}
+{"Time":"2026-11-20T01:20:23.958229118Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id"}
+{"Time":"2026-11-20T01:20:23.958241186Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/missing_id\n"}
+{"Time":"2026-11-20T01:20:23.967071618Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/missing_id (0.01s)\n"}
+{"Time":"2026-11-20T01:20:23.967088954Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/missing_id","Elapsed":0.01}
+{"Time":"2026-11-20T01:20:23.967096685Z","Action":"run","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence"}
+{"Time":"2026-11-20T01:20:23.96710017Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence","Output":"=== RUN   TestP15VerificationCLIInvalidInputs/malformed_evidence\n"}
+{"Time":"2026-11-20T01:20:23.970332114Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence","Output":"--- PASS: TestP15VerificationCLIInvalidInputs/malformed_evidence (0.00s)\n"}
+{"Time":"2026-11-20T01:20:23.970343681Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs/malformed_evidence","Elapsed":0}
+{"Time":"2026-11-20T01:20:23.971895002Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs","Output":"--- PASS: TestP15VerificationCLIInvalidInputs (0.31s)\n"}
+{"Time":"2026-11-20T01:20:23.971910054Z","Action":"pass","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Test":"TestP15VerificationCLIInvalidInputs","Elapsed":0.31}
+{"Time":"2026-11-20T01:20:23.971915683Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\n"}
+{"Time":"2026-11-20T01:20:23.972833237Z","Action":"output","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Output":"FAIL\tgithub.com/electrikmilk/cherri/tools/language-acceptance\t0.679s\n"}
+{"Time":"2026-11-20T01:20:23.972845305Z","Action":"fail","Package":"github.com/electrikmilk/cherri/tools/language-acceptance","Elapsed":0.679}
+
+==================================================
+exit status 1

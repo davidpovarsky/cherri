@@ -1,0 +1,147 @@
+{
+  "sourceSha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "sourceFingerprint": "b0fd813e05f3392e3657810e811174a8aac8331b9f8c7ff3b68331108d876555",
+  "ledgerSHA256": "33bd2b808b9456afe55d0867d4d604504544035466c080d228d967e52757a2d5",
+  "generatorSHA256": "dd8d568c9df4af3b8a090eaf5d50293777eb95f1d7a2f0885d6e445af185532a",
+  "scope": "COPIED_REAL_EVIDENCE_ACTUAL_VERIFIER_EXITS",
+  "results": [
+    {
+      "case": "actual_healthy_evidence",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "stale_source",
+      "exitCode": 1,
+      "expectedDiagnostic": "STALE_MACRO_SOURCE_EVIDENCE",
+      "verdict": "PASS",
+      "diagnosticTail": "STALE_MACRO_SOURCE_EVIDENCE\n"
+    },
+    {
+      "case": "restore_after_stale_source",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "edited_observation",
+      "exitCode": 1,
+      "expectedDiagnostic": "EDITED_MACRO_OBSERVATIONS",
+      "verdict": "PASS",
+      "diagnosticTail": "EDITED_MACRO_OBSERVATIONS\n"
+    },
+    {
+      "case": "restore_after_edited_observation",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "missing_child",
+      "exitCode": 1,
+      "expectedDiagnostic": "MISSING_OR_DUPLICATE_ASANA_CHILD",
+      "verdict": "PASS",
+      "diagnosticTail": "MISSING_OR_DUPLICATE_ASANA_CHILD\n"
+    },
+    {
+      "case": "restore_after_missing_child",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "premature_closure",
+      "exitCode": 1,
+      "expectedDiagnostic": "STRUCTURAL_EVIDENCE_CANNOT_CLOSE_CHILD",
+      "verdict": "PASS",
+      "diagnosticTail": "STRUCTURAL_EVIDENCE_CANNOT_CLOSE_CHILD\n"
+    },
+    {
+      "case": "restore_after_premature_closure",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "missing_compile",
+      "exitCode": 1,
+      "expectedDiagnostic": "MISSING_CONTROLLED_COMPILE",
+      "verdict": "PASS",
+      "diagnosticTail": "MISSING_CONTROLLED_COMPILE\n"
+    },
+    {
+      "case": "restore_after_missing_compile",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "missing_mutations",
+      "exitCode": 1,
+      "expectedDiagnostic": "MACRO_EXECUTION_COUNT_MISMATCH",
+      "verdict": "PASS",
+      "diagnosticTail": "MACRO_EXECUTION_COUNT_MISMATCH\n"
+    },
+    {
+      "case": "restore_after_missing_mutations",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "false_action_count",
+      "exitCode": 1,
+      "expectedDiagnostic": "MACRO_NATIVE_ACTION_COUNT_MISMATCH",
+      "verdict": "PASS",
+      "diagnosticTail": "MACRO_NATIVE_ACTION_COUNT_MISMATCH\n"
+    },
+    {
+      "case": "restore_after_false_action_count",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "false_roundtrip",
+      "exitCode": 1,
+      "expectedDiagnostic": "MACRO_LOSSLESS_ROUNDTRIP_FAILED",
+      "verdict": "PASS",
+      "diagnosticTail": "MACRO_LOSSLESS_ROUNDTRIP_FAILED\n"
+    },
+    {
+      "case": "restore_after_false_roundtrip",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    },
+    {
+      "case": "stale_markdown",
+      "exitCode": 1,
+      "expectedDiagnostic": "STALE_MACRO_MARKDOWN",
+      "verdict": "PASS",
+      "diagnosticTail": "STALE_MACRO_MARKDOWN\n"
+    },
+    {
+      "case": "restore_after_stale_markdown",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "diagnosticTail": "{\"asanaChildren\": 11, \"open\": 11, \"closed\": 0, \"compilerMacros\": 15, \"compileChecks\": 19, \"compilePassed\": 19, \"causalMutationChecks\": 8, \"structuralExecutionVerdict\": \"PASS\", \"releaseCompletion\": \"OPEN\"}\n"
+    }
+  ],
+  "summary": {
+    "checks": 19,
+    "passed": 19,
+    "failed": 0
+  }
+}

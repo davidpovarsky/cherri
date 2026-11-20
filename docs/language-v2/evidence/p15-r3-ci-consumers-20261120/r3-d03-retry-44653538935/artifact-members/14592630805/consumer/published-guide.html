@@ -1,0 +1,857 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+  <link rel="stylesheet" href="/cherrilang.org/assets/css/just-the-docs-default.css">
+
+  <link rel="stylesheet" href="/cherrilang.org/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
+
+  <style id="jtd-nav-activation">
+  
+
+    .site-nav > ul.nav-list:first-child > li > a,
+    
+    .site-nav > ul.nav-list:first-child > li > ul > li:not(:nth-child(1)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li > ul > li a {
+      background-image: none;
+    }
+
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+
+    .site-nav > ul.nav-list:first-child > li:nth-child(1) > ul > li:nth-child(1) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(1) > button svg,
+    .site-nav > ul.nav-list:first-child > li:nth-child(1) > ul > li:nth-child(1) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(1) > ul.nav-list,
+    .site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(1) > ul.nav-list > li.nav-list-item:nth-child(1) > ul.nav-list {
+      display: block;
+    }
+  </style>
+
+  
+
+  
+    <script src="/cherrilang.org/assets/js/vendor/lunr.min.js"></script>
+  
+
+  <script src="/cherrilang.org/assets/js/just-the-docs.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+  <link rel="icon" href="/cherrilang.org/assets/cherri_icon.png" type="image/x-icon">
+
+
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Language Guide | Cherri Fork V2</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Language Guide" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Active V2 authoring guide for the davidpovarsky Cherri fork" />
+<meta property="og:description" content="Active V2 authoring guide for the davidpovarsky Cherri fork" />
+<link rel="canonical" href="https://davidpovarsky.github.io/cherrilang.org/fork-language/guide" />
+<meta property="og:url" content="https://davidpovarsky.github.io/cherrilang.org/fork-language/guide" />
+<meta property="og:site_name" content="Cherri Fork V2" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Language Guide" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Active V2 authoring guide for the davidpovarsky Cherri fork","headline":"Language Guide","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://davidpovarsky.github.io/cherrilang.org/assets/cherri_logo.png"}},"url":"https://davidpovarsky.github.io/cherrilang.org/fork-language/guide"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!--
+  ~ Copyright (c) Cherri
+  -->
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.redbubble.com https://playground.cherrilang.org https://cdn.jsdelivr.net 'unsafe-inline'">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
+
+<script type="text/javascript" async src="/cherrilang.org/assets/preview.js"></script>
+
+
+</head>
+
+<body>
+  <a class="skip-to-main" href="#main-content">Skip to main content</a>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="svg-link" viewBox="0 0 24 24">
+  <title>Link</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+</symbol>
+
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+  <title>Menu</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</symbol>
+
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+  <title>Expand</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</symbol>
+
+  <!-- Feather. MIT License: https://github.com/feathericons/feather/blob/master/LICENSE -->
+<symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link">
+  <title id="svg-external-link-title">(external link)</title>
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+</symbol>
+
+  
+    <symbol id="svg-doc" viewBox="0 0 24 24">
+  <title>Document</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+  </svg>
+</symbol>
+
+    <symbol id="svg-search" viewBox="0 0 24 24">
+  <title>Search</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</symbol>
+
+  
+  
+</svg>
+
+  
+    <div class="side-bar">
+  <div class="site-header" role="banner">
+    <a href="/cherrilang.org/" class="site-title lh-tight">
+  <div class="site-logo" role="img" aria-label="Cherri Fork V2"></div>
+
+</a>
+    <button id="menu-button" class="site-button btn-reset" aria-label="Toggle menu" aria-pressed="false">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-menu"></use></svg>
+    </button>
+  </div>
+
+  <nav aria-label="Main" id="site-nav" class="site-nav">
+  
+  
+    <ul class="nav-list"><li class="nav-list-item"><button class="nav-list-expander btn-reset" aria-label="toggle items in Language v2.0 category" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use xlink:href="#svg-arrow-right"></use></svg>
+      </button><a href="/cherrilang.org/fork-language/" class="nav-list-link">Language v2.0</a><ul class="nav-list"><li class="nav-list-item"><a href="/cherrilang.org/fork-language/guide" class="nav-list-link">Language Guide</a></li><li class="nav-list-item"><a href="/cherrilang.org/fork-language/actions" class="nav-list-link">Actions Reference</a></li><li class="nav-list-item"><a href="/cherrilang.org/fork-language/migration" class="nav-list-link">Migration Guide</a></li></ul></li></ul>
+  <ul class="nav-list"><li class="nav-list-item external">
+          <a href="https://github.com/electrikmilk/cherri" class="nav-list-link external"
+            
+              target="_blank" rel="noopener noreferrer"
+            
+          >
+            Upstream project (reference)
+            <svg viewBox="0 0 24 24" aria-labelledby="svg-external-link-title"><use xlink:href="#svg-external-link"></use></svg>
+          </a>
+        </li></ul>
+</nav>
+
+
+
+
+  
+  
+    <footer class="site-footer">
+      This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+    </footer>
+  
+</div>
+
+  
+  <div class="main" id="top">
+    <div id="main-header" class="main-header">
+  
+    
+
+<div class="search" role="search">
+  <div class="search-input-wrap">
+    <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search the fork V2 guide" aria-label="Search the fork V2 guide" autocomplete="off">
+    <label for="search-input" class="search-label"><svg viewBox="0 0 24 24" class="search-icon"><use xlink:href="#svg-search"></use></svg></label>
+  </div>
+  <div id="search-results" class="search-results"></div>
+</div>
+
+  
+  <div>
+  <a href="/cherrilang.org/fork-language/guide" class="btn btn-red header-button">V2 guide</a>
+  <a href="/cherrilang.org/fork-language/actions" class="btn header-button">Actions</a>
+</div>
+
+
+  
+    <nav aria-label="Auxiliary" class="aux-nav">
+  <ul class="aux-nav-list">
+    
+      <li class="aux-nav-list-item">
+        <a href="https://github.com/davidpovarsky/cherri" class="site-button"
+          
+          target="_blank" rel="noopener noreferrer"
+          
+        >
+          Fork Source on GitHub
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  
+</div>
+
+    <div class="main-content-wrap">
+      <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+  <ol class="breadcrumb-nav-list">
+    <li class="breadcrumb-nav-list-item"><a href="/cherrilang.org/fork-language/">Language v2.0</a></li>
+    <li class="breadcrumb-nav-list-item"><span>Language Guide</span></li>
+  </ol>
+</nav>
+
+
+      <div id="main-content" class="main-content">
+        <main>
+          
+            <h1 class="no_toc" id="cherri-language-v20--language-guide">
+  
+  
+    <a href="#cherri-language-v20--language-guide" class="anchor-heading" aria-labelledby="cherri-language-v20--language-guide"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Cherri Language v2.0 — Language Guide
+  
+  
+</h1>
+    
+
+<p><strong>Version:</strong> 2.0<br />
+<strong>Status:</strong> Canonical Active Language</p>
+
+<p>Cherri Language v2.0 is a modern, statically typed language that compiles directly to Apple Shortcuts plists (<code class="language-plaintext highlighter-rouge">.shortcut</code>). It eliminates legacy DSL ambiguities, replaces ad-hoc preprocessing with a true AST and semantic IR, and provides deterministic tooling for CLI, LSP, and iOS applications.</p>
+<h2 class="no_toc text-delta" id="table-of-contents">
+  
+  
+    <a href="#table-of-contents" class="anchor-heading" aria-labelledby="table-of-contents"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Table of contents
+  
+  
+</h2>
+    
+
+<ol id="markdown-toc">
+  <li><a href="#1-quick-overview--whats-new-in-v20" id="markdown-toc-1-quick-overview--whats-new-in-v20">1. Quick Overview &amp; What’s New in v2.0</a></li>
+  <li><a href="#2-variables-and-bindings" id="markdown-toc-2-variables-and-bindings">2. Variables and Bindings</a>    <ol>
+      <li><a href="#immutable-bindings-let" id="markdown-toc-immutable-bindings-let">Immutable Bindings (<code class="language-plaintext highlighter-rouge">let</code>)</a></li>
+      <li><a href="#mutable-bindings-var" id="markdown-toc-mutable-bindings-var">Mutable Bindings (<code class="language-plaintext highlighter-rouge">var</code>)</a></li>
+      <li><a href="#type-annotations" id="markdown-toc-type-annotations">Type Annotations</a></li>
+    </ol>
+  </li>
+  <li><a href="#3-strings--text" id="markdown-toc-3-strings--text">3. Strings &amp; Text</a>    <ol>
+      <li><a href="#plain-strings" id="markdown-toc-plain-strings">Plain Strings</a></li>
+      <li><a href="#interpolated-strings-f" id="markdown-toc-interpolated-strings-f">Interpolated Strings (<code class="language-plaintext highlighter-rouge">f"..."</code>)</a></li>
+      <li><a href="#raw-strings-r" id="markdown-toc-raw-strings-r">Raw Strings (<code class="language-plaintext highlighter-rouge">r"..."</code>)</a></li>
+      <li><a href="#multiline-strings-" id="markdown-toc-multiline-strings-">Multiline Strings (<code class="language-plaintext highlighter-rouge">"""..."""</code>)</a></li>
+    </ol>
+  </li>
+  <li><a href="#4-types-and-collections" id="markdown-toc-4-types-and-collections">4. Types and Collections</a>    <ol>
+      <li><a href="#primitive-types" id="markdown-toc-primitive-types">Primitive Types</a></li>
+      <li><a href="#content-types" id="markdown-toc-content-types">Content Types</a></li>
+      <li><a href="#collection-types" id="markdown-toc-collection-types">Collection Types</a></li>
+    </ol>
+  </li>
+  <li><a href="#5-functions--actions" id="markdown-toc-5-functions--actions">5. Functions &amp; Actions</a>    <ol>
+      <li><a href="#calling-actions" id="markdown-toc-calling-actions">Calling Actions</a></li>
+      <li><a href="#user-defined-functions" id="markdown-toc-user-defined-functions">User-Defined Functions</a></li>
+    </ol>
+  </li>
+  <li><a href="#6-control-flow" id="markdown-toc-6-control-flow">6. Control Flow</a>    <ol>
+      <li><a href="#conditionals-if--else" id="markdown-toc-conditionals-if--else">Conditionals (<code class="language-plaintext highlighter-rouge">if</code> / <code class="language-plaintext highlighter-rouge">else</code>)</a></li>
+      <li><a href="#value-producing-if" id="markdown-toc-value-producing-if">Value-Producing <code class="language-plaintext highlighter-rouge">if</code></a></li>
+      <li><a href="#counting-loops-repeat" id="markdown-toc-counting-loops-repeat">Counting Loops (<code class="language-plaintext highlighter-rouge">repeat</code>)</a></li>
+      <li><a href="#iteration-loops-for--in" id="markdown-toc-iteration-loops-for--in">Iteration Loops (<code class="language-plaintext highlighter-rouge">for ... in</code>)</a></li>
+      <li><a href="#list-valued-loop-results" id="markdown-toc-list-valued-loop-results">List-valued loop results</a></li>
+      <li><a href="#menus-menu" id="markdown-toc-menus-menu">Menus (<code class="language-plaintext highlighter-rouge">menu</code>)</a></li>
+    </ol>
+  </li>
+  <li><a href="#7-metadata-and-shortcut-headers" id="markdown-toc-7-metadata-and-shortcut-headers">7. Metadata and Shortcut Headers</a>    <ol>
+      <li><a href="#setup-questions" id="markdown-toc-setup-questions">Setup Questions</a></li>
+    </ol>
+  </li>
+  <li><a href="#8-native-escape-hatches" id="markdown-toc-8-native-escape-hatches">8. Native Escape Hatches</a></li>
+  <li><a href="#9-cli-tools" id="markdown-toc-9-cli-tools">9. CLI Tools</a>    <ol>
+      <li><a href="#check-code" id="markdown-toc-check-code">Check Code</a></li>
+      <li><a href="#format-code" id="markdown-toc-format-code">Format Code</a></li>
+      <li><a href="#compiler-capabilities--schema-metadata" id="markdown-toc-compiler-capabilities--schema-metadata">Compiler Capabilities &amp; Schema Metadata</a></li>
+      <li><a href="#language-server-lsp" id="markdown-toc-language-server-lsp">Language Server (LSP)</a></li>
+    </ol>
+  </li>
+  <li><a href="#10-migration-from-legacy-cherri" id="markdown-toc-10-migration-from-legacy-cherri">10. Migration from Legacy Cherri</a></li>
+</ol><hr />
+<h2 id="1-quick-overview--whats-new-in-v20">
+  
+  
+    <a href="#1-quick-overview--whats-new-in-v20" class="anchor-heading" aria-labelledby="1-quick-overview--whats-new-in-v20"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 1. Quick Overview &amp; What’s New in v2.0
+  
+  
+</h2>
+    
+
+<div class="table-wrapper"><table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Legacy Cherri</th>
+      <th>Cherri v2.0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Variable Declaration</strong></td>
+      <td><code class="language-plaintext highlighter-rouge">@var = value</code> or <code class="language-plaintext highlighter-rouge">const var = value</code></td>
+      <td><code class="language-plaintext highlighter-rouge">let var = value</code> (immutable), <code class="language-plaintext highlighter-rouge">var var = value</code> (mutable)</td>
+    </tr>
+    <tr>
+      <td><strong>String Interpolation</strong></td>
+      <td><code class="language-plaintext highlighter-rouge">"Hello {var}"</code> (ad-hoc braces)</td>
+      <td><code class="language-plaintext highlighter-rouge">f"Hello {var}"</code> (true parsed expressions inside <code class="language-plaintext highlighter-rouge">{}</code>)</td>
+    </tr>
+    <tr>
+      <td><strong>Raw Strings</strong></td>
+      <td>Not supported</td>
+      <td><code class="language-plaintext highlighter-rouge">r"\d+\s+"</code> (no escape parsing)</td>
+    </tr>
+    <tr>
+      <td><strong>Multiline Strings</strong></td>
+      <td>Not supported</td>
+      <td><code class="language-plaintext highlighter-rouge">"""line 1\nline 2"""</code></td>
+    </tr>
+    <tr>
+      <td><strong>Function Declarations</strong></td>
+      <td>Header dispatch hack</td>
+      <td><code class="language-plaintext highlighter-rouge">function name(params) -&gt; ReturnType { ... }</code> (AST-first)</td>
+    </tr>
+    <tr>
+      <td><strong>Call Arguments</strong></td>
+      <td>Unlabeled positional only</td>
+      <td>Primary argument + named labels: <code class="language-plaintext highlighter-rouge">resizeImage(photo, width: 800)</code></td>
+    </tr>
+    <tr>
+      <td><strong>List/Collection Indexing</strong></td>
+      <td>1-based indexing</td>
+      <td><strong>0-based indexing</strong> (<code class="language-plaintext highlighter-rouge">list[0]</code>)</td>
+    </tr>
+    <tr>
+      <td><strong>Block Expressions</strong></td>
+      <td>Incomplete</td>
+      <td><code class="language-plaintext highlighter-rouge">if</code>, <code class="language-plaintext highlighter-rouge">repeat</code>, <code class="language-plaintext highlighter-rouge">for</code>, <code class="language-plaintext highlighter-rouge">menu</code> yield values via <code class="language-plaintext highlighter-rouge">yield</code></td>
+    </tr>
+    <tr>
+      <td><strong>Native Escapes</strong></td>
+      <td>Raw action syntax</td>
+      <td><code class="language-plaintext highlighter-rouge">native.action</code>, <code class="language-plaintext highlighter-rouge">native.plist</code>, <code class="language-plaintext highlighter-rouge">native.ref</code>, <code class="language-plaintext highlighter-rouge">native.workflow</code></td>
+    </tr>
+    <tr>
+      <td><strong>Tooling</strong></td>
+      <td>Compiler only</td>
+      <td><code class="language-plaintext highlighter-rouge">cherri check --json</code>, <code class="language-plaintext highlighter-rouge">cherri format --write</code>, <code class="language-plaintext highlighter-rouge">cherri lsp</code>, <code class="language-plaintext highlighter-rouge">--capabilities-json</code></td>
+    </tr>
+  </tbody>
+</table></div><hr />
+<h2 id="2-variables-and-bindings">
+  
+  
+    <a href="#2-variables-and-bindings" class="anchor-heading" aria-labelledby="2-variables-and-bindings"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 2. Variables and Bindings
+  
+  
+</h2>
+    
+<h3 id="immutable-bindings-let">
+  
+  
+    <a href="#immutable-bindings-let" class="anchor-heading" aria-labelledby="immutable-bindings-let"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Immutable Bindings (<code class="language-plaintext highlighter-rouge">let</code>)
+  
+  
+</h3>
+    
+<p>Variables defined with <code class="language-plaintext highlighter-rouge">let</code> are immutable. They cannot be reassigned.</p>
+<pre><code class="language-cherri">let name = "Alice"
+let count = 42
+</code></pre>
+
+<p>A reassignment to a <code class="language-plaintext highlighter-rouge">let</code> binding is deliberately invalid. The documentation
+test requires the exact <code class="language-plaintext highlighter-rouge">E_ASSIGN_IMMUTABLE</code> diagnostic and verifies that
+no unsigned shortcut is produced:</p>
+
+<!-- cherri-test: diagnostic E_ASSIGN_IMMUTABLE -->
+<pre><code class="language-cherri">let name = "Alice"
+name = "Bob"
+</code></pre>
+<h3 id="mutable-bindings-var">
+  
+  
+    <a href="#mutable-bindings-var" class="anchor-heading" aria-labelledby="mutable-bindings-var"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Mutable Bindings (<code class="language-plaintext highlighter-rouge">var</code>)
+  
+  
+</h3>
+    
+<p>Variables defined with <code class="language-plaintext highlighter-rouge">var</code> can be reassigned with <code class="language-plaintext highlighter-rouge">=</code> or compound assignment operators (<code class="language-plaintext highlighter-rouge">+=</code>, <code class="language-plaintext highlighter-rouge">-=</code>, <code class="language-plaintext highlighter-rouge">*=</code>, <code class="language-plaintext highlighter-rouge">/=</code>):</p>
+<pre><code class="language-cherri">var counter = 0
+counter += 1
+counter = 10
+</code></pre>
+<h3 id="type-annotations">
+  
+  
+    <a href="#type-annotations" class="anchor-heading" aria-labelledby="type-annotations"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Type Annotations
+  
+  
+</h3>
+    
+<p>Types are inferred automatically, but optional explicit type annotations can be supplied:</p>
+<pre><code class="language-cherri">let message: Text = "Welcome"
+var total: Number = 0
+var photos: List&lt;Image&gt; = []
+</code></pre><hr />
+<h2 id="3-strings--text">
+  
+  
+    <a href="#3-strings--text" class="anchor-heading" aria-labelledby="3-strings--text"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 3. Strings &amp; Text
+  
+  
+</h2>
+    
+<h3 id="plain-strings">
+  
+  
+    <a href="#plain-strings" class="anchor-heading" aria-labelledby="plain-strings"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Plain Strings
+  
+  
+</h3>
+    
+<p>Enclosed in double quotes. Braces <code class="language-plaintext highlighter-rouge">{}</code> in plain strings are literal and are NOT interpolated.</p>
+<pre><code class="language-cherri">let greeting = "Hello, world!"
+let jsonTemplate = "{\"key\": \"value\"}" // braces are literal
+</code></pre>
+<h3 id="interpolated-strings-f">
+  
+  
+    <a href="#interpolated-strings-f" class="anchor-heading" aria-labelledby="interpolated-strings-f"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Interpolated Strings (<code class="language-plaintext highlighter-rouge">f"..."</code>)
+  
+  
+</h3>
+    
+<p>Prefix with <code class="language-plaintext highlighter-rouge">f</code>. Expressions inside <code class="language-plaintext highlighter-rouge">{}</code> are parsed and evaluated. Literal braces are escaped as ``:</p>
+<pre><code class="language-cherri">let name = "David"
+let count = 5
+let message = f"User {name} has {count} items. Literal brace: "
+</code></pre>
+<h3 id="raw-strings-r">
+  
+  
+    <a href="#raw-strings-r" class="anchor-heading" aria-labelledby="raw-strings-r"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Raw Strings (<code class="language-plaintext highlighter-rouge">r"..."</code>)
+  
+  
+</h3>
+    
+<p>Prefix with <code class="language-plaintext highlighter-rouge">r</code>. Backslashes are treated as literal characters:</p>
+<pre><code class="language-cherri">let regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
+</code></pre>
+<h3 id="multiline-strings-">
+  
+  
+    <a href="#multiline-strings-" class="anchor-heading" aria-labelledby="multiline-strings-"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Multiline Strings (<code class="language-plaintext highlighter-rouge">"""..."""</code>)
+  
+  
+</h3>
+    
+<p>Enclosed in triple quotes:</p>
+<pre><code class="language-cherri">let sql = """SELECT id, name, email
+FROM users
+WHERE active = true"""
+</code></pre><hr />
+<h2 id="4-types-and-collections">
+  
+  
+    <a href="#4-types-and-collections" class="anchor-heading" aria-labelledby="4-types-and-collections"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 4. Types and Collections
+  
+  
+</h2>
+    
+<h3 id="primitive-types">
+  
+  
+    <a href="#primitive-types" class="anchor-heading" aria-labelledby="primitive-types"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Primitive Types
+  
+  
+</h3>
+    
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Text</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Number</code> (both integers and floating-point values)</li>
+  <li><code class="language-plaintext highlighter-rouge">Bool</code> (<code class="language-plaintext highlighter-rouge">true</code>, <code class="language-plaintext highlighter-rouge">false</code>)</li>
+</ul>
+<h3 id="content-types">
+  
+  
+    <a href="#content-types" class="anchor-heading" aria-labelledby="content-types"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Content Types
+  
+  
+</h3>
+    
+<p>Native Apple Shortcuts content items:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Image</code></li>
+  <li><code class="language-plaintext highlighter-rouge">File</code></li>
+  <li><code class="language-plaintext highlighter-rouge">URL</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Date</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Contact</code></li>
+  <li><code class="language-plaintext highlighter-rouge">CalendarEvent</code></li>
+  <li><code class="language-plaintext highlighter-rouge">AnyContent</code> (arbitrary native Shortcut content)</li>
+</ul>
+<h3 id="collection-types">
+  
+  
+    <a href="#collection-types" class="anchor-heading" aria-labelledby="collection-types"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Collection Types
+  
+  
+</h3>
+    
+<ul>
+  <li><strong>List:</strong> <code class="language-plaintext highlighter-rouge">List&lt;T&gt;</code>, literal <code class="language-plaintext highlighter-rouge">[item1, item2, item3]</code>. Indexed starting at <strong>0</strong> (<code class="language-plaintext highlighter-rouge">items[0]</code>).</li>
+  <li><strong>Map:</strong> <code class="language-plaintext highlighter-rouge">Map&lt;Text, V&gt;</code>, literal <code class="language-plaintext highlighter-rouge">{"key": value}</code>.</li>
+  <li><strong>Record:</strong> Anonymous structural records <code class="language-plaintext highlighter-rouge">{ name: Text, age: Number }</code>.</li>
+  <li><strong>Optional:</strong> <code class="language-plaintext highlighter-rouge">T?</code>, e.g., <code class="language-plaintext highlighter-rouge">Text?</code> or <code class="language-plaintext highlighter-rouge">Number?</code>. Represented by <code class="language-plaintext highlighter-rouge">none</code> when absent.</li>
+  <li><strong>Union:</strong> Small type unions <code class="language-plaintext highlighter-rouge">Text | Number</code>.</li>
+</ul><hr />
+<h2 id="5-functions--actions">
+  
+  
+    <a href="#5-functions--actions" class="anchor-heading" aria-labelledby="5-functions--actions"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 5. Functions &amp; Actions
+  
+  
+</h2>
+    
+<h3 id="calling-actions">
+  
+  
+    <a href="#calling-actions" class="anchor-heading" aria-labelledby="calling-actions"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Calling Actions
+  
+  
+</h3>
+    
+<p>Actions in Cherri v2 accept an optional primary argument without label, followed by named arguments:</p>
+<pre><code class="language-cherri">// Primary argument + named arguments
+let photo = selectPhotos()
+resizeImage(photo, width: 800, height: 600)
+
+// Named arguments only
+alert(alert: "Operation completed!", title: "Success")
+
+// Unlabeled primary argument
+show("Hello from Cherri v2!")
+</code></pre>
+<h3 id="user-defined-functions">
+  
+  
+    <a href="#user-defined-functions" class="anchor-heading" aria-labelledby="user-defined-functions"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> User-Defined Functions
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">function calculateDiscount(price: Number, percentage: Number = 10) -&gt; Number {
+    let discount = price * (percentage / 100)
+    return price - discount
+}
+
+let finalPrice = calculateDiscount(100, percentage: 15)
+</code></pre><hr />
+<h2 id="6-control-flow">
+  
+  
+    <a href="#6-control-flow" class="anchor-heading" aria-labelledby="6-control-flow"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 6. Control Flow
+  
+  
+</h2>
+    
+<h3 id="conditionals-if--else">
+  
+  
+    <a href="#conditionals-if--else" class="anchor-heading" aria-labelledby="conditionals-if--else"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Conditionals (<code class="language-plaintext highlighter-rouge">if</code> / <code class="language-plaintext highlighter-rouge">else</code>)
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">let count = 5
+if count &gt; 10 {
+    show("More than 10 items")
+} else if count &gt; 0 {
+    show("Some items")
+} else {
+    show("No items")
+}
+</code></pre>
+<h3 id="value-producing-if">
+  
+  
+    <a href="#value-producing-if" class="anchor-heading" aria-labelledby="value-producing-if"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Value-Producing <code class="language-plaintext highlighter-rouge">if</code>
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">let count = 5
+let statusText = if count &gt; 0 {
+    yield f"{count} items remaining"
+} else {
+    yield "Out of stock"
+}
+</code></pre>
+<h3 id="counting-loops-repeat">
+  
+  
+    <a href="#counting-loops-repeat" class="anchor-heading" aria-labelledby="counting-loops-repeat"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Counting Loops (<code class="language-plaintext highlighter-rouge">repeat</code>)
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">repeat 3 as i {
+    show(f"Iteration: {i}")
+}
+</code></pre>
+<h3 id="iteration-loops-for--in">
+  
+  
+    <a href="#iteration-loops-for--in" class="anchor-heading" aria-labelledby="iteration-loops-for--in"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Iteration Loops (<code class="language-plaintext highlighter-rouge">for ... in</code>)
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">let names = ["Alice", "Bob", "Charlie"]
+
+// Item only
+for item in names {
+    show(item)
+}
+
+// Index (0-based) and item
+for (index, item) in names {
+    show(f"#{index}: {item}")
+}
+</code></pre>
+<h3 id="list-valued-loop-results">
+  
+  
+    <a href="#list-valued-loop-results" class="anchor-heading" aria-labelledby="list-valued-loop-results"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> List-valued loop results
+  
+  
+</h3>
+    
+
+<p>A value-producing <code class="language-plaintext highlighter-rouge">repeat</code> or <code class="language-plaintext highlighter-rouge">for</code> loop cannot currently preserve a separate
+nested List for each iteration. The native runtime probe produced four items
+from two two-item results. When the compiler knows that a loop would yield a
+List, it rejects that result with <code class="language-plaintext highlighter-rouge">E_TARGET_VALUE_SHAPE</code> and emits no shortcut:</p>
+
+<!-- cherri-test: diagnostic E_TARGET_VALUE_SHAPE -->
+<pre><code class="language-cherri">let values = for item in [1, 2] { yield [item, "tail"] }
+</code></pre>
+
+<p>This boundary applies to the shape of the loop’s result. Statement loops and
+scalar results remain available. For results typed as <code class="language-plaintext highlighter-rouge">AnyContent</code>, successful
+compilation does not establish that nested List cardinality is preserved; that
+runtime case remains unverified.</p>
+<h3 id="menus-menu">
+  
+  
+    <a href="#menus-menu" class="anchor-heading" aria-labelledby="menus-menu"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Menus (<code class="language-plaintext highlighter-rouge">menu</code>)
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">menu("Select an action") {
+    case "Option 1" {
+        show("Selected 1")
+    }
+    case "Option 2" {
+        show("Selected 2")
+    }
+}
+</code></pre><hr />
+<h2 id="7-metadata-and-shortcut-headers">
+  
+  
+    <a href="#7-metadata-and-shortcut-headers" class="anchor-heading" aria-labelledby="7-metadata-and-shortcut-headers"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 7. Metadata and Shortcut Headers
+  
+  
+</h2>
+    
+
+<p>Declare shortcut properties using the <code class="language-plaintext highlighter-rouge">shortcut</code> declaration:</p>
+<pre><code class="language-cherri">shortcut "Network Routine" {
+    icon: { glyph: 59789, color: 4282601983 }
+    trigger wifi(event: .joined)
+}
+</code></pre>
+<h3 id="setup-questions">
+  
+  
+    <a href="#setup-questions" class="anchor-heading" aria-labelledby="setup-questions"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Setup Questions
+  
+  
+</h3>
+    
+<pre><code class="language-cherri">setup apiKey: Text {
+    prompt: "Enter your API Key"
+    default: "synthetic-key"
+}
+text(apiKey)
+</code></pre><hr />
+
+<p>Setup questions are bound to one direct action parameter, as in <code class="language-plaintext highlighter-rouge">text(apiKey)</code>.
+Declare a separate question for another slot. A declaration that is never used
+does not create a native import question. An authored <code class="language-plaintext highlighter-rouge">Ask</code> value is a runtime
+prompt; it is separate from a setup question.</p>
+<h2 id="8-native-escape-hatches">
+  
+  
+    <a href="#8-native-escape-hatches" class="anchor-heading" aria-labelledby="8-native-escape-hatches"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 8. Native Escape Hatches
+  
+  
+</h2>
+    
+
+<p>When exact plist keys or undocumented actions are required, use <code class="language-plaintext highlighter-rouge">native</code>:</p>
+<pre><code class="language-cherri">let result = native.action(
+    identifier: "com.apple.custom.action",
+    parameters: {
+        "CustomKey": "CustomValue",
+        "Threshold": 100
+    }
+)
+</code></pre><hr />
+<h2 id="9-cli-tools">
+  
+  
+    <a href="#9-cli-tools" class="anchor-heading" aria-labelledby="9-cli-tools"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 9. CLI Tools
+  
+  
+</h2>
+    
+<h3 id="check-code">
+  
+  
+    <a href="#check-code" class="anchor-heading" aria-labelledby="check-code"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Check Code
+  
+  
+</h3>
+    
+<p>Analyzes syntax and types without compiling:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cherri check my_shortcut.cherri
+cherri check my_shortcut.cherri <span class="nt">--json</span>
+</code></pre></div></div>
+<h3 id="format-code">
+  
+  
+    <a href="#format-code" class="anchor-heading" aria-labelledby="format-code"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Format Code
+  
+  
+</h3>
+    
+<p>Formats code using canonical Cherri style:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cherri format my_shortcut.cherri
+cherri format my_shortcut.cherri <span class="nt">--write</span>
+</code></pre></div></div>
+<h3 id="compiler-capabilities--schema-metadata">
+  
+  
+    <a href="#compiler-capabilities--schema-metadata" class="anchor-heading" aria-labelledby="compiler-capabilities--schema-metadata"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Compiler Capabilities &amp; Schema Metadata
+  
+  
+</h3>
+    
+<p>Inspect supported features and action catalog fingerprint:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cherri <span class="nt">--capabilities-json</span>
+</code></pre></div></div>
+<h3 id="language-server-lsp">
+  
+  
+    <a href="#language-server-lsp" class="anchor-heading" aria-labelledby="language-server-lsp"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Language Server (LSP)
+  
+  
+</h3>
+    
+<p>Starts a standard JSON-RPC Language Server on stdin/stdout:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cherri lsp
+</code></pre></div></div><hr />
+<h2 id="10-migration-from-legacy-cherri">
+  
+  
+    <a href="#10-migration-from-legacy-cherri" class="anchor-heading" aria-labelledby="10-migration-from-legacy-cherri"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 10. Migration from Legacy Cherri
+  
+  
+</h2>
+    
+
+<p>Use the official <code class="language-plaintext highlighter-rouge">cherri-migrate</code> tool to update legacy files:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cherri-migrate legacy.cherri <span class="nt">--write</span>
+</code></pre></div></div>
+
+<p>The migration tool:</p>
+<ol>
+  <li>Converts <code class="language-plaintext highlighter-rouge">@variable = ...</code> to <code class="language-plaintext highlighter-rouge">let</code> or <code class="language-plaintext highlighter-rouge">var</code> based on reassignment analysis</li>
+  <li>Strips legacy <code class="language-plaintext highlighter-rouge">#include</code> statements</li>
+  <li>Converts string interpolation <code class="language-plaintext highlighter-rouge">"Count {count}"</code> to <code class="language-plaintext highlighter-rouge">f"Count {count}"</code></li>
+  <li>Formats code canonically.</li>
+</ol>
+
+          
+
+          
+            
+          
+        </main>
+        
+
+  <hr>
+  <footer>
+    
+
+    <p class="text-small text-grey-dk-100 mb-0">Copyright &copy;. Distributed under the <a href="https://github.com/electrikmilk/cherri/blob/main/LICENSE">GPL-2.0 License.</a> Siri Shortcuts and Mac are registered trademarks of Apple Inc. Apple is not involved in this project in any way. Do not contact Apple Support unless you are having an issue with the Shortcuts app itself.</p>
+
+    
+      <div class="d-flex mt-2">
+        
+        
+          <p class="text-small text-grey-dk-000 mb-0">
+            <a href="https://github.com/davidpovarsky/cherrilang.org/tree/main/fork-language/guide.md" id="edit-this-page">Contribute to this page</a>
+          </p>
+        
+      </div>
+    
+  </footer>
+
+
+      </div>
+    </div>
+    
+      
+
+<div class="search-overlay"></div>
+
+    
+  </div>
+
+  
+</body>
+</html>
+

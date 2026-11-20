@@ -1,0 +1,365 @@
+smoke-test-snippets	Set up job	﻿2026-11-20T01:11:48.2144047Z Current runner version: '2.338.2'
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2170673Z ##[group]Runner Image Provisioner
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2171648Z Hosted Compute Agent
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2172402Z Version: 20261103.629
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2173023Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2173878Z Build Date: 2026-11-03T17:26:59Z
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2174886Z Worker ID: {c735d4f0-b76d-49f9-848f-d0453468d829}
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2175602Z Region: us-west-2
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2176236Z Cloud: AWS
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2176750Z ##[endgroup]
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2178260Z ##[group]Operating System
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2178979Z Ubuntu
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2179500Z 26.04.1
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2180079Z LTS
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2180573Z ##[endgroup]
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2181080Z ##[group]Runner Image
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2181743Z Image: ubuntu-26.04
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2182289Z Version: 20261111.82.6
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2183685Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.82/images/ubuntu/Ubuntu2604-Readme.md
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2185786Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.82
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2187490Z ##[endgroup]
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2188432Z ##[group]GITHUB_TOKEN Permissions
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2190309Z Contents: read
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2190723Z Metadata: read
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2191191Z ##[endgroup]
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2192948Z Secret source: Actions
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2193659Z Cache mode: write
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2194530Z Prepare workflow directory
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2457431Z Prepare all required actions
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.2493866Z Getting action download info
+smoke-test-snippets	Set up job	2026-11-20T01:11:48.5701827Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+smoke-test-snippets	Set up job	2026-11-20T01:11:50.6537950Z Download action repository 'actions/setup-go@v5' (SHA:40f1582b2485089dde7abd97c1529aa768e1baff)
+smoke-test-snippets	Set up job	2026-11-20T01:11:51.0039362Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+smoke-test-snippets	Set up job	2026-11-20T01:11:51.1457457Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+smoke-test-snippets	Set up job	2026-11-20T01:11:51.4383311Z Complete job name: smoke-test-snippets
+smoke-test-snippets	Checkout cherrilang.org	﻿2026-11-20T01:11:51.4968880Z ##[group]Run actions/checkout@v4
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4969392Z with:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4969701Z   repository: davidpovarsky/cherrilang.org
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4971892Z   token: ***
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4972147Z   ssh-strict: true
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4972424Z   ssh-user: git
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4972750Z   persist-credentials: true
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4973031Z   clean: true
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4973361Z   sparse-checkout-cone-mode: true
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4973664Z   fetch-depth: 1
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4973924Z   fetch-tags: false
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4974514Z   show-progress: true
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4974797Z   lfs: false
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4975086Z   submodules: false
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4975353Z   set-safe-directory: true
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4975690Z   allow-unsafe-pr-checkout: false
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4976184Z env:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4976474Z   PYTHONDONTWRITEBYTECODE: 1
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4976827Z   GOMAXPROCS: 2
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4977119Z   GOFLAGS: -p=2
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:51.4977362Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9760888Z Syncing repository: davidpovarsky/cherrilang.org
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9762731Z ##[group]Getting Git version info
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9763333Z Working directory is '/home/runner/work/cherrilang.org/cherrilang.org'
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9764241Z [command]/usr/bin/git version
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9764603Z git version 2.56.1
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9765793Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9770493Z Temporarily overriding HOME='/home/runner/work/_temp/32c16446-4c3f-4ebb-a61e-e5757f7acab2' before making global git config changes
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9771409Z Adding repository directory to the temporary git global config as a safe directory
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:53.9772497Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherrilang.org/cherrilang.org
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0169843Z Deleting the contents of '/home/runner/work/cherrilang.org/cherrilang.org'
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0174334Z ##[group]Initializing the repository
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0176895Z [command]/usr/bin/git init /home/runner/work/cherrilang.org/cherrilang.org
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0618303Z hint: Using 'master' as the name for the initial branch. This default branch name
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0618952Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0619436Z hint: to use in all of your new repositories, which will suppress this warning,
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0619917Z hint: call:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0620137Z hint:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0620436Z hint: 	git config --global init.defaultBranch <name>
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0620739Z hint:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0621033Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0621518Z hint: 'development'. The just-created branch can be renamed via this command:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0621938Z hint:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0622171Z hint: 	git branch -m <name>
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0622412Z hint:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0622721Z hint: Disable this message with "git config set advice.defaultBranchName false"
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0635735Z Initialized empty Git repository in /home/runner/work/cherrilang.org/cherrilang.org/.git/
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0643856Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherrilang.org
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0689319Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0690125Z ##[group]Disabling automatic garbage collection
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0692123Z [command]/usr/bin/git config --local gc.auto 0
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0712852Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0713603Z ##[group]Setting up auth
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0718395Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.0738702Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.2671274Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.2697048Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.2878036Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.2900439Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.3075067Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.3098816Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.3099307Z ##[group]Fetching the repository
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.3104970Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2bc5f6992cd252f287530b039ee393b1b50ee39e:refs/remotes/origin/agent/cherri-p10r15-docs-completion-20261119
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9699097Z From https://github.com/davidpovarsky/cherrilang.org
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9700140Z  * [new ref]         2bc5f6992cd252f287530b039ee393b1b50ee39e -> origin/agent/cherri-p10r15-docs-completion-20261119
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9702066Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9702682Z ##[group]Determining the checkout info
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9704029Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9709399Z [command]/usr/bin/git sparse-checkout disable
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9753532Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9777601Z ##[group]Checking out the ref
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9780670Z [command]/usr/bin/git checkout --progress --force -B agent/cherri-p10r15-docs-completion-20261119 refs/remotes/origin/agent/cherri-p10r15-docs-completion-20261119
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9960152Z Switched to a new branch 'agent/cherri-p10r15-docs-completion-20261119'
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9965438Z branch 'agent/cherri-p10r15-docs-completion-20261119' set up to track 'origin/agent/cherri-p10r15-docs-completion-20261119'.
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:54.9971007Z ##[endgroup]
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:55.0003537Z [command]/usr/bin/git log -1 --format=%H
+smoke-test-snippets	Checkout cherrilang.org	2026-11-20T01:11:55.0019969Z 2bc5f6992cd252f287530b039ee393b1b50ee39e
+smoke-test-snippets	Set up Go	﻿2026-11-20T01:11:55.0207115Z ##[group]Run actions/setup-go@v5
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0207385Z with:
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0207621Z   go-version: 1.24
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0207860Z   check-latest: false
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0209909Z   token: ***
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0210110Z   cache: true
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0210309Z env:
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0210561Z   PYTHONDONTWRITEBYTECODE: 1
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0210831Z   GOMAXPROCS: 2
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0211075Z   GOFLAGS: -p=2
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.0211276Z ##[endgroup]
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.1171963Z Setup go version spec 1.24
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.1998242Z Found in cache @ /opt/hostedtoolcache/go/1.24.13/x64
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.1999278Z (node:2362) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.2000180Z (Use `node --trace-deprecation ...` to show where the warning was created)
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.2002335Z Added go to the path
+smoke-test-snippets	Set up Go	2026-11-20T01:11:55.2005639Z Successfully set up Go version 1.24
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0790359Z [command]/opt/hostedtoolcache/go/1.24.13/x64/bin/go env GOMODCACHE
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0813844Z [command]/opt/hostedtoolcache/go/1.24.13/x64/bin/go env GOCACHE
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0831035Z /home/runner/go/pkg/mod
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0842462Z /home/runner/.cache/go-build
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0885047Z ##[warning]Restore cache failed: Dependencies file is not found in /home/runner/work/cherrilang.org/cherrilang.org. Supported file pattern: go.sum
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0906502Z go version go1.24.13 linux/amd64
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0906908Z 
+smoke-test-snippets	Set up Go	2026-11-20T01:11:56.0907249Z ##[group]go env
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6345315Z AR='ar'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6345994Z CC='gcc'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6346292Z CGO_CFLAGS='-O2 -g'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6346563Z CGO_CPPFLAGS=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6346895Z CGO_CXXFLAGS='-O2 -g'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6347222Z CGO_ENABLED='1'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6347523Z CGO_FFLAGS='-O2 -g'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6347787Z CGO_LDFLAGS='-O2 -g'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6348039Z CXX='g++'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6348337Z GCCGO='gccgo'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6348631Z GO111MODULE=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6349009Z GOAMD64='v1'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6349288Z GOARCH='amd64'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6349542Z GOAUTH='netrc'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6349815Z GOBIN=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6350088Z GOCACHE='/home/runner/.cache/go-build'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6350419Z GOCACHEPROG=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6350702Z GODEBUG=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6350967Z GOENV='/home/runner/.config/go/env'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6351296Z GOEXE=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6351588Z GOEXPERIMENT=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6351853Z GOFIPS140='off'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6352176Z GOFLAGS='-p=2'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6352941Z GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build4180454942=/tmp/go-build -gno-record-gcc-switches'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6353674Z GOHOSTARCH='amd64'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6353950Z GOHOSTOS='linux'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6354485Z GOINSECURE=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6354787Z GOMOD='/dev/null'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6355075Z GOMODCACHE='/home/runner/go/pkg/mod'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6355849Z GONOPROXY=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6356117Z GONOSUMDB=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6356386Z GOOS='linux'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6356683Z GOPATH='/home/runner/go'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6357022Z GOPRIVATE=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6357522Z GOPROXY='https://proxy.golang.org,direct'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6357976Z GOROOT='/opt/hostedtoolcache/go/1.24.13/x64'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6358399Z GOSUMDB='sum.golang.org'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6358787Z GOTELEMETRY='local'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6359117Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6359456Z GOTMPDIR=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6360004Z GOTOOLCHAIN='auto'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6360382Z GOTOOLDIR='/opt/hostedtoolcache/go/1.24.13/x64/pkg/tool/linux_amd64'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6360812Z GOVCS=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6361092Z GOVERSION='go1.24.13'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6361372Z GOWORK=''
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6361686Z PKG_CONFIG='pkg-config'
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6361880Z 
+smoke-test-snippets	Set up Go	2026-11-20T01:11:57.6362419Z ##[endgroup]
+smoke-test-snippets	Set up Python	﻿2026-11-20T01:11:57.6481549Z ##[group]Run actions/setup-python@v5
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6481854Z with:
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6482099Z   python-version: 3.12
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6482335Z   check-latest: false
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6484553Z   token: ***
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6484788Z   update-environment: true
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6485101Z   allow-prereleases: false
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6485459Z   freethreaded: false
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6485684Z env:
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6485940Z   PYTHONDONTWRITEBYTECODE: 1
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6486192Z   GOMAXPROCS: 2
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6486406Z   GOFLAGS: -p=2
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.6486663Z ##[endgroup]
+smoke-test-snippets	Set up Python	2026-11-20T01:11:57.7472724Z ##[group]Installed versions
+smoke-test-snippets	Set up Python	2026-11-20T01:11:58.1067139Z (node:2421) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+smoke-test-snippets	Set up Python	2026-11-20T01:11:58.1068006Z (Use `node --trace-deprecation ...` to show where the warning was created)
+smoke-test-snippets	Set up Python	2026-11-20T01:11:58.1068792Z Successfully set up CPython (3.12.16)
+smoke-test-snippets	Set up Python	2026-11-20T01:11:58.1069688Z ##[endgroup]
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	﻿2026-11-20T01:11:58.1206305Z ##[group]Run python3 scripts/smoke_test_snippets.py --evidence-out "$RUNNER_TEMP/cherri-docs-evidence.json"
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1207353Z ^[[36;1mpython3 scripts/smoke_test_snippets.py --evidence-out "$RUNNER_TEMP/cherri-docs-evidence.json"^[[0m
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1594276Z shell: /usr/bin/bash -e {0}
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1594657Z env:
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1594960Z   PYTHONDONTWRITEBYTECODE: 1
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1595227Z   GOMAXPROCS: 2
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1595451Z   GOFLAGS: -p=2
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1595742Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1596165Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1596525Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1596898Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1597273Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1597640Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1598204Z   CHERRI_SMOKE_CACHE_DIR: /home/runner/work/_temp/cherri-docs-compiler
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1598594Z   GOCACHE: /home/runner/work/_temp/cherri-docs-go-build
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:11:58.1598911Z ##[endgroup]
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4201991Z Fetching pinned Cherri compiler (cdc8be2c000698dddbe73185f69d8fd94273e1d6) from https://github.com/davidpovarsky/cherri.git...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4203147Z Building and verifying pinned compiler cdc8be2c000698dddbe73185f69d8fd94273e1d6...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4203867Z Testing 1 classified Cherri blocks in index.md (compiler cdc8be2c0006)...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4204797Z   [PASS] Block 1: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4205288Z Summary for index.md: 1 passed, 0 failed, 0 reference-only
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4205742Z Testing 19 classified Cherri blocks in guide.md (compiler cdc8be2c0006)...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4206172Z   [PASS] Block 1: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4206621Z   [PASS] Block 2: exact diagnostic and compile rejection
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4207070Z   [PASS] Block 3: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4207444Z   [PASS] Block 4: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4207847Z   [PASS] Block 5: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4208243Z   [PASS] Block 6: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4208614Z   [PASS] Block 7: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4209050Z   [PASS] Block 8: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4209619Z   [PASS] Block 9: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4209985Z   [PASS] Block 10: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4210407Z   [PASS] Block 11: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4210790Z   [PASS] Block 12: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4211205Z   [PASS] Block 13: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4211582Z   [PASS] Block 14: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4211933Z   [PASS] Block 15: exact diagnostic and compile rejection
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4212397Z   [PASS] Block 16: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4212775Z   [PASS] Block 17: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4213162Z   [PASS] Block 18: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4213544Z   [PASS] Block 19: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4213920Z Summary for guide.md: 19 passed, 0 failed, 0 reference-only
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4214532Z Testing 9 classified Cherri blocks in migration.md (compiler cdc8be2c0006)...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4214981Z   [PASS] Block 2: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4215379Z   [PASS] Block 4: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4215901Z   [PASS] Block 6: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4216281Z   [PASS] Block 8: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4216688Z   [PASS] Block 9: exact diagnostic and compile rejection
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4217129Z Summary for migration.md: 5 passed, 0 failed, 4 reference-only
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4217546Z Testing 520 classified Cherri blocks in actions.md (compiler cdc8be2c0006)...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4217967Z Summary for actions.md: 0 passed, 0 failed, 520 reference-only
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4218372Z Testing 12 classified Cherri blocks in functions.md (compiler cdc8be2c0006)...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4218836Z   [PASS] Block 1: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4219224Z   [PASS] Block 2: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4219596Z   [PASS] Block 3: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4220057Z   [PASS] Block 4: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4220455Z   [PASS] Block 5: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4220855Z   [PASS] Block 6: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4221238Z   [PASS] Block 7: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4221607Z   [PASS] Block 8: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4222014Z   [PASS] Block 9: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4222413Z   [PASS] Block 10: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4222868Z   [PASS] Block 11: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4223260Z   [PASS] Block 12: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4223612Z Summary for functions.md: 12 passed, 0 failed, 0 reference-only
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4224673Z Testing 2 classified Cherri blocks in variables-constants-globals.md (compiler cdc8be2c0006)...
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4225187Z   [PASS] Block 1: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4225582Z   [PASS] Block 2: checked and compiled to a native workflow plist
+smoke-test-snippets	Run standalone docs snippet smoke test against pinned Cherri compiler	2026-11-20T01:12:29.4225996Z Summary for variables-constants-globals.md: 2 passed, 0 failed, 0 reference-only
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	﻿2026-11-20T01:12:29.4311463Z ##[group]Run python3 scripts/test_smoke_test_snippets.py
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4311881Z ^[[36;1mpython3 scripts/test_smoke_test_snippets.py^[[0m
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4331105Z shell: /usr/bin/bash -e {0}
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4331432Z env:
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4331662Z   PYTHONDONTWRITEBYTECODE: 1
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4332023Z   GOMAXPROCS: 2
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4332266Z   GOFLAGS: -p=2
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4332534Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4332923Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4333315Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4333697Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4334495Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4334957Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4335365Z   CHERRI_SMOKE_TEST_CACHE: /home/runner/work/_temp/cherri-docs-compiler
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:29.4335776Z ##[endgroup]
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:52.3293137Z test_actual_valid_check_and_native_plist (__main__.SmokeProductionTests.test_actual_valid_check_and_native_plist) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:53.2937490Z test_corrupt_binary_digest_rejected_and_bytes_preserved (__main__.SmokeProductionTests.test_corrupt_binary_digest_rejected_and_bytes_preserved) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:54.1846813Z test_dirty_tracked_source_rejected_and_preserved (__main__.SmokeProductionTests.test_dirty_tracked_source_rejected_and_preserved) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:54.2167276Z test_exact_invalid_diagnostic_and_no_output (__main__.SmokeProductionTests.test_exact_invalid_diagnostic_and_no_output) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:54.2249133Z test_failed_fetch_cleans_only_the_owned_stage (__main__.SmokeProductionTests.test_failed_fetch_cleans_only_the_owned_stage) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:55.1816470Z test_missing_receipt_does_not_rebuild_or_delete_binary (__main__.SmokeProductionTests.test_missing_receipt_does_not_rebuild_or_delete_binary) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:55.1823086Z test_occupied_empty_directory_is_not_used (__main__.SmokeProductionTests.test_occupied_empty_directory_is_not_used) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:55.1829313Z test_unmanaged_directory_is_not_deleted_or_modified (__main__.SmokeProductionTests.test_unmanaged_directory_is_not_deleted_or_modified) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:56.0831910Z test_untracked_source_rejected_and_preserved (__main__.SmokeProductionTests.test_untracked_source_rejected_and_preserved) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:57.2229182Z test_valid_cache_reuses_verified_binary_without_rebuild (__main__.SmokeProductionTests.test_valid_cache_reuses_verified_binary_without_rebuild) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:57.2420633Z test_wrong_expected_diagnostic_does_not_pass (__main__.SmokeProductionTests.test_wrong_expected_diagnostic_does_not_pass) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.2223598Z test_wrong_real_binary_rejected_even_with_matching_digest_receipt (__main__.SmokeProductionTests.test_wrong_real_binary_rejected_even_with_matching_digest_receipt) ... ok
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.5040546Z 
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.5042548Z Fetching pinned Cherri compiler (cdc8be2c000698dddbe73185f69d8fd94273e1d6) from /tmp/cherri_docs_controls_0cqqr87w/case-59e2yqoy/missing-repository...
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.5044641Z ----------------------------------------------------------------------
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.5045379Z Ran 12 tests in 27.864s
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.5045640Z 
+smoke-test-snippets	Verify real compiler cache provenance and negative examples	2026-11-20T01:12:58.5046094Z OK
+smoke-test-snippets	Retain bounded documentation evidence	﻿2026-11-20T01:12:58.5265365Z ##[group]Run actions/upload-artifact@v4
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5265707Z with:
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5265930Z   name: docs-snippet-evidence
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5266214Z   path: /home/runner/work/_temp/cherri-docs-evidence.json
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5266579Z   if-no-files-found: warn
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5266817Z   compression-level: 6
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5267090Z   overwrite: false
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5267316Z   include-hidden-files: false
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5267544Z env:
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5267803Z   PYTHONDONTWRITEBYTECODE: 1
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5268048Z   GOMAXPROCS: 2
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5268280Z   GOFLAGS: -p=2
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5268556Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5268934Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5269468Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5269847Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5270239Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5270671Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.5271001Z ##[endgroup]
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.6537492Z (node:7772) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.6538179Z (Use `node --trace-deprecation ...` to show where the warning was created)
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.6572654Z With the provided path, there will be 1 file uploaded
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.6575959Z Artifact name is valid!
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:58.6576474Z Root directory input is valid!
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.0491701Z Beginning upload of artifact content to blob storage
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.1048406Z (node:7772) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.5212866Z Uploaded bytes 25778
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.6150871Z Finished uploading artifact content to blob storage!
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.6151913Z SHA256 digest of uploaded artifact zip is 59b349b03bc0e51a6e99c5101d8ba6d6fa54438cb1c0bb5b2a659cca96bf9a10
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.6152487Z Finalizing artifact upload
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.9875421Z Artifact docs-snippet-evidence.zip successfully finalized. Artifact ID 14591107636
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.9876392Z Artifact docs-snippet-evidence has been successfully uploaded! Final size is 25778 bytes. Artifact ID is 14591107636
+smoke-test-snippets	Retain bounded documentation evidence	2026-11-20T01:12:59.9882338Z Artifact download URL: https://github.com/davidpovarsky/cherrilang.org/actions/runs/44651777275/artifacts/14591107636
+smoke-test-snippets	Post Set up Python	﻿2026-11-20T01:13:00.0038335Z Post job cleanup.
+smoke-test-snippets	Post Set up Python	2026-11-20T01:13:00.0943589Z (node:7784) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+smoke-test-snippets	Post Set up Python	2026-11-20T01:13:00.0944590Z (Use `node --trace-deprecation ...` to show where the warning was created)
+smoke-test-snippets	Post Set up Go	﻿2026-11-20T01:13:00.1036379Z Post job cleanup.
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.1980283Z (node:7792) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.1981243Z (Use `node --trace-deprecation ...` to show where the warning was created)
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.2027493Z [command]/opt/hostedtoolcache/go/1.24.13/x64/bin/go env GOMODCACHE
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.2079052Z [command]/opt/hostedtoolcache/go/1.24.13/x64/bin/go env GOCACHE
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.2081450Z /home/runner/go/pkg/mod
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.2098731Z /home/runner/.cache/go-build
+smoke-test-snippets	Post Set up Go	2026-11-20T01:13:00.2101529Z Primary key was not generated. Please check the log messages above for more errors or information
+smoke-test-snippets	Post Checkout cherrilang.org	﻿2026-11-20T01:13:00.2232579Z Post job cleanup.
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.2887783Z [command]/usr/bin/git version
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.2927316Z git version 2.56.1
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.2958468Z Temporarily overriding HOME='/home/runner/work/_temp/614b374f-ba88-4706-9443-355b149b6592' before making global git config changes
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.2959321Z Adding repository directory to the temporary git global config as a safe directory
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.2972616Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherrilang.org/cherrilang.org
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.2999175Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3087577Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3254656Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3272002Z http.https://github.com/.extraheader
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3280764Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3310905Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3587397Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+smoke-test-snippets	Post Checkout cherrilang.org	2026-11-20T01:13:00.3619070Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+smoke-test-snippets	Complete job	﻿2026-11-20T01:13:00.3983048Z Cleaning up orphan processes
+smoke-test-snippets	Complete job	2026-11-20T01:13:00.4239294Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-go@v5, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,0 +1,239 @@
+{
+  "format_version": 1,
+  "requirement": "BRG12",
+  "source_commit": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "internal/language/syntax/ast.go",
+      "sha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "28ba0d1cd9ff1bca0486e51d19e47dd1726c6b0ce82a7c3fa822c349e16e40e1"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "b4fc3531478c91e0701223bbbae2949ba6cef01fd8be47b57196af0ff8107fd9"
+    },
+    {
+      "path": "internal/language/lower/loop_index.go",
+      "sha256": "871f48f8b99020fc735b4ee14ece8822cf76add823124ab4489ab3f944f83b76"
+    },
+    {
+      "path": "internal/language/lower/scoped_blocks.go",
+      "sha256": "ce3273d28b3809e0e5617337f547371529501999d46244d8d9b868846b782405"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "74f68cf258dcf7268627702ba5ed73a5993d8e4d030dbc65995529578adbe824"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "b109cd9555f2f6e49f91828c5d8b3d7772e596f2584320a4318034c48d4ed9c9"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "3c32c9088d2f929d4d5ce18630f9790a69e9a8867cc6db8c5ed1ac85610e47b5"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "sha256": "648f6e5bb2078cb204b4a706830c0927022add3415f175e4fe5d547cde5f4f72"
+    },
+    {
+      "path": "shared_codec.go",
+      "sha256": "57da3538aabbfe0a9ce7ad497181f546209d9b20eaef5774ef943a053ebb9bad"
+    },
+    {
+      "path": "shortcutgen.go",
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+    },
+    {
+      "path": "p15_loop_index_native_test.go",
+      "sha256": "95bdd632f8dc4b7ea8376ec07da322464ba45537f884e816b4bb1b310ce6dad2"
+    },
+    {
+      "path": "p15_loop_identity_acceptance_test.go",
+      "sha256": "00dd85682057d69aaa6921fbd7461ca6280812075fc4227201fceb09de0656f6"
+    },
+    {
+      "path": "p15_loop_identity_native_oracle_test.go",
+      "sha256": "66faeb3e6b8bedebc13609473aff684795329ebd6ad650d429136592185e3234"
+    },
+    {
+      "path": "p15_types_acceptance_test.go",
+      "sha256": "16a78a20cd20415b00b669f019580d658ba83747c5a14d84c00d5819642693a6"
+    },
+    {
+      "path": "p15_parser_acceptance_test.go",
+      "sha256": "d996b4708544d2470e1cacdce463866c938d470ed0c631eddec490c178ef3cd2"
+    },
+    {
+      "path": "p15_short_circuit_test.go",
+      "sha256": "0ce9802e470d8a1b0e7f116294bfadaf21e2d311374225e2ecc78437e027bbe5"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "sha256": "e0c1dc05f8ed83cad89caa6fa971bad4535064e74e39c25c1888ad936e1a7dc8"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution_test.go",
+      "sha256": "16dbbd9ca9fe3bef979feb61c3e69ad4effd9adc3de4c7ca68e53993215938e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "387ed68a6736924602f41ba01f53e6192ba4264e86fb0f964bc11968e0c3c5c8"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "0209caf0dde157a65c97003cc6a2f108fa8f16aecc25ef3f225d314c3040b21b"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "14025c556edaea390962f3cb063cc6129ddc108de1f124db18c3f8a7427570d5"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "sha256": "3e0a44f3e43e51bd02347347a6d36781d6cf3ad261e25cb3e6a610be761889be"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tests/runtime_poc/CherriRuntimePOC.cherri",
+      "sha256": "cf5cb580a75833ffd022f4c4b4e8fa0e0e52f101c7f584d2726833000adf050b"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestBackendRecovery12LoopIdentityUnit|TestBackendRecovery12LoopNativeGraph)$"
+  ],
+  "required_tests": [
+    "TestBackendRecovery12LoopIdentityUnit",
+    "TestBackendRecovery12LoopIdentityUnit/scoped_types",
+    "TestBackendRecovery12LoopIdentityUnit/tuple_index_does_not_escape",
+    "TestBackendRecovery12LoopIdentityUnit/tuple_item_does_not_escape",
+    "TestBackendRecovery12LoopIdentityUnit/named_repeat_index_does_not_escape",
+    "TestBackendRecovery12LoopIdentityUnit/healthy_after_rejection",
+    "TestBackendRecovery12LoopNativeGraph",
+    "TestBackendRecovery12LoopNativeGraph/consistent_uuid_renaming",
+    "TestBackendRecovery12LoopNativeGraph/consistent_shadow_renaming",
+    "TestBackendRecovery12LoopNativeGraph/one_based_capture",
+    "TestBackendRecovery12LoopNativeGraph/wrong_index_owner",
+    "TestBackendRecovery12LoopNativeGraph/wrong_item_owner",
+    "TestBackendRecovery12LoopNativeGraph/wrong_offset",
+    "TestBackendRecovery12LoopNativeGraph/wrong_direction",
+    "TestBackendRecovery12LoopNativeGraph/string_offset",
+    "TestBackendRecovery12LoopNativeGraph/dangling_index_edge",
+    "TestBackendRecovery12LoopNativeGraph/duplicate_producer_identity",
+    "TestBackendRecovery12LoopNativeGraph/reused_loop_owner",
+    "TestBackendRecovery12LoopNativeGraph/wrong_end_owner",
+    "TestBackendRecovery12LoopNativeGraph/iteration_order",
+    "TestBackendRecovery12LoopNativeGraph/iteration_cardinality",
+    "TestBackendRecovery12LoopNativeGraph/repeat_count",
+    "TestBackendRecovery12LoopNativeGraph/consumer_wrong_owner",
+    "TestBackendRecovery12LoopNativeGraph/post_inner_owner_lost",
+    "TestBackendRecovery12LoopNativeGraph/capture_escaped_loop",
+    "TestBackendRecovery12LoopNativeGraph/missing_action",
+    "TestBackendRecovery12LoopNativeGraph/extra_action",
+    "TestBackendRecovery12LoopNativeGraph/shadow_leaks_after_scope"
+  ],
+  "discovered_tests": [
+    "TestBackendRecovery12LoopIdentityUnit",
+    "TestBackendRecovery12LoopIdentityUnit/scoped_types",
+    "TestBackendRecovery12LoopIdentityUnit/tuple_index_does_not_escape",
+    "TestBackendRecovery12LoopIdentityUnit/tuple_item_does_not_escape",
+    "TestBackendRecovery12LoopIdentityUnit/named_repeat_index_does_not_escape",
+    "TestBackendRecovery12LoopIdentityUnit/healthy_after_rejection",
+    "TestBackendRecovery12LoopNativeGraph",
+    "TestBackendRecovery12LoopNativeGraph/consistent_uuid_renaming",
+    "TestBackendRecovery12LoopNativeGraph/consistent_shadow_renaming",
+    "TestBackendRecovery12LoopNativeGraph/one_based_capture",
+    "TestBackendRecovery12LoopNativeGraph/wrong_index_owner",
+    "TestBackendRecovery12LoopNativeGraph/wrong_item_owner",
+    "TestBackendRecovery12LoopNativeGraph/wrong_offset",
+    "TestBackendRecovery12LoopNativeGraph/wrong_direction",
+    "TestBackendRecovery12LoopNativeGraph/string_offset",
+    "TestBackendRecovery12LoopNativeGraph/dangling_index_edge",
+    "TestBackendRecovery12LoopNativeGraph/duplicate_producer_identity",
+    "TestBackendRecovery12LoopNativeGraph/reused_loop_owner",
+    "TestBackendRecovery12LoopNativeGraph/wrong_end_owner",
+    "TestBackendRecovery12LoopNativeGraph/iteration_order",
+    "TestBackendRecovery12LoopNativeGraph/iteration_cardinality",
+    "TestBackendRecovery12LoopNativeGraph/repeat_count",
+    "TestBackendRecovery12LoopNativeGraph/consumer_wrong_owner",
+    "TestBackendRecovery12LoopNativeGraph/post_inner_owner_lost",
+    "TestBackendRecovery12LoopNativeGraph/capture_escaped_loop",
+    "TestBackendRecovery12LoopNativeGraph/missing_action",
+    "TestBackendRecovery12LoopNativeGraph/extra_action",
+    "TestBackendRecovery12LoopNativeGraph/shadow_leaks_after_scope"
+  ],
+  "started_utc": "2026-11-20T01:20:31.099457377Z",
+  "finished_utc": "2026-11-20T01:20:32.125082003Z",
+  "elapsed_seconds": 1.02562725,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "ac6aad43b7a70ccc4f8d7283b6545c2e249c8311cbf7a919b49d6dd6ce350172",
+  "raw_bytes": 24172,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "",
+  "benchmark_bytes": 0
+}

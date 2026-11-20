@@ -1,0 +1,429 @@
+{
+  "status": "VERIFIED_ACTUAL_LOCAL179",
+  "implementation_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "compiler_pin": "cdc8be2c000698dddbe73185f69d8fd94273e1d6",
+  "docs_pin": "2bc5f6992cd252f287530b039ee393b1b50ee39e",
+  "run_id": 44651827685,
+  "run_conclusion": "failure",
+  "artifact_id": 14592460171,
+  "zip_sha256": "0191d1c5c1d6006b54aeccb1f376988bd1bacee69203919784982e88a57eb462",
+  "report_sha256": "2daf9799385008ceff4e2a7d2a627f5869abe0853cd65b47caed69a9029a5b60",
+  "runner_sha256": "02dacfc84ff5a2ee2e9ae99576336baca67176aed28930edee3941d5ecc1e2b7",
+  "contract_digests": {
+    "acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "unique_requirement_count": 179,
+  "record_count": 196,
+  "report_counts": {
+    "NOT_RUN": 66,
+    "PASSED": 95,
+    "PENDING_EXTERNAL": 15,
+    "AI_EVAL_NOT_RUN": 1,
+    "FAILED": 2
+  },
+  "failed_requirements": [
+    {
+      "id": "RP02",
+      "status": "FAILED",
+      "common_failed_test": "TestMeta_UnitAndNativeCannotSatisfyIOSInFinal"
+    },
+    {
+      "id": "BRG04",
+      "status": "FAILED",
+      "common_failed_test": "TestMeta_UnitAndNativeCannotSatisfyIOSInFinal"
+    }
+  ],
+  "original_references": [
+    {
+      "record": "ev-local-S03-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-go.jsonl",
+      "artifact_member": "editor-s03-420165121/editor-s03-go.jsonl",
+      "sha256": "78e981b856bfb47392b4db61ba4cb04762fd31f7ba8b2a8c715d3cc119d89a6c"
+    },
+    {
+      "record": "ev-local-S03-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-stderr.log",
+      "artifact_member": "editor-s03-420165121/editor-s03-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-S03-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-benchmark.json",
+      "artifact_member": "editor-s03-420165121/editor-s03-benchmark.json",
+      "sha256": "824a0cfca9389914e45654fa50792e10be598942f848a7b3167d259a93888304"
+    },
+    {
+      "record": "ev-local-S03-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-process.json",
+      "artifact_member": "editor-s03-420165121/editor-s03-process.json",
+      "sha256": "3140231179e8439e708308c30cad92b2a9cf02ecf729842cf7233b19f0f94869"
+    },
+    {
+      "record": "ev-local-S03-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-go.jsonl",
+      "artifact_member": "editor-s03-420165121/editor-s03-go.jsonl",
+      "sha256": "78e981b856bfb47392b4db61ba4cb04762fd31f7ba8b2a8c715d3cc119d89a6c"
+    },
+    {
+      "record": "ev-local-S03-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-stderr.log",
+      "artifact_member": "editor-s03-420165121/editor-s03-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-S03-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-benchmark.json",
+      "artifact_member": "editor-s03-420165121/editor-s03-benchmark.json",
+      "sha256": "824a0cfca9389914e45654fa50792e10be598942f848a7b3167d259a93888304"
+    },
+    {
+      "record": "ev-local-S03-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-s03-420165121/editor-s03-process.json",
+      "artifact_member": "editor-s03-420165121/editor-s03-process.json",
+      "sha256": "3140231179e8439e708308c30cad92b2a9cf02ecf729842cf7233b19f0f94869"
+    },
+    {
+      "record": "ev-local-F02-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-f02-1481361674/loop-process.json",
+      "artifact_member": "loop-f02-1481361674/loop-process.json",
+      "sha256": "d4fb46ea182ca64cc49f0c383c2b511a9ceb176285ef013195241d18a772c398"
+    },
+    {
+      "record": "ev-local-F02-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-f02-1481361674/loop-go.jsonl",
+      "artifact_member": "loop-f02-1481361674/loop-go.jsonl",
+      "sha256": "d92da7d4e29a6df5d7608d7fd4560463f7cd19edbe919373de15cb945ce77187"
+    },
+    {
+      "record": "ev-local-F02-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-f02-1481361674/loop-stderr.log",
+      "artifact_member": "loop-f02-1481361674/loop-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-F02-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-f02-1481361674/loop-process.json",
+      "artifact_member": "loop-f02-1481361674/loop-process.json",
+      "sha256": "d4fb46ea182ca64cc49f0c383c2b511a9ceb176285ef013195241d18a772c398"
+    },
+    {
+      "record": "ev-local-F02-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-f02-1481361674/loop-go.jsonl",
+      "artifact_member": "loop-f02-1481361674/loop-go.jsonl",
+      "sha256": "d92da7d4e29a6df5d7608d7fd4560463f7cd19edbe919373de15cb945ce77187"
+    },
+    {
+      "record": "ev-local-F02-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-f02-1481361674/loop-stderr.log",
+      "artifact_member": "loop-f02-1481361674/loop-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-E08-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-e08-2090670523/editor-e08-go.jsonl",
+      "artifact_member": "editor-e08-2090670523/editor-e08-go.jsonl",
+      "sha256": "c5d394db7949566872588fabfe6f2476d1a6b78b0ce7245c4205ba645595edaf"
+    },
+    {
+      "record": "ev-local-E08-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-e08-2090670523/editor-e08-stderr.log",
+      "artifact_member": "editor-e08-2090670523/editor-e08-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-E08-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-e08-2090670523/editor-e08-benchmark.json",
+      "artifact_member": "editor-e08-2090670523/editor-e08-benchmark.json",
+      "sha256": "3fff8e46448c652ce6497140d63f73ac2271f6ef247dd3a9d9b251e0933de914"
+    },
+    {
+      "record": "ev-local-E08-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-e08-2090670523/editor-e08-process.json",
+      "artifact_member": "editor-e08-2090670523/editor-e08-process.json",
+      "sha256": "a74e68d6e25927220d8d037b89c4087e746d6bc06477b58f5bf7418d1de0dcf3"
+    },
+    {
+      "record": "ev-local-RP22-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-rp22-2420772461/loop-process.json",
+      "artifact_member": "loop-rp22-2420772461/loop-process.json",
+      "sha256": "587ae04acfb401097e7b1ddb3cffa09859ecd3b4da0297797398e9b5beaeb00f"
+    },
+    {
+      "record": "ev-local-RP22-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-rp22-2420772461/loop-go.jsonl",
+      "artifact_member": "loop-rp22-2420772461/loop-go.jsonl",
+      "sha256": "9dbb643f8d5f8941d2053c632ad0bd9e51d34521b12d0754d5c8abde15fa26e4"
+    },
+    {
+      "record": "ev-local-RP22-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-rp22-2420772461/loop-stderr.log",
+      "artifact_member": "loop-rp22-2420772461/loop-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-RP22-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-rp22-2420772461/loop-process.json",
+      "artifact_member": "loop-rp22-2420772461/loop-process.json",
+      "sha256": "587ae04acfb401097e7b1ddb3cffa09859ecd3b4da0297797398e9b5beaeb00f"
+    },
+    {
+      "record": "ev-local-RP22-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-rp22-2420772461/loop-go.jsonl",
+      "artifact_member": "loop-rp22-2420772461/loop-go.jsonl",
+      "sha256": "9dbb643f8d5f8941d2053c632ad0bd9e51d34521b12d0754d5c8abde15fa26e4"
+    },
+    {
+      "record": "ev-local-RP22-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-rp22-2420772461/loop-stderr.log",
+      "artifact_member": "loop-rp22-2420772461/loop-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-RP29-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-go.jsonl",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-go.jsonl",
+      "sha256": "f4d07a6e64ec4b68dc9013b6680bbded71c5936ce1b165b665e86e8127f7c8f2"
+    },
+    {
+      "record": "ev-local-RP29-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-stderr.log",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-RP29-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-benchmark.json",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-benchmark.json",
+      "sha256": "ff102523cec3760fd92aa167982af0a05584c88192c73f7bd3ace422b1575282"
+    },
+    {
+      "record": "ev-local-RP29-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-process.json",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-process.json",
+      "sha256": "d65996fbdff10d9dc313ff04442f53a292b9315a925dd34a4cf7636e215b8e53"
+    },
+    {
+      "record": "ev-local-RP29-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-go.jsonl",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-go.jsonl",
+      "sha256": "f4d07a6e64ec4b68dc9013b6680bbded71c5936ce1b165b665e86e8127f7c8f2"
+    },
+    {
+      "record": "ev-local-RP29-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-stderr.log",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-RP29-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-benchmark.json",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-benchmark.json",
+      "sha256": "ff102523cec3760fd92aa167982af0a05584c88192c73f7bd3ace422b1575282"
+    },
+    {
+      "record": "ev-local-RP29-service",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-process.json",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-process.json",
+      "sha256": "d65996fbdff10d9dc313ff04442f53a292b9315a925dd34a4cf7636e215b8e53"
+    },
+    {
+      "record": "ev-local-RP29-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-go.jsonl",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-go.jsonl",
+      "sha256": "f4d07a6e64ec4b68dc9013b6680bbded71c5936ce1b165b665e86e8127f7c8f2"
+    },
+    {
+      "record": "ev-local-RP29-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-stderr.log",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-RP29-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-benchmark.json",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-benchmark.json",
+      "sha256": "ff102523cec3760fd92aa167982af0a05584c88192c73f7bd3ace422b1575282"
+    },
+    {
+      "record": "ev-local-RP29-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp29-2627600152/editor-rp29-process.json",
+      "artifact_member": "editor-rp29-2627600152/editor-rp29-process.json",
+      "sha256": "d65996fbdff10d9dc313ff04442f53a292b9315a925dd34a4cf7636e215b8e53"
+    },
+    {
+      "record": "ev-local-RP51-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp51-2056608039/editor-rp51-go.jsonl",
+      "artifact_member": "editor-rp51-2056608039/editor-rp51-go.jsonl",
+      "sha256": "cb57b7baea226c8a45b7bde4ae72f232119270c8db1e6a9e4cd2cee34f3592b9"
+    },
+    {
+      "record": "ev-local-RP51-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp51-2056608039/editor-rp51-stderr.log",
+      "artifact_member": "editor-rp51-2056608039/editor-rp51-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-RP51-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp51-2056608039/editor-rp51-benchmark.json",
+      "artifact_member": "editor-rp51-2056608039/editor-rp51-benchmark.json",
+      "sha256": "d0a917d8788ed72b187c294820693c1b556db0d7ca1e015f0688a6b0d2cc822b"
+    },
+    {
+      "record": "ev-local-RP51-benchmark",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/editor-rp51-2056608039/editor-rp51-process.json",
+      "artifact_member": "editor-rp51-2056608039/editor-rp51-process.json",
+      "sha256": "8db0d446ef383840da527fdeaa435078a6cadf8cb7e17484db75e4922ba4181f"
+    },
+    {
+      "record": "ev-local-RP51-race",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/race-receipt.json",
+      "artifact_member": "state-race-2020366340/race-receipt.json",
+      "sha256": "e285cc9b10185b1b54e62e35fc389accae2bb222a24f13efc5e96038e4d64445"
+    },
+    {
+      "record": "ev-local-RP51-race",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/environment.json",
+      "artifact_member": "state-race-2020366340/environment.json",
+      "sha256": "ae6c27494ccc7abf6ad1aa1741dd998e5f2a1c1bad1cc81f79ee30b9a8d4fac8"
+    },
+    {
+      "record": "ev-local-RP51-race",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/source-files.json",
+      "artifact_member": "state-race-2020366340/source-files.json",
+      "sha256": "4e99859934786fe2e89f126714e672cca01386e2e8d2b48bab796a87720e6ac3"
+    },
+    {
+      "record": "ev-local-RP51-race",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/go-test.jsonl",
+      "artifact_member": "state-race-2020366340/go-test.jsonl",
+      "sha256": "d9b36136e1341b9a9cb5aeca2803b9f65a887885891430828520581fc9acb4b3"
+    },
+    {
+      "record": "ev-local-RP51-race",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/go-test.stderr",
+      "artifact_member": "state-race-2020366340/go-test.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-BRG06-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/race-receipt.json",
+      "artifact_member": "state-race-2020366340/race-receipt.json",
+      "sha256": "e285cc9b10185b1b54e62e35fc389accae2bb222a24f13efc5e96038e4d64445"
+    },
+    {
+      "record": "ev-local-BRG06-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/environment.json",
+      "artifact_member": "state-race-2020366340/environment.json",
+      "sha256": "ae6c27494ccc7abf6ad1aa1741dd998e5f2a1c1bad1cc81f79ee30b9a8d4fac8"
+    },
+    {
+      "record": "ev-local-BRG06-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/source-files.json",
+      "artifact_member": "state-race-2020366340/source-files.json",
+      "sha256": "4e99859934786fe2e89f126714e672cca01386e2e8d2b48bab796a87720e6ac3"
+    },
+    {
+      "record": "ev-local-BRG06-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/go-test.jsonl",
+      "artifact_member": "state-race-2020366340/go-test.jsonl",
+      "sha256": "d9b36136e1341b9a9cb5aeca2803b9f65a887885891430828520581fc9acb4b3"
+    },
+    {
+      "record": "ev-local-BRG06-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/go-test.stderr",
+      "artifact_member": "state-race-2020366340/go-test.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-BRG06-integration",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/race-receipt.json",
+      "artifact_member": "state-race-2020366340/race-receipt.json",
+      "sha256": "e285cc9b10185b1b54e62e35fc389accae2bb222a24f13efc5e96038e4d64445"
+    },
+    {
+      "record": "ev-local-BRG06-integration",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/environment.json",
+      "artifact_member": "state-race-2020366340/environment.json",
+      "sha256": "ae6c27494ccc7abf6ad1aa1741dd998e5f2a1c1bad1cc81f79ee30b9a8d4fac8"
+    },
+    {
+      "record": "ev-local-BRG06-integration",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/source-files.json",
+      "artifact_member": "state-race-2020366340/source-files.json",
+      "sha256": "4e99859934786fe2e89f126714e672cca01386e2e8d2b48bab796a87720e6ac3"
+    },
+    {
+      "record": "ev-local-BRG06-integration",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/go-test.jsonl",
+      "artifact_member": "state-race-2020366340/go-test.jsonl",
+      "sha256": "d9b36136e1341b9a9cb5aeca2803b9f65a887885891430828520581fc9acb4b3"
+    },
+    {
+      "record": "ev-local-BRG06-integration",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-race-2020366340/go-test.stderr",
+      "artifact_member": "state-race-2020366340/go-test.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-BRG06-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-security-818163684/state-security-process.json",
+      "artifact_member": "state-security-818163684/state-security-process.json",
+      "sha256": "8b9edd4ad328e28ba5e509da43e40dc23353ac7361c3f3130ff04f936ac98867"
+    },
+    {
+      "record": "ev-local-BRG06-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-security-818163684/state-security-go.jsonl",
+      "artifact_member": "state-security-818163684/state-security-go.jsonl",
+      "sha256": "ee4dc3d2113aa1178020850044934ed2ee084475251d7c2e88ac01f2ed73fd38"
+    },
+    {
+      "record": "ev-local-BRG06-security",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/state-security-818163684/state-security-stderr.log",
+      "artifact_member": "state-security-818163684/state-security-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-BRG12-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-brg12-1611227489/loop-process.json",
+      "artifact_member": "loop-brg12-1611227489/loop-process.json",
+      "sha256": "e6aebe32594491fbc6fb1b559050b615ea677a3d3b3c4b897d936298b927a038"
+    },
+    {
+      "record": "ev-local-BRG12-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-brg12-1611227489/loop-go.jsonl",
+      "artifact_member": "loop-brg12-1611227489/loop-go.jsonl",
+      "sha256": "ac6aad43b7a70ccc4f8d7283b6545c2e249c8311cbf7a919b49d6dd6ce350172"
+    },
+    {
+      "record": "ev-local-BRG12-unit",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-brg12-1611227489/loop-stderr.log",
+      "artifact_member": "loop-brg12-1611227489/loop-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "record": "ev-local-BRG12-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-brg12-1611227489/loop-process.json",
+      "artifact_member": "loop-brg12-1611227489/loop-process.json",
+      "sha256": "e6aebe32594491fbc6fb1b559050b615ea677a3d3b3c4b897d936298b927a038"
+    },
+    {
+      "record": "ev-local-BRG12-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-brg12-1611227489/loop-go.jsonl",
+      "artifact_member": "loop-brg12-1611227489/loop-go.jsonl",
+      "sha256": "ac6aad43b7a70ccc4f8d7283b6545c2e249c8311cbf7a919b49d6dd6ce350172"
+    },
+    {
+      "record": "ev-local-BRG12-native-structure",
+      "original_path": "/home/runner/work/cherri/cherri/local-acceptance/loop-brg12-1611227489/loop-stderr.log",
+      "artifact_member": "loop-brg12-1611227489/loop-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "unresolved_references": [],
+  "original_member_count": 53,
+  "source_and_docs_clean_unchanged": true,
+  "closure_complete": false,
+  "audited_at": "2026-11-20T01:38:23.667762+00:00"
+}
