@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-11-20T14:01:33.612598+00:00",
+  "rootSource": "71f169845b0c7f1d312b576922ee64b505579219",
+  "components": [
+    {
+      "label": "E05",
+      "proofCommit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "sourceCommit": "46246596dee9032fb41ce9bf35107183fda19bab",
+      "baseCommit": "1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8",
+      "provenanceSHA256": "b76da90b1861a7ab8a67b54609d6eb6df2312a07143994298bd65dd5776815e4",
+      "archiveSHA256": "476c4cd276b4ca07ee075cb9406aef72c7fdf9ee9a630b119ee53d980c9f735d",
+      "archiveBytes": 36630,
+      "originalArtifactsVerified": 22,
+      "gitPresentWitnessesVerified": 48,
+      "gitAbsenceWitnessesVerified": 2,
+      "unchangedContractsVerified": 3,
+      "stages": [
+        {
+          "stage": "e05-mobile-baseline-a1b83438",
+          "source": "a1b83438187fc6b135c8b29539f6589ee710ed15",
+          "dirty": false,
+          "exitCode": 1,
+          "timedOut": false,
+          "counts": {},
+          "stdoutSHA256": "0687099e00852b3739ad73b76110a08b2b187db74aa9bb6380a22d5c405be26f",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout=3m",
+            "-run",
+            "^TestP15E05",
+            "."
+          ]
+        },
+        {
+          "stage": "e05-mobile-baseline-d22ec46a",
+          "source": "d22ec46a09fc196b4b194a0d44f79f4ed02700f3",
+          "dirty": false,
+          "exitCode": 1,
+          "timedOut": false,
+          "counts": {
+            "fail": 7,
+            "pass": 2
+          },
+          "stdoutSHA256": "10ea4a98081e80fa3de2588b6cdb918803f7a32c7147ad2702e91094afafe3e9",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout=3m",
+            "-run",
+            "^TestP15E05",
+            "."
+          ]
+        },
+        {
+          "stage": "e05-mobile-baseline-05a45465",
+          "source": "05a454651b3cbe07309e6a30e824ebdb869eed6f",
+          "dirty": false,
+          "exitCode": 1,
+          "timedOut": false,
+          "counts": {
+            "fail": 1,
+            "pass": 19
+          },
+          "stdoutSHA256": "af15526b28a87fc0d77304b8d5a733ad07f52bcf8a515a89b9e2d128c3af1071",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout=3m",
+            "-run",
+            "^TestP15E05",
+            "."
+          ]
+        },
+        {
+          "stage": "e05-mobile-clean-46246596",
+          "source": "46246596dee9032fb41ce9bf35107183fda19bab",
+          "dirty": false,
+          "exitCode": 0,
+          "timedOut": false,
+          "counts": {
+            "pass": 20
+          },
+          "stdoutSHA256": "de45acd65d4bfb68f0bdbb27997242d340b10d29fd9c150f2f9112e5e26f7480",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout=3m",
+            "-run",
+            "^TestP15E05",
+            "."
+          ]
+        },
+        {
+          "stage": "e05-packages-clean-46246596",
+          "source": "46246596dee9032fb41ce9bf35107183fda19bab",
+          "dirty": false,
+          "exitCode": 0,
+          "timedOut": false,
+          "counts": {
+            "pass": 235
+          },
+          "stdoutSHA256": "e1091d512e68351d46f20dbccddf744b389894cec0233a783bdeab2bf1e162a6",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout=3m",
+            "./internal/language/service",
+            "./internal/language/analysis",
+            "./internal/language/lsp"
+          ]
+        }
+      ],
+      "finalClean": true,
+      "formalRequirementsGranted": [],
+      "appleRuntime": "NOT_RUN",
+      "full179": "NOT_RUN"
+    }
+  ],
+  "productionDiffReview": "Atomic snapshot service and exact C-export response delegation reviewed; no concrete defect found in this Go boundary. Native C/iOS execution remains unproved.",
+  "formalAcceptanceGranted": false,
+  "full179": "NOT_RUN"
+}
