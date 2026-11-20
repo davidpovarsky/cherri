@@ -64,13 +64,14 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 			a.error(CodeArgumentType, argument.NodeSpan(), "Void cannot be passed as an argument value")
 			return
 		}
-		if param.TypeExpr == nil {
-			return
+		if param.TypeExpr != nil {
+			expected := a.resolveType(param.TypeExpr)
+			if actual != nil && !assignmentHasEvidence(actual, expected, argument) {
+				a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
+				return
+			}
 		}
-		expected := a.resolveType(param.TypeExpr)
-		if actual != nil && !assignmentHasEvidence(actual, expected, argument) {
-			a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
-		}
+		a.requirePresentTransport(argument, actual, "function argument")
 	}
 	if call.PrimaryArg != nil {
 		analyzeArgument(call.PrimaryArg, 0)

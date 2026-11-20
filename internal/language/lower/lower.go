@@ -4485,6 +4485,9 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		laterWrites := l.semanticSiblingWrites(list.Elements)
 		items := make([]backend.SemanticValue, 0, len(list.Elements))
 		for index, el := range list.Elements {
+			if err := l.requirePresentTransport(el, "List element"); err != nil {
+				return backend.SemanticValue{}, err
+			}
 			itemVal, err := l.lowerSemanticValue(el)
 			if err != nil {
 				return backend.SemanticValue{}, err

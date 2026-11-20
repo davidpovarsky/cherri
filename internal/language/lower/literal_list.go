@@ -33,6 +33,11 @@ func (l *Lowerer) lowerListDictionary(expr *syntax.MapExpr) (*ir.AttachmentToken
 func (l *Lowerer) lowerListExpression(expr *syntax.ListExpr, nativeItems bool) (interface{}, error) {
 	list := make([]interface{}, len(expr.Elements))
 	for i, element := range expr.Elements {
+		if nativeItems {
+			if err := l.requirePresentTransport(element, "List element"); err != nil {
+				return nil, err
+			}
+		}
 		if nativeItems && l.isNativeListElement(element) {
 			return nil, fmt.Errorf("E_NESTED_NATIVE_LIST: nested List-valued element at item %d has no verified native content-row encoding; preserve nested arrays in Dictionary fields", i)
 		}
