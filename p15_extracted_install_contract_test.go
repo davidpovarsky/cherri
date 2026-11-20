@@ -136,7 +136,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 	manifestPath := filepath.Join(root, "skills", "cherri-shortcuts", "compatibility-manifest.json")
 	manifestBefore := p15InstallRead(t, manifestPath)
 	t.Cleanup(func() {
-		if !bytes.Equal(p15InstallRead(t, manifestPath), manifestBefore) || p15ExtractedRevision(t, root) != f.sourceSHA {
+		if !bytes.Equal(p15InstallRead(t, manifestPath), manifestBefore) || p15ExtractedRevision(t, root) != f.sourceSHA || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 			t.Error("component fixture changed the real source/consumer tuple")
 		}
 		data, e := json.Marshal(f.receipt)
@@ -265,7 +265,23 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 
 func (f *p15ExtractedInstall) run(t *testing.T, binary, cwd string, args ...string) ([]byte, []byte, error) {
 	t.Helper()
-	out, stderr, err := p15RunCLI(t, binary, cwd, nil, args...)
+	// The Skill distributes POSIX-named executable files, including on Git
+	// Bash. Windows Go LookPath refuses extensionless files even when their
+	// actual PE bytes are executable. Invoke the exact installed file through
+	// the Skill's real shell; do not copy/rename it or substitute another tool.
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	command := []string{"--noprofile", "--norc", "-c", "exec \"$@\"", "cherri-installed-cli", filepath.ToSlash(binary)}
+	command = append(command, args...)
+	cmd := exec.CommandContext(ctx, p15SkillBash(t), command...)
+	cmd.Dir, cmd.Env = cwd, p15InstallEnv(nil)
+	var stdout, stderrBuffer bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &stdout, &stderrBuffer
+	err := cmd.Run()
+	if ctx.Err() != nil {
+		t.Fatalf("installed public command timeout is not an accepted result: %v", ctx.Err())
+	}
+	out, stderr := stdout.Bytes(), stderrBuffer.Bytes()
 	record := map[string]any{"args": args, "stdout_base64": base64.StdEncoding.EncodeToString(out), "stderr_base64": base64.StdEncoding.EncodeToString(stderr), "success": err == nil}
 	commands, _ := f.receipt["commands"].([]any)
 	f.receipt["commands"] = append(commands, record)
