@@ -138,6 +138,11 @@ func ConvertSemanticValueToParam(v backend.SemanticValue) any {
 		}
 		return items
 	case backend.ValDict:
+		// A Go map cannot represent an explicit dynamic text key. Preserve the
+		// typed native rows when a semantic Dictionary is nested in a List.
+		if dictionaryHasComputedKeys(v.DictVal) {
+			return encodeTypedLiteralParam(v)
+		}
 		m := make(map[string]any, len(v.DictVal))
 		for _, entry := range v.DictVal {
 			m[entry.Key] = ConvertSemanticValueToParam(entry.Value)

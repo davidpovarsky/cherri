@@ -91,8 +91,11 @@ const (
 
 // DictEntry represents a key-value pair in a semantic dictionary.
 type DictEntry struct {
-	Key   string
-	Value SemanticValue
+	Key string
+	// Explicit computed Text keys retain references and UTF-16 text segments.
+	// A nil/empty segment list leaves the existing literal Key unchanged.
+	KeySegments []TextSegment
+	Value       SemanticValue
 }
 
 // SemanticValue encapsulates an evaluated expression value.
