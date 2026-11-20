@@ -1,0 +1,48 @@
+{
+  "source_sha": "5b8830cbc579ff44382ca47a0c869269a9f25270",
+  "head_after": "5b8830cbc579ff44382ca47a0c869269a9f25270",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15NoneBindingsClearPreviousOutput|TestP15NoneReturnClearsPreviousOutput|TestP15NoneClearingPreservesPresentEmptyValues|TestP15NoneClearOracleRejectsCorruption)$",
+    "."
+  ],
+  "selected_parents": [
+    "TestP15NoneBindingsClearPreviousOutput",
+    "TestP15NoneReturnClearsPreviousOutput",
+    "TestP15NoneClearingPreservesPresentEmptyValues",
+    "TestP15NoneClearOracleRejectsCorruption"
+  ],
+  "started_at_utc": "2026-11-20T01:56:38.210099+00:00",
+  "finished_at_utc": "2026-11-20T01:56:58.853816+00:00",
+  "elapsed_seconds": 20.64000000001397,
+  "exit_code": 1,
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "named_passes": 6,
+  "failed_tests": [
+    "TestP15NoneBindingsClearPreviousOutput/immutable",
+    "TestP15NoneBindingsClearPreviousOutput/mutable",
+    "TestP15NoneBindingsClearPreviousOutput/assignment",
+    "TestP15NoneBindingsClearPreviousOutput",
+    "TestP15NoneReturnClearsPreviousOutput/top_level",
+    "TestP15NoneReturnClearsPreviousOutput/function",
+    "TestP15NoneReturnClearsPreviousOutput/nested_branch",
+    "TestP15NoneReturnClearsPreviousOutput",
+    "TestP15NoneClearingPreservesPresentEmptyValues/false/let",
+    "TestP15NoneClearingPreservesPresentEmptyValues/false/var",
+    "TestP15NoneClearingPreservesPresentEmptyValues/false/assign",
+    "TestP15NoneClearingPreservesPresentEmptyValues",
+    "TestP15NoneClearOracleRejectsCorruption",
+    "<package>"
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "1dcf9649e401875e1ab71d49b5022d0dc7b1cf68279ddcb200db5471ea2259be",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

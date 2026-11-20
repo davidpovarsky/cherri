@@ -1,0 +1,36 @@
+package main
+
+import (
+	"encoding/base64"
+	"encoding/json"
+	"testing"
+)
+
+func TestP15OptionalTransportExploration(t *testing.T) {
+	for _, tc := range []struct{ Name, Source string }{
+		{"arg_none", "function echo(value:Text?)->Text?{return value}\nlet result=echo(none)\ngetVariable(result)"},
+		{"arg_empty", "function echo(value:Text?)->Text?{return value}\nlet result=echo(\"\")\ngetVariable(result)"},
+		{"arg_omitted", "function echo(value:Text?=\"DEFAULT\")->Text?{return value}\nlet result=echo()\ngetVariable(result)"},
+		{"return_none", "function absent()->Text?{text(\"MUST_NOT_LEAK\");return none}\nlet result=absent()\ngetVariable(result)"},
+		{"return_bare", "function absent()->Nothing{text(\"MUST_NOT_LEAK\");return}\nabsent()"},
+		{"map_none", "let value={\"present\":none,\"empty\":\"\"}\ngetVariable(value)"},
+		{"list_none", "let value=[none,\"\"]\ngetVariable(value)"},
+		{"optional_binding_arg", "function echo(value:Text?)->Text?{return value}\nlet value:Text?=none\nlet result=echo(value)\ngetVariable(result)"},
+		{"optional_conditional_arg", "function echo(value:Text?)->Text?{return value}\nlet result=echo(if true{yield none}else{yield \"\"})\ngetVariable(result)"},
+		{"lazy_key", "let key=native.action(\"com.example.p15.key\",{})\nlet value={key:\"value\"}\ngetVariable(value)"},
+		{"lazy_nested_key", "let key=native.action(\"com.example.p15.key\",{})\nlet value={\"nested\":{key:\"value\"}}\ngetVariable(value)"},
+	} {
+		t.Run(tc.Name, func(t *testing.T) {
+			raw, err := CompileSourceToPlist("p15-optional-exploration.cherri", tc.Source)
+			observation := map[string]any{"name": tc.Name, "source": tc.Source, "native_bytes": len(raw), "native_base64": base64.StdEncoding.EncodeToString(raw)}
+			if err != nil {
+				observation["error"] = err.Error()
+			}
+			data, merr := json.Marshal(observation)
+			if merr != nil {
+				t.Fatal(merr)
+			}
+			t.Log("P15_OPTIONAL_EXPLORATION:" + string(data))
+		})
+	}
+}

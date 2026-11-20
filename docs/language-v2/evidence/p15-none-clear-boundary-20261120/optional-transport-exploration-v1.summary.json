@@ -1,0 +1,76 @@
+{
+  "source_sha": "b6d9b461842ef43d2ec026d604e16e0a12cdd6b3",
+  "source_status": "?? p15_optional_transport_probe_test.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^TestP15OptionalTransportExploration$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T01:52:50.165760+00:00",
+  "elapsed_seconds": 19.03100000001723,
+  "exit_code": 0,
+  "raw_sha256": "5da7948f620225b1c0e5cf1e5fad2f0eebf321fcc45742d1f0a46a52a95f0b1d",
+  "cases": [
+    {
+      "name": "arg_none",
+      "native_bytes": 23586,
+      "native_sha256": "2c9c5a2bbe4750a847b4a6af5440089244b24858887fbf5fc73e5ed4cab5aea3"
+    },
+    {
+      "name": "arg_empty",
+      "native_bytes": 23586,
+      "native_sha256": "508f90a9feb1a2be0b1091cdc480986154034ea0dd08ea1d4c09f3caf0242934"
+    },
+    {
+      "name": "arg_omitted",
+      "native_bytes": 25792,
+      "native_sha256": "13de12d022056fb689e91cb40591056cf9d478dd3158c93ed89778dea44a3472"
+    },
+    {
+      "name": "return_none",
+      "native_bytes": 20764,
+      "native_sha256": "07c7046d105116ee10ff43b6606c7e8ab3e4ebaafa621d47bbaa2531295783f0"
+    },
+    {
+      "error": "semantic error [E_RETURN_TYPE]: return value of type Void does not match expected return type Unknown at p15-optional-exploration.cherri:1:50-1:56",
+      "name": "return_bare",
+      "native_bytes": 0
+    },
+    {
+      "name": "map_none",
+      "native_bytes": 4350,
+      "native_sha256": "51f17602f150bea231fa61dd6f286da377db6a96a4062473c3eff809e9133c54"
+    },
+    {
+      "name": "list_none",
+      "native_bytes": 3103,
+      "native_sha256": "01fcecce31b07ce9f7aa1e9ef4351d6ad685a7d2d13ea1a4e0e89adf86787fdd"
+    },
+    {
+      "name": "optional_binding_arg",
+      "native_bytes": 24006,
+      "native_sha256": "48501f69d11a12667d6b7cfffc4886ae9c7f16513ba4ac9313046133200e0efa"
+    },
+    {
+      "error": "semantic error [E_ARGUMENT_TYPE]: argument for value expects Text?, got Unknown | Text at p15-optional-exploration.cherri:2:17-2:50",
+      "name": "optional_conditional_arg",
+      "native_bytes": 0
+    },
+    {
+      "name": "lazy_key",
+      "native_bytes": 4436,
+      "native_sha256": "7e29fba6eb010847d3521679f764f28b0384a7673c6ac68417ad9f555e021c5c"
+    },
+    {
+      "name": "lazy_nested_key",
+      "native_bytes": 5246,
+      "native_sha256": "d5a4c07a7ca279ed7f59a4a7526d683dc2fe6ca7c32165226ff2576944d071be"
+    }
+  ],
+  "scope": "Exploratory actual compiler observations only; test pass is not acceptance of the observed behavior."
+}
