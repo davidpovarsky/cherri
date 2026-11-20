@@ -28,7 +28,7 @@ def main():
     root = Path(__file__).resolve().parents[2]
 
     def git(*command):
-        return subprocess.run(["git", *command], cwd=root, check=True, capture_output=True).stdout
+        return subprocess.run(["git", "--no-replace-objects", *command], cwd=root, check=True, capture_output=True).stdout
 
     if platform.system() != "Darwin":
         raise SystemExit("Actual macOS is required; no simulated evidence is emitted")

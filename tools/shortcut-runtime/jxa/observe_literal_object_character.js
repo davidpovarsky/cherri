@@ -71,6 +71,47 @@ function run(argv) {
         report.directTokenObservations.push(row);
       }
     }
+
+    // Inspect actual typed Dictionary/Array states using only public literals.
+    // Rejected or unavailable forms remain observations, never runtime evidence.
+    report.typedContainerObservations = [];
+    const literal = "L\uFFFC🙂éשָׁR";
+    const literalKey = "K\uFFFCK";
+    const token = text => ({ WFSerializationType: "WFTextTokenString", Value: { string: text, attachmentsByRange: {} } });
+    const dict = rows => ({ WFSerializationType: "WFDictionaryFieldValue", Value: { WFDictionaryFieldValueItems: rows } });
+    const array = rows => ({ WFSerializationType: "WFArrayParameterState", Value: rows });
+    const textRow = value => ({ WFItemType: 0, WFValue: value });
+    const fieldForms = [
+      { name: "dictionary_plain_value_plain_key", value: dict([{ WFItemType: 0, WFKey: "key", WFValue: literal }]) },
+      { name: "dictionary_plain_value_token_key", value: dict([{ WFItemType: 0, WFKey: token("key"), WFValue: literal }]) },
+      { name: "dictionary_token_value_token_key", value: dict([{ WFItemType: 0, WFKey: token("key"), WFValue: token(literal) }]) },
+      { name: "dictionary_plain_literal_key", value: dict([{ WFItemType: 0, WFKey: literalKey, WFValue: "value" }]) },
+      { name: "dictionary_token_literal_key", value: dict([{ WFItemType: 0, WFKey: token(literalKey), WFValue: token("value") }]) },
+      { name: "dictionary_nested_array_plain_value", value: dict([{ WFItemType: 2, WFKey: token("list"), WFValue: array([textRow(literal)]) }]) },
+      { name: "dictionary_nested_array_token_value", value: dict([{ WFItemType: 2, WFKey: token("list"), WFValue: array([textRow(token(literal))]) }]) },
+      { name: "array_plain_value", value: array([textRow(literal)]) },
+      { name: "array_token_value", value: array([textRow(token(literal))]) },
+      { name: "list_plain_value", value: [textRow(literal)] },
+      { name: "list_token_value", value: [textRow(token(literal))] },
+    ];
+    for (const className of ["WFDictionaryParameterState", "WFArrayParameterState", "WFContentArrayParameterState"]) {
+      if (!hasClass(className)) {
+        report.typedContainerObservations.push({ className, unavailable: true });
+        continue;
+      }
+      report.typedContainerSelectors = report.typedContainerSelectors || {};
+      report.typedContainerSelectors[className] = methodNames(className).filter(name => /serial|init|items|pairs/i.test(name)).sort();
+      for (const form of fieldForms) {
+        const row = { className, name: form.name, input: form.value };
+        try {
+          const state = make(className, "initWithSerializedRepresentation:variableProvider:parameter:", $(form.value), null, null);
+          row.accepted = !isNil(state);
+          if (row.accepted) row.serializedRepresentation = plain(state.serializedRepresentation, 0);
+        } catch (_) { row.error = "native container-state exception"; }
+        report.typedContainerObservations.push(row);
+      }
+    }
+
     report.status = "OBSERVED";
   } catch (_) { report.status = "NOT_RUN"; report.error = "engine loading or observation failed"; }
   writeJSON(argv[0], report);
