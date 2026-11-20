@@ -13,7 +13,7 @@ import (
 	"unicode/utf8"
 )
 
-const numberWireScope = "Independent RP11 execution: semantic Number width, exact literal text, mutable variables, action outputs and contextual Unicode tokenized text traverse real analysis and canonical emission across captured Apple NumberString, Number and VariableString parameter states. Eleven positive native comparisons and 58 causal wire/reference/producer/range corruptions run; linked T03/T09/R03, Apple runtime and full179 closure are not inherited."
+const numberWireScope = "Independent RP11 execution: semantic Number width, exact literal text, mutable variables, action outputs and contextual Unicode tokenized text traverse real analysis and canonical emission across captured Apple NumberString, Number and VariableString parameter states. Eleven positive native comparisons and 70 causal wire/reference/producer/range corruptions run; linked T03/T09/R03, Apple runtime and full179 closure are not inherited."
 
 var numberWireTests = []string{"TestP15RP11SemanticNumberAndContext", "TestP15RP11NativeParameterDifferential", "TestP15RP11NativeOracleRejectsFaults"}
 var numberWireTiers = []string{"unit", "native-differential"}
@@ -30,6 +30,10 @@ func numberWireFaults(name string) []string {
 	switch name {
 	case "bound_semantic_width", "output_width", "output_stepper", "output_text":
 		faults = append(faults, "producer_literal")
+	}
+	switch name {
+	case "mutable_width", "mutable_stepper", "mutable_text", "contextual_text":
+		faults = append(faults, "mutable_initializer", "missing_store_input", "foreign_store_input")
 	}
 	if name == "contextual_text" {
 		faults = append(faults, "utf8_range", "lost_context")
@@ -228,7 +232,7 @@ func (r *Runner) executeNumberWireProduction() ([]EvidenceArtifact, string, bool
 	if processErr != nil || parseErr != nil || timedOut || !receipt.SourceCleanAfter {
 		return artifacts, "", command.Process != nil, fmt.Errorf("actual RP11 process failed: process=%v parse=%v timeout=%t clean=%t", processErr, parseErr, timedOut, receipt.SourceCleanAfter)
 	}
-	return artifacts, "Executed semantic Number checks, eleven independent captured-Apple parameter comparisons and58 causal wire/reference/producer/range controls", true, nil
+	return artifacts, "Executed semantic Number checks, eleven independent captured-Apple parameter comparisons and70 causal wire/reference/producer/range controls", true, nil
 }
 func (r *Runner) runNumberWireRequirement(id, title string, levels []string) bool {
 	if id != "RP11" {

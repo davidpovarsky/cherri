@@ -36,7 +36,7 @@ func TestNumberWireProducerInventory(t *testing.T) {
 		row.ExpectedObservation != "Correct wire forms are selected per parameter; no blanket raw-float or generic-attachment encoding." {
 		t.Fatal("RP11 producer drifted from immutable contract", row)
 	}
-	if len(numberWireCases) != 11 || len(numberWireRequiredEvents()) != 83 {
+	if len(numberWireCases) != 11 || len(numberWireRequiredEvents()) != 95 {
 		t.Fatal("complete per-parameter positive/fault inventory changed")
 	}
 	seen := map[string]bool{}

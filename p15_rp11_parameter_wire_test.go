@@ -81,14 +81,14 @@ func p15RP11WireCases() []p15RP11WireCase {
 		{name: "semantic_width", source: "resizeImage(ShortcutInput, 640)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "value:number", literal: float64(640)},
 		{name: "bound_semantic_width", source: "let width: Number = 640\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number", literal: float64(640)},
 		{name: "literal_width_text", source: "resizeImage(ShortcutInput, \"9007199254740993\")", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "value:string", literal: "9007199254740993"},
-		{name: "mutable_width", source: "var width: Number = 640\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:MyVar", reference: "variable"},
+		{name: "mutable_width", source: "var width: Number = 640\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:MyVar", reference: "variable", literal: float64(640)},
 		{name: "output_width", source: "let width = number(\"640\")\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number", literal: "640"},
 		{name: "literal_stepper", source: "wait(5)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "number:5", literal: float64(5)},
-		{name: "mutable_stepper", source: "var width: Number = 5\nwait(width)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "variable:MyVar", reference: "variable"},
+		{name: "mutable_stepper", source: "var width: Number = 5\nwait(width)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "variable:MyVar", reference: "variable", literal: float64(5)},
 		{name: "output_stepper", source: "let width = number(\"5\")\nwait(width)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number", literal: "5"},
-		{name: "mutable_text", source: "var value: Text = \"hello\"\ntext(value)", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variable:MyVar", reference: "variable"},
+		{name: "mutable_text", source: "var value: Text = \"hello\"\ntext(value)", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variable:MyVar", reference: "variable", literal: "hello"},
 		{name: "output_text", source: "let value = text(\"hello\")\ntext(value)", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variable:ActionOutput", reference: "gettext", literal: "hello"},
-		{name: "contextual_text", source: "var width: Number = 640\ntext(f\"😀:{width}:é\")", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variableString:Hello <MyVar>!", reference: "variable", contextual: true},
+		{name: "contextual_text", source: "var width: Number = 640\ntext(f\"😀:{width}:é\")", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variableString:Hello <MyVar>!", reference: "variable", literal: float64(640), contextual: true},
 	}
 }
 
@@ -243,6 +243,9 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 		if fixture.reference == "number" || fixture.reference == "gettext" {
 			faults = append(faults, "producer_literal")
 		}
+		if fixture.reference == "variable" {
+			faults = append(faults, "mutable_initializer", "missing_store_input", "foreign_store_input")
+		}
 		if fixture.contextual {
 			faults = append(faults, "utf8_range", "lost_context")
 		}
@@ -266,6 +269,25 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 					last.WFWorkflowActionParameters[fixture.key] = float64(12345)
 				case "blanket_attachment":
 					last.WFWorkflowActionParameters[fixture.key] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "Variable", "VariableName": "RP11_FOREIGN"}}
+				case "mutable_initializer":
+					if len(broken) != 3 {
+						t.Fatal("mutable fixture changed its independent three-action setup")
+					}
+					key := "WFNumberActionNumber"
+					if fixture.name == "mutable_text" {
+						key = "WFTextActionText"
+					}
+					broken[0].WFWorkflowActionParameters[key] = "RP11_WRONG_MUTABLE_LITERAL"
+				case "missing_store_input":
+					if len(broken) != 3 || broken[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
+						t.Fatal("mutable fixture lost its native store")
+					}
+					delete(broken[1].WFWorkflowActionParameters, "WFInput")
+				case "foreign_store_input":
+					if len(broken) != 3 {
+						t.Fatal("mutable fixture changed its independent three-action setup")
+					}
+					broken[1].WFWorkflowActionParameters["WFInput"] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "ActionOutput", "OutputUUID": "RP11_FOREIGN", "OutputName": "Number"}}
 				case "producer_literal":
 					key := "WFNumberActionNumber"
 					if fixture.reference == "gettext" {
