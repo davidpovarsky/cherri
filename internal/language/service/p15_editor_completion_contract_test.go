@@ -36,7 +36,7 @@ var p15E01CompletionCases = []p15E01CompletionCase{
 	{"alias_parameter", p15E01Declarations + "needAlias(|)", []string{"numberValue"}},
 	{"canonical_number", p15E01Declarations + "number(|)", []string{"numberValue"}},
 	{"lexical_shadow", p15E01Declarations + "if true {\n let numberValue = \"inner\"\n let innerNumber = 11\n needNumber(|)\n}\n", []string{"innerNumber"}},
-	{"function_parameter", p15E01Declarations + "function wrap(amount: Number, title: Text) -> Number {\n return needNumber(|)\n}", []string{"amount", "numberValue"}},
+	{"function_parameter", p15E01Declarations + "function wrap(amount: Number, title: Text) -> Number {\n return needNumber(|)\n}", []string{"amount"}},
 	{"outside_value_context", "let first = 1\nlet second = \"x\"\nshow(first)\n|", []string{"first", "second"}},
 }
 
@@ -136,6 +136,27 @@ func TestP15E01CompletionOracleRejectsMutations(t *testing.T) {
 			}
 			if p15E01VariableSetError(items, want) == nil {
 				t.Fatal("corrupted actual service candidates were accepted")
+			}
+		})
+	}
+}
+
+func TestP15E01CandidateInsertionControls(t *testing.T) {
+	for _, tc := range p15E01CompletionCases {
+		if tc.name == "outside_value_context" {
+			continue
+		}
+		t.Run(tc.name, func(t *testing.T) {
+			for _, name := range tc.want {
+				svc := NewService(nil)
+				const uri = "file:///p15-e01-positive.cherri"
+				svc.OpenDocument(uri, 1, strings.Replace(tc.marked, "|", name, 1))
+				diagnostics, _ := svc.Analyze(uri)
+				for _, d := range diagnostics {
+					if d.Severity == analysis.SeverityError {
+						t.Fatalf("independent source/candidate control %s: %v", name, d)
+					}
+				}
 			}
 		})
 	}
