@@ -1,0 +1,535 @@
+diff --git a/p15_public_frontend_boundary_test.go b/p15_public_frontend_boundary_test.go
+index 9cbeb6f0..d8098f82 100644
+--- a/p15_public_frontend_boundary_test.go
++++ b/p15_public_frontend_boundary_test.go
+@@ -9,7 +9,7 @@ import (
+ 	"howett.net/plist"
+ )
+ 
+-func p15RP52MobileWire(t *testing.T, response mobileCompileResponse, marker string) {
++func p15RP52MobileWire(t *testing.T, response mobileCompileResponse, marker string, mainFallthrough bool) {
+ 	t.Helper()
+ 	if !response.OK || response.PlistBase64 == "" || response.SignedBase64 != "" {
+ 		t.Fatalf("actual unsigned mobile compile failed: okay=%t mode=%s error=%s plist=%d signed=%d", response.OK, response.Mode, response.Error, len(response.PlistBase64), len(response.SignedBase64))
+@@ -34,11 +34,15 @@ func p15RP52MobileWire(t *testing.T, response mobileCompileResponse, marker stri
+ 		}
+ 		actions = append(actions, action)
+ 	}
+-	if err := p15U04PublicSourceWire(actions, marker); err != nil {
++	if err := p15U04PublicSourceWire(actions, marker, mainFallthrough); err != nil {
+ 		t.Fatal(err)
+ 	}
++	// The expected mode comes from the authored test route, never from a response flag.
++	if err := p15U04PublicSourceWire(actions, marker, !mainFallthrough); err == nil {
++		t.Fatal("opposite main output contract accepted the actual mobile graph")
++	}
+ 	// A success flag alone cannot satisfy the observed payload/reference oracle.
+-	if err := p15U04PublicSourceWire(p15V02CorruptLastReference(t, actions, false), marker); err == nil {
++	if err := p15U04PublicSourceWire(p15V02CorruptLastReference(t, actions, false, mainFallthrough), marker, mainFallthrough); err == nil {
+ 		t.Fatal("wrong producer reference passed the actual mobile route oracle")
+ 	}
+ }
+@@ -72,7 +76,7 @@ func TestP15RP52DefaultMobileFrontend(t *testing.T) {
+ 	for _, route := range routes {
+ 		t.Run(route.name+"_valid_v2", func(t *testing.T) {
+ 			response := route.compile(healthy)
+-			p15RP52MobileWire(t, response, "RP52_V2_DEFAULT")
++			p15RP52MobileWire(t, response, "RP52_V2_DEFAULT", true)
+ 			if response.Mode != "v2" {
+ 				t.Fatal("default did not report actual V2 selection", response.Mode)
+ 			}
+@@ -81,14 +85,14 @@ func TestP15RP52DefaultMobileFrontend(t *testing.T) {
+ 			t.Run(route.name+"_reject_"+specimen.name, func(t *testing.T) {
+ 				response := route.compile(specimen.source)
+ 				if response.OK {
+-					p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE")
++					p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE", false)
+ 					t.Fatalf("default/V2 public source route silently selected %q and compiled real Legacy source", response.Mode)
+ 				}
+ 				if response.PlistBase64 != "" || response.SignedBase64 != "" || !strings.Contains(response.Error, "E_LEGACY_SYNTAX") {
+ 					t.Fatalf("old source produced bytes or lost migration diagnostic: mode=%q plist=%d signed=%d error=%s", response.Mode, len(response.PlistBase64), len(response.SignedBase64), response.Error)
+ 				}
+ 				recovered := route.compile(healthy)
+-				p15RP52MobileWire(t, recovered, "RP52_V2_DEFAULT")
++				p15RP52MobileWire(t, recovered, "RP52_V2_DEFAULT", true)
+ 				if recovered.Mode != "v2" {
+ 					t.Fatal("rejected old source contaminated healthy default", recovered.Mode)
+ 				}
+@@ -101,7 +105,7 @@ func TestP15RP52ExplicitLegacyReferenceModes(t *testing.T) {
+ 	for _, specimen := range p15RP52LegacySources() {
+ 		t.Run("explicit_legacy_"+specimen.name, func(t *testing.T) {
+ 			response := compileForMobileMode(specimen.source, "RP52 trusted old reference", "legacy", false)
+-			p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE")
++			p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE", false)
+ 			if response.Mode != "legacy" {
+ 				t.Fatal("explicitly selected Legacy was not preserved", response.Mode)
+ 			}
+@@ -111,7 +115,7 @@ func TestP15RP52ExplicitLegacyReferenceModes(t *testing.T) {
+ 	for _, specimen := range p15RP52LegacySources()[1:] {
+ 		t.Run("explicit_auto_"+specimen.name, func(t *testing.T) {
+ 			response := compileForMobileMode(specimen.source, "RP52 explicitly selected compatibility", "auto", false)
+-			p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE")
++			p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE", false)
+ 			if response.Mode != "legacy" {
+ 				t.Fatal("explicit compatibility route changed", response.Mode)
+ 			}
+@@ -125,6 +129,6 @@ func TestP15RP52ExplicitLegacyReferenceModes(t *testing.T) {
+ 	})
+ 	t.Run("recovery", func(t *testing.T) {
+ 		response := compileForMobileMode("let route = text(\"RP52_V2_DEFAULT\")\nshow(route)\n", "RP52 final recovery", "v2", false)
+-		p15RP52MobileWire(t, response, "RP52_V2_DEFAULT")
++		p15RP52MobileWire(t, response, "RP52_V2_DEFAULT", true)
+ 	})
+ }
+diff --git a/tools/language-acceptance/local_gate_source_binding.go b/tools/language-acceptance/local_gate_source_binding.go
+new file mode 100644
+index 00000000..d0442e7e
+--- /dev/null
++++ b/tools/language-acceptance/local_gate_source_binding.go
+@@ -0,0 +1,109 @@
++package main
++
++import (
++	"bytes"
++	"context"
++	"fmt"
++	"os/exec"
++	"path"
++	"path/filepath"
++	"reflect"
++	"strconv"
++	"strings"
++	"sync"
++	"time"
++)
++
++var localGateSourceCache sync.Map
++
++// These gate inventories exceed one immutable Git read after adding the shared
++// main-output dependencies. Bound the whole set before reading any blob bytes;
++// splitting the request must not multiply the existing resource limits.
++func localGateSourceFiles(repository, commit string, names []string) ([]editorSourceFile, error) {
++	if !documentationHash(commit, 40) || len(names) == 0 || len(names) > 128 {
++		return nil, fmt.Errorf("invalid bounded local-gate source request")
++	}
++	root, err := filepath.Abs(repository)
++	if err != nil {
++		return nil, err
++	}
++	var requests strings.Builder
++	seen := map[string]bool{}
++	for _, name := range names {
++		if name == "." || name == ".." || path.Clean(name) != name || path.IsAbs(name) ||
++			strings.HasPrefix(name, "../") || strings.ContainsAny(name, "\x00\r\n\\:") || seen[name] {
++			return nil, fmt.Errorf("invalid bounded local-gate source path: %q", name)
++		}
++		seen[name] = true
++		requests.WriteString(commit + ":" + name + "\n")
++	}
++	key := root + "\x00" + requests.String()
++	if cached, found := localGateSourceCache.Load(key); found {
++		return append([]editorSourceFile(nil), cached.([]editorSourceFile)...), nil
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
++	defer cancel()
++	command := exec.CommandContext(ctx, "git", "--no-replace-objects", "-C", root, "cat-file", "--batch-check")
++	command.Stdin = strings.NewReader(requests.String())
++	command.WaitDelay = 2 * time.Second
++	var output editorGitSourceOutput
++	var stderr bytes.Buffer
++	command.Stdout, command.Stderr = &output, &stderr
++	if err := command.Run(); err != nil {
++		return nil, fmt.Errorf("bounded immutable source size preflight unavailable: %w", err)
++	}
++	if err := localGateSourceBudget(output.Bytes(), len(names)); err != nil {
++		return nil, err
++	}
++	var files []editorSourceFile
++	for start := 0; start < len(names); start += 64 {
++		end := start + 64
++		if end > len(names) {
++			end = len(names)
++		}
++		batch, err := editorGitSourceFiles(root, commit, names[start:end])
++		if err != nil {
++			return nil, err
++		}
++		files = append(files, batch...)
++	}
++	localGateSourceCache.Store(key, append([]editorSourceFile(nil), files...))
++	return files, nil
++}
++
++func localGateSourceBudget(raw []byte, required int) error {
++	if required < 1 || required > 128 || len(raw) == 0 || raw[len(raw)-1] != '\n' {
++		return fmt.Errorf("invalid bounded local-gate size preflight")
++	}
++	lines := bytes.Split(raw[:len(raw)-1], []byte("\n"))
++	if len(lines) != required {
++		return fmt.Errorf("incomplete bounded local-gate source inventory")
++	}
++	var total int64
++	for _, line := range lines {
++		header := strings.Fields(string(line))
++		if len(header) != 3 || !documentationHash(header[0], 40) || header[1] != "blob" {
++			return fmt.Errorf("invalid bounded local-gate immutable source object")
++		}
++		size, err := strconv.ParseInt(header[2], 10, 64)
++		if err != nil || size < 0 || size > 4<<20 {
++			return fmt.Errorf("invalid bounded local-gate source object size")
++		}
++		total += int64(len(line)) + 1 + size + 1
++		if total > 16<<20 {
++			return fmt.Errorf("bounded local-gate source aggregate exceeds 16MiB")
++		}
++	}
++	return nil
++}
++
++func localGateExactSourceFiles(commit string, recorded []editorSourceFile, names []string) error {
++	immutable, err := localGateSourceFiles(resolveRepoRoot(), commit, names)
++	if err != nil {
++		return err
++	}
++	if !reflect.DeepEqual(recorded, immutable) {
++		return fmt.Errorf("bounded local-gate immutable source manifest mismatch")
++	}
++	return nil
++}
+diff --git a/tools/language-acceptance/local_gate_source_binding_test.go b/tools/language-acceptance/local_gate_source_binding_test.go
+new file mode 100644
+index 00000000..362764c1
+--- /dev/null
++++ b/tools/language-acceptance/local_gate_source_binding_test.go
+@@ -0,0 +1,147 @@
++package main
++
++import (
++	"fmt"
++	"os/exec"
++	"reflect"
++	"strings"
++	"testing"
++)
++
++func TestLocalGateMainOutputDependencies(t *testing.T) {
++	required := []string{
++		"internal/language/analysis/analyzer.go",
++		"internal/language/analysis/diagnostics.go",
++		"internal/language/backend/contracts.go",
++		"internal/language/lower/lower.go",
++		"internal/language/lower/main_output.go",
++		"internal/language/lower/module_scope.go",
++		"internal/language/migrate/main_output.go",
++		"internal/language/migrate/migrate.go",
++		"internal/language/service/module_analysis.go",
++		"internal/language/syntax/main_output.go",
++	}
++	for id, paths := range map[string][]string{
++		"BRG18": nativePathsProductionPaths,
++		"BRG21": purePublicProductionPaths,
++		"RP52":  publicFrontendProductionPaths,
++		"BRG30": packagedSkillProductionPaths,
++		"M02":   mainOutputProductionPaths,
++	} {
++		t.Run(id, func(t *testing.T) {
++			seen := map[string]bool{}
++			for _, name := range paths {
++				if seen[name] {
++					t.Fatal("duplicate immutable source path", name)
++				}
++				seen[name] = true
++			}
++			for _, name := range required {
++				if !seen[name] {
++					t.Fatal("main-output dependency missing from source proof", name)
++				}
++			}
++			if id == "RP52" && !seen["p15_main_void_return_test.go"] {
++				t.Fatal("public graph oracle lost its main-boundary dependency")
++			}
++			if id != "M02" && id != "BRG30" {
++				for _, name := range []string{
++					"tools/language-acceptance/local_gate_source_binding.go",
++					"tools/language-acceptance/local_gate_source_binding_test.go",
++				} {
++					if !seen[name] {
++						t.Fatal("bounded source acquisition is not source-bound", name)
++					}
++				}
++			}
++		})
++	}
++}
++
++func TestLocalGateSourceBudgetControls(t *testing.T) {
++	line := func(size int64) string { return strings.Repeat("a", 40) + " blob " + fmt.Sprint(size) + "\n" }
++	valid := strings.Repeat(line(10), 73)
++	if err := localGateSourceBudget([]byte(valid), 73); err != nil {
++		t.Fatal("valid two-batch preflight rejected", err)
++	}
++	for name, input := range map[string]struct {
++		raw   string
++		count int
++	}{
++		"empty":                    {"", 73},
++		"missing_tail":             {strings.Repeat(line(10), 72), 73},
++		"unexpected_tail":          {valid + line(10), 73},
++		"unterminated":             {strings.TrimSuffix(valid, "\n"), 73},
++		"too_many_objects":         {strings.Repeat(line(10), 129), 129},
++		"non_blob":                 {strings.Replace(valid, " blob ", " tree ", 1), 73},
++		"malformed_hash":           {strings.Replace(valid, strings.Repeat("a", 40), strings.Repeat("x", 40), 1), 73},
++		"negative_size":            {strings.Replace(valid, " blob 10", " blob -1", 1), 73},
++		"oversized_object":         {line((4 << 20) + 1), 1},
++		"aggregate_before_batches": {strings.Repeat(line(4<<20), 4) + strings.Repeat(line(0), 69), 73},
++		"unknown_git_object":       {strings.Repeat(line(10), 72) + "missing missing\n", 73},
++	} {
++		t.Run(name, func(t *testing.T) {
++			if err := localGateSourceBudget([]byte(input.raw), input.count); err == nil {
++				t.Fatal("invalid whole-set preflight accepted")
++			}
++		})
++	}
++}
++
++func TestLocalGateImmutableSourceBatches(t *testing.T) {
++	root := resolveRepoRoot()
++	rawCommit, err := exec.Command("git", "--no-replace-objects", "-C", root, "rev-parse", "HEAD").Output()
++	if err != nil {
++		t.Fatal(err)
++	}
++	commit := strings.TrimSpace(string(rawCommit))
++	names := append([]string(nil), publicFrontendProductionPaths...)
++	if len(names) <= 64 {
++		t.Fatal("control does not cross the real immutable-read boundary")
++	}
++	files, err := localGateSourceFiles(root, commit, names)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(files) != len(names) {
++		t.Fatal("bounded acquisition omitted a source object")
++	}
++	for _, index := range []int{0, 63, 64, len(names) - 1} {
++		raw, err := exec.Command("git", "--no-replace-objects", "-C", root, "show", commit+":"+names[index]).Output()
++		if err != nil {
++			t.Fatal(err)
++		}
++		if files[index].Path != names[index] || files[index].SHA256 != editorSHA(raw) {
++			t.Fatal("actual immutable blob differs across batch boundary", index)
++		}
++	}
++	if err := localGateExactSourceFiles(commit, files, names); err != nil {
++		t.Fatal("actual source witness rejected", err)
++	}
++	original := append([]editorSourceFile(nil), files...)
++	files[64].SHA256 = strings.Repeat("0", 64)
++	if err := localGateExactSourceFiles(commit, files, names); err == nil {
++		t.Fatal("second-batch counterfeit source digest accepted")
++	}
++	again, err := localGateSourceFiles(root, commit, names)
++	if err != nil || !reflect.DeepEqual(again, original) {
++		t.Fatal("caller mutation contaminated immutable source cache", err)
++	}
++	for name, mutate := range map[string]func([]string){
++		"cross_batch_duplicate": func(paths []string) { paths[64] = paths[0] },
++		"traversal":             func(paths []string) { paths[64] = "../main.go" },
++		"absolute":              func(paths []string) { paths[64] = "/main.go" },
++		"query_injection":       func(paths []string) { paths[64] = "main.go\n" + commit + ":go.mod" },
++		"windows_separator":     func(paths []string) { paths[64] = "internal\\language\\lower\\lower.go" },
++		"revision_separator":    func(paths []string) { paths[64] = "HEAD:main.go" },
++		"missing_second_batch":  func(paths []string) { paths[64] = "p15-no-such-source-object.go" },
++	} {
++		t.Run(name, func(t *testing.T) {
++			paths := append([]string(nil), names...)
++			mutate(paths)
++			if _, err := localGateSourceFiles(root, commit, paths); err == nil {
++				t.Fatal("invalid bounded immutable source request accepted")
++			}
++		})
++	}
++}
+diff --git a/tools/language-acceptance/native_paths_execution.go b/tools/language-acceptance/native_paths_execution.go
+index 9c3691d7..b30e7080 100644
+--- a/tools/language-acceptance/native_paths_execution.go
++++ b/tools/language-acceptance/native_paths_execution.go
+@@ -91,6 +91,15 @@ var nativePathsProductionPaths = []string{
+ 	"tools/language-acceptance/parser_execution.go",
+ 	"tools/language-acceptance/evidence_map.go",
+ 	"tools/language-acceptance/execution_audit.go",
++	"internal/language/analysis/diagnostics.go",
++	"internal/language/lower/main_output.go",
++	"internal/language/lower/module_scope.go",
++	"internal/language/migrate/main_output.go",
++	"internal/language/migrate/migrate.go",
++	"internal/language/service/module_analysis.go",
++	"internal/language/syntax/main_output.go",
++	"tools/language-acceptance/local_gate_source_binding.go",
++	"tools/language-acceptance/local_gate_source_binding_test.go",
+ }
+ 
+ func nativePathsRequiredEvents() []string {
+@@ -200,7 +209,7 @@ func validateNativePathsRecord(id string, record EvidenceRecord) error {
+ 	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(nativePathsTests) + time.Minute).Seconds()); err != nil {
+ 		return err
+ 	}
+-	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, nativePathsProductionPaths); err != nil {
++	if err = localGateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, nativePathsProductionPaths); err != nil {
+ 		return err
+ 	}
+ 	if err = parseNativePathsOutput(raw); err != nil {
+@@ -222,7 +231,7 @@ func (r *Runner) executeNativePathsProduction() ([]EvidenceArtifact, string, boo
+ 		return nil, "", false, err
+ 	}
+ 	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "BRG18", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(nativePathsTests), RequiredTests: nativePathsRequiredEvents()}
+-	receipt.SourceFiles, err = editorGitSourceFiles(root, before, nativePathsProductionPaths)
++	receipt.SourceFiles, err = localGateSourceFiles(root, before, nativePathsProductionPaths)
+ 	if err != nil {
+ 		return nil, "", false, err
+ 	}
+diff --git a/tools/language-acceptance/native_paths_execution_test.go b/tools/language-acceptance/native_paths_execution_test.go
+index 0d437f08..628829d1 100644
+--- a/tools/language-acceptance/native_paths_execution_test.go
++++ b/tools/language-acceptance/native_paths_execution_test.go
+@@ -34,7 +34,7 @@ func TestNativePathsProducerInventory(t *testing.T) {
+ 		t.Fatal("immutable full BRG18 contract changed", row)
+ 	}
+ 	names := nativePathsRequiredEvents()
+-	if len(names) != 54 || len(nativePathsProductionPaths) != 61 {
++	if len(names) != 54 || len(nativePathsProductionPaths) != 70 {
+ 		t.Fatal("unreviewed BRG18 event/source inventory", len(names), len(nativePathsProductionPaths))
+ 	}
+ 	seen := map[string]bool{}
+diff --git a/tools/language-acceptance/packaged_skill_execution.go b/tools/language-acceptance/packaged_skill_execution.go
+index b93c5c00..f8a112ed 100644
+--- a/tools/language-acceptance/packaged_skill_execution.go
++++ b/tools/language-acceptance/packaged_skill_execution.go
+@@ -115,6 +115,14 @@ var packagedSkillProductionPaths = []string{
+ 	"tools/language-acceptance/execution_audit.go",
+ 	"go.mod",
+ 	"go.sum",
++	"internal/language/analysis/analyzer.go",
++	"internal/language/analysis/diagnostics.go",
++	"internal/language/lower/lower.go",
++	"internal/language/lower/main_output.go",
++	"internal/language/lower/module_scope.go",
++	"internal/language/migrate/main_output.go",
++	"internal/language/service/module_analysis.go",
++	"internal/language/syntax/main_output.go",
+ }
+ 
+ func packagedSkillRequiredEvents() []string {
+diff --git a/tools/language-acceptance/packaged_skill_execution_test.go b/tools/language-acceptance/packaged_skill_execution_test.go
+index 02c17bbf..15fc1f11 100644
+--- a/tools/language-acceptance/packaged_skill_execution_test.go
++++ b/tools/language-acceptance/packaged_skill_execution_test.go
+@@ -35,7 +35,7 @@ func TestPackagedSkillProducerInventory(t *testing.T) {
+ 		t.Fatal("immutable full BRG30 contract changed", row)
+ 	}
+ 	names := packagedSkillRequiredEvents()
+-	if len(names) != 94 || len(packagedSkillProductionPaths) != 66 {
++	if len(names) != 94 || len(packagedSkillProductionPaths) != 74 {
+ 		t.Fatal("unreviewed BRG30 event/source inventory", len(names), len(packagedSkillProductionPaths))
+ 	}
+ 	seen := map[string]bool{}
+diff --git a/tools/language-acceptance/public_frontend_execution.go b/tools/language-acceptance/public_frontend_execution.go
+index 209592fd..fec37996 100644
+--- a/tools/language-acceptance/public_frontend_execution.go
++++ b/tools/language-acceptance/public_frontend_execution.go
+@@ -101,6 +101,15 @@ var publicFrontendProductionPaths = []string{
+ 	"tools/language-acceptance/parser_execution.go",
+ 	"tools/language-acceptance/evidence_map.go",
+ 	"tools/language-acceptance/execution_audit.go",
++	"internal/language/analysis/diagnostics.go",
++	"internal/language/lower/main_output.go",
++	"internal/language/lower/module_scope.go",
++	"internal/language/migrate/main_output.go",
++	"internal/language/service/module_analysis.go",
++	"internal/language/syntax/main_output.go",
++	"tools/language-acceptance/local_gate_source_binding.go",
++	"tools/language-acceptance/local_gate_source_binding_test.go",
++	"p15_main_void_return_test.go",
+ }
+ 
+ func publicFrontendRequiredEvents() []string {
+@@ -217,7 +226,7 @@ func validatePublicFrontendRecord(id string, record EvidenceRecord) error {
+ 	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(publicFrontendTests) + time.Minute).Seconds()); err != nil {
+ 		return err
+ 	}
+-	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, publicFrontendProductionPaths); err != nil {
++	if err = localGateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, publicFrontendProductionPaths); err != nil {
+ 		return err
+ 	}
+ 	if err = parsePublicFrontendOutput(raw); err != nil {
+@@ -239,7 +248,7 @@ func (r *Runner) executePublicFrontendProduction() ([]EvidenceArtifact, string,
+ 		return nil, "", false, err
+ 	}
+ 	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "RP52", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(publicFrontendTests), RequiredTests: publicFrontendRequiredEvents()}
+-	receipt.SourceFiles, err = editorGitSourceFiles(root, before, publicFrontendProductionPaths)
++	receipt.SourceFiles, err = localGateSourceFiles(root, before, publicFrontendProductionPaths)
+ 	if err != nil {
+ 		return nil, "", false, err
+ 	}
+diff --git a/tools/language-acceptance/public_frontend_execution_test.go b/tools/language-acceptance/public_frontend_execution_test.go
+index 63512201..aac1456f 100644
+--- a/tools/language-acceptance/public_frontend_execution_test.go
++++ b/tools/language-acceptance/public_frontend_execution_test.go
+@@ -34,7 +34,7 @@ func TestPublicFrontendProducerInventory(t *testing.T) {
+ 		t.Fatal("immutable full RP52 contract changed", row)
+ 	}
+ 	names := publicFrontendRequiredEvents()
+-	if len(names) != 98 || len(publicFrontendProductionPaths) != 64 {
++	if len(names) != 98 || len(publicFrontendProductionPaths) != 73 {
+ 		t.Fatal("unreviewed RP52 event/source inventory", len(names), len(publicFrontendProductionPaths))
+ 	}
+ 	seen := map[string]bool{}
+diff --git a/tools/language-acceptance/pure_public_execution.go b/tools/language-acceptance/pure_public_execution.go
+index d56ae2e0..375867bd 100644
+--- a/tools/language-acceptance/pure_public_execution.go
++++ b/tools/language-acceptance/pure_public_execution.go
+@@ -86,6 +86,14 @@ var purePublicProductionPaths = []string{
+ 	"tools/language-acceptance/parser_execution.go",
+ 	"tools/language-acceptance/evidence_map.go",
+ 	"tools/language-acceptance/execution_audit.go",
++	"internal/language/analysis/diagnostics.go",
++	"internal/language/lower/main_output.go",
++	"internal/language/lower/module_scope.go",
++	"internal/language/migrate/main_output.go",
++	"internal/language/migrate/migrate.go",
++	"internal/language/syntax/main_output.go",
++	"tools/language-acceptance/local_gate_source_binding.go",
++	"tools/language-acceptance/local_gate_source_binding_test.go",
+ }
+ 
+ func purePublicRequiredEvents() []string {
+@@ -195,7 +203,7 @@ func validatePurePublicRecord(id string, record EvidenceRecord) error {
+ 	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(purePublicTests) + time.Minute).Seconds()); err != nil {
+ 		return err
+ 	}
+-	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, purePublicProductionPaths); err != nil {
++	if err = localGateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, purePublicProductionPaths); err != nil {
+ 		return err
+ 	}
+ 	if err = parsePurePublicOutput(raw); err != nil {
+@@ -217,7 +225,7 @@ func (r *Runner) executePurePublicProduction() ([]EvidenceArtifact, string, bool
+ 		return nil, "", false, err
+ 	}
+ 	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "BRG21", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(purePublicTests), RequiredTests: purePublicRequiredEvents()}
+-	receipt.SourceFiles, err = editorGitSourceFiles(root, before, purePublicProductionPaths)
++	receipt.SourceFiles, err = localGateSourceFiles(root, before, purePublicProductionPaths)
+ 	if err != nil {
+ 		return nil, "", false, err
+ 	}
+diff --git a/tools/language-acceptance/pure_public_execution_test.go b/tools/language-acceptance/pure_public_execution_test.go
+index ff88c58e..7cc6fc12 100644
+--- a/tools/language-acceptance/pure_public_execution_test.go
++++ b/tools/language-acceptance/pure_public_execution_test.go
+@@ -34,7 +34,7 @@ func TestPurePublicProducerInventory(t *testing.T) {
+ 		t.Fatal("immutable full BRG21 contract changed", row)
+ 	}
+ 	names := purePublicRequiredEvents()
+-	if len(names) != 33 || len(purePublicProductionPaths) != 56 {
++	if len(names) != 33 || len(purePublicProductionPaths) != 64 {
+ 		t.Fatal("unreviewed BRG21 event/source inventory", len(names), len(purePublicProductionPaths))
+ 	}
+ 	seen := map[string]bool{}

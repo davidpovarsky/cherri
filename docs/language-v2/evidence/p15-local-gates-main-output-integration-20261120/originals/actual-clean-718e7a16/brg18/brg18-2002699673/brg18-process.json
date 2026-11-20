@@ -1,0 +1,423 @@
+{
+  "format_version": 1,
+  "requirement": "BRG18",
+  "source_commit": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "main.go",
+      "sha256": "35cd76f2bb78d077fa6aa84ea32ba7166657725b16fe5010075202d5c7a063c8"
+    },
+    {
+      "path": "args.go",
+      "sha256": "46915519af85d5c79271fc03beda6363c68ccf1872756d2b6db61b448bd1a96a"
+    },
+    {
+      "path": "import.go",
+      "sha256": "8ff75c5eaef4403efacc9d213e83ddd6e70d7976a07d7ff6fa4ef56c2e7be705"
+    },
+    {
+      "path": "import_fidelity.go",
+      "sha256": "cba3ca8ce5b2a3f444708687d2383f6079ca8db711f56e51e44968613fd80e74"
+    },
+    {
+      "path": "import_provenance.go",
+      "sha256": "6fa32e54161e77ecbc18d3771450ee7704ca0a39c5b58e235c4dc46aa38bd131"
+    },
+    {
+      "path": "import_provenance_restore.go",
+      "sha256": "c1dc43ac6339f64b5ea31e61de06c79a7c8377a77fd017660707fdb57b647cfa"
+    },
+    {
+      "path": "import_provenance_oracle_nopatch.go",
+      "sha256": "302d319c98f067b357fbf4d9b519602150898eab4ce1b439e4440680075de017"
+    },
+    {
+      "path": "hybrid_import.go",
+      "sha256": "e5418f8ba31028da3e2f96a7e269916f62d8230bf1e997f6bc0be24db2941c6f"
+    },
+    {
+      "path": "semantic_import_planner.go",
+      "sha256": "0e304f7843a69de7375386d133268446c0bb4b213cfd0e19a3b7f3f0e65c2ab5"
+    },
+    {
+      "path": "semantic_import_native_operands.go",
+      "sha256": "4300d13f7c34bdb50724601717610b206072300556acac3562a091698b9bdc2c"
+    },
+    {
+      "path": "semantic_import_native_loop_results.go",
+      "sha256": "091a6e8f07fdf7e8a83676692120bfda71911841e1b90b41a8a3e086b3326cea"
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "sha256": "94b4fd6ab51b679de2dc0a24dce867a6f4fc23a7fa158be5f96d0da7718d2058"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "d32324fdc3aa3667f8280ff9e931a41de568e0a6e3422b7d6d6a7c8c37789762"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "7913b0bec818c0caeeddcf42e0dfc63458ca8e9b318873054b4b038761f3db3f"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "sha256": "d490e6a0b09629cd3cd9e8226481d086daed4f38455c84abfd40466b5c3dd260"
+    },
+    {
+      "path": "mobile_compiler.go",
+      "sha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602"
+    },
+    {
+      "path": "shared_codec.go",
+      "sha256": "57da3538aabbfe0a9ce7ad497181f546209d9b20eaef5774ef943a053ebb9bad"
+    },
+    {
+      "path": "shortcutgen.go",
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+    },
+    {
+      "path": "shortcut.go",
+      "sha256": "c21ff3a195441b1c402ad16ff1009f7eb7a6fc0bd7b29fd382c63d7dd94dd28d"
+    },
+    {
+      "path": "raw_actions.go",
+      "sha256": "620f01e09623d3be7218a32feeef3709158843b039562181ac0cee9d34699706"
+    },
+    {
+      "path": "native_action_envelope.go",
+      "sha256": "6273c3e69a63b6537da7f06130877e7394c74829bb6fc7e8dfbeb269e7352fbe"
+    },
+    {
+      "path": "native_action_result_binding.go",
+      "sha256": "95d562b2186c0a13f90d1f387b7e7c6ef580fb89431555eea0cebe32c25b5c7c"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "d97d0eb0c41771506c51f1dd1c214042d1d104ae1f5c43b5f8a84d7f77089dc9"
+    },
+    {
+      "path": "internal/language/backend/native_envelope.go",
+      "sha256": "3f61a12dfd9867c66e8bffa716ab8a0393c86f97492ee4658c182384ddece6e6"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "f4d949beb67736b26e53a07e0b352802086cc9990349cd4a7ac5d0535a07acc6"
+    },
+    {
+      "path": "internal/language/lower/native_action_envelope.go",
+      "sha256": "bcdb586142cb0f8b45dd52af58f6dfffcf4f8a0a9be64279b1fb23ed644c0158"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "dc76b3338a7944f24038916886459b7e47987eed2c727570d0a2369f64c41512"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474"
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "sha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919"
+    },
+    {
+      "path": "internal/shortcutcompare/compare.go",
+      "sha256": "903899415feb475f382c09659b3ccfdfa983f5a59e0a38e470b4b483caad472a"
+    },
+    {
+      "path": "internal/shortcutcompare/edit.go",
+      "sha256": "90dc403ec069378bb7dfe83fa85c85761b45cf0e88f05f0f7bb1a026d7d990c1"
+    },
+    {
+      "path": "internal/shortcutcompare/normalize.go",
+      "sha256": "6f2f57a173aafe14618fdf87779ef2a2e60ba03ddd7ebde67a1d22ac6c57fc69"
+    },
+    {
+      "path": "internal/shortcutcompare/strict_scalars.go",
+      "sha256": "934a7516cec175b9259234eb0b7dd69ca0c2aa035fc5d7c7187851913a9a715b"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "p15_native_paths_gate_test.go",
+      "sha256": "06ccd9c9a9fbba80b44ef0e5cdf9b6f703ffac7d4e018c6b3f04d452e2e89800"
+    },
+    {
+      "path": "p15_native_acceptance_test.go",
+      "sha256": "68d50ee22426b1d3c814f822449e705a6ffb51da1d51f4e57eab1f82da59b5db"
+    },
+    {
+      "path": "p15_brg19_safe_import_edit_test.go",
+      "sha256": "651cd06db3900d08f95d5f5fe024edd4697a634d46cc070c2e499d77716daca4"
+    },
+    {
+      "path": "p15_cli_acceptance_test.go",
+      "sha256": "40b536a6776072f07177c5f87cd52171a347c06e0ab342bb9a85062218a6fd87"
+    },
+    {
+      "path": "p10r9_hybrid_test.go",
+      "sha256": "57f0d40ee663370f6d19268941cce74c0485cda32e8e64d0260bbd6e25d00253"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tools/language-acceptance/native_paths_execution.go",
+      "sha256": "1c5d431f70d7115a6e2186af8f7b507b697536af6e79389765b08396717534b9"
+    },
+    {
+      "path": "tools/language-acceptance/native_paths_execution_test.go",
+      "sha256": "89766563d59873926663a2330cd25d497479574c95b95a292f3fdbec7c0a6f11"
+    },
+    {
+      "path": "tools/language-acceptance/structural_migration_execution_test.go",
+      "sha256": "ac259b0527131e7c9a866f457d4e44170a9d7a24f329ff983e3aad1beeda8abb"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "sha256": "33edb6072872f90ad6f963b6cd0b0c17ba374b09ea31c17e256608b640541239"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "7857353140aedd3e76bba75e0e4f313a09720eece90364b282bd62817424f9e8"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "3bbe09b6253701c2cd2ab52de5afec3fb3e6817eee93538b8f63b6a049342f47"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "76e8fb77c00724a3b93725e85440f076fc76393530c0bcfbd1d0548269ffe452"
+    },
+    {
+      "path": "internal/language/analysis/diagnostics.go",
+      "sha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f"
+    },
+    {
+      "path": "internal/language/lower/main_output.go",
+      "sha256": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619"
+    },
+    {
+      "path": "internal/language/lower/module_scope.go",
+      "sha256": "2419f4cc460a9a9331d1a70d0848ebdea70ad5c2ab73a49f09c6c69d6a0e9367"
+    },
+    {
+      "path": "internal/language/migrate/main_output.go",
+      "sha256": "f4c0d7515b3fea56e594ff721bb2adc77678d0cfa2d17844cb09cfc514b8e058"
+    },
+    {
+      "path": "internal/language/migrate/migrate.go",
+      "sha256": "0abb1c82795f45bf54f67f4c9e3cd31932ab188a16bc9879549948da9c23b8ea"
+    },
+    {
+      "path": "internal/language/service/module_analysis.go",
+      "sha256": "73627652093ea9ea465b0ed69f7e2d85dfff0c023a4f5e00739312f0e61fb27d"
+    },
+    {
+      "path": "internal/language/syntax/main_output.go",
+      "sha256": "9d53c9c5fa4bb27dbcdb44e3ce75dece9ffe4e532543d7fef9685ea7fd37f9b9"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding.go",
+      "sha256": "fa655ca644934ec8e8cb3fb636694095eeb1cce14b261522b587e1d2cca1ad2e"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding_test.go",
+      "sha256": "f08c738382dd4f69d7a5cd00fc9b9b6e805b18f723462b772044617c2159beb4"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestBackendRecovery18PublicNativeImportPaths|TestBackendRecovery18ExactWorkflowBypass|TestBackendRecovery18RejectsNativeAndReadabilityFaults|TestBackendRecovery18ReadabilityRejectsCompiledFallbacks)$"
+  ],
+  "required_tests": [
+    "TestBackendRecovery18PublicNativeImportPaths",
+    "TestBackendRecovery18ExactWorkflowBypass",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
+    "TestBackendRecovery18PublicNativeImportPaths/xml",
+    "TestBackendRecovery18PublicNativeImportPaths/xml/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/xml/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/binary",
+    "TestBackendRecovery18PublicNativeImportPaths/binary/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/binary/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/json",
+    "TestBackendRecovery18PublicNativeImportPaths/json/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/json/lossless",
+    "TestBackendRecovery18ExactWorkflowBypass/xml",
+    "TestBackendRecovery18ExactWorkflowBypass/binary",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/header",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/action_field",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/data_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/data_byte",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/date_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/date_value",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/large_integer",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/negative_integer",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/false_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/zero_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_text",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_array",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_map",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/order",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/descriptor",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/variant",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/producer_uuid",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/consumer_uuid",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/chain_order",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/region_group",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/region_result",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/omitted_default",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/explicit_false",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/missing_parameters",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/question_index",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/provenance",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_natural",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_opaque",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/source_call",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/encoded_comment_only",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/comment",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/static_variant",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/reference",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/omitted_parameter",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/explicit_false",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/empty_parameters"
+  ],
+  "discovered_tests": [
+    "TestBackendRecovery18PublicNativeImportPaths",
+    "TestBackendRecovery18ExactWorkflowBypass",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
+    "TestBackendRecovery18PublicNativeImportPaths/xml",
+    "TestBackendRecovery18PublicNativeImportPaths/xml/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/xml/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/binary",
+    "TestBackendRecovery18PublicNativeImportPaths/binary/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/binary/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/json",
+    "TestBackendRecovery18PublicNativeImportPaths/json/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/json/lossless",
+    "TestBackendRecovery18ExactWorkflowBypass/xml",
+    "TestBackendRecovery18ExactWorkflowBypass/binary",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/header",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/action_field",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/data_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/data_byte",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/date_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/date_value",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/large_integer",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/negative_integer",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/false_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/zero_type",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_text",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_array",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_map",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/order",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/descriptor",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/variant",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/producer_uuid",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/consumer_uuid",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/chain_order",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/region_group",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/region_result",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/omitted_default",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/explicit_false",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/missing_parameters",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/question_index",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/provenance",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_natural",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_opaque",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/source_call",
+    "TestBackendRecovery18RejectsNativeAndReadabilityFaults/encoded_comment_only",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/comment",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/static_variant",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/reference",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/omitted_parameter",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/explicit_false",
+    "TestBackendRecovery18ReadabilityRejectsCompiledFallbacks/empty_parameters"
+  ],
+  "started_utc": "2026-11-20T11:36:11.6587487Z",
+  "finished_utc": "2026-11-20T11:36:21.8406046Z",
+  "elapsed_seconds": 10.181811100000001,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "6c361d88d9865809464a315ea8f9c61ff659fc526bbe537baddb2a3db7b8a295",
+  "raw_bytes": 551384,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "",
+  "benchmark_bytes": 0
+}

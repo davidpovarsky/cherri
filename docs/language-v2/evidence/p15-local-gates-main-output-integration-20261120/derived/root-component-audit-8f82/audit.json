@@ -1,0 +1,326 @@
+{
+  "format_version": 1,
+  "kind": "independent-read-only-component-evidence-audit",
+  "auditor": "acceptance-agent",
+  "proof_commit": "8f82f5864bf32bf00ae5234b0f57277b7cf0765d",
+  "implementation_commit": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+  "scope": "Byte/source/process/event review only; no new Go or Apple execution; M02 Apple, BRG14, full Go and formal179 remain unaccepted",
+  "audit": {
+    "proof": "8f82f5864bf32bf00ae5234b0f57277b7cf0765d",
+    "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+    "zip": {
+      "bytes": 1163478,
+      "sha256": "c47d104325cb999a425393bc753fbda5ac2273a21e9514ae666a31e4e0469829",
+      "members": 144,
+      "uncompressed_bytes": 12600416
+    },
+    "original_files_identical": 144,
+    "original_files_missing": [],
+    "immutable_source_blobs_verified": 67,
+    "clean_runs": [
+      {
+        "name": "build",
+        "exit_code": 0,
+        "elapsed_seconds": 5.25,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "build-metadata",
+        "exit_code": 0,
+        "elapsed_seconds": 0.297,
+        "stdout_bytes": 3298,
+        "stdout_sha256": "0cdef4280822de1c7d76c13bef8a736e941937f8d02d7822243077a711bd612b"
+      },
+      {
+        "name": "capabilities",
+        "exit_code": 0,
+        "elapsed_seconds": 0.734,
+        "stdout_bytes": 26982,
+        "stdout_sha256": "01bf10f58fbb4e72b04c34a6c790a0572b109b0687a01bcd3f33e365b32de833"
+      },
+      {
+        "name": "focus",
+        "exit_code": 0,
+        "elapsed_seconds": 16.609,
+        "stdout_bytes": 293590,
+        "stdout_sha256": "c1ad2d7b5c884632b5f99b005af83625b2618eba2fea665fdfaf5c722f753fad",
+        "independent_events": {
+          "pass": 337,
+          "fail": 0,
+          "skip": 0,
+          "failed": [],
+          "skipped": [],
+          "packages": [
+            {
+              "Package": "github.com/electrikmilk/cherri",
+              "Action": "pass",
+              "Elapsed": 11.349
+            }
+          ],
+          "event_count": 1352
+        }
+      },
+      {
+        "name": "affected-known-json-failure",
+        "exit_code": 1,
+        "elapsed_seconds": 165.672,
+        "stdout_bytes": 2228811,
+        "stdout_sha256": "67e57ec96bfe1061855769af49a03e0c70ea8c02b3f113b44adb447d104a44fa",
+        "independent_events": {
+          "pass": 2328,
+          "fail": 2,
+          "skip": 0,
+          "failed": [
+            "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/literal-dict-with-dynamic-fields-and-local-http-echo",
+            "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer"
+          ],
+          "skipped": [],
+          "packages": [
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+              "Action": "pass",
+              "Elapsed": 1.366
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/tools/legacy-parity",
+              "Action": "pass",
+              "Elapsed": 3.441
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri",
+              "Action": "fail",
+              "Elapsed": 161.829
+            }
+          ],
+          "event_count": 9471
+        }
+      },
+      {
+        "name": "internal-language",
+        "exit_code": 0,
+        "elapsed_seconds": 14.75,
+        "stdout_bytes": 307616,
+        "stdout_sha256": "12bf5d8179857ed59f71b4153e95e4ceb127f3a71d4f0332b660437072558a6a",
+        "independent_events": {
+          "pass": 322,
+          "fail": 0,
+          "skip": 0,
+          "failed": [],
+          "skipped": [],
+          "packages": [
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/enums",
+              "Action": "skip",
+              "Elapsed": 0.001
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/backend",
+              "Action": "pass",
+              "Elapsed": 1.445
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/modules",
+              "Action": "skip",
+              "Elapsed": 0
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/ir",
+              "Action": "pass",
+              "Elapsed": 2.157
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/analysis",
+              "Action": "pass",
+              "Elapsed": 3.826
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/migrate",
+              "Action": "pass",
+              "Elapsed": 1.954
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+              "Action": "pass",
+              "Elapsed": 1.99
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/lsp",
+              "Action": "pass",
+              "Elapsed": 2.698
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/protocol",
+              "Action": "pass",
+              "Elapsed": 2.891
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/schema",
+              "Action": "pass",
+              "Elapsed": 1.581
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/syntax",
+              "Action": "pass",
+              "Elapsed": 0.831
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/source",
+              "Action": "pass",
+              "Elapsed": 0.933
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/workspace",
+              "Action": "pass",
+              "Elapsed": 1.9769999999999999
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/types",
+              "Action": "pass",
+              "Elapsed": 2.12
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/assets",
+              "Action": "pass",
+              "Elapsed": 8.933
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/internal/language/service",
+              "Action": "pass",
+              "Elapsed": 2.9859999999999998
+            },
+            {
+              "Package": "github.com/electrikmilk/cherri/tools/legacy-parity",
+              "Action": "pass",
+              "Elapsed": 3.363
+            }
+          ],
+          "event_count": 1355
+        }
+      },
+      {
+        "name": "legacy-parity",
+        "exit_code": 0,
+        "elapsed_seconds": 12.812,
+        "stdout_bytes": 6731,
+        "stdout_sha256": "4819550a50382af06be63099794d638ac0895818eb4bc22669d946f8915348ec"
+      }
+    ],
+    "baseline": {
+      "path": "red.jsonl",
+      "events": {
+        "pass": 7,
+        "fail": 7,
+        "skip": 0,
+        "failed": [
+          "TestP15M02MainVoidFallthrough/empty",
+          "TestP15M02MainVoidFallthrough/unused_text",
+          "TestP15M02MainVoidFallthrough/unused_binding",
+          "TestP15M02MainVoidFallthrough/void_action_after_value",
+          "TestP15M02MainVoidFallthrough/partial_early_return",
+          "TestP15M02MainVoidFallthrough/function_caller_fallthrough",
+          "TestP15M02MainVoidFallthrough"
+        ],
+        "skipped": [],
+        "packages": [
+          {
+            "Package": "github.com/electrikmilk/cherri",
+            "Action": "fail",
+            "Elapsed": 0.639
+          }
+        ],
+        "event_count": 66
+      }
+    },
+    "receipt_keys": [
+      "source",
+      "clean_before_after",
+      "compiler_sha256",
+      "source_witness_files",
+      "records",
+      "parity",
+      "scope"
+    ],
+    "receipt_nonarray_fields": {
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "clean_before_after": true,
+      "compiler_sha256": "158b6fd0a3c1ed93e73f8579ba44c0797823f3db5748a7c34888538c3bc44bb5",
+      "source_witness_files": 64,
+      "scope": "M02 component clean implementation and explicitly retained independent JSON failure; not full Go, Apple runtime or formal179"
+    },
+    "parity_keys": [
+      "timestamp",
+      "total_fixtures",
+      "verified_parity",
+      "proven_equivalent",
+      "upstream_baseline_fails",
+      "migration_fails",
+      "v2_compile_fails",
+      "parity_differences",
+      "total_actions_tested",
+      "actions_passed_both",
+      "fixtures",
+      "actions"
+    ],
+    "parity_nonarray_fields": {
+      "timestamp": "2026-11-20T11:04:30Z",
+      "total_fixtures": 47,
+      "verified_parity": 9,
+      "proven_equivalent": 38,
+      "upstream_baseline_fails": 0,
+      "migration_fails": 0,
+      "v2_compile_fails": 0,
+      "parity_differences": 0,
+      "total_actions_tested": 17,
+      "actions_passed_both": 17
+    },
+    "parity_array_sizes": {
+      "fixtures": 47,
+      "actions": 17
+    },
+    "source_guard_lines": [
+      "ev=Path(r\"C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\")/\"r4-main-void/clean-source-510ecfdd\"",
+      " assert subprocess.check_output([\"git\",\"--no-replace-objects\",\"rev-parse\",\"HEAD\"],cwd=root,text=True).strip()==source",
+      " assert not subprocess.check_output([\"git\",\"status\",\"--porcelain\"],cwd=root,text=True).strip()",
+      " oid=subprocess.check_output([\"git\",\"--no-replace-objects\",\"rev-parse\",source+\":\"+name],cwd=root,text=True).strip()",
+      " raw=(ev/(name+\".stdout\")).read_bytes();rec={\"name\":name,\"source\":source,\"source_clean_before_after\":False,\"command\":command,\"CHERRI_BIN\":env[\"CHERRI_BIN\"],\"started_at\":start,\"elapsed_seconds\":round(time.monotonic()-clock,3),\"exit_code\":p.returncode,\"expected_exit_for_this_diagnostic\":expected_exit,\"stdout_sha256\":sha(raw),\"stderr_sha256\":sha((ev/(name+\".stderr\")).read_bytes())}",
+      " guard();rec[\"source_clean_before_after\"]=True",
+      "r={\"source\":source,\"clean_before_after\":True,\"compiler_sha256\":sha((ev/\"compiler.exe\").read_bytes()),\"source_witness_files\":len(witness),\"records\":records,\"parity\":{k:v for k,v in p.items() if k not in [\"fixtures\",\"actions\"]},\"scope\":\"M02 component clean implementation and explicitly retained independent JSON failure; not full Go, Apple runtime or formal179\"}"
+    ],
+    "report_sha256": "e6107f346c5b9e53c502845423a843a82fa7fceb2ea2130f593538ef9ad536a4"
+  },
+  "original_compiler": {
+    "original_compiler_checked": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+    "bytes": 25481728,
+    "sha256": "158b6fd0a3c1ed93e73f8579ba44c0797823f3db5748a7c34888538c3bc44bb5",
+    "failure_messages": [
+      "        Compilation error: semantic error [E_TARGET_VALUE_SHAPE]: current Dictionary value transport cannot preserve optional absence; use a proven present value at C:\\Users\\DAVID\\AppData\\Local\\Temp\\TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEch1432465866\\001\\b1_json_literal_dynamic_fields.cherri:7:145-7:148\n",
+      "--- FAIL: TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/literal-dict-with-dynamic-fields-and-local-http-echo (0.09s)\n",
+      "--- FAIL: TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer (0.09s)\n"
+    ]
+  },
+  "source_manifest_reconciliation": {
+    "original_changed_blobs": 64,
+    "sealed_blobs": 67,
+    "original64_match_sealed67": true,
+    "extra_witnesses": [
+      "go.mod",
+      "go.sum",
+      "p15_main_void_return_test.go"
+    ]
+  },
+  "individual_parity_outcomes_verified": "47 unique complete fixture verdicts +17 unique complete action verdicts verified",
+  "proof_only_paths": [
+    "docs/language-v2/evidence/p15-main-output-20261120/immutable-source-witness.json",
+    "docs/language-v2/evidence/p15-main-output-20261120/original-receipts-manifest.json",
+    "docs/language-v2/evidence/p15-main-output-20261120/original-receipts.zip",
+    "docs/language-v2/evidence/p15-main-output-20261120/report.md",
+    "docs/language-v2/evidence/p15-main-output-20261120/summary.json"
+  ],
+  "review_operations": [
+    "script_job_826d9bd5827b419b86917fef59f7269d",
+    "script_job_cfc9501a6c344d8fab476fd85b2cce45",
+    "script_job_e9918afc289e462196abe3ac1fecec1d"
+  ],
+  "audited_at": "2026-11-20T11:25:20.732158+00:00"
+}

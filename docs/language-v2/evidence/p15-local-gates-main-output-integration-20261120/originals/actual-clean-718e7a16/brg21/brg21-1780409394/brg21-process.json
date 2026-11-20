@@ -1,0 +1,357 @@
+{
+  "format_version": 1,
+  "requirement": "BRG21",
+  "source_commit": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "main.go",
+      "sha256": "35cd76f2bb78d077fa6aa84ea32ba7166657725b16fe5010075202d5c7a063c8"
+    },
+    {
+      "path": "args.go",
+      "sha256": "46915519af85d5c79271fc03beda6363c68ccf1872756d2b6db61b448bd1a96a"
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "sha256": "94b4fd6ab51b679de2dc0a24dce867a6f4fc23a7fa158be5f96d0da7718d2058"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "d32324fdc3aa3667f8280ff9e931a41de568e0a6e3422b7d6d6a7c8c37789762"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "7913b0bec818c0caeeddcf42e0dfc63458ca8e9b318873054b4b038761f3db3f"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "sha256": "d490e6a0b09629cd3cd9e8226481d086daed4f38455c84abfd40466b5c3dd260"
+    },
+    {
+      "path": "mobile_compiler.go",
+      "sha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602"
+    },
+    {
+      "path": "signing.go",
+      "sha256": "01c4156b43db25bebc2515efcff13f9f64fdda72332e25e0bfffef90a8229fac"
+    },
+    {
+      "path": "output.go",
+      "sha256": "e2865c10011359849686e0fcf379ed3f4037ecac19e46771df8651b63d351585"
+    },
+    {
+      "path": "legacy_output_transaction.go",
+      "sha256": "ec4f9ddf0a37c235fc037d29274c81a44f5e13982ad46ab7eae3e34f35c0d497"
+    },
+    {
+      "path": "shortcutgen.go",
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+    },
+    {
+      "path": "shortcut.go",
+      "sha256": "c21ff3a195441b1c402ad16ff1009f7eb7a6fc0bd7b29fd382c63d7dd94dd28d"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "d97d0eb0c41771506c51f1dd1c214042d1d104ae1f5c43b5f8a84d7f77089dc9"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "f4d949beb67736b26e53a07e0b352802086cc9990349cd4a7ac5d0535a07acc6"
+    },
+    {
+      "path": "embedded_assets.go",
+      "sha256": "8301a54bc37828ad31158a9183466930d740e2ad3eac4e720d6a6ff52fa9a9d0"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "dc76b3338a7944f24038916886459b7e47987eed2c727570d0a2369f64c41512"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474"
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "sha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919"
+    },
+    {
+      "path": "internal/language/modules/graph.go",
+      "sha256": "a494fff02dddc986a042a5bb76e52a35481c12e96dbd3f0b2d1824ab4823076f"
+    },
+    {
+      "path": "internal/language/modules/standard_library.go",
+      "sha256": "23720471b739c5252a580d7dadc66156b92e8b17f364d4916b4df1f2606cc4e3"
+    },
+    {
+      "path": "internal/language/modules/stdfunc_source_generated.go",
+      "sha256": "0b68a0c210927483337b18907521369caf19db958bb37c280fcb4acba7a06292"
+    },
+    {
+      "path": "internal/language/workspace/resource.go",
+      "sha256": "6f0152c71f439527de8f74d1ce65d4484098fc3198aa77a9628eacf1acb75f76"
+    },
+    {
+      "path": "internal/language/assets/cache.go",
+      "sha256": "116f6704b59e0f1761e19b7244b9945e7b0c5ac30a493537bcf145e87c44dbf8"
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "sha256": "ac6ae27ca33b2fdb9148df03ab1a9409a8cc8bf078a9c1e88f39325db7ca3345"
+    },
+    {
+      "path": "internal/language/service/module_analysis.go",
+      "sha256": "73627652093ea9ea465b0ed69f7e2d85dfff0c023a4f5e00739312f0e61fb27d"
+    },
+    {
+      "path": "internal/language/service/asset_analysis.go",
+      "sha256": "e3da08707ac7dafeb0e80edaa49278f5c95917bc5c59b2b22704ef1edfbf28c3"
+    },
+    {
+      "path": "internal/language/service/registry_lifetime.go",
+      "sha256": "5e2fa8ae481bf5501c23531adedbe71edbefeb522cd3d06db4447acf2e2333e5"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "p15_pure_public_gate_test.go",
+      "sha256": "af86249dc1a3b71b306bc46b3bc82d11b2dc7555f453a75f4ce99c993f735ce2"
+    },
+    {
+      "path": "p15_workspace_module_test.go",
+      "sha256": "9e49888161f711a433f2283337d2ba74a511d485f8ea60fb4034b730d8b129f3"
+    },
+    {
+      "path": "p15_asset_authorization_repair_test.go",
+      "sha256": "2d14705876d6f8571c2051acdbeaa17670418c7eaae8e74778655fad6145ab95"
+    },
+    {
+      "path": "p15_embedded_asset_acceptance_test.go",
+      "sha256": "9d072a24ade84a74328d5ed6b1d84fc8fea2e24c1044e715e76e5a6a43a6c1a3"
+    },
+    {
+      "path": "p15_asset_dependency_baseline_test.go",
+      "sha256": "a1acac30f32b8b2b0f949c26e42feba7b98cb7028751c57b563c035e1c9b70f6"
+    },
+    {
+      "path": "p15_cli_acceptance_test.go",
+      "sha256": "40b536a6776072f07177c5f87cd52171a347c06e0ab342bb9a85062218a6fd87"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tools/language-acceptance/pure_public_execution.go",
+      "sha256": "8709f0b996ac1a02e1ec81eb5bc45f31f0bb75632289b0b3a13737d71c2e6d48"
+    },
+    {
+      "path": "tools/language-acceptance/pure_public_execution_test.go",
+      "sha256": "902661d32bf2b90a29b306c416062b6d34853a52d3a71a93562052bd969f95aa"
+    },
+    {
+      "path": "tools/language-acceptance/structural_migration_execution_test.go",
+      "sha256": "ac259b0527131e7c9a866f457d4e44170a9d7a24f329ff983e3aad1beeda8abb"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "sha256": "33edb6072872f90ad6f963b6cd0b0c17ba374b09ea31c17e256608b640541239"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "7857353140aedd3e76bba75e0e4f313a09720eece90364b282bd62817424f9e8"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "3bbe09b6253701c2cd2ab52de5afec3fb3e6817eee93538b8f63b6a049342f47"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "76e8fb77c00724a3b93725e85440f076fc76393530c0bcfbd1d0548269ffe452"
+    },
+    {
+      "path": "internal/language/analysis/diagnostics.go",
+      "sha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f"
+    },
+    {
+      "path": "internal/language/lower/main_output.go",
+      "sha256": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619"
+    },
+    {
+      "path": "internal/language/lower/module_scope.go",
+      "sha256": "2419f4cc460a9a9331d1a70d0848ebdea70ad5c2ab73a49f09c6c69d6a0e9367"
+    },
+    {
+      "path": "internal/language/migrate/main_output.go",
+      "sha256": "f4c0d7515b3fea56e594ff721bb2adc77678d0cfa2d17844cb09cfc514b8e058"
+    },
+    {
+      "path": "internal/language/migrate/migrate.go",
+      "sha256": "0abb1c82795f45bf54f67f4c9e3cd31932ab188a16bc9879549948da9c23b8ea"
+    },
+    {
+      "path": "internal/language/syntax/main_output.go",
+      "sha256": "9d53c9c5fa4bb27dbcdb44e3ce75dece9ffe4e532543d7fef9685ea7fd37f9b9"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding.go",
+      "sha256": "fa655ca644934ec8e8cb3fb636694095eeb1cce14b261522b587e1d2cca1ad2e"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding_test.go",
+      "sha256": "f08c738382dd4f69d7a5cd00fc9b9b6e805b18f723462b772044617c2159beb4"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+  ],
+  "required_tests": [
+    "TestBackendRecovery21PublicAndServiceEffects",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
+    "TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement",
+    "TestP15IM04ActualWorkspaceResourceBoundaries",
+    "TestBackendRecovery21PublicAndServiceEffects/observer_controls",
+    "TestBackendRecovery21PublicAndServiceEffects/service_valid",
+    "TestBackendRecovery21PublicAndServiceEffects/check_valid",
+    "TestBackendRecovery21PublicAndServiceEffects/service_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/check_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/compile_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/file_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/service_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/check_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/compile_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/file_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/service_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/check_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/file_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/missing_module"
+  ],
+  "discovered_tests": [
+    "TestBackendRecovery21PublicAndServiceEffects",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
+    "TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement",
+    "TestP15IM04ActualWorkspaceResourceBoundaries",
+    "TestBackendRecovery21PublicAndServiceEffects/observer_controls",
+    "TestBackendRecovery21PublicAndServiceEffects/service_valid",
+    "TestBackendRecovery21PublicAndServiceEffects/check_valid",
+    "TestBackendRecovery21PublicAndServiceEffects/service_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/check_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/compile_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/file_invalid_action",
+    "TestBackendRecovery21PublicAndServiceEffects/service_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/check_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/compile_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/file_remote_import",
+    "TestBackendRecovery21PublicAndServiceEffects/service_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/check_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/file_missing_local_import",
+    "TestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri",
+    "TestP15IM04ActualWorkspaceResourceBoundaries/missing_module"
+  ],
+  "started_utc": "2026-11-20T11:37:14.0257959Z",
+  "finished_utc": "2026-11-20T11:37:26.7153632Z",
+  "elapsed_seconds": 12.6895114,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "49c4b37415bc026d7357828feb8ace9ad670c619a7c108960f09d7bde6823888",
+  "raw_bytes": 31119,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "",
+  "benchmark_bytes": 0
+}

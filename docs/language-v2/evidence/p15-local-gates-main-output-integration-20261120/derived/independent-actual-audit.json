@@ -1,0 +1,1439 @@
+{
+  "format_version": 1,
+  "audited_at": "2026-11-20T11:38:53.042598+00:00",
+  "source": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+  "outer": {
+    "source": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=15m",
+      "-run",
+      "^Test(NativePaths|PurePublic|PublicFrontend|MainOutput)ActualProductionEvidence$",
+      "./tools/language-acceptance"
+    ],
+    "artifact_roots": {
+      "CHERRI_NATIVE_PATHS_EVIDENCE_OUTPUT": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18",
+      "CHERRI_PURE_PUBLIC_EVIDENCE_OUTPUT": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21",
+      "CHERRI_PUBLIC_FRONTEND_EVIDENCE_OUTPUT": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52",
+      "CHERRI_MAIN_OUTPUT_EVIDENCE_OUTPUT": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\m02"
+    },
+    "started_at": "2026-11-20T11:35:45.483759+00:00",
+    "finished_at": "2026-11-20T11:37:35.749236+00:00",
+    "elapsed_seconds": 110.0,
+    "exit_code": 0,
+    "timed_out": false,
+    "named_pass": 702,
+    "named_fail": [],
+    "named_skip": [],
+    "stdout_bytes": 833419,
+    "stdout_sha256": "12f28d6cde82407325a4754236af68b13b4f34b61a19e4cd75eda24a25b9f6bf",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "free_bytes_before": 3072335872,
+    "free_bytes_after": 2766163968
+  },
+  "actual_producers": [
+    {
+      "id": "BRG18",
+      "named_pass": 54,
+      "source_files": 70,
+      "elapsed_seconds": 10.181811100000001,
+      "raw_bytes": 551384,
+      "raw_sha256": "6c361d88d9865809464a315ea8f9c61ff659fc526bbe537baddb2a3db7b8a295",
+      "process_path": "actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-process.json",
+      "process_sha256": "5d3e1b1fb19cb5e2a1f2bb9b97830d583ed0f120d8e575d3e6fdb1c538154c08",
+      "tiers": [
+        "native-roundtrip",
+        "integration"
+      ],
+      "report": {
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "closure_complete": false
+      }
+    },
+    {
+      "id": "BRG21",
+      "named_pass": 33,
+      "source_files": 64,
+      "elapsed_seconds": 12.6895114,
+      "raw_bytes": 31119,
+      "raw_sha256": "49c4b37415bc026d7357828feb8ace9ad670c619a7c108960f09d7bde6823888",
+      "process_path": "actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-process.json",
+      "process_sha256": "9b85d79615661bf33938220959f0cd5b9e0e4590b5068e8df277e7902932b0b1",
+      "tiers": [
+        "security",
+        "integration",
+        "service"
+      ],
+      "report": {
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "closure_complete": false
+      }
+    },
+    {
+      "id": "M02",
+      "named_pass": 172,
+      "source_files": 76,
+      "elapsed_seconds": 16.345098,
+      "raw_bytes": 154550,
+      "raw_sha256": "16934c04215c1256d55d26ddc2e9971b4e6e00b24da8cb68dcfe07e7ee07e10b",
+      "process_path": "actual-clean-718e7a16\\m02\\m02-main-output-1052674819\\main-output-process.json",
+      "process_sha256": "4cb51239885e4897b54c07c599b3e14f6905e05961128358e8a45576fd9e2899",
+      "tiers": [
+        "native-structure"
+      ],
+      "report": {
+        "passed_cases": 0,
+        "skipped_cases": 1,
+        "closure_complete": false
+      }
+    },
+    {
+      "id": "RP52",
+      "named_pass": 98,
+      "source_files": 73,
+      "elapsed_seconds": 26.2196515,
+      "raw_bytes": 145380,
+      "raw_sha256": "18e8dd6ce8b3a2463840e2266b9796e944fc0c4f3a9fa60f9a7b964e206b23ff",
+      "process_path": "actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-process.json",
+      "process_sha256": "10cd58835bb514f2679d9219cbf64bf2c23584716bb883331f6ff5712ab10e64",
+      "tiers": [
+        "integration",
+        "repository"
+      ],
+      "report": {
+        "passed_cases": 1,
+        "skipped_cases": 0,
+        "closure_complete": false
+      }
+    }
+  ],
+  "unique_source_blobs_verified": 140,
+  "source_witness": [
+    {
+      "path": "main.go",
+      "git_blob": "88eb8c1600abed456788acd69e3c3fde427d8d33",
+      "bytes": 11687,
+      "sha256": "35cd76f2bb78d077fa6aa84ea32ba7166657725b16fe5010075202d5c7a063c8"
+    },
+    {
+      "path": "args.go",
+      "git_blob": "8d474f7bdd32b59589f7f549f5760f05c8693e52",
+      "bytes": 7244,
+      "sha256": "46915519af85d5c79271fc03beda6363c68ccf1872756d2b6db61b448bd1a96a"
+    },
+    {
+      "path": "import.go",
+      "git_blob": "a7e524124a2e0f1f933622fa41096d814d176914",
+      "bytes": 10095,
+      "sha256": "8ff75c5eaef4403efacc9d213e83ddd6e70d7976a07d7ff6fa4ef56c2e7be705"
+    },
+    {
+      "path": "import_fidelity.go",
+      "git_blob": "d3723cb7e4fe81de4b5816b563322fb5e8592f3c",
+      "bytes": 34991,
+      "sha256": "cba3ca8ce5b2a3f444708687d2383f6079ca8db711f56e51e44968613fd80e74"
+    },
+    {
+      "path": "import_provenance.go",
+      "git_blob": "ea96c0980f0f9a1869d28bb51635cdf15596a68d",
+      "bytes": 19422,
+      "sha256": "6fa32e54161e77ecbc18d3771450ee7704ca0a39c5b58e235c4dc46aa38bd131"
+    },
+    {
+      "path": "import_provenance_restore.go",
+      "git_blob": "2575ccac33ccef58bba38a566d1ebf46d8c78a5e",
+      "bytes": 195,
+      "sha256": "c1dc43ac6339f64b5ea31e61de06c79a7c8377a77fd017660707fdb57b647cfa"
+    },
+    {
+      "path": "import_provenance_oracle_nopatch.go",
+      "git_blob": "541b8d4bda774527668eb640891c08c64e10feef",
+      "bytes": 303,
+      "sha256": "302d319c98f067b357fbf4d9b519602150898eab4ce1b439e4440680075de017"
+    },
+    {
+      "path": "hybrid_import.go",
+      "git_blob": "947fa6a863288819029586fde493c0bfcec4164c",
+      "bytes": 31124,
+      "sha256": "e5418f8ba31028da3e2f96a7e269916f62d8230bf1e997f6bc0be24db2941c6f"
+    },
+    {
+      "path": "semantic_import_planner.go",
+      "git_blob": "df83047c8688d2036167780654f173d513a28d06",
+      "bytes": 127878,
+      "sha256": "0e304f7843a69de7375386d133268446c0bb4b213cfd0e19a3b7f3f0e65c2ab5"
+    },
+    {
+      "path": "semantic_import_native_operands.go",
+      "git_blob": "e1645ca1f40b3ca4fca080b5206db2b97317df87",
+      "bytes": 687,
+      "sha256": "4300d13f7c34bdb50724601717610b206072300556acac3562a091698b9bdc2c"
+    },
+    {
+      "path": "semantic_import_native_loop_results.go",
+      "git_blob": "ed862b94dad0c22969f9878ae43d9702b5ee4692",
+      "bytes": 1189,
+      "sha256": "091a6e8f07fdf7e8a83676692120bfda71911841e1b90b41a8a3e086b3326cea"
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "git_blob": "009a12db25e56901623278275446ad6cc9df5ed1",
+      "bytes": 15964,
+      "sha256": "94b4fd6ab51b679de2dc0a24dce867a6f4fc23a7fa158be5f96d0da7718d2058"
+    },
+    {
+      "path": "language_backend_session.go",
+      "git_blob": "f447e66acdb03c8789f32d277f0d3a6e7a100235",
+      "bytes": 2609,
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "git_blob": "2e1f9aa8188e5be3e46fd1cc151f113bfd710cd1",
+      "bytes": 36831,
+      "sha256": "d32324fdc3aa3667f8280ff9e931a41de568e0a6e3422b7d6d6a7c8c37789762"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "git_blob": "87bc4ffd1d39ae3d4976bad3dd7a71ac37c83a17",
+      "bytes": 16621,
+      "sha256": "7913b0bec818c0caeeddcf42e0dfc63458ca8e9b318873054b4b038761f3db3f"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "git_blob": "7922e3208de6f93a61507ac3df167a00f39a8426",
+      "bytes": 4298,
+      "sha256": "d490e6a0b09629cd3cd9e8226481d086daed4f38455c84abfd40466b5c3dd260"
+    },
+    {
+      "path": "mobile_compiler.go",
+      "git_blob": "26f5320d511ec33b249ec482bee6c8fb3be86f19",
+      "bytes": 15989,
+      "sha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602"
+    },
+    {
+      "path": "shared_codec.go",
+      "git_blob": "3b9e0e62505d7e4fc3c83d183db527124a1bb1d9",
+      "bytes": 5438,
+      "sha256": "57da3538aabbfe0a9ce7ad497181f546209d9b20eaef5774ef943a053ebb9bad"
+    },
+    {
+      "path": "shortcutgen.go",
+      "git_blob": "08d59a04fbdfb30a0ec5abf16c1924df9ebfca67",
+      "bytes": 50830,
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+    },
+    {
+      "path": "shortcut.go",
+      "git_blob": "613a4177e8d66ab7dd4e35986b9c12416842faf0",
+      "bytes": 9955,
+      "sha256": "c21ff3a195441b1c402ad16ff1009f7eb7a6fc0bd7b29fd382c63d7dd94dd28d"
+    },
+    {
+      "path": "raw_actions.go",
+      "git_blob": "e355904f66960c14469823919e364b9330d1dc06",
+      "bytes": 5003,
+      "sha256": "620f01e09623d3be7218a32feeef3709158843b039562181ac0cee9d34699706"
+    },
+    {
+      "path": "native_action_envelope.go",
+      "git_blob": "85ad86e04264a738bfc96dc231a23988fc6d9df4",
+      "bytes": 3110,
+      "sha256": "6273c3e69a63b6537da7f06130877e7394c74829bb6fc7e8dfbeb269e7352fbe"
+    },
+    {
+      "path": "native_action_result_binding.go",
+      "git_blob": "3b6972e775c25cc47ed0ab8f744270b52a61f2f6",
+      "bytes": 11947,
+      "sha256": "95d562b2186c0a13f90d1f387b7e7c6ef580fb89431555eea0cebe32c25b5c7c"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "git_blob": "b277cd3229e424d0c48d81ad380b59fc934fb4b1",
+      "bytes": 6912,
+      "sha256": "d97d0eb0c41771506c51f1dd1c214042d1d104ae1f5c43b5f8a84d7f77089dc9"
+    },
+    {
+      "path": "internal/language/backend/native_envelope.go",
+      "git_blob": "7d2ac6a80651b0a9366d980f89b3e65913ffce66",
+      "bytes": 871,
+      "sha256": "3f61a12dfd9867c66e8bffa716ab8a0393c86f97492ee4658c182384ddece6e6"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "git_blob": "72efb11af06553b31febebc5f37830439e42948e",
+      "bytes": 187971,
+      "sha256": "f4d949beb67736b26e53a07e0b352802086cc9990349cd4a7ac5d0535a07acc6"
+    },
+    {
+      "path": "internal/language/lower/native_action_envelope.go",
+      "git_blob": "9317803968c1e62c8f432d03c972b71237c66114",
+      "bytes": 1059,
+      "sha256": "bcdb586142cb0f8b45dd52af58f6dfffcf4f8a0a9be64279b1fb23ed644c0158"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "git_blob": "2bbb48eae6bb275aa52b817cc68b0b78a523aa26",
+      "bytes": 69816,
+      "sha256": "dc76b3338a7944f24038916886459b7e47987eed2c727570d0a2369f64c41512"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "git_blob": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "bytes": 42624,
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "git_blob": "242e062b6b65c1156b9dc632d57199a3dc294de2",
+      "bytes": 710514,
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474"
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "git_blob": "e87bad77aed204964e11bb103ac5beda1ec0e6ce",
+      "bytes": 27984,
+      "sha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919"
+    },
+    {
+      "path": "internal/shortcutcompare/compare.go",
+      "git_blob": "9209d990adbc7bd3caa95bfe21fe9a8a3bc01f0e",
+      "bytes": 14324,
+      "sha256": "903899415feb475f382c09659b3ccfdfa983f5a59e0a38e470b4b483caad472a"
+    },
+    {
+      "path": "internal/shortcutcompare/edit.go",
+      "git_blob": "b1dde205532de50f1a7b5a688df7f149cd7a89b2",
+      "bytes": 8329,
+      "sha256": "90dc403ec069378bb7dfe83fa85c85761b45cf0e88f05f0f7bb1a026d7d990c1"
+    },
+    {
+      "path": "internal/shortcutcompare/normalize.go",
+      "git_blob": "33439f2df55565f4d973adc4c0a2a3f3beab022a",
+      "bytes": 57725,
+      "sha256": "6f2f57a173aafe14618fdf87779ef2a2e60ba03ddd7ebde67a1d22ac6c57fc69"
+    },
+    {
+      "path": "internal/shortcutcompare/strict_scalars.go",
+      "git_blob": "30e0c565d280f9f05956e529ce1811c760ab5b55",
+      "bytes": 1575,
+      "sha256": "934a7516cec175b9259234eb0b7dd69ca0c2aa035fc5d7c7187851913a9a715b"
+    },
+    {
+      "path": "go.mod",
+      "git_blob": "0bc0002815d1779cf4f094bbe141df03557d37ed",
+      "bytes": 1618,
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "git_blob": "00552c157626f542aee6906578955f7ded0ebf4c",
+      "bytes": 11884,
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "p15_native_paths_gate_test.go",
+      "git_blob": "4aa3a28346c9cfa61970d68ee17cdd805c996f8b",
+      "bytes": 19779,
+      "sha256": "06ccd9c9a9fbba80b44ef0e5cdf9b6f703ffac7d4e018c6b3f04d452e2e89800"
+    },
+    {
+      "path": "p15_native_acceptance_test.go",
+      "git_blob": "fdf3fb30e1513bc7f86084f94c6e068a9a360f1b",
+      "bytes": 22835,
+      "sha256": "68d50ee22426b1d3c814f822449e705a6ffb51da1d51f4e57eab1f82da59b5db"
+    },
+    {
+      "path": "p15_brg19_safe_import_edit_test.go",
+      "git_blob": "e771332d6f109168e3418d5bd7d5a876b6aaf87d",
+      "bytes": 23487,
+      "sha256": "651cd06db3900d08f95d5f5fe024edd4697a634d46cc070c2e499d77716daca4"
+    },
+    {
+      "path": "p15_cli_acceptance_test.go",
+      "git_blob": "e6abded8ee6f372f3ddaa54e3c91034b1b58e33f",
+      "bytes": 12869,
+      "sha256": "40b536a6776072f07177c5f87cd52171a347c06e0ab342bb9a85062218a6fd87"
+    },
+    {
+      "path": "p10r9_hybrid_test.go",
+      "git_blob": "904fe7b3da509120f5e066b10276dd059d2ad07e",
+      "bytes": 77730,
+      "sha256": "57f0d40ee663370f6d19268941cce74c0485cda32e8e64d0260bbd6e25d00253"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "git_blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "git_blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "git_blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tools/language-acceptance/native_paths_execution.go",
+      "git_blob": "b30e7080b22b3c713a1d40d6cd5106869299681b",
+      "bytes": 14678,
+      "sha256": "1c5d431f70d7115a6e2186af8f7b507b697536af6e79389765b08396717534b9"
+    },
+    {
+      "path": "tools/language-acceptance/native_paths_execution_test.go",
+      "git_blob": "628829d16cbc17afa7b46ed2fbca2875f742fa37",
+      "bytes": 18031,
+      "sha256": "89766563d59873926663a2330cd25d497479574c95b95a292f3fdbec7c0a6f11"
+    },
+    {
+      "path": "tools/language-acceptance/structural_migration_execution_test.go",
+      "git_blob": "1b286ebee5f73f346925b140719e6168fb473eb5",
+      "bytes": 21953,
+      "sha256": "ac259b0527131e7c9a866f457d4e44170a9d7a24f329ff983e3aad1beeda8abb"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "git_blob": "f65bc5ed5aa00ef5621d551811b012977296fe63",
+      "bytes": 4000,
+      "sha256": "33edb6072872f90ad6f963b6cd0b0c17ba374b09ea31c17e256608b640541239"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "git_blob": "4f415c3de47eedff9491e5317f093e82f4651af5",
+      "bytes": 13859,
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "git_blob": "6b8e94c611d2bb6d85798b9ece13665103e23737",
+      "bytes": 3250,
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "git_blob": "99240687ae711d335bdb81453cdd8fb6d36c5fca",
+      "bytes": 19167,
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "git_blob": "7bab8402ce91b609bd74f0ae5066b0b43039213d",
+      "bytes": 571,
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "git_blob": "bd92d3acc1cf5eeeb7d9614b82f5ccd685670cb3",
+      "bytes": 650,
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "git_blob": "73addf057e3d61e94a1f3388ddfbbe02f3ec7d81",
+      "bytes": 12308,
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "git_blob": "d56012d6ce6061881283c161f69d8fe109722355",
+      "bytes": 13578,
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "git_blob": "07e33c682640088d92486b5b629313e37aa60d30",
+      "bytes": 9741,
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "git_blob": "79817af735def1350e2c62f2030b76811204ace8",
+      "bytes": 74350,
+      "sha256": "7857353140aedd3e76bba75e0e4f313a09720eece90364b282bd62817424f9e8"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "git_blob": "04366f3a10bb86ee4259ed8ce239f65951b11730",
+      "bytes": 2131,
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "git_blob": "2e10582a955fe969086b5c72d15cc8fd93ce630c",
+      "bytes": 27247,
+      "sha256": "3bbe09b6253701c2cd2ab52de5afec3fb3e6817eee93538b8f63b6a049342f47"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "git_blob": "77cc28f67d2fb2c3a9ae45094450e0df479137b2",
+      "bytes": 21542,
+      "sha256": "76e8fb77c00724a3b93725e85440f076fc76393530c0bcfbd1d0548269ffe452"
+    },
+    {
+      "path": "internal/language/analysis/diagnostics.go",
+      "git_blob": "e246ddbb1c4e13b9bfc0069505c2965fee5c5acc",
+      "bytes": 2621,
+      "sha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f"
+    },
+    {
+      "path": "internal/language/lower/main_output.go",
+      "git_blob": "7b4029685e2cecf8317bd3bb70c0e8a001893349",
+      "bytes": 1917,
+      "sha256": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619"
+    },
+    {
+      "path": "internal/language/lower/module_scope.go",
+      "git_blob": "8aea1bc8d1f1466184d576633186d208cd80dc86",
+      "bytes": 4297,
+      "sha256": "2419f4cc460a9a9331d1a70d0848ebdea70ad5c2ab73a49f09c6c69d6a0e9367"
+    },
+    {
+      "path": "internal/language/migrate/main_output.go",
+      "git_blob": "1413bfc639ded69a2a05f25a33b72810cf1c67a5",
+      "bytes": 1281,
+      "sha256": "f4c0d7515b3fea56e594ff721bb2adc77678d0cfa2d17844cb09cfc514b8e058"
+    },
+    {
+      "path": "internal/language/migrate/migrate.go",
+      "git_blob": "5824a163aa10a4c385ca0220273f613d9438a631",
+      "bytes": 29877,
+      "sha256": "0abb1c82795f45bf54f67f4c9e3cd31932ab188a16bc9879549948da9c23b8ea"
+    },
+    {
+      "path": "internal/language/service/module_analysis.go",
+      "git_blob": "e75da5b9c05c1d537f0eea841eae9c5aefa07ae8",
+      "bytes": 1633,
+      "sha256": "73627652093ea9ea465b0ed69f7e2d85dfff0c023a4f5e00739312f0e61fb27d"
+    },
+    {
+      "path": "internal/language/syntax/main_output.go",
+      "git_blob": "f24fa0337703150e928811b2cc84b0b1bc7764d1",
+      "bytes": 1988,
+      "sha256": "9d53c9c5fa4bb27dbcdb44e3ce75dece9ffe4e532543d7fef9685ea7fd37f9b9"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding.go",
+      "git_blob": "d0442e7e547915b54b7e78cd8a800b67f9c1a06b",
+      "bytes": 3652,
+      "sha256": "fa655ca644934ec8e8cb3fb636694095eeb1cce14b261522b587e1d2cca1ad2e"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding_test.go",
+      "git_blob": "362764c18d169e55e571d84470577a81b30157d1",
+      "bytes": 5514,
+      "sha256": "f08c738382dd4f69d7a5cd00fc9b9b6e805b18f723462b772044617c2159beb4"
+    },
+    {
+      "path": "signing.go",
+      "git_blob": "477b36cf42bc31cb320578bb1f5647de374c9dde",
+      "bytes": 26810,
+      "sha256": "01c4156b43db25bebc2515efcff13f9f64fdda72332e25e0bfffef90a8229fac"
+    },
+    {
+      "path": "output.go",
+      "git_blob": "a2940abd916c134fdd1a99c055b8958b902ac0f3",
+      "bytes": 4097,
+      "sha256": "e2865c10011359849686e0fcf379ed3f4037ecac19e46771df8651b63d351585"
+    },
+    {
+      "path": "legacy_output_transaction.go",
+      "git_blob": "2ef41b785192bf6155a82c0d30c0e2e557b126eb",
+      "bytes": 1288,
+      "sha256": "ec4f9ddf0a37c235fc037d29274c81a44f5e13982ad46ab7eae3e34f35c0d497"
+    },
+    {
+      "path": "embedded_assets.go",
+      "git_blob": "920b3f8e51b0be0a23af14755ddf254d4c012a18",
+      "bytes": 1497,
+      "sha256": "8301a54bc37828ad31158a9183466930d740e2ad3eac4e720d6a6ff52fa9a9d0"
+    },
+    {
+      "path": "internal/language/modules/graph.go",
+      "git_blob": "9b0ff747f62fe56d4b570e9f1ba00c94a17848a4",
+      "bytes": 9377,
+      "sha256": "a494fff02dddc986a042a5bb76e52a35481c12e96dbd3f0b2d1824ab4823076f"
+    },
+    {
+      "path": "internal/language/modules/standard_library.go",
+      "git_blob": "f4bb9499fa84a4732b98876fdd0adfdc1fb94fda",
+      "bytes": 324,
+      "sha256": "23720471b739c5252a580d7dadc66156b92e8b17f364d4916b4df1f2606cc4e3"
+    },
+    {
+      "path": "internal/language/modules/stdfunc_source_generated.go",
+      "git_blob": "7d1be13b7ab036250a2bd59fad01ca15cada4b29",
+      "bytes": 861,
+      "sha256": "0b68a0c210927483337b18907521369caf19db958bb37c280fcb4acba7a06292"
+    },
+    {
+      "path": "internal/language/workspace/resource.go",
+      "git_blob": "b8078b788461768be52891cc4c9f4ea166e75743",
+      "bytes": 3081,
+      "sha256": "6f0152c71f439527de8f74d1ce65d4484098fc3198aa77a9628eacf1acb75f76"
+    },
+    {
+      "path": "internal/language/assets/cache.go",
+      "git_blob": "86d73c4c14fa3e872ec5cd571a52bd8c79246e37",
+      "bytes": 6799,
+      "sha256": "116f6704b59e0f1761e19b7244b9945e7b0c5ac30a493537bcf145e87c44dbf8"
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "git_blob": "e47833d00bc05659d4e900667e3a0a5c3a780d13",
+      "bytes": 33218,
+      "sha256": "ac6ae27ca33b2fdb9148df03ab1a9409a8cc8bf078a9c1e88f39325db7ca3345"
+    },
+    {
+      "path": "internal/language/service/asset_analysis.go",
+      "git_blob": "a940251e0df015a468091d7c7f9fde84c48e767e",
+      "bytes": 3590,
+      "sha256": "e3da08707ac7dafeb0e80edaa49278f5c95917bc5c59b2b22704ef1edfbf28c3"
+    },
+    {
+      "path": "internal/language/service/registry_lifetime.go",
+      "git_blob": "a151813ad07a22b0a773be5005df93bcc3a71885",
+      "bytes": 489,
+      "sha256": "5e2fa8ae481bf5501c23531adedbe71edbefeb522cd3d06db4447acf2e2333e5"
+    },
+    {
+      "path": "p15_pure_public_gate_test.go",
+      "git_blob": "d053f866046d3d7efc81b4190e81635ed5d6dfc4",
+      "bytes": 8357,
+      "sha256": "af86249dc1a3b71b306bc46b3bc82d11b2dc7555f453a75f4ce99c993f735ce2"
+    },
+    {
+      "path": "p15_workspace_module_test.go",
+      "git_blob": "8784505fb8fb34be40a358af3ba18eba3909b33a",
+      "bytes": 4028,
+      "sha256": "9e49888161f711a433f2283337d2ba74a511d485f8ea60fb4034b730d8b129f3"
+    },
+    {
+      "path": "p15_asset_authorization_repair_test.go",
+      "git_blob": "afa657bd863edaf9be1cf4b2f8608d447d0b80e2",
+      "bytes": 7001,
+      "sha256": "2d14705876d6f8571c2051acdbeaa17670418c7eaae8e74778655fad6145ab95"
+    },
+    {
+      "path": "p15_embedded_asset_acceptance_test.go",
+      "git_blob": "60932ac4df4e71f4af430297781618349bdfc11b",
+      "bytes": 10720,
+      "sha256": "9d072a24ade84a74328d5ed6b1d84fc8fea2e24c1044e715e76e5a6a43a6c1a3"
+    },
+    {
+      "path": "p15_asset_dependency_baseline_test.go",
+      "git_blob": "5369e5b4262424e1dcfa2c75a44943aaef3986a6",
+      "bytes": 3193,
+      "sha256": "a1acac30f32b8b2b0f949c26e42feba7b98cb7028751c57b563c035e1c9b70f6"
+    },
+    {
+      "path": "tools/language-acceptance/pure_public_execution.go",
+      "git_blob": "375867bd6322ae2c86ba9034156f1e41d2424f0b",
+      "bytes": 14507,
+      "sha256": "8709f0b996ac1a02e1ec81eb5bc45f31f0bb75632289b0b3a13737d71c2e6d48"
+    },
+    {
+      "path": "tools/language-acceptance/pure_public_execution_test.go",
+      "git_blob": "7cc6fc1224af3b791550cbb09c96a30c605bd35f",
+      "bytes": 16399,
+      "sha256": "902661d32bf2b90a29b306c416062b6d34853a52d3a71a93562052bd969f95aa"
+    },
+    {
+      "path": "internal/language/syntax/ast.go",
+      "git_blob": "aec8fd6921022e65ad666fec8c2e551d6caea2c4",
+      "bytes": 11243,
+      "sha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f"
+    },
+    {
+      "path": "internal/language/syntax/lexer.go",
+      "git_blob": "2fc6c948403a1f1218ea39ecd2419aa50061739d",
+      "bytes": 15082,
+      "sha256": "e85deee166dc6bc2d44c78028cb8bc9fd5e02df5f992e7b69e065ae4f009d692"
+    },
+    {
+      "path": "internal/language/syntax/format.go",
+      "git_blob": "8c6621e358a5088a36465d2ce8de20686519b2b7",
+      "bytes": 16127,
+      "sha256": "f27fac1c64cc55de42b5d610c9205d21bad30b1ce1c4ba014885b77b3086e817"
+    },
+    {
+      "path": "internal/language/analysis/optional_presence.go",
+      "git_blob": "34eb63d77faead426fc0a257a5f039a30dab459b",
+      "bytes": 1919,
+      "sha256": "d9542c9b3146a5b0f53023c761ed9f5069b57df1936a8ab78b5a671e7faad4e5"
+    },
+    {
+      "path": "internal/language/analysis/optional_transport.go",
+      "git_blob": "087d5d76919626e64f04b3f9bfbb6fc9091a8170",
+      "bytes": 796,
+      "sha256": "af87c40bed82141a8b67e48a8f5c39adeff89fb536f966a5ab663c919cdf2c7e"
+    },
+    {
+      "path": "internal/language/types/types.go",
+      "git_blob": "b1be2d24551fbf4907bb844ccb5834c96a40007b",
+      "bytes": 14524,
+      "sha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31"
+    },
+    {
+      "path": "internal/language/types/optional_presence.go",
+      "git_blob": "b226a8537b206209fe30407d2bb5e856ace79527",
+      "bytes": 1133,
+      "sha256": "58e3a99cfc260c53d8ff77d6bff09ac22efe201425cc98f8b81cde80b30b1a9c"
+    },
+    {
+      "path": "internal/language/ir/ir.go",
+      "git_blob": "02bf65d59871da11c8f5400cde2869a2323d39dc",
+      "bytes": 3491,
+      "sha256": "165ace82a2892e24a3e5a36a1d7813abe0f83e5a97f204b060d9b23888bc994c"
+    },
+    {
+      "path": "internal/language/lower/exhaustive_validation.go",
+      "git_blob": "9a11f0077dd26ce0491724fbabb8f5e390bb9867",
+      "bytes": 7457,
+      "sha256": "0c6a6868d45d0be42b8ee4d9356f866b6aa928e784265d4d876eae4fedf4295b"
+    },
+    {
+      "path": "internal/language/lower/function_optional_presence.go",
+      "git_blob": "01005cae3f56bcb0b0656daecc32a66aafbeb45c",
+      "bytes": 11274,
+      "sha256": "279c6bd790df108070412d9ab94c4c32edbb9ddf55b2b617490c2160e63808d1"
+    },
+    {
+      "path": "internal/language/lower/function_defaults.go",
+      "git_blob": "8c5068debecb466692acca640c7bce19e17a3362",
+      "bytes": 870,
+      "sha256": "c46f1b5899be7c8a9d57cabf6092c25a034b863a6713642738b73f59226b0d6d"
+    },
+    {
+      "path": "internal/language/lower/function_argument_containers.go",
+      "git_blob": "6b1b32b3da698bfd97d38d0589b309d555ca21b2",
+      "bytes": 2625,
+      "sha256": "7007ff4736f948e20ae4abcf037bc2d56ce0d67d814acba2090699f4760117ea"
+    },
+    {
+      "path": "internal/language/lower/optional_presence_demand.go",
+      "git_blob": "a0911851c7a91bb5fc8003122bf34603ab04466f",
+      "bytes": 5758,
+      "sha256": "eac1cdb39a2b61f16a74c842b0c6e7991ba925a8accf17314798f9492422a8cf"
+    },
+    {
+      "path": "internal/language/lower/optional_transport.go",
+      "git_blob": "dd5045904cc79d5b27ada9ec3b11078646af54fe",
+      "bytes": 980,
+      "sha256": "89bec47fe371eb60a438fafdb1dbbf60fada364a662d840676527e7202bc06cf"
+    },
+    {
+      "path": "internal/language/lower/binding_capture.go",
+      "git_blob": "32257e1dad75407ce963d97abf9e7dd80e1eed79",
+      "bytes": 883,
+      "sha256": "20d197223c554c837e45d528187b227780a878bd380caa13714fa04b6a4e06be"
+    },
+    {
+      "path": "internal/language/lower/call_arguments.go",
+      "git_blob": "d15694f0ffa1078972e7cdc338a558ba3e97e666",
+      "bytes": 7247,
+      "sha256": "f853ffe2d9393d01236cf55c1dc53ee5e6fdff39ee97b87ade3401f63f8e11a8"
+    },
+    {
+      "path": "internal/language/lower/scoped_blocks.go",
+      "git_blob": "7a1a6fbcd8852f0605c25a8fd61889783b725ee4",
+      "bytes": 13057,
+      "sha256": "af88f52f8739be3123e51a63f734b481c9af2c887211b459e0025f376993fc56"
+    },
+    {
+      "path": "internal/language/migrate/lexical_source.go",
+      "git_blob": "20a54c1a977cb8541c182ab397d26e0ff9530c06",
+      "bytes": 11882,
+      "sha256": "dfe3e85d185dd9e6e0504b57fa615ac2d5468f5611d29e89b90af74296513574"
+    },
+    {
+      "path": "internal/language/migrate/references.go",
+      "git_blob": "4c45e738cb5000f3cef575411be8247d6aae3898",
+      "bytes": 6722,
+      "sha256": "7bc9d2b41f4f597189199b9f065bada39b5fb847f81601a1102ff003d74ed49d"
+    },
+    {
+      "path": "internal/language/migrate/optional_bindings.go",
+      "git_blob": "5dd1e585d1b5498b258f7317abce5faf4686f5b8",
+      "bytes": 9588,
+      "sha256": "93bcf69713c0ca51f0a51d2d6fe1281216f85b2dbdec0c4e2253cfb68874187b"
+    },
+    {
+      "path": "p15_main_void_return_test.go",
+      "git_blob": "47e687a24dbc338f2eba84dde5126d7cb089e4ab",
+      "bytes": 2465,
+      "sha256": "3fd6428de1a05ebc0460f9d4d29e15d35256a07f988e08c3c0da1bf517944bb4"
+    },
+    {
+      "path": "p15_main_output_mode_test.go",
+      "git_blob": "27b7af05e729098403d185734af806e1c2a63aa7",
+      "bytes": 11578,
+      "sha256": "c1574df2d648a222ad74572922532d6af4a95cdea461f23707b046989cb02ab9"
+    },
+    {
+      "path": "p15_main_output_graph_test.go",
+      "git_blob": "1404390e76b6e5513c0309de2a6a3888f5fc8b32",
+      "bytes": 13198,
+      "sha256": "fb0036ae4ede2d444d24d480bee5eb5fb4be381bcbb489cfbe6b8da716d141f6"
+    },
+    {
+      "path": "p15_main_output_oracle_test.go",
+      "git_blob": "03769c58d7f6426d940cc6d78a2c89ee22470457",
+      "bytes": 495,
+      "sha256": "895f95983b3f2d6b39bacb4575acf7b7ee40cf99112b4ccfa71170b01f340d52"
+    },
+    {
+      "path": "p15_none_clear_boundary_test.go",
+      "git_blob": "bf8f974f69b52b4727234818d1efdb53bb9707ac",
+      "bytes": 11985,
+      "sha256": "2cf5bbbf0d28bc7ca9adb8669ff61007ab3211a85cdd5d870c9b25f8cab128d3"
+    },
+    {
+      "path": "p15_function_native_oracle_test.go",
+      "git_blob": "f8345119eb7777efce2e84c35a5cf7a7b90c96e1",
+      "bytes": 13290,
+      "sha256": "34efe84a2e238bf4c69b1aa30fcdc31c20f1648b2a321d6e1b1ddb8846362266"
+    },
+    {
+      "path": "p15_function_acceptance_test.go",
+      "git_blob": "9d21097404477fa4b61b8575ecee5357bff4280f",
+      "bytes": 17155,
+      "sha256": "65d31430df004b9b93663889b2a400c6b777485aace3b06ef550bb7f0e0c15f2"
+    },
+    {
+      "path": "p15_function_optional_presence_test.go",
+      "git_blob": "8c57b9e50de6cf22b6264fea49ca0915ac9d5683",
+      "bytes": 16267,
+      "sha256": "631432f471fbbb65e70a13e0a78ec120ba161f4f2d761c758c419a106df58c85"
+    },
+    {
+      "path": "p15_container_shape_acceptance_test.go",
+      "git_blob": "29e7b09f08182f33b3f089bd9efcb742f57a84bd",
+      "bytes": 14567,
+      "sha256": "f916e23b6d5f95288751319adcec739cae7c7e384ebd26710c5a6caa51b30caa"
+    },
+    {
+      "path": "p15_types_acceptance_test.go",
+      "git_blob": "29e7fe3f94dc9de0fe1395956a09a150130dc205",
+      "bytes": 6158,
+      "sha256": "16a78a20cd20415b00b669f019580d658ba83747c5a14d84c00d5819642693a6"
+    },
+    {
+      "path": "p15_short_circuit_test.go",
+      "git_blob": "c4bc4c88b025502194f9230073541578d294b338",
+      "bytes": 7186,
+      "sha256": "0ce9802e470d8a1b0e7f116294bfadaf21e2d311374225e2ecc78437e027bbe5"
+    },
+    {
+      "path": "p15_call_order_test.go",
+      "git_blob": "d8a2ced16767a31a76eb8e89ed0d7bdd7648a3ad",
+      "bytes": 12608,
+      "sha256": "339746c86c7ce026f6888a7ab226d6fe2602651fd61b554bbe091d1408ac91da"
+    },
+    {
+      "path": "p15_literal_collections_acceptance_test.go",
+      "git_blob": "8371bbe5e5711e2a361ba0034e0d76798f95604a",
+      "bytes": 13687,
+      "sha256": "a9c9c675b23dcde1e18c459cf9f6ded3fc5a74ae1c01d75cc3469125fb52e27e"
+    },
+    {
+      "path": "tools/language-acceptance/main_output_execution.go",
+      "git_blob": "f09478e491f5ff06a1efc9b5cc6e48fa033e63cb",
+      "bytes": 19650,
+      "sha256": "81992ff5377190e16cf0041019362854a3e5e5907bd24fbbfd041594cef01fa5"
+    },
+    {
+      "path": "tools/language-acceptance/main_output_execution_test.go",
+      "git_blob": "a9ab9e61a75d2cd14d3fa7921f29dc9dc1f19b77",
+      "bytes": 22423,
+      "sha256": "072a04964aa142e11ba39acd6f78d84282eb5737185595af2f8d033fdfa9d6fc"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "git_blob": "cf2655ae1f414fb0ba3bbeb5ecd77676da59b9d4",
+      "bytes": 3498,
+      "sha256": "aaca4814d49baa24562277967204f8fa4f260f31eeb09e3fbe757bc503d4e8c0"
+    },
+    {
+      "path": "ios_bridge.go",
+      "git_blob": "189bbe5bcd3c83be36be938779f611ab2c0495de",
+      "bytes": 11960,
+      "sha256": "6f3baec33cc1619cefd08f70253c74c89b3f4b319724bf4de7d77095bded8a77"
+    },
+    {
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "git_blob": "25877fdb654da0d9a392812dbefe25aabf25c15d",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "path": "ios/CherriTests/CherriCoreIntegrationTests.swift",
+      "git_blob": "69627667f13e7f798cf22325199a1853f4d005a3",
+      "bytes": 23928,
+      "sha256": "ff65a1c41d485514fcff06e680a49e7377dcdd6de5720a79457128d756246d5d"
+    },
+    {
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "git_blob": "b5edba8128ce710a95ded19910953208e4e8043b",
+      "bytes": 20312,
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "path": "internal/language/migrate/native_lists.go",
+      "git_blob": "c37381ce2696caed060670a8e2edb41003f5ff2f",
+      "bytes": 3257,
+      "sha256": "bdd5a235562d67f4d2159ee0221e11b950e82f61bc5f7f3e2a9c5f1f86dc93ed"
+    },
+    {
+      "path": "internal/language/migrate/setter_mode.go",
+      "git_blob": "1faf3ed43bd53d075c25ed2c51f8153fb8ed5d69",
+      "bytes": 1348,
+      "sha256": "ba31aa7c67bb262e5dc0a5b7a316849d66d0e0fe232e2aca6fb28f1c60979fbc"
+    },
+    {
+      "path": "internal/language/migrate/variadic.go",
+      "git_blob": "69048b648f6a492380b9837b96233979d1efb94a",
+      "bytes": 2273,
+      "sha256": "66f7cedd932883ab8d0a22892929b6795f78942b5978996da7b09a1ee772f3d8"
+    },
+    {
+      "path": "p15_public_frontend_boundary_test.go",
+      "git_blob": "d8098f82027fa1f92075e8b846284e27a7a6b428",
+      "bytes": 5491,
+      "sha256": "1d85c5345e11e53774cfdb4db648459fc915ac3d93a58d46f0d1b8b1130bb7ce"
+    },
+    {
+      "path": "p15_frontend_entrypoint_audit_test.go",
+      "git_blob": "01aa8414d3f2fb370713af2aa17f3fa3fef97c6a",
+      "bytes": 18546,
+      "sha256": "7bbc87ea47c364d876f2c83b1b532666b51d93f85befa0536c8b6e9a3d47bd46"
+    },
+    {
+      "path": "p15_public_parser_route_test.go",
+      "git_blob": "bf614917d344b60f390efaca998ce693ab8a1b4d",
+      "bytes": 4881,
+      "sha256": "58740b27abd68d25191f648bacb3f1e7fdde1c94e0a053888f67d4c57fe86cd5"
+    },
+    {
+      "path": "p15_binding_scope_wire_test.go",
+      "git_blob": "4236bd84d25a1330f2874b956ac6e49ea42527fa",
+      "bytes": 13180,
+      "sha256": "38f1a62b60d0606addd6d7d6f8fe1dfc82580a5a4ac6f1016ec3de617e5967e1"
+    },
+    {
+      "path": "p15_upstream_boundary_test.go",
+      "git_blob": "0340b93c9473598bace1cacc68def0e9baf6419d",
+      "bytes": 16339,
+      "sha256": "4561f24d3204921fddf0f2055672a59d7343a639897b822b08347a8d06bec378"
+    },
+    {
+      "path": "docs/language-v2/upstream-preservation-boundary.json",
+      "git_blob": "c2b21bad54b4de8a21340b69b831c5d5c3f84eef",
+      "bytes": 22181,
+      "sha256": "f69a6a80b79303af7192d45a7056e40c6f90fd18115bdb63e7ae2d77ac8657b8"
+    },
+    {
+      "path": "tools/language-acceptance/public_frontend_execution.go",
+      "git_blob": "fec37996cf1c06c1f375cdb8fbe5d17e40e65c35",
+      "bytes": 16434,
+      "sha256": "c33edda09b7b4257cb3ac2568c3558bae00fcfe6c7de7250c636ae118463c08f"
+    },
+    {
+      "path": "tools/language-acceptance/public_frontend_execution_test.go",
+      "git_blob": "aac1456fc88d80cf4d4eadf1a6836114fc175f01",
+      "bytes": 16561,
+      "sha256": "4165234f9d570d55636afddc0d6ef5c77f3c547fccc97932b21791aaf6fff38e"
+    }
+  ],
+  "observed_production_receipts": {
+    "BRG18": {
+      "records": [
+        {
+          "evidence_id": "ev-local-BRG18-native-roundtrip",
+          "requirements": [
+            "BRG18"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestBackendRecovery18ExactWorkflowBypass",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestBackendRecovery18PublicNativeImportPaths|TestBackendRecovery18ExactWorkflowBypass|TestBackendRecovery18RejectsNativeAndReadabilityFaults|TestBackendRecovery18ReadabilityRejectsCompiledFallbacks)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls",
+            "required_go_events": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks\nTestBackendRecovery18PublicNativeImportPaths/xml\nTestBackendRecovery18PublicNativeImportPaths/xml/hybrid\nTestBackendRecovery18PublicNativeImportPaths/xml/lossless\nTestBackendRecovery18PublicNativeImportPaths/binary\nTestBackendRecovery18PublicNativeImportPaths/binary/hybrid\nTestBackendRecovery18PublicNativeImportPaths/binary/lossless\nTestBackendRecovery18PublicNativeImportPaths/shortcut\nTestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid\nTestBackendRecovery18PublicNativeImportPaths/shortcut/lossless\nTestBackendRecovery18PublicNativeImportPaths/json\nTestBackendRecovery18PublicNativeImportPaths/json/hybrid\nTestBackendRecovery18PublicNativeImportPaths/json/lossless\nTestBackendRecovery18ExactWorkflowBypass/xml\nTestBackendRecovery18ExactWorkflowBypass/binary\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/header\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/action_field\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_byte\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_value\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/large_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/negative_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/false_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/zero_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_text\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_array\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_map\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/descriptor\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/variant\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/producer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/consumer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/chain_order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_group\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_result\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/omitted_default\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/explicit_false\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/missing_parameters\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/question_index\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/provenance\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_natural\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_opaque\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/source_call\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/encoded_comment_only\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/comment\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/static_variant\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/reference\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/omitted_parameter\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/explicit_false\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/empty_parameters",
+            "required_production_tests": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
+            "scope": "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-process.json",
+              "sha256": "5d3e1b1fb19cb5e2a1f2bb9b97830d583ed0f120d8e575d3e6fdb1c538154c08"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-go.jsonl",
+              "sha256": "6c361d88d9865809464a315ea8f9c61ff659fc526bbe537baddb2a3db7b8a295"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls"
+        },
+        {
+          "evidence_id": "ev-local-BRG18-integration",
+          "requirements": [
+            "BRG18"
+          ],
+          "tier": "integration",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestBackendRecovery18PublicNativeImportPaths",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestBackendRecovery18PublicNativeImportPaths|TestBackendRecovery18ExactWorkflowBypass|TestBackendRecovery18RejectsNativeAndReadabilityFaults|TestBackendRecovery18ReadabilityRejectsCompiledFallbacks)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls",
+            "required_go_events": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks\nTestBackendRecovery18PublicNativeImportPaths/xml\nTestBackendRecovery18PublicNativeImportPaths/xml/hybrid\nTestBackendRecovery18PublicNativeImportPaths/xml/lossless\nTestBackendRecovery18PublicNativeImportPaths/binary\nTestBackendRecovery18PublicNativeImportPaths/binary/hybrid\nTestBackendRecovery18PublicNativeImportPaths/binary/lossless\nTestBackendRecovery18PublicNativeImportPaths/shortcut\nTestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid\nTestBackendRecovery18PublicNativeImportPaths/shortcut/lossless\nTestBackendRecovery18PublicNativeImportPaths/json\nTestBackendRecovery18PublicNativeImportPaths/json/hybrid\nTestBackendRecovery18PublicNativeImportPaths/json/lossless\nTestBackendRecovery18ExactWorkflowBypass/xml\nTestBackendRecovery18ExactWorkflowBypass/binary\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/header\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/action_field\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_byte\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_value\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/large_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/negative_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/false_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/zero_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_text\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_array\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_map\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/descriptor\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/variant\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/producer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/consumer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/chain_order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_group\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_result\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/omitted_default\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/explicit_false\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/missing_parameters\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/question_index\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/provenance\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_natural\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_opaque\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/source_call\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/encoded_comment_only\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/comment\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/static_variant\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/reference\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/omitted_parameter\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/explicit_false\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/empty_parameters",
+            "required_production_tests": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
+            "scope": "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-process.json",
+              "sha256": "5d3e1b1fb19cb5e2a1f2bb9b97830d583ed0f120d8e575d3e6fdb1c538154c08"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-go.jsonl",
+              "sha256": "6c361d88d9865809464a315ea8f9c61ff659fc526bbe537baddb2a3db7b8a295"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg18\\brg18-2002699673\\brg18-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-20T11:36:22Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "BRG18",
+            "group": "gate",
+            "requirement": "Native action/block/full workflow paths",
+            "test_level": "native-roundtrip+integration",
+            "executed_levels": [
+              "native-roundtrip",
+              "integration"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "requirement": "BRG18",
+      "scope": "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit.",
+      "source_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9"
+    },
+    "BRG21": {
+      "records": [
+        {
+          "evidence_id": "ev-local-BRG21-security",
+          "requirements": [
+            "BRG21"
+          ],
+          "tier": "security",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls",
+            "required_go_events": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries\nTestBackendRecovery21PublicAndServiceEffects/observer_controls\nTestBackendRecovery21PublicAndServiceEffects/service_valid\nTestBackendRecovery21PublicAndServiceEffects/check_valid\nTestBackendRecovery21PublicAndServiceEffects/service_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/check_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/compile_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/file_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/service_remote_import\nTestBackendRecovery21PublicAndServiceEffects/check_remote_import\nTestBackendRecovery21PublicAndServiceEffects/compile_remote_import\nTestBackendRecovery21PublicAndServiceEffects/file_remote_import\nTestBackendRecovery21PublicAndServiceEffects/service_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/check_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/file_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/missing_module",
+            "required_production_tests": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries",
+            "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-process.json",
+              "sha256": "9b85d79615661bf33938220959f0cd5b9e0e4590b5068e8df277e7902932b0b1"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-go.jsonl",
+              "sha256": "49c4b37415bc026d7357828feb8ace9ad670c619a7c108960f09d7bde6823888"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls"
+        },
+        {
+          "evidence_id": "ev-local-BRG21-integration",
+          "requirements": [
+            "BRG21"
+          ],
+          "tier": "integration",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestP15IM04ActualWorkspaceResourceBoundaries",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls",
+            "required_go_events": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries\nTestBackendRecovery21PublicAndServiceEffects/observer_controls\nTestBackendRecovery21PublicAndServiceEffects/service_valid\nTestBackendRecovery21PublicAndServiceEffects/check_valid\nTestBackendRecovery21PublicAndServiceEffects/service_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/check_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/compile_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/file_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/service_remote_import\nTestBackendRecovery21PublicAndServiceEffects/check_remote_import\nTestBackendRecovery21PublicAndServiceEffects/compile_remote_import\nTestBackendRecovery21PublicAndServiceEffects/file_remote_import\nTestBackendRecovery21PublicAndServiceEffects/service_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/check_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/file_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/missing_module",
+            "required_production_tests": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries",
+            "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-process.json",
+              "sha256": "9b85d79615661bf33938220959f0cd5b9e0e4590b5068e8df277e7902932b0b1"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-go.jsonl",
+              "sha256": "49c4b37415bc026d7357828feb8ace9ad670c619a7c108960f09d7bde6823888"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls"
+        },
+        {
+          "evidence_id": "ev-local-BRG21-service",
+          "requirements": [
+            "BRG21"
+          ],
+          "tier": "service",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestBackendRecovery21PublicAndServiceEffects",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls",
+            "required_go_events": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries\nTestBackendRecovery21PublicAndServiceEffects/observer_controls\nTestBackendRecovery21PublicAndServiceEffects/service_valid\nTestBackendRecovery21PublicAndServiceEffects/check_valid\nTestBackendRecovery21PublicAndServiceEffects/service_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/check_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/compile_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/file_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/service_remote_import\nTestBackendRecovery21PublicAndServiceEffects/check_remote_import\nTestBackendRecovery21PublicAndServiceEffects/compile_remote_import\nTestBackendRecovery21PublicAndServiceEffects/file_remote_import\nTestBackendRecovery21PublicAndServiceEffects/service_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/check_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/file_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/missing_module",
+            "required_production_tests": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries",
+            "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-process.json",
+              "sha256": "9b85d79615661bf33938220959f0cd5b9e0e4590b5068e8df277e7902932b0b1"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-go.jsonl",
+              "sha256": "49c4b37415bc026d7357828feb8ace9ad670c619a7c108960f09d7bde6823888"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\brg21\\brg21-1780409394\\brg21-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-20T11:37:26Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "BRG21",
+            "group": "gate",
+            "requirement": "Authorized resource access and pure services",
+            "test_level": "security+integration+service",
+            "executed_levels": [
+              "security",
+              "integration",
+              "service"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "requirement": "BRG21",
+      "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs.",
+      "source_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9"
+    },
+    "RP52": {
+      "records": [
+        {
+          "evidence_id": "ev-local-RP52-integration",
+          "requirements": [
+            "RP52"
+          ],
+          "tier": "integration",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestP15RP52DefaultMobileFrontend",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15RP52DefaultMobileFrontend|TestP15RP52ExplicitLegacyReferenceModes|TestP15RP52EntrypointSourceBoundaries|TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation|TestBackendRecovery19StructuralMigrationIntegration)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references",
+            "required_go_events": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration\nTestP15RP52DefaultMobileFrontend/omitted_valid_v2\nTestP15RP52DefaultMobileFrontend/omitted_reject_plain\nTestP15RP52DefaultMobileFrontend/omitted_reject_file_marker\nTestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/empty_valid_v2\nTestP15RP52DefaultMobileFrontend/empty_reject_plain\nTestP15RP52DefaultMobileFrontend/empty_reject_file_marker\nTestP15RP52DefaultMobileFrontend/empty_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/whitespace_valid_v2\nTestP15RP52DefaultMobileFrontend/whitespace_reject_plain\nTestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker\nTestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/explicit_v2_valid_v2\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_plain\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_file_marker\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_plain\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/invalid_mode\nTestP15RP52ExplicitLegacyReferenceModes/recovery\nTestP15RP52EntrypointSourceBoundaries/actual_go_exports\nTestP15RP52EntrypointSourceBoundaries/actual_swift_default\nTestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_signed_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_default_extra_statement\nTestP15RP52EntrypointSourceBoundaries/go_unknown_export\nTestP15RP52EntrypointSourceBoundaries/go_missing_export\nTestP15RP52EntrypointSourceBoundaries/go_swapped_parameters\nTestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type\nTestP15RP52EntrypointSourceBoundaries/go_wrong_return_type\nTestP15RP52EntrypointSourceBoundaries/swift_auto_default\nTestP15RP52EntrypointSourceBoundaries/swift_legacy_default\nTestP15RP52EntrypointSourceBoundaries/swift_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_comment_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_string_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum\nTestP15RP52EntrypointSourceBoundaries/swift_missing_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_local_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/nested_comment\nTestP15RP52EntrypointSourceBoundaries/opaque_interpolation\nTestP15RP52EntrypointSourceBoundaries/opaque_raw_string\nTestP15U04PublicFrontendRouteMatrix/file/default_v2\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/file/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/file/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/file/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/file/conflicting_modes\nTestP15U04PublicFrontendRouteMatrix/compile/default_v2\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/compile/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/compile/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/compile/conflicting_modes\nTestP15U01DeclarationBoundaryControls/missing_current_file\nTestP15U01DeclarationBoundaryControls/extra_current_file\nTestP15U01DeclarationBoundaryControls/missing_manifest_file\nTestP15U01DeclarationBoundaryControls/duplicate_manifest_file\nTestP15U01DeclarationBoundaryControls/wrong_base\nTestP15U01DeclarationBoundaryControls/wrong_baseline_digest\nTestP15U01DeclarationBoundaryControls/wrong_baseline_size\nTestP15U01DeclarationBoundaryControls/rewritten_unchanged_file\nTestP15U01DeclarationBoundaryControls/forged_recorded_hash\nTestP15U01DeclarationBoundaryControls/wrong_correction\nTestP15U01DeclarationBoundaryControls/false_upstream_equality\nTestP15U01DeclarationBoundaryControls/false_unchanged_class\nTestP15U01GitReplacementIsolation/show\nTestP15U01GitReplacementIsolation/cat_file_batch\nTestP15U01GitReplacementIsolation/ls_tree\nTestP15U01GitReplacementIsolation/diff\nTestBackendRecovery19StructuralMigrationIntegration/metadata\nTestBackendRecovery19StructuralMigrationIntegration/include\nTestBackendRecovery19StructuralMigrationIntegration/reference",
+            "required_production_tests": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration",
+            "scope": "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-process.json",
+              "sha256": "10cd58835bb514f2679d9219cbf64bf2c23584716bb883331f6ff5712ab10e64"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-go.jsonl",
+              "sha256": "18e8dd6ce8b3a2463840e2266b9796e944fc0c4f3a9fa60f9a7b964e206b23ff"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references"
+        },
+        {
+          "evidence_id": "ev-local-RP52-repository",
+          "requirements": [
+            "RP52"
+          ],
+          "tier": "repository",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestP15RP52EntrypointSourceBoundaries",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15RP52DefaultMobileFrontend|TestP15RP52ExplicitLegacyReferenceModes|TestP15RP52EntrypointSourceBoundaries|TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation|TestBackendRecovery19StructuralMigrationIntegration)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references",
+            "required_go_events": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration\nTestP15RP52DefaultMobileFrontend/omitted_valid_v2\nTestP15RP52DefaultMobileFrontend/omitted_reject_plain\nTestP15RP52DefaultMobileFrontend/omitted_reject_file_marker\nTestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/empty_valid_v2\nTestP15RP52DefaultMobileFrontend/empty_reject_plain\nTestP15RP52DefaultMobileFrontend/empty_reject_file_marker\nTestP15RP52DefaultMobileFrontend/empty_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/whitespace_valid_v2\nTestP15RP52DefaultMobileFrontend/whitespace_reject_plain\nTestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker\nTestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/explicit_v2_valid_v2\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_plain\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_file_marker\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_plain\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/invalid_mode\nTestP15RP52ExplicitLegacyReferenceModes/recovery\nTestP15RP52EntrypointSourceBoundaries/actual_go_exports\nTestP15RP52EntrypointSourceBoundaries/actual_swift_default\nTestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_signed_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_default_extra_statement\nTestP15RP52EntrypointSourceBoundaries/go_unknown_export\nTestP15RP52EntrypointSourceBoundaries/go_missing_export\nTestP15RP52EntrypointSourceBoundaries/go_swapped_parameters\nTestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type\nTestP15RP52EntrypointSourceBoundaries/go_wrong_return_type\nTestP15RP52EntrypointSourceBoundaries/swift_auto_default\nTestP15RP52EntrypointSourceBoundaries/swift_legacy_default\nTestP15RP52EntrypointSourceBoundaries/swift_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_comment_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_string_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum\nTestP15RP52EntrypointSourceBoundaries/swift_missing_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_local_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/nested_comment\nTestP15RP52EntrypointSourceBoundaries/opaque_interpolation\nTestP15RP52EntrypointSourceBoundaries/opaque_raw_string\nTestP15U04PublicFrontendRouteMatrix/file/default_v2\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/file/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/file/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/file/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/file/conflicting_modes\nTestP15U04PublicFrontendRouteMatrix/compile/default_v2\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/compile/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/compile/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/compile/conflicting_modes\nTestP15U01DeclarationBoundaryControls/missing_current_file\nTestP15U01DeclarationBoundaryControls/extra_current_file\nTestP15U01DeclarationBoundaryControls/missing_manifest_file\nTestP15U01DeclarationBoundaryControls/duplicate_manifest_file\nTestP15U01DeclarationBoundaryControls/wrong_base\nTestP15U01DeclarationBoundaryControls/wrong_baseline_digest\nTestP15U01DeclarationBoundaryControls/wrong_baseline_size\nTestP15U01DeclarationBoundaryControls/rewritten_unchanged_file\nTestP15U01DeclarationBoundaryControls/forged_recorded_hash\nTestP15U01DeclarationBoundaryControls/wrong_correction\nTestP15U01DeclarationBoundaryControls/false_upstream_equality\nTestP15U01DeclarationBoundaryControls/false_unchanged_class\nTestP15U01GitReplacementIsolation/show\nTestP15U01GitReplacementIsolation/cat_file_batch\nTestP15U01GitReplacementIsolation/ls_tree\nTestP15U01GitReplacementIsolation/diff\nTestBackendRecovery19StructuralMigrationIntegration/metadata\nTestBackendRecovery19StructuralMigrationIntegration/include\nTestBackendRecovery19StructuralMigrationIntegration/reference",
+            "required_production_tests": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration",
+            "scope": "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-process.json",
+              "sha256": "10cd58835bb514f2679d9219cbf64bf2c23584716bb883331f6ff5712ab10e64"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-go.jsonl",
+              "sha256": "18e8dd6ce8b3a2463840e2266b9796e944fc0c4f3a9fa60f9a7b964e206b23ff"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\rp52\\rp52-299656190\\rp52-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-20T11:37:01Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "RP52",
+            "group": "repair",
+            "requirement": "No accidental second user frontend",
+            "test_level": "integration+repository",
+            "executed_levels": [
+              "integration",
+              "repository"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "requirement": "RP52",
+      "scope": "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited.",
+      "source_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9"
+    },
+    "M02": {
+      "requirement": "M02",
+      "source_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+      "records": [
+        {
+          "evidence_id": "ev-local-M02-native-structure",
+          "requirements": [
+            "M02"
+          ],
+          "tier": "native-structure",
+          "implementation_sha": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+          "test_id": "github.com/electrikmilk/cherri:TestP15M02CompleteMainGraphs",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15M02MainVoidFallthrough|TestP15M02ExplicitMainReturnBaseline|TestP15M02CompleteMainGraphs|TestP15M02CompleteGraphCausalControls|TestP15M02ExactNativeWorkflowBoundary|TestP15M02MigratedEntryOutput|TestP15M02ValidatedModeRoutes|TestP15M02InvalidModeFailsBeforeEmission|TestP15M02MigrationUsesEntryContext|TestP15M02MigrationIsIdempotent|TestP15M02MigrationRejectsInvalidExistingMode)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed complete source-bound M02 main-output scenario, native graphs, mode/migration routes and causal corruption inventory; Independent M02 actual canonical compilation of complete main-output graphs: empty/default/explicit-mode Void fallthrough clears inherited or incidental values, partial/zero-iteration paths retain the empty boundary, explicit Text/empty Text/false/zero/bare/None returns consume the exact authored value and stop, and child returns preserve parent continuation. Actual terminal raw/resolved actions, full native.workflow documents and explicit Legacy entry mode retain their defined output. Shared analyzer/service/checked-lowering mode validation rejects malformed or duplicate metadata before emission; real entry/module migration and idempotence preserve context and exact native output. Complete native graph and causal mutations are mandatory. Apple execution and BRG14/RP26/RP30 or other related scopes are not inferred.)",
+            "required_go_events": "TestP15M02MainVoidFallthrough\nTestP15M02MainVoidFallthrough/empty\nTestP15M02MainVoidFallthrough/unused_text\nTestP15M02MainVoidFallthrough/unused_binding\nTestP15M02MainVoidFallthrough/void_action_after_value\nTestP15M02MainVoidFallthrough/partial_early_return\nTestP15M02MainVoidFallthrough/function_caller_fallthrough\nTestP15M02ExplicitMainReturnBaseline\nTestP15M02ExplicitMainReturnBaseline/text\nTestP15M02ExplicitMainReturnBaseline/empty_text\nTestP15M02ExplicitMainReturnBaseline/false\nTestP15M02ExplicitMainReturnBaseline/zero\nTestP15M02ExplicitMainReturnBaseline/bare\nTestP15M02ExplicitMainReturnBaseline/none\nTestP15M02CompleteMainGraphs\nTestP15M02CompleteMainGraphs/empty_input_boundary\nTestP15M02CompleteMainGraphs/unused_text\nTestP15M02CompleteMainGraphs/unused_number_binding\nTestP15M02CompleteMainGraphs/void_action_after_value\nTestP15M02CompleteMainGraphs/partial_early_return\nTestP15M02CompleteMainGraphs/both_branches_return\nTestP15M02CompleteMainGraphs/zero_iteration_return\nTestP15M02CompleteMainGraphs/child_return_parent_falls_through\nTestP15M02CompleteMainGraphs/child_bare_return_parent_continues\nTestP15M02CompleteMainGraphs/parent_explicit_return_after_child\nTestP15M02CompleteMainGraphs/raw_nothing_then_resolved_text\nTestP15M02CompleteMainGraphs/native_word_is_only_text\nTestP15M02CompleteMainGraphs/legacy_mode_preserves_incidental_result\nTestP15M02CompleteMainGraphs/authored_native_output\nTestP15M02CompleteMainGraphs/authored_native_stop\nTestP15M02CompleteMainGraphs/explicit_mode_clears_incidental_result\nTestP15M02CompleteMainGraphs/return_text\nTestP15M02CompleteMainGraphs/return_empty_text\nTestP15M02CompleteMainGraphs/return_false\nTestP15M02CompleteMainGraphs/return_zero\nTestP15M02CompleteMainGraphs/return_empty_\nTestP15M02CompleteMainGraphs/return_empty_none\nTestP15M02CompleteGraphCausalControls\nTestP15M02CompleteGraphCausalControls/empty_input_boundary\nTestP15M02CompleteGraphCausalControls/empty_input_boundary/delete_terminal\nTestP15M02CompleteGraphCausalControls/empty_input_boundary/append_stale\nTestP15M02CompleteGraphCausalControls/empty_input_boundary/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/unused_text\nTestP15M02CompleteGraphCausalControls/unused_text/delete_terminal\nTestP15M02CompleteGraphCausalControls/unused_text/append_stale\nTestP15M02CompleteGraphCausalControls/unused_text/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/unused_number_binding\nTestP15M02CompleteGraphCausalControls/unused_number_binding/delete_terminal\nTestP15M02CompleteGraphCausalControls/unused_number_binding/append_stale\nTestP15M02CompleteGraphCausalControls/unused_number_binding/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/void_action_after_value\nTestP15M02CompleteGraphCausalControls/void_action_after_value/delete_terminal\nTestP15M02CompleteGraphCausalControls/void_action_after_value/append_stale\nTestP15M02CompleteGraphCausalControls/void_action_after_value/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/partial_early_return\nTestP15M02CompleteGraphCausalControls/partial_early_return/delete_terminal\nTestP15M02CompleteGraphCausalControls/partial_early_return/append_stale\nTestP15M02CompleteGraphCausalControls/partial_early_return/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/both_branches_return\nTestP15M02CompleteGraphCausalControls/both_branches_return/delete_terminal\nTestP15M02CompleteGraphCausalControls/both_branches_return/append_stale\nTestP15M02CompleteGraphCausalControls/both_branches_return/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/zero_iteration_return\nTestP15M02CompleteGraphCausalControls/zero_iteration_return/delete_terminal\nTestP15M02CompleteGraphCausalControls/zero_iteration_return/append_stale\nTestP15M02CompleteGraphCausalControls/zero_iteration_return/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/child_return_parent_falls_through\nTestP15M02CompleteGraphCausalControls/child_return_parent_falls_through/delete_terminal\nTestP15M02CompleteGraphCausalControls/child_return_parent_falls_through/append_stale\nTestP15M02CompleteGraphCausalControls/child_return_parent_falls_through/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/child_bare_return_parent_continues\nTestP15M02CompleteGraphCausalControls/child_bare_return_parent_continues/delete_terminal\nTestP15M02CompleteGraphCausalControls/child_bare_return_parent_continues/append_stale\nTestP15M02CompleteGraphCausalControls/child_bare_return_parent_continues/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/parent_explicit_return_after_child\nTestP15M02CompleteGraphCausalControls/parent_explicit_return_after_child/delete_terminal\nTestP15M02CompleteGraphCausalControls/parent_explicit_return_after_child/append_stale\nTestP15M02CompleteGraphCausalControls/parent_explicit_return_after_child/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/raw_nothing_then_resolved_text\nTestP15M02CompleteGraphCausalControls/raw_nothing_then_resolved_text/delete_terminal\nTestP15M02CompleteGraphCausalControls/raw_nothing_then_resolved_text/append_stale\nTestP15M02CompleteGraphCausalControls/raw_nothing_then_resolved_text/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/native_word_is_only_text\nTestP15M02CompleteGraphCausalControls/native_word_is_only_text/delete_terminal\nTestP15M02CompleteGraphCausalControls/native_word_is_only_text/append_stale\nTestP15M02CompleteGraphCausalControls/native_word_is_only_text/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/legacy_mode_preserves_incidental_result\nTestP15M02CompleteGraphCausalControls/legacy_mode_preserves_incidental_result/delete_terminal\nTestP15M02CompleteGraphCausalControls/legacy_mode_preserves_incidental_result/append_stale\nTestP15M02CompleteGraphCausalControls/legacy_mode_preserves_incidental_result/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/authored_native_output\nTestP15M02CompleteGraphCausalControls/authored_native_output/delete_terminal\nTestP15M02CompleteGraphCausalControls/authored_native_output/append_stale\nTestP15M02CompleteGraphCausalControls/authored_native_output/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/authored_native_stop\nTestP15M02CompleteGraphCausalControls/authored_native_stop/delete_terminal\nTestP15M02CompleteGraphCausalControls/authored_native_stop/append_stale\nTestP15M02CompleteGraphCausalControls/authored_native_stop/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/explicit_mode_clears_incidental_result\nTestP15M02CompleteGraphCausalControls/explicit_mode_clears_incidental_result/delete_terminal\nTestP15M02CompleteGraphCausalControls/explicit_mode_clears_incidental_result/append_stale\nTestP15M02CompleteGraphCausalControls/explicit_mode_clears_incidental_result/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/return_text\nTestP15M02CompleteGraphCausalControls/return_text/delete_terminal\nTestP15M02CompleteGraphCausalControls/return_text/append_stale\nTestP15M02CompleteGraphCausalControls/return_text/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/return_text/return_value\nTestP15M02CompleteGraphCausalControls/return_text/return_stale_producer\nTestP15M02CompleteGraphCausalControls/return_text/return_missing_output\nTestP15M02CompleteGraphCausalControls/return_empty_text\nTestP15M02CompleteGraphCausalControls/return_empty_text/delete_terminal\nTestP15M02CompleteGraphCausalControls/return_empty_text/append_stale\nTestP15M02CompleteGraphCausalControls/return_empty_text/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/return_empty_text/return_value\nTestP15M02CompleteGraphCausalControls/return_empty_text/return_stale_producer\nTestP15M02CompleteGraphCausalControls/return_empty_text/return_missing_output\nTestP15M02CompleteGraphCausalControls/return_false\nTestP15M02CompleteGraphCausalControls/return_false/delete_terminal\nTestP15M02CompleteGraphCausalControls/return_false/append_stale\nTestP15M02CompleteGraphCausalControls/return_false/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/return_false/return_value\nTestP15M02CompleteGraphCausalControls/return_false/return_stale_producer\nTestP15M02CompleteGraphCausalControls/return_false/return_missing_output\nTestP15M02CompleteGraphCausalControls/return_zero\nTestP15M02CompleteGraphCausalControls/return_zero/delete_terminal\nTestP15M02CompleteGraphCausalControls/return_zero/append_stale\nTestP15M02CompleteGraphCausalControls/return_zero/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/return_zero/return_value\nTestP15M02CompleteGraphCausalControls/return_zero/return_stale_producer\nTestP15M02CompleteGraphCausalControls/return_zero/return_missing_output\nTestP15M02CompleteGraphCausalControls/return_empty_\nTestP15M02CompleteGraphCausalControls/return_empty_/delete_terminal\nTestP15M02CompleteGraphCausalControls/return_empty_/append_stale\nTestP15M02CompleteGraphCausalControls/return_empty_/alter_first_parameter\nTestP15M02CompleteGraphCausalControls/return_empty_none\nTestP15M02CompleteGraphCausalControls/return_empty_none/delete_terminal\nTestP15M02CompleteGraphCausalControls/return_empty_none/append_stale\nTestP15M02CompleteGraphCausalControls/return_empty_none/alter_first_parameter\nTestP15M02ExactNativeWorkflowBoundary\nTestP15M02ExactNativeWorkflowBoundary/actions_0\nTestP15M02ExactNativeWorkflowBoundary/actions_1\nTestP15M02MigratedEntryOutput\nTestP15M02MigratedEntryOutput/source_0\nTestP15M02MigratedEntryOutput/source_20\nTestP15M02MigratedEntryOutput/source_51\nTestP15M02ValidatedModeRoutes\nTestP15M02ValidatedModeRoutes/default\nTestP15M02ValidatedModeRoutes/explicit\nTestP15M02ValidatedModeRoutes/legacy\nTestP15M02InvalidModeFailsBeforeEmission\nTestP15M02InvalidModeFailsBeforeEmission/unknown\nTestP15M02InvalidModeFailsBeforeEmission/wrong_case\nTestP15M02InvalidModeFailsBeforeEmission/empty\nTestP15M02InvalidModeFailsBeforeEmission/number\nTestP15M02InvalidModeFailsBeforeEmission/boolean\nTestP15M02InvalidModeFailsBeforeEmission/none\nTestP15M02InvalidModeFailsBeforeEmission/dynamic\nTestP15M02InvalidModeFailsBeforeEmission/call\nTestP15M02InvalidModeFailsBeforeEmission/list\nTestP15M02InvalidModeFailsBeforeEmission/duplicate_field\nTestP15M02InvalidModeFailsBeforeEmission/duplicate_header\nTestP15M02MigrationUsesEntryContext\nTestP15M02MigrationIsIdempotent\nTestP15M02MigrationIsIdempotent/empty\nTestP15M02MigrationIsIdempotent/legacy_body\nTestP15M02MigrationIsIdempotent/legacy_header\nTestP15M02MigrationIsIdempotent/existing_v2_header\nTestP15M02MigrationIsIdempotent/existing_legacy_mode\nTestP15M02MigrationIsIdempotent/existing_explicit_mode\nTestP15M02MigrationIsIdempotent/decoy_comment\nTestP15M02MigrationIsIdempotent/decoy_literal\nTestP15M02MigrationRejectsInvalidExistingMode",
+            "required_production_tests": "TestP15M02MainVoidFallthrough\nTestP15M02ExplicitMainReturnBaseline\nTestP15M02CompleteMainGraphs\nTestP15M02CompleteGraphCausalControls\nTestP15M02ExactNativeWorkflowBoundary\nTestP15M02MigratedEntryOutput\nTestP15M02ValidatedModeRoutes\nTestP15M02InvalidModeFailsBeforeEmission\nTestP15M02MigrationUsesEntryContext\nTestP15M02MigrationIsIdempotent\nTestP15M02MigrationRejectsInvalidExistingMode",
+            "scope": "Independent M02 actual canonical compilation of complete main-output graphs: empty/default/explicit-mode Void fallthrough clears inherited or incidental values, partial/zero-iteration paths retain the empty boundary, explicit Text/empty Text/false/zero/bare/None returns consume the exact authored value and stop, and child returns preserve parent continuation. Actual terminal raw/resolved actions, full native.workflow documents and explicit Legacy entry mode retain their defined output. Shared analyzer/service/checked-lowering mode validation rejects malformed or duplicate metadata before emission; real entry/module migration and idempotence preserve context and exact native output. Complete native graph and causal mutations are mandatory. Apple execution and BRG14/RP26/RP30 or other related scopes are not inferred."
+          },
+          "artifacts": [
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\m02\\m02-main-output-1052674819\\main-output-process.json",
+              "sha256": "4cb51239885e4897b54c07c599b3e14f6905e05961128358e8a45576fd9e2899"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\m02\\m02-main-output-1052674819\\main-output-go.jsonl",
+              "sha256": "16934c04215c1256d55d26ddc2e9971b4e6e00b24da8cb68dcfe07e7ee07e10b"
+            },
+            {
+              "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-local-gates-integration\\actual-clean-718e7a16\\m02\\m02-main-output-1052674819\\main-output-stderr.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed complete source-bound M02 main-output scenario, native graphs, mode/migration routes and causal corruption inventory; Independent M02 actual canonical compilation of complete main-output graphs: empty/default/explicit-mode Void fallthrough clears inherited or incidental values, partial/zero-iteration paths retain the empty boundary, explicit Text/empty Text/false/zero/bare/None returns consume the exact authored value and stop, and child returns preserve parent continuation. Actual terminal raw/resolved actions, full native.workflow documents and explicit Legacy entry mode retain their defined output. Shared analyzer/service/checked-lowering mode validation rejects malformed or duplicate metadata before emission; real entry/module migration and idempotence preserve context and exact native output. Complete native graph and causal mutations are mandatory. Apple execution and BRG14/RP26/RP30 or other related scopes are not inferred.)"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-20T11:36:06Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 0,
+        "failed_cases": 0,
+        "skipped_cases": 1,
+        "results": [
+          {
+            "id": "M02",
+            "group": "metadata",
+            "requirement": "Main body explicit return and Void fallthrough",
+            "test_level": "native-structure+ios-runtime",
+            "executed_levels": [
+              "native-structure"
+            ],
+            "passed": false,
+            "status": "NOT_RUN",
+            "detail": "Pending external / CI execution tier"
+          }
+        ]
+      }
+    }
+  },
+  "scope": "Fresh actual BRG18/BRG21/RP52 local complete scenarios and M02 local native only; no BRG30 actual rerun, no Apple/global acceptance"
+}
