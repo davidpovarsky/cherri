@@ -59,7 +59,10 @@ jobs:
   ios-build:
     if: ${{ inputs.documentation_component_only != true }}
     runs-on: ${{ inputs.runner_label || 'macos-15' }}
-    timeout-minutes: 35
+    # R2 Intel run 44634890917 reached 35m after 8m12s of setup/build
+    # and 26m57s in native tests. Preserve all tests and per-test bounds;
+    # allow finite time for completion, evidence and the device build.
+    timeout-minutes: 75
 
     steps:
       - name: Live Activity · refresh

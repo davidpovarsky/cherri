@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+  "observedAtUTC": "2026-11-20",
+  "fullIOS": {
+    "runId": 44634890917,
+    "jobId": 135950751168,
+    "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44634890917",
+    "conclusion": "cancelled",
+    "runnerLabel": "macos-15-intel",
+    "annotation": "The job has exceeded the maximum execution time of 35m0s",
+    "setupAndBuildSeconds": 492,
+    "nativeTestStepSeconds": 1617,
+    "artifactId": 14587693158,
+    "originalZipSha256": "99bc5ae03a3b9760e89a9e40aa91b72492999631f8d4af3c8afe7d8f69c99ca9",
+    "diagnosticsSha256": "1dc8df84c261bf75bd4a52282e4fabd474c3ba4716d9fd84e1eb978ca25601c2",
+    "sanitizedLogSha256": "bd9b59ac3cd659d2109de4dc15719c6965d4ae9edc7d7154bbf441e349e246e3",
+    "xcodebuildExitCode": null,
+    "runStatus": "NOT_RUN_OR_INCOMPLETE",
+    "observedTestCounts": {
+      "passed": 42,
+      "failed": 11
+    },
+    "observedFailures": [
+      {
+        "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+        "sourceLine": 149
+      },
+      {
+        "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+        "sourceLine": 146
+      },
+      {
+        "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+        "sourceLine": 146
+      }
+    ],
+    "formalRecords": 0,
+    "unsignedDeviceBuild": "SKIPPED"
+  },
+  "bindingCapture": {
+    "runId": 44634896010,
+    "jobId": 135950770519,
+    "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44634896010",
+    "artifactId": 14585853875,
+    "originalZipSha256": "b20e9f5382f40531513096a4f3d9c73793b8b4185ba7fc736d17bc5c118505a8",
+    "completedRunMetadataSha256": "13e494852728f57739a7c6d02206e1c8cc86614f2540c6a06bd081466caaa9d5",
+    "auditSha256": "e25a2038a5d96b773a77a91622f7b2c3a4950e74eeec58633748207223cc9410",
+    "status": "PASS_BOUNDED_NATIVE_CONTRACT",
+    "sourceSha256": "31916ae7bcf533a4968b43aa898df9344674dca29e350331643ed239163f1a99",
+    "unsignedPlistSha256": "a4ecf5fe04416cdb70002ce7d1aff320fc5f1b2dbae1e8b4fd9ce87b2c0a41b7",
+    "publishedHashesVerified": 21,
+    "observedCallback": {
+      "matchingCallbacks": 1,
+      "identityVerified": true,
+      "status": "SUCCESS",
+      "runId": "CherriBindingCapturePOC-44634896010-851e8037d84e991b73ef6b24e8f3901f",
+      "timestampISO8601": "2026-11-19T23:49:59.026Z",
+      "resultSummary": "CHERRI_QA_BINDING_CAPTURE_RESULT:Q0hFUlJJX0JJTkRJTkdfQ0FQVFVSRV9PSwpOVU1fQ0FQVFVSRUQ9MQpOVU1fQUdBSU49MQpDTElQX0NBUFRVUkVEPWNsaXBfaW5pdGlhbApDTElQX0FHQUlOPWNsaXBfaW5pdGlhbA==",
+      "resultSummarySha256": "2f9ce19aa7081639682721b52a649f37b0c422ea1141105b5a5c7ff2ba67fb55"
+    },
+    "canonicalOracleReplay": {
+      "runGate": "PASS",
+      "traceGate": "PASS",
+      "reason": "verified correlated callback output and NDJSON trace",
+      "targetFixtureId": "CherriBindingCapturePOC",
+      "compilerCommitSha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+      "buildProfile": "debug",
+      "traceExpectation": "REQUIRED_NDJSON",
+      "releaseBuildVerified": false,
+      "sourceSha256": "31916ae7bcf533a4968b43aa898df9344674dca29e350331643ed239163f1a99",
+      "unsignedPlistSha256": "a4ecf5fe04416cdb70002ce7d1aff320fc5f1b2dbae1e8b4fd9ce87b2c0a41b7"
+    },
+    "runtimeContractVerified": true,
+    "causalOracleControls": {
+      "status": "PASS_LOCAL_ORACLE_MUTATIONS_ONLY",
+      "rejected": [
+        {
+          "mutation": "wrong_summary",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "wrong_nonce",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "self_test",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "wrong_fixture",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "native_error",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "native_cancelled",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "missing_trace",
+          "gate": "traceGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "duplicate_callback",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        }
+      ]
+    }
+  },
+  "typedDefaults": {
+    "runId": 44634896010,
+    "jobId": 135950771074,
+    "artifactId": 14588625499,
+    "originalZipSha256": "08a0e1767caac891a7bd59d304b4acee5e2a341f67805f8538248784f71fe4e3",
+    "auditSha256": "38b4cca01c8df89489257b858cad60d330bc221dafb4871f9b7e3b2ce6c04f62",
+    "status": "FAIL_RUNTIME_PRESERVED",
+    "sourceSha256": "6b4f62c80d2e63ca53ee68c769aae13dc84b3eca766046481d6cd3b607b9efbe",
+    "unsignedPlistSha256": "168a7f58eeb014c043f2f152712cb5ce1eefe16d45d507318b03755346324fc4",
+    "publishedHashesVerified": 18,
+    "canonicalOracleReplay": {
+      "runGate": "FAIL_RUNTIME",
+      "traceGate": "FAIL_RUNTIME",
+      "reason": "no non-self-test callback for runId CherriTypedDefaultsPOC-44634896010-36a823153b28d52eb39498fde71b1761",
+      "targetFixtureId": "CherriTypedDefaultsPOC",
+      "compilerCommitSha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+      "buildProfile": "debug",
+      "traceExpectation": "REQUIRED_NDJSON",
+      "releaseBuildVerified": false,
+      "sourceSha256": "6b4f62c80d2e63ca53ee68c769aae13dc84b3eca766046481d6cd3b607b9efbe",
+      "unsignedPlistSha256": "168a7f58eeb014c043f2f152712cb5ce1eefe16d45d507318b03755346324fc4"
+    },
+    "runtimeContractVerified": false,
+    "editorForegroundRecovery": {
+      "importRequestIssuedAfter": false,
+      "importRequestIssuedBefore": false,
+      "retryRequestIssuedAfter": false,
+      "retryRequestIssuedBefore": false,
+      "schemaVersion": "1.0",
+      "stage": "editor-entry",
+      "transition": {
+        "activationAttempted": false,
+        "budgetExceeded": false,
+        "budgetSeconds": 10,
+        "elapsedSeconds": 4.708333335656789e-06,
+        "finalState": "runningForeground",
+        "launchAttempted": false,
+        "priorState": "runningForeground",
+        "waitSucceeded": false,
+        "waitTimeoutSeconds": []
+      }
+    },
+    "libraryForegroundTransition": {
+      "activationAttempted": true,
+      "finallyForeground": true,
+      "initiallyForeground": false,
+      "lostBeforeQuery": true,
+      "waitAttempted": true,
+      "waitSucceeded": true
+    },
+    "captureStatus": "BLOCKED_SIMULATOR_APP",
+    "handshake": {
+      "schemaVersion": "1.4",
+      "preImportAttempted": true,
+      "preImportAck": {
+        "rc": 0,
+        "message": "method=file_primary durationSec=45"
+      },
+      "importRequested": false,
+      "importAck": null,
+      "importRetried": false,
+      "importRetryAck": null,
+      "runRequested": false,
+      "runAck": null
+    }
+  },
+  "scope": "Exact R2 component observations only. No complete bundle, formal179, other SHA, physical device, Legacy, default-value runtime, full iOS or unsigned device success.",
+  "privacy": {
+    "publicSyntheticFixturesOnly": true,
+    "privateCorpusUsed": false,
+    "rasterOrRawSystemLogPublished": false
+  }
+}
