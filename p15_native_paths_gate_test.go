@@ -411,7 +411,7 @@ func TestBackendRecovery18ReadabilityRejectsCompiledFallbacks(t *testing.T) {
 				t.Fatal("invalid actual call span")
 			}
 			var action = expected["WFWorkflowActions"].([]any)[indices[ordinal]].(map[string]any)
-			var literal, encodeErr = encodePlistValueToLiteral(action["WFWorkflowActionParameters"])
+			var literal, encodeErr = encodePlistValueToLiteral(action["WFWorkflowActionParameters"].(map[string]any))
 			if encodeErr != nil {
 				t.Fatal(encodeErr)
 			}
