@@ -14,29 +14,7 @@ import (
 func TestP15RP33SyntaxAwareMigrationDifferential(t *testing.T) {
 	binary := p15AcceptanceCLI(t)
 	reference := base64.StdEncoding.EncodeToString([]byte(`{"fileLocation":{"fileProviderDomainID":"com.apple.files","relativeSubpath":"rp33-public.txt"}}`))
-	full := `#define name RP33_FLOW
-#define glyph apple
-#define color red
-#define inputs text
-#define outputs text
-#question recipient "Recipient?" "RP33"
-#ref publicDocument ` + reference + `
-#include 'helper.cherri'
-#include 'actions/documents'
-alert(recipient, "RP33 setup")
-@word = "value"
-@box = {"field": "DICT"}
-const greeting = rp33Greet(@word)
-show(greeting)
-show(@box['field'])
-saveFile("rp33-public.txt", @word, false, publicDocument)
-if @word {
-    show("present:{@word}")
-}
-repeat index for 2 {
-    show("index:{@index}")
-}
-`
+	full, _ := p15RP33FullProgram()
 	cases := []struct {
 		name, source string
 		helper       bool
@@ -67,6 +45,45 @@ text("literal-start
 literal-end")
 `, false},
 	}
+	cases = append(cases, []struct {
+		name, source string
+		helper       bool
+	}{
+		{"json_escape_rules", `@box = {"letter": "\u05d0"}
+show(@box['letter'])
+`, false},
+		{"legacy_unknown_escape", `text("\u0041")
+`, false},
+		{"placeholder_collision", `@word = "value"
+text("__cherri_migration_literal_0__ {@word}")
+`, false},
+		{"literal_braces_with_interpolation", `@word = "value"
+text("before { literal {@word} after }")
+`, false},
+		{"include_in_comment", `/*
+#include 'helper.cherri'
+#define color blue
+*/
+text("inactive-include")
+`, true},
+		{"include_in_multiline_literal", `text("start
+#include 'helper.cherri'
+end")
+`, true},
+		{"raw_action_literal", `@word = "must-not-be-attached"
+rawAction("is.workflow.actions.gettext", {"WFTextActionText": "{@word}"})
+`, false},
+		{"reference_callable_collision", "#ref rp33Same " + reference + `
+#include 'actions/documents'
+function rp33Same(text value): text {
+    output("SAME:{@value}")
+}
+const echoed = rp33Same("local")
+show(echoed)
+saveFile("rp33-public.txt", echoed, false, rp33Same)
+`, false},
+	}...)
+
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			directory := t.TempDir()
@@ -75,10 +92,7 @@ literal-end")
 				t.Fatal(err)
 			}
 			if tc.helper {
-				helper := `function rp33Greet(text value): text {
-    output("FUNC:{@value}")
-}
-`
+				_, helper := p15RP33FullProgram()
 				if err := os.WriteFile(filepath.Join(directory, "helper.cherri"), []byte(helper), 0600); err != nil {
 					t.Fatal(err)
 				}
