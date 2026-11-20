@@ -4479,8 +4479,13 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 
 func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticValue, error) {
 	if m, ok := expr.(*syntax.MapExpr); ok {
+		expressions := make([]syntax.Expression, len(m.Entries))
+		for index, entry := range m.Entries {
+			expressions[index] = entry.Value
+		}
+		laterWrites := l.semanticSiblingWrites(expressions)
 		entries := make([]backend.DictEntry, 0, len(m.Entries))
-		for _, entry := range m.Entries {
+		for index, entry := range m.Entries {
 			kVal, err := l.lowerExpression(entry.Key)
 			if err != nil {
 				return backend.SemanticValue{}, err
@@ -4491,7 +4496,7 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 			}
 			entries = append(entries, backend.DictEntry{
 				Key:   fmt.Sprint(kVal),
-				Value: vVal,
+				Value: l.captureCallSemanticValue(vVal, laterWrites[index]),
 			})
 		}
 		return backend.SemanticValue{
@@ -4500,13 +4505,14 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		}, nil
 	}
 	if list, ok := expr.(*syntax.ListExpr); ok {
+		laterWrites := l.semanticSiblingWrites(list.Elements)
 		items := make([]backend.SemanticValue, 0, len(list.Elements))
-		for _, el := range list.Elements {
+		for index, el := range list.Elements {
 			itemVal, err := l.lowerSemanticValue(el)
 			if err != nil {
 				return backend.SemanticValue{}, err
 			}
-			items = append(items, itemVal)
+			items = append(items, l.captureCallSemanticValue(itemVal, laterWrites[index]))
 		}
 		return backend.SemanticValue{
 			Kind:    backend.ValList,
