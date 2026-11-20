@@ -1,0 +1,202 @@
+{
+  "schema_version": "1",
+  "implementation_sha": "54ae81165a92f6dfb62ba92b7c7e639c5b937590",
+  "date_core_implementation_sha": "e259c829fa0345702e0989a25b5bbac1296d1fa6",
+  "original_diagnostic_component": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+  "reused_diagnostic_commit": "703a2ab42932a2592aca4739b2057e14cf7c641f",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "action.go",
+      "sha256": "d8e0aab1e7d425c879ac225631a4fecfa4e3f42c71bb998daeb1b484cc3ade6c"
+    },
+    {
+      "path": "date_field_codec.go",
+      "sha256": "cf3378ec8120acb496017cdcf21d4d50364fe97d74a5414bae6646bdfede7b30"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "fc2d82158217364b3c28b4aa531a19158d968e2510836b8000d44807efd10fd4"
+    },
+    {
+      "path": "p15_date_field_codec_test.go",
+      "sha256": "3c96f06482191fc064a615e83b8cdde724467c3ee4b296918686e4b8a2485b06"
+    },
+    {
+      "path": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "sha256": "78be0769c2f13ad8d6fe1e40159c11579f5d8084b138e92ba713c6a3b774b0bb"
+    },
+    {
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "sha256": "d306b07fd69bb209edc3b4ffeeeb5eb554189fda31f8b320f471803b193ff9a5"
+    },
+    {
+      "path": "tools/p10r15/audit_native_continuation.py",
+      "sha256": "0816dfe220fd3d13cd067ac21756ff4f6ba214810113148ffae6e8748c5a3a2e"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/date_difference_diagnostic.py",
+      "sha256": "4accc86d199a3d0030392748caf41ecbf7855182219d168d186932d0cdae29ef"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-date-difference-diagnostic-v2.cherri",
+      "sha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-date-difference-diagnostic-v2.expected.json",
+      "sha256": "5f96a34fef09a25a3a6261bbbd2556703a61dc41a25992202c80b88dee7e17d2"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_date_difference_diagnostic.py",
+      "sha256": "fb5b559459c74ceed183f10713b8e9b1a916a0c37bbb8f561a5746865c7bbdf1"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_native_macro_diagnostic_contract.py",
+      "sha256": "b8e8ec996a18779c024ce1ee6651388f7204706f1d15a977488aeeab52ef4c6d"
+    }
+  ],
+  "commands": [
+    {
+      "step": 0,
+      "command_kind": "focused_go_controls",
+      "exit_code": 0,
+      "elapsed_seconds": 3.952999999979511,
+      "raw_sha256": "30800f62ed9b68a34efeac64a0ad16d2b762669bb1ccb3ed1413735125f8ef6f",
+      "go_test_outcomes": {
+        "pass": 37,
+        "fail": 0,
+        "skip": 0
+      }
+    },
+    {
+      "step": 1,
+      "command_kind": "original_date_source_contracts",
+      "exit_code": 0,
+      "elapsed_seconds": 0.5310000000172295,
+      "raw_sha256": "bf2a975f628642628d6425073ac7b3cc8870b7ad4c455e0ada058dd59eebde36",
+      "go_test_outcomes": null
+    },
+    {
+      "step": 2,
+      "command_kind": "strict_native_macro_oracle_controls",
+      "exit_code": 0,
+      "elapsed_seconds": 61.84399999998277,
+      "raw_sha256": "bfe8ab4db07f1e672f5021ac5739daac0d2676100dbc64426727e41c7d528f5a",
+      "go_test_outcomes": null
+    },
+    {
+      "step": 3,
+      "command_kind": "actual_compiler_build",
+      "exit_code": 0,
+      "elapsed_seconds": 4.375,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "go_test_outcomes": null
+    },
+    {
+      "step": 4,
+      "command_kind": "actual_date_fixture_compile_and_causal_graph",
+      "exit_code": 0,
+      "elapsed_seconds": 0.5150000000139698,
+      "raw_sha256": "9adfc28edbe68ce28ecdf5baf1471407fc2f190055876da655534280da3d5f63",
+      "go_test_outcomes": null
+    }
+  ],
+  "python_tests": {
+    "date_source_contracts": 5,
+    "native_macro_oracle_controls": 8
+  },
+  "provenance_registry_gate": {
+    "source_sha": "54ae81165a92f6dfb62ba92b7c7e639c5b937590",
+    "command": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-timeout=90s",
+      "-run",
+      "^TestForkActionProvenanceRegistry$",
+      "."
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 50.32799999997951,
+    "raw_sha256": "7f832e64ace5d2977ff63f3d241e211fbe0b849dfc2946e4edc9d843325e967a",
+    "passes": [
+      "TestForkActionProvenanceRegistry"
+    ],
+    "fails": [],
+    "clean_after": true
+  },
+  "actual_compilation": {
+    "source": {
+      "sourceSha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+      "expectedContractSha256": "5f96a34fef09a25a3a6261bbbd2556703a61dc41a25992202c80b88dee7e17d2",
+      "syntheticOnly": true,
+      "appleRuntime": "NOT_RUN",
+      "formalAcceptanceGranted": false
+    },
+    "graph": {
+      "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+      "observedFields": 27,
+      "dateProducers": 3,
+      "intervalProducers": 5,
+      "numericZeroControl": true,
+      "dateValuesIndependentlyFormatted": true,
+      "appleRuntime": "NOT_RUN",
+      "formalAcceptanceGranted": false
+    },
+    "negativeControls": {
+      "status": "PASS_LOCAL_NEGATIVE_CONTROLS",
+      "rejected": [
+        "wrong-specified-date",
+        "current-date-mode",
+        "zero-borrow-positive-input",
+        "positive-borrow-zero-input",
+        "wrong-start-input",
+        "bare-first-date-field",
+        "bare-second-date-field",
+        "date-field-literal-escape",
+        "date-field-missing-range",
+        "wrong-second-unit",
+        "wrong-minute-unit",
+        "same-producer-replaced",
+        "zero-type-borrowed",
+        "zero-count-borrowed",
+        "zero-count-characters",
+        "zero-text-constant",
+        "zero-text-borrowed",
+        "numeric-control-one",
+        "date-format-borrowed",
+        "date-format-loses-time",
+        "date-bytes-borrowed",
+        "base64-decode",
+        "constant-summary",
+        "constant-output",
+        "clear-with-input",
+        "extra-unowned-clear",
+        "unreviewed-network-effect"
+      ],
+      "count": 27,
+      "appleRuntime": "NOT_RUN",
+      "formalAcceptanceGranted": false
+    },
+    "nativeActions": 67,
+    "compiledUnsignedSha256": "bbf3aba624e7e3b49893722188d83a9be5ec083d7ddccbb9764eb3e193405d8b",
+    "compilerSha256": "a7f938ff32ea3d531267e95d3081d2dcf78fa8d51f5141cec369f15835186fa4",
+    "appleRuntime": "NOT_RUN"
+  },
+  "compiler_build_info_has_embedded_vcs": false,
+  "compiler_identity_limitation": "Linked-worktree Go build omits VCS settings despite -buildvcs=true. This local artifact is bound by clean source, exact command and binary SHA, not claimed embedded identity. GitHub native compilation is separately source-bound.",
+  "native_runtime": "NOT_RUN",
+  "formal_acceptance_granted": false,
+  "expected_inputs": {
+    "verify_local_ocr": false,
+    "probe_level": "full",
+    "device_profile": "ipad-default",
+    "sample_id": "qa-date-difference-diagnostic",
+    "capture_full_editor": false,
+    "max_editor_pages": "1",
+    "require_runtime": true,
+    "upload_sanitized_artifacts": true
+  }
+}
