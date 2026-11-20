@@ -1,0 +1,31 @@
+{
+  "source_sha": "ee1c10b1cf8f0af4b379c9bb76d07703d3be10f8",
+  "clean_before": true,
+  "clean_after": true,
+  "head_after": "ee1c10b1cf8f0af4b379c9bb76d07703d3be10f8",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^TestP15SemanticContainerEntriesCaptureBeforeLaterWrite$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T00:24:58.672425+00:00",
+  "finished_at_utc": "2026-11-20T00:25:46.765531+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 47.89000000001397,
+  "named_passes": 0,
+  "failed_tests": [
+    "TestP15SemanticContainerEntriesCaptureBeforeLaterWrite/map",
+    "TestP15SemanticContainerEntriesCaptureBeforeLaterWrite/function_map",
+    "TestP15SemanticContainerEntriesCaptureBeforeLaterWrite/nested_map",
+    "TestP15SemanticContainerEntriesCaptureBeforeLaterWrite/array",
+    "TestP15SemanticContainerEntriesCaptureBeforeLaterWrite",
+    null
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "21bf153dfa2053f63565b1e10834e9dbf1bcc31f7364874cef1d974e48b2c30b"
+}
