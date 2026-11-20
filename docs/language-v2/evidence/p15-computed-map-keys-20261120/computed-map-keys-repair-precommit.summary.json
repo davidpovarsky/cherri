@@ -1,0 +1,26 @@
+{
+  "source_sha": "60aa680f445569718924488fc226905bdd4e0605",
+  "source_status": "M internal/language/backend/contracts.go\n M internal/language/lower/call_arguments.go\n M internal/language/lower/lower.go\n M language_typed_literal_adapter.go\n M language_value_adapter.go\n M p15_computed_map_keys_test.go\n?? internal/language/lower/container_keys.go",
+  "status_after": "M internal/language/backend/contracts.go\n M internal/language/lower/call_arguments.go\n M internal/language/lower/lower.go\n M language_typed_literal_adapter.go\n M language_value_adapter.go\n M p15_computed_map_keys_test.go\n?? internal/language/lower/container_keys.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15ComputedMapKeysPreserveTextIdentity|TestP15ComputedMapKeyWritesCaptureEarlierValue|TestP15ComputedMapKeyCapturesBeforeOwnValueWrite)$",
+    "."
+  ],
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T01:08:04.391004+00:00",
+  "finished_at_utc": "2026-11-20T01:08:44.931600+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 40.54700000002049,
+  "named_passes": 8,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "64c15015fd84ce9b33ac2019dfe07efcc436ea5a562107a62d24a41df2b0c62a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
