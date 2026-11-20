@@ -324,10 +324,10 @@ func p15T01PresenceEnvelopeError(fields map[string]any, supplied []bool) error {
 			}
 			continue
 		}
-		// Lists retain the existing shared raw-parameter empty encoding. Authored
-		// Maps now retain explicit semantic Dictionary rows, including zero rows.
+		// Authored empty values in the private function envelope retain explicit
+		// semantic Array values and Dictionary rows, including zero elements.
 		// These exact wire checks do not replace signed runtime container counts.
-		var expected any = map[string]any{"WFSerializationType": "WFArrayParameterState"}
+		var expected any = map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": []any{}}
 		if i == 4 {
 			expected = map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": []any{}}}
 		}
@@ -356,6 +356,18 @@ func TestP15T01FunctionPresenceEnvelope(t *testing.T) {
 				t.Fatal(err)
 			}
 			for i, supplied := range tc.supplied {
+				if supplied && i == 3 {
+					t.Run("reject_historical_omitted_array_value", func(t *testing.T) {
+						mutated := p15C01CallFields(t, p15ContainerCloneNative(t, actions), false)
+						if err := p15T01PresenceEnvelopeError(mutated, tc.supplied); err != nil {
+							t.Fatal("unchanged native clone must pass", err)
+						}
+						mutated["arg_3"] = map[string]any{"WFSerializationType": "WFArrayParameterState"}
+						if p15T01PresenceEnvelopeError(mutated, tc.supplied) == nil {
+							t.Fatal("historical missing Array value accepted")
+						}
+					})
+				}
 				if supplied && i == 4 {
 					t.Run("reject_historical_omitted_dictionary_rows", func(t *testing.T) {
 						mutated := p15C01CallFields(t, p15C01Clone(t, actions), false)
