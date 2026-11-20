@@ -1,0 +1,32 @@
+{
+  "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+  "sourceAfter": "bd5d82e82828ca1cd0c27981705969c245e85306",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^TestP15RP03FreshCloneContractIntake$",
+    "./tools/language-acceptance"
+  ],
+  "startedAt": "2026-11-20T05:12:06.440437+00:00",
+  "finishedAt": "2026-11-20T05:12:56.434986+00:00",
+  "elapsedSeconds": 50.172,
+  "exitCode": 0,
+  "outerTimedOut": false,
+  "rawBytes": 3406,
+  "rawSha256": "6d86200f64cf954068ce33194b872ecdbf80b49cdbfd987be8344294371c49a1",
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "counts": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed": [],
+  "outputTail": "=== RUN   TestP15RP03FreshCloneContractIntake\n=== RUN   TestP15RP03FreshCloneContractIntake/repository_default\n--- PASS: TestP15RP03FreshCloneContractIntake/repository_default (1.91s)\n=== RUN   TestP15RP03FreshCloneContractIntake/unrelated_explicit\n--- PASS: TestP15RP03FreshCloneContractIntake/unrelated_explicit (0.08s)\n--- PASS: TestP15RP03FreshCloneContractIntake (40.86s)\nPASS\nok  \tgithub.com/electrikmilk/cherri/tools/language-acceptance\t43.561s\n"
+}
