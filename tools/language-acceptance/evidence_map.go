@@ -34,6 +34,11 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// Complete mixed/shadow loop scenarios require their own actual runtime proof.
+	// The preserved simple nested-loop trace does not supply these three rows.
+	if _, found := loopAcceptanceScenarios[id]; found {
+		return
+	}
 	if applyNativeEncodingMapping(id, testIDs, reqAssertions) {
 		return
 	}
@@ -256,6 +261,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if scenario, found := loopAcceptanceScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := numberFunctionScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -462,6 +470,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := loopAcceptanceScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if _, found := stateAcceptanceScenarios[id]; found {
 		return stateAcceptanceTestIDs(id)
 	}
@@ -524,6 +535,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := loopAcceptanceScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if _, found := stateAcceptanceScenarios[id]; found {
 		return stateAcceptanceTestIDs(id)
 	}

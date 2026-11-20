@@ -955,6 +955,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateLoopRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateBindingCaptureRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1678,11 +1682,7 @@ func (r *Runner) runControl() {
 	f01Passed, f01Detail := executeF01ProductionTests()
 	r.Record("F01", "control", "Mixed AND/OR short-circuits observable branch effects", "unit+native+iOS", []string{"unit", "native"}, f01Passed, "PASSED", f01Detail)
 
-	// F02: Nested for/repeat scope and 0-based indices
-	srcF02 := "repeat 3 as i {\n    repeat 2 as j {\n        show(f\"{i}:{j}\")\n    }\n}"
-	wfF02, errF02 := lowerSrc(r.reg, srcF02)
-	f02Passed := errF02 == nil && len(wfF02.Actions) == 7
-	r.Record("F02", "control", "Nested for/repeat scope and zero-based indices", "unit+native+iOS", []string{"unit", "native"}, f02Passed, "PASSED", fmt.Sprintf("Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (%d actions)", len(wfF02.Actions)))
+	r.runLoopRequirement("F02", "control", "Nested for/repeat scope and zero-based indices", []string{"unit", "native", "iOS"})
 
 	r.runValueBranchRequirement()
 
@@ -1914,6 +1914,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runLoopRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runBackendStateRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1934,6 +1937,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runLoopRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
+			continue
+		}
 		if r.runBackendStateRequirement(g.ID, g.Title, g.MinimumEvidenceTiers) {
 			continue
 		}

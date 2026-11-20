@@ -24,7 +24,6 @@ var incompleteLocalAssertions = map[string]string{
 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
-	"F02":  "Seven actions do not prove group identities, scopes, or zero-based indices.",
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
 	"FN04": "Action count does not inspect dispatcher envelope validation.",
 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
