@@ -44,7 +44,8 @@ func TestP15RP44GitIndexDocsIntegrity(t *testing.T) {
 	for _, flag := range []string{"--assume-unchanged", "--skip-worktree"} {
 		t.Run(strings.TrimPrefix(flag, "--"), func(t *testing.T) {
 			t.Cleanup(func() {
-				p15ExtractedGit(t, docs, "update-index", "--no-assume-unchanged", "--no-skip-worktree", "--", rel)
+				p15ExtractedGit(t, docs, "update-index", "--no-assume-unchanged", "--", rel)
+				p15ExtractedGit(t, docs, "update-index", "--no-skip-worktree", "--", rel)
 				p15InstallWrite(t, path, original)
 			})
 			changed := append(append([]byte{}, original...), []byte("\nRP44 locally edited documentation hidden by an index flag.\n")...)
@@ -88,7 +89,8 @@ func TestP15RP45GitIndexSourceIntegrity(t *testing.T) {
 	for _, flag := range []string{"--assume-unchanged", "--skip-worktree"} {
 		t.Run(strings.TrimPrefix(flag, "--"), func(t *testing.T) {
 			t.Cleanup(func() {
-				p15ExtractedGit(t, source, "update-index", "--no-assume-unchanged", "--no-skip-worktree", "--", rel)
+				p15ExtractedGit(t, source, "update-index", "--no-assume-unchanged", "--", rel)
+				p15ExtractedGit(t, source, "update-index", "--no-skip-worktree", "--", rel)
 				p15InstallWrite(t, path, original)
 				// A failed baseline may have published a new build. Restore only
 				// this disposable fixture after recording that real failure.
