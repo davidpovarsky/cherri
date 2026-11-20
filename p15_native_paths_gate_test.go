@@ -99,19 +99,24 @@ func p15BRG18Decode(t *testing.T, raw []byte) map[string]any {
 }
 
 func p15BRG18ReadabilityError(source []byte, plan HybridImportPlan) error {
-	if len(plan.Decisions) != 13 || plan.NaturalVerifiedCount == 0 || plan.Decisions[0].Classification != "NATURAL_VERIFIED" || plan.Decisions[1].Classification != "NATURAL_VERIFIED" {
-		return fmt.Errorf("BRG18 representable controls lost typed readability")
+	var natural = map[int]bool{0: true, 1: true, 8: true, 9: true, 10: true, 11: true}
+	if len(plan.Decisions) != 13 || plan.NaturalVerifiedCount != 6 || plan.ExactNativeCount != 7 || plan.SourceInvalidCount != 0 {
+		return fmt.Errorf("BRG18 complete native/readable decision inventory changed")
 	}
-	for _, index := range []int{2, 3, 5, 6, 7} {
-		if plan.Decisions[index].Classification != "EXACT_NATIVE_FALLBACK" {
-			return fmt.Errorf("BRG18 opaque action/region/variant was guessed at %d", index)
+	for index, decision := range plan.Decisions {
+		var classification = "EXACT_NATIVE_FALLBACK"
+		if natural[index] {
+			classification = "NATURAL_VERIFIED"
+		}
+		if decision.ActionIndex != index || decision.Classification != classification {
+			return fmt.Errorf("BRG18 action/region/variant classification changed at %d", index)
 		}
 	}
 	var program, err = p15BRG19Parse(string(source))
 	if err != nil {
 		return err
 	}
-	var readable = 0
+	var calls []*syntax.CallExpr
 	for _, statement := range program.Statements {
 		expression, okay := statement.(*syntax.ExprStmt)
 		if !okay {
@@ -121,17 +126,55 @@ func p15BRG18ReadabilityError(source []byte, plan HybridImportPlan) error {
 		if !okay {
 			continue
 		}
-		name, okay := call.Callee.(*syntax.IdentExpr)
-		if !okay || name.Name != "comment" {
-			continue
-		}
-		literal, okay := call.PrimaryArg.(*syntax.LiteralExpr)
-		if okay && literal.Value == "BRG18_READABLE" {
-			readable++
+		if _, okay := call.Callee.(*syntax.IdentExpr); okay {
+			calls = append(calls, call)
 		}
 	}
-	if readable != 1 {
-		return fmt.Errorf("BRG18 readable action is not an actual unique parsed user call")
+	var names = []string{"comment", "darkMode", "getVariable", "showNotification", "showNotification", "stop"}
+	if len(calls) != len(names) {
+		return fmt.Errorf("BRG18 supported calls were replaced by opaque source or extra calls")
+	}
+	for index, call := range calls {
+		if call.Callee.(*syntax.IdentExpr).Name != names[index] {
+			return fmt.Errorf("BRG18 readable call identity/order changed at %d", index)
+		}
+		switch index {
+		case 0, 3, 4:
+			var expected = map[int]string{0: "BRG18_READABLE", 3: "omitted sound", 4: "explicit false"}[index]
+			literal, okay := call.PrimaryArg.(*syntax.LiteralExpr)
+			if !okay || literal.Value != expected {
+				return fmt.Errorf("BRG18 readable parameter changed at %d", index)
+			}
+			if index != 4 && len(call.NamedArgs) != 0 {
+				return fmt.Errorf("BRG18 omitted readable parameters were invented")
+			}
+			if index == 4 {
+				if len(call.NamedArgs) != 1 || call.NamedArgs[0].Label != "playSound" {
+					return fmt.Errorf("BRG18 explicit false parameter became omitted")
+				}
+				literal, okay := call.NamedArgs[0].Value.(*syntax.LiteralExpr)
+				if !okay || literal.Type != syntax.TokenFalse {
+					return fmt.Errorf("BRG18 explicit false parameter changed")
+				}
+			}
+		case 1, 5:
+			if call.PrimaryArg != nil || len(call.NamedArgs) != 0 {
+				return fmt.Errorf("BRG18 readable zero-argument variant changed")
+			}
+		case 2:
+			reference, okay := call.PrimaryArg.(*syntax.CallExpr)
+			if !okay || len(call.NamedArgs) != 0 {
+				return fmt.Errorf("BRG18 readable reference consumer became opaque")
+			}
+			member, okay := reference.Callee.(*syntax.MemberExpr)
+			if !okay || member.Property != "ref" {
+				return fmt.Errorf("BRG18 native reference is no longer a structured source call")
+			}
+			target, okay := member.Target.(*syntax.IdentExpr)
+			if !okay || target.Name != "native" {
+				return fmt.Errorf("BRG18 reference namespace changed")
+			}
+		}
 	}
 	return nil
 }

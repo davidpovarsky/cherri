@@ -17,12 +17,13 @@ import (
 const nativePathsTitle = "Native action/block/full workflow paths"
 const nativePathsScenario = "Import unknown nested/top-level keys, descriptors, variants, references, binary/date/large integer data across supported input formats."
 const nativePathsExpected = "Exact tree and reference graph survive; full-native bypass actually works; typed readability retained for supported cases."
-const nativePathsScope = "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
+const nativePathsScope = "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
 
 var nativePathsTests = []string{
 	"TestBackendRecovery18PublicNativeImportPaths",
 	"TestBackendRecovery18ExactWorkflowBypass",
 	"TestBackendRecovery18RejectsNativeAndReadabilityFaults",
+	"TestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
 }
 var nativePathsTiers = []string{"native-roundtrip", "integration"}
 var nativePathsArtifacts = []string{"brg18-process.json", "brg18-go.jsonl", "brg18-stderr.log"}
@@ -101,6 +102,9 @@ func nativePathsRequiredEvents() []string {
 	names = append(names, nativePathsTests[1]+"/xml", nativePathsTests[1]+"/binary")
 	for _, fault := range []string{"header", "action_field", "data_type", "data_byte", "date_type", "date_value", "large_integer", "negative_integer", "false_type", "zero_type", "empty_text", "empty_array", "empty_map", "order", "descriptor", "variant", "producer_uuid", "consumer_uuid", "chain_order", "region_group", "region_result", "omitted_default", "explicit_false", "missing_parameters", "question_index", "provenance", "plan_natural", "plan_opaque", "source_call", "encoded_comment_only"} {
 		names = append(names, nativePathsTests[2]+"/"+fault)
+	}
+	for _, name := range []string{"comment", "static_variant", "reference", "omitted_parameter", "explicit_false", "empty_parameters"} {
+		names = append(names, nativePathsTests[3]+"/"+name)
 	}
 	return names
 }
