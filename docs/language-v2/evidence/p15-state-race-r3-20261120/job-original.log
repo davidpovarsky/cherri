@@ -1,0 +1,301 @@
+state-race	Set up job	﻿2026-11-20T01:12:12.7997414Z Current runner version: '2.338.2'
+state-race	Set up job	2026-11-20T01:12:12.8016029Z ##[group]Runner Image Provisioner
+state-race	Set up job	2026-11-20T01:12:12.8016849Z Hosted Compute Agent
+state-race	Set up job	2026-11-20T01:12:12.8017398Z Version: 20261103.629
+state-race	Set up job	2026-11-20T01:12:12.8017955Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+state-race	Set up job	2026-11-20T01:12:12.8018618Z Build Date: 2026-11-03T17:26:59Z
+state-race	Set up job	2026-11-20T01:12:12.8019165Z Worker ID: {9f6f844d-946b-4aff-8c42-144cdc88ca43}
+state-race	Set up job	2026-11-20T01:12:12.8019768Z Region: centralus
+state-race	Set up job	2026-11-20T01:12:12.8020214Z Cloud: Azure
+state-race	Set up job	2026-11-20T01:12:12.8020674Z ##[endgroup]
+state-race	Set up job	2026-11-20T01:12:12.8021904Z ##[group]Operating System
+state-race	Set up job	2026-11-20T01:12:12.8022440Z Ubuntu
+state-race	Set up job	2026-11-20T01:12:12.8022884Z 26.04.1
+state-race	Set up job	2026-11-20T01:12:12.8023325Z LTS
+state-race	Set up job	2026-11-20T01:12:12.8023760Z ##[endgroup]
+state-race	Set up job	2026-11-20T01:12:12.8024210Z ##[group]Runner Image
+state-race	Set up job	2026-11-20T01:12:12.8024691Z Image: ubuntu-26.04
+state-race	Set up job	2026-11-20T01:12:12.8025468Z Version: 20261111.196.1
+state-race	Set up job	2026-11-20T01:12:12.8026465Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+state-race	Set up job	2026-11-20T01:12:12.8027919Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+state-race	Set up job	2026-11-20T01:12:12.8028700Z ##[endgroup]
+state-race	Set up job	2026-11-20T01:12:12.8029686Z ##[group]GITHUB_TOKEN Permissions
+state-race	Set up job	2026-11-20T01:12:12.8031426Z Contents: read
+state-race	Set up job	2026-11-20T01:12:12.8031917Z Metadata: read
+state-race	Set up job	2026-11-20T01:12:12.8032366Z ##[endgroup]
+state-race	Set up job	2026-11-20T01:12:12.8034312Z Secret source: Actions
+state-race	Set up job	2026-11-20T01:12:12.8035571Z Cache mode: write
+state-race	Set up job	2026-11-20T01:12:12.8036142Z Prepare workflow directory
+state-race	Set up job	2026-11-20T01:12:12.8354750Z Prepare all required actions
+state-race	Set up job	2026-11-20T01:12:12.8395901Z Getting action download info
+state-race	Set up job	2026-11-20T01:12:13.0881021Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+state-race	Set up job	2026-11-20T01:12:13.1719301Z Download action repository 'actions/setup-go@v3' (SHA:be3c94b385c4f180051c996d336f57a34c397495)
+state-race	Set up job	2026-11-20T01:12:13.5755666Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+state-race	Set up job	2026-11-20T01:12:13.7600937Z Complete job name: state-race
+state-race	Run actions/checkout@v6	﻿2026-11-20T01:12:13.8240220Z ##[group]Run actions/checkout@v6
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8241011Z with:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8241438Z   fetch-depth: 1
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8241890Z   persist-credentials: false
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8242399Z   repository: davidpovarsky/cherri
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8245566Z   token: ***
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8246052Z   ssh-strict: true
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8246482Z   ssh-user: git
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8246890Z   clean: true
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8247324Z   sparse-checkout-cone-mode: true
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8247810Z   fetch-tags: false
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8248244Z   show-progress: true
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8248697Z   lfs: false
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8249099Z   submodules: false
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8249529Z   set-safe-directory: true
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8250010Z   allow-unsafe-pr-checkout: false
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8250658Z env:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8251075Z   CGO_ENABLED: 1
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8251488Z   GOMAXPROCS: 2
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8251941Z   GOFLAGS: -p=2
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8252356Z   GORACE: 
+state-race	Run actions/checkout@v6	2026-11-20T01:12:13.8252845Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0879565Z Syncing repository: davidpovarsky/cherri
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0882178Z ##[group]Getting Git version info
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0883216Z Working directory is '/home/runner/work/cherri/cherri'
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0884897Z [command]/usr/bin/git version
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0885909Z git version 2.56.1
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0888595Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0894769Z Temporarily overriding HOME='/home/runner/work/_temp/33e2a918-d9d0-4328-83a4-03437f47b18f' before making global git config changes
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0896962Z Adding repository directory to the temporary git global config as a safe directory
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0898657Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0930996Z Deleting the contents of '/home/runner/work/cherri/cherri'
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0934139Z ##[group]Determining repository object format
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0936544Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0937974Z ##[group]Initializing the repository
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.0939563Z [command]/usr/bin/git init /home/runner/work/cherri/cherri
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1041723Z hint: Using 'master' as the name for the initial branch. This default branch name
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1043575Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1045710Z hint: to use in all of your new repositories, which will suppress this warning,
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1047675Z hint: call:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1048985Z hint:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1050311Z hint: 	git config --global init.defaultBranch <name>
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1051942Z hint:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1053399Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1055589Z hint: 'development'. The just-created branch can be renamed via this command:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1057085Z hint:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1057991Z hint: 	git branch -m <name>
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1058924Z hint:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1060139Z hint: Disable this message with "git config set advice.defaultBranchName false"
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1062818Z Initialized empty Git repository in /home/runner/work/cherri/cherri/.git/
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1066036Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherri
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1106242Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1107575Z ##[group]Disabling automatic garbage collection
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1108850Z [command]/usr/bin/git config --local gc.auto 0
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1134443Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1136386Z ##[group]Setting up auth
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1137530Z Removing SSH command configuration
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1139347Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1165519Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1531439Z Removing HTTP extra header
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1534655Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1563499Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1747358Z Removing includeIf entries pointing to credentials config files
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1753417Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1778369Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1967051Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.1998696Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.2021632Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.2048243Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.2073856Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.2094480Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.2095833Z ##[group]Fetching the repository
+state-race	Run actions/checkout@v6	2026-11-20T01:12:14.2100450Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8e66254d56ea3e4ac70f6cda6ef9d31217e0937c:refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5542318Z From https://github.com/davidpovarsky/cherri
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5543232Z  * [new ref]         8e66254d56ea3e4ac70f6cda6ef9d31217e0937c -> origin/agent/cherri-p10r15-completion-r3-20261119
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5551697Z [command]/usr/bin/git branch --list --remote origin/agent/cherri-p10r15-completion-r3-20261119
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5573298Z   origin/agent/cherri-p10r15-completion-r3-20261119
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5579381Z [command]/usr/bin/git rev-parse refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5598660Z 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5602226Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5603211Z ##[group]Determining the checkout info
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5603817Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5607212Z [command]/usr/bin/git sparse-checkout disable
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5652934Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5674818Z ##[group]Checking out the ref
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.5678637Z [command]/usr/bin/git checkout --progress --force -B agent/cherri-p10r15-completion-r3-20261119 refs/remotes/origin/agent/cherri-p10r15-completion-r3-20261119
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8567322Z Switched to a new branch 'agent/cherri-p10r15-completion-r3-20261119'
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8576965Z branch 'agent/cherri-p10r15-completion-r3-20261119' set up to track 'origin/agent/cherri-p10r15-completion-r3-20261119'.
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8597357Z ##[endgroup]
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8645917Z [command]/usr/bin/git log -1 --format=%H
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8667233Z 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8678946Z ##[group]Removing auth
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8679369Z Removing SSH command configuration
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8679976Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8705575Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8913056Z Removing HTTP extra header
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8917076Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.8940982Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9131343Z Removing includeIf entries pointing to credentials config files
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9134197Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9153288Z includeif.gitdir:/home/runner/work/cherri/cherri/.git.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9153996Z includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9154842Z includeif.gitdir:/github/workspace/.git.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9155673Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9160616Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/.git.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9176991Z /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9185536Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9211965Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9230398Z /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9242207Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9266831Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9290105Z /github/runner_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9295603Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9318707Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9333477Z /github/runner_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9345774Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9364597Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9549452Z Removing credentials config '/home/runner/work/_temp/git-credentials-1e519f29-dd85-46b9-80ef-0609e0e77588.config'
+state-race	Run actions/checkout@v6	2026-11-20T01:12:15.9557321Z ##[endgroup]
+state-race	Run actions/setup-go@v3	﻿2026-11-20T01:12:15.9758516Z ##[group]Run actions/setup-go@v3
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9758851Z with:
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9759152Z   go-version: 1.24
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9759425Z   check-latest: false
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9761250Z   token: ***
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9761547Z   cache: false
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9761825Z env:
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9762070Z   CGO_ENABLED: 1
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9762317Z   GOMAXPROCS: 2
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9762550Z   GOFLAGS: -p=2
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9762830Z   GORACE: 
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:15.9763065Z ##[endgroup]
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:16.0728104Z Setup go version spec 1.24
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:16.0887618Z Found in cache @ /opt/hostedtoolcache/go/1.24.13/x64
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:16.0889784Z Added go to the path
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.3799542Z Successfully set up Go version 1.24
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.3855426Z go version go1.24.13 linux/amd64
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.3855715Z 
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.3860033Z ##[group]go env
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5100292Z AR='ar'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5100987Z CC='gcc'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5101252Z CGO_CFLAGS='-O2 -g'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5101726Z CGO_CPPFLAGS=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5101979Z CGO_CXXFLAGS='-O2 -g'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5102298Z CGO_ENABLED='1'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5102544Z CGO_FFLAGS='-O2 -g'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5102852Z CGO_LDFLAGS='-O2 -g'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5103130Z CXX='g++'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5103400Z GCCGO='gccgo'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5103715Z GO111MODULE=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5104011Z GOAMD64='v1'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5104314Z GOARCH='amd64'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5104542Z GOAUTH='netrc'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5104842Z GOBIN=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5105328Z GOCACHE='/home/runner/.cache/go-build'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5105638Z GOCACHEPROG=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5105861Z GODEBUG=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5106163Z GOENV='/home/runner/.config/go/env'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5106516Z GOEXE=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5106891Z GOEXPERIMENT=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5107224Z GOFIPS140='off'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5107552Z GOFLAGS='-p=2'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5108302Z GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build341916759=/tmp/go-build -gno-record-gcc-switches'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5108969Z GOHOSTARCH='amd64'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5109235Z GOHOSTOS='linux'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5109493Z GOINSECURE=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5109793Z GOMOD='/home/runner/work/cherri/cherri/go.mod'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5110180Z GOMODCACHE='/home/runner/go/pkg/mod'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5110646Z GONOPROXY=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5110976Z GONOSUMDB=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5111395Z GOOS='linux'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5111761Z GOPATH='/home/runner/go'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5112162Z GOPRIVATE=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5112578Z GOPROXY='https://proxy.golang.org,direct'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5113001Z GOROOT='/opt/hostedtoolcache/go/1.24.13/x64'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5113663Z GOSUMDB='sum.golang.org'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5113999Z GOTELEMETRY='local'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5114380Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5114802Z GOTMPDIR=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5115318Z GOTOOLCHAIN='auto'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5115771Z GOTOOLDIR='/opt/hostedtoolcache/go/1.24.13/x64/pkg/tool/linux_amd64'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5116222Z GOVCS=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5116546Z GOVERSION='go1.24.13'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5116885Z GOWORK=''
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5117196Z PKG_CONFIG='pkg-config'
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5117424Z 
+state-race	Run actions/setup-go@v3	2026-11-20T01:12:17.5117872Z ##[endgroup]
+state-race	Verify race evidence intake controls	﻿2026-11-20T01:12:17.5200639Z ##[group]Run python3 -B -m unittest discover -s tools/language-acceptance -p test_state_race_runner.py -v
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5201451Z ^[[36;1mpython3 -B -m unittest discover -s tools/language-acceptance -p test_state_race_runner.py -v^[[0m
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5236779Z shell: /usr/bin/bash -e {0}
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5237122Z env:
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5237355Z   CGO_ENABLED: 1
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5237684Z   GOMAXPROCS: 2
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5237935Z   GOFLAGS: -p=2
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5238180Z   GORACE: 
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.5238455Z ##[endgroup]
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7748852Z test_import_and_panic_recovery_cannot_be_omitted (test_state_race_runner.StateRaceIntakeControls.test_import_and_panic_recovery_cannot_be_omitted) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7751112Z test_rejects_duplicate_completion (test_state_race_runner.StateRaceIntakeControls.test_rejects_duplicate_completion) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7752357Z test_rejects_duplicate_json_keys (test_state_race_runner.StateRaceIntakeControls.test_rejects_duplicate_json_keys) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7758778Z test_rejects_foreign_or_undiscovered_execution (test_state_race_runner.StateRaceIntakeControls.test_rejects_foreign_or_undiscovered_execution) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7770031Z test_rejects_process_configuration_and_source_failures (test_state_race_runner.StateRaceIntakeControls.test_rejects_process_configuration_and_source_failures) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7773872Z test_rejects_skips_and_failures (test_state_race_runner.StateRaceIntakeControls.test_rejects_skips_and_failures) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7783093Z test_rejects_uninstrumented_and_incomplete_witnesses (test_state_race_runner.StateRaceIntakeControls.test_rejects_uninstrumented_and_incomplete_witnesses) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7785316Z test_required_child_cannot_inherit_parent_success (test_state_race_runner.StateRaceIntakeControls.test_required_child_cannot_inherit_parent_success) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7787325Z test_split_output_control (test_state_race_runner.StateRaceIntakeControls.test_split_output_control) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7788376Z test_zero_matching_tests (test_state_race_runner.StateRaceIntakeControls.test_zero_matching_tests) ... ok
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7788942Z 
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7789180Z ----------------------------------------------------------------------
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7789593Z Ran 10 tests in 0.005s
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7789734Z 
+state-race	Verify race evidence intake controls	2026-11-20T01:12:17.7789865Z OK
+state-race	Execute actual instrumented state scenarios	﻿2026-11-20T01:12:17.7923199Z ##[group]Run python3 -B tools/language-acceptance/run_state_race.py --output "$RUNNER_TEMP/p10r15-state-race-evidence"
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7923976Z ^[[36;1mpython3 -B tools/language-acceptance/run_state_race.py --output "$RUNNER_TEMP/p10r15-state-race-evidence"^[[0m
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7951391Z shell: /usr/bin/bash -e {0}
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7951721Z env:
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7951972Z   CGO_ENABLED: 1
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7952278Z   GOMAXPROCS: 2
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7952533Z   GOFLAGS: -p=2
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7952767Z   GORACE: 
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:12:17.7953039Z ##[endgroup]
+state-race	Execute actual instrumented state scenarios	2026-11-20T01:13:22.8932591Z {"status": "PASSED", "source_commit": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c", "exit_code": 0, "elapsed_seconds": 64.76379121, "issues": []}
+state-race	Preserve actual source, configuration and raw results	﻿2026-11-20T01:13:22.9109230Z ##[group]Run actions/upload-artifact@v4
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9109554Z with:
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9109904Z   name: p10r15-state-race-8e66254d56ea3e4ac70f6cda6ef9d31217e0937c-1
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9110460Z   path: /home/runner/work/_temp/p10r15-state-race-evidence
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9110813Z   if-no-files-found: error
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9111124Z   retention-days: 30
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9111392Z   compression-level: 6
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9111659Z   overwrite: false
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9111962Z   include-hidden-files: false
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9112233Z env:
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9112501Z   CGO_ENABLED: 1
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9112747Z   GOMAXPROCS: 2
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9113017Z   GOFLAGS: -p=2
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9113268Z   GORACE: 
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:22.9113523Z ##[endgroup]
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.0474520Z (node:6514) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.0475479Z (Use `node --trace-deprecation ...` to show where the warning was created)
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.0546406Z With the provided path, there will be 5 files uploaded
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.0550721Z Artifact name is valid!
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.0551421Z Root directory input is valid!
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.3331174Z Beginning upload of artifact content to blob storage
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.3537537Z (node:6514) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.4943006Z Uploaded bytes 4648
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.5370318Z Finished uploading artifact content to blob storage!
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.5371208Z SHA256 digest of uploaded artifact zip is 3aac6f680011451e9b87590a53e52d0cb8a0741fbec83336aacd9ed1a3f885fc
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.5372044Z Finalizing artifact upload
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.8853767Z Artifact p10r15-state-race-8e66254d56ea3e4ac70f6cda6ef9d31217e0937c-1.zip successfully finalized. Artifact ID 14591163527
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.8854697Z Artifact p10r15-state-race-8e66254d56ea3e4ac70f6cda6ef9d31217e0937c-1 has been successfully uploaded! Final size is 4648 bytes. Artifact ID is 14591163527
+state-race	Preserve actual source, configuration and raw results	2026-11-20T01:13:23.8858884Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/44651831407/artifacts/14591163527
+state-race	Post Run actions/setup-go@v3	﻿2026-11-20T01:13:23.9006518Z Post job cleanup.
+state-race	Post Run actions/checkout@v6	﻿2026-11-20T01:13:24.0028711Z Post job cleanup.
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0791293Z [command]/usr/bin/git version
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0830961Z git version 2.56.1
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0871949Z Temporarily overriding HOME='/home/runner/work/_temp/a01c3d20-8237-47b8-95ae-7634dfd86da4' before making global git config changes
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0873562Z Adding repository directory to the temporary git global config as a safe directory
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0876281Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0902522Z Removing SSH command configuration
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0908227Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.0937273Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.1165258Z Removing HTTP extra header
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.1166460Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.1196639Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.1396941Z Removing includeIf entries pointing to credentials config files
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.1403120Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+state-race	Post Run actions/checkout@v6	2026-11-20T01:13:24.1431204Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+state-race	Complete job	﻿2026-11-20T01:13:24.1731225Z Cleaning up orphan processes
+state-race	Complete job	2026-11-20T01:13:24.2028812Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-go@v3, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

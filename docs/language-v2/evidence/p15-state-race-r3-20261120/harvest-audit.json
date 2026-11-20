@@ -1,0 +1,93 @@
+{
+  "status": "VERIFIED_ACTUAL_R3_RACE",
+  "source_commit": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "run_id": 44651831407,
+  "run_attempt": 1,
+  "job_id": 136008347006,
+  "artifact_id": 14591163527,
+  "artifact_digest": "sha256:3aac6f680011451e9b87590a53e52d0cb8a0741fbec83336aacd9ed1a3f885fc",
+  "original_job_log_sha256": "6c5a096b3c4b6e36d57256b5908744a1161be13e0085459d0f0012c59ecaf11e",
+  "original_job_log_bytes": 36402,
+  "source_manifest_matches_immutable_git_blobs": true,
+  "verified_source_files": 21,
+  "intake_runner_sha256": "b9dc53a63fdbbee33d11711a2f7e4cfe6e7887f74894965a4b123f79851e2499",
+  "strict_intake": {
+    "status": "PASSED",
+    "issues": [],
+    "required_tests": [
+      "TestBackendRecovery06MixedEntryPoints",
+      "TestBackendRecovery06EmitterErrorAndCancellation",
+      "TestBackendRecovery06EmitterErrorAndCancellation/emitter_error",
+      "TestBackendRecovery06EmitterErrorAndCancellation/cancellation",
+      "TestBackendRecovery06ImportEntryPoints",
+      "TestBackendRecovery06MobilePanicRecovery"
+    ],
+    "observations": {
+      "TestBackendRecovery06MixedEntryPoints": [
+        {
+          "race_instrumented": true,
+          "sequential_rounds": 3,
+          "concurrent_workers": 8,
+          "concurrent_rounds": 8,
+          "completed_cases": 64
+        }
+      ],
+      "TestBackendRecovery06EmitterErrorAndCancellation": [
+        {
+          "race_instrumented": true,
+          "sequential_rounds": 0,
+          "concurrent_workers": 0,
+          "concurrent_rounds": 0,
+          "completed_cases": 0,
+          "emitter_faults": [
+            "emitter_error",
+            "cancellation"
+          ]
+        }
+      ],
+      "TestBackendRecovery06ImportEntryPoints": [
+        {
+          "completed_cases": 32,
+          "concurrent_rounds": 8,
+          "concurrent_workers": 4,
+          "entry_points": [
+            "canonical",
+            "legacy-in-memory",
+            "hybrid-v2",
+            "canonical-catalog-cold"
+          ],
+          "race_instrumented": true
+        }
+      ],
+      "TestBackendRecovery06MobilePanicRecovery": [
+        {
+          "emitted_before_panic": 1,
+          "emitter_calls": 2,
+          "partial_output_rejected": true,
+          "race_instrumented": true,
+          "recovery_requests": [
+            "canonical",
+            "mobile-v2"
+          ]
+        }
+      ]
+    }
+  },
+  "elapsed_seconds": 64.76379121,
+  "environment": {
+    "CC": "gcc",
+    "CGO_ENABLED": "1",
+    "GOARCH": "amd64",
+    "GOOS": "linux",
+    "GOVERSION": "go1.24.13",
+    "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+    "python": "3.14.4",
+    "go_version": "go version go1.24.13 linux/amd64",
+    "gcc_version": "15.2.0",
+    "GOMAXPROCS": "2",
+    "GOFLAGS": "-p=2",
+    "GORACE": ""
+  },
+  "formal_requirements_proved": [],
+  "scope": "Actual exact K bounded race replay; formal BRG06/RP51 intake and RP51 benchmark still separate."
+}
