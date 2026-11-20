@@ -1,0 +1,52 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Additive fixed public carrier experiment. No production export change.
+debugClearLogs()
+debugTraceEvent("before", "text-data")
+let jsonText = text("{\"marker\":\"FILE_CARRIER_PUBLIC\", \"text\":\"שָׁלוֹם 🍒\", \"entries\":[]}")
+let jsonEncoded = base64Encode(jsonText, lineBreakMode: "None")
+let jsonDecoded = base64Decode(jsonEncoded)
+let carrier = getType(jsonText, fileType: "public.data")
+let namedCarrier = setName(carrier, "carrier.json", false)
+let binaryWitness = base64Decode("AQ==")
+let carrierType = typeOf(carrier)
+let namedType = typeOf(namedCarrier)
+let decodedType = typeOf(jsonDecoded)
+let binaryType = typeOf(binaryWitness)
+let itemCount = count(namedCarrier, "Items")
+let namedStem = getName(namedCarrier)
+let namedExtension = getFileDetail(namedCarrier, "File Extension")
+let fullName = text(f"{namedStem}.{namedExtension}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+let carrierType64Raw = base64Encode(carrierType, lineBreakMode: "None")
+let carrierType64Length = count(carrierType64Raw, "Characters")
+var carrierType64 = "OVERSIZE"
+if carrierType64Length.number < 513 { carrierType64 = carrierType64Raw }
+let namedType64Raw = base64Encode(namedType, lineBreakMode: "None")
+let namedType64Length = count(namedType64Raw, "Characters")
+var namedType64 = "OVERSIZE"
+if namedType64Length.number < 513 { namedType64 = namedType64Raw }
+let carrierBytes64Raw = base64Encode(namedCarrier, lineBreakMode: "None")
+let carrierBytes64Length = count(carrierBytes64Raw, "Characters")
+var carrierBytes64 = "OVERSIZE"
+if carrierBytes64Length.number < 513 { carrierBytes64 = carrierBytes64Raw }
+let name64Raw = base64Encode(fullName, lineBreakMode: "None")
+let name64Length = count(name64Raw, "Characters")
+var name64 = "OVERSIZE"
+if name64Length.number < 513 { name64 = name64Raw }
+let jsonBytes64Raw = base64Encode(jsonText, lineBreakMode: "None")
+let jsonBytes64Length = count(jsonBytes64Raw, "Characters")
+var jsonBytes64 = "OVERSIZE"
+if jsonBytes64Length.number < 513 { jsonBytes64 = jsonBytes64Raw }
+let binaryType64Raw = base64Encode(binaryType, lineBreakMode: "None")
+let binaryType64Length = count(binaryType64Raw, "Characters")
+var binaryType64 = "OVERSIZE"
+if binaryType64Length.number < 513 { binaryType64 = binaryType64Raw }
+let decodeType64Raw = base64Encode(decodedType, lineBreakMode: "None")
+let decodeType64Length = count(decodeType64Raw, "Characters")
+var decodeType64 = "OVERSIZE"
+if decodeType64Length.number < 513 { decodeType64 = decodeType64Raw }
+debugTraceEvent("after", "text-data")
+let traceEnvelope = debugExportTrace(runId: "qa-file-carrier-text-data-v2")
+let finalSummary = text(f"CHERRI_QA_FILE_CARRIER:MODE=text-data:TYPE64={carrierType64}:NAMED_TYPE64={namedType64}:COUNT={itemCount}:BYTES64={carrierBytes64}:NAME64={name64}:JSON64={jsonBytes64}:BINARY_TYPE64={binaryType64}:DECODE_TYPE64={decodeType64}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

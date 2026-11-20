@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-file-carrier-text-data|qa-file-carrier-dictionary-data|qa-file-carrier-file-coercion|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -240,6 +240,27 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-n03-text-equality-diagnostic-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_N03_TEXT_EQ_DIAG:LEFT64=YWJj:SAME64=YWJj:CASE64=QUJD:FOLD_SAME_EQ=Y:FOLD_SAME_NE=N:FOLD_CASE_EQ=N:FOLD_CASE_NE=Y:DYN_SAME_EQ=Y:DYN_SAME_NE=N:DYN_CASE_EQ=N:DYN_CASE_NE=Y:IF_SAME_EQ=Y:IF_SAME_NE=N:IF_CASE_EQ=N:IF_CASE_NE=Y:MATCH_SAME_CS=1:MATCH_CASE_CS=0:MATCH_CASE_CI=1"
+    ;;
+  qa-file-carrier-text-data)
+    # One isolated public conversion; actual contrary fields remain failures.
+    TARGET_FIXTURE_ID="qa-file-carrier-text-data-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-file-carrier-text-data-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_FILE_CARRIER:MODE=text-data:TYPE64=RmlsZQ==:NAMED_TYPE64=RmlsZQ==:COUNT=1:BYTES64=eyJtYXJrZXIiOiJGSUxFX0NBUlJJRVJfUFVCTElDIiwgInRleHQiOiLXqda414HXnNeV1rnXnSDwn42SIiwgImVudHJpZXMiOltdfQ==:NAME64=Y2Fycmllci5qc29u:JSON64=eyJtYXJrZXIiOiJGSUxFX0NBUlJJRVJfUFVCTElDIiwgInRleHQiOiLXqda414HXnNeV1rnXnSDwn42SIiwgImVudHJpZXMiOltdfQ==:BINARY_TYPE64=RmlsZQ==:DECODE_TYPE64=RGljdGlvbmFyeQ=="
+    ;;
+  qa-file-carrier-dictionary-data)
+    # One isolated public conversion; actual contrary fields remain failures.
+    TARGET_FIXTURE_ID="qa-file-carrier-dictionary-data-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-file-carrier-dictionary-data-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_FILE_CARRIER:MODE=dictionary-data:TYPE64=RmlsZQ==:NAMED_TYPE64=RmlsZQ==:COUNT=1:BYTES64=eyJtYXJrZXIiOiJGSUxFX0NBUlJJRVJfUFVCTElDIiwgInRleHQiOiLXqda414HXnNeV1rnXnSDwn42SIiwgImVudHJpZXMiOltdfQ==:NAME64=Y2Fycmllci5qc29u:JSON64=eyJtYXJrZXIiOiJGSUxFX0NBUlJJRVJfUFVCTElDIiwgInRleHQiOiLXqda414HXnNeV1rnXnSDwn42SIiwgImVudHJpZXMiOltdfQ==:BINARY_TYPE64=RmlsZQ==:DECODE_TYPE64=RGljdGlvbmFyeQ=="
+    ;;
+  qa-file-carrier-file-coercion)
+    # One isolated public conversion; actual contrary fields remain failures.
+    TARGET_FIXTURE_ID="qa-file-carrier-file-coercion-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-file-carrier-file-coercion-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_FILE_CARRIER:MODE=file-coercion:TYPE64=RmlsZQ==:NAMED_TYPE64=RmlsZQ==:COUNT=1:BYTES64=eyJtYXJrZXIiOiJGSUxFX0NBUlJJRVJfUFVCTElDIiwgInRleHQiOiLXqda414HXnNeV1rnXnSDwn42SIiwgImVudHJpZXMiOltdfQ==:NAME64=Y2Fycmllci5qc29u:JSON64=eyJtYXJrZXIiOiJGSUxFX0NBUlJJRVJfUFVCTElDIiwgInRleHQiOiLXqda414HXnNeV1rnXnSDwn42SIiwgImVudHJpZXMiOltdfQ==:BINARY_TYPE64=RmlsZQ==:DECODE_TYPE64=RGljdGlvbmFyeQ=="
     ;;
   qa-file-materialization-diagnostic)
     # Additive characterization: desired File contract remains independently strict.
@@ -541,6 +562,7 @@ sys.path.insert(0, os.path.join(root_dir, "tools", "shortcuts-simulator-qa"))
 from retry_http_probe import validate_fixture_graph
 from export_unicode_diagnostic import validate_export_unicode_graph
 from file_materialization_diagnostic import verify_source as verify_file_materialization_source, verify_graph as verify_file_materialization_graph
+from file_carrier_controls import verify_source as verify_file_carrier_source, verify_graph as verify_file_carrier_graph
 from n03_text_equality_diagnostic import verify_source as verify_n03_text_equality_source
 from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
@@ -579,6 +601,9 @@ fixture_specs = [
     ("qa-label-raw-empty-v2", "p15-label-probes/qa-label-raw-empty-v2.cherri", "v2"),
     ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),
     ("qa-file-materialization-diagnostic-v2", "qa-file-materialization-diagnostic-v2.cherri", "v2"),
+    ("qa-file-carrier-text-data-v2", "qa-file-carrier-text-data-v2.cherri", "v2"),
+    ("qa-file-carrier-dictionary-data-v2", "qa-file-carrier-dictionary-data-v2.cherri", "v2"),
+    ("qa-file-carrier-file-coercion-v2", "qa-file-carrier-file-coercion-v2.cherri", "v2"),
     ("qa-n03-text-equality-diagnostic-v2", "qa-n03-text-equality-diagnostic-v2.cherri", "v2"),
     ("qa-native-boundary-diagnostic-v2", "qa-native-boundary-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-diagnostic-v2", "qa-export-unicode-diagnostic-v2.cherri", "v2"),
@@ -701,6 +726,8 @@ for fid, fname, dialect in fixture_specs:
         "fileMaterializationSource": verify_file_materialization_source(root_dir, fid, src_bytes),
         "n03TextEqualitySource": verify_n03_text_equality_source(root_dir, fid, src_bytes),
         "fileMaterializationGraph": verify_file_materialization_graph(fid, actions),
+        "fileCarrierSource": verify_file_carrier_source(root_dir, fid, src_bytes),
+        "fileCarrierGraph": verify_file_carrier_graph(fid, actions),
         "bindingDefaultsSource": verify_adapter_source(root_dir, fid, src_bytes),
         "bindingDefaultsGraph": verify_adapter_graph(fid, actions),
         "recordEmptyFeasibilitySource": verify_record_empty_source(root_dir, fid, src_bytes),

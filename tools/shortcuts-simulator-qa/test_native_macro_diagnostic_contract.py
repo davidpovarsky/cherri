@@ -13,11 +13,13 @@ from test_workflow_input_contract import bash_path
 import test_runtime_callback_contract as callback_contract
 from fixture_compile_contract import EXPECTED_REJECTIONS
 import file_materialization_diagnostic as file_probe
+import file_carrier_controls as carrier_controls
 import n03_text_equality_diagnostic as n03_probe
 import tempfile
 
 
 CASES = {
+    **carrier_controls.EXPECTED,
     file_probe.FIXTURE_ID: file_probe.EXPECTED_OUTPUT,
     n03_probe.FIXTURE_ID: n03_probe.EXPECTED_OUTPUT,
     "qa-export-unicode-diagnostic-v2": "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y:NAME=Y:COUNT=Y:STATUS=Y:PAYLOAD=Y:RESTORED_EQ=Y:RESTORED_NE=N:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:DECODED_FILE64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
@@ -103,6 +105,30 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                 manifest = self.oracle.manifest(fid)
                 manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
                 self.assertEqual(self.oracle.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
+    def test_file_carrier_sources_and_every_actual_field_remain_required(self):
+        for fid, expected in carrier_controls.EXPECTED.items():
+            source = (self.root / "tools/shortcuts-simulator-qa/fixtures" / (fid + ".cherri")).read_bytes()
+            receipt = carrier_controls.verify_source(self.root, fid, source)
+            self.assertEqual(receipt["appleRuntime"], "NOT_RUN")
+            self.assertFalse(receipt["formalAcceptanceGranted"])
+            with self.assertRaises(ValueError):
+                carrier_controls.verify_source(self.root, fid, source + b"\n// changed\n")
+            event = self.oracle.event()
+            event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+            event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+            self.assertEqual(self.oracle.verify([event], fid, expected)["runGate"], "PASS")
+            for label, _, _, correct in carrier_controls.FIELDS:
+                for altered in ("WRONG", "OVERSIZE", "A" * 513):
+                    with self.subTest(fixture=fid, field=label, altered=altered[:10]):
+                        wrong = expected.replace(":" + label + "=" + correct, ":" + label + "=" + altered)
+                        self.assertNotEqual(wrong, expected)
+                        self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"], "FAIL_RUNTIME")
+        workflow = (self.root / ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml").read_text(encoding="utf-8")
+        self.assertIn("inputs.sample_id == 'qa-file-carrier-controls'", workflow)
+        self.assertIn("fail-fast: false", workflow)
+        self.assertIn("max-parallel: 1", workflow)
+        self.assertIn("timeout-minutes: 45", workflow)
 
     def test_file_materialization_type_count_and_byte_fields_are_independent(self):
         fid, expected = file_probe.FIXTURE_ID, file_probe.EXPECTED_OUTPUT
