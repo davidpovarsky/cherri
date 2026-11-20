@@ -184,3 +184,12 @@ Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 pas
 - Strict RP43 producer source 468392aae763fe22ef7f6dcde4dcdc6e7f489e91: complete 78 required Linux events and 47 immutable source blobs; clean 97 intake/Windows-host controls pass with zero accepted RP43 records.
 - RP43 remains NOT_RUN until actual Linux permissions plus complete strict source-bound process execute. No Apple signature/runtime or global 179 closure.
 - Report: docs/language-v2/p15-output-signing-repair-20261120.md; original byte archive and manifests in the adjacent evidence directory.
+
+
+## RP43 actual Linux component — 2026-11-20
+
+- Frozen source 53daeae947f729e434168a8a09661e735386c661 completed one manual Linux run 44705394599: 253 outer and all 78 required inner named passes; no failure, skip or timeout.
+- Both RP43-only integration/security records passed strict local intake. The independent audit verified all 47 immutable source blobs, exact commands, process intervals and original raw/artifact hashes. Real Linux permissions and owned loopback signer faults were executed.
+- Original causal failures, corrected fixture expectations and Windows NOT_RUN evidence remain unchanged. The registration-only push is not counted as execution.
+- Final integrated179, required CI, Apple/native signing and coherent consumer publication remain open. No related-ID inheritance or manifest/pin change.
+- Proof: docs/language-v2/p15-output-signing-linux-20261120.md, with the original Linux archive and source/member manifests alongside it.
