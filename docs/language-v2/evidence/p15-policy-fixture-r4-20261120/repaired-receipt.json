@@ -1,0 +1,73 @@
+{
+  "source_sha": "33da522799fe5a18f5bc2eb1aca6a48627ab8afa",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestMeta_|TestAntiFalsePositive_)",
+    "-count=1",
+    "-json",
+    "-timeout=5m"
+  ],
+  "started_at": "2026-11-20T01:33:06.017592+00:00",
+  "duration_seconds": 7.094000000040978,
+  "exit_code": 1,
+  "passed_test_count": 34,
+  "passed_tests": [
+    "TestMeta_AssertionReturnsFalse",
+    "TestMeta_ContradictoryPassedStatus",
+    "TestMeta_MissingRequiredID",
+    "TestMeta_UnknownIDInjected",
+    "TestMeta_ContractHashMismatch",
+    "TestMeta_ZeroMatchingTestsDetected",
+    "TestMeta_WeakTestLevelRejection",
+    "TestMeta_MismatchedEvidenceDigest",
+    "TestMeta_MissingReferencedArtifact",
+    "TestMeta_ArtifactHashMismatch",
+    "TestMeta_FailedOrPendingCIRejection",
+    "TestMeta_DuplicateEvidenceID",
+    "TestMeta_FalsePassedClaimWithMissingTiersRejected",
+    "TestMeta_Negative01_MissingRuntimeRecordFailsClosed",
+    "TestMeta_Negative02_WrongRuntimeTestIDFailsClosed",
+    "TestMeta_Negative03_RequiredAssertionIdentityAbsentFailsClosed",
+    "TestMeta_Negative04_CIShaDiffersFailsClosed",
+    "TestMeta_Negative05_CIRunDoesNotExistFailsClosed",
+    "TestMeta_Negative06_CIRunFailedFailsClosed",
+    "TestMeta_Negative07_ArtifactHashDiffersFailsClosed",
+    "TestMeta_Negative08_ArtifactBelongsToAnotherRunFailsClosed",
+    "TestMeta_Negative09_OnlyIOSBuildExistsWhenIOSRuntimeRequiredFailsClosed",
+    "TestMeta_Negative10_GenericSmokeTriesToSatisfyFunctionRequirementFailsClosed",
+    "TestMeta_Negative11_GenericMarkerExistsButExpectedFunctionResultAbsentFailsClosed",
+    "TestMeta_Negative12_ManifestClaimsPassWithoutTestProducedRecordFailsClosed",
+    "TestAntiFalsePositive_BridgeOnlyCannotSatisfyUIRequirement",
+    "TestAntiFalsePositive_BridgeRecordCannotSatisfyUILevel",
+    "TestAntiFalsePositive_SwappedAcceptanceIDs_E01_E02",
+    "TestAntiFalsePositive_MissingUIEvidenceLeavesRequirementUnsatisfied",
+    "TestAntiFalsePositive_InvalidUIAssertionValueRejected",
+    "TestAntiFalsePositive_UnauthorizedTestIDForRequirementRejected",
+    "TestAntiFalsePositive_EmptyManifestLeavesAllExternalRequirementsUnsatisfied",
+    "TestAntiFalsePositive_GreenUITestWithoutBehavioralCheckpoint_Rejected",
+    "TestAntiFalsePositive_MutatedSourceNodeTarget_Rejected"
+  ],
+  "bad_events": [
+    {
+      "Time": "2026-11-20T03:33:12.8198838+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestMeta_UnitAndNativeCannotSatisfyIOSInFinal",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-11-20T03:33:12.9631189+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Elapsed": 1.467
+    }
+  ],
+  "raw_sha256": "f20700deac56c3ba1eb238cd7be5abd1a18525fa50a04df1967b1f0f90ef7971",
+  "raw_bytes": 33381,
+  "scope": "Synthetic evidence policy controls only; no FN01 or Apple execution credit"
+}

@@ -1,0 +1,21 @@
+{
+  "source_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestMeta_UnitAndNativeCannotSatisfyIOSInFinal$",
+    "-count=1",
+    "-json",
+    "-timeout=3m"
+  ],
+  "started_at": "2026-11-20T01:31:41.702171+00:00",
+  "duration_seconds": 27.70299999997951,
+  "exit_code": 1,
+  "raw_sha256": "6264f6a03ab9cb9dd9365a3b3c848c47ff7977f6f7732c754ba90826d3bd367f",
+  "raw_bytes": 2278,
+  "scope": "Synthetic policy fixture baseline only; no FN01 execution credit"
+}
