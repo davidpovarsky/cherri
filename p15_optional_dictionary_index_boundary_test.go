@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -56,7 +58,14 @@ func p15DictionaryIndexBoundaryGraphError(actions []map[string]any, name string)
 	}
 	_, wire := p15ContainerFieldValue(values)
 	dictionary := g.value("dictionary", map[string]any{"WFItems": wire})
-	g.emit("getvariable", map[string]any{"WFVariable": p15DictionaryKeyEdge(dictionary, "key")})
+	// Both established static-key transports are valid: a native lookup action
+	// or the exact Dictionary-key aggrandizement. Model every parameter and
+	// action of the selected form; neither permits losing Dictionary identity.
+	var selected any = p15DictionaryKeyEdge(dictionary, "key")
+	if next := len(g.expected); next < len(actions) && actions[next]["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvalueforkey" {
+		selected = p15FunctionEdge(g.get("key", dictionary))
+	}
+	g.emit("getvariable", map[string]any{"WFVariable": selected})
 	g.output(g.value("gettext", map[string]any{"WFTextActionText": "DONE"}))
 	g.caller()
 	result := g.call(g.payload("probe"))
@@ -67,7 +76,13 @@ func p15DictionaryIndexBoundaryGraphError(actions []map[string]any, name string)
 func TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder(t *testing.T) {
 	for _, name := range []string{"capture", "reserved_keys", "empty_list", "empty_map"} {
 		t.Run(name, func(t *testing.T) {
-			if err := p15DictionaryIndexBoundaryGraphError(p15CompiledActions(t, p15DictionaryIndexBoundarySource(name)), name); err != nil {
+			actions := p15CompiledActions(t, p15DictionaryIndexBoundarySource(name))
+			if err := p15DictionaryIndexBoundaryGraphError(actions, name); err != nil {
+				if os.MkdirAll("dist/p15-optional-dictionary", 0700) == nil {
+					if raw, e := json.MarshalIndent(actions, "", "  "); e == nil {
+						_ = os.WriteFile("dist/p15-optional-dictionary/direct-index-baseline-"+name+".json", raw, 0600)
+					}
+				}
 				t.Fatal(err)
 			}
 		})
