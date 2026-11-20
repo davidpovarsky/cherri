@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -46,10 +47,10 @@ func p15S01EnclosingInputError(actions []map[string]any, selected ...string) err
 	if seed < 0 || target <= seed {
 		return fmt.Errorf("missing explicit public seed or enclosing native action")
 	}
-	uuid := p15Param(actions[seed])["UUID"]
+	uuid, validUUID := p15Param(actions[seed])["UUID"].(string)
 	check := func(value any) bool {
 		ref := p15DiagnosticValue(value)
-		return ref["Type"] == "ActionOutput" && ref["OutputUUID"] == uuid
+		return validUUID && uuid != "" && ref["Type"] == "ActionOutput" && ref["OutputUUID"] == uuid
 	}
 	if value, present := p15Param(actions[target])["WFInput"]; present {
 		if !check(value) {
@@ -150,4 +151,111 @@ func TestP15S01EnclosingNativeInputBoundaries(t *testing.T) {
 			t.Fatalf("unused exact producer changed: %#v", p15Param(actions[2]))
 		}
 	})
+}
+
+func TestP15S01EnclosingNativeCarrierSequenceControls(t *testing.T) {
+	prefix := "let suffix=text(\"SUFFIX\")\nlet seed=text(\"S01_ENCLOSING_SEED\")\n"
+	for _, tc := range []struct{ name, call string }{
+		{"two_pure_carriers", "native.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"\uFFFC{suffix}\",\"PublicSecond\":f\"second\uFFFC{suffix}\"})\n"},
+		{"later_authored_canonical_producer", "native.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"\uFFFC{suffix}\",\"PublicSecond\":text(\"S01_ENCLOSING_SEED\")})\n"},
+		{"no_literal_carrier", "native.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"normal{suffix}\"})\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			actions := p15CompiledActions(t, prefix+tc.call)
+			if err := p15S01EnclosingInputError(actions); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+	for _, tc := range []struct{ name, field, want string }{
+		{"plain", "f\"\uFFFCname\"", "\uFFFCname"},
+		{"constant_number", "f\"\uFFFC{1}\"", "\uFFFC1"},
+		{"constant_bool", "f\"\uFFFC{true}\"", "\uFFFCtrue"},
+	} {
+		t.Run("pure_"+tc.name, func(t *testing.T) {
+			actions := p15CompiledActions(t, prefix+"native.action(\"is.workflow.actions.setitemname\", {\"WFName\":"+tc.field+"})\n")
+			if len(actions) != 3 || p15Param(actions[2])["WFName"] != tc.want {
+				t.Fatalf("pure string emitted helpers or changed bytes: %#v", actions)
+			}
+			if err := p15S01EnclosingInputError(actions); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+	for _, explicit := range []bool{false, true} {
+		t.Run(fmt.Sprintf("open_control_explicit_%t", explicit), func(t *testing.T) {
+			input := ""
+			if explicit {
+				input = "\"WFInput\":seed,"
+			}
+			source := prefix + "if true {\nnative.action(\"is.workflow.actions.setitemname\", {" + input + "\"WFName\":f\"\uFFFC{suffix}\"})\n}\n"
+			data, err := CompileSourceToPlist("s01-open-control.cherri", source)
+			if explicit {
+				if err != nil || len(data) == 0 {
+					t.Fatalf("explicit input must retain support: bytes=%d error=%v", len(data), err)
+				}
+			} else if err == nil || !strings.Contains(err.Error(), "S01_IMPLICIT_INPUT_UNAVAILABLE") || len(data) != 0 {
+				t.Fatalf("open control input must not be guessed: bytes=%d error=%v", len(data), err)
+			}
+		})
+	}
+}
+
+func TestP15S01EnclosingInputOracleRejectsCausalCorruption(t *testing.T) {
+	original := p15CompiledActions(t, "let suffix=text(\"SUFFIX\")\nlet seed=text(\"S01_ENCLOSING_SEED\")\nnative.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"\uFFFC{suffix}\"})\n")
+	if err := p15S01EnclosingInputError(original); err != nil {
+		t.Fatalf("healthy production control: %v", err)
+	}
+	if len(original) != 5 {
+		t.Fatalf("reviewed control has changed action topology: %d", len(original))
+	}
+	clone := func() []map[string]any {
+		raw, err := json.Marshal(original)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var result []map[string]any
+		if err = json.Unmarshal(raw, &result); err != nil {
+			t.Fatal(err)
+		}
+		return result
+	}
+	mutations := []struct {
+		name   string
+		change func([]map[string]any) []map[string]any
+	}{
+		{"removed_restore", func(a []map[string]any) []map[string]any { return append(a[:3], a[4:]...) }},
+		{"stale_reference", func(a []map[string]any) []map[string]any {
+			p15DiagnosticValue(p15Param(a[3])["WFVariable"])["OutputUUID"] = p15Param(a[0])["UUID"]
+			return a
+		}},
+		{"literal_replaces_reference", func(a []map[string]any) []map[string]any {
+			p15Param(a[3])["WFVariable"] = "S01_ENCLOSING_SEED"
+			return a
+		}},
+		{"wrong_reference_kind", func(a []map[string]any) []map[string]any {
+			p15DiagnosticValue(p15Param(a[3])["WFVariable"])["Type"] = "Variable"
+			return a
+		}},
+		{"missing_source_identity", func(a []map[string]any) []map[string]any { delete(p15Param(a[1]), "UUID"); return a }},
+		{"changed_source_identity", func(a []map[string]any) []map[string]any {
+			p15Param(a[1])["UUID"] = "different-public-source"
+			return a
+		}},
+		{"explicit_carrier_input", func(a []map[string]any) []map[string]any {
+			p15Param(a[4])["WFInput"] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "ActionOutput", "OutputUUID": p15Param(a[2])["UUID"]}}
+			return a
+		}},
+		{"cleared_input", func(a []map[string]any) []map[string]any {
+			a[3] = map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"}
+			return a
+		}},
+	}
+	for _, mutation := range mutations {
+		t.Run(mutation.name, func(t *testing.T) {
+			if err := p15S01EnclosingInputError(mutation.change(clone())); err == nil {
+				t.Fatal("causal input corruption accepted")
+			}
+		})
+	}
 }
