@@ -1,0 +1,1132 @@
+{
+  "schema_version": "1",
+  "evidence_kind": "actual-native-parameter-state-observation",
+  "status": "OBSERVED",
+  "source_sha": "96f67fae308925f7f647bc4c730f2bca1a307cbf",
+  "run": {
+    "id": 44696174000,
+    "attempt": 1,
+    "job_id": 136153339347,
+    "conclusion": "success",
+    "repository": "davidpovarsky/cherri",
+    "workflow": ".github/workflows/macos-shortcuts-deep-extract.yml",
+    "platform": "macOS 15.7.9 Intel",
+    "job_started_at": "2026-11-20T07:45:47Z",
+    "job_completed_at": "2026-11-20T07:46:04Z"
+  },
+  "artifact": {
+    "id": 14611107095,
+    "name": "date-parameter-native-observation",
+    "bytes": 15709,
+    "sha256": "37b5e7efdb775e6bff37dac2e5afbdac7288cb9ab4f65f8a71483100575e107d"
+  },
+  "job_log_sha256": "853c0ee9aba6f6c510873d4ca2dc967fa13c6abdf2e6b01df2a846f28c393492",
+  "published_files": [
+    {
+      "path": "combined-original.js",
+      "bytes": 26497,
+      "sha256": "b58860e186d90501579e51b934bfab774e5235eb2dfb0fbba70160ba794d5112"
+    },
+    {
+      "path": "input-original-probe_single_action.js",
+      "bytes": 6085,
+      "sha256": "872975cda77ab0dda41de0e1aa97214b1a73dd9f9d7bda12a2c7d486b50db415"
+    },
+    {
+      "path": "observations-original.json",
+      "bytes": 66419,
+      "sha256": "0a76893d00354088a755137dd647181a39edfb226164c49a2904d81824956b4b"
+    },
+    {
+      "path": "input-original-date-field-compiled-controls.json",
+      "bytes": 3100,
+      "sha256": "6978f99988123cb91be759648ca5fc476ae83a02ea33e8e3481c6b4a4275edf6"
+    },
+    {
+      "path": "process-original.json",
+      "bytes": 2752,
+      "sha256": "ad0529fe293eebb4868a78bfe01abb71bb3770085dc03b482d6960528b31880d"
+    },
+    {
+      "path": "stderr-original.log",
+      "bytes": 87,
+      "sha256": "7a352d6c130d6d6fc39c769418c269be2cc1030a584e8e32ed89b9ff17ef746b"
+    },
+    {
+      "path": "stdout-original.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "input_provenance": {
+    "description": "Date action fields copied from same-source local compilation, not the randomized unsigned artifact downloaded from the earlier iOS runtime run.",
+    "limitation": "The local source identity and full command/hash receipt remain in the immutable preparation report and pinned date-field-compiled-controls.json; this observation does not claim byte equality with the original downloaded runtime shortcut.",
+    "fixture_path": "tools/shortcut-runtime/fixtures/date-field-compiled-controls.json",
+    "fixture_sha256": "6978f99988123cb91be759648ca5fc476ae83a02ea33e8e3481c6b4a4275edf6",
+    "compiler_source_sha": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+    "local_unsigned_sha256": "2c7b10160a569845c47327e5daee68388c4a26041ba1759ca78f497b2dad4c0a"
+  },
+  "verification": {
+    "original_zip_sha256_verified": true,
+    "all_published_files_sha256_verified": true,
+    "pinned_git_inputs_and_combined_script_verified": true,
+    "foundation_typed_snapshot_control_pass": true,
+    "direct_native_object_hops": true,
+    "native_action_executed": false,
+    "shortcut_runtime_executed": false,
+    "formal_acceptance_granted": false,
+    "original_runtime_oracle_modified": false
+  },
+  "observations": [
+    {
+      "kind": "direct",
+      "specimen": {
+        "form": "actual_local_compiler",
+        "input": {
+          "Value": {
+            "OutputName": "startDate",
+            "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+            "Type": "ActionOutput"
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        },
+        "name": "first_original_bare_attachment"
+      },
+      "class": "WFDateFieldParameterState",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": false,
+          "stateClass": null,
+          "inputTransport": "initial native input",
+          "output": null
+        }
+      ]
+    },
+    {
+      "kind": "direct",
+      "specimen": {
+        "form": "existing_native_probe_form",
+        "input": {
+          "Value": {
+            "attachmentsByRange": {
+              "{0, 1}": {
+                "OutputName": "startDate",
+                "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                "Type": "ActionOutput"
+              }
+            },
+            "string": "￼"
+          },
+          "WFSerializationType": "WFTextTokenString"
+        },
+        "name": "first_token_string_reference"
+      },
+      "class": "WFDateFieldParameterState",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "direct",
+      "specimen": {
+        "form": "literal_control",
+        "input": "2001-02-03T04:05:06Z",
+        "name": "first_literal_date_control"
+      },
+      "class": "WFDateFieldParameterState",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:05:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:05:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:05:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "direct",
+      "specimen": {
+        "form": "actual_local_compiler",
+        "input": {
+          "Value": {
+            "OutputName": "laterDate",
+            "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+            "Type": "ActionOutput"
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        },
+        "name": "second_original_bare_attachment"
+      },
+      "class": "WFDateFieldParameterState",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": false,
+          "stateClass": null,
+          "inputTransport": "initial native input",
+          "output": null
+        }
+      ]
+    },
+    {
+      "kind": "direct",
+      "specimen": {
+        "form": "existing_native_probe_form",
+        "input": {
+          "Value": {
+            "attachmentsByRange": {
+              "{0, 1}": {
+                "OutputName": "laterDate",
+                "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                "Type": "ActionOutput"
+              }
+            },
+            "string": "￼"
+          },
+          "WFSerializationType": "WFTextTokenString"
+        },
+        "name": "second_token_string_reference"
+      },
+      "class": "WFDateFieldParameterState",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "direct",
+      "specimen": {
+        "form": "literal_control",
+        "input": "2001-02-03T04:06:06Z",
+        "name": "second_literal_date_control"
+      },
+      "class": "WFDateFieldParameterState",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:06:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:06:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:06:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "actual_local_compiler",
+      "missingParameterControl": false,
+      "name": "interval_original_bare",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFTimeUntilFromDate",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "actual_local_compiler",
+      "missingParameterControl": false,
+      "name": "interval_original_bare",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFInput",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "existing_native_probe_form",
+      "missingParameterControl": false,
+      "name": "interval_both_token_strings",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFTimeUntilFromDate",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "existing_native_probe_form",
+      "missingParameterControl": false,
+      "name": "interval_both_token_strings",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFInput",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "mixed_control",
+      "missingParameterControl": false,
+      "name": "interval_first_token_only",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFTimeUntilFromDate",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "mixed_control",
+      "missingParameterControl": false,
+      "name": "interval_first_token_only",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFInput",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "mixed_control",
+      "missingParameterControl": false,
+      "name": "interval_second_token_only",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFTimeUntilFromDate",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "mixed_control",
+      "missingParameterControl": false,
+      "name": "interval_second_token_only",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFInput",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "laterDate",
+                    "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "literal_control",
+      "missingParameterControl": false,
+      "name": "interval_literal_dates",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFTimeUntilFromDate",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:05:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:05:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:05:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "literal_control",
+      "missingParameterControl": false,
+      "name": "interval_literal_dates",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFInput",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:06:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:06:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSCFString",
+            "jsonAvailable": true,
+            "jsonValue": "2001-02-03T04:06:06Z",
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "missing_parameter_control",
+      "missingParameterControl": true,
+      "name": "interval_absent_date_parameters",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFTimeUntilFromDate",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.gettimebetweendates",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "missing_parameter_control",
+      "missingParameterControl": true,
+      "name": "interval_absent_date_parameters",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFInput",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.format.date",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "actual_local_compiler",
+      "missingParameterControl": false,
+      "name": "format_original_token_string",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFDate",
+      "parameterStatePresent": true,
+      "kind": "action",
+      "hops": [
+        {
+          "pass": 1,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "initial native input",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 2,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        },
+        {
+          "pass": 3,
+          "accepted": true,
+          "stateClass": "WFDateFieldParameterState",
+          "inputTransport": "unmodified previous native serializedRepresentation",
+          "output": {
+            "className": "__NSDictionaryI",
+            "jsonAvailable": true,
+            "jsonValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "startDate",
+                    "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "nsNull": false,
+            "objcNil": false
+          }
+        }
+      ]
+    },
+    {
+      "actionAvailable": true,
+      "actionExecuted": false,
+      "actionIdentifier": "is.workflow.actions.format.date",
+      "copyAccepted": true,
+      "declaredStateClass": "WFDateFieldParameterState",
+      "form": "changed_form_control",
+      "missingParameterControl": false,
+      "name": "format_bare_attachment_control",
+      "parameterAvailable": true,
+      "parameterClass": "WFDateFieldParameter",
+      "parameterKey": "WFDate",
+      "parameterStatePresent": false,
+      "kind": "action",
+      "hops": []
+    }
+  ],
+  "conclusions": [
+    "Both original bare WFTextTokenAttachment references were rejected by WFDateFieldParameterState initialization.",
+    "The real gettimebetweendates action had absent Date parameter state for each bare reference; the corresponding WFTextTokenString reference was retained with the same ActionOutput UUID and name through three native-object serialization hops.",
+    "Mixed first-only and second-only token-string specimens independently isolate the two Date fields. Literal Date controls were retained; missing-parameter controls remained absent.",
+    "The unchanged format.date WFDate token-string field was retained; its bare-attachment negative control was absent.",
+    "This establishes a parameter serialization boundary. It does not prove fixed dateDiff execution, label retention, iOS behavior or formal requirement closure."
+  ],
+  "process": {
+    "started_at_utc": "2026-11-20T07:45:57.574338+00:00",
+    "finished_at_utc": "2026-11-20T07:45:59.542006+00:00",
+    "elapsed_seconds": 1.925968408000017,
+    "exit_code": 0,
+    "timed_out": false,
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "script_sha256": "2e8274e9e43ba22b83f73f142d7a0fb8096c394cd9896f93882a28786ce3834c",
+    "prelude_commit": "ee52c32937053268e4a035eba4b372fe77ec6411",
+    "prelude_sha256": "d6fbcaad5104562b04004b39ca098486449399c15c83176c49b2ac28f47a3461",
+    "combined_sha256": "b58860e186d90501579e51b934bfab774e5235eb2dfb0fbba70160ba794d5112"
+  }
+}
