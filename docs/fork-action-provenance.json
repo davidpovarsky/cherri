@@ -3199,6 +3199,39 @@
       "reason": "Clean actual tests reproduced silent canonical finalization in three unused/metadata contexts and eleven annotation positions despite the earlier active-expression fallback guard.",
       "evidence": "docs/language-v2/p15-exhaustive-node-acceptance-20261120.md; clean d07bbf7f component114+38 pass; clean db4a8ca6 actual producer/intake280 pass,114 required inner events,45 immutable source hashes,two RP16-only records. Original failed/incomplete and successful receipts retained.",
       "note": "No action definitions or native wire schemas are added. P03/F03/FN01/M03, Apple runtime,179-row closure and global release gates are not inherited. Historical receipts preserve their original source commits. Integrated implementation ancestor is a320593e9d7900596cfc9e285aec75a46d546349; original component observations remain bound to their original commits."
+    },
+    {
+      "name": "P10R15 RP33 structural migration and source-bound native differential proof",
+      "locations": [
+        "internal/language/migrate/migrate.go",
+        "internal/language/migrate/lexical_source.go",
+        "internal/language/migrate/references.go",
+        "language_value_adapter.go",
+        "language_cli_adapter.go",
+        "cmd/cherri-migrate/main.go",
+        "tools/language-migrate/main.go",
+        "tools/legacy-parity/main.go",
+        "tools/language-acceptance/structural_migration_execution.go",
+        "tools/language-acceptance/structural_migration_execution_test.go"
+      ],
+      "firstForkCommit": "a6188f28d5aca147c66ba28f7a8624aaa74c5328",
+      "change": "Protect Legacy lexical regions before compatibility rewrites; inline native references structurally with lexical/callable scope; detach raw plist carriers; resolve public migration includes from the source directory and reject ambiguous multiline includes before writing; execute strict RP33-only production evidence.",
+      "reason": "Clean actual Legacy/V2 baselines reproduced seven lexical/raw-reference differences, native parameter/callee identity loss, wrong cwd include selection and unsafe ambiguous conversion.",
+      "evidence": "docs/language-v2/p15-structural-migration-rp33-20261120.md; clean434fda67 migration19/comparator81/runner16 and fresh47/47+17/17 differential gate; clean d233d9f3 outer251/inner59 pass,64 immutable source hashes,two RP33-only records.",
+      "note": "No action definitions or native wire schemas change. Canonical native grammar, existing null guards and original fixtures remain independent. Ambiguous Legacy include-inside-multiline-literal remains unsupported and fail-closed. No linked requirement,BRG19,Apple or179-closure inheritance; original receipt SHAs are retained."
+    },
+    {
+      "name": "P10R15 import-question target origin through structural comparison",
+      "locations": [
+        "internal/shortcutcompare/normalize.go",
+        "internal/shortcutcompare/question_targets.go",
+        "internal/shortcutcompare/question_targets_test.go"
+      ],
+      "firstForkCommit": "bfc6582377eaf37cb036581a31d400e06d96e5c9",
+      "change": "Track original import-question target action identity through normalization, remap only a unique surviving top-level origin, remove private markers and fall back to original raw comparison for invalid,removed orambiguous targets.",
+      "reason": "Actual42-action Legacy and41-action migrated documents pointed at the same alert with raw indices24/25; prior normalized comparison retained those raw indices after both arrays became18 actions.",
+      "evidence": "docs/language-v2/p15-structural-migration-rp33-20261120.md; original native pair retained,12 actual wrong-target/question-field corruptions reject and complete81-test comparator suite passes.",
+      "note": "No emitted ActionIndex or golden changes. Index0 and duplicate identical actions keep distinct identity. Every other question field stays exact; historical raw artifacts remain unchanged."
     }
   ]
 }

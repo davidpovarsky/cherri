@@ -39,6 +39,8 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Verify RP33 structural migration with actual native differential evidence (2026-11-20). Lexical regions, native reference/callee identity and entry-source include resolution preserve the supported original programs; ambiguous Legacy includes inside multiline literals fail before writing. Import-question comparison follows a unique original target through normalization and still rejects wrong targets. Clean434 full47/47 programs+17/17 actions; clean d233 actual producer251 outer/59 required inner passes with64 source blobs and two RP33-only tiers. Related IDs, BRG19, Apple and release closure remain independent. [Proof and original receipts](docs/language-v2/p15-structural-migration-rp33-20261120.md).
+
 - [x] Verify RP16 exhaustive checked AST and native rejection (2026-11-20). Reproduced three unused/metadata and eleven annotation silent-success gaps before repair. Actual clean compiler114+lower38 and strict producer/intake280 events pass; two RP16-only local records, all114 required children,45 immutable source hashes. Related requirements, Apple runtime and global release closure remain independent. [Proof and original receipts](docs/language-v2/p15-exhaustive-node-acceptance-20261120.md).
 
 - [x] Close statically inferred List-row guard bypasses (2026-11-19). Fourteen parser-valid reference/function/Optional/Union cases now fail explicitly before an artifact is returned; scalar/Dictionary controls and native import round trips pass. Dynamic AnyContent hierarchy is still unverified, so L01/F04/FN05 remain incomplete. See [boundary and executed controls](docs/language-v2/p15-inferred-list-shape-boundary-20261119.md).
