@@ -196,6 +196,12 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 		if err != nil {
 			t.Fatal(err)
 		}
+		if header.Typeflag == tar.TypeXGlobalHeader {
+			if header.Name != "pax_global_header" || header.Size != 0 || len(header.PAXRecords) != 1 || header.PAXRecords["comment"] != f.sourceSHA {
+				t.Fatalf("Git archive metadata does not bind the exact source: %+v", header)
+			}
+			continue
+		}
 		if header.Typeflag == tar.TypeDir {
 			continue
 		}
