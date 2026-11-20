@@ -6,7 +6,7 @@ import (
 	"go/ast"
 	"go/format"
 	"go/parser"
-	"go/token"
+	gotoken "go/token"
 	"os"
 	"reflect"
 	"strings"
@@ -17,7 +17,7 @@ import (
 
 // This is a repository route audit, not an execution claim for the iOS ABI.
 func p15RP52CExportError(raw []byte) error {
-	file, err := parser.ParseFile(token.NewFileSet(), "ios_bridge.go", raw, parser.ParseComments)
+	file, err := parser.ParseFile(gotoken.NewFileSet(), "ios_bridge.go", raw, parser.ParseComments)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func p15RP52CExportError(raw []byte) error {
 	}
 	expression := func(node ast.Node) string {
 		var out bytes.Buffer
-		if format.Node(&out, token.NewFileSet(), node) != nil {
+		if format.Node(&out, gotoken.NewFileSet(), node) != nil {
 			return ""
 		}
 		return out.String()
