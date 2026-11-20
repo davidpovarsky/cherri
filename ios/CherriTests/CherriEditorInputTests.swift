@@ -4,6 +4,12 @@ import XCTest
 @testable import CodeEditorView
 @testable import Cherri
 
+@MainActor
+private final class PasteTimingObservationBuffer {
+    var nativeChangeCount = 0
+    var receipts: [String] = []
+}
+
 /// Uses the actual pinned UITextView implementation, with ordinary keyboard
 /// insertion. These tests do not reimplement its text-storage algorithm.
 @MainActor
@@ -36,7 +42,8 @@ final class CherriEditorInputTests: XCTestCase {
     }
 
     private func recordInputReceipt(_ view: CodeView, fixture: String, stage: String,
-                                    keyIndex: Int, key: String = "", pasteElapsedMilliseconds: Int? = nil) {
+                                    keyIndex: Int, key: String = "", pasteElapsedMilliseconds: Int? = nil,
+                                    bufferingTo buffer: PasteTimingObservationBuffer? = nil) {
         let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
         let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
         var receipt: [String: Any] = [
@@ -58,8 +65,12 @@ final class CherriEditorInputTests: XCTestCase {
         }
         if let bytes = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
            let json = String(data: bytes, encoding: .utf8) {
-            print("[CHERRI_INPUT_RECEIPT] \(json)")
-            fflush(stdout)
+            if let buffer {
+                if buffer.receipts.count < 5 { buffer.receipts.append(json) }
+            } else {
+                print("[CHERRI_INPUT_RECEIPT] \(json)")
+                fflush(stdout)
+            }
         }
     }
 
@@ -158,10 +169,37 @@ final class CherriEditorInputTests: XCTestCase {
             XCTFail("The isolated synthetic pasteboard write must be retained before paste")
             return
         }
-        let pasted = expectation(for: NSPredicate(format: "text == %@", "text(\"x\"))"), evaluatedWith: view)
         let startedAt = ProcessInfo.processInfo.systemUptime
-        func elapsedMilliseconds() -> Int {
+        let elapsedMilliseconds: @Sendable () -> Int = {
             Int(min(120_000, max(0, ProcessInfo.processInfo.systemUptime - startedAt) * 1_000))
+        }
+        // Capture the real edit notification and predicate-match boundary. These
+        // observations never fulfill or replace the original three-second wait.
+        let observations = PasteTimingObservationBuffer()
+        let changeObserver = NotificationCenter.default.addObserver(
+            forName: UITextView.textDidChangeNotification, object: view, queue: nil
+        ) { [weak self, weak view] _ in
+            guard Thread.isMainThread else { return }
+            MainActor.assumeIsolated {
+                guard let self, let view, observations.nativeChangeCount < 4 else { return }
+                observations.nativeChangeCount += 1
+                self.recordInputReceipt(view, fixture: "single-character-paste", stage: "paste-native-text-change",
+                    keyIndex: observations.nativeChangeCount, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds(),
+                    bufferingTo: observations)
+            }
+        }
+        defer { NotificationCenter.default.removeObserver(changeObserver) }
+        let pasted = expectation(for: NSPredicate(format: "text == %@", "text(\"x\"))"), evaluatedWith: view) { [weak self, weak view] in
+            if Thread.isMainThread {
+                MainActor.assumeIsolated {
+                    if let self, let view {
+                        self.recordInputReceipt(view, fixture: "single-character-paste", stage: "paste-predicate-match",
+                            keyIndex: 0, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds(),
+                            bufferingTo: observations)
+                    }
+                }
+            }
+            return true
         }
         recordInputReceipt(view, fixture: "single-character-paste", stage: "before-paste",
                            keyIndex: 0, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds())
@@ -169,6 +207,9 @@ final class CherriEditorInputTests: XCTestCase {
         recordInputReceipt(view, fixture: "single-character-paste", stage: "after-paste-call",
                            keyIndex: 1, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds())
         await fulfillment(of: [pasted], timeout: 3)
+        // Avoid log I/O inside UIKit notification and XCTest predicate callbacks.
+        for json in observations.receipts { print("[CHERRI_INPUT_RECEIPT] \(json)") }
+        fflush(stdout)
         recordInputReceipt(view, fixture: "single-character-paste", stage: "after-paste-wait",
                            keyIndex: 2, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds())
         XCTAssertEqual(view.text, "text(\"x\"))")

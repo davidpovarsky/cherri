@@ -20,6 +20,7 @@ struct CherriEditorStartupDeadline {
     // This is an acceptance/wait budget; a blocked AX call may finish later and fail.
     static let budgetSeconds: TimeInterval = 28
     private let startedAt: TimeInterval
+    var diagnosticStartedAt: TimeInterval { startedAt }
     private let now: () -> TimeInterval
     private(set) var documentCreationIssued = false
 

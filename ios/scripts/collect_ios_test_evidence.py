@@ -81,6 +81,7 @@ BOOL_FIELDS = {
 CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
 STARTUP_PREFIX = "[CHERRI_UI_STARTUP] "
+STARTUP_TIMING_PREFIX = "[CHERRI_UI_STARTUP_TIMING] "
 STARTUP_STAGES = {"window-wait", "document-wait", "document-check", "editor-wait"}
 STARTUP_BOOL_FIELDS = {"waitCompleted", "windowExists", "appRunningForeground",
                        "createDocumentExists", "createDocumentHittable", "editorExists", "editorHittable"}
@@ -161,6 +162,53 @@ def safe_startup_receipt(line, active_test):
     return receipt
 
 
+def safe_startup_timing(line, active_test):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate timing key")
+            result[key] = value
+        return result
+    try:
+        raw = json.loads(line[len(STARTUP_TIMING_PREFIX):], object_pairs_hook=unique)
+    except (ValueError, TypeError):
+        return None
+    expected = {"schemaVersion", "testName", "budgetMilliseconds", "elapsedMilliseconds", "entries", "droppedEntries", "inFlightObservations"}
+    if (not isinstance(raw, dict) or set(raw) != expected or raw["schemaVersion"] != "1.0"
+            or not isinstance(active_test, str) or not TEST_NAME.fullmatch(active_test)
+            or raw["testName"] != active_test
+            or type(raw["budgetMilliseconds"]) is not int or raw["budgetMilliseconds"] != 28000
+            or type(raw["elapsedMilliseconds"]) is not int or not 0 <= raw["elapsedMilliseconds"] <= 120000
+            or type(raw["droppedEntries"]) is not int or not 0 <= raw["droppedEntries"] <= 10000
+            or type(raw["inFlightObservations"]) is not int or not 0 <= raw["inFlightObservations"] <= 128
+            or not isinstance(raw["entries"], list) or len(raw["entries"]) > 128):
+        return None
+    snapshots = {"foreground", "window", "create-exists", "create-hittable", "editor-exists", "editor-hittable", "foreground-final"}
+    operations = {"window-snapshot": snapshots, "document-snapshot": snapshots, "final-snapshot": snapshots,
+                  "window-wait": {"entered", "returned"}, "document-tap": {"entered", "returned"},
+                  "document-wait": {"entered", "returned", "foreground", "editor-exists", "create-exists", "create-hittable"},
+                  "editor-wait": {"entered", "returned", "foreground", "window", "editor-exists", "editor-hittable"}}
+    for index, entry in enumerate(raw["entries"]):
+        if (not isinstance(entry, dict) or set(entry) != {"sequence", "phase", "operation", "startedMilliseconds", "completedMilliseconds", "value", "mainThread"}
+                or type(entry["sequence"]) is not int or entry["sequence"] != index
+                or not isinstance(entry["phase"], str) or entry["phase"] not in operations
+                or not isinstance(entry["operation"], str) or entry["operation"] not in operations[entry["phase"]]
+                or type(entry["value"]) is not bool or type(entry["mainThread"]) is not bool
+                or type(entry["startedMilliseconds"]) is not int or type(entry["completedMilliseconds"]) is not int
+                or not 0 <= entry["startedMilliseconds"] <= entry["completedMilliseconds"] <= raw["elapsedMilliseconds"]):
+            return None
+        if entry["operation"] in {"entered", "returned"} and entry["startedMilliseconds"] != entry["completedMilliseconds"]:
+            return None
+    if raw["droppedEntries"] and len(raw["entries"]) != 128:
+        return None
+    # Overlap is observable: a blocked predicate can still be in flight when the
+    # waiter returns. Do not normalize such timing into an invented serial order.
+    # Only fixed control Boolean values and timing are retained. This diagnostic
+    # cannot supply source, satisfy a behavioral checkpoint, or grant acceptance.
+    return raw
+
+
 def safe_input_receipt(line, active_test):
     try:
         raw = json.loads(line[len(INPUT_PREFIX):])
@@ -173,7 +221,7 @@ def safe_input_receipt(line, active_test):
             or raw.get("fixtureId") not in INPUT_FIXTURES):
         return None
     paste = raw["fixtureId"] == "single-character-paste"
-    stages = {"before-paste", "after-paste-call", "after-paste-wait"} if paste else {"before-key", "after-key", "fixture-complete"}
+    stages = {"before-paste", "after-paste-call", "after-paste-wait", "paste-native-text-change", "paste-predicate-match"} if paste else {"before-key", "after-key", "fixture-complete"}
     if raw.get("stage") not in stages:
         return None
     if paste and (active_test != "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
@@ -187,6 +235,9 @@ def safe_input_receipt(line, active_test):
         if type(raw.get(key)) is not int or not 0 <= raw[key] <= 100000:
             return None
         receipt[key] = raw[key]
+    if paste and ((raw["stage"] == "paste-native-text-change" and not 1 <= raw.get("keyIndex", 0) <= 4)
+                  or (raw["stage"] == "paste-predicate-match" and raw.get("keyIndex") != 0)):
+        return None
     units = raw.get("inputUTF16")
     if not isinstance(units, list) or len(units) > 8 or any(type(unit) is not int or not 0 <= unit <= 65535 for unit in units):
         return None
@@ -229,6 +280,7 @@ def bounded_log(raw_text):
     input_events = 0
     runtime_events = 0
     startup_events = 0
+    startup_timed_tests = set()
     active_test = None
     documentation_events = 0
     documentation_ui_events = 0
@@ -270,6 +322,11 @@ def bounded_log(raw_text):
             if active_test in docs.TEST_IDS:
                 lines.append(docs.REJECTED_PREFIX + "UNSUPPORTED_TEST_BOUNDARY")
             active_test = None
+        elif line.startswith(STARTUP_TIMING_PREFIX) and len(startup_timed_tests) < 16:
+            receipt = safe_startup_timing(line, active_test)
+            if receipt and active_test not in startup_timed_tests:
+                startup_timed_tests.add(active_test)
+                lines.append(STARTUP_TIMING_PREFIX + json.dumps(receipt, sort_keys=True))
         elif line.startswith(STARTUP_PREFIX) and startup_events < 64:
             receipt = safe_startup_receipt(line, active_test)
             if receipt:
@@ -479,6 +536,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "documentationEvidence": documentation,
         "documentationUIStates": [json.loads(line[len(docs.UI_STATE_PREFIX):]) for line in log_text.splitlines() if line.startswith(docs.UI_STATE_PREFIX)],
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
+        "startupTimingTraces": [json.loads(line[len(STARTUP_TIMING_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_TIMING_PREFIX)],
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
         "privacy": {"rawLogsPublished": False, "screenshotsPublished": False,
