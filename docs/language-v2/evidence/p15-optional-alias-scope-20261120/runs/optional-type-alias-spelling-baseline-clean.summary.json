@@ -1,0 +1,30 @@
+{
+  "source_commit": "45ad8982df52c7d7cab8b062649c24c2f01c847d",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope$",
+    "."
+  ],
+  "started_at": "2026-11-20T04:58:11.407218+00:00",
+  "finished_at": "2026-11-20T04:58:27.931222+00:00",
+  "elapsed_seconds": 16.531,
+  "exit_code": 1,
+  "timed_out": false,
+  "passed": [],
+  "failed": [
+    "TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope/Text_is_optional_Number/local",
+    "TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope/Text_is_optional_Number/qualified",
+    "TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope/Number_is_optional_Text/local",
+    "TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope/Number_is_optional_Text/qualified",
+    "TestP15OptionalTypeAliasPrimitiveSpellingUsesDeclarationScope"
+  ],
+  "skipped": [],
+  "raw_sha256": "32a3ddd16e4fc6c0d5dab496f3bb444ed7014c7fcfffbc2d3b7c14fa349464bb",
+  "clean_after": true
+}
