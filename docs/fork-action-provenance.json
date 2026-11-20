@@ -3304,6 +3304,20 @@
       "reason": "Clean tests-only5e2e1611 accepted15 Optional/None loop shapes without transporting a compiler-owned presence bit per collected element. Exact original native bytes and analysis/service observations are retained.",
       "evidence": "Causal baseline raw SHA256a70b1ff9a23fb317f1b6fdd60ff0842e5c1622024494b2174c31767915056057. Precommit279 named graph/diagnostic/corruption events passed, including explicit Text interpolation for the function-discovery control; clean committed replay is separately retained.",
       "note": "This is a bounded current-transport safety repair, not an Apple observation or proof that Optional loop elements are inherently unencodable. T05/L01/F04/FN05, native one-item cardinality and final acceptance remain open. Original unsafe discovery source stays a required negative."
+    },
+    {
+      "name": "P10R15 native List analysis boundary consistency",
+      "locations": [
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/diagnostics.go",
+        "internal/language/analysis/list_shape.go",
+        "p15_nested_list_analysis_boundary_test.go"
+      ],
+      "firstForkCommit": "cdb37aed0bb72588660308b79f2e4641f42b0f66",
+      "change": "Report the existing E_NESTED_NATIVE_LIST target limitation during shared analysis and public check with exact source spans. Preserve Dictionary literal-array and raw native-data contexts; calls and value controls analyze their ordinary runtime operands. Retain immutable initializer List shape only for this diagnostic when a broad annotation erases the read type.",
+      "reason": "Clean tests-only606042a1 reproduced13 analysis/service/check acceptance cases whose actual compilation already failed E_NESTED_NATIVE_LIST, with26 corresponding failing leaves. Original raw and the separate Map-default test-authoring error are retained.",
+      "evidence": "Original baseline stdout SHA256291cf48ece4a362326d95d4bc1a7d9f67f8772266b43c1515cdb6c510b81b88c; first corrected precommit39 exact named passes. Clean final replay and source-bound proof are retained separately.",
+      "note": "No new native List encoding or payload/cardinality claim. Existing inline reference rows and opaque native values remain explicitly unverified at runtime. L01/T05/F04/FN05 and Apple/final179 obligations remain open."
     }
   ]
 }
