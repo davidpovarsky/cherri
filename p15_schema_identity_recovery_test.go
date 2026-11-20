@@ -30,11 +30,17 @@ func main() {
  var reg = schema.DefaultRegistry()
  var action, ok = reg.LookupAction("openURL")
  if !ok { panic("canonical fixture action missing") }
+ var snapshot = reg.Clone()
+ var snapshotAction, snapshotOK = snapshot.LookupAction("openURL")
+ if !snapshotOK || snapshot.Fingerprint() != reg.Fingerprint() { panic("generated registry clone changed identity") }
  var parameters = map[string]any{}
  for _, name := range []string{"rp08Flag", "rp08Zero", "rp08Empty", "rp08Absent"} {
   var parameter, found = action.ParameterByLabel(name)
   if !found || parameter.Type == nil { panic("generated parameter missing: " + name) }
-  parameters[name] = map[string]any{"schema": parameter, "semanticType": parameter.Type.String()}
+  var copied, copiedOK = snapshotAction.ParameterByLabel(name)
+  if !copiedOK || (parameter.DefaultValue == nil) != (copied.DefaultValue == nil) { panic("generated default presence changed during clone") }
+  if parameter.DefaultValue != nil && parameter.DefaultValue == copied.DefaultValue { panic("generated default pointer remains shared") }
+  parameters[name] = map[string]any{"schema": parameter, "snapshotSchema": copied, "semanticType": parameter.Type.String()}
  }
  var errors = func(code string) int {
   var parser = syntax.NewParser(source.NewFile("rp08", "file:///rp08.cherri", 1, code))
@@ -49,6 +55,8 @@ func main() {
  json.NewEncoder(os.Stdout).Encode(map[string]any{
   "schemaFingerprint": reg.Fingerprint(), "codecFingerprint": backend.CodecFingerprint(),
   "capabilitySchema": capabilities.SchemaFingerprint, "capabilityCodec": capabilities.CodecFingerprint,
+  "macroFingerprint": reg.CompilerMacroFingerprint(), "capabilityMacro": capabilities.MacroFingerprint,
+  "compilerMacros": capabilities.CompilerMacros,
   "parameters": parameters, "static": action.StaticParameters,
   "validErrors": errors("openURL(url: \"https://example.invalid\", rp08Flag: false, rp08Zero: 0, rp08Empty: \"\")"),
   "wrongTypeErrors": errors("openURL(url: \"https://example.invalid\", rp08Flag: \"not-bool\")"),
@@ -189,13 +197,13 @@ func TestP15RP08SchemaIdentityProduction(t *testing.T) {
 		}
 		p15SchemaWrite(t, filepath.Join(repo, "internal/language/schema/generated_registry.go"), generated)
 		var actual = p15SchemaJSON(t, p15SchemaRun(t, repo, "go", "run", "-buildvcs=false", "./p15rp08consumer"))
-		for _, field := range []string{"schemaFingerprint", "codecFingerprint"} {
+		for _, field := range []string{"schemaFingerprint", "codecFingerprint", "macroFingerprint"} {
 			var identity, ok = actual[field].(string)
 			if !ok || !regexp.MustCompile(`^[0-9a-f]{64}$`).MatchString(identity) {
 				t.Fatalf("compiled identity missing: %+v", actual)
 			}
 		}
-		if actual["capabilitySchema"] != actual["schemaFingerprint"] || actual["capabilityCodec"] != actual["codecFingerprint"] {
+		if actual["capabilitySchema"] != actual["schemaFingerprint"] || actual["capabilityCodec"] != actual["codecFingerprint"] || actual["capabilityMacro"] != actual["macroFingerprint"] {
 			t.Fatal("actual protocol consumer did not preserve the declared identity tuple")
 		}
 		if actual["validErrors"] != json.Number("0") || actual["wrongTypeErrors"] == json.Number("0") {
@@ -207,6 +215,52 @@ func TestP15RP08SchemaIdentityProduction(t *testing.T) {
 	}
 	var baselineSource = declaration("false", "false", false)
 	var baseline = observe(t, "unchanged", baselineSource, originalCodec, true)
+	t.Run("public_capabilities_and_macro_descriptors", func(t *testing.T) {
+		// Rebuild after generation so the public CLI carries this exact registry.
+		p15SchemaRun(t, repo, "go", "build", "-buildvcs=false", "-o", compiler, ".")
+		var first = p15SchemaRun(t, repo, compiler, "--capabilities-json")
+		var second = p15SchemaRun(t, repo, compiler, "--capabilities-json")
+		if !bytes.Equal(first, second) {
+			t.Fatal("fresh public capabilities processes expose unstable values or identities")
+		}
+		var capabilities = p15SchemaJSON(t, first)
+		for _, field := range []string{"schemaFingerprint", "codecFingerprint", "macroFingerprint"} {
+			if capabilities[field] != baseline.consumer[field] {
+				t.Fatalf("public capabilities %s differs from the compiled producer", field)
+			}
+		}
+		if !reflect.DeepEqual(capabilities["compilerMacros"], baseline.consumer["compilerMacros"]) {
+			t.Fatal("public macro descriptors differ from compiled capability producer")
+		}
+		var macros, ok = capabilities["compilerMacros"].([]any)
+		if !ok || len(macros) == 0 {
+			t.Fatal("public compiler macro descriptors missing")
+		}
+		var checked = map[string]bool{}
+		for _, raw := range macros {
+			var macro = raw.(map[string]any)
+			var parameters, valid = macro["parameters"].([]any)
+			if !valid && macro["parameters"] != nil {
+				t.Fatal("public macro parameters malformed")
+			}
+			for _, rawParameter := range parameters {
+				var parameter = rawParameter.(map[string]any)
+				var key = macro["callableName"].(string) + "." + parameter["label"].(string)
+				if key == "debugTraceEvent.label" {
+					p15RP08Default(t, parameter, true, "", "public macro empty Text")
+					checked[key] = true
+				}
+				if key == "debugLog.withDates" {
+					p15RP08Default(t, parameter, true, "false", "public macro Bool false")
+					checked[key] = true
+				}
+			}
+		}
+		if len(checked) != 2 {
+			t.Fatal("public macro default witnesses missing")
+		}
+		observations["public_capabilities"] = map[string]any{"sha256": p15RP08Hash(first), "schemaFingerprint": capabilities["schemaFingerprint"], "codecFingerprint": capabilities["codecFingerprint"], "macroFingerprint": capabilities["macroFingerprint"], "descriptor_count": len(macros)}
+	})
 	t.Run("typed_default_presence_through_live_generation", func(t *testing.T) {
 		var cases = []struct {
 			name, kind, value string
@@ -221,6 +275,7 @@ func TestP15RP08SchemaIdentityProduction(t *testing.T) {
 				t.Errorf("%s lost semantic type: %+v", sample.name, compiled)
 			}
 			p15RP08Default(t, compiled["schema"].(map[string]any), sample.present, sample.value, "compiled "+sample.name)
+			p15RP08Default(t, compiled["snapshotSchema"].(map[string]any), sample.present, sample.value, "cloned compiled "+sample.name)
 		}
 	})
 	t.Run("changed_default_changes_schema_identity", func(t *testing.T) {

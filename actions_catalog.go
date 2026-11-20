@@ -31,7 +31,7 @@ type catalogParameter struct {
 	Literal    bool     `json:"literal,omitempty"`
 	Enum       string   `json:"enum,omitempty"`
 	EnumValues []string `json:"enumValues,omitempty"`
-	Default    string   `json:"default,omitempty"`
+	Default    *string  `json:"default,omitempty"`
 }
 
 type catalogActionInfo struct {
@@ -140,7 +140,7 @@ func buildActionCatalog() []catalogActionInfo {
 				item.EnumValues = append([]string(nil), enumerations[parameter.enum]...)
 			}
 			if parameter.defaultValue != nil {
-				item.Default = fmt.Sprint(parameter.defaultValue)
+				item.Default = schema.StringDefault(fmt.Sprint(parameter.defaultValue))
 			}
 			parameters = append(parameters, item)
 		}

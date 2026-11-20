@@ -37,18 +37,18 @@ func TestGEN001_StaticParametersNestedMapsPreserved(t *testing.T) {
 // GEN-002: mutate canonical variant/default/AppIntent/literal changes fingerprint
 func TestGEN002_FingerprintDetectsMutations(t *testing.T) {
 	baseAction := &ActionSchema{
-		ID:             "testAct",
-		CallableName:   "testAct",
+		ID:              "testAct",
+		CallableName:    "testAct",
 		AppleIdentifier: "is.workflow.actions.test",
-		OutputTypeName: "Text",
-		Docs:           ActionDocs{Title: "Test Action"},
+		OutputTypeName:  "Text",
+		Docs:            ActionDocs{Title: "Test Action"},
 		Parameters: []ParameterSchema{
 			{
 				ID:           "text",
 				Label:        "text",
 				TypeName:     "Text",
 				WireKey:      "WFText",
-				DefaultValue: "Initial",
+				DefaultValue: StringDefault("Initial"),
 			},
 		},
 	}
@@ -64,7 +64,7 @@ func TestGEN002_FingerprintDetectsMutations(t *testing.T) {
 			Label:        "text",
 			TypeName:     "Text",
 			WireKey:      "WFText",
-			DefaultValue: "Changed",
+			DefaultValue: StringDefault("Changed"),
 		},
 	}
 	regDefault := NewRegistry([]*ActionSchema{&mutDefault}, nil)
@@ -99,7 +99,7 @@ func TestGEN002_FingerprintDetectsMutations(t *testing.T) {
 			Label:        "text",
 			TypeName:     "Text",
 			WireKey:      "WFText",
-			DefaultValue: "Initial",
+			DefaultValue: StringDefault("Initial"),
 			Variadic:     true,
 		},
 	}
@@ -156,7 +156,7 @@ func TestGEN002_FingerprintDetectsMutations(t *testing.T) {
 			Label:         "text",
 			TypeName:      "Text",
 			WireKey:       "WFText",
-			DefaultValue:  "Initial",
+			DefaultValue:  StringDefault("Initial"),
 			AcceptedForms: []string{"literal", "tokenString"},
 		},
 	}
@@ -173,7 +173,7 @@ func TestGEN002_FingerprintDetectsMutations(t *testing.T) {
 			Label:          "text",
 			TypeName:       "Text",
 			WireKey:        "WFText",
-			DefaultValue:   "Initial",
+			DefaultValue:   StringDefault("Initial"),
 			OmissionPolicy: OmitPolicyOmit,
 		},
 	}

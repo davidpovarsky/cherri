@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b`  
+**Schema Fingerprint:** `dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -2934,7 +2934,7 @@ getDeviceDetail(detail: Text)
 **Title:** Get Website & App Activity  
 **Apple Identifier:** `com.apple.intelligenceplatform.IntelligencePlatform.IntelligencePlatformDataActionsAppIntentsExtension.CalculateAppUsageIntent`  
 ```cherri
-getDeviceUsage(usageType?: Text = "all", device?: AnyContent, during?: Text = "today", startTime?: Text, startTime?: Text)
+getDeviceUsage(usageType?: Text = "all", device?: AnyContent, during?: Text = "today", startTime?: Text, endTime?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -2943,7 +2943,7 @@ getDeviceUsage(usageType?: Text = "all", device?: AnyContent, during?: Text = "t
 | `device` | `AnyContent` | No | - | `selectedDevice` | - |
 | `during` | `Text` | No | `today` | `during` | today, yesterday, lastWeek, thisWeek, thisMonth, thisYear, specifiedDay, inBetween |
 | `startTime` | `Text` | No | - | `startTime` | - |
-| `startTime` | `Text` | No | - | `endTime` | - |
+| `endTime` | `Text` | No | - | `endTime` | - |
 
 ---
 
@@ -7410,12 +7410,12 @@ storeValue(key: Text, value: Text, global?: Bool = false)
 Create a location value with an address.
 
 ```cherri
-streetAddress(addressLine2: Text, addressLine2: Text, city: Text, state: Text, country: Text, zipCode: Number)
+streetAddress(addressLine1: Text, addressLine2: Text, city: Text, state: Text, country: Text, zipCode: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `addressLine2` | `Text` | Yes | - | `WFAddressLine1` | - |
+| `addressLine1` | `Text` | Yes | - | `WFAddressLine1` | - |
 | `addressLine2` | `Text` | Yes | - | `WFAddressLine2` | - |
 | `city` | `Text` | Yes | - | `WFCity` | - |
 | `state` | `Text` | Yes | - | `WFState` | - |
@@ -8564,7 +8564,7 @@ url(url: Text)
 
 ## Compiler macros
 
-**Compiler Macro Fingerprint:** `1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec`
+**Compiler Macro Fingerprint:** `3741bc7d242876d3ed6e65c77258f97220823184e767bf93aa3e6c2d848a4867`
 
 **Compiler Macros:** 15
 
@@ -8715,13 +8715,13 @@ debugTrace(value: text) -> text
 Append a structured JSONL trace record (stage, label, step sequence, and CurrentDate timestamp) to the execution-local QA trace buffer without mutating __cherri_debug_log.
 
 ```cherri
-debugTraceEvent(stage: text, label?: text) -> text
+debugTraceEvent(stage: text, label?: text = "") -> text
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
 |---|---|---|---|---|
 | `stage` | `text` | false | false | - |
-| `label` | `text` | true | false | - |
+| `label` | `text` | true | false | "" |
 
 ### `measure`
 

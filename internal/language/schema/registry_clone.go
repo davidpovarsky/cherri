@@ -26,6 +26,9 @@ func cloneActionSchema(action *ActionSchema) *ActionSchema {
 	copy := *action
 	copy.Parameters = append([]ParameterSchema(nil), action.Parameters...)
 	for i := range copy.Parameters {
+		if value := action.Parameters[i].DefaultValue; value != nil {
+			copy.Parameters[i].DefaultValue = StringDefault(*value)
+		}
 		copy.Parameters[i].AcceptedForms = append([]string(nil), action.Parameters[i].AcceptedForms...)
 		copy.Parameters[i].EnumValues = append([]string(nil), action.Parameters[i].EnumValues...)
 		copy.Parameters[i].Type = cloneRegistryType(action.Parameters[i].Type)

@@ -47,6 +47,7 @@ func TestValidateFacets_DetectsInvalidParameter(t *testing.T) {
 
 func TestUpstreamPropagation_AddsParameterAndPreservesAllFields(t *testing.T) {
 	reqInstall := true
+	var defaultValue = `"defaultVal"`
 	cat := &LegacyCatalog{
 		Actions: []LegacyAction{
 			{
@@ -70,7 +71,7 @@ func TestUpstreamPropagation_AddsParameterAndPreservesAllFields(t *testing.T) {
 				},
 				Parameters: []LegacyParameter{
 					{Name: "param1", Key: "Param1", Type: "text", Reference: true},
-					{Name: "newOptionalParam", Key: "NewOptionalParam", Type: "number", Optional: true, Literal: true, Default: `"defaultVal"`},
+					{Name: "newOptionalParam", Key: "NewOptionalParam", Type: "number", Optional: true, Literal: true, Default: &defaultValue},
 				},
 			},
 		},
@@ -160,4 +161,3 @@ func TestLanguageSchema_VerifyGeneratedDetectsDrift(t *testing.T) {
 		t.Fatalf("expected 'Drift detected!' message, got:\n%s", string(out))
 	}
 }
-

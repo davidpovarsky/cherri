@@ -52,7 +52,7 @@ type LegacyParameter struct {
 	Optional   bool     `json:"optional"`
 	Reference  bool     `json:"reference,omitempty"`
 	Literal    bool     `json:"literal,omitempty"`
-	Default    string   `json:"default"`
+	Default    *string  `json:"default"`
 	Enum       string   `json:"enum"`
 	EnumValues []string `json:"enumValues"`
 	Infinite   bool     `json:"infinite"`
@@ -842,8 +842,8 @@ func initDefaultRegistry() *Registry {
 			}
 			fmt.Fprintf(&b, "\t\t\t\t\tWireKey: %q,\n", p.Key)
 			fmt.Fprintf(&b, "\t\t\t\t\tCodec: %q,\n", codec)
-			if p.Default != "" {
-				fmt.Fprintf(&b, "\t\t\t\t\tDefaultValue: %q,\n", p.Default)
+			if p.Default != nil {
+				fmt.Fprintf(&b, "\t\t\t\t\tDefaultValue: StringDefault(%q),\n", *p.Default)
 			}
 			if p.Enum != "" {
 				fmt.Fprintf(&b, "\t\t\t\t\tEnumName: %q,\n", p.Enum)

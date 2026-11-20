@@ -757,7 +757,11 @@ func evaluateContractPassed(res *ParameterContractResult) {
 }
 
 func legacyNonDefaultArgForParam(actionName string, p catalogParameter) string {
-	if p.Type == "qty" || strings.HasPrefix(p.Default, "qty(") {
+	var defaultValue string
+	if p.Default != nil {
+		defaultValue = *p.Default
+	}
+	if p.Type == "qty" || strings.HasPrefix(defaultValue, "qty(") {
 		unit := "sec"
 		if len(p.EnumValues) > 0 {
 			unit = p.EnumValues[0]
@@ -769,7 +773,7 @@ func legacyNonDefaultArgForParam(actionName string, p catalogParameter) string {
 	}
 	if p.Enum != "" && len(p.EnumValues) > 0 {
 		for _, ev := range p.EnumValues {
-			if ev != p.Default {
+			if ev != defaultValue {
 				return fmt.Sprintf("%q", ev)
 			}
 		}
@@ -809,22 +813,22 @@ func legacyNonDefaultArgForParam(actionName string, p catalogParameter) string {
 		if strings.Contains(strings.ToLower(p.Name), "url") {
 			return "\"https://example.com/opt\""
 		}
-		if p.Default == "sample" {
+		if defaultValue == "sample" {
 			return "\"opt_sample_2\""
 		}
 		return "\"opt_sample\""
 	case "float":
-		if p.Default == "0.5" {
+		if defaultValue == "0.5" {
 			return "0.75"
 		}
 		return "0.5"
 	case "number", "int", "integer":
-		if p.Default == "1" {
+		if defaultValue == "1" {
 			return "2"
 		}
 		return "1"
 	case "bool", "boolean":
-		if strings.EqualFold(p.Default, "true") {
+		if strings.EqualFold(defaultValue, "true") {
 			return "false"
 		}
 		return "true"
@@ -1377,7 +1381,7 @@ func verifyCatalogActionParameterContract(entry catalogActionInfo, reg *schema.R
 				continue
 			}
 			// Skip qty parameters which take qty(value, unit) compound syntax
-			if p.Type == "qty" || strings.HasPrefix(p.Default, "qty(") {
+			if p.Type == "qty" || (p.Default != nil && strings.HasPrefix(*p.Default, "qty(")) {
 				continue
 			}
 			// Skip enum parameters that check literal strings in custom check/appendParamsFunc (e.g. labelFile color, editEvent/editReminder detail/mode, convertMeasurement/measurement unitType/unit)

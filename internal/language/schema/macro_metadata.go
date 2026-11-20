@@ -23,6 +23,9 @@ func cloneCompilerMacro(original *ActionSchema) *ActionSchema {
 	copy := *original
 	copy.Parameters = append([]ParameterSchema(nil), original.Parameters...)
 	for i := range copy.Parameters {
+		if value := original.Parameters[i].DefaultValue; value != nil {
+			copy.Parameters[i].DefaultValue = StringDefault(*value)
+		}
 		copy.Parameters[i].AcceptedForms = append([]string(nil), original.Parameters[i].AcceptedForms...)
 		copy.Parameters[i].EnumValues = append([]string(nil), original.Parameters[i].EnumValues...)
 	}

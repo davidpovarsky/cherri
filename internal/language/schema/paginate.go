@@ -93,7 +93,7 @@ func ResolvePaginateOptions(params map[string]any) (PaginateOptions, error) {
 }
 
 func init() {
-	literalText := func(id, title, key, defaultValue string, optional bool) ParameterSchema {
+	literalText := func(id, title, key string, defaultValue *string, optional bool) ParameterSchema {
 		return ParameterSchema{
 			ID: id, Label: id, DisplayName: title, Type: types.Text, TypeName: "Text", RawType: "rawstring",
 			WireKey: key, Optional: optional, Literal: true, AcceptedForms: []string{"literal"},
@@ -104,7 +104,7 @@ func init() {
 		return ParameterSchema{
 			ID: id, Label: id, DisplayName: title, Type: types.Number, TypeName: "Number", RawType: "number",
 			WireKey: key, Optional: true, Literal: true, AcceptedForms: []string{"literal"},
-			DefaultValue: strconv.Itoa(defaultValue), OmissionPolicy: OmitPolicyOmit, EvidenceStatus: EvidenceInferred,
+			DefaultValue: StringDefault(strconv.Itoa(defaultValue)), OmissionPolicy: OmitPolicyOmit, EvidenceStatus: EvidenceInferred,
 		}
 	}
 	result := types.NewList(types.NewMap(types.Text, types.AnyContent))
@@ -112,9 +112,9 @@ func init() {
 		ID: "paginate", CallableName: "paginate", Module: "web", CompilerConstruct: true,
 		AppleIdentifier: "is.workflow.actions.getvariable", PrimaryParameterID: "startURL",
 		Parameters: []ParameterSchema{
-			literalText("startURL", "Initial HTTP(S) URL", "WFPaginateStartURL", "", false),
-			literalText("itemsKey", "Dictionary items key", "WFPaginateItemsKey", "items", true),
-			literalText("nextKey", "Next URL or sibling filename key", "WFPaginateNextKey", "next", true),
+			literalText("startURL", "Initial HTTP(S) URL", "WFPaginateStartURL", nil, false),
+			literalText("itemsKey", "Dictionary items key", "WFPaginateItemsKey", StringDefault("items"), true),
+			literalText("nextKey", "Next URL or sibling filename key", "WFPaginateNextKey", StringDefault("next"), true),
 			literalLimit("maxPages", "Maximum native GET invocations (0..100)", "WFPaginateMaxPages", 20),
 			literalLimit("maxItems", "Maximum returned Dictionary items (0..10000)", "WFPaginateMaxItems", 1000),
 		},

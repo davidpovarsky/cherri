@@ -79,8 +79,11 @@ func renderReference(reg *schema.Registry) string {
 						reqStr = "No"
 					}
 					defStr := "-"
-					if p.DefaultValue != "" {
-						defStr = fmt.Sprintf("`%s`", p.DefaultValue)
+					if p.DefaultValue != nil {
+						defStr = fmt.Sprintf("`%s`", *p.DefaultValue)
+						if *p.DefaultValue == "" {
+							defStr = "`\"\"`"
+						}
 					}
 					choicesStr := "-"
 					if len(p.EnumValues) > 0 {
@@ -156,8 +159,8 @@ func buildSignature(a *schema.ActionSchema) string {
 		if p.Optional {
 			optional = "?"
 		}
-		if p.DefaultValue != "" {
-			def = " = " + formatDefault(p.TypeName, p.DefaultValue)
+		if p.DefaultValue != nil {
+			def = " = " + formatDefault(p.TypeName, *p.DefaultValue)
 		}
 		parts = append(parts, fmt.Sprintf("%s%s: %s%s", p.Label, optional, p.TypeName, def))
 	}
@@ -209,9 +212,12 @@ func writeCompilerMacros(b *strings.Builder, reg *schema.Registry) {
 		if len(m.Parameters) > 0 {
 			b.WriteString("| Parameter | Type | Optional | Literal required | Default |\n|---|---|---|---|---|\n")
 			for _, p := range m.Parameters {
-				def := p.DefaultValue
-				if def == "" {
-					def = "-"
+				var def = "-"
+				if p.DefaultValue != nil {
+					def = *p.DefaultValue
+					if def == "" {
+						def = "\"\""
+					}
 				}
 				fmt.Fprintf(b, "| \x60%s\x60 | \x60%s\x60 | %t | %t | %s |\n", p.Label, p.TypeName, p.Optional, p.Literal, def)
 			}

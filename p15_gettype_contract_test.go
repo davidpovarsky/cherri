@@ -107,7 +107,7 @@ func TestP15GetTypeCatalogMatchesAppleFileMetadata(t *testing.T) {
 			t.Errorf("canonical declaration misdescribes file output: %+v", action)
 		}
 		fileType := findCatalogParameter(t, action, "fileType")
-		if fileType.Key != "WFFileType" || !fileType.Optional || fileType.Default != "" {
+		if fileType.Key != "WFFileType" || !fileType.Optional || fileType.Default != nil {
 			t.Errorf("optional file type changed: %+v", fileType)
 		}
 		input := findCatalogParameter(t, action, "input")

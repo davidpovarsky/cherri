@@ -54,13 +54,18 @@ func TestP15D01PrimaryParameterContract(t *testing.T) {
 		{"Number", "0", "example(value?: Number = 0)"},
 		{"Number", "-2.5", "example(value?: Number = -2.5)"},
 		{"Bool", "false", "example(value?: Bool = false)"},
+		{"Text", "", "example(value?: Text = \"\")"},
 		{"Text", "two words", "example(value?: Text = \"two words\")"},
 	} {
 		copyAction.Parameters[0].TypeName = tc.kind
-		copyAction.Parameters[0].DefaultValue = tc.value
+		copyAction.Parameters[0].DefaultValue = schema.StringDefault(tc.value)
 		if got := buildSignature(&copyAction); got != tc.signature {
 			t.Errorf("%s default %q rendered as %q, want %q", tc.kind, tc.value, got, tc.signature)
 		}
+	}
+	copyAction.Parameters[0].DefaultValue = nil
+	if got := buildSignature(&copyAction); got != "example(value?: Text)" {
+		t.Fatalf("absent default rendered as present: %s", got)
 	}
 }
 
@@ -113,12 +118,12 @@ func TestP15D01AllGeneratedSignaturesAndCategories(t *testing.T) {
 			if (matches[0][1] == "?") != parameter.Optional {
 				t.Errorf("%s parameter %s optional=%t, signature=%s", action.CallableName, parameter.Label, parameter.Optional, signature)
 			}
-			if parameter.DefaultValue != "" {
+			if parameter.DefaultValue != nil {
 				// Independently require that this parameter, including a primary,
 				// carries a default before the following labelled parameter.
 				reDefault := regexp.MustCompile(regexp.QuoteMeta(parameter.Label) + "\\??: " + regexp.QuoteMeta(parameter.TypeName) + " = ")
 				if !reDefault.MatchString(signature) {
-					t.Errorf("%s parameter %s loses schema default %q", action.CallableName, parameter.Label, parameter.DefaultValue)
+					t.Errorf("%s parameter %s loses schema default %q", action.CallableName, parameter.Label, *parameter.DefaultValue)
 				}
 			}
 		}

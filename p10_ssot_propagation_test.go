@@ -321,7 +321,7 @@ func TestP10_AutomaticActionPropagation_Scenarios1To4(t *testing.T) {
 				RawType:       "text",
 				Optional:      true,
 				AcceptedForms: []string{"literal", "attachment(output)", "attachment(variable)"},
-				DefaultValue:  "Fast",
+				DefaultValue:  schema.StringDefault("Fast"),
 				WireKey:       "WFSyntheticMode",
 				Codec:         "enum",
 				EnumName:      synthEnumName,

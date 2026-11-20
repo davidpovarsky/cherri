@@ -55,7 +55,7 @@ type ParameterSchema struct {
 	Reference      bool           `json:"reference,omitempty"`
 	Literal        bool           `json:"literal,omitempty"`
 	AcceptedForms  []string       `json:"acceptedForms,omitempty"`
-	DefaultValue   string         `json:"default,omitempty"`
+	DefaultValue   *string        `json:"default,omitempty"` // nil means absent; a pointer to "" is an explicit empty default
 	OmissionPolicy OmissionPolicy `json:"omissionPolicy,omitempty"`
 	WireKey        string         `json:"wireKey,omitempty"`
 	Codec          string         `json:"codec,omitempty"`
@@ -176,6 +176,9 @@ func (r *Registry) RegisterCustomAction(a *ActionSchema) {
 	if a == nil || a.CallableName == "" {
 		return
 	}
+	// Reject unencodable metadata before publishing an action or replacing its
+	// previously valid identity. NewRegistry also validates while fingerprinting.
+	fingerprintJSON(a.StaticParameters)
 	if r.actionsByName == nil {
 		r.actionsByName = make(map[string]*ActionSchema)
 	}
@@ -270,7 +273,7 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 
 	h := sha256.New()
 	for _, a := range sorted {
-		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%s:%t:%t:%t:%.2f:%.2f:%s\n",
+		fmt.Fprintf(h, "ACT:%q:%q:%q:%q:%q:%t:%t:%t:%g:%g:%q\n",
 			a.CallableName, a.AppleIdentifier, a.Variant, a.OutputTypeName, a.PrimaryParameterID,
 			a.CompilerConstruct, a.MacOnly, a.NonMacOnly, a.MinVersion, a.MaxVersion, a.EvidenceStatus)
 		if len(a.PlatformVersions) > 0 {
@@ -285,7 +288,7 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 			}
 		}
 		if a.AppIntent != nil {
-			fmt.Fprintf(h, "  INTENT:%s:%s:%s:%s\n", a.AppIntent.Name, a.AppIntent.BundleIdentifier, a.AppIntent.AppIntentIdentifier, a.AppIntent.TeamIdentifier)
+			fmt.Fprintf(h, "  INTENT:%q:%q:%q:%q\n", a.AppIntent.Name, a.AppIntent.BundleIdentifier, a.AppIntent.AppIntentIdentifier, a.AppIntent.TeamIdentifier)
 		}
 		if len(a.StaticParameters) > 0 {
 			statKeys := make([]string, 0, len(a.StaticParameters))
@@ -294,20 +297,20 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 			}
 			sort.Strings(statKeys)
 			for _, k := range statKeys {
-				fmt.Fprintf(h, "  STAT:%s=%v\n", k, a.StaticParameters[k])
+				fmt.Fprintf(h, "  STAT:%q=%s\n", k, fingerprintJSON(a.StaticParameters[k]))
 			}
 		}
 		for _, p := range a.Parameters {
-			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s:%s:%t:%s:%s:%s\n",
-				p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, p.DefaultValue, p.Variadic, p.OmissionPolicy, p.EnumName, p.EvidenceStatus)
+			fmt.Fprintf(h, "  P:%q:%q:%q:%t:%q:%q:%s:%t:%q:%q:%q\n",
+				p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, fingerprintDefault(p.DefaultValue), p.Variadic, p.OmissionPolicy, p.EnumName, p.EvidenceStatus)
 			if len(p.AcceptedForms) > 0 {
 				forms := make([]string, len(p.AcceptedForms))
 				copy(forms, p.AcceptedForms)
 				sort.Strings(forms)
-				fmt.Fprintf(h, "    FORMS:%s\n", strings.Join(forms, ","))
+				fmt.Fprintf(h, "    FORMS:%q\n", forms)
 			}
 			for _, ev := range p.EnumValues {
-				fmt.Fprintf(h, "    E:%s\n", ev)
+				fmt.Fprintf(h, "    E:%q\n", ev)
 			}
 		}
 	}
@@ -340,9 +343,9 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		AppleIdentifier:    "is.workflow.actions.appendvariable",
 		PrimaryParameterID: "withDates",
 		Parameters: []ParameterSchema{
-			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
-			{ID: "showLogs", Label: "showLogs", DisplayName: "Show Logs", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogs", EvidenceStatus: EvidenceInferred},
-			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogs", Label: "showLogs", DisplayName: "Show Logs", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogs", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys:    []string{"WFDebugShowLogs", "WFDebugShowLogsAsText", "WFDebugWithDates", "WFVariableName"},
 		OutputType:     types.Text,
@@ -364,9 +367,9 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		AppleIdentifier:    "is.workflow.actions.appendvariable",
 		PrimaryParameterID: "withDates",
 		Parameters: []ParameterSchema{
-			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
-			{ID: "showLogs", Label: "showLogs", DisplayName: "Show Logs", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogs", EvidenceStatus: EvidenceInferred},
-			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogs", Label: "showLogs", DisplayName: "Show Logs", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogs", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys:    []string{"WFDebugShowLogs", "WFDebugShowLogsAsText", "WFDebugWithDates"},
 		OutputType:     types.Text,
@@ -388,8 +391,8 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		AppleIdentifier:    "is.workflow.actions.previewdocument",
 		PrimaryParameterID: "withDates",
 		Parameters: []ParameterSchema{
-			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
-			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys: []string{"WFDebugShowLogsAsText", "WFDebugWithDates"},
 		OutputType:  types.Void,
@@ -409,8 +412,8 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		AppleIdentifier:    "is.workflow.actions.previewdocument",
 		PrimaryParameterID: "withDates",
 		Parameters: []ParameterSchema{
-			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
-			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: StringDefault("false"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys: []string{"WFDebugShowLogsAsText", "WFDebugWithDates"},
 		OutputType:  types.Void,
@@ -469,7 +472,7 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		PrimaryParameterID: "condition",
 		Parameters: []ParameterSchema{
 			{ID: "condition", Label: "condition", DisplayName: "Condition", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: false, AcceptedForms: []string{"bool", "expression", "reference"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFInput", EvidenceStatus: EvidenceInferred},
-			{ID: "message", Label: "message", DisplayName: "Message", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string", "interpolation", "expression", "reference"}, DefaultValue: "Assertion failed", OmissionPolicy: OmitPolicyOmit, WireKey: "WFAlertActionMessage", Codec: "textToken", EvidenceStatus: EvidenceInferred},
+			{ID: "message", Label: "message", DisplayName: "Message", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string", "interpolation", "expression", "reference"}, DefaultValue: StringDefault("Assertion failed"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFAlertActionMessage", Codec: "textToken", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys: []string{"WFAlertActionMessage", "WFInput"},
 		OutputType:  types.Void,
@@ -532,7 +535,7 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		PrimaryParameterID: "stage",
 		Parameters: []ParameterSchema{
 			{ID: "stage", Label: "stage", DisplayName: "Stage", Type: types.Text, TypeName: "text", RawType: "string", Optional: false, AcceptedForms: []string{"string"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFDebugTraceStage", EvidenceStatus: EvidenceInferred},
-			{ID: "label", Label: "label", DisplayName: "Label", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string"}, DefaultValue: "", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugTraceLabel", EvidenceStatus: EvidenceInferred},
+			{ID: "label", Label: "label", DisplayName: "Label", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string"}, DefaultValue: StringDefault(""), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugTraceLabel", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys:    []string{"WFDebugTraceLabel", "WFDebugTraceStage"},
 		OutputType:     types.Text,
@@ -554,7 +557,7 @@ var compilerMacroSchemas = map[string]*ActionSchema{
 		AppleIdentifier:    "is.workflow.actions.gettext",
 		PrimaryParameterID: "runId",
 		Parameters: []ParameterSchema{
-			{ID: "runId", Label: "runId", DisplayName: "Run ID", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string"}, DefaultValue: "cherri-qa-run", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugTraceRunID", EvidenceStatus: EvidenceInferred},
+			{ID: "runId", Label: "runId", DisplayName: "Run ID", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string"}, DefaultValue: StringDefault("cherri-qa-run"), OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugTraceRunID", EvidenceStatus: EvidenceInferred},
 		},
 		EmittedKeys:    []string{"WFDebugTraceRunID"},
 		OutputType:     types.Text,
