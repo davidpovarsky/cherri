@@ -175,3 +175,12 @@ Three original failed combined invocations retained without recategorization. At
 ## 2026-11-20 S01 scoped compiler repair and native replay
 
 Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 passed194 root and88 package events after original six-route failure and a separately reproduced six-route implicit-input regression. Original source/313-byte semantic oracle unchanged; full native replay44671266567 is separate. Further container/enclosing-input boundaries remain open. See docs/language-v2/p15-s01-literal-object-carrier-20261120.md.
+
+
+## RP43 output/signing repair checkpoint — 2026-11-20
+
+- Production source b351ba06c0728197376955629dfd4701c7a6a153: real output/sibling preservation and encode-before-write repairs; Legacy signing defaults unchanged.
+- Clean actual 127 focused/new+compatibility passes and official 47/17 actions pass. Original eight output, twelve signer-preservation, and actual encoder-truncation failures retained; two fixture expectation errors stay distinct.
+- Strict RP43 producer source 468392aae763fe22ef7f6dcde4dcdc6e7f489e91: complete 78 required Linux events and 47 immutable source blobs; clean 97 intake/Windows-host controls pass with zero accepted RP43 records.
+- RP43 remains NOT_RUN until actual Linux permissions plus complete strict source-bound process execute. No Apple signature/runtime or global 179 closure.
+- Report: docs/language-v2/p15-output-signing-repair-20261120.md; original byte archive and manifests in the adjacent evidence directory.
