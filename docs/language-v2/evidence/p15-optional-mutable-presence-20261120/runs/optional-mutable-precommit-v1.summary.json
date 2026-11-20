@@ -1,0 +1,25 @@
+{
+  "source_sha": "1a5d0db59959a25bddf22c1532cb119264fe1cc7",
+  "source_modified": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15OptionalMutable.*|TestP15OptionalCompound.*|TestP15OptionalImmutableSnapshotCapturesMutablePresence)$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T04:20:30.647597+00:00",
+  "finished_at_utc": "2026-11-20T04:21:06.681553+00:00",
+  "elapsed_seconds": 36.03099999995902,
+  "exit_code": 0,
+  "timed_out": false,
+  "outer_budget_seconds": 240,
+  "named_passes": 36,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "fc5e0973551787281c849c6238f430d609d33aa08ec0026592c9b673ef4aadca",
+  "clean_after": false
+}
