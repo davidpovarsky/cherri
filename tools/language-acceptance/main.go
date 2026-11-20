@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateFunctionDefaultRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1606,11 +1610,7 @@ func (r *Runner) runCalls() {
 
 // Group 6: Types
 func (r *Runner) runTypes() {
-	// T01: Typed defaults
-	actBase64, okBase64 := r.reg.LookupAction("base64Encode")
-	wfT01, errT01 := lowerSrc(r.reg, "base64Encode(\"test\")")
-	t01Passed := okBase64 && actBase64.StaticParameters != nil && errT01 == nil && len(wfT01.Actions) > 0
-	r.Record("T01", "types", "Typed defaults preserve false/zero/empty text/list/map vs omission", "unit+native+iOS", []string{"unit", "native"}, t01Passed, "PASSED", "Default values retained across lowering and wire emission")
+	r.runFunctionDefaultRequirement("T01")
 
 	r.runTypeLiteralRequirement()
 
@@ -1725,11 +1725,7 @@ func (r *Runner) runFunctions() {
 		r.runNumberFunctionRequirement(id)
 	}
 
-	// FN04: Caller input vs internal dispatcher envelope
-	srcFN04 := "function test(x: Number) -> Number { return x }\nlet r = test(5)"
-	wfFN04, errFN04 := lowerSrc(r.reg, srcFN04)
-	fn04Passed := errFN04 == nil && len(wfFN04.Actions) >= 8
-	r.Record("FN04", "functions", "Caller input vs internal dispatcher envelope", "native+iOS", []string{"native"}, fn04Passed, "PASSED", "Dispatcher verifies __cherri_fn_call + __cherri_fn + __cherri_args + __cherri_present before branching")
+	r.runFunctionDefaultRequirement("FN04")
 
 	// FN05: Structured argument transport
 	srcFN05 := "function info(name: Text, count: Number) -> Text {\n    return f\"{name}: {count}\"\n}\nlet s = info(\"items\", count: 10)"

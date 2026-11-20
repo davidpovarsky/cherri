@@ -19,12 +19,10 @@ type LocalSmokeObservation struct {
 // of a larger contract. Remove an entry only with a reviewed scenario producer.
 var incompleteLocalAssertions = map[string]string{
 	"B01":  "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
-	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
-	"FN04": "Action count does not inspect dispatcher envelope validation.",
 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
 	"M02":  "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
 
