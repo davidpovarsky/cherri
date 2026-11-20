@@ -355,6 +355,13 @@ if [ -n "$BIN_STAGE" ]; then
 else
   BIN=$(resolve_cherri_installation) || { echo "No compatible Cherri binary found after setup." >&2; exit 1; }
 fi
+SELECTED_MIGRATION=$(cherri_migration_for_compiler "$BIN")
+if [ -n "$BIN_STAGE" ] && [ "$SELECTED_MIGRATION" != "$CACHED_CHERRI_MIGRATE" ]; then
+  if ! validate_cherri_installation "$BIN" "$SELECTED_MIGRATION"; then
+    echo "[CHERRI_INSTALL_SELECTED_INVALID] The explicitly selected migration tool is incompatible; restoring the preceding installation." >&2
+    exit 1
+  fi
+fi
 "$BIN" --version
 if [ -d "$CHERRI_DOCS_DIR" ]; then
   validate_cherri_installed_docs "$CHERRI_DOCS_DIR"
@@ -362,4 +369,4 @@ if [ -d "$CHERRI_DOCS_DIR" ]; then
 fi
 INSTALL_COMMITTED=1
 printf 'Cherri ready: %s\n' "$BIN"
-printf 'Migration ready: %s\n' "$(cherri_migration_for_compiler "$BIN")"
+printf 'Migration ready: %s\n' "$SELECTED_MIGRATION"
