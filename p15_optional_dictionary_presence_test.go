@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -14,7 +15,7 @@ func p15OptionalDictionaryCases() []p15OptionalDictionaryCase {
 	return []p15OptionalDictionaryCase{
 		{"text", "Text", `"ready"`}, {"empty_text", "Text", `""`},
 		{"false", "Bool", `false`}, {"zero", "Number", `0`},
-		{"empty_list", "List<Text>", `[]`}, {"list", "List<Text>", `["one","two"]`},
+		{"empty_list", "List<Unknown>", `[]`}, {"list", "List<Text>", `["one","two"]`},
 		{"empty_map", "Map<Text,AnyContent>", `{}`}, {"map", "Map<Text,Text>", `{"nested":"VALUE"}`},
 	}
 }
@@ -95,10 +96,33 @@ func p15OptionalDictionaryNegatives() []p15OptionalIndexNegative {
 	}
 }
 
+func p15OptionalDictionaryBoundaryError(diagnostics []analysis.Diagnostic, tc p15OptionalIndexNegative) error {
+	if tc.name != "duplicate_key" {
+		return p15OptionalIndexBoundaryError(diagnostics, tc)
+	}
+	kept := []analysis.Diagnostic{}
+	duplicates := 0
+	start := strings.Index(tc.source, `,"key"`) + 1
+	for _, d := range diagnostics {
+		if d.Code == "E_DUPLICATE_KEY" && d.Severity == analysis.SeverityError {
+			if d.Span.Start.ByteOffset != start || d.Span.End.ByteOffset != start+len(`"key"`) {
+				return fmt.Errorf("duplicate key diagnostic lost its exact second-key span: %+v", d)
+			}
+			duplicates++
+		} else {
+			kept = append(kept, d)
+		}
+	}
+	if duplicates != 1 {
+		return fmt.Errorf("want one actual duplicate-key rejection, got %+v", diagnostics)
+	}
+	return p15OptionalIndexBoundaryError(kept, tc)
+}
+
 func TestP15OptionalDictionaryRejectsUnprovenOrigins(t *testing.T) {
 	for _, tc := range p15OptionalDictionaryNegatives() {
 		t.Run(tc.name, func(t *testing.T) {
-			if err := p15OptionalIndexBoundaryError(p15TypeDiagnostics(t, tc.source), tc); err != nil {
+			if err := p15OptionalDictionaryBoundaryError(p15TypeDiagnostics(t, tc.source), tc); err != nil {
 				t.Fatal(err)
 			}
 			if raw, err := CompileSourceToPlist("p15-unproved-dictionary.cherri", tc.source); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
@@ -108,7 +132,7 @@ func TestP15OptionalDictionaryRejectsUnprovenOrigins(t *testing.T) {
 			uri := "file:///p15-unproved-dictionary.cherri"
 			svc.OpenDocument(uri, 1, tc.source)
 			got, _ := svc.Analyze(uri)
-			if err := p15OptionalIndexBoundaryError(got, tc); err != nil {
+			if err := p15OptionalDictionaryBoundaryError(got, tc); err != nil {
 				t.Fatal(err)
 			}
 		})
