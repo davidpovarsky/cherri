@@ -142,6 +142,7 @@ jobs:
           MACRO_FP=$(python3 -c 'import json; print(json.load(open("dist/macro-capabilities.json"))["macroFingerprint"])')
           python3 tools/p10r15/verify_macro_compatibility.py \
             --compiler dist/cherri-linux-amd64 \
+            --migrator dist/cherri-migrate-linux-amd64 \
             --compiler-commit "$GITHUB_SHA" \
             --skill skills/cherri-shortcuts \
             --docs-reference dist/macro-actions-reference.md \
