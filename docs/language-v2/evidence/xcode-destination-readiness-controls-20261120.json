@@ -1,0 +1,251 @@
+{
+  "schema_version": "cherri-component-source-proof-1",
+  "component": "owned-xcode-destination-readiness",
+  "recorded_at": "2026-11-20T10:43:02.425326+00:00",
+  "implementation_sha": "716f1bd450b3c372dde75d963512baea804bc80a",
+  "base_sha": "03f17a785f31f7bdc8c7607bef1ac9a16c28d3b4",
+  "clean_before": true,
+  "clean_after": true,
+  "source_files": [
+    {
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "bytes": 166751,
+      "sha256": "5cfd5f3ff64c62ba84965b8923bb13d3bf5a5f9673652bd31075b6b36739f18b"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
+      "bytes": 16429,
+      "sha256": "c22b3a1d10b8ff5ac4774894d9cdf4c9bea8c2031ffdb8caff6882abf95758c2"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+      "bytes": 15974,
+      "sha256": "ee34aa6ad84497efba89269cc1981a689f4f4958203d3a3207f870d43318f9fa"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/xcode_destination_readiness.py",
+      "bytes": 20971,
+      "sha256": "68caf31615f7a56d8cabcb5c0301b306680849e62809e25ea739a966a84662ed"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_xcode_destination_readiness.py",
+      "bytes": 24145,
+      "sha256": "4c9a37f8a0c1ae94f91cb18841262b32621b191159ae3b3cc067254271feecdf"
+    }
+  ],
+  "original_failure": {
+    "source_sha": "596415bba43bdb324b660767d4021e956ed74ab0",
+    "run_id": 44690018966,
+    "attempt": 1,
+    "xcode_exit": 70,
+    "observation": "The exact requested owned simulator UDID was absent from the scheme's eligible destinations; no Optional result callback was observed.",
+    "original_job_log_sha256": "1b5fd8af4fff241a63eaff7c21714d0628b8be5e2db496599a61731d95e0baec",
+    "classification": "BLOCKED_IMPORT",
+    "semantic_result": "NOT_OBSERVED"
+  },
+  "contract": {
+    "scheme": "CherriSimulatorQAReceiver",
+    "test": "CherriSimulatorQAUITests/CherriSimulatorQAUITests/test02_ShortcutsImportLibraryAndActionEditorCoverage",
+    "phase_budget_seconds": 900,
+    "readiness_max_seconds": 90,
+    "destination_query_max_seconds": 30,
+    "refresh_attempts_max": 1,
+    "same_owned_udid_required": true,
+    "reboot_allowed": false,
+    "test_attempts_max": 1,
+    "preissued_import_replayed": false,
+    "public_raw_destination_log_allowed": false
+  },
+  "causal_red": {
+    "tests": 2,
+    "failures": 2,
+    "actual_observation": "Both deliberately induced post-test validation/write failures allowed a second launch before the durable marker fix.",
+    "log_sha256": "aaca2c0046e07268c36f509d5ae76ee396cef495cdb9178042d160b336eeff40",
+    "controls": [
+      "test_validator_failure_after_test_cannot_enable_a_second_attempt",
+      "test_receipt_write_failure_after_test_cannot_enable_a_second_attempt"
+    ]
+  },
+  "controls": [
+    {
+      "platform": "Linux local",
+      "results": [
+        {
+          "test_file": "test_xcode_destination_readiness.py",
+          "passes": 22,
+          "skips": 0,
+          "total_discovered": 22,
+          "exit_code": 0,
+          "seconds": 0.384,
+          "log_sha256": "3ad1afcba2fe1806d35a8ab626d13439a97edb5850dfa3ed20fab66fee9c9846"
+        },
+        {
+          "test_file": "test_simulator_session_recovery.py",
+          "passes": 19,
+          "skips": 0,
+          "total_discovered": 19,
+          "exit_code": 0,
+          "seconds": 1.214,
+          "log_sha256": "f8a48e6dde0ff8a21c9817c7e553ad74ae1e2405291aba7d29b053da62e9fe7f"
+        },
+        {
+          "test_file": "test_public_artifacts.py",
+          "passes": 17,
+          "skips": 0,
+          "total_discovered": 17,
+          "exit_code": 0,
+          "seconds": 11.168,
+          "log_sha256": "9c456c2cdecf8357a0106f8758934d09dbb3a752d57c0543a2dddd76d871b5eb"
+        }
+      ],
+      "passes": 58,
+      "skips": 0
+    },
+    {
+      "platform": "Windows clean source",
+      "results": [
+        {
+          "test_file": "test_xcode_destination_readiness.py",
+          "passes": 21,
+          "skips": 1,
+          "total_discovered": 22,
+          "exit_code": 0,
+          "seconds": 0.875,
+          "log_sha256": "f4339d7c36d578791bb830197567416d4a5a6106259e86f07c28a62c353b0b30"
+        },
+        {
+          "test_file": "test_simulator_session_recovery.py",
+          "passes": 17,
+          "skips": 2,
+          "total_discovered": 19,
+          "exit_code": 0,
+          "seconds": 0.61,
+          "log_sha256": "71b7b425be23c7ae98b2e5dc3e50306ae82569355d1f870ede1dd1abfe8f7b5c"
+        },
+        {
+          "test_file": "test_public_artifacts.py",
+          "passes": 17,
+          "skips": 0,
+          "total_discovered": 17,
+          "exit_code": 0,
+          "seconds": 25.562,
+          "log_sha256": "3ddf098dfb8e9f9fc19f4072458dc658fd99a92d5b0066b3edf59489e700c900"
+        }
+      ],
+      "passes": 55,
+      "skips": 3
+    }
+  ],
+  "optional_source_graph": {
+    "status": "PASS",
+    "command": [
+      "go",
+      "test",
+      ".",
+      "-run",
+      "^TestP15OptionalNativeDiagnostic",
+      "-count=1",
+      "-json"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 22.906,
+    "stdout_sha256": "b28938c1e42cf3e7a61219ce9fab4592fae25b958e5314c872b2711f31822121",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "named_passes": 54,
+    "failures": [],
+    "skips": []
+  },
+  "unchanged_optional_fixture_contract": [
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.cherri",
+      "bytes": 3485,
+      "sha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+      "unchanged_from_original_optional_source": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.expected.json",
+      "bytes": 1870,
+      "sha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef",
+      "unchanged_from_original_optional_source": true
+    }
+  ],
+  "retained_originals": [
+    {
+      "retained_relative_path": "clean-716f1bd4/optional-graph.jsonl",
+      "bytes": 50441,
+      "sha256": "b28938c1e42cf3e7a61219ce9fab4592fae25b958e5314c872b2711f31822121"
+    },
+    {
+      "retained_relative_path": "clean-716f1bd4/optional-graph.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "retained_relative_path": "clean-716f1bd4/receipt.json",
+      "bytes": 4712,
+      "sha256": "0991aad73bc52ab447d3550b61f1a2399f6cbd0a60d685c779170092342eff6f"
+    },
+    {
+      "retained_relative_path": "clean-716f1bd4/test_public_artifacts.py.log",
+      "bytes": 2789,
+      "sha256": "3ddf098dfb8e9f9fc19f4072458dc658fd99a92d5b0066b3edf59489e700c900"
+    },
+    {
+      "retained_relative_path": "clean-716f1bd4/test_simulator_session_recovery.py.log",
+      "bytes": 3771,
+      "sha256": "71b7b425be23c7ae98b2e5dc3e50306ae82569355d1f870ede1dd1abfe8f7b5c"
+    },
+    {
+      "retained_relative_path": "clean-716f1bd4/test_xcode_destination_readiness.py.log",
+      "bytes": 4199,
+      "sha256": "f4339d7c36d578791bb830197567416d4a5a6106259e86f07c28a62c353b0b30"
+    },
+    {
+      "retained_relative_path": "linux-local/duplicate-attempt-red.log",
+      "bytes": 1903,
+      "sha256": "aaca2c0046e07268c36f509d5ae76ee396cef495cdb9178042d160b336eeff40"
+    },
+    {
+      "retained_relative_path": "linux-local/final-controls/receipt.json",
+      "bytes": 2050,
+      "sha256": "49b8ab339ae3904bf07f4402881945a92e4d9bb11869257761d8eb43291ddc2f"
+    },
+    {
+      "retained_relative_path": "linux-local/final-controls/test_public_artifacts.py.log",
+      "bytes": 2767,
+      "sha256": "9c456c2cdecf8357a0106f8758934d09dbb3a752d57c0543a2dddd76d871b5eb"
+    },
+    {
+      "retained_relative_path": "linux-local/final-controls/test_simulator_session_recovery.py.log",
+      "bytes": 3631,
+      "sha256": "f8a48e6dde0ff8a21c9817c7e553ad74ae1e2405291aba7d29b053da62e9fe7f"
+    },
+    {
+      "retained_relative_path": "linux-local/final-controls/test_xcode_destination_readiness.py.log",
+      "bytes": 4119,
+      "sha256": "3ad1afcba2fe1806d35a8ab626d13439a97edb5850dfa3ed20fab66fee9c9846"
+    },
+    {
+      "retained_relative_path": "linux-local/test_xcode_destination_readiness.py.before-marker.snapshot",
+      "bytes": 19264,
+      "sha256": "c1e0691e69c7b0fe227d572c831e60b168e7683ea88335e87ec03493c43738de"
+    },
+    {
+      "retained_relative_path": "linux-local/xcode_destination_readiness.py.before-marker.snapshot",
+      "bytes": 18241,
+      "sha256": "55143183bebf6fb49b7dd2944e1270ce7d9b5e3693ae731df6966b403a41a686"
+    }
+  ],
+  "privacy": {
+    "query_originals": "Retained once at fixed builds/xcode-destination-query-{1,2}.log paths in the private artifact workspace, size/hash-bound and reparsed before bounded publication. Oversized originals are hashed in place and retained; neither query raw bytes nor durable attempt marker is public allowlisted.",
+    "public_receipt": "runtime/xcode-destination-readiness.json"
+  },
+  "limits": {
+    "native_status": "NOT_RUN",
+    "optional_semantics": "NOT_OBSERVED_ON_THIS_SOURCE",
+    "formal_acceptance_granted": false,
+    "runtime_evidence_inherited": false,
+    "local_process_tests": "Real local shell/process tests use Xcode stubs; no Apple execution is claimed.",
+    "platform_skips": "Three POSIX process/shell controls are skipped on Windows and actually pass on Linux."
+  }
+}
