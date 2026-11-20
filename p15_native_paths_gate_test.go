@@ -364,3 +364,69 @@ func TestBackendRecovery18RejectsNativeAndReadabilityFaults(t *testing.T) {
 		})
 	}
 }
+
+func TestBackendRecovery18ReadabilityRejectsCompiledFallbacks(t *testing.T) {
+	var expected = p15BRG18NativeRoot(false)
+	var raw, err = plist.Marshal(expected, plist.XMLFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var directory = t.TempDir()
+	var input = filepath.Join(directory, "readable.shortcut")
+	p15BRG19Write(t, input, raw)
+	var imported, importErr = ExecuteImportPipeline(ImportOptions{InputPath: input, OutputPath: filepath.Join(directory, "readable.cherri"), Fidelity: "hybrid"})
+	if importErr != nil || imported.Plan == nil {
+		t.Fatal(importErr)
+	}
+	if err := p15BRG18ReadabilityError([]byte(imported.FinalSource), *imported.Plan); err != nil {
+		t.Fatal(err)
+	}
+	var program, parseErr = p15BRG19Parse(imported.FinalSource)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
+	var calls []*syntax.CallExpr
+	for _, statement := range program.Statements {
+		expression, okay := statement.(*syntax.ExprStmt)
+		if !okay {
+			continue
+		}
+		call, okay := expression.Expr.(*syntax.CallExpr)
+		if !okay {
+			continue
+		}
+		if _, okay := call.Callee.(*syntax.IdentExpr); okay {
+			calls = append(calls, call)
+		}
+	}
+	if len(calls) != 6 {
+		t.Fatal("actual importer changed the six supported readable calls", len(calls))
+	}
+	var indices = []int{0, 1, 8, 9, 10, 11}
+	for ordinal, name := range []string{"comment", "static_variant", "reference", "omitted_parameter", "explicit_false", "empty_parameters"} {
+		t.Run(name, func(t *testing.T) {
+			var call = calls[ordinal]
+			var begin, end = call.Span.Start.ByteOffset, call.Span.End.ByteOffset
+			if begin < 0 || end <= begin || end > len(imported.FinalSource) {
+				t.Fatal("invalid actual call span")
+			}
+			var action = expected["WFWorkflowActions"].([]any)[indices[ordinal]].(map[string]any)
+			var literal, encodeErr = encodePlistValueToLiteral(action["WFWorkflowActionParameters"])
+			if encodeErr != nil {
+				t.Fatal(encodeErr)
+			}
+			var replacement = "native.action(" + formatCherriDoubleQuotedString(action["WFWorkflowActionIdentifier"].(string)) + ", parameters: native.plist(" + formatCherriDoubleQuotedString(literal) + "))"
+			var changed = imported.FinalSource[:begin] + replacement + imported.FinalSource[end:]
+			var actual, compileErr = CompileSourceToPlist("brg18-readable-fallback.cherri", changed)
+			if compileErr != nil {
+				t.Fatal("causal fallback control did not compile", compileErr)
+			}
+			if err := p15BRG18ExactError(expected, p15BRG18Decode(t, actual)); err != nil {
+				t.Fatal("fallback control changed native semantics", err)
+			}
+			if p15BRG18ReadabilityError([]byte(changed), *imported.Plan) == nil {
+				t.Fatal("readability accepted a compiled exact-native substitution for supported typed call", name)
+			}
+		})
+	}
+}
