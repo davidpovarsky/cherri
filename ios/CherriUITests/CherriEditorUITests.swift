@@ -100,7 +100,7 @@ final class CherriEditorUITests: XCTestCase {
     }
 
     /// Resolve only the two fixed startup controls through their typed queries.
-    /// Re-reading each result's elementType can fail during a document transition.
+    /// Typed queries avoid an additional elementType lookup for each result.
     /// Keep the returned element identities; do not resolve absent controls or
     /// rebind a creation candidate by its index in a later query.
     private func observeStartupControls(trace: CherriEditorStartupTimingTrace,
