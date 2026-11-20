@@ -487,6 +487,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP52" {
+		return publicFrontendTestIDs()
+	}
 	if id == "RP43" {
 		return outputSigningTestIDs()
 	}
@@ -557,6 +560,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP52" {
+		return append([]string{}, publicFrontendProductionPaths...)
+	}
 	if id == "RP43" {
 		return append([]string{}, outputSigningProductionPaths...)
 	}
