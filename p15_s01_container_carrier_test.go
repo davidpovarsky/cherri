@@ -119,7 +119,7 @@ func p15S01ContainerSource(name string) string {
 	case "function_map_later_argument":
 		return "function accept(value:Map<Text,AnyContent>,later:AnyContent)->Text{return \"DONE\"}\nlet seed=text(\"SEED\")\nlet result=accept({\"key\":" + literal + "},later:native.action(\"is.workflow.actions.setitemname\",{\"WFName\":\"LATER\"}))\ngetVariable(result)\n"
 	case "registered_map":
-		return "let value=dictionary({\"key\":" + literal + "})\ngetVariable(value)\n"
+		return "let value=getDictionary({\"key\":" + literal + "})\ngetVariable(value)\n"
 	case "plain_control":
 		return "let value={\"key\":\"ordinary {literal}\"}\ngetVariable(value)\n"
 	case "raw_native_control":
@@ -142,7 +142,13 @@ func p15S01ContainerGraphError(actions []map[string]any, name string) error {
 			kind = 2
 			field = map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": []any{map[string]any{"WFItemType": 0, "WFValue": field}}}
 		}
-		dictionary := p15S01Dictionary(g, p15S01ContainerRow(key, kind, field))
+		row := p15S01ContainerRow(key, kind, field)
+		dictionary := ""
+		if name == "registered_map" {
+			dictionary = g.value("detect.dictionary", map[string]any{"WFInput": p15S01ContainerRows(row)})
+		} else {
+			dictionary = p15S01Dictionary(g, row)
+		}
 		if name == "map_mutable" {
 			g.emit("setvariable", map[string]any{"WFVariableName": "value", "WFInput": p15FunctionEdge(dictionary)})
 			g.emit("getvariable", map[string]any{"WFVariable": p15FunctionVariable("value")})
