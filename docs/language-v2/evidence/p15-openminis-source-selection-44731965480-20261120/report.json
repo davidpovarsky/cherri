@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "Actual bounded OpenMinis consumer workflow and independent original-byte intake",
+  "workflowID": 341125047,
+  "runID": 44731965480,
+  "jobID": 136273762871,
+  "attempt": 1,
+  "source": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+  "conclusion": "success",
+  "singleDispatch": true,
+  "compilerPin": "fd691b96fb661697a1cbaddab92476d457636ba9",
+  "docsPin": "35543290124f00f216f6f4b638a890542c8e8783",
+  "manifestChangeAncestor": "939775dcdf9d2582d483a5cf51107724f2f13e9d",
+  "manifestSHA256": "e0ad95b255d55f966fe6323ee476e753097a76bdbca0528e1917cacdc0cc2766",
+  "currentCLIAndPinnedSkillKeptDistinct": true,
+  "signing": {
+    "actualRows": 34,
+    "unsignedControls": 3,
+    "rejectedNegativeRequests": 31,
+    "rawLogRowsMatched": 34,
+    "exactPreflightBytesObserved": "all null; no exact-byte claim",
+    "appleCryptographicValidation": "NOT_TESTED",
+    "currentCompilerSHA256": "d4e3f75470479c35771f59429aa12537ddc0d53615f76b5d4da5b568a431c437",
+    "pinnedCompilerSHA256": "0364838712316ca12477fed745944de6885077375f5d6a16b538d123dc575790"
+  },
+  "macroCompatibility": {
+    "actualRows": 23,
+    "failed": 0,
+    "scope": "ACTUAL_INSTALLED_PAIR_AND_EXPLICIT_CONTROLLED_CAPABILITY_FIELD_RESPONSES"
+  },
+  "packages": [
+    {
+      "filename": "cherri-shortcuts-skill-source.zip",
+      "sha256": "c47bc798f8793f2531d86b3943f3ba0883dc1ad9760708ba146e3059606f8b99",
+      "members": 23,
+      "committedGitFiles": 22,
+      "runtime": null
+    },
+    {
+      "filename": "cherri-shortcuts-openminis-arm64.zip",
+      "sha256": "8a190a01cda60d8abec796fe60335d6a16fe92038cf44658d635419da52d8cd7",
+      "members": 29,
+      "committedGitFiles": 22,
+      "runtime": {
+        "compilerCommit": "fd691b96fb661697a1cbaddab92476d457636ba9",
+        "goarch": "arm64",
+        "goos": "linux",
+        "migration": {
+          "compilerCommit": "fd691b96fb661697a1cbaddab92476d457636ba9",
+          "goarch": "arm64",
+          "goos": "linux",
+          "modulePath": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+          "sha256": "2455aa26144bc23b245a5824943f81fa753922e844b195db7773a7037f81f76a",
+          "vcsModified": false
+        },
+        "modulePath": "github.com/electrikmilk/cherri",
+        "sha256": "725b781d17f4478da1749266299013a26b283b530fd8f07f8abb31b5fb374e8b",
+        "vcsModified": false
+      }
+    }
+  ],
+  "embeddedBuilds": [
+    {
+      "label": "current-linux-amd64",
+      "bytes": 17735864,
+      "sha256": "d4e3f75470479c35771f59429aa12537ddc0d53615f76b5d4da5b568a431c437",
+      "modulePath": "github.com/electrikmilk/cherri",
+      "source": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+      "platform": "linux/amd64",
+      "buildInfoSHA256": "9c7a6fef7eed0f7aa9a80b8049eabfb82a59711bf5ad93336b79f20c05b00f0e"
+    },
+    {
+      "label": "current-linux-arm64",
+      "bytes": 16646328,
+      "sha256": "9f4ef21f3a8f2b06bc6d444c4e80f504862f0fc87e4b1b3154014bbdfac0e0ca",
+      "modulePath": "github.com/electrikmilk/cherri",
+      "source": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+      "platform": "linux/arm64",
+      "buildInfoSHA256": "d27396998f2bff35d994846c3d9e80378691c4a86d5487b52e998aff435aea67"
+    },
+    {
+      "label": "pinned-linux-arm64",
+      "bytes": 16646328,
+      "sha256": "725b781d17f4478da1749266299013a26b283b530fd8f07f8abb31b5fb374e8b",
+      "modulePath": "github.com/electrikmilk/cherri",
+      "source": "fd691b96fb661697a1cbaddab92476d457636ba9",
+      "platform": "linux/arm64",
+      "buildInfoSHA256": "982f7b1d6d0a21be43ab8a55282fff8d2bbf23494ae1003adb5dacfc7d776fa1"
+    },
+    {
+      "label": "pinned-migration-linux-arm64",
+      "bytes": 5505208,
+      "sha256": "2455aa26144bc23b245a5824943f81fa753922e844b195db7773a7037f81f76a",
+      "modulePath": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+      "source": "fd691b96fb661697a1cbaddab92476d457636ba9",
+      "platform": "linux/arm64",
+      "buildInfoSHA256": "84fe6f1fe6b24346e2dcad95f0539a77d2fc0ad54113327ae7822ad2fd7ec26b"
+    }
+  ],
+  "wrapperObservations": [
+    {
+      "file": "skill-wrapper-observations.json",
+      "actualCompiler": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+      "actualCLIOperations": [
+        "version",
+        "actions",
+        "catalog",
+        "unsigned-build",
+        "decompile",
+        "recompile",
+        "prepare-edit",
+        "reject-AEA1-input"
+      ],
+      "controlledTransportChecks": 10,
+      "controlledDocsPin": "1f226ce67056eb27a7129d6e7c235df52c60bcc0",
+      "declaredDocsPin": "35543290124f00f216f6f4b638a890542c8e8783",
+      "formalRecords": 0
+    },
+    {
+      "file": "skill-package-arm64-observations.json",
+      "actualCompiler": "fd691b96fb661697a1cbaddab92476d457636ba9",
+      "actualCLIOperations": [
+        "version",
+        "actions",
+        "catalog",
+        "unsigned-build",
+        "decompile",
+        "recompile",
+        "prepare-edit",
+        "reject-AEA1-input"
+      ],
+      "controlledTransportChecks": 10,
+      "controlledDocsPin": "a7d121473ef05aa465d62e5e1611fd67474cb192",
+      "declaredDocsPin": "35543290124f00f216f6f4b638a890542c8e8783",
+      "formalRecords": 0
+    }
+  ],
+  "packageProducer": {
+    "actualOuterPasses": 1,
+    "publishedChildRecord": "K01 skill-package at exact258 only",
+    "childRawStreamPublished": false,
+    "globalClosure": false
+  },
+  "originalArchives": 8,
+  "publishedMembers": 22,
+  "sourceWitnessCount": 25,
+  "sealedArtifactCount": 68,
+  "archive": {
+    "path": "originals.zip",
+    "bytes": 170899,
+    "sha256": "e7cecf1edafb10a6c78c24a60898f1cc591c249808fa625dd85293ab4d458b35"
+  },
+  "acquisitionReceiptSHA256": "e13146e70f3ceaa501918803b20b0ec4396165e2e9fa8cceeb0f1c4ef24f22d6",
+  "intakeReceiptSHA256": "35b3ac5a09de6683c6779a20393879a5c5d6736656eaa9d7d3eab8da1ce44bf0",
+  "priorFailedRun": 44725798960,
+  "priorFailureSource": "4860437f2fca56a57891d786cb0509b15e13a2c1",
+  "AsanaPromotionTask": "1220432417485023",
+  "AsanaTerminalStory": "1220738544343861",
+  "limitations": [
+    "Historical258/fd/D6 component tuple; M02 and later compiler work require a newly coherent S/docs/Skill tuple",
+    "All exactPreflightBytesObserved fields are null; multipart/request observation does not prove exact unsigned input bytes",
+    "No Apple cryptographic signing or Shortcut runtime claim",
+    "K01 child record is retained at exact258; only outer producer raw stream was published, so no invented independent child raw events",
+    "Wrapper10-case transport controls use real tools with synthetic download/minimal docs and are separate from real release/source-build evidence",
+    "Additional macro/debug/storage/continuation reports are retained in original form and retain their own native-NOT_RUN scope",
+    "No final179, physical device, general deployment or full Go suite closure"
+  ],
+  "createdUTC": "2026-11-20T12:41:32.561053+00:00"
+}

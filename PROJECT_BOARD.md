@@ -39,6 +39,9 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Execute and independently intake OpenMinis candidate258/fd/D6 (2026-11-20). Single run44731965480 passed signing34, source/runtime packages, actual ARM64 Alpine and scoped package acceptance. All8 original ZIPs,22 members,25 immutable source blobs and four published binary identities were checked. Original486 failure remains; newM02 tuple, Apple and final179 remain open. [Exact scope](docs/language-v2/p15-openminis-source-selection-44731965480-20261120.md).
+
+
 - [x] Align native nested-List diagnostics across analysis, check, service and compile (2026-11-20). Original13-case mismatch reproduced; clean3852 has151 root+109 core named passes and official47/17 parity, zero failures/skips. Dictionary inline arrays/raw native data and explicitly unverified reference rows retain scope. L01/T05/F04/FN05 native semantics remain open. [Evidence](docs/language-v2/p15-native-list-analysis-boundary-20261120.md).
 
 
