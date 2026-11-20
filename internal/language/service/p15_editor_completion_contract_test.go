@@ -9,6 +9,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/types"
+	"os"
 )
 
 const p15E01Declarations = "type Amount = Number\n" +
@@ -34,9 +37,18 @@ var p15E01CompletionCases = []p15E01CompletionCase{
 	{"primary_list", p15E01Declarations + "needList(|)", []string{"listValue"}},
 	{"optional_parameter", p15E01Declarations + "needOptional(|)", []string{"numberValue", "optionalValue"}},
 	{"alias_parameter", p15E01Declarations + "needAlias(|)", []string{"numberValue"}},
-	{"canonical_number", p15E01Declarations + "number(|)", []string{"numberValue"}},
+	{"canonical_number", p15E01Declarations + "round(|)", []string{"numberValue"}},
+	{"canonical_broad_input", p15E01Declarations + "number(|)", []string{"flagValue", "listValue", "numberValue", "opaqueValue", "optionalValue", "textValue"}},
 	{"lexical_shadow", p15E01Declarations + "if true {\n let numberValue = \"inner\"\n let innerNumber = 11\n needNumber(|)\n}\n", []string{"innerNumber"}},
 	{"function_parameter", p15E01Declarations + "function wrap(amount: Number, title: Text) -> Number {\n return needNumber(|)\n}", []string{"amount"}},
+	{"narrowed_optional", p15E01Declarations + "var maybe: Number? = if true { yield 7 } else { yield none }\nif maybe != none { needNumber(|) }", []string{"numberValue", "maybe"}},
+	{"reassigned_none", p15E01Declarations + "var maybe: Number? = 7\nif maybe != none { maybe = none; needNumber(|) }", []string{"numberValue"}},
+	{"uninitialized_binding", p15E01Declarations + "var missing: Number\nneedNumber(|)", []string{"numberValue"}},
+	{"loop_item_and_index", p15E01Declarations + "for (index, item) in [\"a\"] { needNumber(|) }", []string{"index", "numberValue"}},
+	{"default_parameter_scope", p15E01Declarations + "function defaults(first: Number = 1, second: Number = needNumber(|)) -> Number { return second }", []string{"first"}},
+	{"user_function_shadows_native", p15E01Declarations + "function round(value: Text) -> Text { return value }\nround(|)", []string{"textValue"}},
+	{"named_after_write", p15E01Declarations + "function combine(note: Text, value: Number) -> Number { return value }\nvar maybe: Number? = 7\ncombine(if true { maybe = none; yield \"set\" } else { yield \"other\" }, value: |)", []string{"numberValue"}},
+	{"named_before_write", p15E01Declarations + "function combine(note: Text, value: Number) -> Number { return value }\nvar maybe: Number? = 7\ncombine(value: |, note: if true { maybe = none; yield \"set\" } else { yield \"other\" })", []string{"numberValue", "maybe"}},
 	{"outside_value_context", "let first = 1\nlet second = \"x\"\nshow(first)\n|", []string{"first", "second"}},
 }
 
@@ -52,10 +64,14 @@ func p15EditorCursor(t *testing.T, marked string) (string, int, int) {
 }
 
 func p15E01VariableSetError(items []CompletionItem, want []string) error {
+	return p15E01KindSetError(items, CompletionKindVariable, want)
+}
+
+func p15E01KindSetError(items []CompletionItem, kind CompletionItemKind, want []string) error {
 	actual := []string{}
 	seen := map[string]bool{}
 	for _, item := range items {
-		if item.Kind != CompletionKindVariable {
+		if item.Kind != kind {
 			continue
 		}
 		if seen[item.Label] {
@@ -157,6 +173,69 @@ func TestP15E01CandidateInsertionControls(t *testing.T) {
 						t.Fatalf("independent source/candidate control %s: %v", name, d)
 					}
 				}
+			}
+		})
+	}
+}
+
+func TestP15E01CanonicalInputContracts(t *testing.T) {
+	for _, tc := range []struct {
+		name, file, declaration string
+		input                   types.Type
+	}{
+		{"number", "../../../actions/basic.cherri", "action number(variable number: 'WFNumberActionNumber'): number", types.AnyContent},
+		{"round", "../../../actions/math.cherri", "action default round(number number: 'WFInput'", types.Number},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			raw, err := os.ReadFile(tc.file)
+			if err != nil || !strings.Contains(string(raw), tc.declaration) {
+				t.Fatal("independent canonical declaration absent", err)
+			}
+			action, found := schema.DefaultRegistry().LookupAction(tc.name)
+			if !found {
+				t.Fatal("canonical action missing", tc.name)
+			}
+			primary, found := action.PrimaryParameter()
+			if !found || primary.Type == nil || !primary.Type.Equals(tc.input) ||
+				action.OutputType == nil || !action.OutputType.Equals(types.Number) {
+				t.Fatalf("input/output semantic contract differs: %+v", action)
+			}
+		})
+	}
+}
+
+func TestP15E01ContextualLabelsAndEnums(t *testing.T) {
+	const declarations = "enum Color { Red = \"native-red\", Blue = \"native-blue\" }\n" +
+		"enum Other { Foreign = \"foreign\" }\n" +
+		"function paint(color: Color, note: Text = \"\") -> Text { return note }\n" +
+		"function named(value: Number, label: Text) -> Text { return label }\n"
+	for _, tc := range []struct {
+		name, marked string
+		kind         CompletionItemKind
+		want         []string
+	}{
+		{"primary_already_bound", "named(1, |)", CompletionKindParameter, []string{"label"}},
+		{"named_already_bound", "named(label: \"value: ,\", |)", CompletionKindParameter, []string{"value"}},
+		{"multiline_named", "named(\n label: \"quoted, colon: and 🙂\",\n |)", CompletionKindParameter, []string{"value"}},
+		{"canonical_primary_bound", "formatNumber(1, |)", CompletionKindParameter, []string{"decimalPlaces"}},
+		{"function_enum", "paint(.|)", CompletionKindEnum, []string{"Blue", "Red"}},
+		{"qualified_enum", "paint(Color.|)", CompletionKindEnum, []string{"Blue", "Red"}},
+		{"named_enum", "paint(note: \"x\", color: .|)", CompletionKindEnum, []string{"Blue", "Red"}},
+		{"ambiguous_dot", ".|", CompletionKindEnum, []string{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source, line, col := p15EditorCursor(t, declarations+tc.marked)
+			svc := NewService(nil)
+			const uri = "file:///p15-e01-labels.cherri"
+			svc.OpenDocument(uri, 1, source)
+			actual := svc.Complete(uri, line, col)
+			if err := p15E01KindSetError(actual, tc.kind, tc.want); err != nil {
+				t.Fatal(err)
+			}
+			corrupt := append([]CompletionItem{}, actual...)
+			corrupt = append(corrupt, CompletionItem{Kind: tc.kind, Label: "foreign_domain_or_parameter"})
+			if p15E01KindSetError(corrupt, tc.kind, tc.want) == nil {
+				t.Fatal("unrelated contextual candidate was accepted")
 			}
 		})
 	}
