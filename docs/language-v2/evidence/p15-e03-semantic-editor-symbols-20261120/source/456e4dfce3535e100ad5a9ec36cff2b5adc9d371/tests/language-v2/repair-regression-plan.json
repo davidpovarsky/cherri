@@ -1,0 +1,1070 @@
+{
+  "kind": "supplemental_repair_regression_specification",
+  "status": "SPECIFICATION_ONLY_NOT_TEST_RESULTS",
+  "prepared_date": "2026-10-06",
+  "audited_commit": "15a70716fa725a26a4a6f837517c6e0b35c5664f",
+  "authority": "cherri-language-repair-prompt.md",
+  "original_contract": "reference/cherri-language-acceptance-contract.json",
+  "original_contract_sha256": "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a",
+  "case_count": 52,
+  "rules": [
+    "These are planned regressions, not executed results.",
+    "All 94 original requirements remain mandatory and unchanged.",
+    "Supplemental checks add coverage and never weaken original test levels.",
+    "No PASS without actual assertions and matching source/schema/artifact evidence.",
+    "A parser or mock success cannot replace an original native or iOS requirement."
+  ],
+  "cases": [
+    {
+      "id": "RP01",
+      "title": "Verification aggregator",
+      "original_requirement_ids": [
+        "CI03",
+        "END01"
+      ],
+      "audit_fix_ids": [
+        "FIX-01",
+        "FIX-02"
+      ],
+      "required_test_levels": [
+        "unit",
+        "integration"
+      ],
+      "scenario": "Inject an actually false assertion, contradictory boolean/status, duplicate ID, unknown ID, missing ID and malformed evidence.",
+      "expected_observation": "Every invalid result is rejected; closure exits nonzero; no success is counted from an unvalidated status string.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP02",
+      "title": "Required evidence levels",
+      "original_requirement_ids": [
+        "FN01",
+        "CI02",
+        "CI03"
+      ],
+      "audit_fix_ids": [
+        "FIX-01",
+        "FIX-19"
+      ],
+      "required_test_levels": [
+        "unit",
+        "integration"
+      ],
+      "scenario": "Provide a parser-only success for a native+iOS requirement and a runtime artifact from another SHA.",
+      "expected_observation": "Neither can satisfy the requirement; report actual levels as partial/NOT_RUN, not PASS.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP03",
+      "title": "Portable contract intake",
+      "original_requirement_ids": [
+        "B01",
+        "CI03"
+      ],
+      "audit_fix_ids": [
+        "FIX-02"
+      ],
+      "required_test_levels": [
+        "integration"
+      ],
+      "scenario": "Run from a fresh clone and an unrelated temporary working directory using repository/default or explicit contract location.",
+      "expected_observation": "No Downloads/home-directory dependency; immutable original contract digest and 94 IDs verified.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP04",
+      "title": "Compile cannot bypass analysis",
+      "original_requirement_ids": [
+        "C02",
+        "T02",
+        "V02",
+        "CL01"
+      ],
+      "audit_fix_ids": [
+        "FIX-03"
+      ],
+      "required_test_levels": [
+        "unit",
+        "CLI",
+        "embedded"
+      ],
+      "scenario": "Compile parser-valid programs with immutable reassignment, wrong type, duplicate/unknown label and missing argument through check, CLI and embedded APIs.",
+      "expected_observation": "Matching semantic errors prevent output/signing and preserve any pre-existing destination.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP05",
+      "title": "Literal legacy-looking text",
+      "original_requirement_ids": [
+        "P01",
+        "S02",
+        "CL03"
+      ],
+      "audit_fix_ids": [
+        "FIX-04"
+      ],
+      "required_test_levels": [
+        "unit",
+        "CLI",
+        "embedded"
+      ],
+      "scenario": "Use email text containing @, plain JS containing const, plain #include text, and legacy-looking comments; contrast actual old declarations.",
+      "expected_observation": "Legal text is unchanged and compiles; actual old syntax receives E_LEGACY_SYNTAX through every public path.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP06",
+      "title": "Current declaration propagation",
+      "original_requirement_ids": [
+        "U02",
+        "U03",
+        "AC01"
+      ],
+      "audit_fix_ids": [
+        "FIX-05"
+      ],
+      "required_test_levels": [
+        "generation",
+        "integration"
+      ],
+      "scenario": "Modify an inherited optional parameter in a disposable worktree, export current definitions and regenerate.",
+      "expected_observation": "New schema/compiler/docs/completion see the actual change without editing baseline-catalog or generated output.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP07",
+      "title": "Facet conflict is detected",
+      "original_requirement_ids": [
+        "U03",
+        "AC03"
+      ],
+      "audit_fix_ids": [
+        "FIX-05"
+      ],
+      "required_test_levels": [
+        "generation",
+        "negative-integration"
+      ],
+      "scenario": "Change an upstream field relied on by a semantic facet; inject an unknown codec and duplicate label.",
+      "expected_observation": "Specific assumption/codec/label error fails generation; the change is not silently accepted.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP08",
+      "title": "Schema fingerprint and typed facts",
+      "original_requirement_ids": [
+        "U02",
+        "T01",
+        "AC03"
+      ],
+      "audit_fix_ids": [
+        "FIX-05",
+        "FIX-06"
+      ],
+      "required_test_levels": [
+        "generation",
+        "unit"
+      ],
+      "scenario": "Regenerate twice unchanged, then alter a semantic default/constant/codec version in a disposable fixture.",
+      "expected_observation": "Unchanged semantic output is deterministic; changed semantics change identity; typed false/zero/empty defaults retain presence.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP09",
+      "title": "Static action variants",
+      "original_requirement_ids": [
+        "AC01",
+        "R02"
+      ],
+      "audit_fix_ids": [
+        "FIX-06"
+      ],
+      "required_test_levels": [
+        "native-differential"
+      ],
+      "scenario": "Emit convertToJPEG, base64Encode/base64Decode and DNDOn/DNDOff using actual canonical definitions and new frontend fixtures.",
+      "expected_observation": "All fixed discriminators and mode values match independent canonical/native expectations.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP10",
+      "title": "Custom callbacks and App Intents",
+      "original_requirement_ids": [
+        "AC01",
+        "T09",
+        "R02"
+      ],
+      "audit_fix_ids": [
+        "FIX-06"
+      ],
+      "required_test_levels": [
+        "native-differential"
+      ],
+      "scenario": "Exercise makeParams, appendParamsFunc and a complete App Intent descriptor using current canonical encoders.",
+      "expected_observation": "No behavior-bearing callback/static/descriptor data is lost by generic map serialization.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP11",
+      "title": "Number-as-text and reference forms",
+      "original_requirement_ids": [
+        "T03",
+        "T09",
+        "R03"
+      ],
+      "audit_fix_ids": [
+        "FIX-06",
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native-differential"
+      ],
+      "scenario": "Pass semantic numeric width, a literal, mutable reference, action output, and contextual tokenized string to representative codecs.",
+      "expected_observation": "Correct wire forms are selected per parameter; no blanket raw-float or generic-attachment encoding.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP12",
+      "title": "Named argument effect order",
+      "original_requirement_ids": [
+        "C01",
+        "C02"
+      ],
+      "audit_fix_ids": [
+        "FIX-06",
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Supply named arguments out of declaration order with independently observed effects.",
+      "expected_observation": "Arguments evaluate once in written order before binding/encoding; duplicates and unknown labels fail.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP13",
+      "title": "Variadic list API",
+      "original_requirement_ids": [
+        "C03",
+        "L01"
+      ],
+      "audit_fix_ids": [
+        "FIX-05",
+        "FIX-06"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native"
+      ],
+      "scenario": "Adapt one inherited variadic action to a named list; test zero, one, several and nested elements.",
+      "expected_observation": "Approved repeated-operand encoding is preserved without arbitrary positional tails or unapproved flattening.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP14",
+      "title": "Binding capture and native types",
+      "original_requirement_ids": [
+        "V01",
+        "V03",
+        "V04"
+      ],
+      "audit_fix_ids": [
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Capture a mutable variable and clipboard, change them, then consume saved values; include Number, Bool, list/map values.",
+      "expected_observation": "Saved values reflect the read time with correct types, not late reads or generic Text conversions.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP15",
+      "title": "Compound assignment",
+      "original_requirement_ids": [
+        "V02",
+        "N01"
+      ],
+      "audit_fix_ids": [
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Start at 10, apply +=3, *=2, -=4, /=2.",
+      "expected_observation": "Actual returned Number is 11 and every RHS is evaluated once.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP16",
+      "title": "Exhaustive node handling",
+      "original_requirement_ids": [
+        "P03",
+        "F03",
+        "FN01",
+        "M03"
+      ],
+      "audit_fix_ids": [
+        "FIX-07",
+        "FIX-10",
+        "FIX-12"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native-negative"
+      ],
+      "scenario": "Send every approved expression/declaration/statement kind through checked lowering and inject an unknown node in a test.",
+      "expected_observation": "Required nodes work; deliberately unknown nodes fail explicitly; no silent nil success.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP17",
+      "title": "Comparisons and arithmetic",
+      "original_requirement_ids": [
+        "N01",
+        "N02",
+        "N03",
+        "F01"
+      ],
+      "audit_fix_ids": [
+        "FIX-08"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Evaluate 2>3, 2==2, 2!=2, 5/2, 10%3 and mixed unary/parenthesized expressions.",
+      "expected_observation": "Correct Bool/Number results and wire forms; no comparison or unknown operator defaults to addition.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP18",
+      "title": "Observable short circuit",
+      "original_requirement_ids": [
+        "F01"
+      ],
+      "audit_fix_ids": [
+        "FIX-08"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Use safe marker effects in RHS helpers under false AND, true OR and mixed nested boolean trees.",
+      "expected_observation": "Unneeded RHS effects do not run; needed effects run once in order.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP19",
+      "title": "Literal and Unicode f-strings",
+      "original_requirement_ids": [
+        "S01",
+        "S02"
+      ],
+      "audit_fix_ids": [
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native-roundtrip",
+        "iOS"
+      ],
+      "scenario": "Interpolate literal 42/false, action outputs and adjacent tokens after Hebrew, emoji and combining marks.",
+      "expected_observation": "Expected content/type formatting and exact attachment ranges; no unbound replacement characters.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP20",
+      "title": "Container and optional shape",
+      "original_requirement_ids": [
+        "L01",
+        "T01",
+        "T05",
+        "V04"
+      ],
+      "audit_fix_ids": [
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native"
+      ],
+      "scenario": "Build nested lists/maps with false, zero, empty text/list/map and explicit optional/JSON-null contexts.",
+      "expected_observation": "Order/cardinality/shape and presence are preserved; plist null is not fabricated.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP21",
+      "title": "Safe zero-based indexing",
+      "original_requirement_ids": [
+        "L02",
+        "L03",
+        "L04"
+      ],
+      "audit_fix_ids": [
+        "FIX-07"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Test first/last/empty/dynamic/negative/fractional/out-of-range index and a nonnumeric index.",
+      "expected_observation": "Approved zero-based/none/type-error behavior; unsafe native lookup is not executed.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP22",
+      "title": "Loop item and index bindings",
+      "original_requirement_ids": [
+        "F02"
+      ],
+      "audit_fix_ids": [
+        "FIX-09"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Run nested for/repeat with named and tuple indices; shadow an outer name.",
+      "expected_observation": "Actual iteration values/order and zero-based indices are correct; scopes do not collide.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP23",
+      "title": "Value block and loop yields",
+      "original_requirement_ids": [
+        "F03",
+        "F04"
+      ],
+      "audit_fix_ids": [
+        "FIX-09"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native"
+      ],
+      "scenario": "Exercise yielded if/menu values and a yielded loop with zero/multiple iterations; omit a required yield deliberately.",
+      "expected_observation": "Correct block values and one element per iteration; missing or illegal yield is diagnosed.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP24",
+      "title": "Function return and recursion",
+      "original_requirement_ids": [
+        "FN01",
+        "FN03"
+      ],
+      "audit_fix_ids": [
+        "FIX-10"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Call add(2,b:3) then multiply its result by 2; run a small terminating recursion; reject illegal capture.",
+      "expected_observation": "Result is 10, caller continues, recursion returns correctly and no implicit main runtime capture occurs.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP25",
+      "title": "Function default and transport",
+      "original_requirement_ids": [
+        "FN02",
+        "FN05",
+        "T01"
+      ],
+      "audit_fix_ids": [
+        "FIX-10"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
+      "scenario": "Compare omitted arguments to explicit false/0/empty text/list/map using type-correct functions and structured results.",
+      "expected_observation": "Defaults apply only on absence; structured and optional transport does not collapse values.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP26",
+      "title": "Caller input and Void",
+      "original_requirement_ids": [
+        "FN04",
+        "M02"
+      ],
+      "audit_fix_ids": [
+        "FIX-10",
+        "FIX-12"
+      ],
+      "required_test_levels": [
+        "native",
+        "iOS"
+      ],
+      "scenario": "Pass user input through a function chain; use a dictionary resembling a partial dispatch marker; test bare return/fallthrough.",
+      "expected_observation": "system.input remains user input; incomplete envelopes do not dispatch; Void does not leak incidental output.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP27",
+      "title": "Real module resolution",
+      "original_requirement_ids": [
+        "IM01",
+        "IM02",
+        "IM05"
+      ],
+      "audit_fix_ids": [
+        "FIX-11"
+      ],
+      "required_test_levels": [
+        "unit",
+        "service",
+        "migration"
+      ],
+      "scenario": "Use multiple actual module files and aliases, a cycle, forbidden library runtime init and unresolved remote dependency.",
+      "expected_observation": "Correct namespace resolution and diagnostics; no ignored import or automatic network install.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP28",
+      "title": "Generated existing stdfunc",
+      "original_requirement_ids": [
+        "IM03",
+        "U02"
+      ],
+      "audit_fix_ids": [
+        "FIX-11"
+      ],
+      "required_test_levels": [
+        "generation",
+        "native"
+      ],
+      "scenario": "Generate and import stdfunc from preserved original runJS/chooseFromVCard source; test dependencies and calls.",
+      "expected_observation": "Both existing behaviors are preserved via a tracked generated module, not falsely counted as missing registry actions.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP29",
+      "title": "Asset and path authorization",
+      "original_requirement_ids": [
+        "IM04",
+        "S03",
+        "E08"
+      ],
+      "audit_fix_ids": [
+        "FIX-11"
+      ],
+      "required_test_levels": [
+        "security",
+        "service",
+        "benchmark"
+      ],
+      "scenario": "Exercise allowed assets, missing file, ../ traversal, symlink escape, large binary/text asset and unrelated edits.",
+      "expected_observation": "Only allowed workspace resources load; binary/text remain distinct; caching is measured, not assumed.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP30",
+      "title": "Header metadata roundtrip",
+      "original_requirement_ids": [
+        "M01",
+        "M02"
+      ],
+      "audit_fix_ids": [
+        "FIX-12",
+        "FIX-13"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "scenario": "Roundtrip targets, input/output types, noInput, share/quick-action surfaces, name and nondefault icon; include unknown native metadata.",
+      "expected_observation": "Verified fields preserve exact semantics; unknown fields survive; no fabricated widget/watch or minimum-version defaults.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP31",
+      "title": "Setup indices and askEachTime",
+      "original_requirement_ids": [
+        "M03",
+        "M04"
+      ],
+      "audit_fix_ids": [
+        "FIX-12"
+      ],
+      "required_test_levels": [
+        "unit",
+        "service",
+        "native-roundtrip"
+      ],
+      "scenario": "Bind setup to action zero and after function/lowering expansion; misuse/reuse it and insert an unfilled editor placeholder.",
+      "expected_observation": "Stable node/parameter binding yields final correct indices; illegal use fails; holes do not become silent prompts.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP32",
+      "title": "Existing triggers and declarations",
+      "original_requirement_ids": [
+        "M05",
+        "AC02",
+        "AC03"
+      ],
+      "audit_fix_ids": [
+        "FIX-12"
+      ],
+      "required_test_levels": [
+        "unit",
+        "native"
+      ],
+      "scenario": "Migrate seven existing trigger families and declare a custom static action with registered codec; inject invalid bindings.",
+      "expected_observation": "Payloads preserve current verified behavior; no automation-install claim; invalid declarations fail.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP33",
+      "title": "Syntax-aware migration",
+      "original_requirement_ids": [
+        "CL03",
+        "IM02",
+        "M01",
+        "M03",
+        "R03"
+      ],
+      "audit_fix_ids": [
+        "FIX-13"
+      ],
+      "required_test_levels": [
+        "migration",
+        "native-differential"
+      ],
+      "scenario": "Migrate a program containing metadata/setup/ref directives, old interpolation, indices, includes, has-value comparisons and functions.",
+      "expected_observation": "Meaning is preserved through structural transformation; no global directive deletion/regex-only rewrite.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP34",
+      "title": "Atomic failed migration",
+      "original_requirement_ids": [
+        "CL03",
+        "R07"
+      ],
+      "audit_fix_ids": [
+        "FIX-13"
+      ],
+      "required_test_levels": [
+        "integration",
+        "negative"
+      ],
+      "scenario": "Force an unrepresentable conversion and a destination write failure while --write is requested.",
+      "expected_observation": "Original file remains unchanged; diagnostic/native fallback or explicit failure; no partial overwrite.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP35",
+      "title": "Native forms and unknown values",
+      "original_requirement_ids": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05"
+      ],
+      "audit_fix_ids": [
+        "FIX-14"
+      ],
+      "required_test_levels": [
+        "native-roundtrip"
+      ],
+      "scenario": "Roundtrip raw literals/UUID-like text/binary/date/unknown enum, static variants, omission and ordered aggrandizements.",
+      "expected_observation": "Typed/native codecs preserve exact semantic tree and reference topology; no normalization erases unknown information.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP36",
+      "title": "Shared intake formats",
+      "original_requirement_ids": [
+        "R06"
+      ],
+      "audit_fix_ids": [
+        "FIX-14"
+      ],
+      "required_test_levels": [
+        "integration"
+      ],
+      "scenario": "Import XML, binary plist, unsigned Shortcut and JSON workflow; provide AEA1 signed bytes.",
+      "expected_observation": "Supported formats use same preservation pipeline; unsupported signed extraction fails accurately without pretending to decode.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP37",
+      "title": "Allowed edit and fail-closed gate",
+      "original_requirement_ids": [
+        "R07",
+        "K05"
+      ],
+      "audit_fix_ids": [
+        "FIX-14",
+        "FIX-17"
+      ],
+      "required_test_levels": [
+        "integration",
+        "negative"
+      ],
+      "scenario": "Apply one authorized field change, then inject unrelated metadata loss/reference damage; remove the comparator tool.",
+      "expected_observation": "Only authorized delta passes; missing comparator or mismatch blocks finalization/signing and preserves the workspace.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP38",
+      "title": "Contextual service and LSP",
+      "original_requirement_ids": [
+        "E01",
+        "E02",
+        "E03",
+        "E06"
+      ],
+      "audit_fix_ids": [
+        "FIX-15"
+      ],
+      "required_test_levels": [
+        "service",
+        "protocol"
+      ],
+      "scenario": "Send partial named calls, enums, scoped identifiers, multiple errors and real LSP requests with UTF-16/negotiated positions.",
+      "expected_observation": "Correct contextual labels/types/signatures/ranges; genuine framing and method behavior, not capability strings only.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP39",
+      "title": "Format, rename and stale edits",
+      "original_requirement_ids": [
+        "E03",
+        "E04",
+        "E05",
+        "P05"
+      ],
+      "audit_fix_ids": [
+        "FIX-15"
+      ],
+      "required_test_levels": [
+        "unit",
+        "service",
+        "UI"
+      ],
+      "scenario": "Format twice; rename shadowed Unicode symbols; preserve same words in strings/comments; deliver out-of-order analysis responses.",
+      "expected_observation": "Stable contents, semantic symbol-only edits, and stale-response rejection with correct caret spans.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP40",
+      "title": "Actual Swift integration",
+      "original_requirement_ids": [
+        "E01",
+        "E02",
+        "E03",
+        "E05",
+        "E06"
+      ],
+      "audit_fix_ids": [
+        "FIX-15"
+      ],
+      "required_test_levels": [
+        "app-integration",
+        "UI"
+      ],
+      "scenario": "Build the real app, open v2 source, request completion/diagnostics/rename and compile through the app on iOS.",
+      "expected_observation": "Actual Swift call paths use modern service/protocol and shared registry; C export presence alone is insufficient.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP41",
+      "title": "Preview bounded source edit",
+      "original_requirement_ids": [
+        "E07"
+      ],
+      "audit_fix_ids": [
+        "FIX-15",
+        "FIX-14"
+      ],
+      "required_test_levels": [
+        "integration",
+        "UI"
+      ],
+      "scenario": "Edit one mapped action parameter in rich preview; attempt a generated/unmapped action edit.",
+      "expected_observation": "Only correct source region changes; unrelated comments/code preserved; unmapped edits are explained/read-only.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP42",
+      "title": "Real public CLI and installed tools",
+      "original_requirement_ids": [
+        "CL01",
+        "K01",
+        "K03"
+      ],
+      "audit_fix_ids": [
+        "FIX-16"
+      ],
+      "required_test_levels": [
+        "CLI",
+        "packaging"
+      ],
+      "scenario": "Invoke actual help-documented compile/check/format/import/schema/alias commands and cherri-migrate from extracted install.",
+      "expected_observation": "Commands really exist, share the same pipeline, and have reliable JSON/exit/output behavior.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP43",
+      "title": "Output/signing failure behavior",
+      "original_requirement_ids": [
+        "CL01",
+        "CL02",
+        "CI04"
+      ],
+      "audit_fix_ids": [
+        "FIX-03",
+        "FIX-16"
+      ],
+      "required_test_levels": [
+        "integration",
+        "security"
+      ],
+      "scenario": "Test output paths/spaces/non-ASCII/permissions, failed encoding/signer, explicit Linux remote-sign request and unsigned check.",
+      "expected_observation": "No swallowed errors or wrong destination; no unsolicited signing; no unsigned bytes claimed signed.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP44",
+      "title": "Skill compatibility rejection",
+      "original_requirement_ids": [
+        "K02",
+        "K04"
+      ],
+      "audit_fix_ids": [
+        "FIX-17"
+      ],
+      "required_test_levels": [
+        "packaging",
+        "integration"
+      ],
+      "scenario": "Select outdated bundled and cached compilers, invalid capabilities JSON, incompatible protocol/schema and mismatched docs.",
+      "expected_observation": "Doctor/install fails or selects verified compatible replacement; no existence-only or language-string-only success.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP45",
+      "title": "Exact install and rollback",
+      "original_requirement_ids": [
+        "K01",
+        "K03",
+        "K04"
+      ],
+      "audit_fix_ids": [
+        "FIX-17"
+      ],
+      "required_test_levels": [
+        "packaging",
+        "integration"
+      ],
+      "scenario": "Install an exact source/digest, verify migration binary, run offline with compatible cache, corrupt replacement checksum and interrupt update.",
+      "expected_observation": "Resolved immutable revisions match; atomic activation; compatible previous installation survives update failures.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP46",
+      "title": "Docs and Skill retrieval coherence",
+      "original_requirement_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "K05"
+      ],
+      "audit_fix_ids": [
+        "FIX-18"
+      ],
+      "required_test_levels": [
+        "docs",
+        "integration"
+      ],
+      "scenario": "Collect runnable/invalid/contextual examples in both repos and query action/docs wrappers from the packaged Skill.",
+      "expected_observation": "Active f-string/commands/enums match actual compiler; legacy docs are not silently selected; fingerprints and generated outputs agree.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP47",
+      "title": "Native encoding negative gate",
+      "original_requirement_ids": [
+        "CI01"
+      ],
+      "audit_fix_ids": [
+        "FIX-19"
+      ],
+      "required_test_levels": [
+        "negative-CI"
+      ],
+      "scenario": "Break one REQUIRED encoding EXPECT in an isolated verification input and then run the correct set.",
+      "expected_observation": "Broken expectation fails gate nonzero; expected rejection passes; normal run reports actual per-form outcomes.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP48",
+      "title": "Real runtime computed assertions",
+      "original_requirement_ids": [
+        "CI02",
+        "V01",
+        "FN01",
+        "F01"
+      ],
+      "audit_fix_ids": [
+        "FIX-19"
+      ],
+      "required_test_levels": [
+        "iOS"
+      ],
+      "scenario": "Compile/import/run all required safe new-language fixtures on actual Simulator Shortcuts with reset channels and per-case identities.",
+      "expected_observation": "Assertions depend on computed values/types/effects; no unconditional sentinel can counterfeit a pass.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP49",
+      "title": "Final SHA and artifact binding",
+      "original_requirement_ids": [
+        "CI03",
+        "END01"
+      ],
+      "audit_fix_ids": [
+        "FIX-19",
+        "FIX-02"
+      ],
+      "required_test_levels": [
+        "repository",
+        "CI",
+        "packaging"
+      ],
+      "scenario": "Collect all required event types/attempts and artifact metadata for final source F; inject earlier-SHA and missing artifacts.",
+      "expected_observation": "Only completed successful required gates and compatible F artifacts satisfy closure; pending/skipped/stale evidence does not.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP50",
+      "title": "Executable AI evaluation harness",
+      "original_requirement_ids": [
+        "AI01"
+      ],
+      "audit_fix_ids": [
+        "FIX-20"
+      ],
+      "required_test_levels": [
+        "harness-unit",
+        "evaluation"
+      ],
+      "scenario": "Run held-out generation/edit task harness against a fake adapter to test control flow; run actual models only with an authorized configured endpoint.",
+      "expected_observation": "Task suite and runner genuinely exist; fake run is not AI quality evidence; external absence yields AI_EVAL_NOT_RUN with instructions.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP51",
+      "title": "Performance and race evidence",
+      "original_requirement_ids": [
+        "E08",
+        "S03",
+        "E05"
+      ],
+      "audit_fix_ids": [
+        "FIX-15",
+        "FIX-01"
+      ],
+      "required_test_levels": [
+        "benchmark",
+        "race"
+      ],
+      "scenario": "Measure cold/warm small/medium/large/asset fixtures and concurrent service/alternating compile-error-success sessions.",
+      "expected_observation": "Real p50/p95, environment and cache metrics; stable state isolation and no fabricated sub-millisecond claim.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    },
+    {
+      "id": "RP52",
+      "title": "No accidental second user frontend",
+      "original_requirement_ids": [
+        "U01",
+        "U04",
+        "CL03"
+      ],
+      "audit_fix_ids": [
+        "FIX-04",
+        "FIX-05",
+        "FIX-16"
+      ],
+      "required_test_levels": [
+        "integration",
+        "repository"
+      ],
+      "scenario": "Inspect production entrypoints and compile actual old user source, while running isolated trusted old declaration/migration reference paths.",
+      "expected_observation": "Only approved new public language is accepted; preserved upstream inputs remain build/reference resources, not hidden user execution fallback.",
+      "status": "PLANNED_NOT_EXECUTED",
+      "must_preserve_original_minimum_levels": true
+    }
+  ]
+}

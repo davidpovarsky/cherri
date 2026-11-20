@@ -1,0 +1,47 @@
+{
+  "source": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E01",
+    "./internal/language/service"
+  ],
+  "status_before": " M internal/language/analysis/analyzer.go\n M internal/language/service/module_analysis.go\n M internal/language/service/service.go\n?? internal/language/analysis/editor_context.go\n?? internal/language/service/typed_completion.go\n",
+  "free_before": 43213914112,
+  "started_at": "2026-11-20T12:54:20.742636+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 5.85999999998603,
+  "completed_at": "2026-11-20T12:54:26.602339+00:00",
+  "status_after": " M internal/language/analysis/analyzer.go\n M internal/language/service/module_analysis.go\n M internal/language/service/service.go\n?? internal/language/analysis/editor_context.go\n?? internal/language/service/typed_completion.go\n",
+  "head_after": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+  "free_after": 43183480832,
+  "named_counts": {
+    "pass": 24,
+    "fail": 2
+  },
+  "failed_names": [
+    "TestP15E01ExpectedTypeCompletion/canonical_number",
+    "TestP15E01ExpectedTypeCompletion"
+  ],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 25035,
+      "sha256": "b4c38e209351a3804b7c695499dbdc8c2aee62e17dbf7851060f1c4a3ce1d649"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

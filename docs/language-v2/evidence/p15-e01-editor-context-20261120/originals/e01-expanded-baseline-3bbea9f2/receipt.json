@@ -1,0 +1,66 @@
+{
+  "source": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E01",
+    "./internal/language/service"
+  ],
+  "status_before": "",
+  "free_before": 42197417984,
+  "started_at": "2026-11-20T12:59:46.990801+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 7.282000000006519,
+  "completed_at": "2026-11-20T12:59:54.270278+00:00",
+  "status_after": "",
+  "head_after": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+  "free_after": 42160705536,
+  "named_counts": {
+    "fail": 21,
+    "pass": 35
+  },
+  "failed_names": [
+    "TestP15E01ExpectedTypeCompletion/primary_number",
+    "TestP15E01ExpectedTypeCompletion/named_text",
+    "TestP15E01ExpectedTypeCompletion/primary_bool",
+    "TestP15E01ExpectedTypeCompletion/primary_list",
+    "TestP15E01ExpectedTypeCompletion/optional_parameter",
+    "TestP15E01ExpectedTypeCompletion/alias_parameter",
+    "TestP15E01ExpectedTypeCompletion/canonical_number",
+    "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+    "TestP15E01ExpectedTypeCompletion/function_parameter",
+    "TestP15E01ExpectedTypeCompletion/narrowed_optional",
+    "TestP15E01ExpectedTypeCompletion/reassigned_none",
+    "TestP15E01ExpectedTypeCompletion/uninitialized_binding",
+    "TestP15E01ExpectedTypeCompletion/loop_item_and_index",
+    "TestP15E01ExpectedTypeCompletion/default_parameter_scope",
+    "TestP15E01ExpectedTypeCompletion/user_function_shadows_native",
+    "TestP15E01ExpectedTypeCompletion/named_after_write",
+    "TestP15E01ExpectedTypeCompletion/named_before_write",
+    "TestP15E01ExpectedTypeCompletion",
+    "TestP15E01ContextualLabelsAndEnums/primary_already_bound",
+    "TestP15E01ContextualLabelsAndEnums/canonical_primary_bound",
+    "TestP15E01ContextualLabelsAndEnums"
+  ],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 60085,
+      "sha256": "cfac807539763f368b406f6640b5ebd869634c3d146aa9689be33d257763c67d"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

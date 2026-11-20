@@ -1,0 +1,4059 @@
+{
+  "schema_version": 1,
+  "source_commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+  "base_commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+  "created_at": "2026-11-20T13:15:54.228691+00:00",
+  "scope": "E01 contextual completion service component and affected package replay only",
+  "formal_requirements_proved": [],
+  "apple_runtime": "NOT_RUN",
+  "full179": "NOT_RUN",
+  "changed_paths": [
+    "internal/language/analysis/analyzer.go",
+    "internal/language/analysis/editor_context.go",
+    "internal/language/service/module_analysis.go",
+    "internal/language/service/p15_editor_completion_contract_test.go",
+    "internal/language/service/service.go",
+    "internal/language/service/typed_completion.go"
+  ],
+  "artifacts": [
+    {
+      "path": "originals/e01-baseline-2a4230d9/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-baseline-2a4230d9\\receipt.json",
+      "bytes": 1687,
+      "sha256": "7a04cdbeeb0c5e96296a17fcd06b6c1bb55dd65d891d050e9f534f61c00970fb"
+    },
+    {
+      "path": "originals/e01-baseline-2a4230d9/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-baseline-2a4230d9\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-baseline-2a4230d9/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-baseline-2a4230d9\\stdout.jsonl",
+      "bytes": 18746,
+      "sha256": "cfdd556fe98b82925666d7ca406bd93342981b25bd93db99f9515d2bb6c5ffa9"
+    },
+    {
+      "path": "originals/e01-baseline-2a4230d9/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-baseline-2a4230d9\\submitted-script.py",
+      "bytes": 2524,
+      "sha256": "5f134be31a4d314c8d5ceebd7702f56b79dce78e4c1f61c07048ee3c89d27df8"
+    },
+    {
+      "path": "originals/e01-corrected-baseline-6809ba06/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-corrected-baseline-6809ba06\\receipt.json",
+      "bytes": 1688,
+      "sha256": "0f005b3789043f6c8d905eec07bbeaf0cb25364c8176487351066f16699f96fc"
+    },
+    {
+      "path": "originals/e01-corrected-baseline-6809ba06/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-corrected-baseline-6809ba06\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-corrected-baseline-6809ba06/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-corrected-baseline-6809ba06\\stdout.jsonl",
+      "bytes": 28047,
+      "sha256": "67538555f1764b61033ca0ffb1eecc59e2c2342278e9499621c669031736c8a5"
+    },
+    {
+      "path": "originals/e01-corrected-baseline-6809ba06/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-corrected-baseline-6809ba06\\submitted-script.py",
+      "bytes": 2534,
+      "sha256": "4ea696ef99e0dc17cd6378b011394c747bdbb250b3db299e5e910490a086e6fa"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/editor_context.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\editor_context.go",
+      "bytes": 4564,
+      "sha256": "ccf4b1b10ff69a4f7e49f82a7f108f40ae64a40b60a0914484545352f6b4ebc9"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\receipt.json",
+      "bytes": 1701,
+      "sha256": "d37d7a8c162d8691ff00bb7105a64bc0c0ae15d3eab0e136e6021b28a730fd86"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/source.diff",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\source.diff",
+      "bytes": 4234,
+      "sha256": "7d3d32b8f94022eb38fee2f1a94c012c0e277014eaf51083525d4d7090f25bc4"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\stdout.jsonl",
+      "bytes": 25035,
+      "sha256": "b4c38e209351a3804b7c695499dbdc8c2aee62e17dbf7851060f1c4a3ce1d649"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\submitted-script.py",
+      "bytes": 3066,
+      "sha256": "dcebf96b247e9a3bec1ba9dce8f6d7c97d226fe8fe6fee8ee11e7db7bacb786b"
+    },
+    {
+      "path": "originals/e01-first-repair-draft/typed_completion.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-first-repair-draft\\typed_completion.go",
+      "bytes": 1348,
+      "sha256": "306787671a827ffecb42d421445eeba384df9d738af29758f47cb0138ab3ec46"
+    },
+    {
+      "path": "originals/e01-expanded-baseline-3bbea9f2/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-baseline-3bbea9f2\\receipt.json",
+      "bytes": 2357,
+      "sha256": "83f2763f319492716103b5f801544e050435eccb30d703821f768ab9cb4b48f5"
+    },
+    {
+      "path": "originals/e01-expanded-baseline-3bbea9f2/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-baseline-3bbea9f2\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-expanded-baseline-3bbea9f2/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-baseline-3bbea9f2\\stdout.jsonl",
+      "bytes": 60085,
+      "sha256": "cfac807539763f368b406f6640b5ebd869634c3d146aa9689be33d257763c67d"
+    },
+    {
+      "path": "originals/e01-expanded-baseline-3bbea9f2/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-baseline-3bbea9f2\\submitted-script.py",
+      "bytes": 2533,
+      "sha256": "4f9a14ece56a460b55aca90cdad2e93cfb57376eec9ba29e6f6a5fa7eb74a822"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/editor_context.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\editor_context.go",
+      "bytes": 4564,
+      "sha256": "ccf4b1b10ff69a4f7e49f82a7f108f40ae64a40b60a0914484545352f6b4ebc9"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\receipt.json",
+      "bytes": 1584,
+      "sha256": "587fca5e74610f67040d508d3829bf6b19095eb8f8c2d039968fdbeb1f5e7b85"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/source.diff",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\source.diff",
+      "bytes": 5854,
+      "sha256": "b5b0db11ec835a7df967398a85d531792cc5c939339b5fead03dcc08691ce092"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\stdout.jsonl",
+      "bytes": 52919,
+      "sha256": "706528230598ee46d71c610dc38e8db4041fb02afa0d73c24ae3e76ffefd8e88"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\submitted-script.py",
+      "bytes": 3069,
+      "sha256": "36a2a888d4c4b722ad08522340642909948965b85a448c52ec30c47e187f6aef"
+    },
+    {
+      "path": "originals/e01-expanded-repair-draft/typed_completion.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-expanded-repair-draft\\typed_completion.go",
+      "bytes": 2961,
+      "sha256": "29c1c5ea37a18bb21ce46119f3e4b4d44ff87527580b3c9473de2f108f9c035d"
+    },
+    {
+      "path": "originals/e01-initial-clean-2f66c81a/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-initial-clean-2f66c81a\\receipt.json",
+      "bytes": 1280,
+      "sha256": "b15f15f18382703c863b017305b16be705ccbc4f41d6e4b540ddc0ba0222fdee"
+    },
+    {
+      "path": "originals/e01-initial-clean-2f66c81a/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-initial-clean-2f66c81a\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-initial-clean-2f66c81a/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-initial-clean-2f66c81a\\stdout.jsonl",
+      "bytes": 143119,
+      "sha256": "5152ed0e2e3b3a90d861f6ec3712ab0bf24797cf3da7bc6487271cb669b754a3"
+    },
+    {
+      "path": "originals/e01-initial-clean-2f66c81a/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-initial-clean-2f66c81a\\submitted-script.py",
+      "bytes": 2587,
+      "sha256": "f2e0454d3bc3ce6eec5d2e8427596f2f2e389197536f05a30dcf50f2c82e114d"
+    },
+    {
+      "path": "originals/e01-recovery-clean-8da4c027/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-recovery-clean-8da4c027\\receipt.json",
+      "bytes": 1158,
+      "sha256": "c29b2f9d91780207019f8cfdc28e2c244b623562fc9db64f1aebdf33f3bd81ec"
+    },
+    {
+      "path": "originals/e01-recovery-clean-8da4c027/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-recovery-clean-8da4c027\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-recovery-clean-8da4c027/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-recovery-clean-8da4c027\\stdout.jsonl",
+      "bytes": 146634,
+      "sha256": "1f0f12b9bc47c4fb85d7457a0004365a356a4d02128c2458905dff63aa4b6ebf"
+    },
+    {
+      "path": "originals/e01-recovery-clean-8da4c027/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-recovery-clean-8da4c027\\submitted-script.py",
+      "bytes": 2588,
+      "sha256": "92f0107e13de76e182be31596636d3366622187363b22b4464d17ca39241f32f"
+    },
+    {
+      "path": "originals/e01-final-clean-73d0c7b3/receipt.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-final-clean-73d0c7b3\\receipt.json",
+      "bytes": 1159,
+      "sha256": "90d6947ef6c377df327b00cda544555fd4c15013aeffd29a1b1223820e40c1ec"
+    },
+    {
+      "path": "originals/e01-final-clean-73d0c7b3/stderr.txt",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-final-clean-73d0c7b3\\stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/e01-final-clean-73d0c7b3/stdout.jsonl",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-final-clean-73d0c7b3\\stdout.jsonl",
+      "bytes": 149322,
+      "sha256": "1b5431cb315ca3847cd85642965c1de962bd1e81a482672e523d73c27c0009be"
+    },
+    {
+      "path": "originals/e01-final-clean-73d0c7b3/submitted-script.py",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e01-final-clean-73d0c7b3\\submitted-script.py",
+      "bytes": 2585,
+      "sha256": "c7702f81c0958a5be0e8f0d58ffab3591bd2deaadc813026b0f4534adabb516a"
+    },
+    {
+      "path": "originals/first-repair-source/internal/language/analysis/analyzer.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\first-repair-source\\internal\\language\\analysis\\analyzer.go",
+      "bytes": 70205,
+      "sha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296"
+    },
+    {
+      "path": "originals/first-repair-source/internal/language/analysis/editor_context.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\first-repair-source\\internal\\language\\analysis\\editor_context.go",
+      "bytes": 4564,
+      "sha256": "ccf4b1b10ff69a4f7e49f82a7f108f40ae64a40b60a0914484545352f6b4ebc9"
+    },
+    {
+      "path": "originals/first-repair-source/internal/language/service/module_analysis.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\first-repair-source\\internal\\language\\service\\module_analysis.go",
+      "bytes": 1666,
+      "sha256": "6550b3cb620c43d1e9757f7e1f5a7f40481f2fe2a7c57f6ac09b2b5fa1f4e34f"
+    },
+    {
+      "path": "originals/first-repair-source/internal/language/service/service.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\first-repair-source\\internal\\language\\service\\service.go",
+      "bytes": 33423,
+      "sha256": "bdc40717a27a2a15f676c992d8d2aa31a61e7bb1cbe9b2dedbb9ba1a1746b9b2"
+    },
+    {
+      "path": "originals/first-repair-source/internal/language/service/typed_completion.go",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\first-repair-source\\internal\\language\\service\\typed_completion.go",
+      "bytes": 1348,
+      "sha256": "306787671a827ffecb42d421445eeba384df9d738af29758f47cb0138ab3ec46"
+    },
+    {
+      "path": "originals/first-repair-source/manifest.json",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\first-repair-source\\manifest.json",
+      "bytes": 864,
+      "sha256": "c06059208a40f082ab9b0ee071b3bfeea41b611f8428727db628f3d350ab5293"
+    }
+  ],
+  "source_witnesses": [
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "actions/basic.cherri",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/actions/basic.cherri",
+      "bytes": 7870,
+      "sha256": "8d56aa01e688e3abbc390931778ac6471596f1dcd35628034a597369366f382a"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "actions/math.cherri",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/actions/math.cherri",
+      "bytes": 1909,
+      "sha256": "c8bd38d21c92a22b9b0e544f3230aacc3333f7819db36f7c49dab8a15e034f92"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "go.mod",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/go.mod",
+      "bytes": 1618,
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "go.sum",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/go.sum",
+      "bytes": 11884,
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/analysis/analyzer.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/analyzer.go",
+      "bytes": 69816,
+      "sha256": "dc76b3338a7944f24038916886459b7e47987eed2c727570d0a2369f64c41512"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/analysis/editor_context.go",
+      "absent": true
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/analysis/function_arguments.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/function_arguments.go",
+      "bytes": 3819,
+      "sha256": "5e4a3dfff3739b167da0dd1925e2c1a253bdee5e6a3d327fd3d0d76d48b366c4"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/analysis/type_aliases.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/type_aliases.go",
+      "bytes": 2629,
+      "sha256": "2a380ae14ebb2ed791d5a52fa41261e85e19e54f3799baedbc2a980d0aeae985"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/modules/graph.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/modules/graph.go",
+      "bytes": 9377,
+      "sha256": "a494fff02dddc986a042a5bb76e52a35481c12e96dbd3f0b2d1824ab4823076f"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/service/context_position.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/context_position.go",
+      "bytes": 1315,
+      "sha256": "28db417692f05518a177400ca700d3ae655651ad35cfcdd390a6cae398d8e1d7"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/service/enum_completion.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/enum_completion.go",
+      "bytes": 7468,
+      "sha256": "a5e114f4eb92a7f8bf505915e4e42cb197d4968cfa879b6fd9b84503cb5c32d5"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/service/module_analysis.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/module_analysis.go",
+      "bytes": 1633,
+      "sha256": "73627652093ea9ea465b0ed69f7e2d85dfff0c023a4f5e00739312f0e61fb27d"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "absent": true
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/service/service.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/service.go",
+      "bytes": 33218,
+      "sha256": "ac6ae27ca33b2fdb9148df03ab1a9409a8cc8bf078a9c1e88f39325db7ca3345"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/service/typed_completion.go",
+      "absent": true
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/source/span.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/source/span.go",
+      "bytes": 7597,
+      "sha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/syntax/parser.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/syntax/parser.go",
+      "bytes": 42624,
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/types/record_evidence.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/types/record_evidence.go",
+      "bytes": 2849,
+      "sha256": "31f2750e1b004f8e0c047fdd3942b8148c0ae5c9b071a66e03bce8d03bf8a78f"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "internal/language/types/types.go",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/types/types.go",
+      "bytes": 14524,
+      "sha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "actions/basic.cherri",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/actions/basic.cherri",
+      "bytes": 7870,
+      "sha256": "8d56aa01e688e3abbc390931778ac6471596f1dcd35628034a597369366f382a"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "actions/math.cherri",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/actions/math.cherri",
+      "bytes": 1909,
+      "sha256": "c8bd38d21c92a22b9b0e544f3230aacc3333f7819db36f7c49dab8a15e034f92"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "go.mod",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/go.mod",
+      "bytes": 1618,
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "go.sum",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/go.sum",
+      "bytes": 11884,
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/analysis/analyzer.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/analyzer.go",
+      "bytes": 70205,
+      "sha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/analysis/editor_context.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/editor_context.go",
+      "bytes": 4632,
+      "sha256": "6cce8bcd1544b1501d1face4079077526de0569bdbec65429a83627d239ac799"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/analysis/function_arguments.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/function_arguments.go",
+      "bytes": 3819,
+      "sha256": "5e4a3dfff3739b167da0dd1925e2c1a253bdee5e6a3d327fd3d0d76d48b366c4"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/analysis/type_aliases.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/type_aliases.go",
+      "bytes": 2629,
+      "sha256": "2a380ae14ebb2ed791d5a52fa41261e85e19e54f3799baedbc2a980d0aeae985"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/modules/graph.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/modules/graph.go",
+      "bytes": 9377,
+      "sha256": "a494fff02dddc986a042a5bb76e52a35481c12e96dbd3f0b2d1824ab4823076f"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/service/context_position.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/context_position.go",
+      "bytes": 1315,
+      "sha256": "28db417692f05518a177400ca700d3ae655651ad35cfcdd390a6cae398d8e1d7"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/service/enum_completion.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/enum_completion.go",
+      "bytes": 7468,
+      "sha256": "a5e114f4eb92a7f8bf505915e4e42cb197d4968cfa879b6fd9b84503cb5c32d5"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/service/module_analysis.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/module_analysis.go",
+      "bytes": 1846,
+      "sha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/p15_editor_completion_contract_test.go",
+      "bytes": 18061,
+      "sha256": "41c4b60a5f06eed73437b048392292b7b348ede1f12f21121914da19f2106eef"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/service/service.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/service.go",
+      "bytes": 32256,
+      "sha256": "c00016d64e52867a3fd04fb517b6df69623e835a2703360010f868052b174f6a"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/service/typed_completion.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/typed_completion.go",
+      "bytes": 3001,
+      "sha256": "c818ac5f77ed0086b12fcdb0832ac93e9a153ae03db7a3cba84d711026073e35"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/source/span.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/source/span.go",
+      "bytes": 7597,
+      "sha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/syntax/parser.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/syntax/parser.go",
+      "bytes": 42624,
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/types/record_evidence.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/types/record_evidence.go",
+      "bytes": 2849,
+      "sha256": "31f2750e1b004f8e0c047fdd3942b8148c0ae5c9b071a66e03bce8d03bf8a78f"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "internal/language/types/types.go",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/types/types.go",
+      "bytes": 14524,
+      "sha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "2a4230d9a2a94a3fba31a48d83aad8626dc05138",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "artifact": "source/2a4230d9a2a94a3fba31a48d83aad8626dc05138/internal/language/service/p15_editor_completion_contract_test.go",
+      "bytes": 5307,
+      "sha256": "3f5aa9b62ac3da859ec08e594858d426a73652bfed32965a549c6399ce5ab4ce"
+    },
+    {
+      "commit": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "artifact": "source/6809ba0645211e2cb4086eed4dc6b1593a497ba7/internal/language/service/p15_editor_completion_contract_test.go",
+      "bytes": 5894,
+      "sha256": "2a0957488387435375582b9c591f1f00e91b1f539534a9645a832234d54dc943"
+    },
+    {
+      "commit": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "artifact": "source/3bbea9f2af3b0a1db829f43125d7bfcd91435189/internal/language/service/p15_editor_completion_contract_test.go",
+      "bytes": 10584,
+      "sha256": "e3070d7dd0edabea8b606ae19046bc1241b22cca48e9e9fe00d99245f6bea2c1"
+    },
+    {
+      "commit": "2f66c81a14a37e62a7233715dcca2f8d547972a1",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "artifact": "source/2f66c81a14a37e62a7233715dcca2f8d547972a1/internal/language/service/p15_editor_completion_contract_test.go",
+      "bytes": 14588,
+      "sha256": "aeac289a63a2fa2329493f9aeaa1c34a712515a61d5c0956e9df1ce199f6c6bb"
+    },
+    {
+      "commit": "8da4c027f855a2721e012669a5c90fba459a751a",
+      "path": "internal/language/service/p15_editor_completion_contract_test.go",
+      "artifact": "source/8da4c027f855a2721e012669a5c90fba459a751a/internal/language/service/p15_editor_completion_contract_test.go",
+      "bytes": 17097,
+      "sha256": "2620d2e356c79d919c6e1472866746774c7139eafa99209b2f70f0d8555f8743"
+    }
+  ],
+  "unchanged_contracts": [
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "e01-baseline-2a4230d9",
+      "source": "2a4230d9a2a94a3fba31a48d83aad8626dc05138",
+      "dirty": false,
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 5.922000000020489,
+      "named_counts": {
+        "fail": 10,
+        "pass": 6
+      },
+      "raw_sha256": "cfdd556fe98b82925666d7ca406bd93342981b25bd93db99f9515d2bb6c5ffa9",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        }
+      ]
+    },
+    {
+      "stage": "e01-corrected-baseline-6809ba06",
+      "source": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+      "dirty": false,
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 5.797000000020489,
+      "named_counts": {
+        "fail": 10,
+        "pass": 16
+      },
+      "raw_sha256": "67538555f1764b61033ca0ffb1eecc59e2c2342278e9499621c669031736c8a5",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        }
+      ]
+    },
+    {
+      "stage": "e01-first-repair-draft",
+      "source": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+      "dirty": true,
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 5.85999999998603,
+      "named_counts": {
+        "pass": 24,
+        "fail": 2
+      },
+      "raw_sha256": "b4c38e209351a3804b7c695499dbdc8c2aee62e17dbf7851060f1c4a3ce1d649",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        }
+      ]
+    },
+    {
+      "stage": "e01-expanded-baseline-3bbea9f2",
+      "source": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+      "dirty": false,
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 7.282000000006519,
+      "named_counts": {
+        "fail": 21,
+        "pass": 35
+      },
+      "raw_sha256": "cfac807539763f368b406f6640b5ebd869634c3d146aa9689be33d257763c67d",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/narrowed_optional",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/reassigned_none",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/uninitialized_binding",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/loop_item_and_index",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/default_parameter_scope",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/user_function_shadows_native",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_after_write",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_before_write",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/round",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/primary_already_bound",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/multiline_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/canonical_primary_bound",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/function_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/qualified_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/ambiguous_dot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums",
+          "action": "fail"
+        }
+      ]
+    },
+    {
+      "stage": "e01-expanded-repair-draft",
+      "source": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+      "dirty": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 6.452999999979511,
+      "named_counts": {
+        "pass": 56
+      },
+      "raw_sha256": "706528230598ee46d71c610dc38e8db4041fb02afa0d73c24ae3e76ffefd8e88",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/round",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/primary_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/multiline_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/canonical_primary_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/function_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/qualified_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/ambiguous_dot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums",
+          "action": "pass"
+        }
+      ]
+    },
+    {
+      "stage": "e01-initial-clean-2f66c81a",
+      "source": "2f66c81a14a37e62a7233715dcca2f8d547972a1",
+      "dirty": false,
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 6.2810000000172295,
+      "named_counts": {
+        "pass": 154,
+        "fail": 2
+      },
+      "raw_sha256": "5152ed0e2e3b3a90d861f6ec3712ab0bf24797cf3da7bc6487271cb669b754a3",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestCompilerMacrosReachCompletionFromSharedMetadata",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerAssignImmutable",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerReadBeforeInit",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerUnknownArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerMissingArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerDuplicateArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerIfConditionBool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerYieldOutsideValueBlock",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerLegacySyntax",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerValidProgram",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerCopyPaste",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerTruthiness",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerHotLoopWarning",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerGlobals",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerListPlusAssign",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestDictionaryPresenceFactsAreExactAndIsolated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestDictionaryPresenceHonorsLexicalShadowing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInNonMacShortcut_Baseline",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInMacShortcut_Allowed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInMacShortcut_Error",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInNonMacShortcut_Allowed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_MapLiteral",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_IndexExpr",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_GetValueCall",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExprTypesTracking",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMixedTargets_RejectsNonPortableActions",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExplicitTargetString",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestUnspecifiedTarget_EmitsWarning",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestVersionBounds_MinVersion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_AcceptsVariableAttachment",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryInputIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryReuseIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryReuseTargetConfiguration",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryConstructorSnapshot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockInferredTypeAndLexicalScope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSettersRetainCompatibility",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSourceAccessorsKeepComponents",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/round",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/primary_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/multiline_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/canonical_primary_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/function_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/qualified_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/ambiguous_dot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_primary",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_named",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_labels",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_partial_identifier",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/unknown_export_no_borrow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership",
+          "action": "fail"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/returned_collections_are_copies",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/analysis_resets_old_exact_identity",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/fresh_document_does_not_borrow_old_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E04IncompleteDocumentFormatFailsClosed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceDocumentRegistryIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceRegistryRevisionAndClose",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceVisualEditUsesSourceRegistry",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceAnalyze",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceComplete",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceHover",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceContextualCallComplete",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE01MultiDiagnosticAnalysis",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE02CompletionHoverSignatureDefinition",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE04FormatterPreservesCommentsAndSemantics",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE05OutOfOrderVersionedEdits",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE07BoundedVisualSourceEditAndRejection",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/preserved_source_without_main",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/stdfunc_alias",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/stdlib_alias",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/legacy_bare_callable",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/unknown_export_rejected",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestLSPAssetWatcherInvalidatesPreservedMetadata",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38UTF16RequestAndResponseRanges",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MultipleDiagnosticsUTF16",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/named_labels_and_LSP_kinds",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/enum_domain",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/typed_function_and_string_commas",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/inner",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/outer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/function",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/after_block_closer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/after_function_closer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38NestedAndMultilineContext",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ProtocolIDsAndNotifications",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ProtocolMethodsAndNull",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_-1__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_abc__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_999999999999999999999__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_2_Content-Length:_2__{}",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__{}",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_0__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved/error",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved/short",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestLSPServerInitializeAndDidOpen",
+          "action": "pass"
+        }
+      ]
+    },
+    {
+      "stage": "e01-recovery-clean-8da4c027",
+      "source": "8da4c027f855a2721e012669a5c90fba459a751a",
+      "dirty": false,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 9.030999999959022,
+      "named_counts": {
+        "pass": 160
+      },
+      "raw_sha256": "1f0f12b9bc47c4fb85d7457a0004365a356a4d02128c2458905dff63aa4b6ebf",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerAssignImmutable",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerReadBeforeInit",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerUnknownArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerMissingArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerDuplicateArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerIfConditionBool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerYieldOutsideValueBlock",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerLegacySyntax",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerValidProgram",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerCopyPaste",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerTruthiness",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerHotLoopWarning",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerGlobals",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerListPlusAssign",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestDictionaryPresenceFactsAreExactAndIsolated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestDictionaryPresenceHonorsLexicalShadowing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInNonMacShortcut_Baseline",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInMacShortcut_Allowed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInMacShortcut_Error",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInNonMacShortcut_Allowed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_MapLiteral",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_IndexExpr",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_GetValueCall",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExprTypesTracking",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMixedTargets_RejectsNonPortableActions",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExplicitTargetString",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestUnspecifiedTarget_EmitsWarning",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestVersionBounds_MinVersion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_AcceptsVariableAttachment",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryInputIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryReuseIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryReuseTargetConfiguration",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryConstructorSnapshot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockInferredTypeAndLexicalScope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSettersRetainCompatibility",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSourceAccessorsKeepComponents",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestCompilerMacrosReachCompletionFromSharedMetadata",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/round",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/primary_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/multiline_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/canonical_primary_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/function_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/qualified_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/ambiguous_dot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_primary",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_labels",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestLSPAssetWatcherInvalidatesPreservedMetadata",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38UTF16RequestAndResponseRanges",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MultipleDiagnosticsUTF16",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_partial_identifier",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/named_labels_and_LSP_kinds",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/enum_domain",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/typed_function_and_string_commas",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/unknown_export_no_borrow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/inner",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/outer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/function",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/after_block_closer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/after_function_closer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/returned_collections_are_copies",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/analysis_resets_old_exact_identity",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/fresh_document_does_not_borrow_old_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded/remote",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded/outside",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38NestedAndMultilineContext",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ProtocolIDsAndNotifications",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded/invalid_dependency",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ProtocolMethodsAndNull",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_-1__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_abc__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_999999999999999999999__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_2_Content-Length:_2__{}",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__{}",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_0__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved/error",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved/short",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E04IncompleteDocumentFormatFailsClosed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestLSPServerInitializeAndDidOpen",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceDocumentRegistryIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceRegistryRevisionAndClose",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceVisualEditUsesSourceRegistry",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceAnalyze",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceComplete",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceHover",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceContextualCallComplete",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE01MultiDiagnosticAnalysis",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE02CompletionHoverSignatureDefinition",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE04FormatterPreservesCommentsAndSemantics",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE05OutOfOrderVersionedEdits",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE07BoundedVisualSourceEditAndRejection",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/preserved_source_without_main",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/stdfunc_alias",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/stdlib_alias",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/legacy_bare_callable",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/unknown_export_rejected",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary",
+          "action": "pass"
+        }
+      ]
+    },
+    {
+      "stage": "e01-final-clean-73d0c7b3",
+      "source": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "dirty": false,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 12.563000000023749,
+      "named_counts": {
+        "pass": 163
+      },
+      "raw_sha256": "1b5431cb315ca3847cd85642965c1de962bd1e81a482672e523d73c27c0009be",
+      "terminal_events": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerAssignImmutable",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerReadBeforeInit",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerUnknownArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerMissingArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerDuplicateArgument",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerIfConditionBool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerYieldOutsideValueBlock",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerLegacySyntax",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerValidProgram",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerCopyPaste",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerTruthiness",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerHotLoopWarning",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerGlobals",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerListPlusAssign",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestDictionaryPresenceFactsAreExactAndIsolated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestDictionaryPresenceHonorsLexicalShadowing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInNonMacShortcut_Baseline",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInMacShortcut_Allowed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInMacShortcut_Error",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInNonMacShortcut_Allowed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_MapLiteral",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_IndexExpr",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_GetValueCall",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExprTypesTracking",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMixedTargets_RejectsNonPortableActions",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExplicitTargetString",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestUnspecifiedTarget_EmitsWarning",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestVersionBounds_MinVersion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_AcceptsVariableAttachment",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryInputIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryReuseIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryReuseTargetConfiguration",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerRegistryConstructorSnapshot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockInferredTypeAndLexicalScope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSettersRetainCompatibility",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSourceAccessorsKeepComponents",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestCompilerMacrosReachCompletionFromSharedMetadata",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion/outside_value_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ExpectedTypeCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/missing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/unrelated",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/duplicate",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations/wrong_kind",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CompletionOracleRejectsMutations",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_text",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_bool",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/primary_list",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/optional_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/alias_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/canonical_broad_input",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/lexical_shadow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/function_parameter",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/narrowed_optional",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/reassigned_none",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/uninitialized_binding",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/loop_item_and_index",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/default_parameter_scope",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/user_function_shadows_native",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_after_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls/named_before_write",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CandidateInsertionControls",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/number",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts/round",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01CanonicalInputContracts",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/primary_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_already_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/multiline_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/canonical_primary_bound",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/function_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/qualified_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/named_enum",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums/ambiguous_dot",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextualLabelsAndEnums",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_primary",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_named",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_labels",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/qualified_partial_identifier",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership/unknown_export_no_borrow",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01QualifiedModuleOwnership",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/returned_collections_are_copies",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/analysis_resets_old_exact_identity",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation/fresh_document_does_not_borrow_old_context",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ContextFactIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded/remote",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded/outside",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestLSPAssetWatcherInvalidatesPreservedMetadata",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38UTF16RequestAndResponseRanges",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded/invalid_dependency",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01IncompleteModuleRecoveryRemainsBounded",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MultipleDiagnosticsUTF16",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ParameterMetadataPreserved/round",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/named_labels_and_LSP_kinds",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ParameterMetadataPreserved/resizeImage",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E01ParameterMetadataPreserved",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/enum_domain",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures/typed_function_and_string_commas",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ContextualLabelsEnumsAndSignatures",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/inner",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/outer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/function",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/after_block_closer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion/after_function_closer",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ScopedServiceCompletion",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15E04IncompleteDocumentFormatFailsClosed",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceDocumentRegistryIsolation",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38NestedAndMultilineContext",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ProtocolIDsAndNotifications",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38ProtocolMethodsAndNull",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceRegistryRevisionAndClose",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_-1__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_abc__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_999999999999999999999__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_2_Content-Length:_2__{}",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__{}",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_0__",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38MalformedFramingFailsWithoutPanic",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved/error",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved/short",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestP15RP38WriteFailuresAreObserved",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceVisualEditUsesSourceRegistry",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "test": "TestLSPServerInitializeAndDidOpen",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceAnalyze",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceComplete",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceHover",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceContextualCallComplete",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE01MultiDiagnosticAnalysis",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE02CompletionHoverSignatureDefinition",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE04FormatterPreservesCommentsAndSemantics",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE05OutOfOrderVersionedEdits",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE07BoundedVisualSourceEditAndRejection",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/preserved_source_without_main",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/stdfunc_alias",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/stdlib_alias",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/legacy_bare_callable",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary/unknown_export_rejected",
+          "action": "pass"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestP15IM03DirectServiceStandardLibrary",
+          "action": "pass"
+        }
+      ]
+    }
+  ],
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 98573,
+    "sha256": "711ab532b70099c2a667e6d5f329a1e135ea302c83b6617e0a5614ccf5be6b48"
+  }
+}
