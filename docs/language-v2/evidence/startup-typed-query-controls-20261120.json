@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "kind": "local-startup-query-orchestration-controls",
-  "implementation_sha": "fd1aae3f28bb9139d5fe33661b65a66eb9e41937",
+  "implementation_sha": "6591233759b8e80398b47f545168652b20017101",
   "base_sha": "ddbab8fa4b313f8f9785c88344ebad72cf555d43",
   "clean_before": true,
   "clean_after": true,
@@ -16,8 +16,8 @@
         "<owned>/startup-controls.exe"
       ],
       "exit_code": 0,
-      "duration_seconds": 2.39,
-      "stdout_sha256": "c63ff597b789d90168f31b30d917c1ad2469f07be488ad5e7c88ed5f1ed6e075"
+      "duration_seconds": 6.141,
+      "stdout_sha256": "12220e1faaf39e674b0c2e68c7d26bff43fb5c5a39a28ea16e095077bc507b97"
     },
     {
       "name": "controls",
@@ -25,7 +25,7 @@
         "<owned>/startup-controls.exe"
       ],
       "exit_code": 0,
-      "duration_seconds": 0.078,
+      "duration_seconds": 0.125,
       "stdout_sha256": "7f75ce079891253dad8e0b4788d26815704092649137172fb9b3974feff22f90"
     },
     {
@@ -37,15 +37,15 @@
         "ios/CherriUITests/CherriEditorUITests.swift"
       ],
       "exit_code": 0,
-      "duration_seconds": 0.188,
+      "duration_seconds": 0.25,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
   "source_files": [
     {
       "path": "ios/CherriUITests/CherriEditorUITests.swift",
-      "bytes": 49056,
-      "sha256": "2e87456a94bc4564d1e8906c307fc7aa8deda08353066a2d3fe465857da20340",
+      "bytes": 49050,
+      "sha256": "c21f436318142ccced41030ea415539a13d1610c65b6dd3965b07c454a8fadce",
       "changed_from_a8d4": true
     },
     {
@@ -102,5 +102,7 @@
     "Two typed queries still call real AX and may block or observe a transition. Their order is creation controls then editor; no atomic snapshot is claimed.",
     "Pure Swift controls and parsing do not typecheck XCUI SDK APIs or establish simulator success.",
     "Original failed run and fixed 28s/3s assertions remain required evidence."
-  ]
+  ],
+  "prior_local_control_source_sha": "fd1aae3f28bb9139d5fe33661b65a66eb9e41937",
+  "reviewed_comment_only_followup": true
 }
