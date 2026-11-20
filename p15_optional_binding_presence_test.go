@@ -112,3 +112,86 @@ func TestP15OptionalImmutablePresentValuesDoNotBecomeNone(t *testing.T) {
 		})
 	}
 }
+
+func p15OptionalImmutableScopeError(actions []map[string]any, tc p15FunctionOptionalCase) error {
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	envelope := g.header("echo")
+	_, outerPresence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+	// The inner immutable empty Text shadows the alias, so its presence is
+	// compiler-owned 1. Leaving the lexical block restores the parameter flag.
+	g.value("gettext", map[string]any{"WFTextActionText": ""})
+	innerPresence := g.value("gettext", map[string]any{"WFTextActionText": "1"})
+	inner := g.conditional(4, p15FunctionEdge(innerPresence), "WFConditionalActionString", "0")
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(1)})
+	g.boundary(inner, 1, false)
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(0)})
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(g.boundary(inner, 2, true))})
+	outer := g.conditional(4, p15FunctionEdge(outerPresence), "WFConditionalActionString", "0")
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(1)})
+	g.boundary(outer, 1, false)
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(0)})
+	g.output(g.boundary(outer, 2, true))
+	g.caller()
+	result := g.call(p15FunctionOptionalPayload(g, tc))
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
+	return g.finish()
+}
+
+func TestP15OptionalImmutableScopeRestoresPresence(t *testing.T) {
+	for _, tc := range p15FunctionOptionalCases()[:2] {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "function echo(value:Text?)->Bool{let alias=value;{let alias:Text?=\"\";getVariable(alias==none)};return alias==none}\ngetVariable(echo(" + tc.argument + "))"
+			if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
+				t.Fatal(diagnostics)
+			}
+			actions := p15CompiledActions(t, source)
+			if err := p15OptionalImmutableScopeError(actions, tc); err != nil {
+				t.Fatal(err)
+			}
+			for _, fault := range []string{"inner_as_absent", "outer_uses_inner_presence", "outer_uses_value", "truthiness", "duplicate_call"} {
+				t.Run(fault, func(t *testing.T) {
+					bad := p15ContainerCloneNative(t, actions)
+					if err := p15OptionalImmutableScopeError(bad, tc); err != nil {
+						t.Fatal("unchanged typed clone must pass", err)
+					}
+					var comparisons []int
+					innerFlag, decodedValue, call := -1, -1, -1
+					for i, action := range bad {
+						p := p15Param(action)
+						if p["WFConditionalActionString"] == "0" {
+							comparisons = append(comparisons, i)
+						}
+						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" && p["WFTextActionText"] == "1" {
+							innerFlag = i
+						}
+						if p["WFDictionaryKey"] == "arg_0" {
+							decodedValue = i
+						}
+						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
+							call = i
+						}
+					}
+					if len(comparisons) != 2 || innerFlag < 0 || decodedValue < 0 || call < 0 {
+						t.Fatal("presence mutation target missing")
+					}
+					outer := p15Param(bad[comparisons[1]])
+					switch fault {
+					case "inner_as_absent":
+						p15Param(bad[innerFlag])["WFTextActionText"] = "0"
+					case "outer_uses_inner_presence":
+						outer["WFInput"] = map[string]any{"Type": "Variable", "Variable": p15FunctionEdge(p15Param(bad[innerFlag])["UUID"].(string))}
+					case "outer_uses_value":
+						outer["WFInput"] = map[string]any{"Type": "Variable", "Variable": p15FunctionEdge(p15Param(bad[decodedValue])["UUID"].(string))}
+					case "truthiness":
+						outer["WFCondition"] = uint64(100)
+					case "duplicate_call":
+						bad = append(append(bad[:call+1:call+1], bad[call]), bad[call+1:]...)
+					}
+					if p15OptionalImmutableScopeError(bad, tc) == nil {
+						t.Fatal("corrupted lexical value/presence graph accepted")
+					}
+				})
+			}
+		})
+	}
+}

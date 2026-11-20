@@ -1644,6 +1644,18 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		return err
 	}
 
+	// Immutable aliases retain the producer's separate value-presence edge.
+	// An explicit Optional annotation also preserves present empty/false/zero
+	// values without observing their native truthiness. Mutable state needs an
+	// independent paired assignment protocol and does not enter this path.
+	var optionalPresence interface{}
+	if !b.Mutable && (val == nil || optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value)) {
+		optionalPresence, err = l.optionalValuePresence(b.Value, val)
+		if err != nil {
+			return err
+		}
+	}
+
 	if b.Mutable {
 		wfVarName := l.effectiveVariableName(b.Name)
 		if val == nil || isEmptyRuntimeList(val) {
@@ -1831,10 +1843,11 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				wfVarName := l.effectiveVariableName(b.Name)
 				l.emitClearedVariable(wfVarName)
 				l.bindings[b.Name] = BindingRef{
-					IsVariable:   true,
-					TokenType:    "Variable",
-					VariableName: wfVarName,
-					OutputName:   wfVarName,
+					IsVariable:       true,
+					TokenType:        "Variable",
+					VariableName:     wfVarName,
+					OutputName:       wfVarName,
+					OptionalPresence: optionalPresence,
 				}
 				return nil
 			default:
@@ -1868,6 +1881,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	}
 	if ref, ok := l.bindings[b.Name]; ok {
 		ref.Type = varType
+		ref.OptionalPresence = optionalPresence
 		if l.isPolymorphicContainerLookupExpr(b.Value) {
 			ref.PolymorphicLookup = true
 		}
