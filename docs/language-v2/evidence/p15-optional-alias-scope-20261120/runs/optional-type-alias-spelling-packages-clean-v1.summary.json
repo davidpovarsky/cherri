@@ -1,0 +1,30 @@
+{
+  "source_sha": "882a44ae2d827c3d79f658b8b56603b4cf1cc00b",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "./internal/language/types",
+    "./internal/language/analysis",
+    "./internal/language/lower",
+    "./internal/language/modules",
+    "./internal/language/service"
+  ],
+  "started_at_utc": "2026-11-20T05:02:49.968699+00:00",
+  "finished_at_utc": "2026-11-20T05:03:00.093116+00:00",
+  "elapsed_seconds": 10.125,
+  "exit_code": 0,
+  "timed_out": false,
+  "outer_budget_seconds": 240,
+  "named_passes": 75,
+  "top_level_passes": 70,
+  "failed_tests": [],
+  "skipped_tests": [
+    null
+  ],
+  "raw_sha256": "491c408de138adeeafeddbbb3edb585e33f03b1bd8e31793c66ff472d90de684",
+  "clean_after": true
+}
