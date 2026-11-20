@@ -1,0 +1,50 @@
+{
+  "source": "fd691b96fb661697a1cbaddab92476d457636ba9",
+  "status_before": "?? p15_native_paths_gate_test.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^TestBackendRecovery18",
+    "."
+  ],
+  "started_utc": "2026-11-20T09:23:23.307318+00:00",
+  "exit": 1,
+  "elapsed_seconds": 45.5,
+  "finished_utc": "2026-11-20T09:24:08.805625+00:00",
+  "status_after": "?? p15_native_paths_gate_test.go",
+  "named_counts": {
+    "pass": 31,
+    "fail": 16,
+    "skip": 0
+  },
+  "failed": [
+    "TestBackendRecovery18PublicNativeImportPaths/xml/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/xml/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/xml",
+    "TestBackendRecovery18PublicNativeImportPaths/binary/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/binary/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/binary",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/shortcut",
+    "TestBackendRecovery18PublicNativeImportPaths/json/hybrid",
+    "TestBackendRecovery18PublicNativeImportPaths/json/lossless",
+    "TestBackendRecovery18PublicNativeImportPaths/json",
+    "TestBackendRecovery18PublicNativeImportPaths",
+    "TestBackendRecovery18ExactWorkflowBypass/xml",
+    "TestBackendRecovery18ExactWorkflowBypass/binary",
+    "TestBackendRecovery18ExactWorkflowBypass"
+  ],
+  "go.jsonl": {
+    "sha256": "73bc442861e8b1fe26f197bda9c73ce6d9a34a6aeb816c2cc64d2434185941c2",
+    "bytes": 48919
+  },
+  "stderr.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

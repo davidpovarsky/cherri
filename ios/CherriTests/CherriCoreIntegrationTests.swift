@@ -3,6 +3,29 @@ import XCTest
 @testable import Cherri
 
 final class CherriCoreIntegrationTests: XCTestCase {
+    func testRP52DefaultRejectsLegacyAndKeepsExplicitReference() async throws {
+        let legacyBody = "const route = text(\"RP52_LEGACY_REFERENCE\")\nshow(route)\n"
+        for prefix in ["", "// cherri: legacy\n", "#define from sharesheet\n"] {
+            let source = prefix + legacyBody
+            do {
+                _ = try await CherriCompiler.compile(source: source, name: "RP52 Default")
+                XCTFail("Default source entry silently compiled Legacy input")
+            } catch let diagnostic as CompilationDiagnostic {
+                XCTAssertTrue(diagnostic.message.contains("E_LEGACY_SYNTAX"), diagnostic.message)
+            }
+            let explicit = try await CherriCompiler.compile(source: source, name: "RP52 Explicit Reference", mode: "legacy")
+            let actions = try XCTUnwrap(try propertyList(explicit.plist)["WFWorkflowActions"] as? [[String: Any]])
+            let textRows = actions.filter { action in
+                let parameters = action["WFWorkflowActionParameters"] as? [String: Any]
+                return action["WFWorkflowActionIdentifier"] as? String == "is.workflow.actions.gettext"
+                    && parameters?["WFTextActionText"] as? String == "RP52_LEGACY_REFERENCE"
+            }
+            XCTAssertEqual(textRows.count, 1)
+        }
+        let recovery = try await CherriCompiler.compile(source: "let route = text(\"RP52_V2_RECOVERY\")\nshow(route)\n", name: "RP52 Recovery")
+        XCTAssertFalse(recovery.plist.isEmpty)
+    }
+
     func testCompileProducesShortcutPlist() async throws {
         let result = try await CherriCompiler.compile(
             source: "show(\"Hello from iOS tests\")\n",
@@ -17,8 +40,8 @@ final class CherriCoreIntegrationTests: XCTestCase {
     func testRepeatedCompileResetsIncludedActions() async throws {
         let source = "#include 'actions/text'\nshow(\"Repeated compile\")\n"
 
-        let first = try await CherriCompiler.compile(source: source, name: "First")
-        let second = try await CherriCompiler.compile(source: source, name: "Second")
+        let first = try await CherriCompiler.compile(source: source, name: "First", mode: "legacy")
+        let second = try await CherriCompiler.compile(source: source, name: "Second", mode: "legacy")
 
         let firstActions = try XCTUnwrap(try propertyList(first.plist)["WFWorkflowActions"] as? [[String: Any]])
         let secondActions = try XCTUnwrap(try propertyList(second.plist)["WFWorkflowActions"] as? [[String: Any]])
@@ -34,7 +57,7 @@ final class CherriCoreIntegrationTests: XCTestCase {
         let decompiled = try await CherriCompiler.decompile(plist: original.plist, name: "Round Trip")
         XCTAssertFalse(decompiled.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
-        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Round Trip Rebuilt")
+        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Round Trip Rebuilt", mode: "legacy")
         let rebuiltActions = try XCTUnwrap(try propertyList(rebuilt.plist)["WFWorkflowActions"] as? [[String: Any]])
         XCTAssertFalse(rebuiltActions.isEmpty)
     }
@@ -100,14 +123,14 @@ final class CherriCoreIntegrationTests: XCTestCase {
         show("Metadata")
         """
 
-        let original = try await CherriCompiler.compile(source: source, name: "Metadata")
+        let original = try await CherriCompiler.compile(source: source, name: "Metadata", mode: "legacy")
         let decompiled = try await CherriCompiler.decompile(plist: original.plist, name: "Metadata")
         XCTAssertTrue(decompiled.contains("#define from"))
         XCTAssertTrue(decompiled.contains("sharesheet"))
         XCTAssertTrue(decompiled.contains("quickactions"))
         XCTAssertTrue(decompiled.contains("#define quickactions finder, services"))
 
-        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Metadata")
+        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Metadata", mode: "legacy")
         let plist = try propertyList(rebuilt.plist)
         let workflowTypes = Set((plist["WFWorkflowTypes"] as? [String]) ?? [])
         let quickActions = Set((plist["WFQuickActionSurfaces"] as? [String]) ?? [])

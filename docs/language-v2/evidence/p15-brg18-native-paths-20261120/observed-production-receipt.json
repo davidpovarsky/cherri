@@ -1,0 +1,119 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-BRG18-native-roundtrip",
+      "requirements": [
+        "BRG18"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "26cd9ef5c58df45ef29f1c0e000fbf0e53b7e666",
+      "test_id": "github.com/electrikmilk/cherri:TestBackendRecovery18ExactWorkflowBypass",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestBackendRecovery18PublicNativeImportPaths|TestBackendRecovery18ExactWorkflowBypass|TestBackendRecovery18RejectsNativeAndReadabilityFaults|TestBackendRecovery18ReadabilityRejectsCompiledFallbacks)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls",
+        "required_go_events": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks\nTestBackendRecovery18PublicNativeImportPaths/xml\nTestBackendRecovery18PublicNativeImportPaths/xml/hybrid\nTestBackendRecovery18PublicNativeImportPaths/xml/lossless\nTestBackendRecovery18PublicNativeImportPaths/binary\nTestBackendRecovery18PublicNativeImportPaths/binary/hybrid\nTestBackendRecovery18PublicNativeImportPaths/binary/lossless\nTestBackendRecovery18PublicNativeImportPaths/shortcut\nTestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid\nTestBackendRecovery18PublicNativeImportPaths/shortcut/lossless\nTestBackendRecovery18PublicNativeImportPaths/json\nTestBackendRecovery18PublicNativeImportPaths/json/hybrid\nTestBackendRecovery18PublicNativeImportPaths/json/lossless\nTestBackendRecovery18ExactWorkflowBypass/xml\nTestBackendRecovery18ExactWorkflowBypass/binary\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/header\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/action_field\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_byte\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_value\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/large_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/negative_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/false_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/zero_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_text\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_array\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_map\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/descriptor\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/variant\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/producer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/consumer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/chain_order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_group\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_result\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/omitted_default\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/explicit_false\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/missing_parameters\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/question_index\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/provenance\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_natural\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_opaque\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/source_call\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/encoded_comment_only\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/comment\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/static_variant\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/reference\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/omitted_parameter\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/explicit_false\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/empty_parameters",
+        "required_production_tests": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
+        "scope": "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg18-clean-26cd9ef5\\producer\\brg18-3124480412\\brg18-process.json",
+          "sha256": "b1a16826251b69c39ecf77a1f9dc7582f00049a6863f269b345757ea926e0dea"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg18-clean-26cd9ef5\\producer\\brg18-3124480412\\brg18-go.jsonl",
+          "sha256": "8fb131320a0909601cc0d8588f9a4a674043da9fcc8395824f9f8ea6605e1d41"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg18-clean-26cd9ef5\\producer\\brg18-3124480412\\brg18-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls"
+    },
+    {
+      "evidence_id": "ev-local-BRG18-integration",
+      "requirements": [
+        "BRG18"
+      ],
+      "tier": "integration",
+      "implementation_sha": "26cd9ef5c58df45ef29f1c0e000fbf0e53b7e666",
+      "test_id": "github.com/electrikmilk/cherri:TestBackendRecovery18PublicNativeImportPaths",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestBackendRecovery18PublicNativeImportPaths|TestBackendRecovery18ExactWorkflowBypass|TestBackendRecovery18RejectsNativeAndReadabilityFaults|TestBackendRecovery18ReadabilityRejectsCompiledFallbacks)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls",
+        "required_go_events": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks\nTestBackendRecovery18PublicNativeImportPaths/xml\nTestBackendRecovery18PublicNativeImportPaths/xml/hybrid\nTestBackendRecovery18PublicNativeImportPaths/xml/lossless\nTestBackendRecovery18PublicNativeImportPaths/binary\nTestBackendRecovery18PublicNativeImportPaths/binary/hybrid\nTestBackendRecovery18PublicNativeImportPaths/binary/lossless\nTestBackendRecovery18PublicNativeImportPaths/shortcut\nTestBackendRecovery18PublicNativeImportPaths/shortcut/hybrid\nTestBackendRecovery18PublicNativeImportPaths/shortcut/lossless\nTestBackendRecovery18PublicNativeImportPaths/json\nTestBackendRecovery18PublicNativeImportPaths/json/hybrid\nTestBackendRecovery18PublicNativeImportPaths/json/lossless\nTestBackendRecovery18ExactWorkflowBypass/xml\nTestBackendRecovery18ExactWorkflowBypass/binary\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/header\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/action_field\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/data_byte\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/date_value\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/large_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/negative_integer\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/false_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/zero_type\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_text\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_array\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/empty_map\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/descriptor\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/variant\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/producer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/consumer_uuid\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/chain_order\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_group\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/region_result\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/omitted_default\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/explicit_false\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/missing_parameters\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/question_index\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/provenance\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_natural\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/plan_opaque\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/source_call\nTestBackendRecovery18RejectsNativeAndReadabilityFaults/encoded_comment_only\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/comment\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/static_variant\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/reference\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/omitted_parameter\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/explicit_false\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks/empty_parameters",
+        "required_production_tests": "TestBackendRecovery18PublicNativeImportPaths\nTestBackendRecovery18ExactWorkflowBypass\nTestBackendRecovery18RejectsNativeAndReadabilityFaults\nTestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
+        "scope": "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg18-clean-26cd9ef5\\producer\\brg18-3124480412\\brg18-process.json",
+          "sha256": "b1a16826251b69c39ecf77a1f9dc7582f00049a6863f269b345757ea926e0dea"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg18-clean-26cd9ef5\\producer\\brg18-3124480412\\brg18-go.jsonl",
+          "sha256": "8fb131320a0909601cc0d8588f9a4a674043da9fcc8395824f9f8ea6605e1d41"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg18-clean-26cd9ef5\\producer\\brg18-3124480412\\brg18-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T09:42:03Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG18",
+        "group": "gate",
+        "requirement": "Native action/block/full workflow paths",
+        "test_level": "native-roundtrip+integration",
+        "executed_levels": [
+          "native-roundtrip",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "BRG18",
+  "scope": "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit.",
+  "source_sha": "26cd9ef5c58df45ef29f1c0e000fbf0e53b7e666"
+}

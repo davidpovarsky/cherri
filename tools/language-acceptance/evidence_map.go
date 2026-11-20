@@ -487,6 +487,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP52" {
+		return publicFrontendTestIDs()
+	}
 	if id == "RP43" {
 		return outputSigningTestIDs()
 	}
@@ -557,6 +560,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP52" {
+		return append([]string{}, publicFrontendProductionPaths...)
+	}
 	if id == "RP43" {
 		return append([]string{}, outputSigningProductionPaths...)
 	}
@@ -582,6 +588,15 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if id == "BRG30" {
+		return packagedSkillTestIDs()
+	}
+	if id == "BRG21" {
+		return purePublicTestIDs()
+	}
+	if id == "BRG18" {
+		return nativePathsTestIDs()
+	}
 	if id == "BRG19" {
 		return safeImportEditTestIDs()
 	}
@@ -665,6 +680,15 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if id == "BRG30" {
+		return append([]string{}, packagedSkillProductionPaths...)
+	}
+	if id == "BRG21" {
+		return append([]string{}, purePublicProductionPaths...)
+	}
+	if id == "BRG18" {
+		return append([]string{}, nativePathsProductionPaths...)
+	}
 	if id == "BRG19" {
 		return append([]string{}, safeImportEditProductionPaths...)
 	}

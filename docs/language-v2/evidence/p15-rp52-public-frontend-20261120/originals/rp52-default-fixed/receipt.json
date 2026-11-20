@@ -1,0 +1,67 @@
+{
+  "source": "8665ef0381d6735a04d9f4dce07e560943199243",
+  "source_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^TestP15RP52|^TestIOS00[126]_|^TestBuildProfileMobileBridgeIsolation$|^TestP15U04PublicFrontendRouteMatrix$|^TestP15CLIDefaultRejectsLegacyWithGuidance$|^TestP10_NativeSpecimenParity_ValidatorAndNegativeMutations$",
+    "."
+  ],
+  "started_utc": "2026-11-20T10:10:31.899522+00:00",
+  "exit": 0,
+  "elapsed_seconds": 40.31300000002375,
+  "finished_utc": "2026-11-20T10:11:12.221395+00:00",
+  "named_counts": {
+    "pass": 58,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed": [],
+  "go.jsonl": {
+    "bytes": 52282,
+    "sha256": "6f9a28f781dd9d37e37bfca0aecb7780b5040ab3182d66084757faf20c52548c"
+  },
+  "stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "swift_parse": [
+    {
+      "source": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-frontend",
+        "-dump-parse",
+        "ios/CherriApp/Compiler/CherriCompiler.swift"
+      ],
+      "exit": 0,
+      "seconds": 0.9219999999622814,
+      "stdout_bytes": 335186,
+      "stdout_sha256": "af4a0d08c84bfef812ca9c99f06ada9bce93ac2c4b2ff9adf7d7f6ce30d45bca",
+      "stderr_bytes": 2,
+      "stderr_sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "scope": "actual Swift parser only; no iOS typecheck/link/run"
+    },
+    {
+      "source": "ios/CherriTests/CherriCoreIntegrationTests.swift",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-frontend",
+        "-dump-parse",
+        "ios/CherriTests/CherriCoreIntegrationTests.swift"
+      ],
+      "exit": 0,
+      "seconds": 0.20300000003771856,
+      "stdout_bytes": 344584,
+      "stdout_sha256": "4fe661942e08d5d4531e760f0e2547cb691ea7692ca8b308a8f758ff5622c898",
+      "stderr_bytes": 2,
+      "stderr_sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "scope": "actual Swift parser only; no iOS typecheck/link/run"
+    }
+  ],
+  "source_clean_after": true
+}

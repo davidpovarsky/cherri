@@ -1,0 +1,121 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-BRG30-integration",
+      "requirements": [
+        "BRG30"
+      ],
+      "tier": "integration",
+      "implementation_sha": "c83007d83fdf4177667d48994207796c9ee97e15",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP45ExtractedInstallAndRollback",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "40m0s",
+        ".",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags|TestP15RP44ExtractedCapabilitiesRejection|TestP15RP44InstalledDocsIdentity|TestP15RP44ExtractedCacheAndBundleSelection|TestP15RP44GitIndexDocsIntegrity|TestP15RP44ExtractedCompatibilityConsumer|TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements|TestP15RP45IdentityValidationOrder|TestP15RP45ExtractedInstallAndRollback|TestP15RP45ExtractedRuntimePair|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete BRG30 extracted source/runtime tools, immutable compatibility, offline selection and actual update rollback scenarios",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags\nTestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer\nTestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals\nTestP15RP42ExtractedInstallPublicCLI/help_and_schema\nTestP15RP42ExtractedInstallPublicCLI/check_and_alias\nTestP15RP42ExtractedInstallPublicCLI/format_and_aliases\nTestP15RP42ExtractedInstallPublicCLI/compile_and_file_alias\nTestP15RP42ExtractedInstallPublicCLI/import_and_alias\nTestP15RP42ExtractedInstallPublicCLI/installed_migration_tool\nTestP15RP42MigrationDocumentedFlags/check\nTestP15RP42MigrationDocumentedFlags/write\nTestP15RP42MigrationDocumentedFlags/check/before_file\nTestP15RP42MigrationDocumentedFlags/check/documented_after_file\nTestP15RP42MigrationDocumentedFlags/write/before_file\nTestP15RP42MigrationDocumentedFlags/write/documented_after_file\nTestP15RP44ExtractedCapabilitiesRejection/missing_comma\nTestP15RP44ExtractedCapabilitiesRejection/trailing_comma\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_schema\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_escaped_schema\nTestP15RP44ExtractedCapabilitiesRejection/invalid_escape\nTestP15RP44ExtractedCapabilitiesRejection/invalid_number\nTestP15RP44ExtractedCapabilitiesRejection/unpaired_surrogate\nTestP15RP44ExtractedCapabilitiesRejection/invalid_utf8\nTestP15RP44ExtractedCapabilitiesRejection/raw_nul\nTestP15RP44ExtractedCapabilitiesRejection/multiple_objects\nTestP15RP44ExtractedCapabilitiesRejection/nested_fields_only\nTestP15RP44ExtractedCapabilitiesRejection/missing_protocol\nTestP15RP44ExtractedCapabilitiesRejection/wrong_protocol\nTestP15RP44ExtractedCapabilitiesRejection/missing_catalog\nTestP15RP44ExtractedCapabilitiesRejection/wrong_catalog\nTestP15RP44ExtractedCapabilitiesRejection/missing_codec\nTestP15RP44ExtractedCapabilitiesRejection/wrong_codec\nTestP15RP44ExtractedCapabilitiesRejection/missing_macro\nTestP15RP44ExtractedCapabilitiesRejection/wrong_schema_same_language\nTestP15RP44ExtractedCapabilitiesRejection/not_json\nTestP15RP44InstalledDocsIdentity/changed_docs_preserve_fingerprints\nTestP15RP44InstalledDocsIdentity/missing_git_provenance\nTestP15RP44InstalledDocsIdentity/wrong_commit\nTestP15RP44InstalledDocsIdentity/wrong_schema\nTestP15RP44InstalledDocsIdentity/wrong_macros\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_bundle_prefers_cache\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/unselected_bundle_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/checksum_invalid_cache_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/incomplete_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/both_outdated_rejected\nTestP15RP44ExtractedCacheAndBundleSelection/explicit_outdated_never_falls_back\nTestP15RP44GitIndexDocsIntegrity/assume-unchanged\nTestP15RP44GitIndexDocsIntegrity/skip-worktree\nTestP15RP45InstalledBinaryOwnership/reconciled_wrong_source\nTestP15RP45InstalledBinaryOwnership/wrong_migration_role\nTestP15RP45InstalledBinaryOwnership/missing_migration_binary\nTestP15RP45InstalledBinaryOwnership/migration_checksum_before_execution\nTestP15RP45RuntimePackageOwnership/missing_companion\nTestP15RP45RuntimePackageOwnership/wrong_compiler_role\nTestP15RP45PackageIgnoresGitReplacements/commit\nTestP15RP45PackageIgnoresGitReplacements/tree\nTestP15RP45PackageIgnoresGitReplacements/blob\nTestP15RP45IdentityValidationOrder/missing_checksum_before_execution\nTestP15RP45IdentityValidationOrder/migration_wrapper_cannot_borrow_identity\nTestP15RP45IdentityValidationOrder/different_platform_metadata\nTestP15RP45ExtractedInstallAndRollback/offline_compatible_cache\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_compiler\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_migration\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_missing\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_wrong_role\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_backup\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_binary\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_source_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_checksum_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_documentation\nTestP15RP45ExtractedInstallAndRollback/successful_complete_update\nTestP15RP45ExtractedRuntimePair/exact_extracted_pair\nTestP15RP45ExtractedRuntimePair/actual_offline_bundled_install\nTestP15RP45ExtractedRuntimePair/shipped_compiler_and_migrator_execute\nTestP15RP45ExtractedRuntimePair/controlled_installation_self_test\nTestP15RP45GitIndexSourceIntegrity/assume-unchanged\nTestP15RP45GitIndexSourceIntegrity/skip-worktree\nTestP15RP45LockAcquisitionSignals/after_mkdir_HUP\nTestP15RP45LockAcquisitionSignals/after_mkdir_INT\nTestP15RP45LockAcquisitionSignals/after_mkdir_TERM\nTestP15RP45LockAcquisitionSignals/existing_owner_preserved",
+        "required_production_tests": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags\nTestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer\nTestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals",
+        "scope": "Independent BRG30 fresh execution of complete source/runtime ZIP creation, verification, extraction and actual installed public tools. Actual current and historical d705 compilers exercise bundle/cache/explicit selection; original-byte capability/protocol/catalog/schema/codec/macro and exact-document identity faults must be observed before rejection. Actual immutable source/docs branches advance while installation retains exact pins; offline request counters remain zero, corrupt downloaded tools never execute, and handled update/lock interruptions preserve both prior tools, all receipts, exact docs and usable doctor. Runtime ZIP members and shipped migration/public commands execute. Disposable committed component tuples derive from this exact source and real generated docs; they are not the published release tuple. Controlled adversarial response/transport tests remain explicit controls. No K01-K05, RP42/RP44/RP45/RP46, published deployment, Apple execution, power-loss or concurrent-reader guarantee is inherited."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg30-intake-clean\\producer\\brg30-3385870374\\brg30-process.json",
+          "sha256": "813d155c24e67af02c84aaf6c15ccf02651e70eecacdf80401732053475d814d"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg30-intake-clean\\producer\\brg30-3385870374\\brg30-go.jsonl",
+          "sha256": "1e531b299f1f0279acb17cf93aeb8ad463df3ecc412a41d35ef7a90778072053"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg30-intake-clean\\producer\\brg30-3385870374\\brg30-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete BRG30 extracted source/runtime tools, immutable compatibility, offline selection and actual update rollback scenarios"
+    },
+    {
+      "evidence_id": "ev-local-BRG30-skill-package",
+      "requirements": [
+        "BRG30"
+      ],
+      "tier": "skill-package",
+      "implementation_sha": "c83007d83fdf4177667d48994207796c9ee97e15",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP45ExtractedRuntimePair",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "40m0s",
+        ".",
+        "-run",
+        "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags|TestP15RP44ExtractedCapabilitiesRejection|TestP15RP44InstalledDocsIdentity|TestP15RP44ExtractedCacheAndBundleSelection|TestP15RP44GitIndexDocsIntegrity|TestP15RP44ExtractedCompatibilityConsumer|TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements|TestP15RP45IdentityValidationOrder|TestP15RP45ExtractedInstallAndRollback|TestP15RP45ExtractedRuntimePair|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete BRG30 extracted source/runtime tools, immutable compatibility, offline selection and actual update rollback scenarios",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags\nTestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer\nTestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals\nTestP15RP42ExtractedInstallPublicCLI/help_and_schema\nTestP15RP42ExtractedInstallPublicCLI/check_and_alias\nTestP15RP42ExtractedInstallPublicCLI/format_and_aliases\nTestP15RP42ExtractedInstallPublicCLI/compile_and_file_alias\nTestP15RP42ExtractedInstallPublicCLI/import_and_alias\nTestP15RP42ExtractedInstallPublicCLI/installed_migration_tool\nTestP15RP42MigrationDocumentedFlags/check\nTestP15RP42MigrationDocumentedFlags/write\nTestP15RP42MigrationDocumentedFlags/check/before_file\nTestP15RP42MigrationDocumentedFlags/check/documented_after_file\nTestP15RP42MigrationDocumentedFlags/write/before_file\nTestP15RP42MigrationDocumentedFlags/write/documented_after_file\nTestP15RP44ExtractedCapabilitiesRejection/missing_comma\nTestP15RP44ExtractedCapabilitiesRejection/trailing_comma\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_schema\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_escaped_schema\nTestP15RP44ExtractedCapabilitiesRejection/invalid_escape\nTestP15RP44ExtractedCapabilitiesRejection/invalid_number\nTestP15RP44ExtractedCapabilitiesRejection/unpaired_surrogate\nTestP15RP44ExtractedCapabilitiesRejection/invalid_utf8\nTestP15RP44ExtractedCapabilitiesRejection/raw_nul\nTestP15RP44ExtractedCapabilitiesRejection/multiple_objects\nTestP15RP44ExtractedCapabilitiesRejection/nested_fields_only\nTestP15RP44ExtractedCapabilitiesRejection/missing_protocol\nTestP15RP44ExtractedCapabilitiesRejection/wrong_protocol\nTestP15RP44ExtractedCapabilitiesRejection/missing_catalog\nTestP15RP44ExtractedCapabilitiesRejection/wrong_catalog\nTestP15RP44ExtractedCapabilitiesRejection/missing_codec\nTestP15RP44ExtractedCapabilitiesRejection/wrong_codec\nTestP15RP44ExtractedCapabilitiesRejection/missing_macro\nTestP15RP44ExtractedCapabilitiesRejection/wrong_schema_same_language\nTestP15RP44ExtractedCapabilitiesRejection/not_json\nTestP15RP44InstalledDocsIdentity/changed_docs_preserve_fingerprints\nTestP15RP44InstalledDocsIdentity/missing_git_provenance\nTestP15RP44InstalledDocsIdentity/wrong_commit\nTestP15RP44InstalledDocsIdentity/wrong_schema\nTestP15RP44InstalledDocsIdentity/wrong_macros\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_bundle_prefers_cache\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/unselected_bundle_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/checksum_invalid_cache_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/incomplete_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/both_outdated_rejected\nTestP15RP44ExtractedCacheAndBundleSelection/explicit_outdated_never_falls_back\nTestP15RP44GitIndexDocsIntegrity/assume-unchanged\nTestP15RP44GitIndexDocsIntegrity/skip-worktree\nTestP15RP45InstalledBinaryOwnership/reconciled_wrong_source\nTestP15RP45InstalledBinaryOwnership/wrong_migration_role\nTestP15RP45InstalledBinaryOwnership/missing_migration_binary\nTestP15RP45InstalledBinaryOwnership/migration_checksum_before_execution\nTestP15RP45RuntimePackageOwnership/missing_companion\nTestP15RP45RuntimePackageOwnership/wrong_compiler_role\nTestP15RP45PackageIgnoresGitReplacements/commit\nTestP15RP45PackageIgnoresGitReplacements/tree\nTestP15RP45PackageIgnoresGitReplacements/blob\nTestP15RP45IdentityValidationOrder/missing_checksum_before_execution\nTestP15RP45IdentityValidationOrder/migration_wrapper_cannot_borrow_identity\nTestP15RP45IdentityValidationOrder/different_platform_metadata\nTestP15RP45ExtractedInstallAndRollback/offline_compatible_cache\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_compiler\nTestP15RP45ExtractedInstallAndRollback/corrupt_download_migration\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_missing\nTestP15RP45ExtractedInstallAndRollback/explicit_migration_override_wrong_role\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_backup\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_binary\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_source_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_migration_checksum_receipt\nTestP15RP45ExtractedInstallAndRollback/interrupt_documentation\nTestP15RP45ExtractedInstallAndRollback/successful_complete_update\nTestP15RP45ExtractedRuntimePair/exact_extracted_pair\nTestP15RP45ExtractedRuntimePair/actual_offline_bundled_install\nTestP15RP45ExtractedRuntimePair/shipped_compiler_and_migrator_execute\nTestP15RP45ExtractedRuntimePair/controlled_installation_self_test\nTestP15RP45GitIndexSourceIntegrity/assume-unchanged\nTestP15RP45GitIndexSourceIntegrity/skip-worktree\nTestP15RP45LockAcquisitionSignals/after_mkdir_HUP\nTestP15RP45LockAcquisitionSignals/after_mkdir_INT\nTestP15RP45LockAcquisitionSignals/after_mkdir_TERM\nTestP15RP45LockAcquisitionSignals/existing_owner_preserved",
+        "required_production_tests": "TestP15RP42ExtractedInstallPublicCLI\nTestP15RP42MigrationDocumentedFlags\nTestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer\nTestP15RP45InstalledBinaryOwnership\nTestP15RP45RuntimePackageOwnership\nTestP15RP45PackageIgnoresGitReplacements\nTestP15RP45IdentityValidationOrder\nTestP15RP45ExtractedInstallAndRollback\nTestP15RP45ExtractedRuntimePair\nTestP15RP45GitIndexSourceIntegrity\nTestP15RP45LockAcquisitionSignals",
+        "scope": "Independent BRG30 fresh execution of complete source/runtime ZIP creation, verification, extraction and actual installed public tools. Actual current and historical d705 compilers exercise bundle/cache/explicit selection; original-byte capability/protocol/catalog/schema/codec/macro and exact-document identity faults must be observed before rejection. Actual immutable source/docs branches advance while installation retains exact pins; offline request counters remain zero, corrupt downloaded tools never execute, and handled update/lock interruptions preserve both prior tools, all receipts, exact docs and usable doctor. Runtime ZIP members and shipped migration/public commands execute. Disposable committed component tuples derive from this exact source and real generated docs; they are not the published release tuple. Controlled adversarial response/transport tests remain explicit controls. No K01-K05, RP42/RP44/RP45/RP46, published deployment, Apple execution, power-loss or concurrent-reader guarantee is inherited."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg30-intake-clean\\producer\\brg30-3385870374\\brg30-process.json",
+          "sha256": "813d155c24e67af02c84aaf6c15ccf02651e70eecacdf80401732053475d814d"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg30-intake-clean\\producer\\brg30-3385870374\\brg30-go.jsonl",
+          "sha256": "1e531b299f1f0279acb17cf93aeb8ad463df3ecc412a41d35ef7a90778072053"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg30-intake-clean\\producer\\brg30-3385870374\\brg30-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete BRG30 extracted source/runtime tools, immutable compatibility, offline selection and actual update rollback scenarios"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T11:15:28Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG30",
+        "group": "gate",
+        "requirement": "Complete extracted Skill and immutable compatibility",
+        "test_level": "skill-package+integration",
+        "executed_levels": [
+          "skill-package",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "BRG30",
+  "scope": "Independent BRG30 fresh execution of complete source/runtime ZIP creation, verification, extraction and actual installed public tools. Actual current and historical d705 compilers exercise bundle/cache/explicit selection; original-byte capability/protocol/catalog/schema/codec/macro and exact-document identity faults must be observed before rejection. Actual immutable source/docs branches advance while installation retains exact pins; offline request counters remain zero, corrupt downloaded tools never execute, and handled update/lock interruptions preserve both prior tools, all receipts, exact docs and usable doctor. Runtime ZIP members and shipped migration/public commands execute. Disposable committed component tuples derive from this exact source and real generated docs; they are not the published release tuple. Controlled adversarial response/transport tests remain explicit controls. No K01-K05, RP42/RP44/RP45/RP46, published deployment, Apple execution, power-loss or concurrent-reader guarantee is inherited.",
+  "source_sha": "c83007d83fdf4177667d48994207796c9ee97e15"
+}

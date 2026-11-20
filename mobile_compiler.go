@@ -90,7 +90,7 @@ func detectLegacySource(src string) bool {
 }
 
 func compileForMobile(src string, requestedName string, sign bool) mobileCompileResponse {
-	return compileForMobileMode(src, requestedName, string(MobileCompileModeAuto), sign)
+	return compileForMobileMode(src, requestedName, string(MobileCompileModeV2), sign)
 }
 
 func compileForMobileMode(src string, requestedName string, mode string, sign bool) mobileCompileResponse {
@@ -142,7 +142,7 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 
 	selectedMode := MobileCompileMode(strings.ToLower(strings.TrimSpace(mode)))
 	if selectedMode == "" {
-		selectedMode = MobileCompileModeAuto
+		selectedMode = MobileCompileModeV2
 	}
 
 	if selectedMode == MobileCompileModeAuto {

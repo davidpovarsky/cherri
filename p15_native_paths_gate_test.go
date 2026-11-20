@@ -1,0 +1,475 @@
+package main
+
+import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/shortcutcompare"
+	"howett.net/plist"
+)
+
+const p15BRG18Producer = "10000000-0000-4000-8000-000000000018"
+const p15BRG18Region = "20000000-0000-4000-8000-000000000018"
+
+// JSON has no native data/date scalar. Its strings remain strings; plist inputs
+// independently exercise the actual data/date categories, including nested data.
+func p15BRG18NativeRoot(jsonInput bool) map[string]any {
+	var data any = []byte{0, 1, 128, 254, 255}
+	var date any = time.Date(2026, 11, 20, 1, 2, 3, 0, time.UTC)
+	if jsonInput {
+		data, date = "AAGA/v8=", "2026-11-20T01:02:03Z"
+	}
+	var root = baseTestHeader()
+	root["BRG18UnknownHeader"] = map[string]any{
+		"bytes": data, "date": date, "big": uint64(9007199254740993),
+		"negative": int64(-9007199254740993), "real": 1.25,
+		"false": false, "zero": uint64(0), "empty": "", "array": []any{}, "map": map[string]any{},
+		"ordered": []any{"first", data, date, "last"}, "uuidLikeLiteral": p15BRG18Producer,
+	}
+	var unknown = p15AcceptanceAction("com.example.brg18.future", map[string]any{
+		"UUID": p15BRG18Producer, "CustomOutputName": "BRG18 exact result",
+		"Opaque": map[string]any{"payload": data, "date": date, "nested": []any{false, uint64(0), "0", []any{uint64(9007199254740993)}}},
+	})
+	unknown["BRG18UnknownActionField"] = map[string]any{"future": []any{"left", false, "right"}}
+	var descriptor = p15AcceptanceAction("com.example.brg18.intent", map[string]any{
+		"AppIntentDescriptor": map[string]any{
+			"AppIntentIdentifier": "BRG18FutureIntent", "BundleIdentifier": "com.example.brg18", "Name": "Synthetic BRG18",
+			"TeamIdentifier": "BRG18TEAM", "UnknownDescriptor": map[string]any{"data": data, "date": date, "number": uint64(9007199254740993)},
+		},
+		"IntentAppDefinition": map[string]any{"BundleIdentifier": "com.example.brg18", "TeamIdentifier": "BRG18TEAM", "Future": false},
+		"mode":                "future-wire-variant", "payload": []any{"preserve", uint64(0), false},
+	})
+	var chain = []any{
+		map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFDictionaryContentItem"},
+		map[string]any{"Type": "WFDictionaryValueVariableAggrandizement", "DictionaryKey": "payload"},
+		map[string]any{"Type": "WFPropertyVariableAggrandizement", "PropertyName": "Name", "Future": []any{false, uint64(0)}},
+	}
+	root["WFWorkflowActions"] = []any{
+		p15AcceptanceAction("is.workflow.actions.comment", map[string]any{"WFCommentActionText": "BRG18_READABLE"}),
+		p15AcceptanceAction("is.workflow.actions.appearance", map[string]any{"operation": "set", "style": "dark"}),
+		p15AcceptanceAction("is.workflow.actions.appearance", map[string]any{}),
+		unknown,
+		p15AcceptanceAction("is.workflow.actions.getvariable", map[string]any{"WFVariable": p15AcceptanceRef(p15BRG18Producer, chain)}),
+		p15AcceptanceAction("is.workflow.actions.conditional", map[string]any{
+			"GroupingIdentifier": "BRG18_OPAQUE_REGION", "WFControlFlowMode": uint64(0), "WFCondition": uint64(4),
+			"WFInput": p15AcceptanceRef(p15BRG18Producer, nil), "WFConditionalActionString": "alpha", "WFNumberValue": "9",
+		}),
+		descriptor,
+		p15AcceptanceAction("is.workflow.actions.conditional", map[string]any{
+			"GroupingIdentifier": "BRG18_OPAQUE_REGION", "WFControlFlowMode": uint64(2), "UUID": p15BRG18Region,
+			"CustomOutputName": "BRG18 region result",
+		}),
+		p15AcceptanceAction("is.workflow.actions.getvariable", map[string]any{"WFVariable": p15AcceptanceRef(p15BRG18Region, nil)}),
+		p15AcceptanceAction("is.workflow.actions.notification", map[string]any{"WFNotificationActionBody": "omitted sound"}),
+		p15AcceptanceAction("is.workflow.actions.notification", map[string]any{"WFNotificationActionBody": "explicit false", "WFNotificationActionSound": false}),
+		p15AcceptanceAction("is.workflow.actions.exit", map[string]any{}),
+		map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.exit"},
+	}
+	root["WFWorkflowImportQuestions"] = []any{map[string]any{
+		"ActionIndex": uint64(0), "Category": "Parameter", "ParameterKey": "WFCommentActionText", "Text": "Synthetic exact target", "DefaultValue": "BRG18_READABLE",
+	}}
+	return root
+}
+
+func p15BRG18ExactError(expected, actual map[string]any) error {
+	if comparison := shortcutcompare.CompareDocumentsExact(expected, actual); !comparison.Equal {
+		return fmt.Errorf("BRG18 exact native tree/reference mismatch: %+v", comparison)
+	}
+	if hasImportProvenanceKey(actual) {
+		return fmt.Errorf("BRG18 compiler provenance escaped into native data")
+	}
+	return nil
+}
+
+func p15BRG18Decode(t *testing.T, raw []byte) map[string]any {
+	t.Helper()
+	var actual map[string]any
+	if _, err := plist.Unmarshal(raw, &actual); err != nil {
+		t.Fatal(err)
+	}
+	return actual
+}
+
+func p15BRG18ReadabilityError(source []byte, plan HybridImportPlan) error {
+	var natural = map[int]bool{0: true, 1: true, 8: true, 9: true, 10: true, 11: true}
+	if len(plan.Decisions) != 13 || plan.NaturalVerifiedCount != 6 || plan.ExactNativeCount != 7 || plan.SourceInvalidCount != 0 {
+		return fmt.Errorf("BRG18 complete native/readable decision inventory changed")
+	}
+	for index, decision := range plan.Decisions {
+		var classification = "EXACT_NATIVE_FALLBACK"
+		if natural[index] {
+			classification = "NATURAL_VERIFIED"
+		}
+		if decision.ActionIndex != index || decision.Classification != classification {
+			return fmt.Errorf("BRG18 action/region/variant classification changed at %d", index)
+		}
+	}
+	var program, err = p15BRG19Parse(string(source))
+	if err != nil {
+		return err
+	}
+	var calls []*syntax.CallExpr
+	for _, statement := range program.Statements {
+		expression, okay := statement.(*syntax.ExprStmt)
+		if !okay {
+			continue
+		}
+		call, okay := expression.Expr.(*syntax.CallExpr)
+		if !okay {
+			continue
+		}
+		if _, okay := call.Callee.(*syntax.IdentExpr); okay {
+			calls = append(calls, call)
+		}
+	}
+	var names = []string{"comment", "darkMode", "getVariable", "showNotification", "showNotification", "stop"}
+	if len(calls) != len(names) {
+		return fmt.Errorf("BRG18 supported calls were replaced by opaque source or extra calls")
+	}
+	for index, call := range calls {
+		if call.Callee.(*syntax.IdentExpr).Name != names[index] {
+			return fmt.Errorf("BRG18 readable call identity/order changed at %d", index)
+		}
+		switch index {
+		case 0, 3, 4:
+			var expected = map[int]string{0: "BRG18_READABLE", 3: "omitted sound", 4: "explicit false"}[index]
+			literal, okay := call.PrimaryArg.(*syntax.LiteralExpr)
+			if !okay || literal.Value != expected {
+				return fmt.Errorf("BRG18 readable parameter changed at %d", index)
+			}
+			if index != 4 && len(call.NamedArgs) != 0 {
+				return fmt.Errorf("BRG18 omitted readable parameters were invented")
+			}
+			if index == 4 {
+				if len(call.NamedArgs) != 1 || call.NamedArgs[0].Label != "playSound" {
+					return fmt.Errorf("BRG18 explicit false parameter became omitted")
+				}
+				literal, okay := call.NamedArgs[0].Value.(*syntax.LiteralExpr)
+				if !okay || literal.Type != syntax.TokenFalse {
+					return fmt.Errorf("BRG18 explicit false parameter changed")
+				}
+			}
+		case 1, 5:
+			if call.PrimaryArg != nil || len(call.NamedArgs) != 0 {
+				return fmt.Errorf("BRG18 readable zero-argument variant changed")
+			}
+		case 2:
+			reference, okay := call.PrimaryArg.(*syntax.CallExpr)
+			if !okay || len(call.NamedArgs) != 0 {
+				return fmt.Errorf("BRG18 readable reference consumer became opaque")
+			}
+			member, okay := reference.Callee.(*syntax.MemberExpr)
+			if !okay || member.Property != "ref" {
+				return fmt.Errorf("BRG18 native reference is no longer a structured source call")
+			}
+			target, okay := member.Target.(*syntax.IdentExpr)
+			if !okay || target.Name != "native" {
+				return fmt.Errorf("BRG18 reference namespace changed")
+			}
+		}
+	}
+	return nil
+}
+
+func p15BRG18Log(t *testing.T, name string, files map[string][]byte) {
+	t.Helper()
+	var receipt = map[string]any{"scenario": name, "exact_native_tree": true, "apple_runtime_observed": false}
+	for key, data := range files {
+		receipt[key] = map[string]any{"bytes": len(data), "sha256": fmt.Sprintf("%x", sha256.Sum256(data)), "base64": base64.StdEncoding.EncodeToString(data)}
+	}
+	var raw, err = json.Marshal(receipt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("BRG18_NATIVE_PATH_RECEIPT:" + string(raw))
+}
+
+func TestBackendRecovery18PublicNativeImportPaths(t *testing.T) {
+	var binary = p15AcceptanceCLI(t)
+	for _, format := range []string{"xml", "binary", "shortcut", "json"} {
+		t.Run(format, func(t *testing.T) {
+			var expected = p15BRG18NativeRoot(format == "json")
+			var raw []byte
+			var err error
+			if format == "json" {
+				raw, err = json.Marshal(expected)
+			} else {
+				var encoding = plist.BinaryFormat
+				if format == "xml" {
+					encoding = plist.XMLFormat
+				}
+				raw, err = plist.Marshal(expected, encoding)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			var directory = t.TempDir()
+			var filename = map[string]string{"xml": "source.xml.plist", "binary": "source.binary.plist", "shortcut": "source.shortcut", "json": "source.json"}[format]
+			var input = filepath.Join(directory, filename)
+			p15BRG19Write(t, input, raw)
+			for _, fidelity := range []string{"hybrid", "lossless"} {
+				t.Run(fidelity, func(t *testing.T) {
+					var sourcePath = filepath.Join(directory, fidelity+".cherri")
+					var outputPath = filepath.Join(directory, fidelity+".shortcut")
+					var planPath = filepath.Join(directory, fidelity+"-plan.json")
+					var arguments = []string{"import", input, "--fidelity=" + fidelity, "--output=" + sourcePath}
+					if fidelity == "hybrid" {
+						arguments = append(arguments, "--plan-json="+planPath)
+					}
+					var out, stderr, importErr = p15RunCLI(t, binary, directory, nil, arguments...)
+					if importErr != nil {
+						t.Fatalf("public %s/%s import failed: %v\n%s\n%s", format, fidelity, importErr, out, stderr)
+					}
+					var source = p15BRG19Read(t, sourcePath)
+					var files = map[string][]byte{"input": raw, "source": source}
+					if fidelity == "hybrid" {
+						var plan HybridImportPlan
+						files["plan"] = p15BRG19Read(t, planPath)
+						if err := json.Unmarshal(files["plan"], &plan); err != nil {
+							t.Fatal(err)
+						}
+						if err := p15BRG18ReadabilityError(source, plan); err != nil {
+							t.Fatal(err)
+						}
+					}
+					out, stderr, err = p15RunCLI(t, binary, directory, nil, "compile", sourcePath, "--skip-sign", "--output="+outputPath)
+					if err != nil {
+						t.Fatalf("public imported compile failed: %v\n%s\n%s", err, out, stderr)
+					}
+					files["output"] = p15BRG19Read(t, outputPath)
+					if err := p15BRG18ExactError(expected, p15BRG18Decode(t, files["output"])); err != nil {
+						t.Fatal(err)
+					}
+					if !bytes.Equal(raw, p15BRG19Read(t, input)) || !bytes.Equal(source, p15BRG19Read(t, sourcePath)) {
+						t.Fatal("import/compile changed the original input or generated source")
+					}
+					p15BRG18Log(t, format+"/"+fidelity, files)
+				})
+			}
+		})
+	}
+}
+
+func TestBackendRecovery18ExactWorkflowBypass(t *testing.T) {
+	for _, encoding := range []string{"xml", "binary"} {
+		t.Run(encoding, func(t *testing.T) {
+			var expected = p15BRG18NativeRoot(false)
+			var format = plist.XMLFormat
+			if encoding == "binary" {
+				format = plist.BinaryFormat
+			}
+			var raw, err = plist.Marshal(expected, format)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var literal = string(raw)
+			if encoding == "binary" {
+				literal = "b64:" + base64.StdEncoding.EncodeToString(raw)
+			}
+			var source = "native.workflow(native.plist(" + formatCherriDoubleQuotedString(literal) + "), exact: true)\n"
+			var program, parseErr = p15BRG19Parse(source)
+			if parseErr != nil || len(program.Statements) != 1 {
+				t.Fatal("full-native input was not the single authored bypass call", parseErr)
+			}
+			var actual, compileErr = CompileSourceToPlist("brg18-full-native.cherri", source)
+			if compileErr != nil {
+				t.Fatal(compileErr)
+			}
+			if err := p15BRG18ExactError(expected, p15BRG18Decode(t, actual)); err != nil {
+				t.Fatal(err)
+			}
+			p15BRG18Log(t, "full-native/"+encoding, map[string][]byte{"input": raw, "source": []byte(source), "output": actual})
+		})
+	}
+}
+
+func TestBackendRecovery18RejectsNativeAndReadabilityFaults(t *testing.T) {
+	var expected = p15BRG18NativeRoot(false)
+	var faults = []string{"header", "action_field", "data_type", "data_byte", "date_type", "date_value", "large_integer", "negative_integer", "false_type", "zero_type", "empty_text", "empty_array", "empty_map", "order", "descriptor", "variant", "producer_uuid", "consumer_uuid", "chain_order", "region_group", "region_result", "omitted_default", "explicit_false", "missing_parameters", "question_index", "provenance"}
+	for _, fault := range faults {
+		t.Run(fault, func(t *testing.T) {
+			var actual = p15BRG18NativeRoot(false)
+			var header = actual["BRG18UnknownHeader"].(map[string]any)
+			var actions = actual["WFWorkflowActions"].([]any)
+			var params = func(index int) map[string]any {
+				return actions[index].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+			}
+			switch fault {
+			case "header":
+				delete(actual, "BRG18UnknownHeader")
+			case "action_field":
+				delete(actions[3].(map[string]any), "BRG18UnknownActionField")
+			case "data_type":
+				header["bytes"] = "AAGA/v8="
+			case "data_byte":
+				header["bytes"] = []byte{0, 1, 128, 255, 254}
+			case "date_type":
+				header["date"] = "2026-11-20T01:02:03Z"
+			case "date_value":
+				header["date"] = header["date"].(time.Time).Add(time.Second)
+			case "large_integer":
+				header["big"] = uint64(9007199254740992)
+			case "negative_integer":
+				header["negative"] = int64(-9007199254740992)
+			case "false_type":
+				header["false"] = int64(0)
+			case "zero_type":
+				header["zero"] = "0"
+			case "empty_text":
+				delete(header, "empty")
+			case "empty_array":
+				header["array"] = ""
+			case "empty_map":
+				header["map"] = []any{}
+			case "order":
+				actions[3], actions[4] = actions[4], actions[3]
+			case "descriptor":
+				delete(params(6)["AppIntentDescriptor"].(map[string]any), "UnknownDescriptor")
+			case "variant":
+				params(1)["style"] = "light"
+			case "producer_uuid":
+				params(3)["UUID"] = p15BRG18Region
+			case "consumer_uuid":
+				params(4)["WFVariable"].(map[string]any)["Value"].(map[string]any)["OutputUUID"] = p15BRG18Region
+			case "chain_order":
+				var chain = params(4)["WFVariable"].(map[string]any)["Value"].(map[string]any)["Aggrandizements"].([]any)
+				chain[0], chain[2] = chain[2], chain[0]
+			case "region_group":
+				params(7)["GroupingIdentifier"] = "OTHER_GROUP"
+			case "region_result":
+				params(8)["WFVariable"].(map[string]any)["Value"].(map[string]any)["OutputUUID"] = p15BRG18Producer
+			case "omitted_default":
+				params(9)["WFNotificationActionSound"] = true
+			case "explicit_false":
+				delete(params(10), "WFNotificationActionSound")
+			case "missing_parameters":
+				actions[12].(map[string]any)["WFWorkflowActionParameters"] = map[string]any{}
+			case "question_index":
+				actual["WFWorkflowImportQuestions"].([]any)[0].(map[string]any)["ActionIndex"] = int64(1)
+			case "provenance":
+				actual[importProvenanceKey] = map[string]any{"leaked": true}
+			}
+			if p15BRG18ExactError(expected, actual) == nil {
+				t.Fatalf("native oracle accepted %s", fault)
+			}
+		})
+	}
+	var directory = t.TempDir()
+	var raw, err = plist.Marshal(expected, plist.XMLFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var input = filepath.Join(directory, "readability.shortcut")
+	p15BRG19Write(t, input, raw)
+	var result, importErr = ExecuteImportPipeline(ImportOptions{InputPath: input, OutputPath: filepath.Join(directory, "readability.cherri"), Fidelity: "hybrid"})
+	if importErr != nil || result.Plan == nil {
+		t.Fatal(importErr)
+	}
+	if err := p15BRG18ReadabilityError([]byte(result.FinalSource), *result.Plan); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"plan_natural", "plan_opaque", "source_call", "encoded_comment_only"} {
+		t.Run(fault, func(t *testing.T) {
+			var encoded, err = json.Marshal(result.Plan)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var changed HybridImportPlan
+			if err := json.Unmarshal(encoded, &changed); err != nil {
+				t.Fatal(err)
+			}
+			var source = result.FinalSource
+			switch fault {
+			case "plan_natural":
+				changed.Decisions[0].Classification = "EXACT_NATIVE_FALLBACK"
+			case "plan_opaque":
+				changed.Decisions[6].Classification = "NATURAL_VERIFIED"
+			case "source_call":
+				source = strings.Replace(source, "comment(\"BRG18_READABLE\")", "comment(\"WRONG\")", 1)
+			case "encoded_comment_only":
+				var literal, encodeErr = encodePlistValueToLiteral(expected)
+				if encodeErr != nil {
+					t.Fatal(encodeErr)
+				}
+				source = "native.workflow(native.plist(" + formatCherriDoubleQuotedString(literal) + "), exact: true)\n"
+			}
+			if p15BRG18ReadabilityError([]byte(source), changed) == nil {
+				t.Fatal("readability oracle accepted", fault)
+			}
+		})
+	}
+}
+
+func TestBackendRecovery18ReadabilityRejectsCompiledFallbacks(t *testing.T) {
+	var expected = p15BRG18NativeRoot(false)
+	var raw, err = plist.Marshal(expected, plist.XMLFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var directory = t.TempDir()
+	var input = filepath.Join(directory, "readable.shortcut")
+	p15BRG19Write(t, input, raw)
+	var imported, importErr = ExecuteImportPipeline(ImportOptions{InputPath: input, OutputPath: filepath.Join(directory, "readable.cherri"), Fidelity: "hybrid"})
+	if importErr != nil || imported.Plan == nil {
+		t.Fatal(importErr)
+	}
+	if err := p15BRG18ReadabilityError([]byte(imported.FinalSource), *imported.Plan); err != nil {
+		t.Fatal(err)
+	}
+	var program, parseErr = p15BRG19Parse(imported.FinalSource)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
+	var calls []*syntax.CallExpr
+	for _, statement := range program.Statements {
+		expression, okay := statement.(*syntax.ExprStmt)
+		if !okay {
+			continue
+		}
+		call, okay := expression.Expr.(*syntax.CallExpr)
+		if !okay {
+			continue
+		}
+		if _, okay := call.Callee.(*syntax.IdentExpr); okay {
+			calls = append(calls, call)
+		}
+	}
+	if len(calls) != 6 {
+		t.Fatal("actual importer changed the six supported readable calls", len(calls))
+	}
+	var indices = []int{0, 1, 8, 9, 10, 11}
+	for ordinal, name := range []string{"comment", "static_variant", "reference", "omitted_parameter", "explicit_false", "empty_parameters"} {
+		t.Run(name, func(t *testing.T) {
+			var call = calls[ordinal]
+			var begin, end = call.Span.Start.ByteOffset, call.Span.End.ByteOffset
+			if begin < 0 || end <= begin || end > len(imported.FinalSource) {
+				t.Fatal("invalid actual call span")
+			}
+			var action = expected["WFWorkflowActions"].([]any)[indices[ordinal]].(map[string]any)
+			var literal, encodeErr = encodePlistValueToLiteral(action["WFWorkflowActionParameters"].(map[string]any))
+			if encodeErr != nil {
+				t.Fatal(encodeErr)
+			}
+			var replacement = "native.action(" + formatCherriDoubleQuotedString(action["WFWorkflowActionIdentifier"].(string)) + ", parameters: native.plist(" + formatCherriDoubleQuotedString(literal) + "))"
+			var changed = imported.FinalSource[:begin] + replacement + imported.FinalSource[end:]
+			var actual, compileErr = CompileSourceToPlist("brg18-readable-fallback.cherri", changed)
+			if compileErr != nil {
+				t.Fatal("causal fallback control did not compile", compileErr)
+			}
+			if err := p15BRG18ExactError(expected, p15BRG18Decode(t, actual)); err != nil {
+				t.Fatal("fallback control changed native semantics", err)
+			}
+			if p15BRG18ReadabilityError([]byte(changed), *imported.Plan) == nil {
+				t.Fatal("readability accepted a compiled exact-native substitution for supported typed call", name)
+			}
+		})
+	}
+}

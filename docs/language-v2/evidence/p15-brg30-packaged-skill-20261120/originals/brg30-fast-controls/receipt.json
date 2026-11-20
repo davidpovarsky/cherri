@@ -1,0 +1,35 @@
+{
+  "source_sha": "c83007d83fdf4177667d48994207796c9ee97e15",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "head_after": "c83007d83fdf4177667d48994207796c9ee97e15",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestPackagedSkill(ProducerInventory|EventParserControls|SourceBudget)$",
+    "./tools/language-acceptance"
+  ],
+  "started_utc": "2026-11-20T10:42:54.863915+00:00",
+  "finished_utc": "2026-11-20T10:43:02.903908+00:00",
+  "elapsed_seconds": 8.03100000001723,
+  "exit_code": 0,
+  "timed_out": false,
+  "GOMAXPROCS": "2",
+  "go_jsonl_bytes": 145448,
+  "go_jsonl_sha256": "46de40c0787ab3279c22196b6272b9f4c6083985745d72ec7b7ac8d03d3561e4",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "event_counts": {
+    "run": 126,
+    "output": 252,
+    "pass": 126
+  },
+  "failed_tests": [],
+  "json_decode_errors": [],
+  "free_before_bytes": 5839642624,
+  "free_after_bytes": 5828558848
+}
