@@ -201,6 +201,7 @@ jobs:
         run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_*.py' -v
 
       - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
+        id: native_qa
         env:
           CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
           QA_PROBE_LEVEL: ${{ inputs.probe_level || 'full' }}
@@ -218,6 +219,16 @@ jobs:
             "$QA_CAPTURE_FULL_EDITOR" \
             "$QA_MAX_EDITOR_PAGES" \
             "$QA_REQUIRE_RUNTIME"
+
+      - name: Retain explicitly incomplete acquisition after interruption
+        if: always()
+        env:
+          CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
+        run: |
+          python3 tools/shortcuts-simulator-qa/qa_terminal_receipts.py finalize \
+            --repo . --root "artifacts/cherri-ios27-simulator-qa/${{ github.run_id }}" \
+            --source-sha "${{ github.sha }}" --run-id "${{ github.run_id }}" \
+            --step-outcome "${{ steps.native_qa.outcome }}"
 
       - name: Stage synthetic text artifacts; quarantine raster and raw inputs
         id: privacy_gate
