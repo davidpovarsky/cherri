@@ -34,6 +34,7 @@ type Symbol struct {
 	knownAbsent           bool
 	dictionaryOrigin      *syntax.MapExpr
 	nativeReferenceTarget bool
+	nativeListValue       bool
 }
 
 // Scope represents a lexical scope.
@@ -111,6 +112,7 @@ type Analyzer struct {
 	setupUses              map[*syntax.SetupDecl]int
 	allowedSetupExpression syntax.Expression
 	rawNativeDataContext   bool
+	inlineDictionaryArray  bool
 	nativeNamespace        *Symbol
 	nativeReferenceCalls   map[syntax.Expression]bool
 	typeAnnotations        map[syntax.TypeAnnotation]types.Type
@@ -826,6 +828,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 		if !s.Mutable {
 			symbol.dictionaryOrigin = a.dictionaryOrigins[s.Value]
+			symbol.nativeListValue = a.isNativeListElement(s.Value, valType, scope)
 		}
 		narrowAssignedValue(symbol, valType)
 		scope.Define(symbol)
@@ -1146,6 +1149,12 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 }
 
 func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scope) types.Type {
+	if a.inlineDictionaryArray {
+		if _, literal := expr.(*syntax.ListExpr); !literal {
+			a.inlineDictionaryArray = false
+			defer func() { a.inlineDictionaryArray = true }()
+		}
+	}
 	if a.rawNativeDataContext {
 		switch expr.(type) {
 		case *syntax.LiteralExpr, *syntax.ListExpr, *syntax.MapExpr:
@@ -1387,12 +1396,15 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 	case *syntax.ListExpr:
 		elements := make([]types.Type, 0, len(e.Elements))
-		for _, el := range e.Elements {
+		for i, el := range e.Elements {
 			elementType := a.analyzeExpression(el, scope)
 			if isVoidValue(elementType) {
 				a.error(CodeArgumentType, el.NodeSpan(), "Void cannot be stored as a list value")
 			} else {
 				a.requirePresentTransport(el, elementType, "List element")
+				if !a.inlineDictionaryArray && !a.rawNativeDataContext && a.isNativeListElement(el, elementType, scope) {
+					a.error(CodeNestedNativeList, el.NodeSpan(), fmt.Sprintf("nested List-valued element at item %d has no verified native content-row encoding; preserve nested arrays in Dictionary fields", i))
+				}
 			}
 			elements = append(elements, elementType)
 		}
@@ -1412,7 +1424,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 				seenKeys[litKey.Value] = true
 			}
 			keyType := a.analyzeExpression(entry.Key, scope)
-			valueType := a.analyzeExpression(entry.Value, scope)
+			valueType := a.analyzeDictionaryValue(entry.Value, scope)
 			if isVoidValue(keyType) {
 				a.error(CodeArgumentType, entry.Key.NodeSpan(), "Void cannot be a dictionary key")
 			} else {

@@ -39,6 +39,9 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Align native nested-List diagnostics across analysis, check, service and compile (2026-11-20). Original13-case mismatch reproduced; clean3852 has151 root+109 core named passes and official47/17 parity, zero failures/skips. Dictionary inline arrays/raw native data and explicitly unverified reference rows retain scope. L01/T05/F04/FN05 native semantics remain open. [Evidence](docs/language-v2/p15-native-list-analysis-boundary-20261120.md).
+
+
 - [x] Complete independent RP42/RP44/RP45 Linux component producers (2026-11-20). Run44697366234 attempt1 at clean9654056e passed210/233/235 outer and14/39/41 actual root events, zero failures/skips; all64 immutable source blobs, raw/process bytes and six distinct tier records were independently checked. BusyBox10 original-byte controls passed separately. Original failed source/run receipts remain unchanged. Published tuple, final integrated179, Apple and deployment remain open. [Exact component proof](docs/language-v2/p15-extracted-install-linux-20261120.md).
 
 - [x] Complete the RP42 local extracted-install producer and preserve first Linux failures (2026-11-20). Clean95611881 passed210 outer and14 actual scenario events with both CLI/skill-package records,64 immutable source hashes, zero failures/skips and strict incomplete/final-rejection controls. Original Linux44694030530 remains failed; its94 successful inner observations do not replace formal success. Actual BusyBox10 byte controls passed separately. RP44/RP45 full strict replay, coherent published consumers and final179 remain pending. [Proof and original receipts](docs/language-v2/p15-extracted-install-linux-followup-20261120.md).
