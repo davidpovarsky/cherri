@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "8d2c30e65b050d34de36bbf374f37e3183d3aea0",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "results": [
+    {
+      "name": "collector",
+      "exitCode": 0,
+      "durationSeconds": 6.766,
+      "logSha256": "7993018d9fd531f7efb3d7990e9b3746cb3a8fa07fa3a2779f6078c389a9eb28"
+    },
+    {
+      "name": "swift-deadline-build",
+      "exitCode": 0,
+      "durationSeconds": 7.578,
+      "logSha256": "a7b33fbe782d6d8ddd133b3ef9f4d6f85850e2f2b44f441fbda56e9d86981914"
+    },
+    {
+      "name": "swift-deadline-exec",
+      "exitCode": 0,
+      "durationSeconds": 0.094,
+      "logSha256": "a0269636d1646301af198aa6958d72208329d54577f07e7a643836abf933eab2"
+    },
+    {
+      "name": "swift-ui-parse",
+      "exitCode": 0,
+      "durationSeconds": 0.703,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "allFocusedChecksPassed": true,
+  "appleRuntime": "NOT_RUN",
+  "scope": "Local harness/collector component verification only. Real UIKit paste, Cherri app startup and complete iOS suite remain NOT_RUN on this source.",
+  "sourceSha256": {
+    "ios/CherriUITests/CherriEditorUITests.swift": "0092c081997a8a8a8c098b2adad5b7496519b3dbb72fcf60276c473bf8e61e06",
+    "ios/CherriUITests/EditorStartupDeadline.swift": "90542205dac82890e0a2808e72d05218b5be4eb6598928588ff971fff83e610d",
+    "ios/CherriTests/CherriEditorInputTests.swift": "90a961faa13a7252e17d8cd47926d6026ec13e126be47d60e314bf60c2953fe7",
+    "ios/scripts/collect_ios_test_evidence.py": "e019c28a750643097ba9f43070f7d93c7df65634942df4899077fd44b41135e6",
+    "ios/scripts/test_collect_ios_test_evidence.py": "be1946baad3bf18b709c731d5cc4276ab1e5cb24c73a0f0763cc8bad3777a264",
+    "ios/scripts/verify_editor_startup.swift": "5131963cce26051a9e479b56a51faf74fd5706767dcd0ff3af771dcc1c925e28",
+    ".github/workflows/ios-build.yml": "fa63589ca02e46bd1e80fb47b0ef184a1299e21b576826385f16160c61768d2d"
+  },
+  "localCounts": {
+    "pythonCollectorTests": 27,
+    "compiledSwiftDeadlineAssertions": 23
+  },
+  "retainedR2Failure": {
+    "source": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+    "runId": 44634890917,
+    "artifactId": 14587693158,
+    "originalZipSha256": "99bc5ae03a3b9760e89a9e40aa91b72492999631f8d4af3c8afe7d8f69c99ca9",
+    "observedPassed": 42,
+    "observedFailed": 11
+  }
+}
