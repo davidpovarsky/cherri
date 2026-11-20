@@ -145,3 +145,104 @@ func TestP15DateFieldNativeOracleRejectsCausalCorruption(t *testing.T) {
 		})
 	}
 }
+
+func p15DateFieldLiteral(value any) (string, bool) {
+	if text, ok := value.(string); ok {
+		return text, true
+	}
+	if wrapper, ok := value.(map[string]any); ok && wrapper["WFSerializationType"] == "WFTextTokenString" {
+		if text, ok := wrapper["Value"].(map[string]any); ok {
+			var ranges, _ = text["attachmentsByRange"].(map[string]any)
+			var literal, literalOK = text["string"].(string)
+			return literal, literalOK && len(ranges) == 0
+		}
+	}
+	return "", false
+}
+
+func TestP15DateFieldLiteralAndOmittedSlots(t *testing.T) {
+	for _, legacy := range []bool{false, true} {
+		for _, omit := range []string{"neither", "first", "second"} {
+			t.Run(fmt.Sprintf("legacy_%v/%s", legacy, omit), func(t *testing.T) {
+				var first = "2001-02-03T04:05:06Z"
+				var second = "2001-02-03T04:06:06Z"
+				var source = fmt.Sprintf("getTimeBetweenDates(%q, %q, \"Seconds\")\n", first, second)
+				if omit == "first" {
+					source = fmt.Sprintf("getTimeBetweenDates(endDate: %q, unit: \"Seconds\")\n", second)
+				} else if omit == "second" {
+					source = fmt.Sprintf("getTimeBetweenDates(%q, unit: \"Seconds\")\n", first)
+				}
+				if legacy {
+					if omit == "first" {
+						source = fmt.Sprintf("getTimeBetweenDates(nil, %q, \"Seconds\")\n", second)
+					} else if omit == "second" {
+						source = fmt.Sprintf("getTimeBetweenDates(%q, nil, \"Seconds\")\n", first)
+					}
+					source = "#include 'actions/calendar'\n" + source
+				} else if omit != "first" {
+					// The existing V2 API requires a reference in the first slot.
+					// Preserve that restriction while testing one-sided omission.
+					source = fmt.Sprintf("let literalFirst = date(%q)\n", first) + strings.Replace(source, fmt.Sprintf("%q", first), "literalFirst", 1)
+				}
+				var actions = p15DateFieldActions(t, source, legacy)
+				var interval = actions[len(actions)-1]
+				var p = p15Param(interval)
+				if interval["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettimebetweendates" || p["WFTimeUntilUnit"] != "Seconds" {
+					t.Fatalf("interval or units changed: %#v", interval)
+				}
+				for i, key := range []string{"WFTimeUntilFromDate", "WFInput"} {
+					var value, present = p[key]
+					if omit == []string{"first", "second"}[i] {
+						if present {
+							t.Fatalf("omitted Date field %s was invented: %#v", key, value)
+						}
+						continue
+					}
+					var want = []string{first, second}[i]
+					if literal, ok := p15DateFieldLiteral(value); ok && literal == want {
+						continue
+					}
+					// Verify the real Date/Text producer rather than inventing an
+					// expected UUID or permitting a borrowed field value.
+					var matched bool
+					for _, producer := range actions[:len(actions)-1] {
+						var parameters = p15Param(producer)
+						var literal, ok = p15DateFieldLiteral(parameters["WFTextActionText"])
+						var producerOK = producer["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" && ok && literal == want
+						if producer["WFWorkflowActionIdentifier"] == "is.workflow.actions.date" {
+							producerOK = parameters["WFDateActionMode"] == "Specified Date" && parameters["WFDateActionDate"] == want
+						}
+						if !producerOK {
+							continue
+						}
+						var token = map[string]any{"Type": "ActionOutput", "OutputUUID": parameters["UUID"], "OutputName": parameters["CustomOutputName"]}
+						matched = p15DateFieldReferenceError(value, token) == nil
+					}
+					if !matched {
+						t.Errorf("%s lost authored literal %q: %#v", key, want, value)
+					}
+				}
+			})
+		}
+	}
+}
+
+func TestP15DateFieldPreservesV2FirstSlotReferenceRequirement(t *testing.T) {
+	var _, err = CompileSourceToPlist("date-literal-restriction.cherri", "getTimeBetweenDates(\"2001-02-03T04:05:06Z\")\n")
+	if err == nil || !strings.Contains(err.Error(), "E_ARGUMENT_TYPE") || !strings.Contains(err.Error(), "startDate") {
+		t.Fatalf("existing first-slot reference restriction changed: %v", err)
+	}
+}
+
+func TestP15DateFieldDoesNotWrapUnrelatedInputs(t *testing.T) {
+	var actions = p15DateFieldActions(t, "let d = date(\"2001-02-03T04:05:06Z\")\ntypeOf(d)\ncount(d, \"Items\")\n", false)
+	if len(actions) != 3 {
+		t.Fatalf("unrelated observation graph changed: %#v", actions)
+	}
+	for i, key := range []string{"WFInput", "Input"} {
+		var value, ok = p15Param(actions[i+1])[key].(map[string]any)
+		if !ok || value["WFSerializationType"] != "WFTextTokenAttachment" {
+			t.Errorf("unrelated %s parameter was wrapped as Date text: %#v", key, value)
+		}
+	}
+}

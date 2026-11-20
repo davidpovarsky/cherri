@@ -434,6 +434,11 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 			continue
 		}
 
+		if value, handled := canonicalDateFieldValue(getFullActionIdentifier(), param.key, arguments[i]); handled {
+			params[param.key] = value
+			continue
+		}
+
 		if param.key == "WFContentItemFilter" {
 			val := arguments[i].value
 			if vv, ok := val.(varValue); ok {
