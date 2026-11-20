@@ -19,7 +19,7 @@ func CodecFingerprint() string {
 		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
 		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
 		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n\n" +
-		"text_literal_object_character:plain_text_producer:deferred_after_interpolated_calls:exact_output_reference:complete_utf16_placeholder_coverage:pure_string_without_references:enclosing_native_input=existing_result_handle:checked_output_contract\n"
+		"text_literal_object_character:plain_text_producer:deferred_after_interpolated_calls:exact_output_reference:complete_utf16_placeholder_coverage:pure_string_without_references:enclosing_native_input=existing_result_handle:checked_native_declaration_output_contract\n"
 	sum := sha256.Sum256([]byte(codecDescriptor))
 	return hex.EncodeToString(sum[:])
 }

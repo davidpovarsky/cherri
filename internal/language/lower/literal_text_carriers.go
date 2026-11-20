@@ -99,19 +99,22 @@ func (l *Lowerer) restoreNativeInputAfterLiteralCarriers(target *ir.NativeAction
 	return l.emitErr
 }
 
-// Multiple schema variants must agree that the identifier produces a value.
-// Unknown, Void and absent definitions cannot be promoted by inventing a UUID.
+// Native declaration variants must agree that the identifier produces a value.
+// Builtin macros may share their final native identifier while describing the
+// macro's aggregate result (for example embedFile and Text); they do not define
+// the output contract of this already-emitted native action.
 func (l *Lowerer) knownNativeValueOutput(identifier string) bool {
-	actions := l.registry.LookupByIdentifier(identifier)
-	if len(actions) == 0 {
-		return false
-	}
-	for _, action := range actions {
+	foundNative := false
+	for _, action := range l.registry.LookupByIdentifier(identifier) {
+		if action.Builtin || action.CompilerConstruct {
+			continue
+		}
+		foundNative = true
 		if !knownNativeValueOutputType(action.OutputType) {
 			return false
 		}
 	}
-	return true
+	return foundNative
 }
 
 func knownNativeValueOutputType(value types.Type) bool {
