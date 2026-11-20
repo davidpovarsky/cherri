@@ -1,0 +1,41 @@
+{
+  "source_commit": "83a613bc8a086900b6be6072d05505f05fc0993c",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalForwardingPublicRoutes$",
+    "."
+  ],
+  "started_at": "2026-11-20T05:10:09.763093+00:00",
+  "finished_at": "2026-11-20T05:10:26.233950+00:00",
+  "elapsed_seconds": 16.468,
+  "exit_code": 1,
+  "timed_out": false,
+  "passed": [],
+  "failed": [
+    "TestP15OptionalForwardingPublicRoutes/immutable_none",
+    "TestP15OptionalForwardingPublicRoutes/mutable_none",
+    "TestP15OptionalForwardingPublicRoutes/inferred_none",
+    "TestP15OptionalForwardingPublicRoutes/immutable_alias",
+    "TestP15OptionalForwardingPublicRoutes/returned_none_default",
+    "TestP15OptionalForwardingPublicRoutes/parameter_none",
+    "TestP15OptionalForwardingPublicRoutes/parameter_empty",
+    "TestP15OptionalForwardingPublicRoutes/named_parameter",
+    "TestP15OptionalForwardingPublicRoutes/later_assignment",
+    "TestP15OptionalForwardingPublicRoutes/returned_none",
+    "TestP15OptionalForwardingPublicRoutes/returned_empty_text",
+    "TestP15OptionalForwardingPublicRoutes/returned_false",
+    "TestP15OptionalForwardingPublicRoutes/returned_zero",
+    "TestP15OptionalForwardingPublicRoutes/returned_empty_list",
+    "TestP15OptionalForwardingPublicRoutes/returned_empty_map",
+    "TestP15OptionalForwardingPublicRoutes"
+  ],
+  "skipped": [],
+  "raw_sha256": "68f93e414ee3fb41deb31ed7ab2d0f79625e7a62b4435539fbe3eeaea6ab22f3",
+  "clean_after": true
+}
