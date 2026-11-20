@@ -41,19 +41,19 @@ func TestP15RawNativeJSONNullCannotDisappear(t *testing.T) {
 }
 
 func TestP15NativePlistEncodedNullCannotDisappear(t *testing.T) {
-	for _, payload := range []string{
-		"{\"Present\":false,\"Probe\":null}",
-		"{\"Nested\":{\"Probe\":null}}",
-		"{\"Rows\":[false,0,\"\",null]}",
+	for _, tc := range []struct{ payload, path string }{
+		{"{\"Present\":false,\"Probe\":null}", "$[\"Probe\"]"},
+		{"{\"Nested\":{\"Probe\":null}}", "$[\"Nested\"][\"Probe\"]"},
+		{"{\"Rows\":[false,0,\"\",null]}", "$[\"Rows\"][3]"},
 	} {
-		t.Run(payload, func(t *testing.T) {
-			literal, err := json.Marshal(payload)
+		t.Run(tc.payload, func(t *testing.T) {
+			literal, err := json.Marshal(tc.payload)
 			if err != nil {
 				t.Fatal(err)
 			}
 			source := "native.action(\"com.example.p15.null\",native.plist(" + string(literal) + "))"
 			raw, err := CompileSourceToPlist("p15-encoded-null.cherri", source)
-			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), p15T05NullCode) {
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), p15T05NullCode) || !strings.Contains(err.Error(), tc.path) {
 				if len(raw) > 0 {
 					t.Log("P15_RAW_NULL_NATIVE_BASE64:" + base64.StdEncoding.EncodeToString(raw))
 				}

@@ -1099,9 +1099,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		case syntax.TokenNone:
 			return types.NewOptional(types.Unknown)
 		case syntax.TokenNull:
-			if !a.rawNativeDataContext {
-				a.error(CodeNativeJSONNull, e.Span, "authored JSON null has no supported native value encoding; it cannot become none, empty text, or an omitted field")
-			}
+			// A raw escape does not create a plist-null representation. Reject
+			// explicit null before it can be omitted or coerced by serialization.
+			a.error(CodeNativeJSONNull, e.Span, "authored JSON null has no supported native value encoding; it cannot become none, empty text, or an omitted field")
 			return types.JsonNull
 		default:
 			return types.Unknown
