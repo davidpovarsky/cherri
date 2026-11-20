@@ -1,0 +1,153 @@
+[
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "Number",
+      "UUID": "823411AB-9269-4953-8BAA-9FF074B4F35D",
+      "WFNumberActionNumber": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputName": "Number",
+          "OutputUUID": "823411AB-9269-4953-8BAA-9FF074B4F35D",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "flag"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.choosefrommenu",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "075A9FE7-217D-4740-B5F3-4F7FB6EB17F9",
+      "WFControlFlowMode": 0,
+      "WFMenuItems": [
+        {
+          "WFItemType": 0,
+          "WFValue": "A"
+        },
+        {
+          "WFItemType": 0,
+          "WFValue": "B"
+        }
+      ],
+      "WFMenuPrompt": "Pick"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.choosefrommenu",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "075A9FE7-217D-4740-B5F3-4F7FB6EB17F9",
+      "WFControlFlowMode": 1,
+      "WFMenuItemAttributedTitle": "A",
+      "WFMenuItemTitle": "A"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "UUID": "34C891B4-F883-4ED6-85CA-DE3DFB2988B6",
+      "WFNumberActionNumber": 0
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.choosefrommenu",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "075A9FE7-217D-4740-B5F3-4F7FB6EB17F9",
+      "WFControlFlowMode": 1,
+      "WFMenuItemAttributedTitle": "B",
+      "WFMenuItemTitle": "B"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.nothing"
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.choosefrommenu",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "candidate",
+      "GroupingIdentifier": "075A9FE7-217D-4740-B5F3-4F7FB6EB17F9",
+      "UUID": "37344582-2D1B-43DC-B844-307D4977EB29",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+    "WFWorkflowActionParameters": {
+      "WFVariable": {
+        "Value": {
+          "OutputName": "candidate",
+          "OutputUUID": "37344582-2D1B-43DC-B844-307D4977EB29",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "DFBEB343-25DE-4FAE-9C03-18B097D46853",
+      "WFCondition": 4,
+      "WFConditionalLegacyComparisonBehavior": true,
+      "WFControlFlowMode": 0,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "OutputName": "candidate",
+            "OutputUUID": "37344582-2D1B-43DC-B844-307D4977EB29",
+            "Type": "ActionOutput"
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "WFNumberActionNumber": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "DFBEB343-25DE-4FAE-9C03-18B097D46853",
+      "WFControlFlowMode": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "WFNumberActionNumber": 0
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "absent",
+      "GroupingIdentifier": "DFBEB343-25DE-4FAE-9C03-18B097D46853",
+      "UUID": "25548C73-2957-44BF-8C63-86D82758A341",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+    "WFWorkflowActionParameters": {
+      "WFVariable": {
+        "Value": {
+          "OutputName": "absent",
+          "OutputUUID": "25548C73-2957-44BF-8C63-86D82758A341",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  }
+]

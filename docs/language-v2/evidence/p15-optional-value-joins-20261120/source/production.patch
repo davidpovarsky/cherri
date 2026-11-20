@@ -1,0 +1,551 @@
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index b67a7a36..51ee7028 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -1130,6 +1130,8 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
+ 		if binding, found := scope.Lookup(node.Name); found {
+ 			a.exprAbsent[expr] = binding.Initialized && binding.knownAbsent
+ 		}
++	case *syntax.IfStmt, *syntax.MenuStmt:
++		a.exprAbsent[expr] = a.controlValueKnownAbsent(expr)
+ 	}
+ 	if name := a.enumContexts[expr]; name != "" {
+ 		a.validateEnumValue(expr, name, a.enumCatalog.Values(name))
+diff --git a/internal/language/analysis/control_presence.go b/internal/language/analysis/control_presence.go
+new file mode 100644
+index 00000000..1a48df9d
+--- /dev/null
++++ b/internal/language/analysis/control_presence.go
+@@ -0,0 +1,121 @@
++package analysis
++
++import (
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++type controlValueEvidence struct {
++	value                    types.Type
++	knownAbsent, hasPresence bool
++}
++
++// Only normally completing branches contribute a joined value. A literal or
++// path-local known None supplies absence, not an unknown present inner value.
++// An opaque native Unknown retains its unknown inner value and no presence.
++func (a *Analyzer) normalControlValueEvidence(expr syntax.Expression) []controlValueEvidence {
++	var values []controlValueEvidence
++	add := func(body *syntax.BlockStmt) {
++		if body == nil || !statementMayContinue(body) {
++			return
++		}
++		result := syntax.BlockResultExpression(body)
++		if result != nil && len(body.Statements) != 0 {
++			if _, yielded := body.Statements[len(body.Statements)-1].(*syntax.YieldStmt); yielded {
++				value := a.exprTypes[result]
++				if value == nil {
++					value = types.AnyContent
++				}
++				values = append(values, controlValueEvidence{value, a.exprAbsent[result], a.exprPresence[result]})
++				return
++			}
++		}
++		switch control := result.(type) {
++		case *syntax.IfStmt, *syntax.MenuStmt:
++			values = append(values, a.normalControlValueEvidence(control)...)
++		case *syntax.ForStmt, *syntax.RepeatStmt:
++			value := a.controlExpressionResultType(control)
++			values = append(values, controlValueEvidence{value, false, types.DefinitelyPresent(value)})
++		default:
++			values = append(values, controlValueEvidence{types.AnyContent, false, false})
++		}
++	}
++	switch control := expr.(type) {
++	case *syntax.IfStmt:
++		add(control.ThenBlock)
++		switch alternate := control.ElseBlock.(type) {
++		case *syntax.BlockStmt:
++			add(alternate)
++		case *syntax.IfStmt:
++			if statementMayContinue(alternate) {
++				values = append(values, a.normalControlValueEvidence(alternate)...)
++			}
++		default:
++			values = append(values, controlValueEvidence{types.AnyContent, false, false})
++		}
++	case *syntax.MenuStmt:
++		for _, item := range control.Cases {
++			add(item.BodyBlock)
++		}
++	}
++	return values
++}
++
++func joinControlValueEvidence(values []controlValueEvidence) types.Type {
++	var present []types.Type
++	mayBeAbsent := false
++	var add func(types.Type)
++	add = func(value types.Type) {
++		switch typed := value.(type) {
++		case types.OptionalType:
++			mayBeAbsent = true
++			add(typed.Inner)
++		case types.UnionType:
++			for _, member := range typed.Members {
++				add(member)
++			}
++		default:
++			present = append(present, value)
++		}
++	}
++	for _, branch := range values {
++		if branch.knownAbsent {
++			mayBeAbsent = true
++		} else {
++			add(branch.value)
++		}
++	}
++	joined := types.NewUnion(present...)
++	if mayBeAbsent {
++		// NewOptional(Unknown) intentionally collapses to Unknown for an
++		// unproved annotation; an observed None path must retain absence.
++		return types.OptionalType{Inner: joined}
++	}
++	return joined
++}
++
++func (a *Analyzer) controlValueHasPresence(expr syntax.Expression) bool {
++	values := a.normalControlValueEvidence(expr)
++	if len(values) == 0 {
++		return false
++	}
++	for _, branch := range values {
++		if !branch.hasPresence {
++			return false
++		}
++	}
++	return true
++}
++
++func (a *Analyzer) controlValueKnownAbsent(expr syntax.Expression) bool {
++	values := a.normalControlValueEvidence(expr)
++	if len(values) == 0 {
++		return false
++	}
++	for _, branch := range values {
++		if !branch.knownAbsent {
++			return false
++		}
++	}
++	return true
++}
+diff --git a/internal/language/analysis/control_results.go b/internal/language/analysis/control_results.go
+index 50387f5e..605a1b7b 100644
+--- a/internal/language/analysis/control_results.go
++++ b/internal/language/analysis/control_results.go
+@@ -10,32 +10,13 @@ import (
+ // branch's output, and an early yield can be followed by a different action.
+ func (a *Analyzer) controlExpressionResultType(expr syntax.Expression) types.Type {
+ 	switch control := expr.(type) {
+-	case *syntax.IfStmt:
+-		thenType := a.normalControlBranchResultType(control.ThenBlock)
+-		var elseType types.Type = types.AnyContent
+-		switch alternate := control.ElseBlock.(type) {
+-		case *syntax.BlockStmt:
+-			elseType = a.normalControlBranchResultType(alternate)
+-		case *syntax.IfStmt:
+-			if statementMayContinue(alternate) {
+-				elseType = a.controlExpressionResultType(alternate)
+-			} else {
+-				elseType = nil
+-			}
+-		}
+-		return types.NewUnion(thenType, elseType)
++	case *syntax.IfStmt, *syntax.MenuStmt:
++		return joinControlValueEvidence(a.normalControlValueEvidence(expr))
+ 	case *syntax.ForStmt:
+ 		return types.NewList(a.controlBranchResultType(control.BodyBlock))
+ 	case *syntax.RepeatStmt:
+ 		return types.NewList(a.controlBranchResultType(control.BodyBlock))
+-	case *syntax.MenuStmt:
+-		branches := make([]types.Type, 0, len(control.Cases))
+-		for _, item := range control.Cases {
+-			branches = append(branches, a.normalControlBranchResultType(item.BodyBlock))
+-		}
+-		if len(branches) != 0 {
+-			return types.NewUnion(branches...)
+-		}
++
+ 	}
+ 	return types.AnyContent
+ }
+diff --git a/internal/language/analysis/optional_presence.go b/internal/language/analysis/optional_presence.go
+index c3cbca0b..34eb63d7 100644
+--- a/internal/language/analysis/optional_presence.go
++++ b/internal/language/analysis/optional_presence.go
+@@ -9,7 +9,7 @@ import (
+ 
+ // Provenance records whether lowering can obtain an independent presence flag,
+ // not whether the value is present. It follows bindings and checked function
+-// carriers; arbitrary native content and unimplemented value joins have none.
++// carriers and complete normal branch values; arbitrary native content has none.
+ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Type, scope *Scope) bool {
+ 	if types.DefinitelyPresent(value) {
+ 		return true
+@@ -22,6 +22,8 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
+ 		return found && binding.Initialized && binding.optionalPresence
+ 	case *syntax.CallExpr:
+ 		return a.exprPresence[expr]
++	case *syntax.IfStmt, *syntax.MenuStmt:
++		return a.controlValueHasPresence(expr)
+ 	case *syntax.IndexExpr:
+ 		if a.dictionaryIndexes[expr] {
+ 			return true
+diff --git a/internal/language/backend/contracts.go b/internal/language/backend/contracts.go
+index 8da0826d..5bb6ae42 100644
+--- a/internal/language/backend/contracts.go
++++ b/internal/language/backend/contracts.go
+@@ -19,6 +19,7 @@ func CodecFingerprint() string {
+ 		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
+ 		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
+ 		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n:optional_arg_n=_cherri_optional_argument_v1,has_value=0-absent-1-present,value-present-only:result=_cherri_optional_result_v1,has_value,value\n" +
++		"optional_control_join:_cherri_optional_join_v1:has_value=0-absent-1-present:value-present-only:normal-branch-yields:source-demand:no-truthiness\n" +
+ 		"text_literal_object_character:plain_text_producer:deferred_after_interpolated_calls:exact_output_reference:complete_utf16_placeholder_coverage:pure_string_without_references:enclosing_native_input=existing_result_handle:checked_native_declaration_output_contract:semantic_container_fields_after_authored_values:literal_key_order_preserved:function_and_optional_fields:removed_diagnostics_without_pure_carriers\n"
+ 	sum := sha256.Sum256([]byte(codecDescriptor))
+ 	return hex.EncodeToString(sum[:])
+diff --git a/internal/language/lower/function_optional_presence.go b/internal/language/lower/function_optional_presence.go
+index d1b53db8..01005cae 100644
+--- a/internal/language/lower/function_optional_presence.go
++++ b/internal/language/lower/function_optional_presence.go
+@@ -97,6 +97,9 @@ func (l *Lowerer) staticIndexHasPresentValue(expr syntax.Expression) bool {
+ // Only compiler-owned presence participates in these predicates. Imported raw
+ // native predicates and unrelated action-content tests retain their own wire.
+ func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
++	if l.optionalJoinNeeded(expr) {
++		return true
++	}
+ 	if l.staticIndexHasPresentValue(expr) {
+ 		return true
+ 	}
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 806e59fe..879f3d52 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -102,6 +102,8 @@ type Lowerer struct {
+ 	optionalFunctionReturn     bool
+ 	optionalExpressionPresence map[syntax.Expression]interface{}
+ 	optionalPresenceDemand     map[*syntax.BindingStmt]bool
++	optionalJoinDemand         map[syntax.Expression]bool
++	optionalJoinYields         map[*syntax.YieldStmt]bool
+ 	knownDictionaryIndexes     map[syntax.Expression]bool
+ 	literalTextCarriers        map[*ir.NativeActionNode]bool
+ 	nativeResultReferences     map[*ir.NativeActionNode]*ir.AttachmentToken
+@@ -1509,6 +1511,9 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
+ 	case *syntax.MenuStmt:
+ 		return l.lowerMenu(s)
+ 	case *syntax.YieldStmt:
++		if l.optionalJoinYields[s] {
++			return l.lowerOptionalJoinYield(s)
++		}
+ 		val, err := l.lowerRuntimeLiteral(s.Value)
+ 		if err != nil {
+ 			return err
+@@ -3650,12 +3655,18 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
+ 
+ 	switch e := expr.(type) {
+ 	case *syntax.IfStmt:
++		if l.optionalJoinNeeded(e) {
++			return l.lowerOptionalControlValue(e)
++		}
+ 		return l.lowerIfWithOutput(e, true)
+ 	case *syntax.RepeatStmt:
+ 		return l.lowerRepeatWithOutput(e, true)
+ 	case *syntax.ForStmt:
+ 		return l.lowerForWithOutput(e, true)
+ 	case *syntax.MenuStmt:
++		if l.optionalJoinNeeded(e) {
++			return l.lowerOptionalControlValue(e)
++		}
+ 		return l.lowerMenuWithOutput(e, true)
+ 
+ 	case *syntax.LiteralExpr:
+diff --git a/internal/language/lower/optional_control_presence.go b/internal/language/lower/optional_control_presence.go
+new file mode 100644
+index 00000000..09db3e4f
+--- /dev/null
++++ b/internal/language/lower/optional_control_presence.go
+@@ -0,0 +1,167 @@
++package lower
++
++import (
++	"fmt"
++
++	"github.com/electrikmilk/cherri/internal/language/ir"
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++// Presence is emitted only for a nullable control value with an actual source
++// consumer. Unknown generated nodes retain the conservative demand policy.
++// Ordinary unconsumed control values keep their existing native last output.
++func (l *Lowerer) optionalJoinNeeded(expr syntax.Expression) bool {
++	switch expr.(type) {
++	case *syntax.IfStmt, *syntax.MenuStmt:
++	default:
++		return false
++	}
++	needed, analyzed := l.optionalJoinDemand[expr]
++	return (!analyzed || needed) && types.MayBeAbsent(l.exprTypes[expr])
++}
++
++// Each normally completing branch supplies a private tagged Dictionary. A
++// return exits the invocation using its existing function-result carrier and
++// does not supply a join value. The tag is consumed once after the control end.
++func (l *Lowerer) lowerOptionalControlValue(expr syntax.Expression) (*ir.AttachmentToken, error) {
++	leaves := map[*syntax.YieldStmt]bool{}
++	if err := collectOptionalJoinYields(expr, leaves); err != nil {
++		return nil, err
++	}
++	if len(leaves) == 0 {
++		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control has no normal value path at %s", expr.NodeSpan())
++	}
++	previous := l.optionalJoinYields
++	l.optionalJoinYields = make(map[*syntax.YieldStmt]bool, len(previous)+len(leaves))
++	for yield, tracked := range previous {
++		l.optionalJoinYields[yield] = tracked
++	}
++	for yield := range leaves {
++		l.optionalJoinYields[yield] = true
++	}
++	defer func() { l.optionalJoinYields = previous }()
++
++	var carrier *ir.AttachmentToken
++	var err error
++	switch control := expr.(type) {
++	case *syntax.IfStmt:
++		carrier, err = l.lowerIfWithOutput(control, true)
++	case *syntax.MenuStmt:
++		carrier, err = l.lowerMenuWithOutput(control, true)
++	}
++	if err != nil {
++		return nil, err
++	}
++	if carrier == nil || carrier.OutputUUID == "" {
++		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control has no joined carrier at %s", expr.NodeSpan())
++	}
++	value, presence := l.decodeOptionalCarrier(carrier.OutputUUID, "has_value", "value", "")
++	if l.optionalExpressionPresence == nil {
++		l.optionalExpressionPresence = map[syntax.Expression]interface{}{}
++	}
++	l.optionalExpressionPresence[expr] = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence}
++	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: value}, nil
++}
++
++func (l *Lowerer) lowerOptionalJoinYield(yield *syntax.YieldStmt) error {
++	previous := l.inExprStmt
++	l.inExprStmt = false
++	defer func() { l.inExprStmt = previous }()
++	var value interface{}
++	var err error
++	switch yield.Value.(type) {
++	case *syntax.MapExpr, *syntax.ListExpr:
++		// An ordinary container retains its AST identity and explicit empty
++		// fields inside the private carrier. It is never a raw native template.
++		value, err = l.lowerSemanticValue(yield.Value)
++	default:
++		value, err = l.lowerRuntimeLiteral(yield.Value)
++	}
++	if err != nil {
++		return err
++	}
++	presence, err := l.optionalValuePresence(yield.Value, value)
++	if err != nil {
++		return err
++	}
++	l.optionalCarrier(value, presence, "has_value", "value", "_cherri_optional_join_v1")
++	return nil
++}
++
++func collectOptionalJoinYields(expr syntax.Expression, leaves map[*syntax.YieldStmt]bool) error {
++	var collectBlock func(*syntax.BlockStmt) error
++	collectBlock = func(body *syntax.BlockStmt) error {
++		if !optionalJoinMayContinue(body) {
++			return nil
++		}
++		if body == nil || len(body.Statements) == 0 {
++			return fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control branch has no explicit value")
++		}
++		switch last := body.Statements[len(body.Statements)-1].(type) {
++		case *syntax.YieldStmt:
++			leaves[last] = true
++			return nil
++		case *syntax.IfStmt:
++			return collectOptionalJoinYields(last, leaves)
++		case *syntax.MenuStmt:
++			return collectOptionalJoinYields(last, leaves)
++		default:
++			return fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control transport requires an explicit normal-branch yield at %s", body.NodeSpan())
++		}
++	}
++	switch control := expr.(type) {
++	case *syntax.IfStmt:
++		if err := collectBlock(control.ThenBlock); err != nil {
++			return err
++		}
++		switch alternate := control.ElseBlock.(type) {
++		case *syntax.BlockStmt:
++			return collectBlock(alternate)
++		case *syntax.IfStmt:
++			return collectOptionalJoinYields(alternate, leaves)
++		default:
++			return fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional If has no alternate value at %s", control.NodeSpan())
++		}
++	case *syntax.MenuStmt:
++		for _, item := range control.Cases {
++			if err := collectBlock(item.BodyBlock); err != nil {
++				return err
++			}
++		}
++		return nil
++	}
++	return fmt.Errorf("E_TARGET_VALUE_SHAPE: unsupported Optional control %T", expr)
++}
++
++// Match the analyzer's normal-completion boundary. Loop bodies do not prove
++// that the loop executes, whereas a return reached unconditionally terminates
++// the invocation, including through an If or every Menu case.
++func optionalJoinMayContinue(statement syntax.Statement) bool {
++	switch node := statement.(type) {
++	case *syntax.ReturnStmt:
++		return false
++	case *syntax.BlockStmt:
++		if node == nil {
++			return true
++		}
++		for _, child := range node.Statements {
++			if !optionalJoinMayContinue(child) {
++				return false
++			}
++		}
++	case *syntax.IfStmt:
++		return optionalJoinMayContinue(node.ThenBlock) || node.ElseBlock == nil || optionalJoinMayContinue(node.ElseBlock)
++	case *syntax.MenuStmt:
++		if len(node.Cases) == 0 {
++			return true
++		}
++		for _, item := range node.Cases {
++			if optionalJoinMayContinue(item.BodyBlock) {
++				return true
++			}
++		}
++		return false
++	}
++	return true
++}
+diff --git a/internal/language/lower/optional_presence_demand.go b/internal/language/lower/optional_presence_demand.go
+index 4f4f1b40..a0911851 100644
+--- a/internal/language/lower/optional_presence_demand.go
++++ b/internal/language/lower/optional_presence_demand.go
+@@ -28,6 +28,16 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 	})
+ 	bindings := map[*syntax.BindingStmt]string{}
+ 	dependencies := map[string]map[string]bool{}
++	dependencyExpressions := map[string][]syntax.Expression{}
++	l.optionalJoinDemand = map[syntax.Expression]bool{}
++	optionalDemandWalk(roots, func(node syntax.Node) {
++		switch value := node.(type) {
++		case *syntax.IfStmt:
++			l.optionalJoinDemand[value] = false
++		case *syntax.MenuStmt:
++			l.optionalJoinDemand[value] = false
++		}
++	})
+ 	needed := map[string]bool{}
+ 	addNames := func(target map[string]bool, expression syntax.Expression) {
+ 		optionalDemandWalk(expression, func(node syntax.Node) {
+@@ -36,7 +46,22 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 			}
+ 		})
+ 	}
++	markJoins := func(expression syntax.Expression) {
++		optionalDemandWalk(expression, func(node syntax.Node) {
++			switch value := node.(type) {
++			case *syntax.IfStmt:
++				l.optionalJoinDemand[value] = true
++			case *syntax.MenuStmt:
++				l.optionalJoinDemand[value] = true
++			}
++		})
++	}
++	seed := func(expression syntax.Expression) {
++		addNames(needed, expression)
++		markJoins(expression)
++	}
+ 	depend := func(name string, expression syntax.Expression) {
++		dependencyExpressions[name] = append(dependencyExpressions[name], expression)
+ 		if dependencies[name] == nil {
+ 			dependencies[name] = map[string]bool{}
+ 		}
+@@ -56,10 +81,10 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 		case *syntax.ReturnStmt:
+ 			// All authored returns are retained conservatively; only Optional
+ 			// bindings actually emit paired flags during lowering.
+-			addNames(needed, value.Value)
++			seed(value.Value)
+ 		case *syntax.FunctionDecl:
+ 			for _, parameter := range value.Parameters {
+-				addNames(needed, parameter.DefaultExpr)
++				seed(parameter.DefaultExpr)
+ 			}
+ 		case *syntax.CallExpr:
+ 			name := ""
+@@ -74,18 +99,18 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 			if functions[name] {
+ 				// Include every written argument of a user-function call.
+ 				// Ordinary canonical action inputs do not consume this flag.
+-				addNames(needed, value.PrimaryArg)
++				seed(value.PrimaryArg)
+ 				for _, argument := range value.NamedArgs {
+-					addNames(needed, argument.Value)
++					seed(argument.Value)
+ 				}
+ 			}
+ 		case *syntax.BinaryExpr:
+ 			if value.Op == syntax.TokenEqual || value.Op == syntax.TokenNotEqual {
+ 				if isNone(value.Right) {
+-					addNames(needed, value.Left)
++					seed(value.Left)
+ 				}
+ 				if isNone(value.Left) {
+-					addNames(needed, value.Right)
++					seed(value.Right)
+ 				}
+ 			}
+ 		}
+@@ -104,6 +129,11 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 			}
+ 		}
+ 	}
++	for name := range needed {
++		for _, expression := range dependencyExpressions[name] {
++			markJoins(expression)
++		}
++	}
+ 	l.optionalPresenceDemand = map[*syntax.BindingStmt]bool{}
+ 	for binding, name := range bindings {
+ 		l.optionalPresenceDemand[binding] = needed[name]
+diff --git a/internal/language/lower/scoped_blocks.go b/internal/language/lower/scoped_blocks.go
+index 51815566..7a1a6fbc 100644
+--- a/internal/language/lower/scoped_blocks.go
++++ b/internal/language/lower/scoped_blocks.go
+@@ -261,6 +261,11 @@ func (r *scopedBlockRenamer) expression(expression syntax.Expression, names map[
+ 				r.lowerer.enumValues[result] = value
+ 			}
+ 		}
++		if result != nil {
++			if needed, analyzed := r.lowerer.optionalJoinDemand[expression]; analyzed {
++				r.lowerer.optionalJoinDemand[result] = needed
++			}
++		}
+ 		if result != nil && r.lowerer.knownDictionaryIndexes[expression] {
+ 			r.lowerer.knownDictionaryIndexes[result] = true
+ 		}
