@@ -1644,15 +1644,18 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		return err
 	}
 
-	// Immutable aliases retain the producer's separate value-presence edge.
-	// An explicit Optional annotation also preserves present empty/false/zero
-	// values without observing their native truthiness. Mutable state needs an
-	// independent paired assignment protocol and does not enter this path.
+	// Presence is independent of the value's native truthiness. Mutable
+	// bindings store a paired flag; immutable aliases snapshot a mutable flag.
 	var optionalPresence interface{}
-	if !b.Mutable && (val == nil || optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value)) {
+	if val == nil || optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
 		optionalPresence, err = l.optionalValuePresence(b.Value, val)
 		if err != nil {
 			return err
+		}
+		if b.Mutable {
+			optionalPresence = l.newMutableOptionalPresence(optionalPresence)
+		} else {
+			optionalPresence = l.snapshotOptionalPresence(optionalPresence)
 		}
 	}
 
@@ -1898,6 +1901,14 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	}
 
 	binding, isBound := l.bindings[a.Name]
+	if isBound {
+		presence, err := l.assignOptionalPresence(binding, a, val)
+		if err != nil {
+			return err
+		}
+		binding.OptionalPresence = presence
+		l.bindings[a.Name] = binding
+	}
 	isList := false
 	isNumericBinding := isBound && binding.Type != nil &&
 		(binding.Type.Equals(types.Number) || binding.Type.Name() == "Number" || binding.Type.Name() == "Int" || binding.Type.Name() == "Float")

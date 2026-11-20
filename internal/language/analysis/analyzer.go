@@ -820,6 +820,12 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			a.error(CodeReadBeforeInit, s.Span, fmt.Sprintf("variable %q read before initialization by compound assignment", s.Name))
 		}
 		valType := a.analyzeEnumContext(s.Value, scope, sym.EnumType)
+		// Compound assignment reads both operands. A declared Optional target
+		// does not turn absence into a Number/List value; only a checked flow
+		// narrowing (or a known-present initializer) permits that read.
+		if s.Op != syntax.TokenAssign && (types.MayBeAbsent(sym.readType()) || types.MayBeAbsent(valType)) {
+			a.error(CodeArgumentType, s.Span, "compound assignment requires present operands; check Optional values against none before using them")
+		}
 		if valType != nil && sym.Type != nil {
 			if s.Op == syntax.TokenPlusAssign {
 				if listType, ok := sym.Type.(types.ListType); ok {
