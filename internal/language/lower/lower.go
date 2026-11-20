@@ -4421,54 +4421,65 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 	attachmentsByRange := make(map[string]interface{})
 
 	for _, part := range f.Parts {
+		var val interface{}
 		if !part.IsExpr {
-			fullText.WriteString(part.Text)
+			if !strings.ContainsRune(part.Text, '\uFFFC') {
+				fullText.WriteString(part.Text)
+				continue
+			}
+			// WorkflowKit treats every U+FFFC inside a token string as a
+			// placeholder. Preserve authored literal bytes in an ordinary Text
+			// producer and reuse its native attachment at this evaluation point.
+			val = l.materializeToAttachment(part.Text)
 		} else {
-			val, err := l.lowerExpression(part.Expr)
+			var err error
+			val, err = l.lowerExpression(part.Expr)
 			if err != nil {
 				return nil, err
 			}
+			if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
+				val = l.materializeToAttachment(literal)
+			}
+		}
+		if tok, ok := val.(*ir.AttachmentToken); ok {
+			startUTF16 := len(utf16.Encode([]rune(fullText.String())))
+			fullText.WriteString("\uFFFC") // Object replacement char
 
-			if tok, ok := val.(*ir.AttachmentToken); ok {
-				startUTF16 := len(utf16.Encode([]rune(fullText.String())))
-				fullText.WriteString("\uFFFC") // Object replacement char
-
-				rangeKey := fmt.Sprintf("{%d, 1}", startUTF16)
-				att := map[string]interface{}{
-					"Type": tok.Type,
+			rangeKey := fmt.Sprintf("{%d, 1}", startUTF16)
+			att := map[string]interface{}{
+				"Type": tok.Type,
+			}
+			if tok.OutputUUID != "" {
+				att["OutputUUID"] = tok.OutputUUID
+			}
+			if tok.Type == "Variable" {
+				att["VariableName"] = tok.OutputName
+			} else if tok.Type == "Ask" && tok.OutputName != "" {
+				att["Prompt"] = tok.OutputName
+			} else if tok.OutputName != "" && tok.Type != "ExtensionInput" && tok.Type != "CurrentDate" && tok.Type != "Clipboard" && tok.Type != "DeviceDetails" {
+				att["OutputName"] = tok.OutputName
+			}
+			if len(tok.Aggrandizements) > 0 {
+				att["Aggrandizements"] = tok.Aggrandizements
+			}
+			attachmentsByRange[rangeKey] = att
+		} else {
+			// Literal value: format directly into text!
+			switch v := val.(type) {
+			case float64:
+				if v == float64(int64(v)) {
+					fullText.WriteString(fmt.Sprintf("%d", int64(v)))
+				} else {
+					fullText.WriteString(fmt.Sprintf("%g", v))
 				}
-				if tok.OutputUUID != "" {
-					att["OutputUUID"] = tok.OutputUUID
-				}
-				if tok.Type == "Variable" {
-					att["VariableName"] = tok.OutputName
-				} else if tok.Type == "Ask" && tok.OutputName != "" {
-					att["Prompt"] = tok.OutputName
-				} else if tok.OutputName != "" && tok.Type != "ExtensionInput" && tok.Type != "CurrentDate" && tok.Type != "Clipboard" && tok.Type != "DeviceDetails" {
-					att["OutputName"] = tok.OutputName
-				}
-				if len(tok.Aggrandizements) > 0 {
-					att["Aggrandizements"] = tok.Aggrandizements
-				}
-				attachmentsByRange[rangeKey] = att
-			} else {
-				// Literal value: format directly into text!
-				switch v := val.(type) {
-				case float64:
-					if v == float64(int64(v)) {
-						fullText.WriteString(fmt.Sprintf("%d", int64(v)))
-					} else {
-						fullText.WriteString(fmt.Sprintf("%g", v))
-					}
-				case bool:
-					fullText.WriteString(fmt.Sprintf("%t", v))
-				case string:
-					fullText.WriteString(v)
-				case nil:
-					fullText.WriteString("")
-				default:
-					fullText.WriteString(fmt.Sprint(v))
-				}
+			case bool:
+				fullText.WriteString(fmt.Sprintf("%t", v))
+			case string:
+				fullText.WriteString(v)
+			case nil:
+				fullText.WriteString("")
+			default:
+				fullText.WriteString(fmt.Sprint(v))
 			}
 		}
 	}
@@ -4512,30 +4523,37 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		var segments []backend.TextSegment
 		hasRef := false
 		for _, part := range f.Parts {
+			var val interface{}
 			if !part.IsExpr {
-				segments = append(segments, backend.TextSegment{
-					IsExpr: false,
-					Text:   part.Text,
-				})
+				if !strings.ContainsRune(part.Text, '\uFFFC') {
+					segments = append(segments, backend.TextSegment{Text: part.Text})
+					continue
+				}
+				val = l.materializeToAttachment(part.Text)
 			} else {
-				val, err := l.lowerExpression(part.Expr)
+				var err error
+				val, err = l.lowerExpression(part.Expr)
 				if err != nil {
 					return backend.SemanticValue{}, err
 				}
-				semVal := l.toSemanticValue(val)
-				if semVal.Kind == backend.ValReference {
-					hasRef = true
-					segments = append(segments, backend.TextSegment{
-						IsExpr:    true,
-						Reference: semVal.Ref,
-					})
-				} else {
-					segments = append(segments, backend.TextSegment{
-						IsExpr: false,
-						Text:   formatSemanticLiteral(semVal),
-					})
+				if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
+					val = l.materializeToAttachment(literal)
 				}
 			}
+			semVal := l.toSemanticValue(val)
+			if semVal.Kind == backend.ValReference {
+				hasRef = true
+				segments = append(segments, backend.TextSegment{
+					IsExpr:    true,
+					Reference: semVal.Ref,
+				})
+			} else {
+				segments = append(segments, backend.TextSegment{
+					IsExpr: false,
+					Text:   formatSemanticLiteral(semVal),
+				})
+			}
+
 		}
 		if hasRef {
 			return backend.SemanticValue{

@@ -382,12 +382,12 @@ func p15CoverageGraphError(actions []map[string]any) error {
 			return fmt.Errorf("missing actual producer %s", name)
 		}
 	}
-	var refs, refsErr = p15UnicodeExpectedRefs(actions)
-	if refsErr != nil {
-		return refsErr
-	}
 	for index, name := range []string{"unicodeFirst", "unicodeSecond"} {
 		var tc = p15UnicodeTextCases()[index]
+		var refs, refsErr = p15UnicodeExpectedRefs(actions, tc)
+		if refsErr != nil {
+			return refsErr
+		}
 		tc.text = strings.TrimSuffix(tc.text, "\n")
 		if err := p15UnicodeTextError(named[name]["WFTextActionText"], tc, refs); err != nil {
 			return err
@@ -404,7 +404,7 @@ func p15CoverageGraphError(actions []map[string]any) error {
 		}
 	}
 	var scenarios = p15CoverageCases()
-	if len(markers) != len(scenarios)+1 || markers[0] != 15 {
+	if len(markers) != len(scenarios)+1 || markers[0] != 16 {
 		return fmt.Errorf("case boundaries or seed prefix changed")
 	}
 	var prefix = roots[:markers[0]]
