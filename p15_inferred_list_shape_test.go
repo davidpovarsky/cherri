@@ -27,12 +27,20 @@ func TestP15L01InferredNestedNativeListFailsClosed(t *testing.T) {
 			if _, errors := p15ParseProgram(tc.source); len(errors) != 0 {
 				t.Fatalf("shape regression must be parser-valid: %v", errors)
 			}
+			expectedCode := "E_NESTED_NATIVE_LIST"
+			expectedDetail := ""
+			if tc.name == "optional_absent" {
+				// Absence is rejected by the semantic transport boundary before
+				// the native nested-List shape guard can run.
+				expectedCode = "E_TARGET_VALUE_SHAPE"
+				expectedDetail = "current List element transport cannot preserve optional absence; use a proven present value"
+			}
 			var data, err = CompileSourceToPlist("p15-inferred-nested-list.cherri", tc.source)
-			if err == nil || len(data) != 0 || !strings.Contains(err.Error(), "E_NESTED_NATIVE_LIST") {
+			if err == nil || len(data) != 0 || !strings.Contains(err.Error(), expectedCode) || !strings.Contains(err.Error(), expectedDetail) {
 				t.Fatalf("inferred nested shape bypassed native List boundary: bytes=%d error=%v", len(data), err)
 			}
 			var mobile = compileForMobileMode(tc.source, "Inferred nested List", "v2", false)
-			if mobile.OK || mobile.PlistBase64 != "" || mobile.SignedBase64 != "" || !strings.Contains(mobile.Error, "E_NESTED_NATIVE_LIST") {
+			if mobile.OK || mobile.PlistBase64 != "" || mobile.SignedBase64 != "" || !strings.Contains(mobile.Error, expectedCode) || !strings.Contains(mobile.Error, expectedDetail) {
 				t.Fatalf("mobile route bypassed List shape boundary: %+v", mobile)
 			}
 		})
