@@ -285,11 +285,17 @@ func TestExhaustiveNodeActualProductionEvidence(t *testing.T) {
 		}
 	}
 	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
-	for _, phase := range []string{"local", "final"} {
-		report, err := ValidateEvidenceManifest(manifest, selected, phase)
-		if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete != (phase == "final") {
-			t.Fatal("complete RP16-only source-bound production rejected", phase, report, err)
-		}
+	report, err := ValidateEvidenceManifest(manifest, selected, "local")
+	if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
+		t.Fatal("complete RP16-only source-bound production rejected", report, err)
+	}
+	// Final release validation independently requires the global consumer tuple
+	// and real CI runs, even when selecting one requirement. Do not fabricate
+	// those unrelated proofs to make this local producer appear release-ready.
+	final, finalErr := ValidateEvidenceManifest(manifest, selected, "final")
+	if finalErr == nil || final == nil || final.PassedCases != 1 || final.ClosureComplete ||
+		!strings.Contains(finalErr.Error(), "missing required successful CI workflow run") {
+		t.Fatal("local RP16 proof bypassed the global final release gate", final, finalErr)
 	}
 	original, err := json.Marshal(manifest)
 	if err != nil {
@@ -400,7 +406,7 @@ func TestExhaustiveNodeActualProductionEvidence(t *testing.T) {
 						}
 						break
 					}
-					report, err := ValidateEvidenceManifest(&broken, selected, "final")
+					report, err := ValidateEvidenceManifest(&broken, selected, "local")
 					if err == nil || report == nil || report.ClosureComplete || report.PassedCases != 0 {
 						t.Fatal("damaged actual RP16 evidence accepted", fault, report, err)
 					}
@@ -470,7 +476,7 @@ func TestExhaustiveNodeActualProductionEvidence(t *testing.T) {
 			t.Fatal("unexecuted requirement inherited RP16 proof", row.ID)
 		}
 	}
-	receipt, err := json.Marshal(map[string]any{"source_sha": runner.implSHA, "scope": exhaustiveNodeScope, "records": runner.records})
+	receipt, err := json.Marshal(map[string]any{"source_sha": runner.implSHA, "scope": exhaustiveNodeScope, "report": report, "records": runner.records})
 	if err != nil {
 		t.Fatal(err)
 	}
