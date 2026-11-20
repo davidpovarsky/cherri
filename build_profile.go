@@ -105,7 +105,8 @@ func inspectReleaseMacroReferences(value any, removed map[string]string) error {
 		}
 		if node["Type"] == "Variable" {
 			if name, ok := node["VariableName"].(string); ok &&
-				(name == debugLogVariableName || name == debugQATraceVariableName ||
+				(name == debugLogVariableName || name == debugLabelVariableName || name == debugQATraceVariableName ||
+					strings.HasPrefix(name, debugLabelDisplayVariablePrefix) ||
 					strings.HasPrefix(name, debugTimerVariablePrefix)) {
 				return fmt.Errorf("RELEASE_DIAGNOSTIC_VALUE: source consumes execution-local diagnostic state")
 			}
@@ -134,8 +135,11 @@ func validateRemovedDiagnosticOptions(name string, params map[string]any) error 
 		return err
 	case "debugLog", "debugLogPrevious", "debugShowLogs", "debugFinish":
 		if name == "debugLog" || name == "debugLogPrevious" {
+			if _, _, err := debugLiteralLogLabel(params, name); err != nil {
+				return err
+			}
 			if value, passed := params["WFInput"]; passed && value != nil {
-				return fmt.Errorf("%s() accepts only withDates/showLogs flags; it captures the previous native output", name)
+				return fmt.Errorf("%s() accepts only display flags and a literal label; it captures the previous native output", name)
 			}
 		}
 		for _, key := range []string{"WFDebugWithDates", "WFDebugShowLogs", "WFDebugShowLogsAsText"} {
