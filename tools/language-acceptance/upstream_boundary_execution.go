@@ -13,9 +13,10 @@ import (
 	"unicode/utf8"
 )
 
-const upstreamBoundaryScope = "Independent U01 repository execution: reconcile all25 Legacy action declarations and preserved stdfunc input against four immutable Git baselines; retain inherited fork differences explicitly; admit only the two independently reviewed parameter-label corrections since the requested continuation base. Twelve causal boundary corruptions are rejected. No B01/BRG01, other schema/std-function row, Apple runtime or final release credit is inherited."
+const upstreamBoundaryScope = "Independent U01 repository execution: reconcile all25 Legacy action declarations and preserved stdfunc input against four immutable Git baselines; retain inherited fork differences explicitly; admit only the two independently reviewed parameter-label corrections since the requested continuation base. Twelve causal boundary corruptions are rejected; four real isolated Git replacement-ref controls verify original-object reads. No B01/BRG01, other schema/std-function row, Apple runtime or final release credit is inherited."
 
-var upstreamBoundaryTests = []string{"TestP15U01ActualDeclarationBoundary", "TestP15U01DeclarationBoundaryControls"}
+var upstreamBoundaryTests = []string{"TestP15U01ActualDeclarationBoundary", "TestP15U01DeclarationBoundaryControls", "TestP15U01GitReplacementIsolation"}
+var upstreamBoundaryReplacementControls = []string{"show", "cat_file_batch", "ls_tree", "diff"}
 var upstreamBoundaryTiers = []string{"repository"}
 var upstreamBoundaryArtifacts = []string{"u01-process.json", "u01-go.jsonl", "u01-stderr.log"}
 var upstreamBoundaryControls = []string{"missing_current_file", "extra_current_file", "missing_manifest_file", "duplicate_manifest_file", "wrong_base", "wrong_baseline_digest", "wrong_baseline_size", "rewritten_unchanged_file", "forged_recorded_hash", "wrong_correction", "false_upstream_equality", "false_unchanged_class"}
@@ -76,6 +77,9 @@ func upstreamBoundaryRequiredEvents() []string {
 	names := append([]string{}, upstreamBoundaryTests...)
 	for _, name := range upstreamBoundaryControls {
 		names = append(names, upstreamBoundaryTests[1]+"/"+name)
+	}
+	for _, name := range upstreamBoundaryReplacementControls {
+		names = append(names, upstreamBoundaryTests[2]+"/"+name)
 	}
 	return names
 }

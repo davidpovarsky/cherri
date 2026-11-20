@@ -79,6 +79,7 @@ func p15U01Git(t *testing.T, input []byte, args ...string) []byte {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
 	defer cancel()
+	args = append([]string{"--no-replace-objects"}, args...)
 	command := exec.CommandContext(ctx, "git", args...)
 	command.Stdin = bytes.NewReader(input)
 	var errors bytes.Buffer
