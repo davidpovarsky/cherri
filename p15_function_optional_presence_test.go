@@ -12,6 +12,7 @@ import (
 type p15FunctionOptionalCase struct {
 	name, typ, argument, fallback string
 	supplied, valuePresent, named bool
+	defaultEffect                 bool
 	value                         p15FunctionArgument
 }
 
@@ -31,13 +32,22 @@ func p15FunctionOptionalCases() []p15FunctionOptionalCase {
 		{name: "omitted_none_default", typ: "Text", fallback: "none"},
 		{name: "explicit_none_with_none_default", typ: "Text", argument: "none", fallback: "none", supplied: true},
 		{name: "named_none_skips_default", typ: "Text", argument: "none", fallback: "DEFAULT", supplied: true, named: true},
+		{name: "empty_list_default", typ: "List<AnyContent>", fallback: "[]"},
+		{name: "none_skips_empty_list_default", typ: "List<AnyContent>", argument: "none", fallback: "[]", supplied: true},
+		{name: "empty_map_default", typ: "Map<Text,AnyContent>", fallback: "{}"},
+		{name: "none_skips_empty_map_default", typ: "Map<Text,AnyContent>", argument: "none", fallback: "{}", supplied: true},
+		{name: "omitted_runs_default_effect", typ: "Text", fallback: "DEFAULT", defaultEffect: true},
+		{name: "none_skips_default_effect", typ: "Text", argument: "none", fallback: "DEFAULT", defaultEffect: true, supplied: true},
+		{name: "empty_skips_default_effect", typ: "Text", argument: "\"\"", fallback: "DEFAULT", defaultEffect: true, supplied: true, valuePresent: true, value: p15FunctionString("")},
 	}
 }
 
 func p15FunctionOptionalSource(tc p15FunctionOptionalCase) string {
 	parameters := "value:" + tc.typ + "?"
-	if tc.fallback == "none" {
-		parameters += "=none"
+	if tc.fallback == "none" || tc.fallback == "[]" || tc.fallback == "{}" {
+		parameters += "=" + tc.fallback
+	} else if tc.defaultEffect {
+		parameters += "=text(\"" + tc.fallback + "\")"
 	} else if tc.fallback != "" {
 		parameters += "=\"" + tc.fallback + "\""
 	}
@@ -136,7 +146,18 @@ func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCa
 		defaultGroup := g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
 		g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(envelope)})
 		g.boundary(defaultGroup, 1, false)
-		p15OptionalCarrierGraph(g, presenceKey, valueKey, "", tc.fallback != "none", p15FunctionString(tc.fallback))
+		fallback := p15FunctionString(tc.fallback)
+		switch tc.fallback {
+		case "[]":
+			fallback = p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": []any{}}}
+		case "{}":
+			fallback = p15FunctionArgument{true, 1, map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": []any{}}}}
+		}
+		if tc.defaultEffect {
+			producer := g.value("gettext", map[string]any{"WFTextActionText": tc.fallback})
+			fallback = p15FunctionArgument{true, 0, p15FunctionEdge(producer)}
+		}
+		p15OptionalCarrierGraph(g, presenceKey, valueKey, "", tc.fallback != "none", fallback)
 		envelope = g.boundary(defaultGroup, 2, true)
 	}
 	value, presence := p15DecodeOptionalGraph(g, envelope, presenceKey, valueKey)
@@ -162,6 +183,73 @@ func TestP15FunctionOptionalPresenceWire(t *testing.T) {
 			}
 			if err := p15FunctionOptionalError(p15CompiledActions(t, source), tc); err != nil {
 				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func p15OptionalEmptyListResultError(actions []map[string]any) error {
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	envelope := g.header("make")
+	g.get("arg_0", envelope)
+	g.emit("gettext", map[string]any{"WFTextActionText": "MUST_NOT_LEAK"})
+	carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true,
+		p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": []any{}}})
+	g.output(carrier)
+	g.caller()
+	result := g.call(g.payload("make", p15FunctionString("unused")))
+	value, _ := p15DecodeOptionalGraph(g, result, "has_value", "value")
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(value)})
+	return g.finish()
+}
+
+func TestP15OptionalEmptyListResultIsPresent(t *testing.T) {
+	source := "function make(seed:Text)->List<AnyContent>?{text(\"MUST_NOT_LEAK\");return []}\ngetVariable(make(\"unused\"))"
+	actions := p15CompiledActions(t, source)
+	if err := p15OptionalEmptyListResultError(actions); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"absent_flag", "missing_array_value", "empty_text_alias", "wrong_value_kind", "stale_output", "truthiness_decoder"} {
+		t.Run(fault, func(t *testing.T) {
+			bad := p15ContainerCloneNative(t, actions)
+			if err := p15OptionalEmptyListResultError(bad); err != nil {
+				t.Fatal("unchanged clone must pass", err)
+			}
+			var fields map[string]map[string]any
+			output, presence := -1, -1
+			for i, action := range bad {
+				p := p15Param(action)
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.dictionary" {
+					if candidate, err := p15ContainerFields(p["WFItems"]); err == nil && candidate["_cherri_optional_result_v1"] != nil {
+						fields = candidate
+					}
+				}
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.output" {
+					output = i
+				}
+				if p["WFDictionaryKey"] == "has_value" {
+					presence = i + 1
+				}
+			}
+			if fields == nil || output < 0 || presence < 0 {
+				t.Fatal("mutation target absent")
+			}
+			switch fault {
+			case "absent_flag":
+				fields["has_value"]["WFValue"] = p15FunctionText("0")
+			case "missing_array_value":
+				delete(fields["value"]["WFValue"].(map[string]any), "Value")
+			case "empty_text_alias":
+				fields["value"]["WFValue"] = p15FunctionText("")
+			case "wrong_value_kind":
+				fields["value"]["WFItemType"] = uint64(0)
+			case "stale_output":
+				p15Param(bad[output])["WFOutput"] = p15FunctionText("MUST_NOT_LEAK")
+			case "truthiness_decoder":
+				p15Param(bad[presence])["WFCondition"] = uint64(100)
+			}
+			if p15OptionalEmptyListResultError(bad) == nil {
+				t.Fatal("damaged present-empty result accepted")
 			}
 		})
 	}
