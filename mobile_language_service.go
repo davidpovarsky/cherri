@@ -5,6 +5,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/protocol"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/service"
+	"github.com/electrikmilk/cherri/internal/language/source"
 )
 
 // analyzeVersionedForMobile is the exact response producer used by the C ABI.
@@ -41,7 +42,10 @@ func completeForMobile(src string, line, column int) protocol.CompleteResponse {
 	svc := service.NewService(schema.DefaultRegistry())
 	uri := "file:///mobile.cherri"
 	svc.OpenDocument(uri, 1, src)
-	items := svc.Complete(uri, line, column)
+	var items []service.CompletionItem
+	if position, valid := mobileEditorPosition(svc, uri, line, column); valid {
+		items = svc.Complete(uri, position.Line, position.Column)
+	}
 
 	wireItems := make([]protocol.CompletionItem, 0)
 	for _, it := range items {
@@ -70,7 +74,11 @@ func hoverForMobile(src string, line, column int) protocol.HoverResponse {
 	svc := service.NewService(schema.DefaultRegistry())
 	uri := "file:///mobile.cherri"
 	svc.OpenDocument(uri, 1, src)
-	res := svc.Hover(uri, line, column)
+	position, valid := mobileEditorPosition(svc, uri, line, column)
+	if !valid {
+		return protocol.HoverResponse{OK: false}
+	}
+	res := svc.Hover(uri, position.Line, position.Column)
 	if res == nil {
 		return protocol.HoverResponse{OK: false}
 	}
@@ -90,7 +98,11 @@ func definitionForMobile(src string, line, column int) protocol.DefinitionRespon
 	svc := service.NewService(schema.DefaultRegistry())
 	uri := "file:///mobile.cherri"
 	svc.OpenDocument(uri, 1, src)
-	span := svc.Definition(uri, line, column)
+	position, valid := mobileEditorPosition(svc, uri, line, column)
+	if !valid {
+		return protocol.DefinitionResponse{OK: false}
+	}
+	span := svc.Definition(uri, position.Line, position.Column)
 	if span == nil {
 		return protocol.DefinitionResponse{OK: false}
 	}
@@ -110,7 +122,11 @@ func signatureHelpForMobile(src string, line, column int) protocol.SignatureHelp
 	svc := service.NewService(schema.DefaultRegistry())
 	uri := "file:///mobile.cherri"
 	svc.OpenDocument(uri, 1, src)
-	sig := svc.SignatureHelp(uri, line, column)
+	position, valid := mobileEditorPosition(svc, uri, line, column)
+	if !valid {
+		return protocol.SignatureHelpResponse{OK: false}
+	}
+	sig := svc.SignatureHelp(uri, position.Line, position.Column)
 	if sig == nil {
 		return protocol.SignatureHelpResponse{OK: false}
 	}
@@ -128,7 +144,11 @@ func renameForMobile(src string, line, column int, targetName string) protocol.R
 	svc := service.NewService(schema.DefaultRegistry())
 	uri := "file:///mobile.cherri"
 	svc.OpenDocument(uri, 1, src)
-	updated, edits, err := svc.Rename(uri, line, column, targetName)
+	position, valid := mobileEditorPosition(svc, uri, line, column)
+	if !valid {
+		return protocol.RenameResponse{OK: false, Error: "invalid UTF-16 source position"}
+	}
+	updated, edits, err := svc.Rename(uri, position.Line, position.Column, targetName)
 	if err != nil {
 		return protocol.RenameResponse{OK: false, Error: err.Error()}
 	}
@@ -147,4 +167,15 @@ func renameForMobile(src string, line, column int, targetName string) protocol.R
 		Source: updated,
 		Edits:  wireEdits,
 	}
+}
+
+// mobileEditorPosition converts the C/Swift bridge's one-based UTF-16
+// coordinates to the service's rune coordinates. Reject clamped or split
+// surrogate positions rather than selecting a different real symbol.
+func mobileEditorPosition(svc *service.Service, uri string, line, column int) (source.Position, bool) {
+	if line < 1 || column < 1 {
+		return source.Position{}, false
+	}
+	position, valid := svc.PositionFromLSP(uri, line-1, column-1)
+	return position, valid && position.Line == line && position.UTF16Column == column
 }

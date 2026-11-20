@@ -135,6 +135,7 @@ func CherriAnalyzeVersioned(uri *C.char, version C.int, source *C.char) *C.char 
 }
 
 // CherriComplete computes contextual completions at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriComplete
 func CherriComplete(source *C.char, line C.int, column C.int) *C.char {
@@ -144,6 +145,7 @@ func CherriComplete(source *C.char, line C.int, column C.int) *C.char {
 }
 
 // CherriHover returns hover documentation and range at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriHover
 func CherriHover(source *C.char, line C.int, column C.int) *C.char {
@@ -153,6 +155,7 @@ func CherriHover(source *C.char, line C.int, column C.int) *C.char {
 }
 
 // CherriDefinition returns the declaration span for the symbol at (line, column).
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriDefinition
 func CherriDefinition(source *C.char, line C.int, column C.int) *C.char {
@@ -162,6 +165,7 @@ func CherriDefinition(source *C.char, line C.int, column C.int) *C.char {
 }
 
 // CherriSignatureHelp returns signature help at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriSignatureHelp
 func CherriSignatureHelp(source *C.char, line C.int, column C.int) *C.char {
@@ -171,6 +175,7 @@ func CherriSignatureHelp(source *C.char, line C.int, column C.int) *C.char {
 }
 
 // CherriRename performs a scoped symbol rename at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriRename
 func CherriRename(source *C.char, line C.int, column C.int, newName *C.char) *C.char {
