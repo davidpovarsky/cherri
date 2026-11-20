@@ -548,6 +548,13 @@ func TestP15RP44ExtractedCapabilitiesRejection(t *testing.T) {
 		{"missing_comma", []byte(strings.Replace(string(plain), ",\n", "\n", 1)), "malformed JSON"},
 		{"trailing_comma", []byte(strings.TrimSuffix(string(plain), "}") + ",\n}"), "malformed JSON"},
 		{"duplicate_schema", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"schemaFingerprint\": \"" + flat["schemaFingerprint"].(string) + "\"\n}"), "malformed JSON"},
+		{"duplicate_escaped_schema", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"schema\\u0046ingerprint\": \"" + flat["schemaFingerprint"].(string) + "\"\n}"), "malformed JSON"},
+		{"invalid_escape", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"unused\": \"\\x\"\n}"), "malformed JSON"},
+		{"invalid_number", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"unused\": 01\n}"), "malformed JSON"},
+		{"unpaired_surrogate", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"unused\": \"\\ud800\"\n}"), "malformed JSON"},
+		{"invalid_utf8", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"unused\": \"\xff\"\n}"), "malformed JSON"},
+		{"raw_nul", []byte(strings.TrimSuffix(string(plain), "}") + ",\n  \"unused\": \"\x00\"\n}"), "malformed JSON"},
+		{"multiple_objects", append(append([]byte{}, plain...), plain...), "malformed JSON"},
 		{"nested_fields_only", jsonBytes(map[string]any{"nested": flat}), "languageVersion"},
 		{"missing_protocol", change("protocolVersion", nil, true), "protocolVersion"},
 		{"wrong_protocol", change("protocolVersion", "0.0", false), "protocolVersion"},
@@ -576,6 +583,8 @@ func TestP15RP44ExtractedCapabilitiesRejection(t *testing.T) {
 			p15InstallWrite(t, f.compiler+".sha256", []byte(p15ExtractedHash(t, f.compiler)+"\n"))
 			output, err := p15InstallRun(t, doctor, f.env)
 			observed := p15InstallRead(t, marker)
+			controls, _ := f.receipt["capability_controls"].([]any)
+			f.receipt["capability_controls"] = append(controls, map[string]any{"name": tc.name, "payload_base64": base64.StdEncoding.EncodeToString(tc.payload), "output_base64": base64.StdEncoding.EncodeToString([]byte(output)), "success": err == nil, "response_observations": bytes.Count(observed, []byte("observed"))})
 			if !bytes.Contains(observed, []byte("observed")) {
 				t.Fatal("bad capability response was not actually requested")
 			}
