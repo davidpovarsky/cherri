@@ -3232,6 +3232,21 @@
       "reason": "Actual42-action Legacy and41-action migrated documents pointed at the same alert with raw indices24/25; prior normalized comparison retained those raw indices after both arrays became18 actions.",
       "evidence": "docs/language-v2/p15-structural-migration-rp33-20261120.md; original native pair retained,12 actual wrong-target/question-field corruptions reject and complete81-test comparator suite passes.",
       "note": "No emitted ActionIndex or golden changes. Index0 and duplicate identical actions keep distinct identity. Every other question field stays exact; historical raw artifacts remain unchanged. Integrated implementation ancestor is a45740f73806ddc64fb1e5f0c8e913e33947c936. Original component receipts preserve their original source SHAs."
+    },
+    {
+      "name": "P10R15 S01 literal object character carriers with authored call ordering",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "internal/language/backend/contracts.go",
+        "p15_s01_literal_placeholder_test.go",
+        "p15_unicode_text_acceptance_test.go",
+        "p15_runtime_s01_f01_coverage_test.go"
+      ],
+      "firstForkCommit": "feaa5e119116a1e469084e0181148c525d75d2b6",
+      "change": "Reuse the existing plain Text materializer for FString literal U+FFFC chunks and bind every native template placeholder to a real reference; defer pure helper emission until authored interpolated calls have lowered.",
+      "reason": "Real K runtime lost an authored literal and later tokens; real WorkflowKit reproduces unmapped-placeholder loss. Six-route actual graph controls also exposed helper interference with interpolated calls using implicit input.",
+      "evidence": "docs/language-v2/p15-s01-literal-object-carrier-20261120.md; clean da0ba0e5 root194 and lower/analysis/backend88 pass, original runtime fixture and expected bytes unchanged; original native observation and both causal counterexamples retained.",
+      "note": "No new action definition, native wire key, second codec, or expected-runtime change. Shared pure codec remains unchanged. Ordinary literal container fields and enclosing native-action implicit input are distinct follow-up boundaries. Original source/receipt identities remain unchanged; no Apple execution, other-ID or final179 inheritance."
     }
   ]
 }

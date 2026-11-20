@@ -163,3 +163,7 @@ Clean 06c5c2fa completed 140 outer and 19 actual root events after a real four-o
 ## 2026-11-20 R4 intermediate preflight audit
 
 Three original failed combined invocations retained without recategorization. At0dc, five completed RP11/RP16/U01 records independently verified against92 distinct source blobs. F03 and schema focused clean replays pass; RP03 child completion and full final suite remain open. See docs/language-v2/p15-r4-intermediate-preflights-20261120.md.
+
+## 2026-11-20 S01 scoped compiler repair and native replay
+
+Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 passed194 root and88 package events after original six-route failure and a separately reproduced six-route implicit-input regression. Original source/313-byte semantic oracle unchanged; full native replay44671266567 is separate. Further container/enclosing-input boundaries remain open. See docs/language-v2/p15-s01-literal-object-carrier-20261120.md.
