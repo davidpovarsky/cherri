@@ -1,0 +1,82 @@
+{
+  "source_sha": "fe952222c62b78fbb1c1b30d89d1d6ed4471f0a2",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestRP16UnknownNodesFailCheckedLowering$",
+    "./internal/language/lower"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 12.313,
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_sha_after": "fe952222c62b78fbb1c1b30d89d1d6ed4471f0a2",
+  "stdout_sha256": "f2f5015a81fa456bc9f98b6e3edbd9b46c96b116caa9125e4626660465ba68d7",
+  "bytes": 14155,
+  "failures": [
+    {
+      "Time": "2026-11-20T02:33:03.339495+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Test": "TestRP16UnknownNodesFailCheckedLowering/expression",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-11-20T02:33:03.352719+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Test": "TestRP16UnknownNodesFailCheckedLowering/nested_map_value",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-11-20T02:33:03.3721269+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Test": "TestRP16UnknownNodesFailCheckedLowering/nested_list_item",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-11-20T02:33:03.3875849+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Test": "TestRP16UnknownNodesFailCheckedLowering/nested_text_reference",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-11-20T02:33:03.3991881+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Test": "TestRP16UnknownNodesFailCheckedLowering/function_body",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-11-20T02:33:03.3997918+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Test": "TestRP16UnknownNodesFailCheckedLowering",
+      "Elapsed": 0.12
+    },
+    {
+      "Time": "2026-11-20T02:33:03.4044303+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Elapsed": 1.7770000000000001
+    }
+  ],
+  "passes": [
+    "TestRP16UnknownNodesFailCheckedLowering/declaration",
+    "TestRP16UnknownNodesFailCheckedLowering/statement"
+  ],
+  "skips": [],
+  "diagnostics": [
+    "    exhaustive_nodes_test.go:43: unknown node did not fail checked lowering explicitly: workflow=&{Name: ClientVersion:5037.0.17 WorkflowTypes:[Watch WFWorkflowTypeShowInSearch] InputContentItemClasses:[WFAVAssetContentItem WFAppContentItem WFAppStoreAppContentItem WFArticleContentItem WFBooleanContentItem WFContactContentItem WFContentItem WFDCMapsLinkContentItem WFDateContentItem WFDictionaryContentItem WFEmailAddressContentItem WFFolderContentItem WFGenericFileContentItem WFImageContentItem WFLocationContentItem WFNumberContentItem WFPDFContentItem WFPhoneNumberContentItem WFRichTextContentItem WFSafariWebPageContentItem WFStringContentItem WFURLContentItem WFiTunesProductContentItem] OutputContentItemClasses:[] NoInputBehavior: QuickActionSurfaces:[] IconGlyph:0 IconColor:0 Actions:[] ImportQuestions:[] Triggers:[] HasExplicitReturn:false HasShortcutInputVariables:false IsFullNativePass:false ExactRawWorkflow:false NativeWorkflowRaw:map[]} err=<nil>; want \"unhandled expression\" and nil workflow\n",
+    "    exhaustive_nodes_test.go:43: unknown node did not fail checked lowering explicitly: workflow=&{Name: ClientVersion:5037.0.17 WorkflowTypes:[Watch WFWorkflowTypeShowInSearch] InputContentItemClasses:[WFAVAssetContentItem WFAppContentItem WFAppStoreAppContentItem WFArticleContentItem WFBooleanContentItem WFContactContentItem WFContentItem WFDCMapsLinkContentItem WFDateContentItem WFDictionaryContentItem WFEmailAddressContentItem WFFolderContentItem WFGenericFileContentItem WFImageContentItem WFLocationContentItem WFNumberContentItem WFPDFContentItem WFPhoneNumberContentItem WFRichTextContentItem WFSafariWebPageContentItem WFStringContentItem WFURLContentItem WFiTunesProductContentItem] OutputContentItemClasses:[] NoInputBehavior: QuickActionSurfaces:[] IconGlyph:0 IconColor:0 Actions:[] ImportQuestions:[] Triggers:[] HasExplicitReturn:false HasShortcutInputVariables:false IsFullNativePass:false ExactRawWorkflow:false NativeWorkflowRaw:map[]} err=<nil>; want \"unhandled expression\" and nil workflow\n",
+    "    exhaustive_nodes_test.go:43: unknown node did not fail checked lowering explicitly: workflow=&{Name: ClientVersion:5037.0.17 WorkflowTypes:[Watch WFWorkflowTypeShowInSearch] InputContentItemClasses:[WFAVAssetContentItem WFAppContentItem WFAppStoreAppContentItem WFArticleContentItem WFBooleanContentItem WFContactContentItem WFContentItem WFDCMapsLinkContentItem WFDateContentItem WFDictionaryContentItem WFEmailAddressContentItem WFFolderContentItem WFGenericFileContentItem WFImageContentItem WFLocationContentItem WFNumberContentItem WFPDFContentItem WFPhoneNumberContentItem WFRichTextContentItem WFSafariWebPageContentItem WFStringContentItem WFURLContentItem WFiTunesProductContentItem] OutputContentItemClasses:[] NoInputBehavior: QuickActionSurfaces:[] IconGlyph:0 IconColor:0 Actions:[] ImportQuestions:[] Triggers:[] HasExplicitReturn:false HasShortcutInputVariables:false IsFullNativePass:false ExactRawWorkflow:false NativeWorkflowRaw:map[]} err=<nil>; want \"unhandled expression\" and nil workflow\n",
+    "    exhaustive_nodes_test.go:43: unknown node did not fail checked lowering explicitly: workflow=&{Name: ClientVersion:5037.0.17 WorkflowTypes:[Watch WFWorkflowTypeShowInSearch] InputContentItemClasses:[WFAVAssetContentItem WFAppContentItem WFAppStoreAppContentItem WFArticleContentItem WFBooleanContentItem WFContactContentItem WFContentItem WFDCMapsLinkContentItem WFDateContentItem WFDictionaryContentItem WFEmailAddressContentItem WFFolderContentItem WFGenericFileContentItem WFImageContentItem WFLocationContentItem WFNumberContentItem WFPDFContentItem WFPhoneNumberContentItem WFRichTextContentItem WFSafariWebPageContentItem WFStringContentItem WFURLContentItem WFiTunesProductContentItem] OutputContentItemClasses:[] NoInputBehavior: QuickActionSurfaces:[] IconGlyph:0 IconColor:0 Actions:[] ImportQuestions:[] Triggers:[] HasExplicitReturn:false HasShortcutInputVariables:false IsFullNativePass:false ExactRawWorkflow:false NativeWorkflowRaw:map[]} err=<nil>; want \"unhandled expression\" and nil workflow\n",
+    "    exhaustive_nodes_test.go:43: unknown node did not fail checked lowering explicitly: workflow=&{Name: ClientVersion:5037.0.17 WorkflowTypes:[] InputContentItemClasses:[] OutputContentItemClasses:[] NoInputBehavior: QuickActionSurfaces:[] IconGlyph:0 IconColor:0 Actions:[0xc0000f4930 0xc0000f49a0 0xc0000f4a10 0xc0000f4a80 0xc0000f4af0 0xc0000f4b60 0xc0000f4bd0 0xc0000f4c40 0xc0000f4cb0 0xc0000f4d20 0xc0000f4d90 0xc0000f4e00 0xc0000f4e70 0xc0000f4ee0 0xc0000f4f50 0xc0000f4fc0 0xc0000f5030 0xc0000f50a0 0xc0000f5110 0xc0000f5180 0xc0000f51f0 0xc0000f5260 0xc0000f52d0 0xc0000f5340 0xc0000f53b0 0xc0000f5420 0xc0000f5490] ImportQuestions:[] Triggers:[] HasExplicitReturn:false HasShortcutInputVariables:true IsFullNativePass:false ExactRawWorkflow:false NativeWorkflowRaw:map[]} err=<nil>; want \"unhandled expression\" and nil workflow\n"
+  ]
+}

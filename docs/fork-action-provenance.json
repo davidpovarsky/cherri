@@ -3126,6 +3126,41 @@
       "reason": "Clean RP08 production and unit baselines reproduced empty-default presence loss, absent/empty and Bool/Text identity collisions and failed registration publication; further causal controls exposed Data/Text, integer/real, pointer alias and record delimiter/version precision collisions.",
       "evidence": "docs/language-v2/p15-schema-identity-rp08-20261120.md; exact clean 35373c2d production 9 named passes, focused packages 55 and CLI/mobile consumers 8, all exit 0 with no skips/failures; original failed and dirty draft logs retained separately.",
       "note": "Generation and unit/consumer proof only. No Apple runtime, complete T01 or 179-row acceptance claim; formal RP08 registration and combined-source replay remain separate. Integrated implementation ancestor is 803eb38b; original source-bound observations retain 35373c2d."
+    },
+    {
+      "name": "P10R15 function Map argument semantic identity",
+      "locations": [
+        "internal/language/lower/function_argument_containers.go",
+        "internal/language/lower/lower.go"
+      ],
+      "firstForkCommit": "6068a66bc9a66e6ace365ca1be6b4f8c72ef0f8c",
+      "change": "Preserve Map AST semantics through function argument lowering, including empty and nested maps and snapshots before later writing arguments.",
+      "reason": "Clean tests-only baselines exposed semantic maps being treated as native templates and early mutable references observed after later argument writes.",
+      "evidence": "docs/language-v2/p15-function-map-identity-20261120.md; clean e06ad573 root replay175 named passes with unchanged authored/native.plist boundaries.",
+      "note": "Original component source receipts remain unchanged; integrated implementation ancestry is recorded here. No full FN05, T05 or native-runtime credit."
+    },
+    {
+      "name": "P10R15 semantic container entry evaluation order",
+      "locations": [
+        "internal/language/lower/lower.go"
+      ],
+      "firstForkCommit": "93629f9937bd4ca354377de5cb119b3dad9c1d8b",
+      "change": "Capture earlier semantic Map/List value references before a later sibling value writes the same binding, using the existing typed snapshot path.",
+      "reason": "Clean ee1c10b1 baseline failed direct Map, function Map, nested Map and Dictionary-array entry-order cases.",
+      "evidence": "docs/language-v2/p15-container-entry-order-20261120.md; clean b186ab6d selected root192 named passes and complete lower package success, plus seven causal corruption cases.",
+      "note": "Value-sibling proof only. Computed-key transport/evaluation is a separate unverified boundary; original native templates and runtime fixtures are unchanged."
+    },
+    {
+      "name": "P10R15 explicit rejection of unknown expression AST nodes",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "internal/language/lower/exhaustive_nodes_test.go"
+      ],
+      "firstForkCommit": "8cfaca263c90034914f5f3540774113332fc5c07",
+      "change": "Return an explicit unhandled-expression error at the final lowering fallback instead of silent nil success.",
+      "reason": "Five actual unknown-expression contexts returned a successful workflow on clean tests-only fe952222; declaration and statement controls already rejected unknown nodes.",
+      "evidence": "docs/language-v2/p15-exhaustive-node-fail-closed-20261120.md; clean7d767d08 complete lower package38 named passes,0 failures/skips,44.734s.",
+      "note": "Only the demonstrated unknown-node repair is established. RP16 exhaustive positive/native-boundary producer remains open."
     }
   ]
 }

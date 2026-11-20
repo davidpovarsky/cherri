@@ -135,3 +135,5 @@ Four actual schema scenarios RP06/RP07/BRG22/BRG23 passed at clean a278d9f3 with
 ## 2026-11-20 — BRG33 approved frontend production execution
 
 [תומר | INT] [MAIN_SESSION] Clean 04c5e847 actually executed all 23 selected production tests and ten receipt controls. One bounded BRG33 PASS; original minimum tiers and independent 179-row accounting remain unchanged. [Proof](docs/language-v2/p15-approved-frontend-20261120.md). No Apple, linked-ID or release inheritance.
+
+- 2026-11-20: Actual unknown-expression injection exposed a silent nil-success fallback in checked lowering (five contexts). The narrow fallback now rejects explicitly; do not equate an unresolved import test with exhaustive AST coverage. RP16 still needs the positive approved-kind inventory and native-boundary producer. See docs/language-v2/p15-exhaustive-node-fail-closed-20261120.md.
