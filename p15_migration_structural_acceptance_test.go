@@ -75,6 +75,9 @@ rawAction("is.workflow.actions.showresult", {"Text": "${@word}"})
 		{"raw_action_mixed_text", `@word = "raw-action-output"
 rawAction("is.workflow.actions.gettext", {"WFTextActionText": "prefix:{@word}:suffix"})
 `, false},
+		{"raw_action_literal_key", `@word = "raw-action-key"
+rawAction("com.example.rp33.public", {"{@word}": "literal-key-value"})
+`, false},
 		{"reference_callable_collision", "#ref rp33Same " + reference + `
 #include 'actions/documents'
 function rp33Same(text value): text {
