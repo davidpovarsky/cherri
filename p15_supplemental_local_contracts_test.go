@@ -23,8 +23,11 @@ func p15SupplementalTextBytes(t *testing.T, raw []byte, want string) {
 		t.Fatal(err)
 	}
 	actions, ok := root["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 1 {
+	if !ok || len(actions) != 2 {
 		t.Fatalf("literal acquired extra effects: %#v", root)
+	}
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
 	}
 	action := actions[0].(map[string]any)
 	if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
@@ -131,8 +134,15 @@ func p15StaticVariantCases() []p15StaticVariantCase {
 	}
 }
 
-func p15StaticVariantError(actions []ShortcutAction, tc p15StaticVariantCase) error {
-	if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != tc.identifier {
+func p15StaticVariantError(actions []ShortcutAction, tc p15StaticVariantCase, legacy bool) error {
+	count := 1
+	if !legacy {
+		count++
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
+	}
+	if len(actions) != count || actions[0].WFWorkflowActionIdentifier != tc.identifier {
 		return fmt.Errorf("variant identity/cardinality changed: %+v", actions)
 	}
 	p := actions[0].WFWorkflowActionParameters
@@ -155,10 +165,10 @@ func TestP15RP09StaticVariantNativeDifferential(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			v2 := compileDebugFixture(t, tc.source, false)
 			legacy := compileDebugFixture(t, "#include '"+tc.include+"'\n"+tc.source, true)
-			if err := p15StaticVariantError(v2, tc); err != nil {
+			if err := p15StaticVariantError(v2, tc, false); err != nil {
 				t.Fatal(err)
 			}
-			if err := p15StaticVariantError(legacy, tc); err != nil {
+			if err := p15StaticVariantError(legacy, tc, true); err != nil {
 				t.Fatal(err)
 			}
 			if !plistValuesStrictlyEqual(legacy[0].WFWorkflowActionParameters, v2[0].WFWorkflowActionParameters) {
@@ -168,13 +178,13 @@ func TestP15RP09StaticVariantNativeDifferential(t *testing.T) {
 				changed := append([]ShortcutAction(nil), v2...)
 				changed[0].WFWorkflowActionParameters = deepClonePlistMap(v2[0].WFWorkflowActionParameters)
 				delete(changed[0].WFWorkflowActionParameters, key)
-				if p15StaticVariantError(changed, tc) == nil {
+				if p15StaticVariantError(changed, tc, false) == nil {
 					t.Fatal("fixed-field deletion passed variant oracle", key)
 				}
 			}
 			changed := append([]ShortcutAction(nil), v2...)
 			changed[0].WFWorkflowActionIdentifier = "com.example.p15.wrong.variant"
-			if p15StaticVariantError(changed, tc) == nil {
+			if p15StaticVariantError(changed, tc, false) == nil {
 				t.Fatal("wrong action identity passed variant oracle")
 			}
 		})
@@ -199,7 +209,10 @@ func TestP15CanonicalCallbackCausality(t *testing.T) {
 				t.Fatal("canonical fixture definition missing")
 			}
 			baseline := compileDebugFixture(t, tc.source, false)
-			if len(baseline) != 1 || baseline[0].WFWorkflowActionIdentifier != tc.identifier {
+			if err := p15M02MainVoidDebugError(baseline); err != nil {
+				t.Fatal(err)
+			}
+			if len(baseline) != 2 || baseline[0].WFWorkflowActionIdentifier != tc.identifier {
 				t.Fatal("baseline did not use expected action")
 			}
 			changed := *original
@@ -246,7 +259,10 @@ func TestP15CanonicalCallbackCausality(t *testing.T) {
 			definitions[tc.name] = &changed
 			defer func() { definitions[tc.name] = original }()
 			emitted := compileDebugFixture(t, tc.source, false)
-			if len(emitted) != 1 || emitted[0].WFWorkflowActionIdentifier != tc.identifier {
+			if err := p15M02MainVoidDebugError(emitted); err != nil {
+				t.Fatal(err)
+			}
+			if len(emitted) != 2 || emitted[0].WFWorkflowActionIdentifier != tc.identifier {
 				t.Fatal("canonical mutation changed unrelated identity")
 			}
 			parameters := emitted[0].WFWorkflowActionParameters
@@ -275,6 +291,12 @@ func TestP15CanonicalCallbackCausality(t *testing.T) {
 			}
 			definitions[tc.name] = original
 			restored := compileDebugFixture(t, tc.source, false)
+			if err := p15M02MainVoidDebugError(restored); err != nil {
+				t.Fatal(err)
+			}
+			if len(restored) != 2 || restored[0].WFWorkflowActionIdentifier != tc.identifier {
+				t.Fatal("restored canonical graph changed")
+			}
 			if !plistValuesStrictlyEqual(baseline[0].WFWorkflowActionParameters, restored[0].WFWorkflowActionParameters) {
 				t.Fatal("restored canonical definition differs from original control")
 			}

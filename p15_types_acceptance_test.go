@@ -107,7 +107,10 @@ func TestP15T02LiteralRequiredProduction(t *testing.T) {
 					}
 				}
 				actions := compileDebugFixture(t, src, false)
-				if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent" ||
+				if err := p15M02MainVoidDebugError(actions); err != nil {
+					t.Fatal(err)
+				}
+				if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent" ||
 					actions[0].WFWorkflowActionParameters["backgroundSound"] != "Ocean" {
 					t.Fatalf("eligible literal was evaluated dynamically or encoded incorrectly: %#v", actions)
 				}

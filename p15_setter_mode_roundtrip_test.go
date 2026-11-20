@@ -46,7 +46,12 @@ func p15SetterSource(action string, tc p15SetterCase) string {
 
 // The complete expected graph is authored from each scenario, including the
 // exact data producers, setter mode, property, field presence and input edges.
-func p15SetterGraphError(actual []map[string]any, action string, tc p15SetterCase) error {
+func p15SetterGraphError(actual []map[string]any, action string, tc p15SetterCase, mainLegacy bool) error {
+	if !mainLegacy {
+		if err := p15M02MainVoidBoundaryError(actual); err != nil {
+			return err
+		}
+	}
 	g := &p15FunctionGraph{actual: actual, groups: map[string]bool{}}
 	target := g.value("gettext", map[string]any{"WFTextActionText": "PUBLIC_SYNTHETIC_TARGET"})
 	params := map[string]any{"WFInput": p15FunctionEdge(target), "WFContentItemPropertyName": "URL", "Mode": tc.mode}
@@ -66,6 +71,9 @@ func p15SetterGraphError(actual []map[string]any, action string, tc p15SetterCas
 		params[key] = p15FunctionEdge(value)
 	}
 	g.emit(kind, params)
+	if !mainLegacy {
+		g.emit("nothing", nil)
+	}
 	// The shared builder's finish closes a user-function dispatcher. This
 	// source has no dispatcher: compare its complete straight-line graph here.
 	if g.err != nil {
@@ -112,7 +120,7 @@ func TestP15SetterModeSemanticRoundTrip(t *testing.T) {
 			t.Run(action+"/"+tc.name, func(t *testing.T) {
 				r := newRoundTripRunner(t)
 				first := r.compileSource("original", p15SetterSource(action, tc))
-				if err := p15SetterGraphError(p15SetterDocumentActions(t, loadRoundTripDocument(t, first)), action, tc); err != nil {
+				if err := p15SetterGraphError(p15SetterDocumentActions(t, loadRoundTripDocument(t, first)), action, tc, true); err != nil {
 					t.Fatalf("original graph: %v", err)
 				}
 				decompiled := r.decompileShortcut("imported", first)
@@ -120,7 +128,7 @@ func TestP15SetterModeSemanticRoundTrip(t *testing.T) {
 					t.Fatalf("semantic import lost the natural setter call:\n%s", decompiled)
 				}
 				second := r.compileSource("recompiled", decompiled)
-				if err := p15SetterGraphError(p15SetterDocumentActions(t, loadRoundTripDocument(t, second)), action, tc); err != nil {
+				if err := p15SetterGraphError(p15SetterDocumentActions(t, loadRoundTripDocument(t, second)), action, tc, true); err != nil {
 					t.Fatalf("round-trip graph: %v\nsource:\n%s", err, decompiled)
 				}
 			})
@@ -169,7 +177,7 @@ func TestP15SetterShorthandMigration(t *testing.T) {
 							t.Errorf("whole-property removal acquired %s", key)
 						}
 					}
-					if err := p15SetterGraphError(p15SetterDocumentActions(t, doc), action, p15SetterCase{name: tc.name, mode: "Remove"}); err != nil {
+					if err := p15SetterGraphError(p15SetterDocumentActions(t, doc), action, p15SetterCase{name: tc.name, mode: "Remove"}, true); err != nil {
 						t.Fatal(err)
 					}
 				}
@@ -182,16 +190,16 @@ func TestP15SetterModeGraphRejectsCorruption(t *testing.T) {
 	for _, action := range []string{"editEvent", "editReminder"} {
 		tc := p15SetterCases()[0]
 		original := p15CompiledActions(t, p15SetterSource(action, tc))
-		if err := p15SetterGraphError(original, action, tc); err != nil {
+		if err := p15SetterGraphError(original, action, tc, false); err != nil {
 			t.Fatal(err)
 		}
 		for _, fault := range []string{"changed_mode", "injected_value", "missing_input", "wrong_property", "extra_action"} {
 			t.Run(action+"/"+fault, func(t *testing.T) {
 				clone := p15ContainerCloneNative(t, original)
-				if err := p15SetterGraphError(clone, action, tc); err != nil {
+				if err := p15SetterGraphError(clone, action, tc, false); err != nil {
 					t.Fatal("unchanged clone rejected", err)
 				}
-				last := p15Param(clone[len(clone)-1])
+				last := p15Param(clone[len(clone)-2])
 				switch fault {
 				case "changed_mode":
 					last["Mode"] = "Set"
@@ -204,7 +212,7 @@ func TestP15SetterModeGraphRejectsCorruption(t *testing.T) {
 				case "extra_action":
 					clone = append(clone, clone[0])
 				}
-				if err := p15SetterGraphError(clone, action, tc); err == nil {
+				if err := p15SetterGraphError(clone, action, tc, false); err == nil {
 					t.Fatal("accepted corrupt native graph", fault)
 				}
 			})
@@ -250,10 +258,13 @@ func TestP15SetterNamedModeWordsRemainData(t *testing.T) {
 					}
 					source += ")\n"
 					actions := p15CompiledActions(t, source)
-					if len(actions) < 2 {
-						t.Fatal("missing literal input and setter")
+					if err := p15M02MainVoidBoundaryError(actions); err != nil {
+						t.Fatal(err)
 					}
-					last := actions[len(actions)-1]
+					if len(actions) != 3 {
+						t.Fatal("literal input, setter, and main result changed cardinality")
+					}
+					last := actions[len(actions)-2]
 					kind, property := "is.workflow.actions.setters.calendarevents", "WFCalendarEventContentItemURL"
 					if action == "editReminder" {
 						kind, property = "is.workflow.actions.setters.reminders", "WFReminderContentItemURL"
