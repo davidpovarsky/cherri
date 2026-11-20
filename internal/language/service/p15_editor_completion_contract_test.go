@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"path/filepath"
 	"reflect"
@@ -328,4 +330,73 @@ func TestP15E01ContextFactIsolation(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
+}
+
+func TestP15E01IncompleteModuleRecoveryRemainsBounded(t *testing.T) {
+	hits := 0
+	server := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { hits++ }))
+	defer server.Close()
+	for _, tc := range []struct{ name, header, dependency, want string }{
+		{"remote", fmt.Sprintf("import %q as dep\n", server.URL+"/module.cherri"), "", "E_WORKSPACE_ACCESS"},
+		{"outside", "import \"../outside.cherri\" as dep\n", "", "E_WORKSPACE_ACCESS"},
+		{"invalid_dependency", "import \"./dependency.cherri\" as dep\n", "function broken(", "E_SYNTAX"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			container := t.TempDir()
+			directory := filepath.Join(container, "workspace")
+			if err := os.Mkdir(directory, 0700); err != nil {
+				t.Fatal(err)
+			}
+			const outside = "function forbidden(value:Number)->Number{return value}\n"
+			if err := os.WriteFile(filepath.Join(container, "outside.cherri"), []byte(outside), 0600); err != nil {
+				t.Fatal(err)
+			}
+			if tc.dependency != "" {
+				if err := os.WriteFile(filepath.Join(directory, "dependency.cherri"), []byte(tc.dependency), 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			entry := filepath.Join(directory, "main.cherri")
+			path := filepath.ToSlash(entry)
+			if !strings.HasPrefix(path, "/") {
+				path = "/" + path
+			}
+			uri := (&url.URL{Scheme: "file", Path: path}).String()
+			svc := NewService(nil)
+			code, line, col := p15EditorCursor(t, tc.header+"dep.take(value: |)")
+			svc.OpenDocument(uri, 1, code)
+			if len(svc.documents[uri].ParseErrors) == 0 {
+				t.Fatal("incomplete source no longer exercises parser recovery")
+			}
+			diagnostics, _ := svc.Analyze(uri)
+			found := false
+			for _, d := range diagnostics {
+				found = found || d.Code == tc.want
+			}
+			if !found {
+				t.Fatalf("required bounded module error %s absent: %+v", tc.want, diagnostics)
+			}
+			if err := p15E01KindSetError(svc.Complete(uri, line, col), CompletionKindParameter, []string{}); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := os.ReadFile(filepath.Join(container, "outside.cherri"))
+			if err != nil || string(raw) != outside {
+				t.Fatal("outside source changed", err)
+			}
+			files, err := os.ReadDir(directory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			want := 0
+			if tc.dependency != "" {
+				want = 1
+			}
+			if len(files) != want {
+				t.Fatal("analysis wrote workspace artifacts", files)
+			}
+		})
+	}
+	if hits != 0 {
+		t.Fatalf("remote module completion issued %d network requests", hits)
+	}
 }
