@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // Bind by parameter identity first, then analyze each supplied expression once
@@ -74,7 +75,7 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 		// A literal None is explicitly tagged by the optional function envelope.
 		// Other possibly absent values still require their own presence provenance.
 		if literal, ok := argument.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
-			if _, optional := param.TypeExpr.(*syntax.OptionalTypeAnnotation); optional {
+			if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
 				return
 			}
 		}

@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/service"
 	"howett.net/plist"
 )
 
@@ -153,9 +155,140 @@ func TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues(t *testing.T) {
 			if !found {
 				t.Errorf("missing exact alias diagnostic %s/%s: %#v", tc.code, tc.detail, diagnostics)
 			}
+			svc := service.NewService(nil)
+			uri := "file:///p15-alias-" + tc.name + ".cherri"
+			svc.OpenDocument(uri, 1, tc.source)
+			editor, _ := svc.Analyze(uri)
+			found = false
+			for _, diagnostic := range editor {
+				if diagnostic.Severity == analysis.SeverityError && diagnostic.Code == tc.code && strings.Contains(diagnostic.Message, tc.detail) {
+					found = true
+				}
+			}
+			if !found {
+				t.Errorf("editor lost exact alias diagnostic %s/%s: %#v", tc.code, tc.detail, editor)
+			}
 			raw, err := CompileSourceToPlist("p15-optional-type-alias.cherri", tc.source)
 			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), tc.code) || !strings.Contains(err.Error(), tc.detail) {
 				t.Errorf("invalid alias emitted native bytes or wrong diagnostic: bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
+}
+
+func TestP15OptionalTypeAliasAnalyzerReuse(t *testing.T) {
+	analyzer := analysis.NewAnalyzer(schema.DefaultRegistry())
+	previous := analyzer.TypeAnnotations()
+	for _, tc := range []struct {
+		name, target, argument string
+		invalid                bool
+	}{
+		{"first", "Text?", "none", false},
+		{"changed", "Number?", "\"\"", true},
+		{"restored", "Text?", "\"\"", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "type Maybe=" + tc.target + "\nfunction echo(value:Maybe)->Maybe{return value}\ngetVariable(echo(" + tc.argument + "))"
+			program, errors := p15ParseProgram(source)
+			if len(errors) != 0 {
+				t.Fatal(errors)
+			}
+			analyzer.Analyze(program)
+			diagnostics := analyzer.Diagnostics()
+			if tc.invalid {
+				if len(diagnostics) != 1 || diagnostics[0].Code != analysis.CodeArgumentType || !strings.Contains(diagnostics[0].Message, "expects Number?") {
+					t.Fatal(diagnostics)
+				}
+			} else if len(diagnostics) != 0 {
+				t.Fatal(diagnostics)
+			}
+			current := analyzer.TypeAnnotations()
+			if len(current) == 0 {
+				t.Fatal("missing actual annotation results")
+			}
+			for annotation := range previous {
+				if _, retained := current[annotation]; retained {
+					t.Fatal("another program's type annotation leaked into this result")
+				}
+			}
+			previous = current
+		})
+	}
+}
+
+func TestP15OptionalTypeAliasModuleRejectsCallerType(t *testing.T) {
+	path, source := p15ModuleProject(t, map[string]string{
+		"main.cherri":       "import \"./dependency.cherri\" as dep\ntype Maybe=Number\ngetVariable(dep.echo(5))",
+		"dependency.cherri": "type Maybe=Text?\nfunction echo(value:Maybe)->Maybe{return value}\n",
+	})
+	// This is a semantic error in the caller's argument, not an import-loader
+	// path diagnostic. Require its exact caller span and defining-module type.
+	const detail = "expects Text?, got Number"
+	raw, err := CompileSourceToPlist(path, source)
+	if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) || !strings.Contains(err.Error(), detail) {
+		t.Fatalf("caller alias replaced imported function's type: bytes=%d error=%v", len(raw), err)
+	}
+	diagnostics := p15CheckModuleService(t, path, source)
+	if err := p15ExactLiteralDiagnostic(diagnostics, source, "5", analysis.CodeArgumentType); err != nil {
+		t.Fatal(err)
+	}
+	if len(diagnostics) != 1 || !strings.Contains(diagnostics[0].Message, detail) {
+		t.Fatal(diagnostics)
+	}
+}
+
+func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
+	for _, tc := range p15FunctionOptionalCases()[:2] {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "type Maybe=Text?\n" + strings.ReplaceAll(p15FunctionOptionalSource(tc), "Text?", "Maybe")
+			actions := p15CompiledActions(t, source)
+			if err := p15FunctionOptionalError(actions, tc); err != nil {
+				t.Fatal(err)
+			}
+			for _, fault := range []string{"value_presence", "argument_omission", "dispatch", "presence_decoder", "call_input", "duplicate_call"} {
+				t.Run(fault, func(t *testing.T) {
+					bad := p15ContainerCloneNative(t, actions)
+					if err := p15FunctionOptionalError(bad, tc); err != nil {
+						t.Fatal("unchanged clone must pass", err)
+					}
+					fields, err := p15FunctionContainerPayload(bad)
+					if err != nil {
+						t.Fatal(err)
+					}
+					decoder, call := -1, -1
+					for i, action := range bad {
+						if p15Param(action)["WFDictionaryKey"] == "has_value_0" {
+							decoder = i
+						}
+						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
+							call = i
+						}
+					}
+					if decoder < 0 || call < 0 {
+						t.Fatal("corruption target missing")
+					}
+					switch fault {
+					case "value_presence":
+						flag := "1"
+						if tc.valuePresent {
+							flag = "0"
+						}
+						fields["has_value_0"]["WFValue"] = p15FunctionText(flag)
+					case "argument_omission":
+						fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
+					case "dispatch":
+						fields["function"]["WFValue"] = p15FunctionText("other.echo")
+					case "presence_decoder":
+						p15Param(bad[decoder])["WFDictionaryKey"] = "arg_0"
+					case "call_input":
+						p15Param(bad[call])["WFInput"] = p15FunctionEdge("missing-payload")
+					case "duplicate_call":
+						bad = append(bad[:call], append([]map[string]any{bad[call]}, bad[call:]...)...)
+					}
+					if p15FunctionOptionalError(bad, tc) == nil {
+						t.Fatal("corrupted aliased Optional graph accepted")
+					}
+				})
 			}
 		})
 	}

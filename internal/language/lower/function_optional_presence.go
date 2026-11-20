@@ -9,9 +9,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
-func optionalFunctionParameter(annotation syntax.TypeAnnotation) bool {
-	_, optional := annotation.(*syntax.OptionalTypeAnnotation)
-	return optional
+func (l *Lowerer) optionalFunctionParameter(annotation syntax.TypeAnnotation) bool {
+	return types.MayBeAbsent(l.resolveTypeAnnotation(annotation))
 }
 
 // These are semantic values inside the compiler's private function carrier.
@@ -111,7 +110,7 @@ func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
 		name = callee.TypeName + "." + callee.Member
 	}
 	fn := l.functions[name]
-	return fn != nil && optionalFunctionParameter(fn.ReturnType)
+	return fn != nil && l.optionalFunctionParameter(fn.ReturnType)
 }
 
 func (l *Lowerer) lowerOptionalNoneCondition(expr syntax.Expression) (*ir.AttachmentToken, int, bool, error) {

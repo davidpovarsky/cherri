@@ -89,6 +89,7 @@ type Lowerer struct {
 	emitErr                    error
 	isMac                      *bool
 	exprTypes                  map[syntax.Expression]types.Type
+	typeAnnotations            map[syntax.TypeAnnotation]types.Type
 	enumValues                 map[syntax.Expression]string
 	inExprStmt                 bool
 	hasImportProvenance        bool
@@ -151,6 +152,11 @@ func (l *Lowerer) SetBaseFilePath(path string) {
 // SetExprTypes sets the map of analyzed expression types.
 func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
 	l.exprTypes = exprTypes
+}
+
+// SetTypeAnnotations preserves the defining module's analyzed alias meaning.
+func (l *Lowerer) SetTypeAnnotations(annotations map[syntax.TypeAnnotation]types.Type) {
+	l.typeAnnotations = annotations
 }
 
 // SetEnumValues supplies exact enum literals resolved without AST mutation.
@@ -411,14 +417,14 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		return err
 	}
 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
-	if l.exprTypes == nil || l.enumValues == nil {
+	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
 		analyzer.SetModuleGraph(l.moduleGraph)
 		analyzer.Analyze(prog)
 		l.registry = analyzer.Registry()
 		l.SetModuleRegistries(analyzer.ModuleRegistries())
 		for _, diagnostic := range analyzer.Diagnostics() {
-			if diagnostic.Code == analysis.CodeSetupBinding && diagnostic.Severity == analysis.SeverityError {
+			if (diagnostic.Code == analysis.CodeSetupBinding || diagnostic.Code == analysis.CodeTypeAlias) && diagnostic.Severity == analysis.SeverityError {
 				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
 			}
 		}
@@ -427,6 +433,9 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 		if l.enumValues == nil {
 			l.enumValues = analyzer.EnumValues()
+		}
+		if l.typeAnnotations == nil {
+			l.typeAnnotations = analyzer.TypeAnnotations()
 		}
 		if l.isMac == nil {
 			l.isMac = analyzer.IsMacTarget()
@@ -1237,7 +1246,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.bindings = make(map[string]BindingRef)
 
 		for idx, param := range fn.Parameters {
-			if optionalFunctionParameter(param.TypeExpr) {
+			if l.optionalFunctionParameter(param.TypeExpr) {
 				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr)
 				if err != nil {
 					return nil, fmt.Errorf("function %s optional parameter %s: %w", fn.Name, param.Name, err)
@@ -1341,7 +1350,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 		hasReturn := false
 		priorOptionalReturn := l.optionalFunctionReturn
-		l.optionalFunctionReturn = optionalFunctionParameter(fn.ReturnType)
+		l.optionalFunctionReturn = l.optionalFunctionParameter(fn.ReturnType)
 		for _, stmt := range fn.Body.Statements {
 			if _, ok := stmt.(*syntax.ReturnStmt); ok {
 				hasReturn = true
@@ -1356,7 +1365,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.bindings = savedBindings
 
 		if !hasReturn {
-			if optionalFunctionParameter(fn.ReturnType) {
+			if l.optionalFunctionParameter(fn.ReturnType) {
 				// Preserve the existing implicit no-value return with the same
 				// explicit presence protocol as authored `return none`.
 				carrier := l.optionalCarrier(nil, "0", "has_value", "value", "_cherri_optional_result_v1")
@@ -1568,6 +1577,9 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 	if t == nil {
 		return nil
 	}
+	if value, found := l.typeAnnotations[t]; found {
+		return value
+	}
 	switch ta := t.(type) {
 	case *syntax.NamedTypeAnnotation:
 		if nt, ok := types.ParseNamedType(ta.Name); ok {
@@ -1647,7 +1659,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	// Presence is independent of the value's native truthiness. Mutable
 	// bindings store a paired flag; immutable aliases snapshot a mutable flag.
 	var optionalPresence interface{}
-	if val == nil || optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
+	if val == nil || l.optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
 		optionalPresence, err = l.optionalValuePresence(b.Value, val)
 		if err != nil {
 			return err
@@ -5449,7 +5461,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					}
 				}
 			}
-			optionalValue := optionalFunctionParameter(param.TypeExpr)
+			optionalValue := l.optionalFunctionParameter(param.TypeExpr)
 			if optionalValue {
 				presence := "0"
 				if supplied && argVal != nil {
@@ -5527,7 +5539,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		l.emitAction(runNode)
 
-		if optionalFunctionParameter(fn.ReturnType) {
+		if l.optionalFunctionParameter(fn.ReturnType) {
 			value, presence := l.decodeOptionalCarrier(uuid, "has_value", "value", outName)
 			if l.optionalExpressionPresence == nil {
 				l.optionalExpressionPresence = make(map[syntax.Expression]interface{})
