@@ -64,6 +64,79 @@ class CallbackContractTests(unittest.TestCase):
     def test_exact_fresh_success(self):
         self.assertEqual(self.verify([self.event()])["runGate"], "PASS")
 
+    def optional_control(self):
+        import optional_forwarding_diagnostic as optional
+        manifest = self.manifest(optional.FIXTURE_ID)
+        fixture = manifest["fixtures"][0]
+        fixture.update(sourceSha256=optional.SOURCE_SHA256,
+                       optionalForwardingSource={
+                           "status": "PASS_REVIEWED_PUBLIC_SOURCE_ONLY", "sourceSha256": optional.SOURCE_SHA256,
+                           "expectedContractSha256": optional.CONTRACT_SHA256, "observedFields": 11,
+                           "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False},
+                       optionalForwardingGraph={
+                           "schemaVersion": "1.0", "fixtureId": optional.FIXTURE_ID,
+                           "status": "PASS_NATIVE_STRUCTURE_ONLY", "sourceSha256": optional.SOURCE_SHA256,
+                           "expectedContractSha256": optional.CONTRACT_SHA256, "unsignedPlistSha256": "c" * 64,
+                           "nativeActionCount": 399, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
+                           "testStdoutSha256": "d" * 64, "testStderrSha256": "e" * 64})
+        event = self.event()
+        event.update(fixtureId=optional.FIXTURE_ID, expectedShortcutName=optional.FIXTURE_ID,
+                     resultSummary=optional.EXPECTED_OUTPUT)
+        event["tracePayload"] = event["tracePayload"].replace("qa-unit", optional.FIXTURE_ID)
+        return optional, event, manifest
+
+    def test_optional_eleven_fields_require_exact_fresh_values_and_normal_trace(self):
+        optional, event, manifest = self.optional_control()
+        def verify(events):
+            return self.verify(events, optional.FIXTURE_ID, optional.EXPECTED_OUTPUT, manifest)
+        result = verify([event])
+        self.assertEqual((result["runGate"], result["traceGate"]), ("PASS", "PASS"))
+        for key, value in optional.EXPECTED_FIELDS:
+            for fields in ([pair for pair in optional.EXPECTED_FIELDS if pair[0] != key],
+                           [(name, "WRONG" if name == key else val) for name, val in optional.EXPECTED_FIELDS]):
+                changed = optional.PREFIX + ":".join(name + "=" + val for name, val in fields)
+                with self.subTest(field=key, field_count=len(fields)):
+                    self.assertEqual(verify([{**event, "resultSummary": changed}])["runGate"], "FAIL_RUNTIME")
+        for key, value in (("status", "ERROR"), ("status", "CANCELLED"), ("runId", "stale"),
+                           ("fixtureId", "qa-other"), ("expectedShortcutName", "qa-other"),
+                           ("receiverSelfTest", True), ("eventSource", "receiver-self-test"),
+                           ("resultSummary", optional.EXPECTED_OUTPUT + ":NONE=NONE")):
+            with self.subTest(key=key, value=value):
+                self.assertEqual(verify([{**event, key: value}])["runGate"], "FAIL_RUNTIME")
+        for trace in ("", event["tracePayload"].replace(optional.FIXTURE_ID, "stale-fixture")):
+            self.assertEqual(verify([{**event, "tracePayload": trace}])["traceGate"], "FAIL_RUNTIME")
+        self.assertEqual(verify([event, event])["runGate"], "FAIL_RUNTIME")
+
+    def test_optional_callback_requires_exact_prepared_graph_proof(self):
+        import copy
+        optional, event, original = self.optional_control()
+        mutations = [("sourceSha256", "b" * 64), ("optionalForwardingSource", None),
+                     ("optionalForwardingGraph", None), ("unsignedPlistSha256", "f" * 64),
+                     ("buildProfile", "release"), ("runtimeTraceExpectation", "ABSENT_RELEASE")]
+        for key, value in mutations:
+            manifest = copy.deepcopy(original)
+            manifest["fixtures"][0][key] = value
+            with self.subTest(fixture_key=key):
+                self.assertEqual(self.verify([event], optional.FIXTURE_ID, optional.EXPECTED_OUTPUT, manifest)["runGate"], "FAIL_RUNTIME")
+        for proof in ("optionalForwardingSource", "optionalForwardingGraph"):
+            keys = original["fixtures"][0][proof]
+            for key in keys:
+                for changed in ("wrong", None):
+                    manifest = copy.deepcopy(original)
+                    if changed is None:
+                        del manifest["fixtures"][0][proof][key]
+                    else:
+                        manifest["fixtures"][0][proof][key] = changed
+                    with self.subTest(proof=proof, key=key, value=changed):
+                        self.assertEqual(self.verify([event], optional.FIXTURE_ID, optional.EXPECTED_OUTPUT, manifest)["runGate"], "FAIL_RUNTIME")
+            for key, value in (("formalAcceptanceGranted", 0), ("privatePayload", "CANARY")):
+                manifest = copy.deepcopy(original)
+                manifest["fixtures"][0][proof][key] = value
+                self.assertEqual(self.verify([event], optional.FIXTURE_ID, optional.EXPECTED_OUTPUT, manifest)["runGate"], "FAIL_RUNTIME")
+        manifest = copy.deepcopy(original)
+        manifest["fixtures"][0]["optionalForwardingGraph"]["nativeActionCount"] = 399.0
+        self.assertEqual(self.verify([event], optional.FIXTURE_ID, optional.EXPECTED_OUTPUT, manifest)["runGate"], "FAIL_RUNTIME")
+
     def test_self_contained_short_circuit_requires_exact_count_and_normal_trace(self):
         fid = "qa-short-circuit-local-v2"
         expected = "CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"

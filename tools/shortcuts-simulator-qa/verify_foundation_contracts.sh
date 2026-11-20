@@ -28,3 +28,5 @@ swiftc -parse-as-library \
   "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_debug_label_preview.swift" \
   -o "$QA_TEST_DIR/qa-debug-label-preview-contracts"
 "$QA_TEST_DIR/qa-debug-label-preview-contracts"
+
+python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_optional_receiver.py"

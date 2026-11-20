@@ -39,14 +39,15 @@ def receipt_json(text):
     return json.loads(text, object_pairs_hook=unique_object)
 
 
-def run_process(command, timeout):
+def run_process(command, timeout, *, output=None):
     """Same process-group kill strategy as the existing bounded Xcode runner."""
     started = time.monotonic()
     if timeout <= 0:
         return {"result": "DEADLINE_EXHAUSTED", "exitCode": None, "elapsedMs": 0}
     try:
         process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            stdout=output if output is not None else subprocess.DEVNULL,
+            stderr=subprocess.STDOUT if output is not None else subprocess.DEVNULL,
             start_new_session=(os.name == "posix"))
     except OSError:
         return {"result": "LAUNCH_FAILED", "exitCode": None,

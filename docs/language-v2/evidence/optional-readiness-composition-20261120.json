@@ -1,0 +1,483 @@
+{
+  "schema_version": "cherri-component-source-proof-1",
+  "component": "optional-native-diagnostic-with-coherent-readiness",
+  "recorded_at": "2026-11-20T11:13:47.880052+00:00",
+  "implementation_sha": "5ab5e8157904a5ae23db24c81383947231e0b112",
+  "original_optional_source_sha": "596415bba43bdb324b660767d4021e956ed74ab0",
+  "clean_before": true,
+  "clean_after": true,
+  "source_files": [
+    {
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "bytes": 151170,
+      "sha256": "f8e26d82cfc69294386469b76ae676d38ec3f11f32148566c139d64fd2d79120"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+      "bytes": 14522,
+      "sha256": "288965976036d09fbba3b17c8244cef31b99473e52618929e7a3aca2f15517a1"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
+      "bytes": 16429,
+      "sha256": "c22b3a1d10b8ff5ac4774894d9cdf4c9bea8c2031ffdb8caff6882abf95758c2"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_simulator_session_recovery.py",
+      "bytes": 16823,
+      "sha256": "53dacfac8f229d134397c9acdc809fc5cc38cf4a4ee12bdf1fba98ba89793fe7"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_xcode_destination_readiness.py",
+      "bytes": 24145,
+      "sha256": "4c9a37f8a0c1ae94f91cb18841262b32621b191159ae3b3cc067254271feecdf"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/xcode_destination_readiness.py",
+      "bytes": 20971,
+      "sha256": "68caf31615f7a56d8cabcb5c0301b306680849e62809e25ea739a966a84662ed"
+    }
+  ],
+  "original_optional_dependencies": [
+    {
+      "path": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "sha256": "471fc3e69e1aba51d47736faa42e038396826013bf1646d92f6d3bb048854e22",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "p15_optional_artifact_gate_test.go",
+      "sha256": "235e6bf77ac23eabf3ee3020287ee03c0757976ae0d1e55717c701673766dc8b",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "p15_optional_native_diagnostic_test.go",
+      "sha256": "78f29d31560ea6075bb37a0ba6407d513baa7691d47a6508198ce018acd22151",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "sha256": "f8e26d82cfc69294386469b76ae676d38ec3f11f32148566c139d64fd2d79120",
+      "unchanged_from_original_optional": false
+    },
+    {
+      "path": "tools/p10r15/audit_native_continuation.py",
+      "sha256": "427da39642067960a292826e5ef99bdb8decb205f9345f4a0caf91a22279c0c1",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift",
+      "sha256": "4d37b52d5ea4a3b41c91e702cc39f57d92ddd6ab460e4b672fe7adbcaa5bba56",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/optional_forwarding_diagnostic.py",
+      "sha256": "87bdc793a5f209ab39532a7beba978f15f5adba07c8ed2fa4311633f9cad9328",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_native_continuation_audit.py",
+      "sha256": "f4e509fefe85145f308bd9a301d14212a46d83f9e49cd0e626c9d8dbc59dd2b1",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_optional_forwarding_diagnostic.py",
+      "sha256": "23ae6c23f4193f495aed6b85f822d7acb7c97627f7fecdefc1df35bc0502f821",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_runtime_callback_contract.py",
+      "sha256": "b3fa1f938bdec9b5c58f8aa37a5bdeb42ba1da71cda7ea687479c25dea792ee2",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/verify_foundation_contracts.sh",
+      "sha256": "e894d834908b65fcba3d0f6e5191ea562083944e38c69e85b6eec876976b454c",
+      "unchanged_from_original_optional": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/verify_optional_receiver.py",
+      "sha256": "c51c476e3f63f26afa309c6b7507efee6e9c6c9db36e7e63219d4b94e8ac12f8",
+      "unchanged_from_original_optional": true
+    }
+  ],
+  "source_diff_sha256": "4dec38b5aa82117b3ac5cc2551a4abccd8255ec6d59cb6e065fca153a4a9a9b1",
+  "composition_chain": [
+    "8e9b2de7e0e131179abe57b767f28d44e554e57f",
+    "a04c71f071c219794f7d58d11df9c637a1f64c0b",
+    "5ab5e8157904a5ae23db24c81383947231e0b112"
+  ],
+  "unchanged_fixture": {
+    "source_path": "tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.cherri",
+    "source_sha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+    "expected_path": "tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.expected.json",
+    "expected_sha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef"
+  },
+  "original_blocked_native_run": {
+    "id": 44690018966,
+    "source_sha": "596415bba43bdb324b660767d4021e956ed74ab0",
+    "classification": "BLOCKED_IMPORT",
+    "native_result_observed": false
+  },
+  "rejected_dispatch": {
+    "source_sha": "57f404fd8942355f90c7d4e86ed4ffd2f5e0cb92",
+    "http_status": 422,
+    "registered_run_count": 0,
+    "reason": "That unrelated base lacked the original Optional selector and wiring. The published source was kept immutable; no native attempt was created."
+  },
+  "preserved_dependency_failures": [
+    {
+      "source_sha": "8e9b2de7e0e131179abe57b767f28d44e554e57f",
+      "platform": "Windows",
+      "failure": "The shared recovery module publication control lacked its required bounded receipt validator.",
+      "original_log_sha256": "81c15a0df1bbede1bc3bbe0206bc99bbe12cf7469656209d31f2aba6d3833f4a"
+    },
+    {
+      "source_sha": "a04c71f071c219794f7d58d11df9c637a1f64c0b",
+      "platform": "Linux",
+      "failure": "The real original shell wrapper still used the older recovery body and did not emit the module's recovery receipt.",
+      "original_log_sha256": "ed4c42e1584a7674c9ab88246b5d2daa4c7f66d72cffb24a71d35da61dc24a4c",
+      "raw_log_retained_location": "local apple-ci-optional-readiness/local-proof/clean-a04c71f0/test_simulator_session_recovery.py.log"
+    }
+  ],
+  "controls": {
+    "linux": {
+      "implementation_sha": "5ab5e8157904a5ae23db24c81383947231e0b112",
+      "platform": "Linux local mirror of exact Git blobs",
+      "source_files": [
+        {
+          "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+          "bytes": 151170,
+          "sha256": "f8e26d82cfc69294386469b76ae676d38ec3f11f32148566c139d64fd2d79120"
+        },
+        {
+          "path": "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+          "bytes": 14522,
+          "sha256": "288965976036d09fbba3b17c8244cef31b99473e52618929e7a3aca2f15517a1"
+        },
+        {
+          "path": "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
+          "bytes": 16429,
+          "sha256": "c22b3a1d10b8ff5ac4774894d9cdf4c9bea8c2031ffdb8caff6882abf95758c2"
+        },
+        {
+          "path": "tools/shortcuts-simulator-qa/test_simulator_session_recovery.py",
+          "bytes": 16823,
+          "sha256": "53dacfac8f229d134397c9acdc809fc5cc38cf4a4ee12bdf1fba98ba89793fe7"
+        },
+        {
+          "path": "tools/shortcuts-simulator-qa/test_xcode_destination_readiness.py",
+          "bytes": 24145,
+          "sha256": "4c9a37f8a0c1ae94f91cb18841262b32621b191159ae3b3cc067254271feecdf"
+        },
+        {
+          "path": "tools/shortcuts-simulator-qa/xcode_destination_readiness.py",
+          "bytes": 20971,
+          "sha256": "68caf31615f7a56d8cabcb5c0301b306680849e62809e25ea739a966a84662ed"
+        }
+      ],
+      "python": [
+        {
+          "name": "test_xcode_destination_readiness.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_xcode_destination_readiness.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 0.414,
+          "log_sha256": "a10b9aae4ab0b698930c8ae6efeb095e777ce3798147c57349b8623b7e0d1cc6",
+          "tail": "receipt_write_failure_after_test_cannot_enable_a_second_attempt) ... ok\ntest_refresh_timeout_stops_without_requery_or_test (test_xcode_destination_readiness.DestinationTests.test_refresh_timeout_stops_without_requery_or_test) ... ok\ntest_still_missing_never_tests_or_retries_import (test_xcode_destination_readiness.DestinationTests.test_still_missing_never_tests_or_retries_import) ... ok\ntest_validator_failure_after_test_cannot_enable_a_second_attempt (test_xcode_destination_readiness.DestinationTests.test_validator_failure_after_test_cannot_enable_a_second_attempt) ... ok\ntest_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation (test_xcode_destination_readiness.RealProcessAndShellTests.test_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation) ... ok\ntest_existing_process_runner_captures_actual_stdout_and_stderr (test_xcode_destination_readiness.RealProcessAndShellTests.test_existing_process_runner_captures_actual_stdout_and_stderr) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 0.225s\n\nOK\n",
+          "passed": 22,
+          "skipped": 0
+        },
+        {
+          "name": "test_simulator_session_recovery.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_simulator_session_recovery.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 1.291,
+          "log_sha256": "516ec5c4f478e8d4fbb01dc677fc5055d3314636c49688be32a7f0f8038ab92e",
+          "tail": "etains_exact_bounded_receipt_and_rejects_rebinding) ... ok\ntest_quick_probe_has_no_reboot_import_or_display_claim (test_simulator_session_recovery.SessionRecoveryTests.test_quick_probe_has_no_reboot_import_or_display_claim) ... ok\ntest_receipt_rejects_specific_false_readiness_and_unknown_fields (test_simulator_session_recovery.SessionRecoveryTests.test_receipt_rejects_specific_false_readiness_and_unknown_fields) ... ok\ntest_receipt_rejects_understated_time_and_success_after_stage_allowance (test_simulator_session_recovery.SessionRecoveryTests.test_receipt_rejects_understated_time_and_success_after_stage_allowance) ... ok\ntest_recovery_command_timeout_stops_remaining_commands (test_simulator_session_recovery.SessionRecoveryTests.test_recovery_command_timeout_stops_remaining_commands) ... ok\ntest_recovery_uses_owned_device_and_fresh_display_and_removes_raster (test_simulator_session_recovery.SessionRecoveryTests.test_recovery_uses_owned_device_and_fresh_display_and_removes_raster) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 1.113s\n\nOK\n",
+          "passed": 19,
+          "skipped": 0
+        },
+        {
+          "name": "test_public_artifacts.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_public_artifacts.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 12.871,
+          "log_sha256": "4d542299b5b9af051f66776f19a7006d43da99743d7744a12c709577c9f3fbf6",
+          "tail": "ic_json_published (test_public_artifacts.PublicArtifactTests.test_positive_synthetic_json_published) ... ok\ntest_private_manifest_and_failed_existing_gate_blocked (test_public_artifacts.PublicArtifactTests.test_private_manifest_and_failed_existing_gate_blocked) ... ok\ntest_provenance_not_self_assertion (test_public_artifacts.PublicArtifactTests.test_provenance_not_self_assertion) ... ok\ntest_raster_disguised_as_json_and_xcresult_stay_local (test_public_artifacts.PublicArtifactTests.test_raster_disguised_as_json_and_xcresult_stay_local) ... ok\ntest_raster_secret_english_hebrew_low_contrast_quarantined (test_public_artifacts.PublicArtifactTests.test_raster_secret_english_hebrew_low_contrast_quarantined) ... ok\ntest_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) ... ok\ntest_unknown_paths_quarantined (test_public_artifacts.PublicArtifactTests.test_unknown_paths_quarantined) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 12.745s\n\nOK\n",
+          "passed": 17,
+          "skipped": 0
+        }
+      ],
+      "shell_parse_exit": 0,
+      "native_status": "NOT_RUN"
+    },
+    "windows": {
+      "implementation_sha": "5ab5e8157904a5ae23db24c81383947231e0b112",
+      "clean_before": true,
+      "clean_after": true,
+      "python": [
+        {
+          "name": "test_xcode_destination_readiness.py",
+          "command": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_xcode_destination_readiness.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 1.0,
+          "log_sha256": "facb86485dc85b454efa3df91838415db59617a673e270e31387fc05db071518",
+          "tail": "xcode_destination_readiness.DestinationTests.test_validator_failure_after_test_cannot_enable_a_second_attempt) ... ok\r\ntest_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation (test_xcode_destination_readiness.RealProcessAndShellTests.test_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation) ... skipped 'actual shell route requires POSIX'\r\ntest_existing_process_runner_captures_actual_stdout_and_stderr (test_xcode_destination_readiness.RealProcessAndShellTests.test_existing_process_runner_captures_actual_stdout_and_stderr) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 22 tests in 0.605s\r\n\r\nOK (skipped=1)\r\n",
+          "discovered": 22,
+          "skipped": 1,
+          "passed": 21
+        },
+        {
+          "name": "test_simulator_session_recovery.py",
+          "command": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_simulator_session_recovery.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 0.766,
+          "log_sha256": "b0d71c6d3fc281bc664805c1a2530e6cea05a6f611d9adb84a801ec99b480d28",
+          "tail": "k\r\ntest_receipt_rejects_understated_time_and_success_after_stage_allowance (test_simulator_session_recovery.SessionRecoveryTests.test_receipt_rejects_understated_time_and_success_after_stage_allowance) ... ok\r\ntest_recovery_command_timeout_stops_remaining_commands (test_simulator_session_recovery.SessionRecoveryTests.test_recovery_command_timeout_stops_remaining_commands) ... ok\r\ntest_recovery_uses_owned_device_and_fresh_display_and_removes_raster (test_simulator_session_recovery.SessionRecoveryTests.test_recovery_uses_owned_device_and_fresh_display_and_removes_raster) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 19 tests in 0.395s\r\n\r\nOK (skipped=2)\r\n",
+          "discovered": 19,
+          "skipped": 2,
+          "passed": 17
+        },
+        {
+          "name": "test_public_artifacts.py",
+          "command": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_public_artifacts.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 34.39,
+          "log_sha256": "370e14776549d7ab0edd033576e968d36d370cb5a246b2bb6f2ae543c79c2959",
+          "tail": "ed_as_json_and_xcresult_stay_local (test_public_artifacts.PublicArtifactTests.test_raster_disguised_as_json_and_xcresult_stay_local) ... ok\r\ntest_raster_secret_english_hebrew_low_contrast_quarantined (test_public_artifacts.PublicArtifactTests.test_raster_secret_english_hebrew_low_contrast_quarantined) ... ok\r\ntest_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) ... ok\r\ntest_unknown_paths_quarantined (test_public_artifacts.PublicArtifactTests.test_unknown_paths_quarantined) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 17 tests in 34.136s\r\n\r\nOK\r\n",
+          "discovered": 17,
+          "skipped": 0,
+          "passed": 17
+        },
+        {
+          "name": "test_optional_forwarding_diagnostic.py",
+          "command": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_optional_forwarding_diagnostic.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 0.938,
+          "log_sha256": "dd26c9c14526ba499ef0eea3de867476e626b134d741cc8db88c758a4a4a4901",
+          "tail": "GateTests.test_failed_process_and_timeout_do_not_make_a_proof) ... ok\r\ntest_public_pins_and_exact_eleven_field_contract (test_optional_forwarding_diagnostic.OptionalArtifactGateTests.test_public_pins_and_exact_eleven_field_contract) ... ok\r\ntest_receipt_schema_truth_and_artifact_binding_mutations_reject (test_optional_forwarding_diagnostic.OptionalArtifactGateTests.test_receipt_schema_truth_and_artifact_binding_mutations_reject) ... ok\r\ntest_unrelated_fixture_cannot_invoke_gate (test_optional_forwarding_diagnostic.OptionalArtifactGateTests.test_unrelated_fixture_cannot_invoke_gate) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 9 tests in 0.599s\r\n\r\nOK\r\n",
+          "discovered": 9,
+          "skipped": 0,
+          "passed": 9
+        },
+        {
+          "name": "test_runtime_callback_contract.py",
+          "command": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_runtime_callback_contract.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 63.89,
+          "log_sha256": "8cdfcf4eee36412afc49250a658cb2f2ac167efe094c3e41806cb1d0dcc3c3f4",
+          "tail": "lbackContractTests.test_source_fixture_and_self_test_mutations) ... ok\r\ntest_summary_and_required_gate_only_accept_verified_release_absence (test_runtime_callback_contract.CallbackContractTests.test_summary_and_required_gate_only_accept_verified_release_absence) ... ok\r\ntest_trace_schema_order_and_completeness (test_runtime_callback_contract.CallbackContractTests.test_trace_schema_order_and_completeness) ... ok\r\ntest_wrong_trace_identity_and_no_events_not_trace_success (test_runtime_callback_contract.CallbackContractTests.test_wrong_trace_identity_and_no_events_not_trace_success) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 27 tests in 63.652s\r\n\r\nOK\r\n",
+          "discovered": 27,
+          "skipped": 0,
+          "passed": 27
+        },
+        {
+          "name": "test_native_continuation_audit.py",
+          "command": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/shortcuts-simulator-qa",
+            "-p",
+            "test_native_continuation_audit.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 17.844,
+          "log_sha256": "71161d146bc94e1137702f685845947124bd22512f31350f6fbe82e3f3c02ae1",
+          "tail": "sing_trace (test_native_continuation_audit.NativeContinuationAuditTests.test_summary_cannot_promote_wrong_output_or_missing_trace) ... ok\r\ntest_synthetic_protocol_control_replays_actual_oracle_and_eight_causal_rejections (test_native_continuation_audit.NativeContinuationAuditTests.test_synthetic_protocol_control_replays_actual_oracle_and_eight_causal_rejections) ... ok\r\ntest_unrelated_preserved_rejections_do_not_promote_or_block_executed_target (test_native_continuation_audit.NativeContinuationAuditTests.test_unrelated_preserved_rejections_do_not_promote_or_block_executed_target) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 15 tests in 17.426s\r\n\r\nOK\r\n",
+          "discovered": 15,
+          "skipped": 0,
+          "passed": 15
+        }
+      ],
+      "swift_receiver": {
+        "command": [
+          "python",
+          "tools/shortcuts-simulator-qa/verify_optional_receiver.py",
+          "--swiftc",
+          "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.exe"
+        ],
+        "exit_code": 0,
+        "duration_seconds": 4.547,
+        "log_sha256": "8b208ff7d40d797c34b9286c26fc8d5e10e4a56fe8c0b0f9f19b409a8aa47547",
+        "output": "OPTIONAL_RECEIVER_POLICY_CONTROLS_PASS count=14 nativeRuntime=NOT_RUN\r\n   Creating library C:\\Users\\DAVID\\AppData\\Local\\Temp\\optional-receiver-policy-yrcho5bq\\verify-receiver.lib and object C:\\Users\\DAVID\\AppData\\Local\\Temp\\optional-receiver-policy-yrcho5bq\\verify-receiver.exp\r\r\n"
+      },
+      "go_optional": {
+        "command": [
+          "go",
+          "test",
+          ".",
+          "-run",
+          "^TestP15Optional(NativeDiagnostic|Artifact)",
+          "-count=1",
+          "-json"
+        ],
+        "exit_code": 0,
+        "duration_seconds": 7.172,
+        "stdout_sha256": "b9f00f9133d52702aa54316005a180780f9ebff0b4c5a39e3b1dcf0746a734b1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "named_passes": 66,
+        "failures": [],
+        "skips": [],
+        "tail": ""
+      },
+      "native_status": "NOT_RUN",
+      "native_semantic_acceptance": false
+    },
+    "windows_python_passes": 106,
+    "windows_python_skips": 3,
+    "linux_python_passes": 58,
+    "swift_receiver_controls": 14,
+    "go_named_passes": 66
+  },
+  "retained_originals": [
+    {
+      "evidence_relative_path": "xcode-destination-readiness-20261120/native-dispatch/dispatch-requested.json",
+      "bytes": 844,
+      "sha256": "a1de822738bf591e2bd49746008ed1c559be312e5407e785e48e0694adfcc01d"
+    },
+    {
+      "evidence_relative_path": "xcode-destination-readiness-20261120/native-dispatch/dispatch.stdout",
+      "bytes": 237,
+      "sha256": "4918e31360a73d5ddece8dbf6d785da3452d5a9796368754e64b24d96a50c29c"
+    },
+    {
+      "evidence_relative_path": "xcode-destination-readiness-20261120/native-dispatch/dispatch.stderr",
+      "bytes": 122,
+      "sha256": "0e1e276737576eb29fd5502f388161dd75fff70dfdb7ba9cc513f01419d738c7"
+    },
+    {
+      "evidence_relative_path": "xcode-destination-readiness-20261120/native-dispatch/registration-followup.stdout",
+      "bytes": 36,
+      "sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/clean-8e9b2de7/receipt.json",
+      "bytes": 2640,
+      "sha256": "5767baeafcb333d27d30056bca09af96ef17ae33d1257dae805b7d04e6406917"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/clean-8e9b2de7/test_simulator_session_recovery.py.log",
+      "bytes": 5193,
+      "sha256": "81c15a0df1bbede1bc3bbe0206bc99bbe12cf7469656209d31f2aba6d3833f4a"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/clean-a04c71f0/receipt.json",
+      "bytes": 8410,
+      "sha256": "f1e277ccff66846229b555721b78e9d1c68c7697edd14c6633635fbc66a98fbe"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/clean-5ab5e815/receipt.json",
+      "bytes": 8406,
+      "sha256": "22b445fcb9fac30c83325681b6e15662ce73fa2569983da80d86d7894ea16c49"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/clean-5ab5e815/optional-graph.jsonl",
+      "bytes": 61436,
+      "sha256": "b9f00f9133d52702aa54316005a180780f9ebff0b4c5a39e3b1dcf0746a734b1"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/clean-5ab5e815/optional-receiver-swift.log",
+      "bytes": 280,
+      "sha256": "8b208ff7d40d797c34b9286c26fc8d5e10e4a56fe8c0b0f9f19b409a8aa47547"
+    },
+    {
+      "evidence_relative_path": "optional-destination-readiness-20261120/linux-final-receipt.json",
+      "bytes": 6055,
+      "sha256": "09c7f016c5fc48243be02c45486f1588170567a4988fbb69d92892ed23f15c67"
+    }
+  ],
+  "limits": {
+    "native_status": "NOT_RUN",
+    "formal_acceptance_granted": false,
+    "callback_contract_modified": false,
+    "fixture_expected_modified": false,
+    "test02_phase_seconds": 900,
+    "xcode_readiness_max_seconds": 90,
+    "test_attempts_per_phase_max": 1,
+    "frozen_refs_rewritten": false,
+    "local_executor_note": "The exact Linux source/receipt and individual log hashes were collected before local executor availability was lost. The preserved receipt is copied here; original local log files are not recreated or represented as host downloads."
+  }
+}

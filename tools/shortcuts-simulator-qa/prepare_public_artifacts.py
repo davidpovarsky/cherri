@@ -22,6 +22,7 @@ ALLOWED = {
     "runtime/http-probe-diagnostic.json", "runtime/simulator-session-recovery.json",
     "runtime/json-body-diagnostic.json",
     "runtime/debug-label-acceptance.json", "editor/debug-label-preview.json",
+    "runtime/xcode-destination-readiness.json",
     "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
     "editor/editor-foreground-recovery.json",
@@ -227,6 +228,16 @@ def stage(root, output, trusted_sources):
                                          assertions["targetFixtureId"])
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_SESSION_DIAGNOSTIC"})
+                        continue
+                if name == "runtime/xcode-destination-readiness.json":
+                    from xcode_destination_readiness import validate_receipt
+                    try:
+                        compiler = public_json((root / "compiler-manifest.json").read_text(encoding="utf-8"))
+                        assertions = public_json((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
+                        validate_receipt(parsed, compiler["compilerCommitSha"], root.name,
+                                         assertions["targetFixtureId"], artifact_root=root)
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_DESTINATION_DIAGNOSTIC"})
                         continue
                 if name == "runtime/storage-cross-run-diagnostic.json":
                     from storage_cross_run import validate_public_diagnostic
