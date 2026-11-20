@@ -1,0 +1,20 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15FunctionArgumentContainersPreserveSemanticIdentity|TestP15FunctionContainerArgumentsCaptureBeforeLaterWrite|TestP15ExplicitNativeContainerTemplateRemainsOpaque|TestP15FunctionContainerOracleRejectsNativeConfusion|TestP15FunctionContainerUnsupportedNullStillFailsPrecisely)$",
+    "."
+  ],
+  "source_sha": "21ef2c0a7b61672fef43fc348d42547e92c42a91",
+  "source_status": " M internal/language/lower/call_arguments.go\n?? internal/language/lower/function_argument_containers.go\n",
+  "exit_code": 0,
+  "elapsed_seconds": 19.76500000001397,
+  "named_passes": 19,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "78cd992343999e5d01a3731b1967b12c83c7896e28ee8edb47ca1167178b842b"
+}

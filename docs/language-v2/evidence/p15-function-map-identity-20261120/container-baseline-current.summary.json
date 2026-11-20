@@ -1,0 +1,33 @@
+{
+  "source_sha": "0b8c9a47608185da3c4b31d3b6351b439a5bc49c",
+  "source_status": "?? p15_container_shape_acceptance_test.go\n",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15FunctionArgumentContainersPreserveSemanticIdentity|TestP15FunctionContainerArgumentsCaptureBeforeLaterWrite|TestP15ExplicitNativeContainerTemplateRemainsOpaque|TestP15FunctionContainerUnsupportedNullStillFailsPrecisely)$",
+    "."
+  ],
+  "started_utc": "2026-11-20T00:06:41.875753+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 23.68700000003446,
+  "passed_tests": [
+    "TestP15ExplicitNativeContainerTemplateRemainsOpaque",
+    "TestP15FunctionContainerUnsupportedNullStillFailsPrecisely"
+  ],
+  "failed_tests": [
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/empty",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/reserved_attachment",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/reserved_color",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/literal_braces",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/nested",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity",
+    "TestP15FunctionContainerArgumentsCaptureBeforeLaterWrite",
+    null
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "ecf7f450b99577620f84ae0ff37be9017daf41fd90bd8296d67ddbdedb697efe"
+}
