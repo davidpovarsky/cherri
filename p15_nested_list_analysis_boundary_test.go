@@ -190,7 +190,7 @@ func TestP15L01NativeListContextPreservesInlineArrays(t *testing.T) {
 		{"dictionary_in_list", "return [{\"rows\":[[],[1,2]]},{\"rows\":[[3,4]]}]"},
 		{"map_argument", "function echo(value:Map<Text,AnyContent>)->Map<Text,AnyContent>{return value}\nreturn echo({\"rows\":[[],[1,2],[[3],[]]]})"},
 		{"map_return", "function value()->Map<Text,AnyContent>{return {\"rows\":[[],[1,2]]}}\nreturn value()"},
-		{"map_default", "function echo(value:Map<Text,AnyContent>={\"rows\":[[],[1,2]]})->Map<Text,AnyContent>{return value}\nreturn echo()"},
+		{"map_default", "function echo(value:Map<Text,AnyContent> = {\"rows\":[[],[1,2]]})->Map<Text,AnyContent>{return value}\nreturn echo()"},
 		{"flat_scalar_list", "return [false,0,\"\",7]"},
 		{"flat_dictionary_list", "return [{},{\"rows\":[[],[1,2]]}]"},
 		{"opaque_native_input", "let value=Clipboard\nreturn [value]"},
