@@ -20,10 +20,10 @@ var skillProductionTests = map[string][]string{
 }
 
 var skillProductionPaths = map[string][]string{
-	"K01": {"tools/p10r15/package_skill.py", "p15_skill_packaging_test.go", "skills/cherri-shortcuts/scripts/self-test.sh", ".github/workflows/openminis-skill.yml"},
-	"K02": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go"},
-	"K03": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go", "p15_skill_signal_test.go"},
-	"K04": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh", "p15_skill_acceptance_test.go"},
+	"K01": {"tools/p10r15/package_skill.py", "p15_skill_packaging_test.go", "skills/cherri-shortcuts/scripts/self-test.sh", ".github/workflows/openminis-skill.yml", "skills/cherri-shortcuts/scripts/installation.sh", "skills/cherri-shortcuts/scripts/json-object.awk", "cmd/cherri-migrate/install_identity.go", "p15_install_actual_tools_test.go", "p15_extracted_install_contract_test.go", "p15_install_identity_contract_test.go"},
+	"K02": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go", "skills/cherri-shortcuts/scripts/installation.sh", "skills/cherri-shortcuts/scripts/json-object.awk", "cmd/cherri-migrate/install_identity.go", "p15_install_actual_tools_test.go", "p15_extracted_install_contract_test.go", "p15_install_identity_contract_test.go"},
+	"K03": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go", "p15_skill_signal_test.go", "skills/cherri-shortcuts/scripts/installation.sh", "skills/cherri-shortcuts/scripts/json-object.awk", "cmd/cherri-migrate/install_identity.go", "p15_install_actual_tools_test.go", "p15_extracted_install_contract_test.go", "p15_install_identity_contract_test.go"},
+	"K04": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh", "p15_skill_acceptance_test.go", "skills/cherri-shortcuts/scripts/installation.sh", "skills/cherri-shortcuts/scripts/json-object.awk", "cmd/cherri-migrate/install_identity.go", "p15_install_actual_tools_test.go", "p15_extracted_install_contract_test.go", "p15_install_identity_contract_test.go"},
 }
 
 func (r *Runner) runSkillProductionRequirement(id, requirement string) {

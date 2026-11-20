@@ -973,6 +973,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateExtractedInstallRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateSafeImportEditRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1927,6 +1930,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 	}
 	for _, c := range repair.Cases {
 		if r.runNumberWireRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+			continue
+		}
+		if r.runExtractedInstallRequirement(c) {
 			continue
 		}
 		if r.runStructuralMigrationRequirement(c) {

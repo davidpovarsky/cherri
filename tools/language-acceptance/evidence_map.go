@@ -476,6 +476,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if _, found := extractedInstallScenarios[id]; found {
+		return extractedInstallTestIDs(id)
+	}
 	if id == "RP11" {
 		return numberWireTestIDs()
 	}
@@ -540,6 +543,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := extractedInstallScenarios[id]; found {
+		return append([]string{}, extractedInstallProductionPaths...)
+	}
 	if id == "RP11" {
 		return append([]string{}, numberWireProductionPaths...)
 	}
