@@ -1,0 +1,1498 @@
+commit 7571baca9e6e86ac5c92205b93a51630906ba993
+Author:     David Povarsky <davidpovarsky@users.noreply.github.com>
+AuthorDate: Fri Nov 20 07:28:22 2026 +0200
+Commit:     David Povarsky <davidpovarsky@users.noreply.github.com>
+CommitDate: Fri Nov 20 07:28:22 2026 +0200
+
+    fix: preserve Optional presence across function arguments
+
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index 5339cbe7..d7e9d51d 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -30,6 +30,8 @@ type Symbol struct {
+ 	EnumDeclaration       bool
+ 	EnumType              string
+ 	flowType              types.Type
++	optionalPresence      bool
++	knownAbsent           bool
+ 	nativeReferenceTarget bool
+ }
+ 
+@@ -88,6 +90,8 @@ type Analyzer struct {
+ 	moduleScope            *Scope
+ 	isMacTarget            *bool
+ 	exprTypes              map[syntax.Expression]types.Type
++	exprPresence           map[syntax.Expression]bool
++	exprAbsent             map[syntax.Expression]bool
+ 	targets                []string
+ 	hasExplicitTarget      bool
+ 	minTargetVersion       float64
+@@ -346,6 +350,8 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
+ func (a *Analyzer) Analyze(prog *syntax.Program) {
+ 	a.beginProgram()
+ 	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
++	a.exprPresence = make(map[syntax.Expression]bool)
++	a.exprAbsent = make(map[syntax.Expression]bool)
+ 	defer func() { a.analyzing = false }()
+ 	a.analyzeModuleDependencies()
+ 	a.expandCopyPaste(prog)
+@@ -495,7 +501,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
+ 				if parameter.DefaultExpr != nil {
+ 					actual := a.analyzeEnumContext(parameter.DefaultExpr, scope, a.enumCatalog.TypeName(parameter.TypeExpr))
+ 					expected := a.resolveType(parameter.TypeExpr)
+-					if actual != nil && !assignmentHasEvidence(actual, expected, parameter.DefaultExpr) {
++					if actual != nil && !a.optionalAssignmentHasEvidence(actual, expected, parameter.DefaultExpr) {
+ 						a.error(CodeArgumentType, parameter.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", actual, expected))
+ 					}
+ 				}
+@@ -708,12 +714,15 @@ func (a *Analyzer) analyzeFunction(fn *syntax.FunctionDecl, parentScope *Scope)
+ 		pType := a.resolveType(p.TypeExpr)
+ 		if p.DefaultExpr != nil {
+ 			defType := a.analyzeEnumContext(p.DefaultExpr, fnScope, a.enumCatalog.TypeName(p.TypeExpr))
+-			if defType != nil && !assignmentHasEvidence(defType, pType, p.DefaultExpr) {
++			if defType != nil && !a.optionalAssignmentHasEvidence(defType, pType, p.DefaultExpr) {
+ 				a.error(CodeArgumentType, p.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", defType, pType))
++			} else if types.MayBeAbsent(pType) {
++				a.requireCompilerPresence(p.DefaultExpr, "Optional default")
+ 			}
+ 		}
+ 		fnScope.Define(&Symbol{
+ 			nativeReferenceTarget: true,
++			optionalPresence:      types.MayBeAbsent(pType) || types.DefinitelyPresent(pType),
+ 			Name:                  p.Name,
+ 			EnumType:              a.enumCatalog.TypeName(p.TypeExpr),
+ 			Type:                  pType,
+@@ -766,8 +775,10 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
+ 		declType := valType
+ 		if s.TypeExpr != nil {
+ 			annotated := a.resolveType(s.TypeExpr)
+-			if s.Value != nil && valType != nil && !assignmentHasEvidence(valType, annotated, s.Value) {
++			if s.Value != nil && valType != nil && !a.optionalAssignmentHasEvidence(valType, annotated, s.Value) {
+ 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("type %s is not assignable to declared type %s", valType, annotated))
++			} else if s.Value != nil && types.MayBeAbsent(annotated) {
++				a.requireCompilerPresence(s.Value, "Optional binding")
+ 			}
+ 			declType = annotated
+ 		}
+@@ -796,6 +807,8 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
+ 
+ 		symbol := &Symbol{
+ 			nativeReferenceTarget: s.Value != nil && !isVoidValue(valType),
++			optionalPresence:      a.exprPresence[s.Value],
++			knownAbsent:           a.exprAbsent[s.Value],
+ 			Name:                  s.Name,
+ 			EnumType:              a.enumCatalog.TypeName(s.TypeExpr),
+ 			Type:                  declType,
+@@ -834,17 +847,32 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
+ 		if valType != nil && sym.Type != nil {
+ 			if s.Op == syntax.TokenPlusAssign {
+ 				if listType, ok := sym.Type.(types.ListType); ok {
+-					if !assignmentHasEvidence(valType, listType.Element, s.Value) && !assignmentHasEvidence(valType, sym.Type, s.Value) {
++					if !a.optionalAssignmentHasEvidence(valType, listType.Element, s.Value) && !a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
+ 						a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to list element of type %s", valType, listType.Element))
+ 					}
+-				} else if !assignmentHasEvidence(valType, sym.Type, s.Value) {
++				} else if !a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
+ 					a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
+ 				}
+-			} else if !assignmentHasEvidence(valType, sym.Type, s.Value) {
++			} else if !a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
+ 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
+ 			}
+ 		}
+ 		sym.Initialized = true
++		if s.Op == syntax.TokenAssign {
++			if types.MayBeAbsent(sym.Type) && a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
++				a.requireCompilerPresence(s.Value, "Optional assignment")
++			}
++			sym.optionalPresence = a.exprPresence[s.Value]
++			sym.knownAbsent = a.exprAbsent[s.Value]
++		} else {
++			// An invalid compound operation was diagnosed above. Preserve the
++			// existing provenance while collecting later diagnostics; a valid
++			// operation produces a present value and keeps its paired flag.
++			if types.DefinitelyPresent(sym.readType()) && types.DefinitelyPresent(valType) {
++				sym.optionalPresence = true
++			}
++			sym.knownAbsent = false
++		}
+ 		narrowAssignedValue(sym, valType)
+ 
+ 	case *syntax.ExprStmt:
+@@ -861,8 +889,10 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
+ 		}
+ 		if a.currentFn != nil && a.currentFn.ReturnType != nil {
+ 			expected := a.resolveType(a.currentFn.ReturnType)
+-			if !assignmentHasEvidence(retType, expected, s.Value) {
++			if !a.optionalAssignmentHasEvidence(retType, expected, s.Value) {
+ 				a.error(CodeReturnType, s.Span, fmt.Sprintf("return value of type %s does not match expected return type %s", retType, expected))
++			} else if types.MayBeAbsent(expected) {
++				a.requireCompilerPresence(s.Value, "Optional result")
+ 			}
+ 		}
+ 
+@@ -1074,7 +1104,24 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
+ 	if expr == nil {
+ 		return types.Unknown
+ 	}
++	if a.exprPresence == nil {
++		a.exprPresence = make(map[syntax.Expression]bool)
++	}
++	if a.exprAbsent == nil {
++		a.exprAbsent = make(map[syntax.Expression]bool)
++	}
++	delete(a.exprPresence, expr)
+ 	t := a.analyzeExpressionInternal(expr, scope)
++	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
++	a.exprAbsent[expr] = false
++	switch node := expr.(type) {
++	case *syntax.LiteralExpr:
++		a.exprAbsent[expr] = node.Type == syntax.TokenNone
++	case *syntax.IdentExpr:
++		if binding, found := scope.Lookup(node.Name); found {
++			a.exprAbsent[expr] = binding.Initialized && binding.knownAbsent
++		}
++	}
+ 	if name := a.enumContexts[expr]; name != "" {
+ 		a.validateEnumValue(expr, name, a.enumCatalog.Values(name))
+ 	}
+@@ -1518,6 +1565,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+ 		// Evaluate arguments
+ 		if sym.Function != nil {
+ 			a.checkUserFunctionArguments(sym.Function, call, scope)
++			a.exprPresence[call] = types.MayBeAbsent(sym.Type)
+ 		} else {
+ 			if call.PrimaryArg != nil {
+ 				a.analyzeExpression(call.PrimaryArg, scope)
+diff --git a/internal/language/analysis/binding_flow.go b/internal/language/analysis/binding_flow.go
+index eec63911..2409e6fc 100644
+--- a/internal/language/analysis/binding_flow.go
++++ b/internal/language/analysis/binding_flow.go
+@@ -28,8 +28,10 @@ func narrowAssignedValue(symbol *Symbol, value types.Type) {
+ }
+ 
+ type bindingFlowState struct {
+-	initialized bool
+-	readType    types.Type
++	initialized      bool
++	readType         types.Type
++	optionalPresence bool
++	knownAbsent      bool
+ }
+ type bindingFlow map[*Symbol]bindingFlowState
+ 
+@@ -37,7 +39,7 @@ func captureBindingFlow(scope *Scope) bindingFlow {
+ 	result := bindingFlow{}
+ 	for current := scope; current != nil; current = current.parent {
+ 		for _, symbol := range current.symbols {
+-			result[symbol] = bindingFlowState{symbol.Initialized, symbol.readType()}
++			result[symbol] = bindingFlowState{symbol.Initialized, symbol.readType(), symbol.optionalPresence, symbol.knownAbsent}
+ 		}
+ 	}
+ 	return result
+@@ -46,6 +48,8 @@ func captureBindingFlow(scope *Scope) bindingFlow {
+ func (state bindingFlow) restore() {
+ 	for symbol, value := range state {
+ 		symbol.Initialized = value.initialized
++		symbol.optionalPresence = value.optionalPresence
++		symbol.knownAbsent = value.knownAbsent
+ 		symbol.flowType = nil
+ 		if value.readType != nil && symbol.Type != nil && !value.readType.Equals(symbol.Type) {
+ 			symbol.flowType = value.readType
+@@ -66,13 +70,17 @@ func mergeBindingFlow(entry bindingFlow, paths ...bindingFlow) {
+ 		if !ok {
+ 			continue
+ 		}
+-		initialized, sameType := first.initialized, true
++		initialized, sameType, presence, absent := first.initialized, true, first.optionalPresence, first.knownAbsent
+ 		for _, path := range paths[1:] {
+ 			value, found := path[symbol]
+ 			initialized = initialized && found && value.initialized
++			presence = presence && found && value.optionalPresence
++			absent = absent && found && value.knownAbsent
+ 			sameType = sameType && found && first.readType != nil && value.readType != nil && first.readType.Equals(value.readType)
+ 		}
+ 		symbol.Initialized = initialized
++		symbol.optionalPresence = initialized && presence
++		symbol.knownAbsent = initialized && absent
+ 		symbol.flowType = nil
+ 		if initialized && sameType && first.readType != nil && symbol.Type != nil && !first.readType.Equals(symbol.Type) {
+ 			symbol.flowType = first.readType
+@@ -284,5 +292,6 @@ func invalidateLoopRefinements(body *syntax.BlockStmt, scope *Scope) {
+ 	// inside the body can establish a fresh fact for the current iteration.
+ 	for symbol := range writtenBindings(body, scope) {
+ 		symbol.flowType = nil
++		symbol.knownAbsent = false
+ 	}
+ }
+diff --git a/internal/language/analysis/function_arguments.go b/internal/language/analysis/function_arguments.go
+index 035932a8..47982b3b 100644
+--- a/internal/language/analysis/function_arguments.go
++++ b/internal/language/analysis/function_arguments.go
+@@ -67,17 +67,16 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
+ 		}
+ 		if param.TypeExpr != nil {
+ 			expected := a.resolveType(param.TypeExpr)
+-			if actual != nil && !assignmentHasEvidence(actual, expected, argument) {
++			if actual != nil && !a.optionalAssignmentHasEvidence(actual, expected, argument) {
+ 				a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
+ 				return
+ 			}
+ 		}
+-		// A literal None is explicitly tagged by the optional function envelope.
+-		// Other possibly absent values still require their own presence provenance.
+-		if literal, ok := argument.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
+-			if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
+-				return
+-			}
++		// Optional parameters transport a compiler-owned value-presence carrier.
++		// Omission/default presence remains a separate outer-envelope decision.
++		if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
++			a.requireCompilerPresence(argument, "Optional argument")
++			return
+ 		}
+ 		a.requirePresentTransport(argument, actual, "function argument")
+ 	}
+diff --git a/internal/language/analysis/optional_presence.go b/internal/language/analysis/optional_presence.go
+new file mode 100644
+index 00000000..089d6b65
+--- /dev/null
++++ b/internal/language/analysis/optional_presence.go
+@@ -0,0 +1,40 @@
++package analysis
++
++import (
++	"fmt"
++
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++// Provenance records whether lowering can obtain an independent presence flag,
++// not whether the value is present. It follows bindings and checked function
++// carriers; arbitrary native content and unimplemented value joins have none.
++func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Type, scope *Scope) bool {
++	if types.DefinitelyPresent(value) {
++		return true
++	}
++	switch node := expr.(type) {
++	case *syntax.LiteralExpr:
++		return node.Type == syntax.TokenNone
++	case *syntax.IdentExpr:
++		binding, found := scope.Lookup(node.Name)
++		return found && binding.Initialized && binding.optionalPresence
++	case *syntax.CallExpr:
++		return a.exprPresence[expr]
++	}
++	return false
++}
++
++func (a *Analyzer) requireCompilerPresence(expr syntax.Expression, context string) {
++	if expr != nil && !a.exprPresence[expr] {
++		a.error(CodeTargetValueShape, expr.NodeSpan(), fmt.Sprintf("current %s transport requires compiler-owned value presence; opaque native output or an untagged optional value cannot supply it", context))
++	}
++}
++
++// The inferred Unknown? type alone cannot prove a destination's inner type.
++// A source-owned, path-local None fact can satisfy an Optional destination
++// without inventing any present inner value or weakening unknown-type rules.
++func (a *Analyzer) optionalAssignmentHasEvidence(actual, expected types.Type, expr syntax.Expression) bool {
++	return assignmentHasEvidence(actual, expected, expr) || (a.exprAbsent[expr] && types.MayBeAbsent(expected))
++}
+diff --git a/internal/language/backend/contracts.go b/internal/language/backend/contracts.go
+index 6fade016..0317f646 100644
+--- a/internal/language/backend/contracts.go
++++ b/internal/language/backend/contracts.go
+@@ -12,13 +12,13 @@ import (
+ 
+ // CodecFingerprint returns the deterministic SHA256 fingerprint of the canonical backend codec contract.
+ func CodecFingerprint() string {
+-	const codecDescriptor = "cherri-canonical-codec:v2.1\n" +
++	const codecDescriptor = "cherri-canonical-codec:v2.2\n" +
+ 		"refs:ActionResult,MutableBinding,SystemValue,LoopItem,LoopIndex,LoopResult,ExtensionInput,AskEachTime\n" +
+ 		"values:Nil,Bool,Int,Float,String,Reference,TextSegments,List,Dict,RawNative\n" +
+ 		"controls:If,Repeat,For,Menu:modes=0,1,2\n" +
+ 		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
+ 		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
+-		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n:optional_has_value_n=0-absent,1-present:result=_cherri_optional_result_v1,has_value,value\n"
++		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n:optional_arg_n=_cherri_optional_argument_v1,has_value=0-absent-1-present,value-present-only:result=_cherri_optional_result_v1,has_value,value\n"
+ 	sum := sha256.Sum256([]byte(codecDescriptor))
+ 	return hex.EncodeToString(sum[:])
+ }
+diff --git a/internal/language/lower/call_arguments.go b/internal/language/lower/call_arguments.go
+index 56483fcd..d15694f0 100644
+--- a/internal/language/lower/call_arguments.go
++++ b/internal/language/lower/call_arguments.go
+@@ -7,6 +7,7 @@ import (
+ 	"github.com/electrikmilk/cherri/internal/language/ir"
+ 	"github.com/electrikmilk/cherri/internal/language/syntax"
+ 	"sort"
++	"strings"
+ )
+ 
+ // A consumed argument/default is a value expression even when the enclosing
+@@ -21,23 +22,70 @@ func (l *Lowerer) lowerCallValue(expr syntax.Expression) (interface{}, error) {
+ // Evaluate the written argument list before binding values to envelope slots.
+ // Never lower an omitted function default here: the existing dispatcher owns
+ // its guarded evaluation in the scope of preceding parameters.
+-func (l *Lowerer) lowerProvidedFunctionValues(call *syntax.CallExpr) (interface{}, []interface{}, error) {
+-	var primary interface{}
+-	var err error
+-	if call.PrimaryArg != nil {
+-		primary, err = l.lowerFunctionArgumentValue(call, -1, call.PrimaryArg)
+-		if err != nil {
+-			return nil, nil, err
++type providedFunctionValue struct {
++	value, presence interface{}
++	supplied        bool
++}
++
++func (l *Lowerer) lowerProvidedFunctionValues(fn *syntax.FunctionDecl, call *syntax.CallExpr) ([]providedFunctionValue, error) {
++	// Bind identities without executing any expression. The array is indexed
++	// by written position (primary, then named/remaining positional arguments).
++	slots := make([]int, len(call.NamedArgs)+1)
++	for i := range slots {
++		slots[i] = -1
++	}
++	unnamed := 0
++	for i, param := range fn.Parameters {
++		written := -1
++		if i == 0 && call.PrimaryArg != nil {
++			written = 0
++		}
++		if written < 0 {
++			for n, argument := range call.NamedArgs {
++				if argument.Label != "" && (argument.Label == param.Name || strings.TrimPrefix(param.Name, "_") == argument.Label) {
++					written = n + 1
++					break
++				}
++			}
++		}
++		if written < 0 {
++			for unnamed < len(call.NamedArgs) {
++				n := unnamed
++				unnamed++
++				if call.NamedArgs[n].Label == "" {
++					written = n + 1
++					break
++				}
++			}
++		}
++		if written >= 0 {
++			if slots[written] >= 0 {
++				return nil, fmt.Errorf("ambiguous function argument at %s", call.Span)
++			}
++			slots[written] = i
++		} else if !param.Optional && param.DefaultExpr == nil {
++			return nil, fmt.Errorf("missing function argument %q at %s", param.Name, call.Span)
+ 		}
+ 	}
+-	named := make([]interface{}, len(call.NamedArgs))
+-	for index, argument := range call.NamedArgs {
+-		named[index], err = l.lowerFunctionArgumentValue(call, index, argument.Value)
++	values := make([]providedFunctionValue, len(fn.Parameters))
++	for written, slot := range slots {
++		expr := call.PrimaryArg
++		if written > 0 {
++			expr = call.NamedArgs[written-1].Value
++		}
++		if expr == nil {
++			continue
++		}
++		if slot < 0 {
++			return nil, fmt.Errorf("unbound function argument at %s", expr.NodeSpan())
++		}
++		value, presence, err := l.lowerFunctionArgumentValue(call, written-1, expr, l.optionalFunctionParameter(fn.Parameters[slot].TypeExpr))
+ 		if err != nil {
+-			return nil, nil, err
++			return nil, err
+ 		}
++		values[slot] = providedFunctionValue{value, presence, true}
+ 	}
+-	return primary, named, nil
++	return values, nil
+ }
+ 
+ // callWritesAfter resolves only actual source-visible assignments in later
+@@ -60,6 +108,10 @@ func (l *Lowerer) lowerCallArgumentValue(call *syntax.CallExpr, argumentIndex in
+ 		return nil, err
+ 	}
+ 	writes := l.callWritesAfter(call, argumentIndex)
++	return l.captureCallArgumentValue(expr, value, writes)
++}
++
++func (l *Lowerer) captureCallArgumentValue(expr syntax.Expression, value interface{}, writes map[string]bool) (interface{}, error) {
+ 	if len(writes) > 0 {
+ 		switch expr.(type) {
+ 		case *syntax.FStringExpr, *syntax.ListExpr, *syntax.MapExpr, *syntax.RecordExpr:
+diff --git a/internal/language/lower/function_argument_containers.go b/internal/language/lower/function_argument_containers.go
+index 0b985d0b..6b1b32b3 100644
+--- a/internal/language/lower/function_argument_containers.go
++++ b/internal/language/lower/function_argument_containers.go
+@@ -9,28 +9,53 @@ import (
+ // an authored Map's AST identity so ordinary native-looking keys and literal
+ // braces cannot select raw native/template codecs. Scalar and native-reference
+ // argument routes retain their existing representation.
+-func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentIndex int, expr syntax.Expression) (interface{}, error) {
++func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentIndex int, expr syntax.Expression, optional bool) (interface{}, interface{}, error) {
+ 	if literal, ok := expr.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
+ 		// The slot binder validates an Optional parameter and writes value absence
+ 		// independently from the caller's supplied/default-presence flag.
+-		return nil, nil
++		return nil, "0", nil
+ 	}
+-	if err := l.requirePresentTransport(expr, "function argument"); err != nil {
+-		return nil, err
+-	}
+-	if _, literalMap := expr.(*syntax.MapExpr); !literalMap {
+-		return l.lowerCallArgumentValue(call, argumentIndex, expr)
++	if !optional {
++		if err := l.requirePresentTransport(expr, "function argument"); err != nil {
++			return nil, nil, err
++		}
+ 	}
+ 	previous := l.inExprStmt
+ 	l.inExprStmt = false
+ 	defer func() { l.inExprStmt = previous }()
+ 
+-	value, err := l.lowerSemanticValue(expr)
++	var value interface{}
++	var err error
++	_, literalMap := expr.(*syntax.MapExpr)
++	if literalMap {
++		value, err = l.lowerSemanticValue(expr)
++	} else {
++		value, err = l.lowerCallValue(expr)
++	}
+ 	if err != nil {
+-		return nil, err
++		return nil, nil, err
++	}
++	writes := l.callWritesAfter(call, argumentIndex)
++	var presence interface{}
++	if optional {
++		presence, err = l.optionalValuePresence(expr, value)
++		if err != nil {
++			return nil, nil, err
++		}
++		// Capture metadata before the corresponding value snapshot. The last
++		// emitted output remains the data consumed by a later authored action.
++		if name, ok := expr.(*syntax.IdentExpr); ok {
++			if binding, found := l.bindings[name.Name]; found && binding.IsVariable && writes[binding.VariableName] {
++				presence = l.snapshotOptionalPresence(presence)
++			}
++		}
++	}
++	if !literalMap {
++		captured, err := l.captureCallArgumentValue(expr, value, writes)
++		return captured, presence, err
+ 	}
+-	if len(l.callWritesAfter(call, argumentIndex)) == 0 {
+-		return value, nil
++	if len(writes) == 0 {
++		return value, presence, nil
+ 	}
+ 	// The aggregate can contain deferred mutable references. Consume the typed
+ 	// Dictionary now, before a subsequent written argument mutates those values.
+@@ -41,5 +66,5 @@ func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentInde
+ 		OutputUUID: uuid, OutputName: "Dictionary",
+ 		Parameters: map[string]interface{}{"WFItems": value},
+ 	})
+-	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid, OutputName: "Dictionary"}, nil
++	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid, OutputName: "Dictionary"}, presence, nil
+ }
+diff --git a/internal/language/lower/function_optional_presence.go b/internal/language/lower/function_optional_presence.go
+index c6744a78..b3da1664 100644
+--- a/internal/language/lower/function_optional_presence.go
++++ b/internal/language/lower/function_optional_presence.go
+@@ -211,7 +211,7 @@ func (l *Lowerer) optionalValuePresence(expr syntax.Expression, value interface{
+ 	if presence := l.optionalExpressionPresence[expr]; presence != nil {
+ 		return presence, nil
+ 	}
+-	if types.MayBeAbsent(l.exprTypes[expr]) {
++	if !types.DefinitelyPresent(l.exprTypes[expr]) {
+ 		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function result transport lacks compiler-owned optional absence at %s", expr.NodeSpan())
+ 	}
+ 	return "1", nil
+@@ -252,13 +252,12 @@ func (l *Lowerer) optionalCarrier(value, presence interface{}, presenceKey, valu
+ }
+ 
+ func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name string, fallback syntax.Expression) (value, presence string, err error) {
+-	presenceKey, valueKey := fmt.Sprintf("has_value_%d", slot), fmt.Sprintf("arg_%d", slot)
++	valueKey := fmt.Sprintf("arg_%d", slot)
+ 	if fallback != nil {
+ 		supplied := l.optionalField(dictionary, fmt.Sprintf("has_arg_%d", slot), "")
+ 		group := l.GenerateUUID()
+ 		l.emitIfStart(group, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: supplied}, 4, "1", true)
+-		// Reuse the supplied envelope without touching an absent arg_n field.
+-		l.materializeYieldValue(&ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictionary})
++		l.optionalField(dictionary, valueKey, "")
+ 		l.emitIfElse(group)
+ 		defaultValue, err := l.lowerCallValue(fallback)
+ 		if err != nil {
+@@ -268,11 +267,13 @@ func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name strin
+ 		if err != nil {
+ 			return "", "", err
+ 		}
+-		l.optionalCarrier(defaultValue, defaultPresence, presenceKey, valueKey, "")
++		l.optionalCarrier(defaultValue, defaultPresence, "has_value", "value", "_cherri_optional_argument_v1")
+ 		selected := l.GenerateUUID()
+ 		l.emitIfEnd(group, selected, "OptionalArgument")
+ 		dictionary = selected
++	} else {
++		dictionary = l.optionalField(dictionary, valueKey, "")
+ 	}
+-	value, presence = l.decodeOptionalCarrier(dictionary, presenceKey, valueKey, name)
++	value, presence = l.decodeOptionalCarrier(dictionary, "has_value", "value", name)
+ 	return value, presence, nil
+ }
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 5277fd6d..6022c071 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -5422,7 +5422,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+ 
+ 	// Check user-defined function
+ 	if fn, ok := l.functions[actionName]; ok {
+-		primaryValue, namedValues, err := l.lowerProvidedFunctionValues(call)
++		providedValues, err := l.lowerProvidedFunctionValues(fn, call)
+ 		if err != nil {
+ 			return nil, err
+ 		}
+@@ -5433,42 +5433,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+ 			"function":             l.functionDispatchName(fn),
+ 			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
+ 		}
+-		unnamedArgIdx := 0
++		// All authored arguments have now executed in written order. Only now
++		// construct Optional carriers, so metadata cannot become implicit input
++		// to a later authored argument call.
+ 		for i, param := range fn.Parameters {
+-			var argVal interface{}
+-			supplied := false
+-			if i == 0 && call.PrimaryArg != nil {
+-				argVal = primaryValue
+-				supplied = true
+-			}
+-			if !supplied {
+-				for argumentIndex, nArg := range call.NamedArgs {
+-					if nArg.Label != "" && (nArg.Label == param.Name || strings.TrimPrefix(param.Name, "_") == nArg.Label) {
+-						argVal = namedValues[argumentIndex]
+-						supplied = true
+-						break
+-					}
+-				}
+-			}
+-			if !supplied {
+-				for unnamedArgIdx < len(call.NamedArgs) {
+-					nArg := call.NamedArgs[unnamedArgIdx]
+-					unnamedArgIdx++
+-					if nArg.Label == "" {
+-						argVal = namedValues[unnamedArgIdx-1]
+-						supplied = true
+-						break
+-					}
+-				}
+-			}
++			provided := providedValues[i]
++			argVal, supplied := provided.value, provided.supplied
+ 			optionalValue := l.optionalFunctionParameter(param.TypeExpr)
+-			if optionalValue {
+-				presence := "0"
+-				if supplied && argVal != nil {
+-					presence = "1"
+-				}
+-				dispatchDict[fmt.Sprintf("has_value_%d", i)] = presence
+-			}
+ 			if supplied {
+ 				if argVal == nil && !optionalValue {
+ 					return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function argument transport requires an explicit Optional parameter for optional absence at %s", call.Span)
+@@ -5480,7 +5451,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+ 						argVal = 0.0
+ 					}
+ 				}
+-				argVal = functionEnvelopeValue(argVal)
++				if optionalValue {
++					argVal = l.optionalCarrier(argVal, provided.presence, "has_value", "value", "_cherri_optional_argument_v1")
++				} else {
++					argVal = functionEnvelopeValue(argVal)
++				}
+ 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "1"
+ 				if argVal != nil {
+ 					dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal
+diff --git a/internal/language/types/optional_presence.go b/internal/language/types/optional_presence.go
+index 1e90cdda..b226a853 100644
+--- a/internal/language/types/optional_presence.go
++++ b/internal/language/types/optional_presence.go
+@@ -16,3 +16,28 @@ func MayBeAbsent(value Type) bool {
+ 	}
+ 	return false
+ }
++
++// DefinitelyPresent is semantic type evidence. Unknown and AnyContent do not
++// prove that an opaque native producer returned a value. This does not inspect
++// the value's truthiness: false, zero and empty Text/List/Map remain present.
++func DefinitelyPresent(value Type) bool {
++	if value == nil || MayBeAbsent(value) {
++		return false
++	}
++	if union, ok := value.(UnionType); ok {
++		if len(union.Members) == 0 {
++			return false
++		}
++		for _, member := range union.Members {
++			if !DefinitelyPresent(member) {
++				return false
++			}
++		}
++		return true
++	}
++	switch value.Kind() {
++	case KindUnknown, KindAnyContent, KindVoid, KindJsonNull:
++		return false
++	}
++	return true
++}
+diff --git a/p15_function_native_oracle_test.go b/p15_function_native_oracle_test.go
+index bb98a715..e3d97d4a 100644
+--- a/p15_function_native_oracle_test.go
++++ b/p15_function_native_oracle_test.go
+@@ -14,6 +14,7 @@ type p15FunctionGraph struct {
+ 	actual, expected []map[string]any
+ 	groups           map[string]bool
+ 	outer, body      string
++	functionName     string
+ 	err              error
+ }
+ 
+@@ -157,11 +158,17 @@ func (g *p15FunctionGraph) header(name string) string {
+ 	g.outer = g.conditional(4, p15FunctionVariable("_cherri_is_fn"), "WFConditionalActionString", "1")
+ 	envelope := g.value("detect.dictionary", map[string]any{"WFInput": input})
+ 	function := g.get("function", envelope)
++	g.functionName = function
+ 	g.get("arguments", envelope)
+ 	g.body = g.conditional(4, p15FunctionEdge(function), "WFConditionalActionString", name)
+ 	return envelope
+ }
+ 
++func (g *p15FunctionGraph) nextFunction(name string) {
++	g.boundary(g.body, 2, false)
++	g.body = g.conditional(4, p15FunctionEdge(g.functionName), "WFConditionalActionString", name)
++}
++
+ func (g *p15FunctionGraph) caller() {
+ 	g.boundary(g.body, 2, false)
+ 	g.emit("exit", map[string]any{})
+@@ -200,7 +207,13 @@ func (g *p15FunctionGraph) payload(name string, args ...p15FunctionArgument) str
+ 		fields[fmt.Sprintf("has_arg_%d", i)] = p15FunctionString(presence)
+ 		values = append(values, map[string]any{"WFItemType": arg.kind, "WFValue": arg.value})
+ 	}
+-	fields["arguments"] = p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": values}}
++	array := map[string]any{"WFSerializationType": "WFArrayParameterState"}
++	if len(args) != 0 {
++		array["Value"] = values
++	}
++	// The legacy positional mirror for a function with zero parameters has no
++	// rows. This is not the representation of a supplied empty List argument.
++	fields["arguments"] = p15FunctionArgument{true, 2, array}
+ 	keys := []string{}
+ 	for key := range fields {
+ 		keys = append(keys, key)
+diff --git a/p15_function_optional_predicate_test.go b/p15_function_optional_predicate_test.go
+index 4d33a35f..f6abef81 100644
+--- a/p15_function_optional_predicate_test.go
++++ b/p15_function_optional_predicate_test.go
+@@ -50,7 +50,7 @@ func p15OptionalPredicateSource(tc p15OptionalPredicateCase) string {
+ func p15OptionalPredicateError(actions []map[string]any, tc p15OptionalPredicateCase) error {
+ 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+ 	envelope := g.header("echo")
+-	_, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
++	_, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
+ 	predicate := g.conditional(tc.code, p15FunctionEdge(presence), "WFConditionalActionString", "0")
+ 	if tc.context == "value" {
+ 		g.emit("number", map[string]any{"WFNumberActionNumber": float64(1)})
+@@ -144,7 +144,7 @@ func TestP15OptionalNonePredicateOracleRejectsCorruption(t *testing.T) {
+ func p15OptionalCallPredicateError(actions []map[string]any, tc p15FunctionOptionalCase, code int) error {
+ 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+ 	envelope := g.header("echo")
+-	value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
++	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
+ 	resultGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
+ 	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
+ 	g.boundary(resultGroup, 1, false)
+diff --git a/p15_function_optional_presence_test.go b/p15_function_optional_presence_test.go
+index 6fbffa37..52190513 100644
+--- a/p15_function_optional_presence_test.go
++++ b/p15_function_optional_presence_test.go
+@@ -60,44 +60,57 @@ func p15FunctionOptionalSource(tc p15FunctionOptionalCase) string {
+ }
+ 
+ func p15FunctionOptionalPayload(g *p15FunctionGraph, tc p15FunctionOptionalCase) string {
+-	fields := map[string]p15FunctionArgument{
+-		"_cherri_caller_input": {true, 0, p15FunctionVariable("_cherri_caller_input")},
+-		"_cherri_magic":        p15FunctionString("__cherri_fn_envelope_v2__"),
+-		"cherri_functions":     p15FunctionString("1"), "function": p15FunctionString("echo"),
+-	}
+-	slot := 0
+-	values := []any{}
++	args := []p15FunctionArgument{}
+ 	if tc.named {
+-		fields["arg_0"] = p15FunctionString("FIRST")
+-		fields["has_arg_0"] = p15FunctionString("1")
+-		values = append(values, map[string]any{"WFItemType": 0, "WFValue": p15FunctionText("FIRST")})
+-		slot++
++		args = append(args, p15FunctionString("FIRST"))
+ 	}
+-	supplied, present := "0", "0"
++	value := p15FunctionArgument{}
+ 	if tc.supplied {
+-		supplied = "1"
++		carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", tc.valuePresent, tc.value)
++		value = p15FunctionArgument{true, 0, p15FunctionEdge(carrier)}
+ 	}
+-	value := p15FunctionString("") // legacy positional mirror; flags own meaning
+-	if tc.valuePresent {
+-		present = "1"
+-		value = tc.value
+-		fields[fmt.Sprintf("arg_%d", slot)] = tc.value
++	args = append(args, value)
++	return g.payload("echo", args...)
++}
++
++func p15DecodeOptionalArgumentGraph(g *p15FunctionGraph, envelope string, slot int) (value, presence string) {
++	carrier := g.get(fmt.Sprintf("arg_%d", slot), envelope)
++	return p15DecodeOptionalGraph(g, carrier, "has_value", "value")
++}
++
++// Resolve the actual supplied static carrier through its exact envelope edge.
++// This helper selects mutation targets; the full graph remains the oracle.
++func p15OptionalArgumentFields(actions []map[string]any, slot int) (map[string]map[string]any, error) {
++	fields, err := p15FunctionContainerPayload(actions)
++	if err != nil {
++		return nil, err
+ 	}
+-	fields[fmt.Sprintf("has_arg_%d", slot)] = p15FunctionString(supplied)
+-	fields[fmt.Sprintf("has_value_%d", slot)] = p15FunctionString(present)
+-	values = append(values, map[string]any{"WFItemType": value.kind, "WFValue": value.value})
+-	fields["arguments"] = p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": values}}
+-	keys := []string{}
+-	for key := range fields {
+-		keys = append(keys, key)
++	row := fields[fmt.Sprintf("arg_%d", slot)]
++	if row == nil {
++		return nil, fmt.Errorf("supplied Optional carrier is absent")
+ 	}
+-	sort.Strings(keys)
+-	rows := []any{}
+-	for _, key := range keys {
+-		field := fields[key]
+-		rows = append(rows, map[string]any{"WFKey": p15FunctionText(key), "WFItemType": field.kind, "WFValue": field.value})
++	wire, ok := row["WFValue"].(map[string]any)
++	if !ok {
++		return nil, fmt.Errorf("Optional argument is not a native reference")
+ 	}
+-	return g.value("dictionary", map[string]any{"WFItems": map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": rows}}})
++	descriptor, ok := wire["Value"].(map[string]any)
++	if !ok || descriptor["Type"] != "ActionOutput" {
++		return nil, fmt.Errorf("Optional argument has no exact carrier edge")
++	}
++	for _, action := range actions {
++		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.dictionary" || p15Param(action)["UUID"] != descriptor["OutputUUID"] {
++			continue
++		}
++		inner, err := p15ContainerFields(p15Param(action)["WFItems"])
++		if err != nil {
++			return nil, err
++		}
++		if marker := inner["_cherri_optional_argument_v1"]; marker == nil || !reflect.DeepEqual(marker["WFValue"], p15FunctionText("1")) {
++			return nil, fmt.Errorf("wrong Optional argument carrier marker")
++		}
++		return inner, nil
++	}
++	return nil, fmt.Errorf("Optional argument carrier edge is unresolved")
+ }
+ 
+ func p15OptionalCarrierGraph(g *p15FunctionGraph, presenceKey, valueKey, marker string, present bool, value p15FunctionArgument) string {
+@@ -140,11 +153,11 @@ func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCa
+ 		g.get("arg_0", envelope)
+ 		slot++
+ 	}
+-	valueKey, presenceKey := fmt.Sprintf("arg_%d", slot), fmt.Sprintf("has_value_%d", slot)
++	valueKey := fmt.Sprintf("arg_%d", slot)
+ 	if tc.fallback != "" {
+ 		supplied := g.get(fmt.Sprintf("has_arg_%d", slot), envelope)
+ 		defaultGroup := g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
+-		g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(envelope)})
++		g.get(valueKey, envelope)
+ 		g.boundary(defaultGroup, 1, false)
+ 		fallback := p15FunctionString(tc.fallback)
+ 		switch tc.fallback {
+@@ -157,10 +170,12 @@ func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCa
+ 			producer := g.value("gettext", map[string]any{"WFTextActionText": tc.fallback})
+ 			fallback = p15FunctionArgument{true, 0, p15FunctionEdge(producer)}
+ 		}
+-		p15OptionalCarrierGraph(g, presenceKey, valueKey, "", tc.fallback != "none", fallback)
++		p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", tc.fallback != "none", fallback)
+ 		envelope = g.boundary(defaultGroup, 2, true)
++	} else {
++		envelope = g.get(valueKey, envelope)
+ 	}
+-	value, presence := p15DecodeOptionalGraph(g, envelope, presenceKey, valueKey)
++	value, presence := p15DecodeOptionalGraph(g, envelope, "has_value", "value")
+ 	resultGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
+ 	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
+ 	g.boundary(resultGroup, 1, false)
+@@ -275,12 +290,16 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
+ 					if err != nil {
+ 						t.Fatal(err)
+ 					}
++					inner, err := p15OptionalArgumentFields(bad, 0)
++					if err != nil {
++						t.Fatal(err)
++					}
+ 					decoder, condition, nothing, fallback, join, call, consumer := -1, -1, -1, -1, -1, -1, -1
+ 					for index, action := range bad {
+ 						p := p15Param(action)
+ 						switch action["WFWorkflowActionIdentifier"] {
+ 						case "is.workflow.actions.getvalueforkey":
+-							if p["WFDictionaryKey"] == "has_value_0" {
++							if decoder < 0 && p["WFDictionaryKey"] == "has_value" {
+ 								decoder = index
+ 								condition = index + 1
+ 							}
+@@ -289,7 +308,7 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
+ 							join = index + 1
+ 						case "is.workflow.actions.dictionary":
+ 							if fields, err := p15ContainerFields(p["WFItems"]); err == nil {
+-								if row := fields["arg_0"]; row != nil && reflect.DeepEqual(row["WFValue"], p15FunctionText("DEFAULT")) {
++								if row := fields["value"]; row != nil && reflect.DeepEqual(row["WFValue"], p15FunctionText("DEFAULT")) {
+ 									fallback = index
+ 								}
+ 							}
+@@ -308,13 +327,13 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
+ 						if tc.valuePresent {
+ 							wrong = "0"
+ 						}
+-						fields["has_value_0"]["WFValue"] = p15FunctionText(wrong)
++						inner["has_value"]["WFValue"] = p15FunctionText(wrong)
+ 					case "omission_flag":
+ 						fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
+ 					case "flag_type":
+-						fields["has_value_0"]["WFItemType"] = uint64(4)
++						inner["has_value"]["WFItemType"] = uint64(4)
+ 					case "decode_argument_as_presence":
+-						p15Param(bad[decoder])["WFDictionaryKey"] = "arg_0"
++						p15Param(bad[decoder])["WFDictionaryKey"] = "value"
+ 					case "decode_truthiness":
+ 						p15Param(bad[condition])["WFCondition"] = uint64(100)
+ 					case "no_nothing":
+@@ -327,10 +346,10 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
+ 						p15Param(bad[join])["GroupingIdentifier"] = "wrong-join"
+ 					case "none_as_empty_value":
+ 						if tc.valuePresent {
+-							fields["arg_0"]["WFValue"] = p15FunctionText("changed")
++							inner["value"]["WFValue"] = p15FunctionText("changed")
+ 						} else {
+-							fields["has_value_0"]["WFKey"] = p15FunctionText("arg_0")
+-							fields["has_value_0"]["WFValue"] = p15FunctionText("")
++							inner["has_value"]["WFKey"] = p15FunctionText("value")
++							inner["has_value"]["WFValue"] = p15FunctionText("")
+ 						}
+ 					case "call_input":
+ 						p15Param(bad[call])["WFInput"] = p15FunctionEdge("missing-payload")
+diff --git a/p15_optional_binding_presence_test.go b/p15_optional_binding_presence_test.go
+index 15ac7e46..5ec6710b 100644
+--- a/p15_optional_binding_presence_test.go
++++ b/p15_optional_binding_presence_test.go
+@@ -118,7 +118,7 @@ func TestP15OptionalImmutablePresentValuesDoNotBecomeNone(t *testing.T) {
+ func p15OptionalImmutableScopeError(actions []map[string]any, tc p15FunctionOptionalCase) error {
+ 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+ 	envelope := g.header("echo")
+-	_, outerPresence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
++	_, outerPresence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
+ 	// The inner immutable empty Text shadows the alias, so its presence is
+ 	// compiler-owned 1. Leaving the lexical block restores the parameter flag.
+ 	g.value("gettext", map[string]any{"WFTextActionText": ""})
+diff --git a/p15_optional_forwarding_oracle_test.go b/p15_optional_forwarding_oracle_test.go
+new file mode 100644
+index 00000000..075d0bfe
+--- /dev/null
++++ b/p15_optional_forwarding_oracle_test.go
+@@ -0,0 +1,345 @@
++package main
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++)
++
++func p15ForwardCarrierGraph(g *p15FunctionGraph, marker string, value p15FunctionArgument, presence any) string {
++	if flag, known := presence.(string); known {
++		return p15OptionalCarrierGraph(g, "has_value", "value", marker, flag == "1", value)
++	}
++	group := g.conditional(4, presence, "WFConditionalActionString", "1")
++	p15OptionalCarrierGraph(g, "has_value", "value", marker, true, value)
++	g.boundary(group, 1, false)
++	p15OptionalCarrierGraph(g, "has_value", "value", marker, false, p15FunctionArgument{})
++	return g.boundary(group, 2, true)
++}
++
++func p15ForwardCallGraph(g *p15FunctionGraph, name string, value p15FunctionArgument, presence any, before, after []p15FunctionArgument) (string, string) {
++	carrier := p15ForwardCarrierGraph(g, "_cherri_optional_argument_v1", value, presence)
++	args := append([]p15FunctionArgument(nil), before...)
++	args = append(args, p15FunctionArgument{true, 0, p15FunctionEdge(carrier)})
++	args = append(args, after...)
++	result := g.call(g.payload(name, args...))
++	return p15DecodeOptionalGraph(g, result, "has_value", "value")
++}
++
++func p15ForwardResultGraph(g *p15FunctionGraph, value, presence string) {
++	carrier := p15ForwardCarrierGraph(g, "_cherri_optional_result_v1", p15FunctionArgument{true, 0, p15FunctionEdge(value)}, p15FunctionEdge(presence))
++	g.output(carrier)
++}
++
++func p15ForwardParameterGraph(g *p15FunctionGraph, envelope string, slot int, fallback bool) (value, presence string) {
++	if !fallback {
++		return p15DecodeOptionalArgumentGraph(g, envelope, slot)
++	}
++	supplied := g.get(fmt.Sprintf("has_arg_%d", slot), envelope)
++	group := g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
++	g.get(fmt.Sprintf("arg_%d", slot), envelope)
++	g.boundary(group, 1, false)
++	producer := g.value("gettext", map[string]any{"WFTextActionText": "DEFAULT"})
++	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(producer)})
++	carrier := g.boundary(group, 2, true)
++	return p15DecodeOptionalGraph(g, carrier, "has_value", "value")
++}
++
++// Every operation is independently authored. Actual UUIDs are alpha names;
++// complete ordering, parameter shape, control joins and edges must match.
++func p15OptionalForwardingGraphError(actions []map[string]any, name string) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	first := "echo"
++	if name == "later_assignment" || name == "implicit_input" {
++		first = "pick"
++	}
++	envelope := g.header(first)
++	value, presence := p15ForwardParameterGraph(g, envelope, 0, name == "returned_none_default")
++	if first == "pick" {
++		g.get("arg_1", envelope)
++	}
++	p15ForwardResultGraph(g, value, presence)
++	second := ""
++	if strings.HasPrefix(name, "parameter_") || name == "named_parameter" {
++		second = "relay"
++	}
++	if name == "former_function_forward" {
++		second = "forward"
++	}
++	if name == "former_function_result" {
++		second = "absent"
++	}
++	if second != "" {
++		g.nextFunction(second)
++		if second == "absent" {
++			g.output(p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", false, p15FunctionArgument{}))
++		} else {
++			slot := 0
++			if name == "named_parameter" {
++				g.get("arg_0", envelope)
++				slot = 1
++			}
++			value, presence = p15DecodeOptionalArgumentGraph(g, envelope, slot)
++			value, presence = p15ForwardCallGraph(g, "echo", p15FunctionArgument{true, 0, p15FunctionEdge(value)}, p15FunctionEdge(presence), nil, nil)
++			p15ForwardResultGraph(g, value, presence)
++		}
++	}
++	g.caller()
++	var output string
++	switch {
++	case name == "immutable_none" || name == "inferred_none" || name == "former_function_bound":
++		g.emit("nothing", nil)
++		g.emit("setvariable", map[string]any{"WFVariableName": "candidate"})
++		output, _ = p15ForwardCallGraph(g, "echo", p15FunctionArgument{}, "0", nil, nil)
++	case name == "immutable_alias" || name == "inferred_alias":
++		g.emit("nothing", nil)
++		g.emit("setvariable", map[string]any{"WFVariableName": "initial"})
++		g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable("initial")})
++		output, _ = p15ForwardCallGraph(g, "echo", p15FunctionArgument{}, "0", nil, nil)
++	case name == "mutable_none" || name == "former_function_mutable":
++		flag := p15MutableOptionalAssignGraph(g, "", false, p15MutableOptionalPresentValues()[0])
++		output, _ = p15ForwardCallGraph(g, "echo", p15FunctionArgument{true, 0, p15FunctionVariable("candidate")}, p15FunctionVariable(flag), nil, nil)
++	case name == "later_assignment":
++		flag := p15MutableOptionalAssignGraph(g, "", false, p15MutableOptionalPresentValues()[0])
++		oldPresence := g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable(flag)})
++		oldValue := g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable("candidate")})
++		condition := g.value("number", map[string]any{"WFNumberActionNumber": float64(1)})
++		group := g.conditional(4, p15FunctionEdge(condition), "WFNumberValue", float64(1))
++		p15MutableOptionalAssignGraph(g, flag, true, p15MutableOptionalPresentValues()[0])
++		g.value("gettext", map[string]any{"WFTextActionText": "WRITTEN"})
++		g.boundary(group, 1, false)
++		g.value("gettext", map[string]any{"WFTextActionText": "UNUSED"})
++		later := g.boundary(group, 2, true)
++		output, _ = p15ForwardCallGraph(g, "pick", p15FunctionArgument{true, 0, p15FunctionEdge(oldValue)}, p15FunctionEdge(oldPresence), nil, []p15FunctionArgument{{true, 0, p15FunctionEdge(later)}})
++	case name == "implicit_input":
++		g.emit("nothing", nil)
++		g.emit("setvariable", map[string]any{"WFVariableName": "supplied"})
++		g.emit("gettext", map[string]any{"WFTextActionText": "INPUT"})
++		late := g.value("hash", map[string]any{"WFHashType": "SHA256"})
++		output, _ = p15ForwardCallGraph(g, "pick", p15FunctionArgument{}, "0", nil, []p15FunctionArgument{{true, 0, p15FunctionEdge(late)}})
++	case name == "former_function_result":
++		call := g.call(g.payload("absent"))
++		value, presence = p15DecodeOptionalGraph(g, call, "has_value", "value")
++		output, _ = p15ForwardCallGraph(g, "echo", p15FunctionArgument{true, 0, p15FunctionEdge(value)}, p15FunctionEdge(presence), nil, nil)
++	case second != "":
++		var before []p15FunctionArgument
++		if name == "named_parameter" {
++			before = []p15FunctionArgument{p15FunctionString("SEED")}
++		}
++		flag, argument := "0", p15FunctionArgument{}
++		if name == "parameter_empty" || name == "former_function_forward" {
++			flag, argument = "1", p15FunctionString("")
++		}
++		output, _ = p15ForwardCallGraph(g, second, argument, flag, before, nil)
++	case strings.HasPrefix(name, "returned_"):
++		key := strings.TrimPrefix(name, "returned_")
++		if key == "none_default" {
++			key = "none"
++		}
++		found := false
++		for _, tc := range p15FunctionOptionalCases()[:6] {
++			if tc.name != key {
++				continue
++			}
++			found = true
++			flag := "0"
++			if tc.valuePresent {
++				flag = "1"
++			}
++			value, presence = p15ForwardCallGraph(g, "echo", tc.value, flag, nil, nil)
++			output, _ = p15ForwardCallGraph(g, "echo", p15FunctionArgument{true, 0, p15FunctionEdge(value)}, p15FunctionEdge(presence), nil, nil)
++		}
++		if !found {
++			return fmt.Errorf("unmodeled Optional forwarding value %q", key)
++		}
++	default:
++		return fmt.Errorf("unmodeled Optional forwarding scenario %q", name)
++	}
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(output)})
++	return g.finish()
++}
++
++func TestP15OptionalForwardingCompleteNativeGraph(t *testing.T) {
++	for _, tc := range p15OptionalForwardingCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			if err := p15OptionalForwardingGraphError(p15CompiledActions(t, tc.source), tc.name); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func p15MutateOptionalForwardingGraph(actions []map[string]any, fault string) ([]map[string]any, bool) {
++	for i, action := range actions {
++		p := p15Param(action)
++		kind, _ := action["WFWorkflowActionIdentifier"].(string)
++		if kind == "is.workflow.actions.dictionary" {
++			fields, err := p15ContainerFields(p["WFItems"])
++			if err != nil {
++				continue
++			}
++			if fields["_cherri_optional_argument_v1"] != nil {
++				switch fault {
++				case "carrier_marker":
++					fields["_cherri_optional_argument_v1"]["WFValue"] = p15FunctionText("0")
++					return actions, true
++				case "value_flag":
++					wrong := "1"
++					if fields["value"] != nil {
++						wrong = "0"
++					}
++					fields["has_value"]["WFValue"] = p15FunctionText(wrong)
++					return actions, true
++				case "flag_type":
++					fields["has_value"]["WFItemType"] = uint64(4)
++					return actions, true
++				case "empty_text_alias":
++					row := fields["value"]
++					if row == nil {
++						row = fields["has_value"]
++						row["WFKey"] = p15FunctionText("value")
++					}
++					row["WFValue"] = p15FunctionText("WRONG")
++					return actions, true
++				}
++			}
++			if fields["_cherri_magic"] != nil && fields["has_arg_0"] != nil {
++				switch fault {
++				case "argument_omission":
++					fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
++					return actions, true
++				case "carrier_edge":
++					fields["arg_0"]["WFValue"] = p15FunctionEdge("missing-carrier")
++					return actions, true
++				}
++			}
++		}
++		if p["WFDictionaryKey"] == "has_value" {
++			switch fault {
++			case "decode_value_as_presence":
++				p["WFDictionaryKey"] = "value"
++				return actions, true
++			case "truthiness":
++				if i+1 >= len(actions) {
++					return actions, false
++				}
++				p15Param(actions[i+1])["WFCondition"] = uint64(100)
++				return actions, true
++			}
++		}
++		if kind == "is.workflow.actions.nothing" && fault == "none_as_text" {
++			action["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext"
++			action["WFWorkflowActionParameters"] = map[string]any{"WFTextActionText": ""}
++			return actions, true
++		}
++		if kind == "is.workflow.actions.conditional" && p["UUID"] != nil && fault == "wrong_join" {
++			p["GroupingIdentifier"] = "wrong-join"
++			return actions, true
++		}
++		if kind == "is.workflow.actions.runworkflow" {
++			switch fault {
++			case "call_input":
++				p["WFInput"] = p15FunctionEdge("missing-payload")
++				return actions, true
++			case "duplicate_call":
++				return append(append(actions[:i+1:i+1], action), actions[i+1:]...), true
++			}
++		}
++	}
++	return actions, false
++}
++
++func TestP15OptionalForwardingOracleRejectsCorruption(t *testing.T) {
++	for _, tc := range p15OptionalForwardingCases() {
++		switch tc.name {
++		case "returned_none", "returned_empty_text", "later_assignment", "implicit_input", "named_parameter", "returned_none_default":
++		default:
++			continue
++		}
++		t.Run(tc.name, func(t *testing.T) {
++			actions := p15CompiledActions(t, tc.source)
++			if err := p15OptionalForwardingGraphError(actions, tc.name); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"carrier_marker", "value_flag", "flag_type", "empty_text_alias", "argument_omission", "carrier_edge", "decode_value_as_presence", "truthiness", "none_as_text", "wrong_join", "call_input", "duplicate_call"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15ContainerCloneNative(t, actions)
++					if err := p15OptionalForwardingGraphError(bad, tc.name); err != nil {
++						t.Fatal("unchanged clone must pass", err)
++					}
++					bad, changed := p15MutateOptionalForwardingGraph(bad, fault)
++					if !changed {
++						t.Fatal("missing precise corruption target")
++					}
++					if p15OptionalForwardingGraphError(bad, tc.name) == nil {
++						t.Fatal("corrupted Optional carrier graph accepted")
++					}
++				})
++			}
++		})
++	}
++}
++
++func TestP15OptionalForwardingSourceOrderOracle(t *testing.T) {
++	for _, tc := range p15OptionalForwardingCases() {
++		if tc.name != "later_assignment" && tc.name != "implicit_input" && tc.name != "returned_none_default" {
++			continue
++		}
++		t.Run(tc.name, func(t *testing.T) {
++			actions := p15CompiledActions(t, tc.source)
++			if err := p15OptionalForwardingGraphError(actions, tc.name); err != nil {
++				t.Fatal(err)
++			}
++			bad := p15ContainerCloneNative(t, actions)
++			if err := p15OptionalForwardingGraphError(bad, tc.name); err != nil {
++				t.Fatal("unchanged clone must pass", err)
++			}
++			changed := false
++			for i, action := range bad {
++				p := p15Param(action)
++				if tc.name == "later_assignment" && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" {
++					wire, ok := p["WFVariable"].(map[string]any)
++					if !ok {
++						continue
++					}
++					descriptor, ok := wire["Value"].(map[string]any)
++					if !ok {
++						continue
++					}
++					name, _ := descriptor["VariableName"].(string)
++					if strings.HasPrefix(name, "_cherri_optional_presence_") {
++						// The independent presence snapshot cannot read the data.
++						p["WFVariable"] = p15FunctionVariable("candidate")
++						changed = true
++						break
++					}
++				}
++				if tc.name == "implicit_input" && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.hash" && i+1 < len(bad) {
++					// Moving the pure carrier before this opaque authored action
++					// changes its implicit input even if the final payload is equal.
++					bad[i], bad[i+1] = bad[i+1], bad[i]
++					changed = true
++					break
++				}
++				if tc.name == "returned_none_default" && p["WFTextActionText"] == "DEFAULT" {
++					for j := 0; j < i; j++ {
++						if p15Param(bad[j])["WFDictionaryKey"] == "has_arg_0" {
++							moved := bad[i]
++							bad = append(bad[:i:i], bad[i+1:]...)
++							bad = append(bad[:j+1:j+1], append([]map[string]any{moved}, bad[j+1:]...)...)
++							changed = true
++							break
++						}
++					}
++					break
++				}
++			}
++			if !changed {
++				t.Fatal("missing exact order mutation target")
++			}
++			if p15OptionalForwardingGraphError(bad, tc.name) == nil {
++				t.Fatal("wrong snapshot/effect/implicit-input order accepted")
++			}
++		})
++	}
++}
+diff --git a/p15_optional_forwarding_test.go b/p15_optional_forwarding_test.go
+index de80f79e..5e15a32c 100644
+--- a/p15_optional_forwarding_test.go
++++ b/p15_optional_forwarding_test.go
+@@ -5,6 +5,7 @@ import (
+ 	"testing"
+ 
+ 	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/schema"
+ 	"github.com/electrikmilk/cherri/internal/language/service"
+ )
+ 
+@@ -16,21 +17,99 @@ func p15OptionalForwardingCases() []p15OptionalForwardingCase {
+ 		{"immutable_none", echo + "let candidate:Text?=none\ngetVariable(echo(candidate))"},
+ 		{"mutable_none", echo + "var candidate:Text?=none\ngetVariable(echo(candidate))"},
+ 		{"inferred_none", echo + "let candidate=none\ngetVariable(echo(candidate))"},
++		{"inferred_alias", echo + "let initial=none\nlet candidate=initial\ngetVariable(echo(candidate))"},
+ 		{"immutable_alias", echo + "let initial:Text?=none\nlet candidate=initial\ngetVariable(echo(candidate))"},
+ 		{"returned_none_default", "function echo(value:Text?=text(\"DEFAULT\"))->Text?{return value}\ngetVariable(echo(echo(none)))"},
+ 		{"parameter_none", echo + "function relay(candidate:Text?)->Text?{return echo(candidate)}\ngetVariable(relay(none))"},
+ 		{"parameter_empty", echo + "function relay(candidate:Text?)->Text?{return echo(candidate)}\ngetVariable(relay(\"\"))"},
+ 		{"named_parameter", echo + "function relay(seed:Text,candidate:Text?)->Text?{return echo(candidate)}\ngetVariable(relay(candidate:none,seed:\"SEED\"))"},
+ 		{"later_assignment", "function pick(candidate:Text?,later:Text)->Text?{return candidate}\nvar candidate:Text?=none\ngetVariable(pick(candidate,later:if true{candidate=\"\";yield \"WRITTEN\"}else{yield \"UNUSED\"}))"},
++		{"implicit_input", "function pick(value:Text?,later:AnyContent)->Text?{return value}\nlet supplied:Text?=none\ntext(\"INPUT\")\ngetVariable(pick(supplied,later:native.action(\"is.workflow.actions.hash\",{\"WFHashType\":\"SHA256\"})))"},
+ 	}
+ 	for _, tc := range p15FunctionOptionalCases()[:6] {
+ 		cases = append(cases, p15OptionalForwardingCase{
+ 			"returned_" + tc.name,
+ 			"function echo(value:" + tc.typ + "?)->" + tc.typ + "?{return value}\ngetVariable(echo(echo(" + tc.argument + ")))"})
+ 	}
++	for _, tc := range p15OptionalTransportCases() {
++		if tc.context == "function argument" {
++			cases = append(cases, p15OptionalForwardingCase{"former_" + tc.name, tc.source})
++		}
++	}
+ 	return cases
+ }
+ 
++func TestP15OptionalForwardingDoesNotReuseAbsentFactsAfterWrites(t *testing.T) {
++	const fn = "function echo(value:Text?)->Text?{return value}\n"
++	for _, tc := range []p15OptionalForwardingCase{
++		{"assignment", fn + "var candidate:AnyContent?=none\ncandidate=0\ngetVariable(echo(candidate))"},
++		{"branch", fn + "var candidate:AnyContent?=none\nif true{candidate=0}\ngetVariable(echo(candidate))"},
++		{"later_iteration", fn + "var candidate:AnyContent?=none\nrepeat 2{getVariable(echo(candidate));candidate=0}"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			check := func(diagnostics []analysis.Diagnostic) {
++				t.Helper()
++				errors := []analysis.Diagnostic{}
++				for _, d := range diagnostics {
++					if d.Severity == analysis.SeverityError {
++						errors = append(errors, d)
++					}
++				}
++				start := strings.Index(tc.source, "echo(candidate)") + len("echo(")
++				if len(errors) != 1 || errors[0].Code != analysis.CodeArgumentType || errors[0].Span.Start.ByteOffset != start || errors[0].Span.End.ByteOffset != start+len("candidate") || !strings.Contains(errors[0].Message, "expects Text?") {
++					t.Errorf("stale None evidence bypassed the real argument type: %#v", errors)
++				}
++			}
++			check(p15TypeDiagnostics(t, tc.source))
++			svc := service.NewService(nil)
++			uri := "file:///p15-optional-flow-" + tc.name + ".cherri"
++			svc.OpenDocument(uri, 1, tc.source)
++			diagnostics, _ := svc.Analyze(uri)
++			check(diagnostics)
++			raw, err := CompileSourceToPlist("p15-optional-flow.cherri", tc.source)
++			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) {
++				t.Errorf("invalid Optional value emitted bytes=%d error=%v", len(raw), err)
++			}
++		})
++	}
++}
++
++func TestP15OptionalForwardingAnalyzerReuse(t *testing.T) {
++	a := analysis.NewAnalyzer(schema.DefaultRegistry())
++	for _, opaque := range []bool{false, true, false} {
++		source := "function echo(value:AnyContent?)->AnyContent?{return value}\nlet candidate=none\ngetVariable(echo(candidate))"
++		if opaque {
++			source = strings.Replace(source, "candidate=none", `candidate=native.action("is.workflow.actions.nothing",{})`, 1)
++		}
++		program, errors := p15ParseProgram(source)
++		if len(errors) != 0 {
++			t.Fatal(errors)
++		}
++		a.Analyze(program)
++		diagnostics := a.Diagnostics()
++		if !opaque && len(diagnostics) != 0 {
++			t.Fatal("healthy source retained stale provenance", diagnostics)
++		}
++		if opaque && (len(diagnostics) != 1 || diagnostics[0].Code != analysis.CodeTargetValueShape || !strings.Contains(diagnostics[0].Message, "compiler-owned")) {
++			t.Fatal("opaque source inherited a previous None fact", diagnostics)
++		}
++	}
++}
++
++func TestP15OptionalForwardingDefiningModulePresence(t *testing.T) {
++	for _, tc := range p15FunctionOptionalCases()[:6] {
++		t.Run(tc.name, func(t *testing.T) {
++			entry := "import \"./dependency.cherri\" as dep\ntype Maybe=Bool\ngetVariable(dep.echo(dep.echo(" + tc.argument + ")))"
++			dependency := "type Maybe=" + tc.typ + "?\nfunction echo(value:Maybe)->Maybe{return value}\n"
++			path, source := p15ModuleProject(t, map[string]string{"main.cherri": entry, "dependency.cherri": dependency})
++			actions := p15OptionalModuleActionsWithDispatchCount(t, path, source, "module:dependency.cherri::echo", 3)
++			if err := p15OptionalForwardingGraphError(actions, "returned_"+tc.name); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
+ func TestP15OptionalForwardingRequiresOwnedPresence(t *testing.T) {
+ 	const opaque = `native.action("is.workflow.actions.nothing",{})`
+ 	for _, tc := range []p15OptionalForwardingCase{
+diff --git a/p15_optional_mutable_presence_test.go b/p15_optional_mutable_presence_test.go
+index f540a36d..fd3937cc 100644
+--- a/p15_optional_mutable_presence_test.go
++++ b/p15_optional_mutable_presence_test.go
+@@ -26,7 +26,7 @@ func p15MutablePresenceName(g *p15FunctionGraph) string {
+ func p15MutableOptionalReturnError(actions []map[string]any, tc p15FunctionOptionalCase) error {
+ 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+ 	envelope := g.header("echo")
+-	value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
++	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
+ 	flag := p15MutablePresenceName(g)
+ 	g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(presence)})
+ 	g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})
+@@ -246,7 +246,7 @@ func p15MutableOptionalCompoundError(actions []map[string]any, narrowed bool, tc
+ 	envelope := g.header("echo")
+ 	flag, guard := "", ""
+ 	if narrowed {
+-		value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
++		value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
+ 		flag = p15MutablePresenceName(g)
+ 		g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(presence)})
+ 		g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})
+diff --git a/p15_optional_transport_boundary_test.go b/p15_optional_transport_boundary_test.go
+index 83c2b807..8e38fd3f 100644
+--- a/p15_optional_transport_boundary_test.go
++++ b/p15_optional_transport_boundary_test.go
+@@ -55,6 +55,9 @@ func p15OptionalTransportDiagnostic(diagnostics []analysis.Diagnostic, tc p15Opt
+ }
+ func TestP15OptionalTransportFailsPrecisely(t *testing.T) {
+ 	for _, tc := range p15OptionalTransportCases() {
++		if tc.context == "function argument" {
++			continue
++		} // exercised as positive forwarding routes
+ 		t.Run(tc.name, func(t *testing.T) {
+ 			diagnostics := p15TypeDiagnostics(t, tc.source)
+ 			diagnosticErr := p15OptionalTransportDiagnostic(diagnostics, tc)
+@@ -150,8 +153,15 @@ func TestP15OptionalTransportKeepsPresentValues(t *testing.T) {
+ 						t.Fatal("missing or duplicated present producer")
+ 					}
+ 				}
++				inner, err := p15OptionalArgumentFields(actions, 0)
++				if err != nil {
++					t.Fatal(err)
++				}
++				if !reflect.DeepEqual(inner["has_value"]["WFValue"], p15FunctionText("1")) {
++					t.Fatal("present value became absent")
++				}
+ 				kind, wire := p15ContainerFieldValue(want)
+-				row := fields["arg_0"]
++				row := inner["value"]
+ 				if row == nil || row["WFItemType"] != kind || !reflect.DeepEqual(row["WFValue"], wire) {
+ 					t.Fatal("present argument lost native value", row, wire)
+ 				}
+diff --git a/p15_optional_type_alias_test.go b/p15_optional_type_alias_test.go
+index 8f7f8979..4d1d3364 100644
+--- a/p15_optional_type_alias_test.go
++++ b/p15_optional_type_alias_test.go
+@@ -57,6 +57,10 @@ func TestP15OptionalTypeAliasChainsAndOrder(t *testing.T) {
+ }
+ 
+ func p15OptionalAliasModuleActions(t *testing.T, path, source, exactDispatch string) []map[string]any {
++	return p15OptionalModuleActionsWithDispatchCount(t, path, source, exactDispatch, 2)
++}
++
++func p15OptionalModuleActionsWithDispatchCount(t *testing.T, path, source, exactDispatch string, expectedCount int) []map[string]any {
+ 	t.Helper()
+ 	path = filepath.Join(filepath.Dir(path), "p15-short-circuit.cherri")
+ 	p15ModuleWrite(t, path, source)
+@@ -78,7 +82,7 @@ func p15OptionalAliasModuleActions(t *testing.T, path, source, exactDispatch str
+ 	if exactDispatch == "" {
+ 		return actions
+ 	}
+-	// Only the two exact source-authorized dispatch spellings are alpha names.
++	// Only the exact source-authorized dispatch spellings are alpha names.
+ 	// A wrong module, missing dispatch or extra call cannot be normalized away.
+ 	changed := 0
+ 	var rename func(any) any
+@@ -103,8 +107,8 @@ func p15OptionalAliasModuleActions(t *testing.T, path, source, exactDispatch str
+ 	for _, action := range actions {
+ 		rename(action)
+ 	}
+-	if changed != 2 {
+-		t.Fatalf("exact module dispatch must occur in definition and call: %d", changed)
++	if changed != expectedCount {
++		t.Fatalf("exact module dispatch count: got %d want %d", changed, expectedCount)
+ 	}
+ 	return actions
+ }
+@@ -255,9 +259,13 @@ func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
+ 					if err != nil {
+ 						t.Fatal(err)
+ 					}
++					inner, err := p15OptionalArgumentFields(bad, 0)
++					if err != nil {
++						t.Fatal(err)
++					}
+ 					decoder, call := -1, -1
+ 					for i, action := range bad {
+-						if p15Param(action)["WFDictionaryKey"] == "has_value_0" {
++						if decoder < 0 && p15Param(action)["WFDictionaryKey"] == "has_value" {
+ 							decoder = i
+ 						}
+ 						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
+@@ -273,13 +281,13 @@ func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
+ 						if tc.valuePresent {
+ 							flag = "0"
+ 						}
+-						fields["has_value_0"]["WFValue"] = p15FunctionText(flag)
++						inner["has_value"]["WFValue"] = p15FunctionText(flag)
+ 					case "argument_omission":
+ 						fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
+ 					case "dispatch":
+ 						fields["function"]["WFValue"] = p15FunctionText("other.echo")
+ 					case "presence_decoder":
+-						p15Param(bad[decoder])["WFDictionaryKey"] = "arg_0"
++						p15Param(bad[decoder])["WFDictionaryKey"] = "value"
+ 					case "call_input":
+ 						p15Param(bad[call])["WFInput"] = p15FunctionEdge("missing-payload")
+ 					case "duplicate_call":

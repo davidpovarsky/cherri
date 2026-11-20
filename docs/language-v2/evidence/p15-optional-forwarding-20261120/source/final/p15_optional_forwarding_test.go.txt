@@ -1,0 +1,178 @@
+package main
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/service"
+)
+
+type p15OptionalForwardingCase struct{ name, source string }
+
+func p15OptionalForwardingCases() []p15OptionalForwardingCase {
+	const echo = "function echo(value:Text?)->Text?{return value}\n"
+	cases := []p15OptionalForwardingCase{
+		{"immutable_none", echo + "let candidate:Text?=none\ngetVariable(echo(candidate))"},
+		{"mutable_none", echo + "var candidate:Text?=none\ngetVariable(echo(candidate))"},
+		{"inferred_none", echo + "let candidate=none\ngetVariable(echo(candidate))"},
+		{"inferred_alias", echo + "let initial=none\nlet candidate=initial\ngetVariable(echo(candidate))"},
+		{"immutable_alias", echo + "let initial:Text?=none\nlet candidate=initial\ngetVariable(echo(candidate))"},
+		{"returned_none_default", "function echo(value:Text?=text(\"DEFAULT\"))->Text?{return value}\ngetVariable(echo(echo(none)))"},
+		{"parameter_none", echo + "function relay(candidate:Text?)->Text?{return echo(candidate)}\ngetVariable(relay(none))"},
+		{"parameter_empty", echo + "function relay(candidate:Text?)->Text?{return echo(candidate)}\ngetVariable(relay(\"\"))"},
+		{"named_parameter", echo + "function relay(seed:Text,candidate:Text?)->Text?{return echo(candidate)}\ngetVariable(relay(candidate:none,seed:\"SEED\"))"},
+		{"later_assignment", "function pick(candidate:Text?,later:Text)->Text?{return candidate}\nvar candidate:Text?=none\ngetVariable(pick(candidate,later:if true{candidate=\"\";yield \"WRITTEN\"}else{yield \"UNUSED\"}))"},
+		{"implicit_input", "function pick(value:Text?,later:AnyContent)->Text?{return value}\nlet supplied:Text?=none\ntext(\"INPUT\")\ngetVariable(pick(supplied,later:native.action(\"is.workflow.actions.hash\",{\"WFHashType\":\"SHA256\"})))"},
+	}
+	for _, tc := range p15FunctionOptionalCases()[:6] {
+		cases = append(cases, p15OptionalForwardingCase{
+			"returned_" + tc.name,
+			"function echo(value:" + tc.typ + "?)->" + tc.typ + "?{return value}\ngetVariable(echo(echo(" + tc.argument + ")))"})
+	}
+	for _, tc := range p15OptionalTransportCases() {
+		if tc.context == "function argument" {
+			cases = append(cases, p15OptionalForwardingCase{"former_" + tc.name, tc.source})
+		}
+	}
+	return cases
+}
+
+func TestP15OptionalForwardingDoesNotReuseAbsentFactsAfterWrites(t *testing.T) {
+	const fn = "function echo(value:Text?)->Text?{return value}\n"
+	for _, tc := range []p15OptionalForwardingCase{
+		{"assignment", fn + "var candidate:AnyContent?=none\ncandidate=0\ngetVariable(echo(candidate))"},
+		{"branch", fn + "var candidate:AnyContent?=none\nif true{candidate=0}\ngetVariable(echo(candidate))"},
+		{"later_iteration", fn + "var candidate:AnyContent?=none\nrepeat 2{getVariable(echo(candidate));candidate=0}"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			check := func(diagnostics []analysis.Diagnostic) {
+				t.Helper()
+				errors := []analysis.Diagnostic{}
+				for _, d := range diagnostics {
+					if d.Severity == analysis.SeverityError {
+						errors = append(errors, d)
+					}
+				}
+				start := strings.Index(tc.source, "echo(candidate)") + len("echo(")
+				if len(errors) != 1 || errors[0].Code != analysis.CodeArgumentType || errors[0].Span.Start.ByteOffset != start || errors[0].Span.End.ByteOffset != start+len("candidate") || !strings.Contains(errors[0].Message, "expects Text?") {
+					t.Errorf("stale None evidence bypassed the real argument type: %#v", errors)
+				}
+			}
+			check(p15TypeDiagnostics(t, tc.source))
+			svc := service.NewService(nil)
+			uri := "file:///p15-optional-flow-" + tc.name + ".cherri"
+			svc.OpenDocument(uri, 1, tc.source)
+			diagnostics, _ := svc.Analyze(uri)
+			check(diagnostics)
+			raw, err := CompileSourceToPlist("p15-optional-flow.cherri", tc.source)
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) {
+				t.Errorf("invalid Optional value emitted bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
+}
+
+func TestP15OptionalForwardingAnalyzerReuse(t *testing.T) {
+	a := analysis.NewAnalyzer(schema.DefaultRegistry())
+	for _, opaque := range []bool{false, true, false} {
+		source := "function echo(value:AnyContent?)->AnyContent?{return value}\nlet candidate=none\ngetVariable(echo(candidate))"
+		if opaque {
+			source = strings.Replace(source, "candidate=none", `candidate=native.action("is.workflow.actions.nothing",{})`, 1)
+		}
+		program, errors := p15ParseProgram(source)
+		if len(errors) != 0 {
+			t.Fatal(errors)
+		}
+		a.Analyze(program)
+		diagnostics := a.Diagnostics()
+		if !opaque && len(diagnostics) != 0 {
+			t.Fatal("healthy source retained stale provenance", diagnostics)
+		}
+		if opaque && (len(diagnostics) != 1 || diagnostics[0].Code != analysis.CodeTargetValueShape || !strings.Contains(diagnostics[0].Message, "compiler-owned")) {
+			t.Fatal("opaque source inherited a previous None fact", diagnostics)
+		}
+	}
+}
+
+func TestP15OptionalForwardingDefiningModulePresence(t *testing.T) {
+	for _, tc := range p15FunctionOptionalCases()[:6] {
+		t.Run(tc.name, func(t *testing.T) {
+			entry := "import \"./dependency.cherri\" as dep\ntype Maybe=Bool\ngetVariable(dep.echo(dep.echo(" + tc.argument + ")))"
+			dependency := "type Maybe=" + tc.typ + "?\nfunction echo(value:Maybe)->Maybe{return value}\n"
+			path, source := p15ModuleProject(t, map[string]string{"main.cherri": entry, "dependency.cherri": dependency})
+			actions := p15OptionalModuleActionsWithDispatchCount(t, path, source, "module:dependency.cherri::echo", 3)
+			if err := p15OptionalForwardingGraphError(actions, "returned_"+tc.name); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestP15OptionalForwardingRequiresOwnedPresence(t *testing.T) {
+	const opaque = `native.action("is.workflow.actions.nothing",{})`
+	for _, tc := range []p15OptionalForwardingCase{
+		{"opaque_argument", "function echo(value:AnyContent?)->AnyContent?{return value}\ngetVariable(echo(" + opaque + "))"},
+		{"opaque_return", "function absent(seed:Text)->AnyContent?{return " + opaque + "}\ngetVariable(absent(\"SEED\"))"},
+		{"opaque_binding", "let candidate:AnyContent?=" + opaque + "\ngetVariable(candidate)"},
+		{"opaque_assignment", "var candidate:AnyContent?=none\ncandidate=" + opaque + "\ngetVariable(candidate)"},
+		{"opaque_default", "function echo(value:AnyContent?=" + opaque + ")->AnyContent?{return value}\ngetVariable(echo())"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			check := func(diagnostics []analysis.Diagnostic) {
+				t.Helper()
+				var errors []analysis.Diagnostic
+				for _, d := range diagnostics {
+					if d.Severity == analysis.SeverityError {
+						errors = append(errors, d)
+					}
+				}
+				start := strings.Index(tc.source, opaque)
+				if len(errors) != 1 || errors[0].Code != analysis.CodeTargetValueShape ||
+					errors[0].Span.Start.ByteOffset != start || errors[0].Span.End.ByteOffset != start+len(opaque) ||
+					!strings.Contains(errors[0].Message, "compiler-owned") || !strings.Contains(errors[0].Message, "presence") {
+					t.Errorf("opaque native output must not fabricate Optional presence: %#v", errors)
+				}
+			}
+			check(p15TypeDiagnostics(t, tc.source))
+			svc := service.NewService(nil)
+			uri := "file:///p15-optional-presence-" + tc.name + ".cherri"
+			svc.OpenDocument(uri, 1, tc.source)
+			diagnostics, _ := svc.Analyze(uri)
+			check(diagnostics)
+			raw, err := CompileSourceToPlist("p15-optional-presence.cherri", tc.source)
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
+				t.Errorf("opaque optional boundary emitted bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
+}
+
+// These public-route controls establish the unsupported semantic boundary on
+// the clean tests-only source. A successful compiler run is not Apple runtime
+// evidence; the completed component also requires an independent native graph.
+func TestP15OptionalForwardingPublicRoutes(t *testing.T) {
+	for _, tc := range p15OptionalForwardingCases() {
+		t.Run(tc.name, func(t *testing.T) {
+			diagnostics := p15TypeDiagnostics(t, tc.source)
+			if len(diagnostics) != 0 {
+				t.Errorf("compiler-owned Optional value must remain transportable: %#v", diagnostics)
+			}
+			svc := service.NewService(nil)
+			uri := "file:///p15-optional-forwarding-" + tc.name + ".cherri"
+			svc.OpenDocument(uri, 1, tc.source)
+			editorDiagnostics, _ := svc.Analyze(uri)
+			if len(editorDiagnostics) != 0 {
+				t.Errorf("editor must accept the same Optional forwarding source: %#v", editorDiagnostics)
+			}
+			raw, err := CompileSourceToPlist("p15-short-circuit.cherri", tc.source)
+			if err != nil || len(raw) == 0 {
+				t.Fatalf("Optional forwarding failed: bytes=%d error=%v", len(raw), err)
+			}
+			if !strings.Contains(string(raw), "_cherri_optional_result_v1") {
+				t.Fatal("Optional result lost its compiler-owned presence carrier")
+			}
+		})
+	}
+}
