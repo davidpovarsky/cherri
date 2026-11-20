@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -194,7 +195,11 @@ func p15OptionalFallthroughError(actions []map[string]any, branch bool) error {
 	envelope := g.header("echo")
 	seed := g.get("arg_0", envelope)
 	if branch {
-		group := g.conditional(4, p15FunctionEdge(seed), "WFConditionalActionString", "RETURN")
+		// The existing declared Text parameter is decoded from a Dictionary;
+		// its ordinary Text comparison retains the canonical String coercion.
+		input := p15FunctionEdge(seed)
+		input["Value"].(map[string]any)["Aggrandizements"] = []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}}
+		group := g.conditional(4, input, "WFConditionalActionString", "RETURN")
 		g.output(p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionString("")))
 		g.boundary(group, 2, false)
 	}
@@ -228,8 +233,67 @@ func TestP15OptionalReturnCompleteness(t *testing.T) {
 			if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
 				t.Fatal(diagnostics)
 			}
-			if err := p15OptionalFallthroughError(p15CompiledActions(t, source), branch); err != nil {
+			actions := p15CompiledActions(t, source)
+			if err := p15OptionalFallthroughError(actions, branch); err != nil {
 				t.Fatal(err)
+			}
+			faults := []string{"changed_presence", "invented_empty_value", "lost_carrier", "stale_output", "missing_decoder"}
+			if branch {
+				faults = append(faults, "lost_text_coercion")
+			}
+			for _, fault := range faults {
+				t.Run(fault, func(t *testing.T) {
+					bad := p15ContainerCloneNative(t, actions)
+					if err := p15OptionalFallthroughError(bad, branch); err != nil {
+						t.Fatal("unchanged clone must pass", err)
+					}
+					carrier, output, decoder := -1, -1, -1
+					var fields map[string]map[string]any
+					for i, action := range bad {
+						p := p15Param(action)
+						if candidate, err := p15ContainerFields(p["WFItems"]); err == nil && candidate["_cherri_optional_result_v1"] != nil && reflect.DeepEqual(candidate["has_value"]["WFValue"], p15FunctionText("0")) {
+							carrier = i
+							fields = candidate
+						}
+						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.output" {
+							output = i
+						}
+						if p["WFDictionaryKey"] == "has_value" {
+							decoder = i
+						}
+					}
+					if fields == nil || carrier < 0 || output < 0 || decoder < 0 {
+						t.Fatal("mutation target missing")
+					}
+					switch fault {
+					case "changed_presence":
+						fields["has_value"]["WFValue"] = p15FunctionText("1")
+					case "invented_empty_value":
+						fields["has_value"]["WFKey"] = p15FunctionText("value")
+						fields["has_value"]["WFValue"] = p15FunctionText("")
+					case "lost_carrier":
+						bad[carrier]["WFWorkflowActionIdentifier"] = "is.workflow.actions.nothing"
+					case "stale_output":
+						p15Param(bad[output])["WFOutput"] = p15FunctionText("MUST_NOT_LEAK")
+					case "missing_decoder":
+						p15Param(bad[decoder])["WFDictionaryKey"] = "value"
+					case "lost_text_coercion":
+						found := false
+						for _, action := range bad {
+							p := p15Param(action)
+							if p["WFConditionalActionString"] == "RETURN" {
+								delete(p["WFInput"].(map[string]any)["Variable"].(map[string]any)["Value"].(map[string]any), "Aggrandizements")
+								found = true
+							}
+						}
+						if !found {
+							t.Fatal("Text comparison coercion target missing")
+						}
+					}
+					if p15OptionalFallthroughError(bad, branch) == nil {
+						t.Fatal("damaged implicit None accepted")
+					}
+				})
 			}
 		})
 	}
