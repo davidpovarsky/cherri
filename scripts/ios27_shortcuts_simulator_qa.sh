@@ -1610,6 +1610,13 @@ PY
       exit 2
     fi
     EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}-${EXEC_RANDOM_NONCE}"
+    case "$TARGET_FIXTURE_ID" in
+      qa-debug-label-*)
+        python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/debug_label_preview.py" prepare \
+          --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --commit "$SOURCE_SHA" \
+          --run-id "$RUN_ID" --attempt "${GITHUB_RUN_ATTEMPT:-1}" --nonce "$EXEC_RUN_NONCE" || exit 2
+        ;;
+    esac
     SHORTCUT_INPUT_VALUE="CHERRI_QA_INPUT"
     if [ "$HTTP_PROBE_ENABLED" = "true" ]; then
       # Static source bytes are never rewritten: only reviewed loopback port/nonce
@@ -1670,6 +1677,9 @@ PY
     export TEST_RUNNER_CHERRI_QA_EXPECT_RUNTIME_RUN="$SIGNED_ARTIFACT_VALID_AEA1"
     export TEST_RUNNER_CHERRI_QA_DEFER_RUNTIME_TO_PHASE4B="true"
     export TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE="$EXEC_RUN_NONCE"
+    export TEST_RUNNER_CHERRI_QA_SOURCE_SHA="$SOURCE_SHA"
+    export TEST_RUNNER_CHERRI_QA_WORKFLOW_RUN_ID="$RUN_ID"
+    export TEST_RUNNER_CHERRI_QA_WORKFLOW_RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-1}"
     export TEST_RUNNER_CHERRI_QA_RUN_URL="$RUN_URL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_MINIMAL="$RUN_URL_MINIMAL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_PLAIN="$RUN_URL_PLAIN"
@@ -2737,6 +2747,16 @@ if not os.path.exists(trace_jsonl_path) and fid != "qa-storage-text-cross-run-v2
             "omittedReason": reason if trace_status != "PASS" else None,
         }) + "\n")
 PY
+
+# A successful exact callback does not substitute for requested visible labels.
+# This fresh-run receipt is additive; original values, trace and callback remain required.
+case "$TARGET_FIXTURE_ID" in
+  qa-debug-label-*)
+    python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/debug_label_preview.py" finalize \
+      --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --commit "$SOURCE_SHA" \
+      --run-id "$RUN_ID" --attempt "${GITHUB_RUN_ATTEMPT:-1}" || exit 2
+    ;;
+esac
 
 if [ "$HTTP_PROBE_STARTED" = "true" ]; then
   stop_http_probe
