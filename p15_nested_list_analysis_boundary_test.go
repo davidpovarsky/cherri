@@ -193,6 +193,11 @@ func TestP15L01NativeListContextPreservesInlineArrays(t *testing.T) {
 		{"map_default", "function echo(value:Map<Text,AnyContent> = {\"rows\":[[],[1,2]]})->Map<Text,AnyContent>{return value}\nreturn echo()"},
 		{"flat_scalar_list", "return [false,0,\"\",7]"},
 		{"flat_dictionary_list", "return [{},{\"rows\":[[],[1,2]]}]"},
+		// These existing inline reference rows are accepted locally; no nested
+		// List runtime type/cardinality is inferred from their compilation.
+		{"inline_array_call_reference_unverified", "function makeList()->List<Number>{return [1,2]}\nreturn {\"slot\":[makeList()]}"},
+		{"inline_array_if_reference_unverified", "return {\"slot\":[if true {yield [1,2]} else {yield [3,4]}]}"},
+		{"inline_array_menu_reference_unverified", "return {\"slot\":[menu(\"Pick\") {case \"A\" {yield [1,2]} case \"B\" {yield [3,4]}}]}"},
 		{"opaque_native_input", "let value=Clipboard\nreturn [value]"},
 		{"raw_native_data", "native.action(\"is.workflow.actions.list\",parameters:native.plist({\"WFItems\":[[1,2],[]]}))\nreturn 7"},
 		{"raw_then_dictionary", "native.action(\"com.example.p15.raw\",parameters:native.plist({\"rows\":[[1,2]]}))\nreturn {\"rows\":[[3,4]]}"},
