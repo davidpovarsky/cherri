@@ -29,8 +29,8 @@ var extractedInstallScenarios = map[string]extractedInstallScenario{
 		Expected:  "Commands really exist, share the same pipeline, and have reliable JSON/exit/output behavior.",
 		Scope:     "Independent RP42 actual clean-source build, generated reference, committed disposable component tuple, ZIP create/verify/extract and source install. Public help/schema/check/format/compile/import aliases, native equality and installed cherri-migrate preview/check/write are executed. This component tuple is not the published release tuple; no CL01,K01,K03 or other linked requirement inherits credit.",
 		Tests:     []string{"TestP15RP42ExtractedInstallPublicCLI", "TestP15RP42MigrationDocumentedFlags"},
-		Tiers:     []string{"cli", "packaging"},
-		Producers: map[string]string{"cli": "TestP15RP42ExtractedInstallPublicCLI", "packaging": "TestP15RP42ExtractedInstallPublicCLI"},
+		Tiers:     []string{"cli", "skill-package"},
+		Producers: map[string]string{"cli": "TestP15RP42ExtractedInstallPublicCLI", "skill-package": "TestP15RP42ExtractedInstallPublicCLI"},
 		Timeout:   8 * time.Minute,
 	},
 	"RP44": {
@@ -39,8 +39,8 @@ var extractedInstallScenarios = map[string]extractedInstallScenario{
 		Expected:  "Doctor/install fails or selects verified compatible replacement; no existence-only or language-string-only success.",
 		Scope:     "Independent RP44 extracted installation with actual current and outdated compiler files, complete same-source companion, cache/bundle/explicit selection, original-byte malformed JSON and protocol/catalog/schema/codec/macro controls, and exact clean documentation provenance. Synthetic response controls must be actually observed before precise rejection; they never count as native output. The shipped offline consumer runs against actual tools and generated docs. No K02,K04 or published release credit is inherited.",
 		Tests:     []string{"TestP15RP44ExtractedCapabilitiesRejection", "TestP15RP44InstalledDocsIdentity", "TestP15RP44ExtractedCacheAndBundleSelection", "TestP15RP44GitIndexDocsIntegrity", "TestP15RP44ExtractedCompatibilityConsumer"},
-		Tiers:     []string{"packaging", "integration"},
-		Producers: map[string]string{"packaging": "TestP15RP44ExtractedCapabilitiesRejection", "integration": "TestP15RP44ExtractedCacheAndBundleSelection"},
+		Tiers:     []string{"skill-package", "integration"},
+		Producers: map[string]string{"skill-package": "TestP15RP44ExtractedCapabilitiesRejection", "integration": "TestP15RP44ExtractedCacheAndBundleSelection"},
 		Timeout:   12 * time.Minute,
 	},
 	"RP45": {
@@ -49,8 +49,8 @@ var extractedInstallScenarios = map[string]extractedInstallScenario{
 		Expected:  "Resolved immutable revisions match; atomic activation; compatible previous installation survives update failures.",
 		Scope:     "Independent RP45 actual immutable source build after source/docs branches advance, both embedded tool roles/source/platforms and mandatory byte receipts, verified runtime ZIP extraction, offline cache, corrupt replacement rejection and real handled interruptions after filesystem operations. Six prior tool/receipt files plus exact docs survive failures; a complete update executes the installed migrator. Controlled download self-test is distinct from the real source-build route. No power-loss or concurrent-reader guarantee, published deployment, K01/K03/K04 or other linked acceptance is inferred.",
 		Tests:     []string{"TestP15RP45InstalledBinaryOwnership", "TestP15RP45RuntimePackageOwnership", "TestP15RP45PackageIgnoresGitReplacements", "TestP15RP45IdentityValidationOrder", "TestP15RP45ExtractedInstallAndRollback", "TestP15RP45ExtractedRuntimePair", "TestP15RP45GitIndexSourceIntegrity", "TestP15RP45LockAcquisitionSignals"},
-		Tiers:     []string{"packaging", "integration"},
-		Producers: map[string]string{"packaging": "TestP15RP45ExtractedRuntimePair", "integration": "TestP15RP45ExtractedInstallAndRollback"},
+		Tiers:     []string{"skill-package", "integration"},
+		Producers: map[string]string{"skill-package": "TestP15RP45ExtractedRuntimePair", "integration": "TestP15RP45ExtractedInstallAndRollback"},
 		// One complete scenario owns multiple actual clean builds and more than
 		// twenty separate shell transactions. This new producer has its own finite
 		// whole-scenario budget; existing test and release deadlines are unchanged.
