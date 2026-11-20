@@ -1,0 +1,36 @@
+{
+  "source_sha": "21ef2c0a7b61672fef43fc348d42547e92c42a91",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_unchanged": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15FunctionArgumentContainersPreserveSemanticIdentity|TestP15FunctionContainerArgumentsCaptureBeforeLaterWrite|TestP15ExplicitNativeContainerTemplateRemainsOpaque|TestP15FunctionContainerUnsupportedNullStillFailsPrecisely)$",
+    "."
+  ],
+  "started_utc": "2026-11-20T00:08:37.585950+00:00",
+  "finished_utc": "2026-11-20T00:08:42.094889+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 4.327999999979511,
+  "passed_tests": [
+    "TestP15ExplicitNativeContainerTemplateRemainsOpaque",
+    "TestP15FunctionContainerUnsupportedNullStillFailsPrecisely"
+  ],
+  "failed_tests": [
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/empty",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/reserved_attachment",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/reserved_color",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/literal_braces",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity/nested",
+    "TestP15FunctionArgumentContainersPreserveSemanticIdentity",
+    "TestP15FunctionContainerArgumentsCaptureBeforeLaterWrite",
+    null
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "2d0678919f7040e8d6bb1f69157f26771cea12f3f2e39fc53f25a5d0834da98d"
+}
