@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-date-difference-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -305,6 +305,13 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="CherriTypedDefaultsPOC"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_TYPED_DEFAULTS_RESULT:Q0hFUlJJX1RZUEVEX0RFRkFVTFRTX09LCkRFRkFVTFRTX0VYUExJQ0lUPTA6MDo6MDowCkRFRkFVTFRTX09NSVRURUQ9MTo5OmRlZjoxOjEKREVGQVVMVFNfTUlYRUQ9MDo5OmRlZjowOjE="
+    ;;
+  qa-date-difference-diagnostic)
+    # Causal Date characterization only; actual empty/nonzero fields stay strict.
+    TARGET_FIXTURE_ID="qa-date-difference-diagnostic-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-date-difference-diagnostic-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DATE_DIFFERENCE_DIAG:START_TYPE64=RGF0ZQ==:START_COUNT=1:START_FORMAT64=MjAwMS0wMi0wM1QwNDowNTowNlo=:SAME_TYPE64=RGF0ZQ==:SAME_COUNT=1:SAME_FORMAT64=MjAwMS0wMi0wM1QwNDowNTowNlo=:LATER_TYPE64=RGF0ZQ==:LATER_COUNT=1:LATER_FORMAT64=MjAwMS0wMi0wM1QwNDowNjowNlo=:ZERO_SECONDS_TYPE64=TnVtYmVy:ZERO_SECONDS_COUNT=1:ZERO_SECONDS_TEXT64=MA==:POSITIVE_SECONDS_TYPE64=TnVtYmVy:POSITIVE_SECONDS_COUNT=1:POSITIVE_SECONDS_TEXT64=NjA=:ZERO_MINUTES_TYPE64=TnVtYmVy:ZERO_MINUTES_COUNT=1:ZERO_MINUTES_TEXT64=MA==:POSITIVE_MINUTES_TYPE64=TnVtYmVy:POSITIVE_MINUTES_COUNT=1:POSITIVE_MINUTES_TEXT64=MQ==:SAME_PRODUCER_SECONDS_TYPE64=TnVtYmVy:SAME_PRODUCER_SECONDS_COUNT=1:SAME_PRODUCER_SECONDS_TEXT64=MA==:NUMERIC_ZERO_TYPE64=TnVtYmVy:NUMERIC_ZERO_COUNT=1:NUMERIC_ZERO_TEXT64=MA=="
     ;;
   qa-n03-text-equality-diagnostic)
     # Exact-equality target only; contradictory actual fields remain failures.
@@ -614,6 +621,7 @@ from retry_http_probe import validate_fixture_graph
 from export_unicode_diagnostic import validate_export_unicode_graph
 from file_materialization_diagnostic import verify_source as verify_file_materialization_source, verify_graph as verify_file_materialization_graph
 from n03_text_equality_diagnostic import verify_source as verify_n03_text_equality_source
+from date_difference_diagnostic import verify_source as verify_date_difference_source, verify_graph as verify_date_difference_graph, verify_causal_mutations as verify_date_difference_mutations
 from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from native_boundary_diagnostic import verify_source as verify_boundary_source, verify_graph as verify_boundary_graph
@@ -665,6 +673,7 @@ fixture_specs = [
     ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),
     ("qa-file-materialization-diagnostic-v2", "qa-file-materialization-diagnostic-v2.cherri", "v2"),
     ("qa-n03-text-equality-diagnostic-v2", "qa-n03-text-equality-diagnostic-v2.cherri", "v2"),
+    ("qa-date-difference-diagnostic-v2", "qa-date-difference-diagnostic-v2.cherri", "v2"),
     ("qa-native-boundary-diagnostic-v2", "qa-native-boundary-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-diagnostic-v2", "qa-export-unicode-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-v2", "p15-export-probes/qa-export-unicode-v2.cherri", "v2"),
@@ -785,6 +794,9 @@ for fid, fname, dialect in fixture_specs:
         "exportUnicodeDiagnosticGraph": validate_export_unicode_graph(fid, actions),
         "fileMaterializationSource": verify_file_materialization_source(root_dir, fid, src_bytes),
         "n03TextEqualitySource": verify_n03_text_equality_source(root_dir, fid, src_bytes),
+        "dateDifferenceSource": verify_date_difference_source(root_dir, fid, src_bytes),
+        "dateDifferenceGraph": verify_date_difference_graph(fid, actions),
+        "dateDifferenceCausalMutations": verify_date_difference_mutations(actions) if verify_date_difference_source(root_dir, fid, src_bytes) else None,
         "fileMaterializationGraph": verify_file_materialization_graph(fid, actions),
         "bindingDefaultsSource": verify_adapter_source(root_dir, fid, src_bytes),
         "bindingDefaultsGraph": verify_adapter_graph(fid, actions),
