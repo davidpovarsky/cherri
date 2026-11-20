@@ -1,0 +1,8 @@
+p15_optional_binding_presence_test.go:177:4: expected statement, found ')'
+p15_optional_binding_presence_test.go:179:3: expected '}', found 'EOF'
+Traceback (most recent call last):
+  File "C:\ProgramData\SentinelX\uploads\.sentinelx_uploads\script_job_62bc9e8dfc8141a6952fc652d6915bfd\script.py", line 9, in <module>
+    subprocess.run(['gofmt','-w',item['path']],check=True)
+  File "C:\Users\DAVID\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['gofmt', '-w', 'p15_optional_binding_presence_test.go']' returned non-zero exit status 2.
