@@ -78,7 +78,7 @@ func p15E06MobileError(text string, actual p15E06MobileSnapshot) error {
 }
 func TestP15E06MobileUTF16SymbolCoordinates(t *testing.T) {
 	for _, tc := range []struct{ name, prefix, newline string }{
-		{"ascii_lf", "plain", "\n"}, {"hebrew_lf", "שלום", "\n"}, {"emoji_crlf", "🙂🙂", "\r\n"}, {"zwj_combining_crlf", "👩‍💻e\u0301שלום", "\r\n"},
+		{"ascii_lf", "plain", "\n"}, {"hebrew_lf", "שלום", "\n"}, {"emoji_crlf", "🙂🙂🙂🙂", "\r\n"}, {"zwj_combining_crlf", "👩‍💻👩‍💻e\u0301שלום", "\r\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			text := "let ערך = \"literal ערך\"" + tc.newline + "// ערך remains" + tc.newline + "show(f\"" + tc.prefix + " {ערך}\")" + tc.newline
@@ -90,7 +90,7 @@ func TestP15E06MobileUTF16SymbolCoordinates(t *testing.T) {
 }
 func TestP15E06MobileUTF16CallCoordinates(t *testing.T) {
 	for _, tc := range []struct{ name, prefix, newline string }{
-		{"ascii_lf", "plain", "\n"}, {"hebrew_lf", "שלום", "\n"}, {"emoji_crlf", "🙂🙂", "\r\n"}, {"zwj_combining_crlf", "👩‍💻e\u0301שלום", "\r\n"},
+		{"ascii_lf", "plain", "\n"}, {"hebrew_lf", "שלום", "\n"}, {"emoji_crlf", "🙂🙂🙂🙂", "\r\n"}, {"zwj_combining_crlf", "👩‍💻👩‍💻e\u0301שלום", "\r\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			text := "function target(first: Text, number: Number) -> Number { return number }" + tc.newline + "let numberValue = 3" + tc.newline + "let textValue = \"word\"" + tc.newline + "target(\"" + tc.prefix + "\", number: )"
@@ -110,7 +110,7 @@ func TestP15E06MobileUTF16CallCoordinates(t *testing.T) {
 				t.Errorf("UTF16 caret lost expected Number context: %v", variables)
 			}
 			sig := signatureHelpForMobile(text, position.Line+1, position.Character+1)
-			if !sig.OK || !strings.HasPrefix(sig.Label, "target(") || sig.ActiveParameter != 1 || !reflect.DeepEqual(sig.Parameters, []string{"first: Text", "number: Number"}) {
+			if !sig.OK || !strings.HasPrefix(sig.Label, "function target(") || sig.ActiveParameter != 1 || !reflect.DeepEqual(sig.Parameters, []string{"first: Text", "number: Number"}) {
 				t.Errorf("UTF16 signature target/slot changed: %+v", sig)
 			}
 		})
