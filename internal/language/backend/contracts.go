@@ -19,6 +19,7 @@ func CodecFingerprint() string {
 		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
 		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
 		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n:optional_arg_n=_cherri_optional_argument_v1,has_value=0-absent-1-present,value-present-only:result=_cherri_optional_result_v1,has_value,value\n" +
+		"optional_control_join:_cherri_optional_join_v1:has_value=0-absent-1-present:value-present-only:normal-branch-yields:source-demand:no-truthiness\n" +
 		"text_literal_object_character:plain_text_producer:deferred_after_interpolated_calls:exact_output_reference:complete_utf16_placeholder_coverage:pure_string_without_references:enclosing_native_input=existing_result_handle:checked_native_declaration_output_contract:semantic_container_fields_after_authored_values:literal_key_order_preserved:function_and_optional_fields:removed_diagnostics_without_pure_carriers\n" +
 		"date_field_references:gettimebetweendates:WFTimeUntilFromDate,WFInput:WFTextTokenString:exact_reference_preserved\n"
 	sum := sha256.Sum256([]byte(codecDescriptor))

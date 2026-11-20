@@ -261,6 +261,11 @@ func (r *scopedBlockRenamer) expression(expression syntax.Expression, names map[
 				r.lowerer.enumValues[result] = value
 			}
 		}
+		if result != nil {
+			if needed, analyzed := r.lowerer.optionalJoinDemand[expression]; analyzed {
+				r.lowerer.optionalJoinDemand[result] = needed
+			}
+		}
 		if result != nil && r.lowerer.knownDictionaryIndexes[expression] {
 			r.lowerer.knownDictionaryIndexes[result] = true
 		}

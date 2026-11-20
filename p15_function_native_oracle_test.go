@@ -239,6 +239,11 @@ func (g *p15FunctionGraph) call(payload string) string {
 
 func (g *p15FunctionGraph) finish() error {
 	g.boundary(g.outer, 2, false)
+	return g.compare()
+}
+
+// compare also checks complete workflows without the function dispatcher.
+func (g *p15FunctionGraph) compare() error {
 	if g.err != nil {
 		return g.err
 	}
