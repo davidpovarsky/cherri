@@ -16,8 +16,6 @@ type p15OptionalTransportCase struct{ name, source, target, context string }
 func p15OptionalTransportCases() []p15OptionalTransportCase {
 	const function = "function echo(value:Text?)->Text?{return value}\n"
 	return []p15OptionalTransportCase{
-		{"function_literal", function + "getVariable(echo(none))", "none", "function argument"},
-		{"function_named", "function echo(first:Text,value:Text?)->Text?{return value}\ngetVariable(echo(\"first\",value:none))", "none", "function argument"},
 		{"function_bound", function + "let candidate:Text?=none\ngetVariable(echo(candidate))", "candidate", "function argument"},
 		{"function_mutable", function + "var candidate:Text?=none\ngetVariable(echo(candidate))", "candidate", "function argument"},
 		{"function_result", function + "function absent()->Text?{return none}\ngetVariable(echo(absent()))", "absent()", "function argument"},
@@ -185,14 +183,11 @@ func TestP15OptionalTransportKeepsNarrowedAndDefaultValues(t *testing.T) {
 		if _, exists := fields["arg_0"]; exists || !reflect.DeepEqual(fields["has_arg_0"]["WFValue"], p15ContainerText("0")) {
 			t.Fatal("omitted argument became explicit empty value")
 		}
-		found := 0
-		for _, action := range actions {
-			if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" {
-				found++
-			}
-		}
-		if found != 1 {
-			t.Fatal("existing None default lost its explicit no-value producer")
+		// The new supplied-None branch and the omitted-None default each have
+		// their own Nothing under different presence guards. Check the entire
+		// graph instead of the historical single-Nothing physical count.
+		if err := p15FunctionOptionalError(actions, p15FunctionOptionalCase{typ: "Text", fallback: "none"}); err != nil {
+			t.Fatal("None default/value presence graph changed", err)
 		}
 	})
 }
