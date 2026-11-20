@@ -1,0 +1,59 @@
+{
+  "schema_version": "1",
+  "implementation_sha": "f9ff5323c6c958be75ed4005357ac2a1bca39d97",
+  "base_sha": "b6329e22537793dd453401c7ae85a45235c5f048",
+  "clean_before": true,
+  "clean_after": true,
+  "source_files": [
+    {
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "sha256": "85e23041e52f3cf989841fd538807250013b9d3d41e613d2ff0bcca493310bc9"
+    },
+    {
+      "path": "ios/CherriUITests/EditorStartupDeadline.swift",
+      "sha256": "a263d9a1fc8dc8476ede4ab09f6096195fa1f1d14368830006a31c8fdfec92c3"
+    },
+    {
+      "path": "ios/scripts/verify_editor_startup.swift",
+      "sha256": "ee2f19b19ac804830dd1812e61a14e59736c41b52c4b8f8895d6297ba34d5901"
+    }
+  ],
+  "local_receipt_sha256": "5e5d6f971ed5f335ba6bad11bf3e02eda3636af88f96f4cb40f3d088f8fd7515",
+  "local_commands": [
+    {
+      "kind": "compile",
+      "exit_code": 0,
+      "elapsed_seconds": 5.4060000000172295,
+      "raw_sha256": "ff2187ffac71bf504d7ec1b11da6e2907e816c30894ac16a69d3bb2d010e0ed1"
+    },
+    {
+      "kind": "controls",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09399999998277053,
+      "raw_sha256": "7f75ce079891253dad8e0b4788d26815704092649137172fb9b3974feff22f90"
+    },
+    {
+      "kind": "ui-parse",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1720000000204891,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "swift_version": "6.3.3 Windows",
+  "actual_control_assertions_passed": 123,
+  "unchanged_feature_bodies_sha256": "1c225bcbcf13c8d66f1f6c26c3f60a17601881279ae32b53a675b13a92d6d2b3",
+  "unchanged_input_tests_sha256": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b",
+  "declared_ui_test_methods": 13,
+  "original_startup_budget_seconds": 28,
+  "original_paste_budget_seconds": 3,
+  "original_native_run_id": 44699102028,
+  "original_native_conclusion": "failure",
+  "original_native_test_counts": {
+    "pass": 44,
+    "fail": 12
+  },
+  "causal_scope": "Remove a second full AX query after the same wait already observed all required controls; retain only the last successful evaluation in that wait and consume it once after actual completion. A false evaluation clears it. Fresh foreground may only invalidate it. Final decision still uses the original monotonic deadline. Failure snapshots cannot authorize a tap or success.",
+  "native_sdk_typecheck": "NOT_RUN",
+  "native_ui": "NOT_RUN",
+  "formal_acceptance_granted": false
+}
