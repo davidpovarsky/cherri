@@ -147,7 +147,7 @@ func TestP15RP08SchemaIdentityProduction(t *testing.T) {
 	if codecErr != nil {
 		t.Fatal(codecErr)
 	}
-	var codecVersion = "cherri-canonical-codec:v2.0"
+	var codecVersion = "cherri-canonical-codec:v2.2"
 	if bytes.Count(originalCodec, []byte(codecVersion)) != 1 {
 		t.Fatal("actual codec version fixture changed")
 	}
