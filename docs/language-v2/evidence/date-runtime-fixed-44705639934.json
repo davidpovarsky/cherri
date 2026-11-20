@@ -1,0 +1,484 @@
+{
+  "schema_version": 1,
+  "status": "PASS_BOUNDED_NATIVE_CONTRACT",
+  "scope": "UNCHANGED_PUBLIC_DATE_DIAGNOSTIC_ONLY",
+  "source_sha": "55ba009aa66810aedda466c12680b84d00b59766",
+  "implementation_sha": "e259c829fa0345702e0989a25b5bbac1296d1fa6",
+  "run": {
+    "id": 44705639934,
+    "head_sha": "55ba009aa66810aedda466c12680b84d00b59766",
+    "head_branch": "audit/cherri-p10r15-date-runtime-fixed-20261120",
+    "run_attempt": 1,
+    "conclusion": "success",
+    "created_at": "2026-11-20T08:49:41Z",
+    "updated_at": "2026-11-20T09:10:44Z",
+    "html_url": "https://github.com/davidpovarsky/cherri/actions/runs/44705639934"
+  },
+  "fixture_source_sha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+  "expected_contract_sha256": "5f96a34fef09a25a3a6261bbbd2556703a61dc41a25992202c80b88dee7e17d2",
+  "original_fixture_and_expected_bytes_unchanged_since": "7f044196d042dcdbbcc7401dcc96177f059b0db3",
+  "original_failed_run_id": 44680412319,
+  "original_artifact_receipt": {
+    "source_sha": "55ba009aa66810aedda466c12680b84d00b59766",
+    "run_id": 44705639934,
+    "run_attempt": 1,
+    "conclusion": "success",
+    "job_id": 136184430273,
+    "started_at": "2026-11-20T08:49:45Z",
+    "completed_at": "2026-11-20T09:10:44Z",
+    "artifact_id": 14616400322,
+    "artifact_name": "cherri-ios27-simulator-qa-44705639934",
+    "artifact_bytes": 55746,
+    "artifact_sha256": "d496122e3b4214820038842d10717faf21b0ad80e0dda3302a17872d3de2c481",
+    "job_log_sha256": "4874c851f16d71f45a3cd3ab09a1493cfd547b1acea26bf1e76ec93cf3e43a12",
+    "files": [
+      {
+        "path": "compiler-manifest.json",
+        "bytes": 476468,
+        "sha256": "755fcf546e348dfe68ca1c180b44b13cdd9edba67cb5c52f54cfcff4b537665d"
+      },
+      {
+        "path": "docs/report.md",
+        "bytes": 833,
+        "sha256": "0017fbbc5013d610bba979abcba3f2af29b34fcb1a13e38785eb302a95f008c2"
+      },
+      {
+        "path": "editor/ax-persistence-diagnostics.json",
+        "bytes": 225,
+        "sha256": "9fc55acda87fe8f72256ad704e872d1b9380852cb0a66069ef8c39ea5c9cabda"
+      },
+      {
+        "path": "editor/editor-action-coverage.json",
+        "bytes": 2246,
+        "sha256": "f3dba6c9a45c69df71bd6ab048efa7d9d787861e14621fb314ca8494dd24a716"
+      },
+      {
+        "path": "editor/editor-actions.json",
+        "bytes": 5715,
+        "sha256": "70ee2d0301ec5b32d94b3618839b50d2059c77cc5620c0e042a3ffa08ddfa518"
+      },
+      {
+        "path": "editor/editor-comparison.json",
+        "bytes": 41342,
+        "sha256": "9049e0df370814bb750af34aa4bc1b34e2d086ddf81a69e876c1755fdcfd5446"
+      },
+      {
+        "path": "editor/editor-foreground-recovery.json",
+        "bytes": 546,
+        "sha256": "1bd0b9dbf1cdb78da45c8d123e02a91952c52c07aec28034449344ac61f1c01d"
+      },
+      {
+        "path": "editor/editor-report.md",
+        "bytes": 3972,
+        "sha256": "7c2188b8b79a5e2e3acf8bcb25cb507194dec63249db8172e725f4f96f697223"
+      },
+      {
+        "path": "editor/editor-tree.json",
+        "bytes": 190557,
+        "sha256": "bf8d551a4e0baf58455f7abc3487032f0bf1d7114d341e316466702fa101c092"
+      },
+      {
+        "path": "editor/handshake-status.json",
+        "bytes": 292,
+        "sha256": "82f67324ce1328b573606acba1296b115ca96edc8eeca40a7db667ab18fdaae7"
+      },
+      {
+        "path": "editor/plist-vs-editor-comparison.json",
+        "bytes": 41342,
+        "sha256": "9049e0df370814bb750af34aa4bc1b34e2d086ddf81a69e876c1755fdcfd5446"
+      },
+      {
+        "path": "editor/screenshots-manifest.json",
+        "bytes": 526,
+        "sha256": "86e9df0220459549f195ebb5ac1874936cb4a6025455f8b5c6877b9030b61a7d"
+      },
+      {
+        "path": "environment.json",
+        "bytes": 786,
+        "sha256": "e941ee6587d3923d9c50084e56f6139837258296fa054a9e9e92d15f865bf87f"
+      },
+      {
+        "path": "import-attempts.json",
+        "bytes": 1686,
+        "sha256": "28b2fdf42ecf9509e4e32589ea3d8e52bfe5b20a3417d61e9187892bf1b35ef3"
+      },
+      {
+        "path": "publication-manifest.json",
+        "bytes": 6437,
+        "sha256": "980cf10183d4990d906a9da47e70e5a7263068830ebd11a177e373b7bb8046fd"
+      },
+      {
+        "path": "runtime/callback-events.json",
+        "bytes": 3010,
+        "sha256": "6db59b8b2293f8d41cc86b94554dc86e7f661c9c0242f1669112a00ab1df61b0"
+      },
+      {
+        "path": "runtime/instrumentation-vs-original.json",
+        "bytes": 7442,
+        "sha256": "95259cce678b165cb938e404bec4366aa357a7273089a939c19d5414fce5880d"
+      },
+      {
+        "path": "runtime/output-assertions.json",
+        "bytes": 2199,
+        "sha256": "de396d91dc30df899155cc9167702b31ea6af0ec6e42d473adf3dcd51032be38"
+      },
+      {
+        "path": "runtime/runtime-trace.jsonl",
+        "bytes": 1033,
+        "sha256": "3542dcd72cd8a96c8da14fbbc8a0ab607100491305f69fa95be118b804f2af26"
+      },
+      {
+        "path": "runtime/signing-provenance.json",
+        "bytes": 2095,
+        "sha256": "c9bc20d94974997a7fd4f5980493ae5303a7d8b0b5fc672400d0d6fa66af50a7"
+      },
+      {
+        "path": "runtime/simulator-session-recovery.json",
+        "bytes": 1021,
+        "sha256": "baac49f453decc1fec18cbf9ee80bf9a0085ea17e367624bdd276972b43a41ad"
+      },
+      {
+        "path": "tests/xcresult-summary.json",
+        "bytes": 984,
+        "sha256": "435f117e57b3459f0526a7344625af6f1fc64dc065b9495d1f07bf3b9c2b4967"
+      },
+      {
+        "path": "summary.json",
+        "bytes": 1117,
+        "sha256": "1ac32aaf82fa760fc7d9447ac8a106c7bc18630e1c22aea4d8e32b9139eba327"
+      }
+    ],
+    "published_entries_verified": 22
+  },
+  "exact_source_intake": {
+    "schemaVersion": 1,
+    "status": "PASS_BOUNDED_NATIVE_CONTRACT",
+    "sourceCommit": "55ba009aa66810aedda466c12680b84d00b59766",
+    "runId": 44705639934,
+    "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44705639934",
+    "workflowConclusion": "success",
+    "fixtureId": "qa-date-difference-diagnostic-v2",
+    "sourceSha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+    "unsignedPlistSha256": "cc384e61df0d732f76b0185c1d4195cfec0753ca8312f7f9f2bcea5b8fb74d6e",
+    "signedArtifactSha256": "ff34f13816c01e0c0ef9c67422c884138b14ba6731a7cca766bc5401acd7cafb",
+    "nativeActionCount": 67,
+    "observedCallback": {
+      "matchingCallbacks": 1,
+      "identityVerified": true,
+      "status": "SUCCESS",
+      "runId": "qa-date-difference-diagnostic-v2-44705639934-e712a9939a90977e2e5002399c211e31",
+      "timestampISO8601": "2026-11-20T09:08:55.664Z",
+      "resultSummary": "CHERRI_QA_DATE_DIFFERENCE_DIAG:START_TYPE64=RGF0ZQ==:START_COUNT=1:START_FORMAT64=MjAwMS0wMi0wM1QwNDowNTowNlo=:SAME_TYPE64=RGF0ZQ==:SAME_COUNT=1:SAME_FORMAT64=MjAwMS0wMi0wM1QwNDowNTowNlo=:LATER_TYPE64=RGF0ZQ==:LATER_COUNT=1:LATER_FORMAT64=MjAwMS0wMi0wM1QwNDowNjowNlo=:ZERO_SECONDS_TYPE64=TnVtYmVy:ZERO_SECONDS_COUNT=1:ZERO_SECONDS_TEXT64=MA==:POSITIVE_SECONDS_TYPE64=TnVtYmVy:POSITIVE_SECONDS_COUNT=1:POSITIVE_SECONDS_TEXT64=NjA=:ZERO_MINUTES_TYPE64=TnVtYmVy:ZERO_MINUTES_COUNT=1:ZERO_MINUTES_TEXT64=MA==:POSITIVE_MINUTES_TYPE64=TnVtYmVy:POSITIVE_MINUTES_COUNT=1:POSITIVE_MINUTES_TEXT64=MQ==:SAME_PRODUCER_SECONDS_TYPE64=TnVtYmVy:SAME_PRODUCER_SECONDS_COUNT=1:SAME_PRODUCER_SECONDS_TEXT64=MA==:NUMERIC_ZERO_TYPE64=TnVtYmVy:NUMERIC_ZERO_COUNT=1:NUMERIC_ZERO_TEXT64=MA==",
+      "resultSummarySha256": "1e4fd0ff8d75b7c309ede7b91246bc881883a9c70a2682a2256f1acaf2fc1da0"
+    },
+    "canonicalOracleReplay": {
+      "runGate": "PASS",
+      "traceGate": "PASS",
+      "reason": "verified correlated callback output and NDJSON trace",
+      "targetFixtureId": "qa-date-difference-diagnostic-v2",
+      "compilerCommitSha": "55ba009aa66810aedda466c12680b84d00b59766",
+      "buildProfile": "debug",
+      "traceExpectation": "REQUIRED_NDJSON",
+      "releaseBuildVerified": false,
+      "sourceSha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+      "unsignedPlistSha256": "cc384e61df0d732f76b0185c1d4195cfec0753ca8312f7f9f2bcea5b8fb74d6e"
+    },
+    "runtimeContractVerified": true,
+    "oracleSourceSha256": "d306b07fd69bb209edc3b4ffeeeb5eb554189fda31f8b320f471803b193ff9a5",
+    "publicationPolicySourceSha256": "701e4c9daaaeaab10a942bd81d4b298e81822fab724eeb376ebed4c3e8d62037",
+    "publicationManifestSha256": "980cf10183d4990d906a9da47e70e5a7263068830ebd11a177e373b7bb8046fd",
+    "publishedHashesVerified": 22,
+    "files": [
+      {
+        "path": "compiler-manifest.json",
+        "sha256": "755fcf546e348dfe68ca1c180b44b13cdd9edba67cb5c52f54cfcff4b537665d",
+        "bytes": 476468
+      },
+      {
+        "path": "docs/report.md",
+        "sha256": "0017fbbc5013d610bba979abcba3f2af29b34fcb1a13e38785eb302a95f008c2",
+        "bytes": 833
+      },
+      {
+        "path": "editor/ax-persistence-diagnostics.json",
+        "sha256": "9fc55acda87fe8f72256ad704e872d1b9380852cb0a66069ef8c39ea5c9cabda",
+        "bytes": 225
+      },
+      {
+        "path": "editor/editor-action-coverage.json",
+        "sha256": "f3dba6c9a45c69df71bd6ab048efa7d9d787861e14621fb314ca8494dd24a716",
+        "bytes": 2246
+      },
+      {
+        "path": "editor/editor-actions.json",
+        "sha256": "70ee2d0301ec5b32d94b3618839b50d2059c77cc5620c0e042a3ffa08ddfa518",
+        "bytes": 5715
+      },
+      {
+        "path": "editor/editor-comparison.json",
+        "sha256": "9049e0df370814bb750af34aa4bc1b34e2d086ddf81a69e876c1755fdcfd5446",
+        "bytes": 41342
+      },
+      {
+        "path": "editor/editor-foreground-recovery.json",
+        "sha256": "1bd0b9dbf1cdb78da45c8d123e02a91952c52c07aec28034449344ac61f1c01d",
+        "bytes": 546
+      },
+      {
+        "path": "editor/editor-report.md",
+        "sha256": "7c2188b8b79a5e2e3acf8bcb25cb507194dec63249db8172e725f4f96f697223",
+        "bytes": 3972
+      },
+      {
+        "path": "editor/editor-tree.json",
+        "sha256": "bf8d551a4e0baf58455f7abc3487032f0bf1d7114d341e316466702fa101c092",
+        "bytes": 190557
+      },
+      {
+        "path": "editor/handshake-status.json",
+        "sha256": "82f67324ce1328b573606acba1296b115ca96edc8eeca40a7db667ab18fdaae7",
+        "bytes": 292
+      },
+      {
+        "path": "editor/plist-vs-editor-comparison.json",
+        "sha256": "9049e0df370814bb750af34aa4bc1b34e2d086ddf81a69e876c1755fdcfd5446",
+        "bytes": 41342
+      },
+      {
+        "path": "editor/screenshots-manifest.json",
+        "sha256": "86e9df0220459549f195ebb5ac1874936cb4a6025455f8b5c6877b9030b61a7d",
+        "bytes": 526
+      },
+      {
+        "path": "environment.json",
+        "sha256": "e941ee6587d3923d9c50084e56f6139837258296fa054a9e9e92d15f865bf87f",
+        "bytes": 786
+      },
+      {
+        "path": "import-attempts.json",
+        "sha256": "28b2fdf42ecf9509e4e32589ea3d8e52bfe5b20a3417d61e9187892bf1b35ef3",
+        "bytes": 1686
+      },
+      {
+        "path": "runtime/callback-events.json",
+        "sha256": "6db59b8b2293f8d41cc86b94554dc86e7f661c9c0242f1669112a00ab1df61b0",
+        "bytes": 3010
+      },
+      {
+        "path": "runtime/instrumentation-vs-original.json",
+        "sha256": "95259cce678b165cb938e404bec4366aa357a7273089a939c19d5414fce5880d",
+        "bytes": 7442
+      },
+      {
+        "path": "runtime/output-assertions.json",
+        "sha256": "de396d91dc30df899155cc9167702b31ea6af0ec6e42d473adf3dcd51032be38",
+        "bytes": 2199
+      },
+      {
+        "path": "runtime/runtime-trace.jsonl",
+        "sha256": "3542dcd72cd8a96c8da14fbbc8a0ab607100491305f69fa95be118b804f2af26",
+        "bytes": 1033
+      },
+      {
+        "path": "runtime/signing-provenance.json",
+        "sha256": "c9bc20d94974997a7fd4f5980493ae5303a7d8b0b5fc672400d0d6fa66af50a7",
+        "bytes": 2095
+      },
+      {
+        "path": "runtime/simulator-session-recovery.json",
+        "sha256": "baac49f453decc1fec18cbf9ee80bf9a0085ea17e367624bdd276972b43a41ad",
+        "bytes": 1021
+      },
+      {
+        "path": "summary.json",
+        "sha256": "1ac32aaf82fa760fc7d9447ac8a106c7bc18630e1c22aea4d8e32b9139eba327",
+        "bytes": 1117
+      },
+      {
+        "path": "tests/xcresult-summary.json",
+        "sha256": "435f117e57b3459f0526a7344625af6f1fc64dc065b9495d1f07bf3b9c2b4967",
+        "bytes": 984
+      }
+    ],
+    "causalOracleControls": {
+      "status": "PASS_LOCAL_ORACLE_MUTATIONS_ONLY",
+      "rejected": [
+        {
+          "mutation": "wrong_summary",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "wrong_nonce",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "self_test",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "wrong_fixture",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "native_error",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "native_cancelled",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "missing_trace",
+          "gate": "traceGate",
+          "result": "FAIL_RUNTIME"
+        },
+        {
+          "mutation": "duplicate_callback",
+          "gate": "runGate",
+          "result": "FAIL_RUNTIME"
+        }
+      ]
+    },
+    "editorStatus": "NEEDS_REVIEW",
+    "environment": {
+      "schemaVersion": "1.4",
+      "compilerCommitSha": "55ba009aa66810aedda466c12680b84d00b59766",
+      "uname": "Darwin sat12-dp153-338ca9f7-50d9-4813-9ac7-9fc77f1aa311-12FE7E6D17AA.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:00:07 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_VMAPPLE arm64",
+      "swVers": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+      "xcodeSelectPath": "/Applications/Xcode_27.1.app/Contents/Developer",
+      "xcodebuildVersion": "Xcode 27.1\nBuild version 27A9275",
+      "simulator": {
+        "maskedUdid": "8721CBAE-REDACTED",
+        "deviceName": "iPad mini (A17 Pro)",
+        "runtimeName": "iOS 27.0",
+        "runtimeVersion": "27.0",
+        "isIPad": true,
+        "shortcutsAppInstalled": true,
+        "shortcutsBundleId": "com.apple.shortcuts"
+      }
+    },
+    "scope": "This exact source, fixture, synthetic inputs and recorded Simulator run only.",
+    "notProven": [
+      "Physical device",
+      "General typed cache/TTL",
+      "Native failure cause",
+      "Complete per-action typed coverage",
+      "Complete Inspector identity mapping",
+      "HTTP status/error catching or redirect policy",
+      "Original require fixture repair"
+    ],
+    "privacy": {
+      "syntheticOnly": true,
+      "rawOrRasterPublication": false,
+      "privateCorpusUsed": false
+    }
+  },
+  "intake_execution": {
+    "exit_code": 0,
+    "elapsed_seconds": 2.7959999999729916,
+    "auditor_sha256": "0816dfe220fd3d13cd067ac21756ff4f6ba214810113148ffae6e8748c5a3a2e",
+    "stdout_sha256": "00a0e0e0733d3d85675eb179974adfac4d604c492d348925057655a9e39ac2c1"
+  },
+  "intake_report_sha256": "370fb45b45f351b5b5def265c2e7b540fbf9b4bcf6866025f44c82804f68c517",
+  "callback_timestamp": "2026-11-20T09:08:55.664Z",
+  "callback_nonce": "qa-date-difference-diagnostic-v2-44705639934-e712a9939a90977e2e5002399c211e31",
+  "observed_fields": {
+    "START_TYPE64": "RGF0ZQ==",
+    "START_COUNT": "1",
+    "START_FORMAT64": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+    "SAME_TYPE64": "RGF0ZQ==",
+    "SAME_COUNT": "1",
+    "SAME_FORMAT64": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+    "LATER_TYPE64": "RGF0ZQ==",
+    "LATER_COUNT": "1",
+    "LATER_FORMAT64": "MjAwMS0wMi0wM1QwNDowNjowNlo=",
+    "ZERO_SECONDS_TYPE64": "TnVtYmVy",
+    "ZERO_SECONDS_COUNT": "1",
+    "ZERO_SECONDS_TEXT64": "MA==",
+    "POSITIVE_SECONDS_TYPE64": "TnVtYmVy",
+    "POSITIVE_SECONDS_COUNT": "1",
+    "POSITIVE_SECONDS_TEXT64": "NjA=",
+    "ZERO_MINUTES_TYPE64": "TnVtYmVy",
+    "ZERO_MINUTES_COUNT": "1",
+    "ZERO_MINUTES_TEXT64": "MA==",
+    "POSITIVE_MINUTES_TYPE64": "TnVtYmVy",
+    "POSITIVE_MINUTES_COUNT": "1",
+    "POSITIVE_MINUTES_TEXT64": "MQ==",
+    "SAME_PRODUCER_SECONDS_TYPE64": "TnVtYmVy",
+    "SAME_PRODUCER_SECONDS_COUNT": "1",
+    "SAME_PRODUCER_SECONDS_TEXT64": "MA==",
+    "NUMERIC_ZERO_TYPE64": "TnVtYmVy",
+    "NUMERIC_ZERO_COUNT": "1",
+    "NUMERIC_ZERO_TEXT64": "MA=="
+  },
+  "expected_fields": {
+    "START_TYPE64": "RGF0ZQ==",
+    "START_COUNT": "1",
+    "START_FORMAT64": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+    "SAME_TYPE64": "RGF0ZQ==",
+    "SAME_COUNT": "1",
+    "SAME_FORMAT64": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+    "LATER_TYPE64": "RGF0ZQ==",
+    "LATER_COUNT": "1",
+    "LATER_FORMAT64": "MjAwMS0wMi0wM1QwNDowNjowNlo=",
+    "ZERO_SECONDS_TYPE64": "TnVtYmVy",
+    "ZERO_SECONDS_COUNT": "1",
+    "ZERO_SECONDS_TEXT64": "MA==",
+    "POSITIVE_SECONDS_TYPE64": "TnVtYmVy",
+    "POSITIVE_SECONDS_COUNT": "1",
+    "POSITIVE_SECONDS_TEXT64": "NjA=",
+    "ZERO_MINUTES_TYPE64": "TnVtYmVy",
+    "ZERO_MINUTES_COUNT": "1",
+    "ZERO_MINUTES_TEXT64": "MA==",
+    "POSITIVE_MINUTES_TYPE64": "TnVtYmVy",
+    "POSITIVE_MINUTES_COUNT": "1",
+    "POSITIVE_MINUTES_TEXT64": "MQ==",
+    "SAME_PRODUCER_SECONDS_TYPE64": "TnVtYmVy",
+    "SAME_PRODUCER_SECONDS_COUNT": "1",
+    "SAME_PRODUCER_SECONDS_TEXT64": "MA==",
+    "NUMERIC_ZERO_TYPE64": "TnVtYmVy",
+    "NUMERIC_ZERO_COUNT": "1",
+    "NUMERIC_ZERO_TEXT64": "MA=="
+  },
+  "observed_decoded_fields": {
+    "START_TYPE64": "Date",
+    "START_COUNT": "1",
+    "START_FORMAT64": "2001-02-03T04:05:06Z",
+    "SAME_TYPE64": "Date",
+    "SAME_COUNT": "1",
+    "SAME_FORMAT64": "2001-02-03T04:05:06Z",
+    "LATER_TYPE64": "Date",
+    "LATER_COUNT": "1",
+    "LATER_FORMAT64": "2001-02-03T04:06:06Z",
+    "ZERO_SECONDS_TYPE64": "Number",
+    "ZERO_SECONDS_COUNT": "1",
+    "ZERO_SECONDS_TEXT64": "0",
+    "POSITIVE_SECONDS_TYPE64": "Number",
+    "POSITIVE_SECONDS_COUNT": "1",
+    "POSITIVE_SECONDS_TEXT64": "60",
+    "ZERO_MINUTES_TYPE64": "Number",
+    "ZERO_MINUTES_COUNT": "1",
+    "ZERO_MINUTES_TEXT64": "0",
+    "POSITIVE_MINUTES_TYPE64": "Number",
+    "POSITIVE_MINUTES_COUNT": "1",
+    "POSITIVE_MINUTES_TEXT64": "1",
+    "SAME_PRODUCER_SECONDS_TYPE64": "Number",
+    "SAME_PRODUCER_SECONDS_COUNT": "1",
+    "SAME_PRODUCER_SECONDS_TEXT64": "0",
+    "NUMERIC_ZERO_TYPE64": "Number",
+    "NUMERIC_ZERO_COUNT": "1",
+    "NUMERIC_ZERO_TEXT64": "0"
+  },
+  "matching_field_count": 27,
+  "formal_requirements_proved": [],
+  "label_matrix_acceptance": false,
+  "physical_device_acceptance": false,
+  "final_candidate_inheritance": false,
+  "asana_comment": "1220734877629316"
+}
