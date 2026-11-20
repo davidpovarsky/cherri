@@ -12,141 +12,43 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
 
-// Helper to reconstruct a JSON object from Apple Shortcuts WFDictionaryFieldValue
-// as Apple's WFDownloadURLAction serializes WFJSONValues at runtime.
+// This strict test decoder describes only the supported Dictionary field wire
+// shapes. The HTTP request below is sent by Go, not Apple's Shortcuts runtime.
 func reconstructJSONFromWFDictionaryFieldValue(t *testing.T, raw any, resolvedVars map[string]any) map[string]any {
 	t.Helper()
-	m, ok := raw.(map[string]any)
-	if !ok {
-		t.Fatalf("expected WFDictionaryFieldValue map, got %T (%v)", raw, raw)
+	result, err := p10DecodeJSONDictionary(raw, resolvedVars)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if m["WFSerializationType"] != "WFDictionaryFieldValue" {
-		t.Fatalf("expected WFSerializationType == WFDictionaryFieldValue, got %v", m["WFSerializationType"])
-	}
-	valMap, ok := m["Value"].(map[string]any)
-	if !ok {
-		t.Fatalf("WFDictionaryFieldValue missing Value map: %v", m)
-	}
-	if innerVal, hasInner := valMap["Value"].(map[string]any); hasInner && valMap["WFSerializationType"] == "WFDictionaryFieldValue" {
-		valMap = innerVal
-	}
-	items, ok := valMap["WFDictionaryFieldValueItems"].([]any)
-	if !ok {
-		t.Fatalf("missing WFDictionaryFieldValueItems slice in %v", valMap)
-	}
-	out := make(map[string]any, len(items))
-	for _, rawItem := range items {
-		item := rawItem.(map[string]any)
-		keyStr := resolveWFTokenString(t, item["WFKey"], resolvedVars)
-		out[keyStr] = reconstructWFDictionaryItemValue(t, item, resolvedVars)
-	}
-	return out
+	return result
 }
 
-func resolveWFTokenString(t *testing.T, raw any, resolvedVars map[string]any) string {
-	t.Helper()
-	if s, ok := raw.(string); ok {
-		return s
-	}
-	m, ok := raw.(map[string]any)
-	if !ok {
-		t.Fatalf("expected WFTextTokenString map or string, got %T (%v)", raw, raw)
-	}
-	valMap, ok := m["Value"].(map[string]any)
-	if !ok {
-		return fmt.Sprint(m["Value"])
-	}
-	strVal, _ := valMap["string"].(string)
-	if strVal == "\uFFFC" {
-		if atts, ok := valMap["attachmentsByRange"].(map[string]any); ok {
-			if att0, ok := atts["{0, 1}"].(map[string]any); ok {
-				if name, ok := att0["OutputName"].(string); ok && resolvedVars != nil {
-					if v, exists := resolvedVars[name]; exists {
-						return fmt.Sprint(v)
-					}
-				}
-				if name, ok := att0["VariableName"].(string); ok && resolvedVars != nil {
-					if v, exists := resolvedVars[name]; exists {
-						return fmt.Sprint(v)
-					}
-				}
-			}
+const p10OriginalJSONLiteralSource = `let dynamicModel = "gpt-4o-mini"
+let resp = jsonRequest(
+	%q,
+	method: "POST",
+	body: {
+		"model": dynamicModel,
+		"stream": false,
+		"max_tokens": 256,
+		"empty_val": nil,
+		"nested": {
+			"env": "prod",
+			"flags": [true, false],
+			"matrix": [[1, 2], [3, 4]]
 		}
+	},
+	headers: {
+		"Authorization": "Bearer test-token-123",
+		"X-Custom-Client": "Cherri-P10"
 	}
-	return strVal
-}
-
-func reconstructWFDictionaryItemValue(t *testing.T, item map[string]any, resolvedVars map[string]any) any {
-	t.Helper()
-	var itemType uint64
-	switch v := item["WFItemType"].(type) {
-	case uint64:
-		itemType = v
-	case int64:
-		itemType = uint64(v)
-	case int:
-		itemType = uint64(v)
-	}
-	wfVal, _ := item["WFValue"].(map[string]any)
-	switch itemType {
-	case 0: // Text
-		if wfVal["WFSerializationType"] == "WFTextTokenAttachment" {
-			valObj, _ := wfVal["Value"].(map[string]any)
-			if name, ok := valObj["OutputName"].(string); ok && resolvedVars != nil {
-				if v, exists := resolvedVars[name]; exists {
-					return v
-				}
-			}
-			if name, ok := valObj["VariableName"].(string); ok && resolvedVars != nil {
-				if v, exists := resolvedVars[name]; exists {
-					return v
-				}
-			}
-		}
-		return resolveWFTokenString(t, wfVal, resolvedVars)
-	case 1: // Dictionary
-		return reconstructJSONFromWFDictionaryFieldValue(t, wfVal, resolvedVars)
-	case 2: // Array
-		arrSlice, ok := wfVal["Value"].([]any)
-		if !ok {
-			t.Fatalf("expected array Value slice, got %T (%v)", wfVal["Value"], wfVal)
-		}
-		outArr := make([]any, len(arrSlice))
-		for i, rawElem := range arrSlice {
-			switch elem := rawElem.(type) {
-			case map[string]any:
-				if _, hasItemType := elem["WFItemType"]; hasItemType {
-					outArr[i] = reconstructWFDictionaryItemValue(t, elem, resolvedVars)
-				} else if elem["WFSerializationType"] == "WFDictionaryFieldValue" {
-					outArr[i] = reconstructJSONFromWFDictionaryFieldValue(t, elem, resolvedVars)
-				} else if elem["WFSerializationType"] == "WFTextTokenString" {
-					outArr[i] = resolveWFTokenString(t, elem, resolvedVars)
-				} else {
-					outArr[i] = elem
-				}
-			default:
-				outArr[i] = elem
-			}
-		}
-		return outArr
-	case 3: // Number
-		s := resolveWFTokenString(t, wfVal, resolvedVars)
-		var num float64
-		fmt.Sscanf(s, "%f", &num)
-		return num
-	case 4: // Bool
-		if b, ok := wfVal["Value"].(bool); ok {
-			return b
-		}
-		return false
-	default:
-		return nil
-	}
-}
+)
+`
 
 // Phase B1 & B2 (Asana 1219800356179243 & 1219800511200890 & 1219800392994574):
 // Comprehensive verification of jsonRequest, dynamic JSON bodies, nested structures,
@@ -156,9 +58,9 @@ func TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer(t *
 	r := newRoundTripRunner(t)
 
 	// 1. Dictionary literal with static and dynamic field values, nested dictionaries,
-	// arrays, nested arrays, integers, booleans, and null/empty values -> succeeds and
+	// arrays, nested arrays, integers, booleans, and present empty Text -> succeeds and
 	// round-trips through local HTTP echo server.
-	t.Run("literal-dict-with-dynamic-fields-and-local-http-echo", func(t *testing.T) {
+	t.Run("present-literal-dict-with-dynamic-fields-and-local-http-echo", func(t *testing.T) {
 		var receivedHeaders http.Header
 		var receivedBody map[string]any
 
@@ -179,27 +81,8 @@ func TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer(t *
 		}))
 		defer srv.Close()
 
-		v2Src := fmt.Sprintf(`let dynamicModel = "gpt-4o-mini"
-let resp = jsonRequest(
-	%q,
-	method: "POST",
-	body: {
-		"model": dynamicModel,
-		"stream": false,
-		"max_tokens": 256,
-		"empty_val": nil,
-		"nested": {
-			"env": "prod",
-			"flags": [true, false],
-			"matrix": [[1, 2], [3, 4]]
-		}
-	},
-	headers: {
-		"Authorization": "Bearer test-token-123",
-		"X-Custom-Client": "Cherri-P10"
-	}
-)
-`, srv.URL)
+		v2Src := strings.Replace(fmt.Sprintf(p10OriginalJSONLiteralSource, srv.URL), "\"empty_val\": nil", "\"empty_val\": \"\"", 1)
+		v2Src = strings.Replace(v2Src, "\"max_tokens\": 256,", "\"max_tokens\": 256,\n\t\t\"zero\": 0,", 1)
 
 		plistPath := r.compileSource("b1_json_literal_dynamic_fields", v2Src)
 		doc := loadRoundTripDocument(t, plistPath)
@@ -225,9 +108,32 @@ let resp = jsonRequest(
 		}
 
 		// Reconstruct the JSON body and headers from the compiled plist and send to local echo server
-		resolved := map[string]any{"dynamicModel": "gpt-4o-mini"}
+		resolved := map[string]any{}
+		for _, rawAction := range doc["WFWorkflowActions"].([]any) {
+			action := rawAction.(map[string]any)
+			fields := action["WFWorkflowActionParameters"].(map[string]any)
+			if fields["CustomOutputName"] != "dynamicModel" {
+				continue
+			}
+			uuid, ok := fields["UUID"].(string)
+			if !ok || uuid == "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || fields["WFTextActionText"] != "gpt-4o-mini" {
+				t.Fatal("actual dynamic model producer changed", action)
+			}
+			resolved["ActionOutput:"+uuid] = "gpt-4o-mini"
+		}
+		if len(resolved) != 1 {
+			t.Fatal("missing or duplicated actual dynamic model producer")
+		}
 		jsonPayload := reconstructJSONFromWFDictionaryFieldValue(t, params["WFJSONValues"], resolved)
 		headerMap := reconstructJSONFromWFDictionaryFieldValue(t, params["WFHTTPHeaders"], resolved)
+		expected := map[string]any{
+			"model": "gpt-4o-mini", "stream": false, "max_tokens": float64(256), "zero": float64(0), "empty_val": "",
+			"nested": map[string]any{"env": "prod", "flags": []any{true, false}, "matrix": []any{[]any{float64(1), float64(2)}, []any{float64(3), float64(4)}}},
+		}
+		if !reflect.DeepEqual(jsonPayload, expected) {
+			t.Fatalf("complete decoded JSON changed: %#v", jsonPayload)
+		}
+		p10AssertJSONWireMutations(t, params["WFJSONValues"], resolved, expected)
 
 		payloadBytes, err := json.Marshal(jsonPayload)
 		if err != nil {
@@ -256,6 +162,9 @@ let resp = jsonRequest(
 		}
 		if receivedHeaders.Get("Authorization") != "Bearer test-token-123" {
 			t.Errorf("expected Authorization header 'Bearer test-token-123', got %q", receivedHeaders.Get("Authorization"))
+		}
+		if !reflect.DeepEqual(receivedBody, expected) {
+			t.Fatalf("complete local echo JSON changed: %#v", receivedBody)
 		}
 		if receivedBody["model"] != "gpt-4o-mini" {
 			t.Errorf("expected echoed model 'gpt-4o-mini', got %v", receivedBody["model"])
@@ -557,7 +466,7 @@ func TestP10_IPadAcceptanceKit_CompileAndStructure(t *testing.T) {
 	}
 
 	safeguards := map[string]string{
-		"01_run_fixed_and_dynamic_dict": "Calls synthetic target shortcut P10EchoTarget with in-memory dictionary; zero user data mutation.",
+		"01_run_fixed_and_dynamic_dict":  "Calls synthetic target shortcut P10EchoTarget with in-memory dictionary; zero user data mutation.",
 		"02_conditional_getvalue_string": "Pure in-memory dictionary string coercion conditional check; zero external state mutation.",
 		"03_lumen_storage27_roundtrip":   "Uses synthetic key prefix p10_test_key and deletes temporary key at end of run.",
 		"04_jsonrequest_dynamic_fields":  "Posts synthetic JSON payload to echo endpoint https://httpbin.org/post; zero local device mutation.",
