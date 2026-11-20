@@ -32,7 +32,7 @@ func p15NewEditFixtureWithBinary(t *testing.T, binary string) p15EditFixture {
 	t.Helper()
 	root := t.TempDir()
 	skill := filepath.Join(root, "skill")
-	for _, relative := range []string{"compatibility-manifest.json", "scripts/common.sh",
+	for _, relative := range []string{"compatibility-manifest.json", "scripts/common.sh", "scripts/json-object.awk",
 		"scripts/prepare-edit.sh", "scripts/decompile.sh", "scripts/build.sh"} {
 		p15InstallWrite(t, filepath.Join(skill, relative),
 			p15InstallRead(t, filepath.Join("skills/cherri-shortcuts", relative)))
