@@ -30,6 +30,8 @@ type Symbol struct {
 	EnumDeclaration       bool
 	EnumType              string
 	flowType              types.Type
+	optionalPresence      bool
+	knownAbsent           bool
 	nativeReferenceTarget bool
 }
 
@@ -88,6 +90,8 @@ type Analyzer struct {
 	moduleScope            *Scope
 	isMacTarget            *bool
 	exprTypes              map[syntax.Expression]types.Type
+	exprPresence           map[syntax.Expression]bool
+	exprAbsent             map[syntax.Expression]bool
 	targets                []string
 	hasExplicitTarget      bool
 	minTargetVersion       float64
@@ -346,6 +350,8 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.beginProgram()
 	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
+	a.exprPresence = make(map[syntax.Expression]bool)
+	a.exprAbsent = make(map[syntax.Expression]bool)
 	defer func() { a.analyzing = false }()
 	a.analyzeModuleDependencies()
 	a.expandCopyPaste(prog)
@@ -495,7 +501,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				if parameter.DefaultExpr != nil {
 					actual := a.analyzeEnumContext(parameter.DefaultExpr, scope, a.enumCatalog.TypeName(parameter.TypeExpr))
 					expected := a.resolveType(parameter.TypeExpr)
-					if actual != nil && !assignmentHasEvidence(actual, expected, parameter.DefaultExpr) {
+					if actual != nil && !a.optionalAssignmentHasEvidence(actual, expected, parameter.DefaultExpr) {
 						a.error(CodeArgumentType, parameter.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", actual, expected))
 					}
 				}
@@ -708,12 +714,15 @@ func (a *Analyzer) analyzeFunction(fn *syntax.FunctionDecl, parentScope *Scope) 
 		pType := a.resolveType(p.TypeExpr)
 		if p.DefaultExpr != nil {
 			defType := a.analyzeEnumContext(p.DefaultExpr, fnScope, a.enumCatalog.TypeName(p.TypeExpr))
-			if defType != nil && !assignmentHasEvidence(defType, pType, p.DefaultExpr) {
+			if defType != nil && !a.optionalAssignmentHasEvidence(defType, pType, p.DefaultExpr) {
 				a.error(CodeArgumentType, p.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", defType, pType))
+			} else if types.MayBeAbsent(pType) {
+				a.requireCompilerPresence(p.DefaultExpr, "Optional default")
 			}
 		}
 		fnScope.Define(&Symbol{
 			nativeReferenceTarget: true,
+			optionalPresence:      types.MayBeAbsent(pType) || types.DefinitelyPresent(pType),
 			Name:                  p.Name,
 			EnumType:              a.enumCatalog.TypeName(p.TypeExpr),
 			Type:                  pType,
@@ -766,8 +775,10 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		declType := valType
 		if s.TypeExpr != nil {
 			annotated := a.resolveType(s.TypeExpr)
-			if s.Value != nil && valType != nil && !assignmentHasEvidence(valType, annotated, s.Value) {
+			if s.Value != nil && valType != nil && !a.optionalAssignmentHasEvidence(valType, annotated, s.Value) {
 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("type %s is not assignable to declared type %s", valType, annotated))
+			} else if s.Value != nil && types.MayBeAbsent(annotated) {
+				a.requireCompilerPresence(s.Value, "Optional binding")
 			}
 			declType = annotated
 		}
@@ -796,6 +807,8 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 
 		symbol := &Symbol{
 			nativeReferenceTarget: s.Value != nil && !isVoidValue(valType),
+			optionalPresence:      a.exprPresence[s.Value],
+			knownAbsent:           a.exprAbsent[s.Value],
 			Name:                  s.Name,
 			EnumType:              a.enumCatalog.TypeName(s.TypeExpr),
 			Type:                  declType,
@@ -834,17 +847,32 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if valType != nil && sym.Type != nil {
 			if s.Op == syntax.TokenPlusAssign {
 				if listType, ok := sym.Type.(types.ListType); ok {
-					if !assignmentHasEvidence(valType, listType.Element, s.Value) && !assignmentHasEvidence(valType, sym.Type, s.Value) {
+					if !a.optionalAssignmentHasEvidence(valType, listType.Element, s.Value) && !a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
 						a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to list element of type %s", valType, listType.Element))
 					}
-				} else if !assignmentHasEvidence(valType, sym.Type, s.Value) {
+				} else if !a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
 					a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
 				}
-			} else if !assignmentHasEvidence(valType, sym.Type, s.Value) {
+			} else if !a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
 			}
 		}
 		sym.Initialized = true
+		if s.Op == syntax.TokenAssign {
+			if types.MayBeAbsent(sym.Type) && a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
+				a.requireCompilerPresence(s.Value, "Optional assignment")
+			}
+			sym.optionalPresence = a.exprPresence[s.Value]
+			sym.knownAbsent = a.exprAbsent[s.Value]
+		} else {
+			// An invalid compound operation was diagnosed above. Preserve the
+			// existing provenance while collecting later diagnostics; a valid
+			// operation produces a present value and keeps its paired flag.
+			if types.DefinitelyPresent(sym.readType()) && types.DefinitelyPresent(valType) {
+				sym.optionalPresence = true
+			}
+			sym.knownAbsent = false
+		}
 		narrowAssignedValue(sym, valType)
 
 	case *syntax.ExprStmt:
@@ -861,8 +889,10 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 		if a.currentFn != nil && a.currentFn.ReturnType != nil {
 			expected := a.resolveType(a.currentFn.ReturnType)
-			if !assignmentHasEvidence(retType, expected, s.Value) {
+			if !a.optionalAssignmentHasEvidence(retType, expected, s.Value) {
 				a.error(CodeReturnType, s.Span, fmt.Sprintf("return value of type %s does not match expected return type %s", retType, expected))
+			} else if types.MayBeAbsent(expected) {
+				a.requireCompilerPresence(s.Value, "Optional result")
 			}
 		}
 
@@ -1074,7 +1104,24 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	if expr == nil {
 		return types.Unknown
 	}
+	if a.exprPresence == nil {
+		a.exprPresence = make(map[syntax.Expression]bool)
+	}
+	if a.exprAbsent == nil {
+		a.exprAbsent = make(map[syntax.Expression]bool)
+	}
+	delete(a.exprPresence, expr)
 	t := a.analyzeExpressionInternal(expr, scope)
+	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
+	a.exprAbsent[expr] = false
+	switch node := expr.(type) {
+	case *syntax.LiteralExpr:
+		a.exprAbsent[expr] = node.Type == syntax.TokenNone
+	case *syntax.IdentExpr:
+		if binding, found := scope.Lookup(node.Name); found {
+			a.exprAbsent[expr] = binding.Initialized && binding.knownAbsent
+		}
+	}
 	if name := a.enumContexts[expr]; name != "" {
 		a.validateEnumValue(expr, name, a.enumCatalog.Values(name))
 	}
@@ -1518,6 +1565,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		// Evaluate arguments
 		if sym.Function != nil {
 			a.checkUserFunctionArguments(sym.Function, call, scope)
+			a.exprPresence[call] = types.MayBeAbsent(sym.Type)
 		} else {
 			if call.PrimaryArg != nil {
 				a.analyzeExpression(call.PrimaryArg, scope)

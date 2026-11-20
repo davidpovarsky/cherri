@@ -67,17 +67,16 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 		}
 		if param.TypeExpr != nil {
 			expected := a.resolveType(param.TypeExpr)
-			if actual != nil && !assignmentHasEvidence(actual, expected, argument) {
+			if actual != nil && !a.optionalAssignmentHasEvidence(actual, expected, argument) {
 				a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
 				return
 			}
 		}
-		// A literal None is explicitly tagged by the optional function envelope.
-		// Other possibly absent values still require their own presence provenance.
-		if literal, ok := argument.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
-			if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
-				return
-			}
+		// Optional parameters transport a compiler-owned value-presence carrier.
+		// Omission/default presence remains a separate outer-envelope decision.
+		if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
+			a.requireCompilerPresence(argument, "Optional argument")
+			return
 		}
 		a.requirePresentTransport(argument, actual, "function argument")
 	}

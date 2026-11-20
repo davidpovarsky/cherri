@@ -57,6 +57,10 @@ func TestP15OptionalTypeAliasChainsAndOrder(t *testing.T) {
 }
 
 func p15OptionalAliasModuleActions(t *testing.T, path, source, exactDispatch string) []map[string]any {
+	return p15OptionalModuleActionsWithDispatchCount(t, path, source, exactDispatch, 2)
+}
+
+func p15OptionalModuleActionsWithDispatchCount(t *testing.T, path, source, exactDispatch string, expectedCount int) []map[string]any {
 	t.Helper()
 	path = filepath.Join(filepath.Dir(path), "p15-short-circuit.cherri")
 	p15ModuleWrite(t, path, source)
@@ -78,7 +82,7 @@ func p15OptionalAliasModuleActions(t *testing.T, path, source, exactDispatch str
 	if exactDispatch == "" {
 		return actions
 	}
-	// Only the two exact source-authorized dispatch spellings are alpha names.
+	// Only the exact source-authorized dispatch spellings are alpha names.
 	// A wrong module, missing dispatch or extra call cannot be normalized away.
 	changed := 0
 	var rename func(any) any
@@ -103,8 +107,8 @@ func p15OptionalAliasModuleActions(t *testing.T, path, source, exactDispatch str
 	for _, action := range actions {
 		rename(action)
 	}
-	if changed != 2 {
-		t.Fatalf("exact module dispatch must occur in definition and call: %d", changed)
+	if changed != expectedCount {
+		t.Fatalf("exact module dispatch count: got %d want %d", changed, expectedCount)
 	}
 	return actions
 }
@@ -255,9 +259,13 @@ func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
+					inner, err := p15OptionalArgumentFields(bad, 0)
+					if err != nil {
+						t.Fatal(err)
+					}
 					decoder, call := -1, -1
 					for i, action := range bad {
-						if p15Param(action)["WFDictionaryKey"] == "has_value_0" {
+						if decoder < 0 && p15Param(action)["WFDictionaryKey"] == "has_value" {
 							decoder = i
 						}
 						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
@@ -273,13 +281,13 @@ func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
 						if tc.valuePresent {
 							flag = "0"
 						}
-						fields["has_value_0"]["WFValue"] = p15FunctionText(flag)
+						inner["has_value"]["WFValue"] = p15FunctionText(flag)
 					case "argument_omission":
 						fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
 					case "dispatch":
 						fields["function"]["WFValue"] = p15FunctionText("other.echo")
 					case "presence_decoder":
-						p15Param(bad[decoder])["WFDictionaryKey"] = "arg_0"
+						p15Param(bad[decoder])["WFDictionaryKey"] = "value"
 					case "call_input":
 						p15Param(bad[call])["WFInput"] = p15FunctionEdge("missing-payload")
 					case "duplicate_call":

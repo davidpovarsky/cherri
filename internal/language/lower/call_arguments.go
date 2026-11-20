@@ -7,6 +7,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"sort"
+	"strings"
 )
 
 // A consumed argument/default is a value expression even when the enclosing
@@ -21,23 +22,70 @@ func (l *Lowerer) lowerCallValue(expr syntax.Expression) (interface{}, error) {
 // Evaluate the written argument list before binding values to envelope slots.
 // Never lower an omitted function default here: the existing dispatcher owns
 // its guarded evaluation in the scope of preceding parameters.
-func (l *Lowerer) lowerProvidedFunctionValues(call *syntax.CallExpr) (interface{}, []interface{}, error) {
-	var primary interface{}
-	var err error
-	if call.PrimaryArg != nil {
-		primary, err = l.lowerFunctionArgumentValue(call, -1, call.PrimaryArg)
-		if err != nil {
-			return nil, nil, err
+type providedFunctionValue struct {
+	value, presence interface{}
+	supplied        bool
+}
+
+func (l *Lowerer) lowerProvidedFunctionValues(fn *syntax.FunctionDecl, call *syntax.CallExpr) ([]providedFunctionValue, error) {
+	// Bind identities without executing any expression. The array is indexed
+	// by written position (primary, then named/remaining positional arguments).
+	slots := make([]int, len(call.NamedArgs)+1)
+	for i := range slots {
+		slots[i] = -1
+	}
+	unnamed := 0
+	for i, param := range fn.Parameters {
+		written := -1
+		if i == 0 && call.PrimaryArg != nil {
+			written = 0
+		}
+		if written < 0 {
+			for n, argument := range call.NamedArgs {
+				if argument.Label != "" && (argument.Label == param.Name || strings.TrimPrefix(param.Name, "_") == argument.Label) {
+					written = n + 1
+					break
+				}
+			}
+		}
+		if written < 0 {
+			for unnamed < len(call.NamedArgs) {
+				n := unnamed
+				unnamed++
+				if call.NamedArgs[n].Label == "" {
+					written = n + 1
+					break
+				}
+			}
+		}
+		if written >= 0 {
+			if slots[written] >= 0 {
+				return nil, fmt.Errorf("ambiguous function argument at %s", call.Span)
+			}
+			slots[written] = i
+		} else if !param.Optional && param.DefaultExpr == nil {
+			return nil, fmt.Errorf("missing function argument %q at %s", param.Name, call.Span)
 		}
 	}
-	named := make([]interface{}, len(call.NamedArgs))
-	for index, argument := range call.NamedArgs {
-		named[index], err = l.lowerFunctionArgumentValue(call, index, argument.Value)
-		if err != nil {
-			return nil, nil, err
+	values := make([]providedFunctionValue, len(fn.Parameters))
+	for written, slot := range slots {
+		expr := call.PrimaryArg
+		if written > 0 {
+			expr = call.NamedArgs[written-1].Value
 		}
+		if expr == nil {
+			continue
+		}
+		if slot < 0 {
+			return nil, fmt.Errorf("unbound function argument at %s", expr.NodeSpan())
+		}
+		value, presence, err := l.lowerFunctionArgumentValue(call, written-1, expr, l.optionalFunctionParameter(fn.Parameters[slot].TypeExpr))
+		if err != nil {
+			return nil, err
+		}
+		values[slot] = providedFunctionValue{value, presence, true}
 	}
-	return primary, named, nil
+	return values, nil
 }
 
 // callWritesAfter resolves only actual source-visible assignments in later
@@ -60,6 +108,10 @@ func (l *Lowerer) lowerCallArgumentValue(call *syntax.CallExpr, argumentIndex in
 		return nil, err
 	}
 	writes := l.callWritesAfter(call, argumentIndex)
+	return l.captureCallArgumentValue(expr, value, writes)
+}
+
+func (l *Lowerer) captureCallArgumentValue(expr syntax.Expression, value interface{}, writes map[string]bool) (interface{}, error) {
 	if len(writes) > 0 {
 		switch expr.(type) {
 		case *syntax.FStringExpr, *syntax.ListExpr, *syntax.MapExpr, *syntax.RecordExpr:
