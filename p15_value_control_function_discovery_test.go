@@ -199,7 +199,7 @@ func p15ValueControlFunctionGraphError(actions []map[string]any, tc p15ValueCont
 		return fmt.Errorf("unmodeled discovery scenario %q", tc.control)
 	}
 	g.output(result)
-	return g.finish()
+	return g.finishExplicitMainReturn()
 }
 
 func TestP15ValueControlFunctionDiscoveryCompleteGraph(t *testing.T) {

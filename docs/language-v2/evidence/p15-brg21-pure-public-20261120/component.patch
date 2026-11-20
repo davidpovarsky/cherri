@@ -1,0 +1,1017 @@
+diff --git a/p15_pure_public_gate_test.go b/p15_pure_public_gate_test.go
+new file mode 100644
+index 00000000..d053f866
+--- /dev/null
++++ b/p15_pure_public_gate_test.go
+@@ -0,0 +1,211 @@
++package main
++
++import (
++	"context"
++	"fmt"
++	"io"
++	"net/http"
++	"net/http/httptest"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"runtime"
++	"strings"
++	"sync/atomic"
++	"testing"
++	"time"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/service"
++)
++
++func p15BRG21ProcessObservers(t *testing.T, marker string) string {
++	t.Helper()
++	var directory = t.TempDir()
++	var source = filepath.Join(directory, "observer.go")
++	var body = "package main\nimport (\"os\";\"path/filepath\")\nfunc main(){if err:=os.WriteFile(os.Getenv(\"CHERRI_BRG21_PROCESS_MARKER\"),[]byte(filepath.Base(os.Args[0])),0600);err!=nil{os.Exit(94)};os.Exit(93)}\n"
++	p15ModuleWrite(t, source, body)
++	var suffix string
++	if runtime.GOOS == "windows" {
++		suffix = ".exe"
++	}
++	var binary = filepath.Join(directory, "observer"+suffix)
++	var ctx, cancel = context.WithTimeout(context.Background(), 90*time.Second)
++	defer cancel()
++	var command = exec.CommandContext(ctx, "go", "build", "-o", binary, source)
++	if output, err := command.CombinedOutput(); err != nil {
++		t.Fatalf("build actual process observer: %v context=%v\n%s", err, ctx.Err(), output)
++	}
++	var data, err = os.ReadFile(binary)
++	if err != nil {
++		t.Fatal(err)
++	}
++	for _, name := range []string{"shortcuts", "open", "git", "curl", "xcrun"} {
++		if err := os.WriteFile(filepath.Join(directory, name+suffix), data, 0700); err != nil {
++			t.Fatal(err)
++		}
++	}
++	t.Setenv("PATH", directory+string(os.PathListSeparator)+os.Getenv("PATH"))
++	t.Setenv("CHERRI_BRG21_PROCESS_MARKER", marker)
++	return directory
++}
++
++func TestBackendRecovery21PublicAndServiceEffects(t *testing.T) {
++	var binary = p15AcceptanceCLI(t)
++	var workspace = t.TempDir()
++	var entry = filepath.Join(workspace, "entry.cherri")
++	var target = filepath.Join(workspace, "must-not-exist.shortcut")
++	var marker = filepath.Join(workspace, "process-was-invoked")
++	var observers = p15BRG21ProcessObservers(t, marker)
++	var requests atomic.Int32
++	var server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		requests.Add(1)
++		_, _ = io.Copy(io.Discard, r.Body)
++		w.Header().Set("Content-Type", "application/json")
++		_, _ = io.WriteString(w, "{\"success\":false,\"error\":{\"message\":\"BRG21_ACTUAL_SIGNER_OBSERVER\"}}")
++	}))
++	defer server.Close()
++	t.Run("observer_controls", func(t *testing.T) {
++		var suffix string
++		if runtime.GOOS == "windows" {
++			suffix = ".exe"
++		}
++		for _, name := range []string{"shortcuts", "open", "git", "curl", "xcrun"} {
++			var _, _, err = p15RunCLI(t, filepath.Join(observers, name+suffix), workspace, nil)
++			exit, okay := err.(*exec.ExitError)
++			if !okay || exit.ExitCode() != 93 {
++				t.Fatal("actual process observer was not executed", name, err)
++			}
++			var observed, readErr = os.ReadFile(marker)
++			if readErr != nil || string(observed) != name+suffix {
++				t.Fatal("process observer identity was not recorded", name, readErr)
++			}
++			if err := os.Remove(marker); err != nil {
++				t.Fatal(err)
++			}
++		}
++		var client = &http.Client{Timeout: 5 * time.Second}
++		var response, err = client.Get(server.URL + "/positive-observer-control")
++		if err != nil {
++			t.Fatal(err)
++		}
++		_, _ = io.Copy(io.Discard, response.Body)
++		if err := response.Body.Close(); err != nil {
++			t.Fatal(err)
++		}
++		if requests.Load() != 1 {
++			t.Fatal("actual network observer did not see exactly one request")
++		}
++		requests.Store(0)
++	})
++	var valid = fmt.Sprintf("openURL(%q)\n", server.URL+"/authored-runtime-action")
++	var specimens = []struct {
++		name, source, diagnostic string
++		valid                    bool
++	}{
++		{"valid", valid, "", true},
++		{"invalid_action", valid + "BRG21MissingAction()\n", "BRG21MissingAction", false},
++		{"remote_import", fmt.Sprintf("import %q as remote\n", server.URL+"/remote.cherri"), "E_WORKSPACE_ACCESS", false},
++		{"missing_local_import", "import \"./missing.cherri\" as localDependency\n", "E_MODULE_DEPENDENCY", false},
++	}
++	var assertNoEffects = func(t *testing.T, before map[string][32]byte) {
++		t.Helper()
++		if requests.Load() != 0 {
++			t.Fatalf("pure/rejected operation made %d actual network requests", requests.Load())
++		}
++		if _, err := os.Stat(marker); !os.IsNotExist(err) {
++			t.Fatalf("pure/rejected operation invoked a signing/open/install process: %v", err)
++		}
++		if after := p15DirectoryDigest(t, workspace); !reflect.DeepEqual(before, after) {
++			t.Fatal("pure/rejected operation modified source, installed a dependency or emitted an artifact")
++		}
++	}
++	var svc = service.NewService(nil)
++	for index, specimen := range specimens {
++		p15ModuleWrite(t, entry, specimen.source)
++		var before = p15DirectoryDigest(t, workspace)
++		t.Run("service_"+specimen.name, func(t *testing.T) {
++			if index == 0 {
++				svc.OpenDocument(entry, 1, specimen.source)
++			} else {
++				svc.ChangeDocument(entry, index+1, specimen.source)
++			}
++			var diagnostics, _ = svc.Analyze(entry)
++			var errors []analysis.Diagnostic
++			for _, diagnostic := range diagnostics {
++				if diagnostic.Severity == analysis.SeverityError {
++					errors = append(errors, diagnostic)
++				}
++			}
++			if specimen.valid {
++				if len(errors) != 0 {
++					t.Fatal("valid analysis failed", errors)
++				}
++			} else if len(errors) == 0 || !strings.Contains(fmt.Sprint(errors), specimen.diagnostic) {
++				t.Fatal("service omitted the actual rejection cause", errors)
++			}
++			assertNoEffects(t, before)
++			var output, err = CompileSourceToPlist(entry, specimen.source)
++			if specimen.valid {
++				if err != nil || !p15ModuleContains(t, output, server.URL+"/authored-runtime-action") {
++					t.Fatal("valid compile did not serialize the actual authored runtime action", err)
++				}
++			} else if err == nil || len(output) != 0 || !strings.Contains(err.Error(), specimen.diagnostic) {
++				t.Fatalf("invalid public library compile returned bytes or wrong rejection: %d %v", len(output), err)
++			}
++			assertNoEffects(t, before)
++		})
++		for _, route := range []string{"check", "compile", "file"} {
++			if specimen.valid && route != "check" {
++				continue
++			}
++			t.Run(route+"_"+specimen.name, func(t *testing.T) {
++				var arguments = []string{entry, "--hubsign", "--open", "--no-ansi", "--signing-server=" + server.URL + "/sign?response=json", "--output=" + target}
++				if route != "file" {
++					arguments = append([]string{route}, arguments...)
++				}
++				if route == "check" {
++					arguments = append(arguments, "--json")
++				}
++				var output, stderr, err = p15RunCLI(t, binary, workspace, nil, arguments...)
++				if (err == nil) != specimen.valid {
++					t.Fatalf("public %s validity changed: %v\n%s\n%s", route, err, output, stderr)
++				}
++				if route == "check" {
++					object, okay := p15DecodeOneJSON(t, output).(map[string]any)
++					if !okay || object["valid"] != specimen.valid {
++						t.Fatal("check did not produce its real validity report", object)
++					}
++				}
++				if !specimen.valid && !strings.Contains(string(output)+string(stderr), specimen.diagnostic) {
++					t.Fatal("public route omitted the exact rejection cause", specimen.name, string(output), string(stderr))
++				}
++				assertNoEffects(t, before)
++			})
++		}
++	}
++	t.Run("valid_recovery_and_requested_signer_control", func(t *testing.T) {
++		p15ModuleWrite(t, entry, valid)
++		svc.ChangeDocument(entry, len(specimens)+1, valid)
++		var before = p15DirectoryDigest(t, workspace)
++		var diagnostics, _ = svc.Analyze(entry)
++		for _, diagnostic := range diagnostics {
++			if diagnostic.Severity == analysis.SeverityError {
++				t.Fatal("failed operations contaminated valid service recovery", diagnostic)
++			}
++		}
++		var output, err = CompileSourceToPlist(entry, valid)
++		if err != nil || !p15ModuleContains(t, output, server.URL+"/authored-runtime-action") {
++			t.Fatal("failed operations contaminated valid compile recovery", err)
++		}
++		assertNoEffects(t, before)
++		var _, stderr, signErr = p15RunCLI(t, binary, workspace, nil, "compile", entry, "--hubsign", "--signing-server="+server.URL+"/sign?response=json", "--output="+target)
++		if signErr == nil || requests.Load() == 0 || !strings.Contains(string(stderr), "BRG21_ACTUAL_SIGNER_OBSERVER") {
++			t.Fatalf("explicit signing positive control never reached the same observer: %v requests=%d %s", signErr, requests.Load(), stderr)
++		}
++		if after := p15DirectoryDigest(t, workspace); !reflect.DeepEqual(before, after) {
++			t.Fatal("known failed signer modified the source or left an artifact")
++		}
++	})
++}
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index 98b29e5f..09ac0dec 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -582,6 +582,9 @@ func deriveRepairFixtures(id string) []string {
+ }
+ 
+ func deriveGateTestIDs(id, proposedPrefix string) []string {
++	if id == "BRG21" {
++		return purePublicTestIDs()
++	}
+ 	if id == "BRG18" {
+ 		return nativePathsTestIDs()
+ 	}
+@@ -668,6 +671,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
+ }
+ 
+ func deriveGateFixtures(id string) []string {
++	if id == "BRG21" {
++		return append([]string{}, purePublicProductionPaths...)
++	}
+ 	if id == "BRG18" {
+ 		return append([]string{}, nativePathsProductionPaths...)
+ 	}
+diff --git a/tools/language-acceptance/execution_audit.go b/tools/language-acceptance/execution_audit.go
+index 2367cec4..6ce5663e 100644
+--- a/tools/language-acceptance/execution_audit.go
++++ b/tools/language-acceptance/execution_audit.go
+@@ -267,6 +267,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
+ 			row.PositiveAndNegative = res.Passed
+ 			row.Scope = numberWireScope
+ 		}
++		if row.ID == "BRG21" {
++			row.TestNames = append([]string{}, purePublicTests...)
++			row.ProductionPath = append([]string{}, purePublicProductionPaths...)
++			row.PositiveAndNegative = res.Passed
++			row.Scope = purePublicScope
++		}
+ 		if row.ID == "BRG18" {
+ 			row.TestNames = append([]string{}, nativePathsTests...)
+ 			row.ProductionPath = append([]string{}, nativePathsProductionPaths...)
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index 66b38075..921522b0 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -977,6 +977,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
++			if err := validatePurePublicRecord(reqID, rec); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
+ 			if err := validateNativePathsRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1969,6 +1972,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
+ 		return
+ 	}
+ 	for _, g := range gates.Gates {
++		if r.runPurePublicRequirement(g) {
++			continue
++		}
+ 		if r.runNativePathsRequirement(g) {
+ 			continue
+ 		}
+diff --git a/tools/language-acceptance/pure_public_execution.go b/tools/language-acceptance/pure_public_execution.go
+new file mode 100644
+index 00000000..d56ae2e0
+--- /dev/null
++++ b/tools/language-acceptance/pure_public_execution.go
+@@ -0,0 +1,302 @@
++package main
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"fmt"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"time"
++	"unicode/utf8"
++)
++
++const purePublicTitle = "Authorized resource access and pure services"
++const purePublicScenario = "Attempt symlink/traversal/out-of-root access, unresolved remote imports, network/process calls during analysis and invalid compile."
++const purePublicExpected = "Actual loader and public APIs reject unauthorized operations and never sign/execute/install during analysis."
++const purePublicScope = "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
++
++var purePublicTests = []string{
++	"TestBackendRecovery21PublicAndServiceEffects",
++	"TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
++	"TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement",
++	"TestP15IM04ActualWorkspaceResourceBoundaries",
++}
++var purePublicTiers = []string{"security", "integration", "service"}
++var purePublicArtifacts = []string{"brg21-process.json", "brg21-go.jsonl", "brg21-stderr.log"}
++
++// Immutable Git bytes bind the public entrypoints, actual effect observers and intake.
++var purePublicProductionPaths = []string{
++	"main.go",
++	"args.go",
++	"language_cli_adapter.go",
++	"language_backend_session.go",
++	"language_backend_adapter.go",
++	"language_emit_adapter.go",
++	"language_value_adapter.go",
++	"mobile_compiler.go",
++	"signing.go",
++	"output.go",
++	"legacy_output_transaction.go",
++	"shortcutgen.go",
++	"shortcut.go",
++	"internal/language/backend/contracts.go",
++	"internal/language/lower/lower.go",
++	"embedded_assets.go",
++	"internal/language/analysis/analyzer.go",
++	"internal/language/syntax/parser.go",
++	"internal/language/schema/generated_registry.go",
++	"internal/language/schema/schema.go",
++	"internal/language/modules/graph.go",
++	"internal/language/modules/standard_library.go",
++	"internal/language/modules/stdfunc_source_generated.go",
++	"internal/language/workspace/resource.go",
++	"internal/language/assets/cache.go",
++	"internal/language/service/service.go",
++	"internal/language/service/module_analysis.go",
++	"internal/language/service/asset_analysis.go",
++	"internal/language/service/registry_lifetime.go",
++	"go.mod",
++	"go.sum",
++	"p15_pure_public_gate_test.go",
++	"p15_workspace_module_test.go",
++	"p15_asset_authorization_repair_test.go",
++	"p15_embedded_asset_acceptance_test.go",
++	"p15_asset_dependency_baseline_test.go",
++	"p15_cli_acceptance_test.go",
++	"tests/language-v2/repair-regression-plan.json",
++	"tests/language-v2/acceptance-contract.json",
++	"tests/language-v2/backend-recovery-gates.json",
++	"tools/language-acceptance/pure_public_execution.go",
++	"tools/language-acceptance/pure_public_execution_test.go",
++	"tools/language-acceptance/structural_migration_execution_test.go",
++	"tools/language-acceptance/strict_go_events.go",
++	"tools/language-acceptance/loop_execution.go",
++	"tools/language-acceptance/editor_source_binding.go",
++	"tools/language-acceptance/editor_performance_execution.go",
++	"tools/language-acceptance/editor_process_other.go",
++	"tools/language-acceptance/editor_process_windows.go",
++	"tools/language-acceptance/native_encoding_intake.go",
++	"tools/language-acceptance/state_acceptance_intake.go",
++	"tools/language-acceptance/state_acceptance_execution.go",
++	"tools/language-acceptance/main.go",
++	"tools/language-acceptance/parser_execution.go",
++	"tools/language-acceptance/evidence_map.go",
++	"tools/language-acceptance/execution_audit.go",
++}
++
++func purePublicRequiredEvents() []string {
++	names := append([]string{}, purePublicTests...)
++	for _, child := range []string{"observer_controls", "service_valid", "check_valid", "service_invalid_action", "check_invalid_action", "compile_invalid_action", "file_invalid_action", "service_remote_import", "check_remote_import", "compile_remote_import", "file_remote_import", "service_missing_local_import", "check_missing_local_import", "compile_missing_local_import", "file_missing_local_import", "valid_recovery_and_requested_signer_control"} {
++		names = append(names, purePublicTests[0]+"/"+child)
++	}
++	for _, child := range []string{"allowed_text", "allowed_binary", "missing", "existing_parent_escape", "file_symlink_escape", "directory_symlink_escape"} {
++		names = append(names, purePublicTests[1]+"/"+child)
++	}
++	for _, child := range []string{"allowed_._local_helper.cherri", "allowed_._local_helper", "allowed_._..safe_helper.cherri", "reject_._escape_helper.cherri", "reject_._escape_helper", "reject_.._workspace-other_helper.cherri", "missing_module"} {
++		names = append(names, purePublicTests[3]+"/"+child)
++	}
++	return names
++}
++func purePublicTestIDs() []string {
++	var ids []string
++	for _, name := range purePublicTests {
++		ids = append(ids, "github.com/electrikmilk/cherri:"+name)
++	}
++	return ids
++}
++func purePublicProducer(tier string) string {
++	switch tier {
++	case "security":
++		return purePublicTestIDs()[1]
++	case "integration":
++		return purePublicTestIDs()[3]
++	case "service":
++		return purePublicTestIDs()[0]
++	}
++	return ""
++}
++func parsePurePublicOutput(raw []byte) error {
++	names := purePublicRequiredEvents()
++	if err := parseStrictNamedProductionOutput(names, productionTestTimeout(purePublicTests)+time.Minute, raw); err != nil {
++		return err
++	}
++	// Route parents own fault children. A selected intermediate parent cannot
++	// complete early even if the outer Go test remains active.
++	selected, run, passed := map[string]bool{}, map[string]bool{}, map[string]bool{}
++	for _, name := range names {
++		selected[name] = true
++	}
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event struct{ Action, Test string }
++		if err := json.Unmarshal(line, &event); err != nil {
++			return err
++		}
++		if event.Test == "" {
++			continue
++		}
++		switch event.Action {
++		case "run":
++			parent := event.Test
++			for {
++				slash := strings.LastIndexByte(parent, '/')
++				if slash < 0 {
++					break
++				}
++				parent = parent[:slash]
++				if selected[parent] && (!run[parent] || passed[parent]) {
++					return fmt.Errorf("BRG21 child outside selected route parent")
++				}
++			}
++			run[event.Test] = true
++		case "pass":
++			for name := range selected {
++				if strings.HasPrefix(name, event.Test+"/") && !passed[name] {
++					return fmt.Errorf("BRG21 route passed before required child")
++				}
++			}
++			passed[event.Test] = true
++		}
++	}
++	return nil
++}
++func validatePurePublicRecord(id string, record EvidenceRecord) error {
++	if id != "BRG21" {
++		return nil
++	}
++	producer := purePublicProducer(record.Tier)
++	if producer == "" || record.Result != "passed" || record.ExitCode != 0 || !reflect.DeepEqual(record.Requirements, []string{id}) ||
++		record.TestID != producer || !reflect.DeepEqual(record.Command, productionTestCommand(purePublicTests)) ||
++		record.Assertions["required_production_tests"] != strings.Join(purePublicTests, "\n") ||
++		record.Assertions["required_go_events"] != strings.Join(purePublicRequiredEvents(), "\n") ||
++		record.Assertions["scope"] != purePublicScope {
++		return fmt.Errorf("BRG21 record detached from complete actual authorization and pure-public scenario")
++	}
++	data, err := stateReadArtifacts(record.Artifacts, purePublicArtifacts)
++	if err != nil {
++		return err
++	}
++	var receipt editorProcessReceipt
++	if err = decodeEditorJSON(data[purePublicArtifacts[0]], &receipt); err != nil {
++		return err
++	}
++	raw, stderr := data[purePublicArtifacts[1]], data[purePublicArtifacts[2]]
++	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != record.ImplementationSHA ||
++		!receipt.SourceCleanBefore || !receipt.SourceCleanAfter || !reflect.DeepEqual(receipt.Command, record.Command) ||
++		!reflect.DeepEqual(receipt.RequiredTests, purePublicRequiredEvents()) || !reflect.DeepEqual(receipt.DiscoveredTests, purePublicRequiredEvents()) ||
++		receipt.ExitCode == nil || *receipt.ExitCode != 0 || receipt.TimedOut == nil || *receipt.TimedOut ||
++		receipt.RawSHA256 != editorSHA(raw) || receipt.RawBytes != len(raw) || receipt.StderrSHA256 != editorSHA(stderr) || receipt.StderrBytes != len(stderr) || !utf8.Valid(stderr) ||
++		receipt.BenchmarkSHA256 != "" || receipt.BenchmarkBytes != 0 {
++		return fmt.Errorf("incomplete BRG21 process/source/byte binding")
++	}
++	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(purePublicTests) + time.Minute).Seconds()); err != nil {
++		return err
++	}
++	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, purePublicProductionPaths); err != nil {
++		return err
++	}
++	if err = parsePurePublicOutput(raw); err != nil {
++		return err
++	}
++	return loopOutputWithinProcess(raw, receipt)
++}
++func (r *Runner) executePurePublicProduction() ([]EvidenceArtifact, string, bool, error) {
++	root, err := filepath.Abs(resolveRepoRoot())
++	if err != nil {
++		return nil, "", false, err
++	}
++	before, clean, stateErr := editorSourceState(root)
++	if stateErr != nil || !clean || before != r.implSHA {
++		return nil, "", false, fmt.Errorf("BRG21 requires exact clean source: %s clean=%t error=%v", before, clean, stateErr)
++	}
++	directory, err := stateEvidenceDirectory(r, "brg21-")
++	if err != nil {
++		return nil, "", false, err
++	}
++	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "BRG21", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(purePublicTests), RequiredTests: purePublicRequiredEvents()}
++	receipt.SourceFiles, err = editorGitSourceFiles(root, before, purePublicProductionPaths)
++	if err != nil {
++		return nil, "", false, err
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(purePublicTests)+time.Minute)
++	defer cancel()
++	command := exec.CommandContext(ctx, receipt.Command[0], receipt.Command[1:]...)
++	command.Dir = root
++	configureEditorProductionProcess(command)
++	var output, errors loopBoundedOutput
++	command.Stdout, command.Stderr = &output, &errors
++	started := time.Now()
++	receipt.StartedUTC = started.UTC().Format(time.RFC3339Nano)
++	processErr := command.Run()
++	receipt.FinishedUTC = time.Now().UTC().Format(time.RFC3339Nano)
++	receipt.ElapsedSeconds = time.Since(started).Seconds()
++	exitCode := -1
++	if command.ProcessState != nil {
++		exitCode = command.ProcessState.ExitCode()
++	}
++	timedOut := ctx.Err() != nil
++	receipt.ExitCode, receipt.TimedOut = &exitCode, &timedOut
++	after, afterClean, afterErr := editorSourceState(root)
++	receipt.SourceCleanAfter = afterErr == nil && afterClean && after == before
++	raw, stderr := output.Bytes(), errors.Bytes()
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(raw), len(raw)
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(stderr), len(stderr)
++	parseErr := parsePurePublicOutput(raw)
++	if parseErr == nil {
++		parseErr = loopOutputWithinProcess(raw, receipt)
++	}
++	if parseErr == nil {
++		receipt.DiscoveredTests = purePublicRequiredEvents()
++	}
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		return nil, "", command.Process != nil, err
++	}
++	contents := map[string][]byte{purePublicArtifacts[0]: append(encoded, '\n'), purePublicArtifacts[1]: raw, purePublicArtifacts[2]: stderr}
++	var artifacts []EvidenceArtifact
++	for _, name := range purePublicArtifacts {
++		path := filepath.Join(directory, name)
++		if err = os.WriteFile(path, contents[name], 0600); err != nil {
++			return artifacts, "", command.Process != nil, err
++		}
++		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(contents[name])})
++	}
++	if processErr != nil || parseErr != nil || timedOut || !receipt.SourceCleanAfter {
++		return artifacts, "", command.Process != nil, fmt.Errorf("actual BRG21 process failed: process=%v parse=%v timeout=%t clean=%t", processErr, parseErr, timedOut, receipt.SourceCleanAfter)
++	}
++	return artifacts, "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls", true, nil
++}
++func (r *Runner) runPurePublicRequirement(spec RecoveryGate) bool {
++	if spec.ID != "BRG21" {
++		return false
++	}
++	level := strings.Join(spec.MinimumEvidenceTiers, "+")
++	if spec.Title != purePublicTitle || spec.Scenario != purePublicScenario || spec.ExpectedObservation != purePublicExpected ||
++		!reflect.DeepEqual(parseRequiredTiers(level), purePublicTiers) {
++		r.results[spec.ID] = CaseResult{ID: spec.ID, Group: "recovery_gate", Requirement: spec.Title, TestLevel: level, Status: "FAILED", Detail: "BRG21 producer does not match the immutable full scenario"}
++		return true
++	}
++	artifacts, detail, executed, err := r.executePurePublicProduction()
++	if err != nil {
++		detail = err.Error()
++	}
++	if !executed {
++		r.results[spec.ID] = CaseResult{ID: spec.ID, Group: "recovery_gate", Requirement: spec.Title, TestLevel: level, Status: "NOT_RUN", Detail: detail}
++		return true
++	}
++	first := len(r.records)
++	r.Record(spec.ID, "recovery_gate", spec.Title, level, purePublicTiers, err == nil, "PASSED", detail)
++	for index := first; index < len(r.records); index++ {
++		record := &r.records[index]
++		record.TestID = purePublicProducer(record.Tier)
++		record.Command = productionTestCommand(purePublicTests)
++		record.Artifacts = append([]EvidenceArtifact{}, artifacts...)
++		record.Assertions["required_production_tests"] = strings.Join(purePublicTests, "\n")
++		record.Assertions["required_go_events"] = strings.Join(purePublicRequiredEvents(), "\n")
++		record.Assertions["scope"] = purePublicScope
++	}
++	return true
++}
+diff --git a/tools/language-acceptance/pure_public_execution_test.go b/tools/language-acceptance/pure_public_execution_test.go
+new file mode 100644
+index 00000000..ff88c58e
+--- /dev/null
++++ b/tools/language-acceptance/pure_public_execution_test.go
+@@ -0,0 +1,421 @@
++package main
++
++import (
++	"bytes"
++	"encoding/json"
++	"os"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++)
++
++func purePublicSelectedContracts(t *testing.T, all *ContractsSet) *ContractsSet {
++	t.Helper()
++	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++	for _, row := range all.Gates.Gates {
++		if row.ID == "BRG21" {
++			selected.Gates.Gates = append(selected.Gates.Gates, row)
++		}
++	}
++	if len(selected.Gates.Gates) != 1 {
++		t.Fatal("missing immutable BRG21 contract")
++	}
++	selected.Gates.GateCount = 1
++	return selected
++}
++func TestPurePublicProducerInventory(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	row := purePublicSelectedContracts(t, all).Gates.Gates[0]
++	if row.Title != purePublicTitle || row.Scenario != purePublicScenario || row.ExpectedObservation != purePublicExpected || !reflect.DeepEqual(parseRequiredTiers(strings.Join(row.MinimumEvidenceTiers, "+")), purePublicTiers) {
++		t.Fatal("immutable full BRG21 contract changed", row)
++	}
++	names := purePublicRequiredEvents()
++	if len(names) != 33 || len(purePublicProductionPaths) != 56 {
++		t.Fatal("unreviewed BRG21 event/source inventory", len(names), len(purePublicProductionPaths))
++	}
++	seen := map[string]bool{}
++	for _, name := range names {
++		if name == "" || seen[name] {
++			t.Fatal("invalid event inventory", name)
++		}
++		seen[name] = true
++	}
++	if !reflect.DeepEqual(deriveGateTestIDs("BRG21", row.ProposedTestPrefix), purePublicTestIDs()) || !reflect.DeepEqual(deriveGateFixtures("BRG21"), purePublicProductionPaths) {
++		t.Fatal("missing complete production mapping")
++	}
++	for _, path := range purePublicProductionPaths {
++		if seen[path] {
++			t.Fatal("duplicate source path", path)
++		}
++		seen[path] = true
++		info, err := os.Stat(filepath.Join(resolveRepoRoot(), filepath.FromSlash(path)))
++		if err != nil || !info.Mode().IsRegular() {
++			t.Fatal("missing production source", path, err)
++		}
++	}
++	runner := NewRunner()
++	for _, foreign := range []string{"IM04", "IM05", "CL02", "RP29", "BRG18"} {
++		other := row
++		other.ID = foreign
++		if runner.runPurePublicRequirement(other) {
++			t.Fatal("related ID inherited producer", foreign)
++		}
++	}
++	if len(runner.records) != 0 || len(runner.results) != 0 || len(runner.observations) != 0 {
++		t.Fatal("unexecuted ID minted evidence")
++	}
++	for _, field := range []string{"title", "scenario", "expected", "tiers"} {
++		changed := row
++		switch field {
++		case "title":
++			changed.Title = "different title"
++		case "scenario":
++			changed.Scenario = "different scenario"
++		case "expected":
++			changed.ExpectedObservation = "different expected"
++		case "tiers":
++			changed.MinimumEvidenceTiers = []string{"integration"}
++		}
++		if !runner.runPurePublicRequirement(changed) || runner.results["BRG21"].Status != "FAILED" || len(runner.records) != 0 {
++			t.Fatal("altered immutable scenario accepted", field)
++		}
++	}
++}
++
++// Synthetic streams exercise parser rejection only, never production credit.
++func purePublicControlEvents() []byte {
++	var lines [][]byte
++	emit := func(action, name string) {
++		e := map[string]any{"Time": "2026-11-20T00:00:00Z", "Action": action, "Package": "github.com/electrikmilk/cherri"}
++		if name != "" {
++			e["Test"] = name
++		}
++		if action == "pass" {
++			e["Elapsed"] = 0.001
++		}
++		b, _ := json.Marshal(e)
++		lines = append(lines, b)
++	}
++	names := purePublicRequiredEvents()
++	selected := map[string]bool{}
++	for _, name := range names {
++		selected[name] = true
++	}
++	parent := func(name string) string {
++		for {
++			slash := strings.LastIndexByte(name, '/')
++			if slash < 0 {
++				return ""
++			}
++			name = name[:slash]
++			if selected[name] {
++				return name
++			}
++		}
++	}
++	var execute func(string)
++	execute = func(name string) {
++		emit("run", name)
++		for _, child := range names {
++			if parent(child) == name {
++				execute(child)
++			}
++		}
++		emit("pass", name)
++	}
++	emit("start", "")
++	for _, name := range purePublicTests {
++		execute(name)
++	}
++	emit("pass", "")
++	return append(bytes.Join(lines, []byte("\n")), '\n')
++}
++func TestPurePublicEventParserControls(t *testing.T) {
++	raw := purePublicControlEvents()
++	if err := parsePurePublicOutput(raw); err != nil {
++		t.Fatal(err)
++	}
++	for _, name := range purePublicRequiredEvents() {
++		t.Run("omitted/"+strings.ReplaceAll(name, "/", "_"), func(t *testing.T) {
++			if parsePurePublicOutput(structuralMigrationCorruptRaw(t, "missing_event", name, raw)) == nil {
++				t.Fatal("required real case omitted", name)
++			}
++		})
++	}
++	target := purePublicTests[0] + "/service_remote_import"
++	for _, fault := range []string{"orphan_pass", "skipped_child", "failed_child", "foreign_package", "unknown_child", "duplicate_run", "parent_before_child", "missing_time", "invalid_time", "backwards_time", "missing_elapsed", "negative_elapsed", "oversized_elapsed", "invalid_utf8", "duplicate_json_key", "trailing_json"} {
++		t.Run(fault, func(t *testing.T) {
++			if parsePurePublicOutput(structuralMigrationCorruptRaw(t, fault, target, raw)) == nil {
++				t.Fatal("damaged parser control accepted", fault)
++			}
++		})
++	}
++
++}
++func purePublicRewriteArtifacts(t *testing.T, record *EvidenceRecord, mutate func(map[string][]byte, *editorProcessReceipt)) {
++	t.Helper()
++	names := purePublicArtifacts
++	data, err := stateReadArtifacts(record.Artifacts, names)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var receipt editorProcessReceipt
++	if err = decodeEditorJSON(data[names[0]], &receipt); err != nil {
++		t.Fatal(err)
++	}
++	mutate(data, &receipt)
++	receipt.RawSHA256 = editorSHA(data[names[1]])
++	receipt.RawBytes = len(data[names[1]])
++	receipt.StderrSHA256 = editorSHA(data[names[2]])
++	receipt.StderrBytes = len(data[names[2]])
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		t.Fatal(err)
++	}
++	data[names[0]] = append(encoded, '\n')
++	root := t.TempDir()
++	record.Artifacts = nil
++	for _, name := range names {
++		path := filepath.Join(root, name)
++		if err = os.WriteFile(path, data[name], 0600); err != nil {
++			t.Fatal(err)
++		}
++		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data[name])})
++	}
++}
++func TestPurePublicActualProductionEvidence(t *testing.T) {
++	const id = "BRG21"
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := purePublicSelectedContracts(t, all)
++	scenario := struct {
++		Tests, Tiers []string
++		Scope        string
++	}{purePublicTests, purePublicTiers, purePublicScope}
++	runner := NewRunner()
++	runner.artifactDir = os.Getenv("CHERRI_PURE_PUBLIC_EVIDENCE_OUTPUT")
++	if runner.artifactDir == "" {
++		runner.artifactDir = t.TempDir()
++	}
++	runner.runRecoveryGates(selected.Gates)
++	if len(runner.records) != 3 || len(runner.results) != 1 || len(runner.observations) != 0 {
++		t.Fatalf("actual %s accounting: records=%d results=%+v observations=%v", id, len(runner.records), runner.results, runner.observations)
++	}
++	result := runner.results[id]
++	if !result.Passed || result.Status != "PASSED" || result.Group != "recovery_gate" || !reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
++		t.Fatalf("actual full %s production did not pass: %+v", id, result)
++	}
++	for _, record := range runner.records {
++		if err = validatePurePublicRecord(id, record); err != nil {
++			t.Fatal(err)
++		}
++	}
++	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
++	report, err := ValidateEvidenceManifest(manifest, selected, "local")
++	if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
++		t.Fatal("complete authorized-loader/pure-public scenario rejected", report, err)
++	}
++	final, finalErr := ValidateEvidenceManifest(manifest, selected, "final")
++	if finalErr == nil || final == nil || final.PassedCases != 1 || final.ClosureComplete || !strings.Contains(finalErr.Error(), "missing required successful CI workflow run") {
++		t.Fatal("local component bypassed global final release gate", final, finalErr)
++	}
++	original, err := json.Marshal(manifest)
++	if err != nil {
++		t.Fatal(err)
++	}
++	faults := []string{"wrong_producer", "borrowed_id", "fake_ios", "wrong_tier", "truncated_command", "missing_child_binding", "wrong_scope", "stale_source", "failed_result", "failed_exit", "missing_artifact", "duplicate_artifact", "bad_artifact_digest", "missing_tier", "process_source", "dirty_before", "dirty_after", "missing_exit", "missing_timeout", "timeout", "missing_discovery", "missing_required_test", "bad_time", "forged_source_hash", "missing_source_path", "process_requirement", "process_command", "forged_benchmark", "stderr_invalid_utf8", "raw_missing_parent", "raw_orphan_pass", "raw_skipped_child", "raw_failed_child", "raw_foreign_package", "raw_unknown_child", "raw_duplicate_run", "raw_parent_before_child", "raw_invalid_utf8", "raw_duplicate_json_key", "raw_trailing_json", "raw_missing_time", "raw_invalid_time", "raw_backwards_time", "raw_missing_elapsed", "raw_negative_elapsed", "raw_oversized_elapsed", "raw_outside_process_interval"}
++	names := purePublicArtifacts
++	target := purePublicTests[0] + "/service_remote_import"
++	for _, actual := range runner.records {
++		t.Run(actual.Tier, func(t *testing.T) {
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					var broken EvidenceManifest
++					if err := json.Unmarshal(original, &broken); err != nil {
++						t.Fatal(err)
++					}
++					for index := range broken.Records {
++						changed := &broken.Records[index]
++						if changed.EvidenceID != actual.EvidenceID {
++							continue
++						}
++						switch fault {
++						case "wrong_producer":
++							changed.TestID = "tools/language-acceptance:runControl"
++						case "borrowed_id":
++							changed.Requirements = append(changed.Requirements, "K01")
++						case "fake_ios":
++							changed.Tier = "ios-runtime"
++						case "wrong_tier":
++							changed.Tier = "repository"
++						case "truncated_command":
++							changed.Command = productionTestCommand(scenario.Tests[:1])
++						case "missing_child_binding":
++							delete(changed.Assertions, "required_go_events")
++						case "wrong_scope":
++							changed.Assertions["scope"] = "All linked requirements complete"
++						case "stale_source":
++							changed.ImplementationSHA = strings.Repeat("e", 40)
++						case "failed_result":
++							changed.Result = "failed"
++						case "failed_exit":
++							changed.ExitCode = 1
++						case "missing_artifact":
++							changed.Artifacts = changed.Artifacts[:2]
++						case "duplicate_artifact":
++							changed.Artifacts[2] = changed.Artifacts[1]
++						case "bad_artifact_digest":
++							changed.Artifacts[0].SHA256 = strings.Repeat("0", 64)
++						case "missing_tier":
++							broken.Records = append(broken.Records[:index], broken.Records[index+1:]...)
++						default:
++							purePublicRewriteArtifacts(t, changed, func(data map[string][]byte, receipt *editorProcessReceipt) {
++								switch fault {
++								case "process_source":
++									receipt.SourceCommit = strings.Repeat("a", 40)
++								case "dirty_before":
++									receipt.SourceCleanBefore = false
++								case "dirty_after":
++									receipt.SourceCleanAfter = false
++								case "missing_exit":
++									receipt.ExitCode = nil
++								case "missing_timeout":
++									receipt.TimedOut = nil
++								case "timeout":
++									value := true
++									receipt.TimedOut = &value
++								case "missing_discovery":
++									receipt.DiscoveredTests = receipt.DiscoveredTests[:len(receipt.DiscoveredTests)-1]
++								case "missing_required_test":
++									receipt.RequiredTests = receipt.RequiredTests[:len(receipt.RequiredTests)-1]
++								case "bad_time":
++									receipt.ElapsedSeconds = 0
++								case "forged_source_hash":
++									receipt.SourceFiles[0].SHA256 = strings.Repeat("0", 64)
++								case "missing_source_path":
++									receipt.SourceFiles = receipt.SourceFiles[:len(receipt.SourceFiles)-1]
++								case "process_requirement":
++									receipt.Requirement = "K01"
++								case "process_command":
++									receipt.Command = productionTestCommand(scenario.Tests[:1])
++								case "forged_benchmark":
++									receipt.BenchmarkSHA256 = strings.Repeat("a", 64)
++									receipt.BenchmarkBytes = 1
++								case "stderr_invalid_utf8":
++									data[names[2]] = []byte{0xff}
++								default:
++									kind := strings.TrimPrefix(fault, "raw_")
++									changedTarget := target
++									if fault == "raw_missing_parent" {
++										kind = "missing_event"
++										changedTarget = scenario.Tests[0]
++									}
++									var raw = structuralMigrationCorruptRaw(t, kind, changedTarget, data[names[1]])
++									if bytes.Equal(raw, data[names[1]]) {
++										t.Fatal("actual byte corruption did not occur", fault)
++									}
++									data[names[1]] = raw
++								}
++							})
++						}
++						break
++					}
++					corrupted, err := ValidateEvidenceManifest(&broken, selected, "local")
++					if corrupted == nil || corrupted.ClosureComplete || corrupted.PassedCases != 0 {
++						t.Fatal("damaged actual authorization/pure-public proof accepted", fault, corrupted, err)
++					}
++					if err == nil {
++						t.Fatal("malformed or incomplete actual BRG21 proof lacked required error", fault, corrupted)
++					}
++				})
++			}
++		})
++	}
++	for index, path := range purePublicProductionPaths {
++		t.Run("source_digest/"+strings.ReplaceAll(path, "/", "_"), func(t *testing.T) {
++			var changed EvidenceRecord
++			encoded, _ := json.Marshal(runner.records[0])
++			if err := json.Unmarshal(encoded, &changed); err != nil {
++				t.Fatal(err)
++			}
++			purePublicRewriteArtifacts(t, &changed, func(_ map[string][]byte, receipt *editorProcessReceipt) {
++				receipt.SourceFiles[index].SHA256 = strings.Repeat("0", 64)
++			})
++			if validatePurePublicRecord(id, changed) == nil {
++				t.Fatal("hash-reconciled source corruption accepted", path)
++			}
++		})
++	}
++	for _, other := range []string{"IM04", "IM05", "CL02", "RP29", "BRG18"} {
++		if other == id {
++			continue
++		}
++		t.Run("no_inheritance/"+other, func(t *testing.T) {
++			related := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++			for _, row := range all.Acceptance.Cases {
++				if row.ID == other {
++					related.Acceptance.Cases = append(related.Acceptance.Cases, row)
++				}
++			}
++			for _, row := range all.Repair.Cases {
++				if row.ID == other {
++					related.Repair.Cases = append(related.Repair.Cases, row)
++				}
++			}
++			for _, row := range all.Gates.Gates {
++				if row.ID == other {
++					related.Gates.Gates = append(related.Gates.Gates, row)
++				}
++			}
++			if len(related.Acceptance.Cases)+len(related.Repair.Cases)+len(related.Gates.Gates) != 1 {
++				t.Fatal("missing linked immutable contract", other)
++			}
++			related.Acceptance.CaseCount = len(related.Acceptance.Cases)
++			related.Repair.CaseCount = len(related.Repair.Cases)
++			related.Gates.GateCount = len(related.Gates.Gates)
++			var rebound EvidenceManifest
++			if err := json.Unmarshal(original, &rebound); err != nil {
++				t.Fatal(err)
++			}
++			for index := range rebound.Records {
++				rebound.Records[index].Requirements = []string{other}
++			}
++			borrowed, err := ValidateEvidenceManifest(&rebound, related, "local")
++			if err == nil || borrowed == nil || borrowed.PassedCases != 0 || borrowed.ClosureComplete {
++				t.Fatal("linked requirement inherited component proof", other, borrowed, err)
++			}
++		})
++	}
++	auditPath := filepath.Join(t.TempDir(), "audit.json")
++	if err = writeExecutionAudit(runner, all, auditPath); err != nil {
++		t.Fatal(err)
++	}
++	raw, err := os.ReadFile(auditPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var audit bindingCaptureAuditEnvelope
++	if err = json.Unmarshal(raw, &audit); err != nil || len(audit.Rows) != 179 || audit.ClosureComplete {
++		t.Fatal("component changed formal 179-row scope", err)
++	}
++	for _, row := range audit.Rows {
++		if row.ID == id {
++			if row.Status != "PASS" || !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, scenario.Tests) || !reflect.DeepEqual(row.ProductionPath, purePublicProductionPaths) || !reflect.DeepEqual(row.Tier, scenario.Tiers) || row.Scope != scenario.Scope {
++				t.Fatalf("component audit lost actual scope: %+v", row)
++			}
++		} else if row.Status == "PASS" {
++			t.Fatal("unexecuted requirement inherited component proof", row.ID)
++		}
++	}
++	receipt, err := json.Marshal(map[string]any{"requirement": id, "source_sha": runner.implSHA, "scope": scenario.Scope, "report": report, "records": runner.records})
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Log("P15_PURE_PUBLIC_PRODUCTION_RECEIPT:" + string(receipt))
++}

@@ -1,0 +1,29 @@
+{
+  "source": "718e7a16ce0bfb1d5b3d132df06ab96f6c9793e9",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=4m",
+    "-run",
+    "^Test(LocalGate.*|NativePaths(ProducerInventory|EventParserControls)|PurePublic(ProducerInventory|EventParserControls)|PublicFrontend(ProducerInventory|EventParserControls)|PackagedSkill(ProducerInventory|EventParserControls|SourceBudget)|MainOutput(ProducerInventory|EventParserControls|SourceBudget))$",
+    "./tools/language-acceptance"
+  ],
+  "started_at": "2026-11-20T11:34:26.665804+00:00",
+  "finished_at": "2026-11-20T11:34:39.458953+00:00",
+  "elapsed_seconds": 12.60899999999674,
+  "exit_code": 0,
+  "timed_out": false,
+  "named_pass": 596,
+  "named_fail": [],
+  "named_skip": [],
+  "stdout_bytes": 699855,
+  "stdout_sha256": "19eed74c77bba6eb06362c67b553a541de20732ced7d0a339e8a4382a66e5703",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "free_bytes_before": 3289432064,
+  "free_bytes_after": 3148201984
+}

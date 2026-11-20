@@ -1,0 +1,29 @@
+{
+  "source": "4adf57a713e7386992aad7cb6dd39c3d8304c328",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^TestP15(ValueControlFunctionDiscovery|T04Opaque|M02|FN0[1-5]|T01(TypedDefaultBoundary|MapDefault|OptionalMapDefault|WrongTypedDefaults)|FunctionOptionalPresence)",
+    "."
+  ],
+  "started_at": "2026-11-20T11:51:23.084358+00:00",
+  "finished_at": "2026-11-20T11:54:29.569525+00:00",
+  "elapsed_seconds": 185.93700000003446,
+  "exit_code": 0,
+  "timed_out": false,
+  "named_pass": 815,
+  "named_fail": [],
+  "named_skip": [],
+  "stdout_bytes": 755578,
+  "stdout_sha256": "0fa8a4332cc9eda67f36228cf753b5db13c77ea81b620bc127ac6d80b50ad11c",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "free_bytes_before": 3086110720,
+  "free_bytes_after": 2766508032
+}

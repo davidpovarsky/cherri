@@ -1,0 +1,119 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP52-integration",
+      "requirements": [
+        "RP52"
+      ],
+      "tier": "integration",
+      "implementation_sha": "08bf92990f4dee4289cb0e254173ce974e526d7e",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP52DefaultMobileFrontend",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP52DefaultMobileFrontend|TestP15RP52ExplicitLegacyReferenceModes|TestP15RP52EntrypointSourceBoundaries|TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation|TestBackendRecovery19StructuralMigrationIntegration)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references",
+        "required_go_events": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration\nTestP15RP52DefaultMobileFrontend/omitted_valid_v2\nTestP15RP52DefaultMobileFrontend/omitted_reject_plain\nTestP15RP52DefaultMobileFrontend/omitted_reject_file_marker\nTestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/empty_valid_v2\nTestP15RP52DefaultMobileFrontend/empty_reject_plain\nTestP15RP52DefaultMobileFrontend/empty_reject_file_marker\nTestP15RP52DefaultMobileFrontend/empty_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/whitespace_valid_v2\nTestP15RP52DefaultMobileFrontend/whitespace_reject_plain\nTestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker\nTestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/explicit_v2_valid_v2\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_plain\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_file_marker\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_plain\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/invalid_mode\nTestP15RP52ExplicitLegacyReferenceModes/recovery\nTestP15RP52EntrypointSourceBoundaries/actual_go_exports\nTestP15RP52EntrypointSourceBoundaries/actual_swift_default\nTestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_signed_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_default_extra_statement\nTestP15RP52EntrypointSourceBoundaries/go_unknown_export\nTestP15RP52EntrypointSourceBoundaries/go_missing_export\nTestP15RP52EntrypointSourceBoundaries/go_swapped_parameters\nTestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type\nTestP15RP52EntrypointSourceBoundaries/go_wrong_return_type\nTestP15RP52EntrypointSourceBoundaries/swift_auto_default\nTestP15RP52EntrypointSourceBoundaries/swift_legacy_default\nTestP15RP52EntrypointSourceBoundaries/swift_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_comment_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_string_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum\nTestP15RP52EntrypointSourceBoundaries/swift_missing_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_local_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/nested_comment\nTestP15RP52EntrypointSourceBoundaries/opaque_interpolation\nTestP15RP52EntrypointSourceBoundaries/opaque_raw_string\nTestP15U04PublicFrontendRouteMatrix/file/default_v2\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/file/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/file/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/file/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/file/conflicting_modes\nTestP15U04PublicFrontendRouteMatrix/compile/default_v2\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/compile/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/compile/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/compile/conflicting_modes\nTestP15U01DeclarationBoundaryControls/missing_current_file\nTestP15U01DeclarationBoundaryControls/extra_current_file\nTestP15U01DeclarationBoundaryControls/missing_manifest_file\nTestP15U01DeclarationBoundaryControls/duplicate_manifest_file\nTestP15U01DeclarationBoundaryControls/wrong_base\nTestP15U01DeclarationBoundaryControls/wrong_baseline_digest\nTestP15U01DeclarationBoundaryControls/wrong_baseline_size\nTestP15U01DeclarationBoundaryControls/rewritten_unchanged_file\nTestP15U01DeclarationBoundaryControls/forged_recorded_hash\nTestP15U01DeclarationBoundaryControls/wrong_correction\nTestP15U01DeclarationBoundaryControls/false_upstream_equality\nTestP15U01DeclarationBoundaryControls/false_unchanged_class\nTestP15U01GitReplacementIsolation/show\nTestP15U01GitReplacementIsolation/cat_file_batch\nTestP15U01GitReplacementIsolation/ls_tree\nTestP15U01GitReplacementIsolation/diff\nTestBackendRecovery19StructuralMigrationIntegration/metadata\nTestBackendRecovery19StructuralMigrationIntegration/include\nTestBackendRecovery19StructuralMigrationIntegration/reference",
+        "required_production_tests": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration",
+        "scope": "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\rp52-intake-clean\\producer\\rp52-1966130667\\rp52-process.json",
+          "sha256": "36121eb7d4a5b4e3d0c14c84b5ae1acafe5462b24be633402e92b873ddc3ddb8"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\rp52-intake-clean\\producer\\rp52-1966130667\\rp52-go.jsonl",
+          "sha256": "a504ecb61555029bcabf60441f6c15209592f1a5d6c3e17b8be973b6313ffaf0"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\rp52-intake-clean\\producer\\rp52-1966130667\\rp52-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references"
+    },
+    {
+      "evidence_id": "ev-local-RP52-repository",
+      "requirements": [
+        "RP52"
+      ],
+      "tier": "repository",
+      "implementation_sha": "08bf92990f4dee4289cb0e254173ce974e526d7e",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP52EntrypointSourceBoundaries",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP52DefaultMobileFrontend|TestP15RP52ExplicitLegacyReferenceModes|TestP15RP52EntrypointSourceBoundaries|TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation|TestBackendRecovery19StructuralMigrationIntegration)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references",
+        "required_go_events": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration\nTestP15RP52DefaultMobileFrontend/omitted_valid_v2\nTestP15RP52DefaultMobileFrontend/omitted_reject_plain\nTestP15RP52DefaultMobileFrontend/omitted_reject_file_marker\nTestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/empty_valid_v2\nTestP15RP52DefaultMobileFrontend/empty_reject_plain\nTestP15RP52DefaultMobileFrontend/empty_reject_file_marker\nTestP15RP52DefaultMobileFrontend/empty_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/whitespace_valid_v2\nTestP15RP52DefaultMobileFrontend/whitespace_reject_plain\nTestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker\nTestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor\nTestP15RP52DefaultMobileFrontend/explicit_v2_valid_v2\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_plain\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_file_marker\nTestP15RP52DefaultMobileFrontend/explicit_v2_reject_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_plain\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_file_marker\nTestP15RP52ExplicitLegacyReferenceModes/explicit_auto_preprocessor\nTestP15RP52ExplicitLegacyReferenceModes/invalid_mode\nTestP15RP52ExplicitLegacyReferenceModes/recovery\nTestP15RP52EntrypointSourceBoundaries/actual_go_exports\nTestP15RP52EntrypointSourceBoundaries/actual_swift_default\nTestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_signed_default_auto\nTestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped\nTestP15RP52EntrypointSourceBoundaries/go_default_extra_statement\nTestP15RP52EntrypointSourceBoundaries/go_unknown_export\nTestP15RP52EntrypointSourceBoundaries/go_missing_export\nTestP15RP52EntrypointSourceBoundaries/go_swapped_parameters\nTestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type\nTestP15RP52EntrypointSourceBoundaries/go_wrong_return_type\nTestP15RP52EntrypointSourceBoundaries/swift_auto_default\nTestP15RP52EntrypointSourceBoundaries/swift_legacy_default\nTestP15RP52EntrypointSourceBoundaries/swift_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_comment_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_string_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum\nTestP15RP52EntrypointSourceBoundaries/swift_missing_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_local_shadow\nTestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer\nTestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi\nTestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge\nTestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct\nTestP15RP52EntrypointSourceBoundaries/nested_comment\nTestP15RP52EntrypointSourceBoundaries/opaque_interpolation\nTestP15RP52EntrypointSourceBoundaries/opaque_raw_string\nTestP15U04PublicFrontendRouteMatrix/file/default_v2\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/file/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/file/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/file/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/file/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/file/conflicting_modes\nTestP15U04PublicFrontendRouteMatrix/compile/default_v2\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2\nTestP15U04PublicFrontendRouteMatrix/compile/default_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/explicit_v2_rejects_legacy\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_flag\nTestP15U04PublicFrontendRouteMatrix/compile/legacy_mode\nTestP15U04PublicFrontendRouteMatrix/compile/invalid_mode\nTestP15U04PublicFrontendRouteMatrix/compile/conflicting_modes\nTestP15U01DeclarationBoundaryControls/missing_current_file\nTestP15U01DeclarationBoundaryControls/extra_current_file\nTestP15U01DeclarationBoundaryControls/missing_manifest_file\nTestP15U01DeclarationBoundaryControls/duplicate_manifest_file\nTestP15U01DeclarationBoundaryControls/wrong_base\nTestP15U01DeclarationBoundaryControls/wrong_baseline_digest\nTestP15U01DeclarationBoundaryControls/wrong_baseline_size\nTestP15U01DeclarationBoundaryControls/rewritten_unchanged_file\nTestP15U01DeclarationBoundaryControls/forged_recorded_hash\nTestP15U01DeclarationBoundaryControls/wrong_correction\nTestP15U01DeclarationBoundaryControls/false_upstream_equality\nTestP15U01DeclarationBoundaryControls/false_unchanged_class\nTestP15U01GitReplacementIsolation/show\nTestP15U01GitReplacementIsolation/cat_file_batch\nTestP15U01GitReplacementIsolation/ls_tree\nTestP15U01GitReplacementIsolation/diff\nTestBackendRecovery19StructuralMigrationIntegration/metadata\nTestBackendRecovery19StructuralMigrationIntegration/include\nTestBackendRecovery19StructuralMigrationIntegration/reference",
+        "required_production_tests": "TestP15RP52DefaultMobileFrontend\nTestP15RP52ExplicitLegacyReferenceModes\nTestP15RP52EntrypointSourceBoundaries\nTestP15U04PublicFrontendRouteMatrix\nTestP15CLIDefaultRejectsLegacyWithGuidance\nTestP15U01ActualDeclarationBoundary\nTestP15U01DeclarationBoundaryControls\nTestP15U01GitReplacementIsolation\nTestBackendRecovery19StructuralMigrationIntegration",
+        "scope": "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\rp52-intake-clean\\producer\\rp52-1966130667\\rp52-process.json",
+          "sha256": "36121eb7d4a5b4e3d0c14c84b5ae1acafe5462b24be633402e92b873ddc3ddb8"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\rp52-intake-clean\\producer\\rp52-1966130667\\rp52-go.jsonl",
+          "sha256": "a504ecb61555029bcabf60441f6c15209592f1a5d6c3e17b8be973b6313ffaf0"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\rp52-intake-clean\\producer\\rp52-1966130667\\rp52-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T10:31:20Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "RP52",
+        "group": "repair",
+        "requirement": "No accidental second user frontend",
+        "test_level": "integration+repository",
+        "executed_levels": [
+          "integration",
+          "repository"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "RP52",
+  "scope": "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited.",
+  "source_sha": "08bf92990f4dee4289cb0e254173ce974e526d7e"
+}

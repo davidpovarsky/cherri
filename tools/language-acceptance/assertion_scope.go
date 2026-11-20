@@ -24,7 +24,6 @@ var incompleteLocalAssertions = map[string]string{
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
-	"M02":  "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
 
 	"E01": "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
 	"E02": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",

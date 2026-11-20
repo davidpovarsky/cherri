@@ -201,7 +201,8 @@ func EvaluateNativeSpecimen(item NativeSpecimenManifestItem, baseDir string, req
 	}
 
 	// 6. Compile equivalent Cherri source
-	compResp := compileForMobile(string(cherriBytes), item.ShortcutName, false)
+	// This isolated historical specimen reference explicitly selects compatibility mode.
+	compResp := compileForMobileMode(string(cherriBytes), item.ShortcutName, string(MobileCompileModeAuto), false)
 	if !compResp.OK {
 		res.Status = NativeSpecimenStatusFail
 		res.Diagnostic = fmt.Sprintf("equivalent Cherri compilation failed: %s", compResp.Error)

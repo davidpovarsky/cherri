@@ -1,0 +1,30 @@
+import pathlib,subprocess,json,datetime,time,hashlib,os,collections,re
+r=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-completion-r4-20261120")
+e=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-continuation-evidence-20261119")/"r5-integration-20261120"/"clean-8b8093ee";e.mkdir(exist_ok=False)
+(e/"submitted-script.py.txt").write_bytes(pathlib.Path(__file__).read_bytes())
+source="8b8093eebf6544aad649a668c7afef147ff0cc32"
+def guard():
+ h=subprocess.check_output(["git","--no-replace-objects","-C",str(r),"rev-parse","HEAD"]).decode().strip()
+ s=subprocess.check_output(["git","--no-replace-objects","-C",str(r),"status","--porcelain"]).decode()
+ assert h==source and not s,(h,s)
+records=[]
+commands=[(name,["python","-m","unittest","discover","-s","tools/shortcuts-simulator-qa","-p",name+".py","-v"],150) for name in ["test_xcode_destination_readiness","test_simulator_session_recovery","test_public_artifacts","test_optional_forwarding_diagnostic","test_runtime_callback_contract","test_native_continuation_audit","test_json_body_probe"]]
+commands.append(("go-optional-discovery-opaque",["go","test",".","-run","^TestP15(Optional(NativeDiagnostic|Artifact)|ValueControlFunctionDiscovery|T04Opaque)","-count=1","-json","-timeout=4m"],280))
+for name,cmd,limit in commands:
+ guard();start=datetime.datetime.now(datetime.timezone.utc).isoformat();clock=time.monotonic();timed=False
+ with (e/(name+".stdout")).open("wb") as out,(e/(name+".stderr")).open("wb") as err:
+  try:p=subprocess.run(cmd,cwd=r,env=dict(os.environ,GOMAXPROCS="2"),stdin=subprocess.DEVNULL,stdout=out,stderr=err,timeout=limit);code=p.returncode
+  except subprocess.TimeoutExpired:code=124;timed=True
+ guard();raw=(e/(name+".stdout")).read_bytes();error=(e/(name+".stderr")).read_bytes()
+ rec={"name":name,"source":source,"source_clean_before_after":True,"command":cmd,"started_utc":start,"elapsed_seconds":round(time.monotonic()-clock,3),"exit_code":code,"timed_out":timed,"stdout_bytes":len(raw),"stdout_sha256":hashlib.sha256(raw).hexdigest(),"stderr_bytes":len(error),"stderr_sha256":hashlib.sha256(error).hexdigest()}
+ if cmd[0]=="go":
+  counts=collections.Counter();fail=[]
+  for ln in raw.splitlines():
+   o=json.loads(ln)
+   if o.get("Test"):counts[o.get("Action")]+=1
+   if o.get("Test") and o.get("Action")=="fail":fail.append(o["Test"])
+  rec.update(named_events=dict(counts),failed=fail)
+ else:
+  rec["summary_tail"]=error.decode("utf-8","replace")[-1300:]
+ (e/(name+"-process.json")).write_text(json.dumps(rec,indent=2)+"\n",encoding="utf-8");records.append(rec);print(json.dumps(rec),flush=True)
+(e/"receipt.json").write_text(json.dumps({"source":source,"records":records},indent=2)+"\n",encoding="utf-8")

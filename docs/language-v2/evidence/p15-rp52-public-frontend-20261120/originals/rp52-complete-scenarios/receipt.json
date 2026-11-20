@@ -1,0 +1,34 @@
+{
+  "source_sha": "b4d770488c246a4b340d87c2cb0c090134ebc0e1",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "head_after": "b4d770488c246a4b340d87c2cb0c090134ebc0e1",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestP15RP52DefaultMobileFrontend|TestP15RP52ExplicitLegacyReferenceModes|TestP15RP52EntrypointSourceBoundaries|TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation|TestBackendRecovery19StructuralMigrationIntegration)$",
+    "."
+  ],
+  "started_utc": "2026-11-20T10:29:11.345802+00:00",
+  "finished_utc": "2026-11-20T10:29:36.497469+00:00",
+  "elapsed_seconds": 25.15600000001723,
+  "exit_code": 0,
+  "timed_out": false,
+  "GOMAXPROCS": "2",
+  "go_jsonl_bytes": 145312,
+  "go_jsonl_sha256": "ca5c4c4414d23e27648621f45db903e208dc13ead27483eb4b4e493bcd945046",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "event_counts": {
+    "run": 98,
+    "output": 246,
+    "pass": 98
+  },
+  "failed_tests": [],
+  "json_decode_errors": [],
+  "free_bytes": 6687842304
+}

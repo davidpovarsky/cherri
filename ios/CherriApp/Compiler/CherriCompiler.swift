@@ -273,7 +273,7 @@ enum CherriBuildProfile: String, Sendable {
 }
 
 enum CherriCompiler {
-    static func compile(source: String, name: String, mode: String = "auto", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
+    static func compile(source: String, name: String, mode: String = "v2", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
         try await Task.detached(priority: .userInitiated) {
             try callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)
         }.value

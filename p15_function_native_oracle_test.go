@@ -245,6 +245,13 @@ func (g *p15FunctionGraph) finish() error {
 	return g.compare()
 }
 
+// Explicit main returns already own their result; only close the dispatcher.
+// This deliberately differs from finish(), whose authored callers fall through.
+func (g *p15FunctionGraph) finishExplicitMainReturn() error {
+	g.boundary(g.outer, 2, false)
+	return g.compare()
+}
+
 // compare also checks complete workflows without the function dispatcher.
 func (g *p15FunctionGraph) compare() error {
 	if g.err != nil {

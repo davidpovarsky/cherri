@@ -1,0 +1,37 @@
+{
+  "source": "c63950858f6ac9b13f9c8a68dc19e9e7a209c46c",
+  "source_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^TestPurePublic",
+    "./tools/language-acceptance"
+  ],
+  "started_utc": "2026-11-20T09:58:17.290024+00:00",
+  "retention_fix": "The prior actual b44 run passed but its test read the unrelated NativePaths env and Go removed the temporary child artifacts. This clean replay uses the intended owned output variable; originals preserved.",
+  "exit": 0,
+  "elapsed_seconds": 35.23399999999674,
+  "finished_utc": "2026-11-20T09:58:52.522180+00:00",
+  "source_clean_after": true,
+  "named_counts": {
+    "pass": 257,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed": [],
+  "go.jsonl": {
+    "bytes": 297588,
+    "sha256": "0f78c3272cde6e8b3036a6a9531da3b7a1fad510db37c9257654b1c1d932a6b6"
+  },
+  "stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "retained_child_receipts": [
+    "producer/brg21-3094312282/brg21-process.json"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "source": "29ad738d81497a6ba657db84eec42a242ee19fa8",
+  "source_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15RP52(DefaultMobileFrontend|ExplicitLegacyReferenceModes)$",
+    "."
+  ],
+  "started_utc": "2026-11-20T10:02:47.971434+00:00",
+  "exit": 1,
+  "elapsed_seconds": 30.93699999997625,
+  "finished_utc": "2026-11-20T10:03:18.913398+00:00",
+  "source_clean_after": true,
+  "named_counts": {
+    "pass": 18,
+    "fail": 7,
+    "skip": 0
+  },
+  "failed": [
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend"
+  ],
+  "go.jsonl": {
+    "bytes": 24089,
+    "sha256": "8a6413539f0888e5c5ba80a393134c344ea81796c6cc8a93d68590009aab0e48"
+  },
+  "stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
