@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/parser"
-	"go/token"
+	gotoken "go/token"
 	"os"
 	"reflect"
 	"strings"
@@ -184,7 +184,7 @@ func TestP15E05VersionedCExportDelegatesSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	file, err := parser.ParseFile(token.NewFileSet(), "ios_bridge.go", raw, 0)
+	file, err := parser.ParseFile(gotoken.NewFileSet(), "ios_bridge.go", raw, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +206,7 @@ func TestP15E05VersionedCExportDelegatesSnapshot(t *testing.T) {
 		if name, ok := call.Fun.(*ast.Ident); ok && name.Name == "analyzeVersionedForMobile" {
 			calls++
 		}
-		if name, ok := call.Fun.(*ast.SelectorExpr); ok && []string{"ChangeDocument", "Analyze", "DocumentVersion"}[0] == name.Sel.Name {
+		if name, ok := call.Fun.(*ast.SelectorExpr); ok && (name.Sel.Name == "ChangeDocument" || name.Sel.Name == "Analyze" || name.Sel.Name == "DocumentVersion") {
 			t.Error("export bypasses shared snapshot producer")
 		}
 		return true
