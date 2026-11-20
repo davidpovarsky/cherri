@@ -90,6 +90,19 @@ def verify_source(repo, fid, source):
             "syntheticOnly": True, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False}
 
 
+def require_date_reference(graph, value, name):
+    # Actual run 44696174000: bare attachments lose WFDateFieldParameterState;
+    # the same UUID/name inside this existing token-string form survives.
+    require(isinstance(value, dict) and set(value) == {"Value", "WFSerializationType"}
+            and value["WFSerializationType"] == "WFTextTokenString", "canonical Date field wrapper " + name)
+    text = value["Value"]
+    require(isinstance(text, dict) and set(text) == {"string", "attachmentsByRange"}
+            and text["string"] == "\ufffc"
+            and isinstance(text["attachmentsByRange"], dict)
+            and set(text["attachmentsByRange"]) == {"{0, 1}"}, "exact Date placeholder " + name)
+    graph.ref(value, name)
+
+
 def verify_graph(fid, actions):
     if fid != FIXTURE_ID:
         return None
@@ -116,6 +129,7 @@ def verify_graph(fid, actions):
         g.encode(name + "Type64", name + "Type")
         g.count(name + "Count", name)
         formatted = g.linked(name + "Formatted", "format.date", name, "WFDate")
+        require_date_reference(g, formatted.get("WFDate"), name)
         require(formatted.get("WFDateFormatStyle") == "Custom"
                 and formatted.get("WFTimeFormatStyle") == "None"
                 and formatted.get("WFDateFormat") == "yyyy-MM-dd'T'HH:mm:ssXXXXX"
@@ -124,8 +138,8 @@ def verify_graph(fid, actions):
 
     for _, name, start, end, unit, _ in INTERVALS:
         p = g.at(g.get(name), "gettimebetweendates")
-        g.ref(p.get("WFTimeUntilFromDate"), start)
-        g.ref(p.get("WFInput"), end)
+        require_date_reference(g, p.get("WFTimeUntilFromDate"), start)
+        require_date_reference(g, p.get("WFInput"), end)
         require(p.get("WFTimeUntilUnit") == unit, "interval units " + name)
         require(g.get(start) < g.get(name) and g.get(end) < g.get(name), "input dominance " + name)
     p = g.at(g.get("numericZero"), "number")
@@ -169,12 +183,25 @@ def verify_causal_mutations(actions):
         def mutate(graph):
             token(params(named(graph, name))[key])["OutputUUID"] = params(named(graph, other))["UUID"]
         return mutate
+    def bare_date(key):
+        def mutate(graph):
+            p = params(named(graph, "positiveSeconds"))
+            p[key] = {"WFSerializationType": "WFTextTokenAttachment", "Value": copy.deepcopy(token(p[key]))}
+        return mutate
+    def corrupt_date_text(field, value):
+        def mutate(graph):
+            params(named(graph, "positiveSeconds"))["WFInput"]["Value"][field] = value
+        return mutate
     tests = [
         ("wrong-specified-date", update("laterDate", WFDateActionDate="2001-02-03T04:05:06Z")),
         ("current-date-mode", update("startDate", WFDateActionMode="Current Date")),
         ("zero-borrow-positive-input", redirect("zeroSeconds", "WFInput", "laterDate")),
         ("positive-borrow-zero-input", redirect("positiveSeconds", "WFInput", "sameDate")),
         ("wrong-start-input", redirect("positiveSeconds", "WFTimeUntilFromDate", "laterDate")),
+        ("bare-first-date-field", bare_date("WFTimeUntilFromDate")),
+        ("bare-second-date-field", bare_date("WFInput")),
+        ("date-field-literal-escape", corrupt_date_text("string", "\\uFFFC")),
+        ("date-field-missing-range", corrupt_date_text("attachmentsByRange", {})),
         ("wrong-second-unit", update("zeroSeconds", WFTimeUntilUnit="Minutes")),
         ("wrong-minute-unit", update("positiveMinutes", WFTimeUntilUnit="Seconds")),
         ("same-producer-replaced", redirect("sameProducerSeconds", "WFInput", "sameDate")),
