@@ -24,6 +24,7 @@ import (
 // source, its real capabilities command and freshly generated reference. It
 // never edits or claims the independently pinned published Skill/docs tuple.
 type p15ExtractedInstall struct {
+	packageRepo                        string
 	root, sourceSHA, skillSHA, docsSHA string
 	skill, home, compiler, migration   string
 	env                                map[string]string
@@ -226,6 +227,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 	}
 	p15InstallWrite(t, filepath.Join(fixtureRepo, "skills", "cherri-shortcuts", "compatibility-manifest.json"), append(derivedManifest, '\n'))
 	f.skillSHA = p15ExtractedCommit(t, fixtureRepo, "Disposable actual source/docs component tuple; not a release")
+	f.packageRepo = fixtureRepo
 	zipPath := filepath.Join(tmp, "source-skill.zip")
 	unpack := filepath.Join(tmp, "extracted")
 	args := []string{"--repo", fixtureRepo, "--skill-commit", f.skillSHA, "--kind", "source", "--archive", zipPath}
