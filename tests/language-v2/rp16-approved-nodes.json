@@ -1,0 +1,261 @@
+[
+  {
+    "role": "declaration",
+    "kind": "ImportDecl",
+    "source": "import \"rp16-module.cherri\" as proof\nproof.marker(\"RP16_IMPORT\")",
+    "witness": "text",
+    "value": "RP16_IMPORT"
+  },
+  {
+    "role": "declaration",
+    "kind": "ShortcutDecl",
+    "source": "shortcut \"RP16_SHORTCUT\" { icon: {glyph: 59789, color: 4282601983} }\ntext(\"RP16_SHORTCUT_EFFECT\")",
+    "witness": "metadata",
+    "value": "RP16_SHORTCUT"
+  },
+  {
+    "role": "declaration",
+    "kind": "TriggerDecl",
+    "source": "trigger bluetooth(event: .connect)\ntext(\"RP16_TRIGGER_EFFECT\")",
+    "witness": "trigger",
+    "value": "RP16_TRIGGER_EFFECT"
+  },
+  {
+    "role": "declaration",
+    "kind": "SetupDecl",
+    "source": "setup answer: Text { prompt: \"RP16_PROMPT\" default: \"RP16_DEFAULT\" }\ntext(answer)",
+    "witness": "setup",
+    "value": "RP16_DEFAULT"
+  },
+  {
+    "role": "declaration",
+    "kind": "TypeDecl",
+    "source": "type Alias = Text\nlet value: Alias = \"RP16_TYPE\"\nshow(value)",
+    "witness": "reference",
+    "value": "RP16_TYPE"
+  },
+  {
+    "role": "declaration",
+    "kind": "EnumDecl",
+    "source": "enum Marker { chosen = \"RP16_ENUM\" }\ntext(Marker.chosen)",
+    "witness": "text",
+    "value": "RP16_ENUM"
+  },
+  {
+    "role": "declaration",
+    "kind": "FunctionDecl",
+    "source": "function target(): Text { return \"RP16_FUNCTION\" }\nshow(target())",
+    "witness": "function",
+    "value": "RP16_FUNCTION"
+  },
+  {
+    "role": "declaration",
+    "kind": "ActionDecl",
+    "source": "action marker(value: Text): Text { identifier: \"is.workflow.actions.gettext\" primary: \"value\" bindings: {value: {key: \"WFTextActionText\"}} }\nmarker(\"RP16_ACTION\")",
+    "witness": "text",
+    "value": "RP16_ACTION"
+  },
+  {
+    "role": "declaration",
+    "kind": "CopyBlockStmt",
+    "source": "copy body { text(\"RP16_COPY_DECL\") }\npaste body",
+    "witness": "text",
+    "value": "RP16_COPY_DECL"
+  },
+  {
+    "role": "statement",
+    "kind": "BindingStmt",
+    "source": "let value = \"RP16_BINDING\"\nshow(value)",
+    "witness": "reference",
+    "value": "RP16_BINDING"
+  },
+  {
+    "role": "statement",
+    "kind": "AssignStmt",
+    "source": "var value = 1\nvalue = 2\nshow(value)",
+    "witness": "assignment",
+    "value": "value"
+  },
+  {
+    "role": "statement",
+    "kind": "ExprStmt",
+    "source": "text(\"RP16_EXPR_STMT\")",
+    "witness": "text",
+    "value": "RP16_EXPR_STMT"
+  },
+  {
+    "role": "statement",
+    "kind": "ReturnStmt",
+    "source": "function target(): Text { return \"RP16_RETURN\" }\nshow(target())",
+    "witness": "function",
+    "value": "RP16_RETURN"
+  },
+  {
+    "role": "statement",
+    "kind": "YieldStmt",
+    "source": "let value = if true { yield \"RP16_YIELD\" } else { yield \"RP16_YIELD_OTHER\" }\nshow(value)",
+    "witness": "if_expression",
+    "value": "RP16_YIELD"
+  },
+  {
+    "role": "statement",
+    "kind": "BlockStmt",
+    "source": "{ text(\"RP16_BLOCK\") }",
+    "witness": "text",
+    "value": "RP16_BLOCK"
+  },
+  {
+    "role": "statement",
+    "kind": "IfStmt",
+    "source": "if true { text(\"RP16_IF_STMT\") } else { text(\"RP16_IF_STMT_OTHER\") }",
+    "witness": "if_statement",
+    "value": "RP16_IF_STMT"
+  },
+  {
+    "role": "statement",
+    "kind": "ForStmt",
+    "source": "for item in [\"RP16_FOR_STMT\"] { show(item) }",
+    "witness": "for_statement",
+    "value": "RP16_FOR_STMT"
+  },
+  {
+    "role": "statement",
+    "kind": "RepeatStmt",
+    "source": "repeat 2 as index { show(index) }",
+    "witness": "repeat_statement",
+    "value": "index"
+  },
+  {
+    "role": "statement",
+    "kind": "MenuStmt",
+    "source": "menu(\"RP16_MENU_STMT\") { case \"A\" { text(\"RP16_MENU_STMT_A\") } case \"B\" { text(\"RP16_MENU_STMT_B\") } }",
+    "witness": "menu_statement",
+    "value": "RP16_MENU_STMT"
+  },
+  {
+    "role": "statement",
+    "kind": "CopyBlockStmt",
+    "source": "{ copy body { text(\"RP16_COPY_STMT\") }\npaste body }",
+    "witness": "text",
+    "value": "RP16_COPY_STMT"
+  },
+  {
+    "role": "statement",
+    "kind": "PasteStmt",
+    "source": "copy body { text(\"RP16_PASTE\") }\npaste body",
+    "witness": "text",
+    "value": "RP16_PASTE"
+  },
+  {
+    "role": "expression",
+    "kind": "LiteralExpr",
+    "source": "text(\"RP16_LITERAL\")",
+    "witness": "text",
+    "value": "RP16_LITERAL"
+  },
+  {
+    "role": "expression",
+    "kind": "FStringExpr",
+    "source": "let value = \"RP16_TOKEN\"\ntext(f\"RP16_FSTRING:{value}\")",
+    "witness": "fstring",
+    "value": "RP16_FSTRING:"
+  },
+  {
+    "role": "expression",
+    "kind": "IdentExpr",
+    "source": "let value = \"RP16_IDENT\"\nshow(value)",
+    "witness": "reference",
+    "value": "RP16_IDENT"
+  },
+  {
+    "role": "expression",
+    "kind": "MemberExpr",
+    "source": "let value = {\"key\": \"RP16_MEMBER\"}\nshow(value.key)",
+    "witness": "member",
+    "value": "RP16_MEMBER"
+  },
+  {
+    "role": "expression",
+    "kind": "IndexExpr",
+    "source": "let values = [\"RP16_INDEX\"]\nshow(values[0])",
+    "witness": "index",
+    "value": "RP16_INDEX"
+  },
+  {
+    "role": "expression",
+    "kind": "CallExpr",
+    "source": "text(\"RP16_CALL\")",
+    "witness": "text",
+    "value": "RP16_CALL"
+  },
+  {
+    "role": "expression",
+    "kind": "UnaryExpr",
+    "source": "var input = 2\nshow(-input)",
+    "witness": "unary",
+    "value": "input"
+  },
+  {
+    "role": "expression",
+    "kind": "BinaryExpr",
+    "source": "var input = 2\nshow(input + 3)",
+    "witness": "binary",
+    "value": "input"
+  },
+  {
+    "role": "expression",
+    "kind": "ListExpr",
+    "source": "let values = [\"RP16_LIST_A\", \"RP16_LIST_B\"]\nshow(values)",
+    "witness": "list",
+    "value": "RP16_LIST"
+  },
+  {
+    "role": "expression",
+    "kind": "MapExpr",
+    "source": "let value = {\"key\": \"RP16_MAP\"}\nshow(value)",
+    "witness": "dictionary",
+    "value": "RP16_MAP"
+  },
+  {
+    "role": "expression",
+    "kind": "RecordExpr",
+    "source": "shortcut \"RP16_RECORD\" { icon: {glyph: 59789, color: 4282601983} }\ntext(\"RP16_RECORD_EFFECT\")",
+    "witness": "metadata",
+    "value": "RP16_RECORD"
+  },
+  {
+    "role": "expression",
+    "kind": "EnumMemberExpr",
+    "source": "enum Marker { chosen = \"RP16_ENUM_MEMBER\" }\ntext(Marker.chosen)",
+    "witness": "text",
+    "value": "RP16_ENUM_MEMBER"
+  },
+  {
+    "role": "expression",
+    "kind": "IfStmt",
+    "source": "let value = if true { yield \"RP16_IF_EXPR\" } else { yield \"RP16_IF_EXPR_OTHER\" }\nshow(value)",
+    "witness": "if_expression",
+    "value": "RP16_IF_EXPR"
+  },
+  {
+    "role": "expression",
+    "kind": "ForStmt",
+    "source": "let value = for item in [\"RP16_FOR_EXPR\"] { yield item }\nshow(value)",
+    "witness": "for_expression",
+    "value": "RP16_FOR_EXPR"
+  },
+  {
+    "role": "expression",
+    "kind": "RepeatStmt",
+    "source": "let value = repeat 2 as index { yield index }\nshow(value)",
+    "witness": "repeat_expression",
+    "value": "index"
+  },
+  {
+    "role": "expression",
+    "kind": "MenuStmt",
+    "source": "let value = menu(\"RP16_MENU_EXPR\") { case \"A\" { yield \"RP16_MENU_EXPR_A\" } case \"B\" { yield \"RP16_MENU_EXPR_B\" } }\nshow(value)",
+    "witness": "menu_expression",
+    "value": "RP16_MENU_EXPR"
+  }
+]

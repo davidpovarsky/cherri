@@ -404,8 +404,18 @@ func (l *Lowerer) emitMenuEnd(groupUUID string, outputUUID string) *ir.NativeAct
 
 // LowerProgramToSession compiles an AST Program into the configured backend.Session.
 func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+	if err := validateLoweringProgram(prog); err != nil {
+		return err
+	}
 	if err := l.ensureModuleGraph(prog); err != nil {
 		return err
+	}
+	for _, module := range l.moduleGraph.Modules {
+		if module.Program != nil && module.Program != prog {
+			if err := validateLoweringProgram(module.Program); err != nil {
+				return err
+			}
+		}
 	}
 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
 	if l.exprTypes == nil || l.enumValues == nil {
