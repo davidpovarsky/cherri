@@ -125,7 +125,11 @@ func TestP15OptionalDictionaryRejectsUnprovenOrigins(t *testing.T) {
 			if err := p15OptionalDictionaryBoundaryError(p15TypeDiagnostics(t, tc.source), tc); err != nil {
 				t.Fatal(err)
 			}
-			if raw, err := CompileSourceToPlist("p15-unproved-dictionary.cherri", tc.source); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
+			code := analysis.CodeTargetValueShape
+			if tc.name == "duplicate_key" {
+				code = "E_DUPLICATE_KEY"
+			}
+			if raw, err := CompileSourceToPlist("p15-unproved-dictionary.cherri", tc.source); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), code) {
 				t.Fatalf("unproved Dictionary value emitted bytes=%d error=%v", len(raw), err)
 			}
 			svc := service.NewService(nil)

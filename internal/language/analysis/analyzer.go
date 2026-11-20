@@ -32,6 +32,7 @@ type Symbol struct {
 	flowType              types.Type
 	optionalPresence      bool
 	knownAbsent           bool
+	dictionaryOrigin      *syntax.MapExpr
 	nativeReferenceTarget bool
 }
 
@@ -92,6 +93,8 @@ type Analyzer struct {
 	exprTypes              map[syntax.Expression]types.Type
 	exprPresence           map[syntax.Expression]bool
 	exprAbsent             map[syntax.Expression]bool
+	dictionaryOrigins      map[syntax.Expression]*syntax.MapExpr
+	dictionaryIndexes      map[syntax.Expression]bool
 	targets                []string
 	hasExplicitTarget      bool
 	minTargetVersion       float64
@@ -352,6 +355,8 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
 	a.exprPresence = make(map[syntax.Expression]bool)
 	a.exprAbsent = make(map[syntax.Expression]bool)
+	a.dictionaryOrigins = make(map[syntax.Expression]*syntax.MapExpr)
+	a.dictionaryIndexes = make(map[syntax.Expression]bool)
 	defer func() { a.analyzing = false }()
 	a.analyzeModuleDependencies()
 	a.expandCopyPaste(prog)
@@ -816,6 +821,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			Initialized:           s.Value != nil,
 			Span:                  s.Span,
 		}
+		if !s.Mutable {
+			symbol.dictionaryOrigin = a.dictionaryOrigins[s.Value]
+		}
 		narrowAssignedValue(symbol, valType)
 		scope.Define(symbol)
 
@@ -1112,6 +1120,7 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	}
 	delete(a.exprPresence, expr)
 	t := a.analyzeExpressionInternal(expr, scope)
+	a.recordDictionaryProvenance(expr, scope)
 	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
 	a.exprAbsent[expr] = false
 	switch node := expr.(type) {

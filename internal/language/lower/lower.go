@@ -102,6 +102,7 @@ type Lowerer struct {
 	optionalFunctionReturn     bool
 	optionalExpressionPresence map[syntax.Expression]interface{}
 	optionalPresenceDemand     map[*syntax.BindingStmt]bool
+	knownDictionaryIndexes     map[syntax.Expression]bool
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -159,6 +160,11 @@ func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
 // SetTypeAnnotations preserves the defining module's analyzed alias meaning.
 func (l *Lowerer) SetTypeAnnotations(annotations map[syntax.TypeAnnotation]types.Type) {
 	l.typeAnnotations = annotations
+}
+
+// SetKnownPresentDictionaryIndexes supplies exact source-owned slot facts.
+func (l *Lowerer) SetKnownPresentDictionaryIndexes(indexes map[syntax.Expression]bool) {
+	l.knownDictionaryIndexes = indexes
 }
 
 // SetEnumValues supplies exact enum literals resolved without AST mutation.
@@ -429,7 +435,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 	}
 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
-	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil {
+	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil || l.knownDictionaryIndexes == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
 		analyzer.SetModuleGraph(l.moduleGraph)
 		analyzer.Analyze(prog)
@@ -448,6 +454,9 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 		if l.typeAnnotations == nil {
 			l.typeAnnotations = analyzer.TypeAnnotations()
+		}
+		if l.knownDictionaryIndexes == nil {
+			l.knownDictionaryIndexes = analyzer.KnownPresentDictionaryIndexes()
 		}
 		if l.isMac == nil {
 			l.isMac = analyzer.IsMacTarget()
@@ -3863,7 +3872,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 
 	case *syntax.IndexExpr:
-		targetVal, err := l.lowerExpression(e.Target)
+		// An indexed literal is an authored runtime value. Reuse typed Dictionary
+		// materialization, including sibling captures and explicit empty fields.
+		targetVal, err := l.lowerRuntimeLiteral(e.Target)
 		if err != nil {
 			return nil, err
 		}

@@ -127,7 +127,7 @@ func p15OptionalIndexNegatives() []p15OptionalIndexNegative {
 		{"dynamic_call", `let selected:Text?=["ready"][number(0)]`, `["ready"][number(0)]`, nil},
 		{"dynamic_binding", `let index=0;let selected:Text?=["ready"][index]`, `["ready"][index]`, nil},
 		{"target_alias", `let values=["ready"];let selected:Text?=values[0]`, `values[0]`, nil},
-		{"map_lookup", `let selected:Text?={"key":"ready"}["key"]`, `{"key":"ready"}["key"]`, nil},
+		{"map_lookup", `var values={"key":"ready"};let selected:Text?=values["key"]`, `values["key"]`, nil},
 		{"optional_element", `let maybe:Text?=none;let selected:Text?=[maybe][0]`, `[maybe][0]`, []string{"maybe"}},
 		{"optional_result_element", `function maybe()->Text?{return none};let selected:Text?=[maybe()][0]`, `[maybe()][0]`, []string{"maybe()"}},
 		{"opaque_element", `let selected:AnyContent?=[native.action("is.workflow.actions.nothing",{})][0]`, `[native.action("is.workflow.actions.nothing",{})][0]`, nil},

@@ -23,6 +23,9 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
 	case *syntax.CallExpr:
 		return a.exprPresence[expr]
 	case *syntax.IndexExpr:
+		if a.dictionaryIndexes[expr] {
+			return true
+		}
 		element, known := syntax.StaticListElement(node)
 		return known && types.DefinitelyPresent(a.exprTypes[element])
 	}

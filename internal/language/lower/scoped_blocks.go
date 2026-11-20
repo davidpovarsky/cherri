@@ -261,6 +261,9 @@ func (r *scopedBlockRenamer) expression(expression syntax.Expression, names map[
 				r.lowerer.enumValues[result] = value
 			}
 		}
+		if result != nil && r.lowerer.knownDictionaryIndexes[expression] {
+			r.lowerer.knownDictionaryIndexes[result] = true
+		}
 		if result != nil && r.lowerer.exprTypes != nil {
 			if inferred, found := r.lowerer.exprTypes[expression]; found {
 				r.lowerer.exprTypes[result] = inferred

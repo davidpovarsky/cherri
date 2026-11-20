@@ -87,6 +87,9 @@ func (l *Lowerer) assignOptionalPresence(binding BindingRef, assignment *syntax.
 // element type proves a value. The existing List/index lowering still runs
 // exactly once, including every authored sibling effect and bounds guard.
 func (l *Lowerer) staticIndexHasPresentValue(expr syntax.Expression) bool {
+	if l.knownDictionaryIndexes[expr] {
+		return true
+	}
 	element, known := syntax.StaticListElement(expr)
 	return known && types.DefinitelyPresent(l.exprTypes[element])
 }
