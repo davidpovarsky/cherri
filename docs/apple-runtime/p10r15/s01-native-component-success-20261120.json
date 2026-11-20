@@ -1,0 +1,152 @@
+{
+  "schema_version": "1",
+  "kind": "SOURCE_BOUND_NATIVE_COMPONENT_SUCCESS",
+  "implementation_sha": "da0ba0e5e49a1be56f97b725f33ff56e3a2c91af",
+  "run": {
+    "id": 44671266567,
+    "attempt": 1,
+    "repository": "davidpovarsky/cherri",
+    "workflow": "iOS 27 Shortcuts Runtime PoC",
+    "workflow_path": ".github/workflows/ios27-shortcuts-runtime-poc.yml",
+    "event": "workflow_dispatch",
+    "head_sha": "da0ba0e5e49a1be56f97b725f33ff56e3a2c91af",
+    "conclusion": "success",
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/44671266567",
+    "job_id": 136072546163,
+    "started_at": "2026-11-20T03:58:33Z",
+    "completed_at": "2026-11-20T04:28:34Z"
+  },
+  "original_artifact": {
+    "id": 14601920849,
+    "zip_bytes": 136750,
+    "zip_sha256": "bd01c1decea628db91d4569de32f845c5cd5c61ff8d29ff9cf9dc52b3c393490",
+    "retained_file_count": 32,
+    "api_digest_and_size_verified": true,
+    "original_bytes_preserved": true
+  },
+  "coverage": {
+    "fixture_id": "CherriS01F01CoveragePOC",
+    "source_sha256": "4a13f90af2bdc326e24f9dbf785f76a1ae41043e176b5a3188ab794694a19aa3",
+    "expected_contract_sha256": "8baa3279a770ca20e3daa6036f416360a308d6f40eb1dd0874a38afeb7d0b10c",
+    "signed_artifact_sha256": "a3126383e4cd2afa905051939826d235db5b4d264e4ed692767c4a18d3eea06d",
+    "observed_clipboard_sha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+    "expected_clipboard_sha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+    "observed_byte_count": 313,
+    "expected_byte_count": 313,
+    "exact_output_match": true,
+    "fresh_reset_observed": true,
+    "result": "passed",
+    "exit_code": 0
+  },
+  "unchanged_original_K_fixture_and_golden": true,
+  "observed_fields": {
+    "S01_OUTPUT": "שָׁלוֹם👩‍💻é|α|אבב|éα|🌍🌍||￼🙂αבéαשָׁ🌍",
+    "F01_TRACE": "START|OR_TRUE|OR_FALSE|NEST_OR|NEST_AND|MIX_LEFT|MIX_RIGHT",
+    "F01_RESULTS": "and_skip=F|or_skip=T|false_or_true=T|false_or_false=F|nested_or=T|nested_and=F|outer_and=F|outer_or=T|mixed_run=T"
+  },
+  "runtime_environment": {
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPhone-16",
+    "created_by_run": true,
+    "cleanup_status": "DELETED",
+    "shutdown_exit_code": 0,
+    "delete_exit_code": 0
+  },
+  "raw_diagnostics": {
+    "records": 17,
+    "passed": 17,
+    "formal_memberships_not_broadened": true
+  },
+  "production_replay": {
+    "implementation_sha": "da0ba0e5e49a1be56f97b725f33ff56e3a2c91af",
+    "run_id": "44671266567",
+    "native_scope": "SOURCE_BOUND_COMPONENT_ONLY",
+    "coverage_exact_bytes": 313,
+    "coverage_sha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+    "raw_diagnostics_pass": 17,
+    "formal_records": 6,
+    "formal_requirements": [
+      "F01",
+      "FN01",
+      "FN02",
+      "FN03",
+      "L02",
+      "L04",
+      "N01",
+      "S01",
+      "V01",
+      "V03"
+    ],
+    "formal_bytes_reproduced": true,
+    "published_bytes_reproduced": true,
+    "published_files": 31,
+    "owned_device_cleanup": "DELETED",
+    "formal_evidence_sha256": "0ec54ce7532a0938fec23e791a76ee3d5de3fe3da64f3222bb2b783a05b91f31",
+    "source_clean": true
+  },
+  "go_intake": {
+    "command": "go run ./tools/language-acceptance --evidence <original-records-wrapper.json> --phase local --out <runtime-intake-report.json>",
+    "execution_receipt_sha256": "122821ed1131de180cdf94fa712e23464984b4dbcb33e45a41f718cba07baa4a",
+    "exit_code": 1,
+    "elapsed_seconds": 16.907,
+    "wrapper_sha256": "5e81336060173e76e594655531b32a4196faf8ec680b5eff9585dcc80318b711",
+    "report_sha256": "b35404bcaa7e1ed4e949789cd09c891411185dcda64c8c9524975bf69fc69670",
+    "executed_runtime_requirement_ids": [
+      "F01",
+      "FN01",
+      "FN02",
+      "FN03",
+      "L02",
+      "L04",
+      "N01",
+      "S01",
+      "V01",
+      "V03"
+    ],
+    "missing_local_tier_errors": 174,
+    "other_validation_errors": 0,
+    "closure_complete": false,
+    "standalone_intake_case_counts": {
+      "total": 179,
+      "passed": 0,
+      "failed_due_to_absent_local_evidence": 174,
+      "skipped": 5
+    }
+  },
+  "original_file_sha256": {
+    "run.json": "029a974603af8197efcc78af8df6d6e112abf1e998027c9cff9c25e22fb3d7d5",
+    "jobs.json": "f6c54cf37aad6f098bcac2b606310a9e5176786a6ebba8c45cdf57ce71cbccd6",
+    "artifacts.json": "f89ba580e58ea0f17d5971f172cd437c3b1b49c7c6180a3436ecbceec9c6221e",
+    "job.log": "a1825a741b6d79e1033ffc606e2ed146cf49f518cf8505fba238dffeb2c39f60",
+    "retention.json": "5440238f3c80fe5dccbf6866af3f287d3588f059848b665996262a1e9bad68f6",
+    "observer-exporter-publication-replay.json": "9020816de1751472d09ce5ce9eae92160af76474a43952c6f97b1c6d1c3be8f7",
+    "runtime-intake.stdout.log": "54cf11b8e13d42670bc0b44d1603a4d6c6e19828f45efd828245c8dd794b7012",
+    "runtime-intake.stderr.log": "bf05a2ed1e6ff1ca52a9863bab4a8833d5068953dd57362001f6462ff43f7cfc"
+  },
+  "published_file_sha256": {
+    "runtime-evidence.json": "0ec54ce7532a0938fec23e791a76ee3d5de3fe3da64f3222bb2b783a05b91f31",
+    "runtime-diagnostics.json": "51891d4a2393955c216cb35c5c6bdcb806fd43613780ee423fac873a44dc7210",
+    "publication-manifest.json": "1cd82bda8dccd25dfb90dba42d0e9fad400502c9ee582d110e1e5a17d8b966e9",
+    "runtime-poc-source-provenance.json": "eac52c84f706df477853d65b0c89056ab259b7d163da186af925506ef8182849",
+    "runtime-poc-signing-provenance.json": "cb9715931f3af8fa8c70d57ccb748690123da80027b929856096d0b74e576474",
+    "runtime-poc-device.json": "609a8696ea8037708a7e5d8b803b783bb07c03b6edfeb0722e7a5d703e25fe9d",
+    "coverage-run-context.json": "dd04dd6350ce4f48a370754345da922d3d39963322f5c19a8f54fc5801a8bce9",
+    "coverage-reset-proof.json": "0657831f633e9d28ad170ba9d77fb4441a54f25738c90fc35827ea0d3b4b0f67",
+    "coverage-result.json": "b8a257d993ff6251986ccfb749ac96193e52a017c33980c4639cf16fd2a19772"
+  },
+  "signing_scope": {
+    "reviewed_public_sources": 5,
+    "per_run_opt_in": true,
+    "method": "hubsign",
+    "receipt_verification_tier": "AEA1_HEADER_PASS",
+    "actual_import_and_execution_observed": true,
+    "cryptographic_verifier_not_claimed": true
+  },
+  "limitations": [
+    "This component evidence belongs only to da0ba0e5e49a1be56f97b725f33ff56e3a2c91af.",
+    "No final R4 source, consumer tuple, full iOS app or physical-device acceptance is inherited.",
+    "The six formal rows cover only their ten registered runtime facets; all required local and other external tiers remain mandatory.",
+    "Original failed K run 44653155762 and its 302-byte coverage observation remain unchanged."
+  ],
+  "asana_stage_comment_id": "1220729830813035"
+}
