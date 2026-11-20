@@ -29,6 +29,7 @@ CONTROL_NAMES = {
     "pre_cancelled_request_does_not_compile", "current_generic_error",
     "stale_after_catalog_await_cannot_write", "cancelled_analysis_does_not_publish",
     "current_signed_adapter_publication",
+    "unicode_snapshot_without_replacement", "unsigned_success_clears_previous_signed_url",
 }
 
 def sha(data: bytes) -> str:

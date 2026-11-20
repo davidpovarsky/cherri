@@ -19,7 +19,7 @@ class EditorPublicationProbeIntakeTests(unittest.TestCase):
 
     def test_synthetic_complete_parser_control(self):
         controls, summary = probe.inspect_output("\n".join(json.dumps(row) for row in self.control_rows()).encode())
-        self.assertEqual(len(controls), 24)
+        self.assertEqual(len(controls), 26)
         self.assertEqual(summary["failed"], 0)
 
     def test_rejects_selection_scope_and_summary_mutations(self):

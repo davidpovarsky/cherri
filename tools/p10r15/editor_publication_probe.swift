@@ -247,6 +247,23 @@ struct ProbeCompletionPlan: Sendable {
     }
 
     static func additionalWorkspaceControls() async {
+
+        do {
+            let harness = WorkspaceHarness(); harness.document.text = "\u{00e9}"
+            let old = ProbeCompilePlan(source: "\u{00e9}", outcome: .success("STALE_UNICODE"))
+            CherriCompiler.compilePlans.append(old)
+            let task = Task { await harness.build(signed: false, liveBuild: true) }
+            await old.started.wait(); harness.document.text = "e\u{0301}"
+            await old.release.release(); await task.value
+            emit("unicode_snapshot_without_replacement", harness.compiled == nil, observe(harness)); reset()
+        }
+        do {
+            let harness = WorkspaceHarness()
+            harness.signedURL = URL(fileURLWithPath: "/controlled-no-file-write/PREVIOUS_SIGNED")
+            await healthy(harness, source: "new", marker: "NEW_UNSIGNED")
+            emit("unsigned_success_clears_previous_signed_url", harness.compiled?.name == "NEW_UNSIGNED" && harness.signedURL == nil, observe(harness)); reset()
+        }
+
         do {
             let harness = WorkspaceHarness(); harness.document.text = "old"
             let old = ProbeCompilePlan(source: "old", outcome: .success("OLD_MANUAL"))
@@ -376,7 +393,7 @@ struct ProbeCompletionPlan: Sendable {
         await workspaceControls()
         await additionalWorkspaceControls()
         await completionControls()
-        precondition(controls == 24)
+        precondition(controls == 26)
         print("{\"event\":\"summary\",\"controls\":\(controls),\"failed\":\(failures),\"uiExecuted\":false,\"realCompilerExecuted\":false}")
         if failures != 0 { exit(1) }
     }
