@@ -1,0 +1,133 @@
+name: P10R15 Packaging Evidence
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p10r15-packaging-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-extracted-install:
+    name: Actual ${{ matrix.requirement }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - requirement: RP42
+            outer_timeout: 10m
+            seconds: 660
+          - requirement: RP44
+            outer_timeout: 14m
+            seconds: 900
+          - requirement: RP45
+            outer_timeout: 22m
+            seconds: 1380
+    env:
+      GOMAXPROCS: '2'
+      GOFLAGS: '-p=2'
+      GOWORK: 'off'
+      GIT_NO_REPLACE_OBJECTS: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.x'
+      - name: Execute complete source-bound component and strict intake
+        env:
+          P15_REQUIREMENT: ${{ matrix.requirement }}
+          P15_GO_TIMEOUT: ${{ matrix.outer_timeout }}
+          P15_PROCESS_SECONDS: ${{ matrix.seconds }}
+          P15_EXPECTED_SOURCE: ${{ github.sha }}
+          CHERRI_EXTRACTED_INSTALL_EVIDENCE_OUTPUT: ${{ runner.temp }}/cherri-packaging-${{ matrix.requirement }}/actual-artifacts
+        run: |
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, signal, subprocess, time
+          root = pathlib.Path.cwd()
+          requirement = os.environ['P15_REQUIREMENT']
+          expected = os.environ['P15_EXPECTED_SOURCE']
+          evidence = pathlib.Path(os.environ['CHERRI_EXTRACTED_INSTALL_EVIDENCE_OUTPUT']).parent
+          assert requirement in ('RP42', 'RP44', 'RP45')
+          assert not evidence.exists(), 'evidence directory already exists'
+          evidence.mkdir(parents=True)
+          def git(*args):
+              return subprocess.check_output(['git', '--no-replace-objects', *args], cwd=root, text=True).strip()
+          source = git('rev-parse', 'HEAD')
+          assert source == expected and not git('status', '--porcelain'), 'source must be exact and clean'
+          command = ['go', 'test', '-count=1', '-json', '-timeout', os.environ['P15_GO_TIMEOUT'], './tools/language-acceptance',
+                     '-run', '^TestExtractedInstall(ProducerInventory|EventParserControls|ActualProductionEvidence)$/^' + requirement + '$']
+          started = time.monotonic()
+          receipt = {'format_version': 1, 'requirement': requirement, 'source_before': source, 'clean_before': True,
+                     'command': command, 'go_version': subprocess.check_output(['go', 'version'], text=True).strip(),
+                     'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                     'workflow_run_id': os.environ['GITHUB_RUN_ID'], 'workflow_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                     'workflow_ref': os.environ['GITHUB_WORKFLOW_REF'], 'ref': os.environ['GITHUB_REF'],
+                     'workflow_sha256': hashlib.sha256((root / '.github/workflows/p10r15-packaging-evidence.yml').read_bytes()).hexdigest(),
+                     'scope': 'Complete actual component proof only; final integrated formal179 and published consumer tuple must run independently.'}
+          (evidence / 'command.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          timed_out = False
+          with (evidence / 'go-test.jsonl').open('wb') as out, (evidence / 'go-test.stderr').open('wb') as err:
+              process = subprocess.Popen(command, cwd=root, stdout=out, stderr=err, start_new_session=True)
+              try:
+                  code = process.wait(timeout=int(os.environ['P15_PROCESS_SECONDS']))
+              except subprocess.TimeoutExpired:
+                  timed_out = True
+                  # Only descendants of this owned Go command are considered.
+                  parents = {}
+                  for status in pathlib.Path('/proc').glob('[0-9]*/status'):
+                      try:
+                          fields = dict(line.split(':', 1) for line in status.read_text().splitlines() if ':' in line)
+                          parents[int(status.parent.name)] = int(fields['PPid'].strip())
+                      except (OSError, ValueError, KeyError):
+                          pass
+                  owned = {process.pid}
+                  while True:
+                      descendants = {pid for pid, parent in parents.items() if parent in owned}
+                      if descendants <= owned:
+                          break
+                      owned |= descendants
+                  for pid in sorted(owned - {process.pid}, reverse=True):
+                      try: os.kill(pid, signal.SIGKILL)
+                      except ProcessLookupError: pass
+                  try: os.killpg(process.pid, signal.SIGKILL)
+                  except ProcessLookupError: pass
+                  code = process.wait(timeout=15)
+          receipt.update(exit_code=code, timed_out=timed_out, elapsed_seconds=time.monotonic() - started,
+                         completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                         source_after=git('rev-parse', 'HEAD'), clean_after=not git('status', '--porcelain'))
+          receipt['artifacts'] = {name: {'bytes': (evidence / name).stat().st_size,
+                                        'sha256': hashlib.sha256((evidence / name).read_bytes()).hexdigest()}
+                                  for name in ('go-test.jsonl', 'go-test.stderr')}
+          (evidence / 'process-result.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          assert code == 0 and not timed_out and receipt['clean_after'] and receipt['source_after'] == expected, 'actual component process failed'
+          events = [json.loads(line) for line in (evidence / 'go-test.jsonl').read_text(encoding='utf-8').splitlines()]
+          assert not any(event.get('Action') in ('fail', 'skip') for event in events), 'failed/skipped component event'
+          test = 'TestExtractedInstallActualProductionEvidence/' + requirement
+          assert sum(event.get('Action') == 'pass' and event.get('Test') == test for event in events) == 1
+          output = ''.join(event.get('Output', '') for event in events if event.get('Test') == test)
+          marker = 'P15_EXTRACTED_INSTALL_PRODUCTION_RECEIPT:'
+          proofs = [json.loads(line.split(marker, 1)[1]) for line in output.splitlines() if marker in line]
+          assert len(proofs) == 1, 'missing/duplicate complete actual receipt'
+          proof = proofs[0]
+          assert proof['requirement'] == requirement and proof['source_sha'] == expected
+          assert proof['report']['passed_cases'] == 1 and not proof['report']['closure_complete']
+          assert len(proof['records']) == 2 and all(record['requirements'] == [requirement] for record in proof['records'])
+          (evidence / 'component-proof.json').write_text(json.dumps(proof, indent=2) + '\n')
+          print(json.dumps({'requirement': requirement, 'source': expected, 'actual_component': 'PASS', 'scope': receipt['scope']}))
+          PY
+      - name: Retain original component output and artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p10r15-packaging-${{ matrix.requirement }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-packaging-${{ matrix.requirement }}
+          if-no-files-found: error
+          retention-days: 30

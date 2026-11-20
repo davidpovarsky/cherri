@@ -31,7 +31,7 @@ func p15ExtractedRequireRole(t *testing.T, binary, sourceSHA, module string) {
 }
 
 // These controls use two real clean builds with identical language contracts.
-// Reconciled sidecars cannot turn the earlier build into the pinned source.
+// Reconciled sidecars cannot turn the distinct same-tree build into the pinned source.
 func TestP15RP45InstalledBinaryOwnership(t *testing.T) {
 	f := p15ExtractedFixture(t, "RP45", false)
 	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
@@ -45,11 +45,18 @@ func TestP15RP45InstalledBinaryOwnership(t *testing.T) {
 	if output, err := p15InstallRun(t, doctor, f.env); err != nil {
 		t.Fatalf("healthy real pair: %v\n%s", err, output)
 	}
-	previous := "55f0398d2794c6f730976c5e954a5a13031918aa"
-	if previous == f.sourceSHA {
-		t.Fatal("source control requires a distinct earlier clean build")
+	// A real distinct same-tree commit isolates source identity even after
+	// later semantic changes alter the current capability fingerprints.
+	otherRepo := filepath.Join(t.TempDir(), "same-tree-source")
+	p15ExtractedGit(t, f.root, "clone", "--quiet", "--shared", "--no-checkout", f.root, otherRepo)
+	p15ExtractedGit(t, otherRepo, "config", "core.autocrlf", "false")
+	p15ExtractedGit(t, otherRepo, "checkout", "--quiet", "--detach", f.sourceSHA)
+	p15ExtractedGit(t, otherRepo, "-c", "user.name=Cherri-QA", "-c", "user.email=qa@example.invalid", "commit", "--allow-empty", "-qm", "Distinct clean source identity control")
+	previous := p15ExtractedRevision(t, otherRepo)
+	if previous == f.sourceSHA || !bytes.Equal(p15ExtractedGit(t, otherRepo, "rev-parse", "HEAD^{tree}"), p15ExtractedGit(t, f.root, "rev-parse", "HEAD^{tree}")) {
+		t.Fatal("source control requires distinct real commits with identical trees")
 	}
-	oldCompiler := p15PackageBuild(t, f.root, previous)
+	oldCompiler := p15ExtractedBuild(t, otherRepo, previous, ".")
 	p15ExtractedRequireRole(t, oldCompiler, previous, "github.com/electrikmilk/cherri")
 	var contracts [2]map[string]any
 	for i, binary := range []string{f.compiler, oldCompiler} {
@@ -69,8 +76,8 @@ func TestP15RP45InstalledBinaryOwnership(t *testing.T) {
 	if p15ExtractedHash(t, f.compiler) == p15ExtractedHash(t, oldCompiler) {
 		t.Fatal("distinct source builds unexpectedly have identical bytes")
 	}
-	f.receipt["earlier_compiler_source"] = previous
-	f.receipt["earlier_compiler_sha256"] = p15ExtractedHash(t, oldCompiler)
+	f.receipt["distinct_compiler_source"] = previous
+	f.receipt["distinct_compiler_sha256"] = p15ExtractedHash(t, oldCompiler)
 	for _, tc := range []struct {
 		name, diagnostic string
 		mutate           func(t *testing.T)
@@ -79,7 +86,7 @@ func TestP15RP45InstalledBinaryOwnership(t *testing.T) {
 			p15InstallWrite(t, f.compiler, p15InstallRead(t, oldCompiler))
 			p15InstallWrite(t, f.compiler+".sha256", []byte(p15ExtractedHash(t, f.compiler)+"\n"))
 			// The forged sidecar claims the desired current commit; the actual
-			// Go binary still independently identifies the earlier clean commit.
+			// Go binary still independently identifies the distinct clean commit.
 			p15InstallWrite(t, f.compiler+".commit", []byte(f.sourceSHA+"\n"))
 		}},
 		{"wrong_migration_role", "tool role", func(t *testing.T) {
