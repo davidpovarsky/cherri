@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "fixture_id": "qa-optional-forwarding-diagnostic-v2",
+  "source_path": "tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.cherri",
+  "source_sha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+  "diagnostic_prefix": "CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:",
+  "field_order": [
+    "NONE",
+    "EMPTY_TEXT",
+    "FALSE",
+    "ZERO",
+    "EMPTY_LIST",
+    "EMPTY_MAP",
+    "LIST",
+    "MAP",
+    "SNAPSHOT",
+    "WRITTEN",
+    "DEFAULT"
+  ],
+  "expected_fields": {
+    "NONE": "NONE",
+    "EMPTY_TEXT": "TEXT[]",
+    "FALSE": "BOOL[false]",
+    "ZERO": "NUMBER[0]",
+    "EMPTY_LIST": "LIST[0]",
+    "EMPTY_MAP": "MAP[0]",
+    "LIST": "LIST[2|A|B]",
+    "MAP": "MAP[1|VALUE|Dictionary]",
+    "SNAPSHOT": "NONE",
+    "WRITTEN": "TEXT[]",
+    "DEFAULT": "TEXT[DEFAULT]"
+  },
+  "expected_summary": "CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:NONE=NONE:EMPTY_TEXT=TEXT[]:FALSE=BOOL[false]:ZERO=NUMBER[0]:EMPTY_LIST=LIST[0]:EMPTY_MAP=MAP[0]:LIST=LIST[2|A|B]:MAP=MAP[1|VALUE|Dictionary]:SNAPSHOT=NONE:WRITTEN=TEXT[]:DEFAULT=TEXT[DEFAULT]",
+  "expected_summary_sha256": "86c2f4ae634e41a462d7b273f76513bd667a5f667f726f510885f54310585a1b",
+  "trace_run_id": "qa-optional-forwarding-diagnostic-v2",
+  "trace_label": "optional-forwarding",
+  "formal_requirements_proved": [],
+  "runtime_status": "NOT_RUN",
+  "scope": "Public synthetic diagnostic of tagged Optional argument/result forwarding, explicit None versus empty Text/false/zero/empty containers, populated flat container payloads, omitted default and earlier-argument snapshot. Expected Dictionary is the English native type label for the populated map. Actual observed fields and NDJSON trace must be preserved even on contradiction. No general value-join, nested-container, File, native acceptance or full requirement closure is established."
+}
