@@ -26,7 +26,7 @@ func p15E05SnapshotError(response protocol.AnalyzeResponse, uri string, maximum 
 	}
 	name := fmt.Sprintf("missingVersion%04d", response.Version)
 	diagnostic := response.Diagnostics[0]
-	if diagnostic.Code != "E_UNKNOWN_NAME" || diagnostic.Severity != "error" || !strings.Contains(diagnostic.Message, name) ||
+	if diagnostic.Code != "E_UNKNOWN_NAME" || diagnostic.Severity != "ERROR" || !strings.Contains(diagnostic.Message, name) ||
 		diagnostic.Range.Start.Line != 0 || diagnostic.Range.Start.Character != 5 ||
 		diagnostic.Range.End.Line != 0 || diagnostic.Range.End.Character != 5+len(name) {
 		return fmt.Errorf("active version%d and diagnostic are from different snapshots: %+v", response.Version, diagnostic)
