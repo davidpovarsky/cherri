@@ -959,6 +959,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateUpstreamBoundaryRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateNumberWireRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1550,13 +1554,7 @@ func (r *Runner) runBaseline() {
 
 // Group 2: Upstream
 func (r *Runner) runUpstream() {
-	// U01: Preserve upstream declaration files
-	webBytes, errWeb := os.ReadFile(resolveRepoPath("actions/web.cherri"))
-	basicBytes, errBasic := os.ReadFile(resolveRepoPath("actions/basic.cherri"))
-	boundBytes, errBound := os.ReadFile(resolveRepoPath(filepath.Join("docs", "language-v2", "upstream-boundary.md")))
-	u01Passed := errWeb == nil && errBasic == nil && errBound == nil && len(webBytes) > 100 && len(basicBytes) > 100 && len(boundBytes) > 50
-	u01Detail := "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact"
-	r.Record("U01", "upstream", "Preserve upstream declaration files when build-time adapters suffice", "repository", []string{"repository"}, u01Passed, "PASSED", u01Detail)
+	r.runUpstreamBoundaryRequirement("U01", "Preserve upstream declaration files when build-time adapters suffice", []string{"repository"})
 
 	r.runSchemaGenerationRequirement()
 

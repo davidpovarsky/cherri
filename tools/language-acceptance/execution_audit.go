@@ -249,6 +249,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
 			row.Scope = scenario.Scope + "; actual Apple observations remain separately required"
 		}
+		if row.ID == "U01" {
+			row.TestNames = append([]string{}, upstreamBoundaryTests...)
+			row.ProductionPath = append([]string{}, upstreamBoundaryProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = upstreamBoundaryScope
+		}
 		if row.ID == "RP11" {
 			row.TestNames = append([]string{}, numberWireTests...)
 			row.ProductionPath = append([]string{}, numberWireProductionPaths...)

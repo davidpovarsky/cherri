@@ -261,6 +261,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "U01" {
+		return upstreamBoundaryTestIDs()
+	}
 	if scenario, found := loopAcceptanceScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -451,6 +454,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == "U01" {
+		return append([]string{}, upstreamBoundaryProductionPaths...)
+	}
 	switch group {
 	case "baseline":
 		return []string{"git:rev-parse:HEAD", "docs/language-v2/baseline-catalog.json"}
