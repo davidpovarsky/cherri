@@ -20,6 +20,7 @@ import time
 from retry_http_probe import LoopbackHTTPServer, atomic_json, require, sha, utc
 
 FIXTURES = {
+    "qa-json-body-file-utf8-v2": ("file-utf8", "8e69b72584bedbfc101c8b2e4cfec92e07afc70a47c7f9405abde9bea6a73247", "ea45b8953cd0cfbbcc10120f677f8b52b0b710ef6b7eea54bebb086af0f2286b"),
     "qa-json-body-control-v2": ("control", "292d75762a0bc9f6924bc3ec5f9f2649795043768f45405ceec4c6015ac25a6c", "e893d69244f75d85b4582fbcfb3216296d942850109795ff6b263a9548f05122"),
     "qa-json-body-null-candidate-v2": ("null-candidate", "6803a3efe34a1f374a255c948d9f401a752b0eec7bf55b6b492c4748b4bf50f0", "fb984a98169609c93962f86098b91f986169bdf31895b45e787e6c6cf8e20fc3"),
 }
@@ -79,6 +80,9 @@ def contract(repo, fixture, source=None):
             value["case"] == case and value["source_sha256"] == source_hash and
             value["runtime_status"] == "NOT_RUN" and value["formal_requirements_proved"] == [] and
             value["candidate_null_semantics"] == "NOT_ASSUMED", "FIXTURE_CONTRACT")
+    if value["case"] == "file-utf8":
+        from json_file_body_probe import validate_contract
+        validate_contract(value)
     return value
 
 
@@ -92,13 +96,19 @@ def verify_source(repo, fixture, source):
 
 
 def graph_receipt(value):
+    if value["case"] == "file-utf8":
+        from json_file_body_probe import graph_receipt as file_receipt
+        return file_receipt(value)
     return {"status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY", "nativeActionCount": 16, "httpActionCount": 2,
             "primaryMethod": "POST", "continuationMethod": "GET", "case": value["case"],
             "bodySha256": sha(json.dumps(value["expected_native_parameters"]["WFJSONValues"], sort_keys=True, separators=(",", ":")).encode()),
             "candidateNullSemantics": "NOT_ASSUMED", "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False}
 
 
-def mutation_receipt():
+def mutation_receipt(fixture=None):
+    if fixture == "qa-json-body-file-utf8-v2":
+        from json_file_body_probe import mutation_receipt as file_mutations
+        return file_mutations()
     return {"status": "PASS_LOCAL_NEGATIVE_CONTROLS", "rejected": list(CAUSAL_CONTROLS),
             "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False}
 
@@ -107,6 +117,9 @@ def verify_graph(repo, fixture, actions):
     value = contract(repo, fixture)
     if value is None:
         return None
+    if value["case"] == "file-utf8":
+        from json_file_body_probe import verify_graph as file_graph
+        return file_graph(value, fixture, actions)
     ids = ["comment", "nothing", "setvariable", "gettext", "appendvariable", "downloadurl",
            "downloadurl", "gettext", "comment", "gettext", "appendvariable", "text.combine",
            "gettext", "gettext", "comment", "output"]
@@ -196,6 +209,9 @@ def verify_mutations(repo, fixture, actions):
     if fixture not in FIXTURES:
         return None
     verify_graph(repo, fixture, actions)
+    if fixture == "qa-json-body-file-utf8-v2":
+        from json_file_body_probe import verify_mutations as file_mutations
+        return file_mutations(contract(repo, fixture), fixture, actions)
     indices = [i for i, a in enumerate(actions) if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.downloadurl"]
     first, second = indices
     def params(value, index=first):
@@ -494,7 +510,10 @@ def observation_status(receipt, runtime_ok):
 
 def validate_public_diagnostic(report, manifest, assertions, callback_bytes, repo=None):
     repo = repo or Path(__file__).resolve().parents[2]
-    require(isinstance(report, dict) and set(report) == {"schemaVersion", "fixtureId", "runNonce", "compilerSha", "sourceSha256", "expectedContractSha256", "unsignedPlistSha256", "callbackEventsSha256", "observedCallbackStatus", "runtimeContractVerified", "receipt", "observationStatus", "controlledBodyVerified", "candidateNullObserved", "formalAcceptanceGranted", "scope"}, "JSON_REPORT_FIELDS")
+    fields = {"schemaVersion", "fixtureId", "runNonce", "compilerSha", "sourceSha256", "expectedContractSha256", "unsignedPlistSha256", "callbackEventsSha256", "observedCallbackStatus", "runtimeContractVerified", "receipt", "observationStatus", "controlledBodyVerified", "candidateNullObserved", "formalAcceptanceGranted", "scope"}
+    if isinstance(report, dict) and report.get("fixtureId") == "qa-json-body-file-utf8-v2":
+        fields.add("rawUtf8BodyVerified")
+    require(isinstance(report, dict) and set(report) == fields, "JSON_REPORT_FIELDS")
     fixture, nonce, commit = report["fixtureId"], report["runNonce"], report["compilerSha"]
     identity(fixture, nonce, commit)
     value = contract(repo, fixture)
@@ -507,7 +526,7 @@ def validate_public_diagnostic(report, manifest, assertions, callback_bytes, rep
             rows[0].get("unsignedPlistSha256") == report["unsignedPlistSha256"] and isinstance(report["unsignedPlistSha256"], str) and
             HASH.fullmatch(report["unsignedPlistSha256"]) and rows[0].get("jsonBodySource") == verify_source(repo, fixture, (Path(repo) / "tools/shortcuts-simulator-qa/fixtures" / (fixture + ".cherri")).read_bytes()), "JSON_REPORT_SOURCE_BINDING")
     require(rows[0].get("jsonBodyGraph") == graph_receipt(value) and
-            rows[0].get("jsonBodyCausalMutations") == mutation_receipt(), "JSON_REPORT_GRAPH_BINDING")
+            rows[0].get("jsonBodyCausalMutations") == mutation_receipt(fixture), "JSON_REPORT_GRAPH_BINDING")
     require(assertions.get("targetFixtureId") == fixture and assertions.get("expectedRunId") == nonce and
             assertions.get("compilerCommitSha") == commit and assertions.get("compiledSourceSha256") == report["sourceSha256"] and
             assertions.get("unsignedPlistSha256") == report["unsignedPlistSha256"] and
@@ -534,6 +553,10 @@ def validate_public_diagnostic(report, manifest, assertions, callback_bytes, rep
     candidate = bool(controlled and value["candidate_null_field"] is not None and receipt["events"][0]["requestBody"]["candidateNullObserved"])
     require(report["observationStatus"] == result and type(report["controlledBodyVerified"]) is bool and report["controlledBodyVerified"] == controlled and
             type(report["candidateNullObserved"]) is bool and report["candidateNullObserved"] == candidate, "JSON_REPORT_FALSE_OBSERVATION")
+    if value["case"] == "file-utf8":
+        from json_file_body_probe import raw_body_exact
+        require(type(report["rawUtf8BodyVerified"]) is bool and
+                report["rawUtf8BodyVerified"] == raw_body_exact(report, value), "JSON_RAW_UTF8_FALSE_PASS")
     return report
 
 
@@ -557,6 +580,9 @@ def diagnose(root, repo, fixture, nonce, commit):
               "receipt": receipt, "observationStatus": result, "controlledBodyVerified": controlled,
               "candidateNullObserved": bool(controlled and value["candidate_null_field"] is not None and receipt["events"][0]["requestBody"]["candidateNullObserved"]),
               "formalAcceptanceGranted": False, "scope": "FIXED_PUBLIC_HTTP_BODY_OBSERVATION_ONLY"}
+    if value["case"] == "file-utf8":
+        from json_file_body_probe import raw_body_exact
+        report["rawUtf8BodyVerified"] = raw_body_exact(report, value)
     validate_public_diagnostic(report, manifest, assertions, callbacks, repo)
     atomic_json(root / "runtime/json-body-diagnostic.json", report)
     return report
@@ -587,7 +613,9 @@ def main():
         report = diagnose(args.root, repo, args.fixture, args.nonce, args.commit)
         print(json.dumps({"jsonBodyObservation": report["observationStatus"], "controlledBodyVerified": report["controlledBodyVerified"],
                           "candidateNullObserved": report["candidateNullObserved"], "formalAcceptanceGranted": False}))
-        return 0 if report["controlledBodyVerified"] else 2
+        # The additive File route has an exact-byte goal. Preserve the original
+        # Dictionary diagnostic truth even when its experimental key is absent.
+        return 0 if report.get("rawUtf8BodyVerified", report["controlledBodyVerified"]) else 2
     return 0
 
 

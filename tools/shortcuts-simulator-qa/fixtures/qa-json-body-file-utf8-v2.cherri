@@ -1,0 +1,15 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "json-body-file-utf8")
+// Fixed UTF8 JSON text uses the registered File request body route.
+// This diagnoses transport only; it does not encode compiler Optional values.
+let bodyText = text("{\"candidate_null\":null,\"empty_val\":\"\",\"max_tokens\":256,\"model\":\"CHERRI_JSON_BODY_SYNTHETIC\",\"nested\":{\"env\":\"prod\",\"flags\":[true,false],\"matrix\":[[1,2],[3,4]]},\"stream\":false,\"zero\":0,\"marker\":\"CHERRI_JSON_BODY_FILE_UTF8\"}")
+let response = fileRequest(f"http://127.0.0.1:{ShortcutInput}/file-utf8", method: "POST", body: bodyText, headers: {"Content-Type": "application/json"})
+downloadURL(f"http://127.0.0.1:{ShortcutInput}/continued")
+let semanticResult = text(f"CHERRI_QA_JSON_BODY_FILE_UTF8_RESULT:{response}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "json-body-file-utf8")
+let traceEnvelope = debugExportTrace(runId: "qa-json-body-file-utf8-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
