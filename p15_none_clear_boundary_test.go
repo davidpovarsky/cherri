@@ -154,7 +154,7 @@ func TestP15NoneClearingPreservesPresentEmptyValues(t *testing.T) {
 		name, typ, literal, action, key string
 		want                            any
 	}{
-		{"false", "Bool?", "false", "is.workflow.actions.number", "WFNumberActionNumber", uint64(0)},
+		{"false", "Bool?", "false", "is.workflow.actions.number", "WFNumberActionNumber", float64(0)},
 		{"zero", "Number?", "0", "is.workflow.actions.number", "WFNumberActionNumber", uint64(0)},
 		{"empty", "Text?", "\"\"", "is.workflow.actions.gettext", "WFTextActionText", ""},
 	} {
@@ -219,7 +219,7 @@ func TestP15NoneClearOracleRejectsCorruption(t *testing.T) {
 			case "empty_text":
 				bad[1] = map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.gettext", "WFWorkflowActionParameters": map[string]any{"WFTextActionText": ""}}
 			case "invented_output":
-				p15Param(bad[2])["WFOutput"] = "MUST_NOT_LEAK"
+				bad[2]["WFWorkflowActionParameters"] = map[string]any{"WFOutput": "MUST_NOT_LEAK"}
 			case "continued_instead":
 				bad[2] = map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.comment", "WFWorkflowActionParameters": map[string]any{"WFCommentActionText": "still running"}}
 			}
