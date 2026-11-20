@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "source": "8b70645542dac68219ac562465f135d21e57240f",
+  "testsSource": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+  "originalSource": "46d828b6f514ffb12222ff8125253e6ba9c9d415",
+  "actualPhase0": {
+    "source": "8b70645542dac68219ac562465f135d21e57240f",
+    "sourceCleanAfter": true,
+    "binarySHA256": "59fb40c42ef1774fa9d1a451b3c653865e264b6e2978a94c4439ec1448a13a4a",
+    "binaryBytes": 25441280,
+    "actualHeredocSHA256": "c6920c13cc5d2fbf19f3e099949dccfb712f4404c41b60302a26829b461554a0",
+    "processes": [
+      {
+        "label": "binding-tests",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "-m",
+          "unittest",
+          "-v",
+          "test_binding_defaults_probe"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-completion-r4-20261120\\tools\\shortcuts-simulator-qa",
+        "timeout": 90,
+        "exitCode": 0,
+        "elapsed": 3.6880000000237487,
+        "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSHA256": "5ffd7a080d22579b12e1877e66cefad2f9fbc898d5704037e9abd145f3db3900",
+        "stdoutBytes": 0,
+        "stderrBytes": 907
+      },
+      {
+        "label": "build",
+        "command": [
+          "go",
+          "build",
+          "-trimpath",
+          "-buildvcs=true",
+          "-o",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r5-phase0-clean-8b706455\\builds\\cherri.exe",
+          "."
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-completion-r4-20261120",
+        "timeout": 200,
+        "exitCode": 0,
+        "elapsed": 3.827999999979511,
+        "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      },
+      {
+        "label": "phase0",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r5-phase0-clean-8b706455\\actual-heredoc.py",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-completion-r4-20261120",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r5-phase0-clean-8b706455",
+          "8b70645542dac68219ac562465f135d21e57240f"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-completion-r4-20261120",
+        "timeout": 340,
+        "exitCode": 0,
+        "elapsed": 12.545999999972992,
+        "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      }
+    ],
+    "phase0Exit": 0,
+    "utc": "2026-11-20T12:42:00.193292+00:00",
+    "nativeRuntime": "NOT_RUN",
+    "formalAcceptanceGranted": false,
+    "manifest": {
+      "sha256": "030f891452c45787642d7c0bc6cd3fbc54e5a7892b739265d880d007545b2340",
+      "compileAttempts": 85,
+      "compiledArtifactCount": 83,
+      "expectedDiagnosticRejectionCount": 2
+    },
+    "bindingNativeActionCounts": {
+      "CherriBindingCapturePOC": 33,
+      "CherriTypedDefaultsPOC": 90
+    },
+    "fixtureIDsUnique": true
+  },
+  "onlyOriginalDiagnosticFailure": {
+    "fixture": "CherriTypedDefaultsPOC",
+    "validator": "verify_adapter_graph",
+    "exception": "ValueError",
+    "message": "BINDING_DEFAULTS_GRAPH_CONTRACT: single dispatcher closure"
+  },
+  "actualPythonTestsPassed": 4,
+  "retainedActualGraphMutationControls": 11,
+  "immutableSourceBodiesUnchanged": true,
+  "compilerProductionSourceUnchanged": true,
+  "actualHeredocUnchanged": true,
+  "artifactCount": 416,
+  "sourceWitnessCount": 866,
+  "archive": {
+    "path": "originals.zip",
+    "bytes": 1364467,
+    "sha256": "4c9013c49c039c370cdf793376ba54e0d752aaeae0f816c059fd86c7b23a9402"
+  },
+  "compiledArtifactCount": 83,
+  "expectedPreciseRejections": 2,
+  "nativeRuntime": "NOT_RUN",
+  "formalAcceptanceGranted": false,
+  "createdUTC": "2026-11-20T12:46:42.765113+00:00"
+}
