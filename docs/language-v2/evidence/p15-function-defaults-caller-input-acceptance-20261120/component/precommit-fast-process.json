@@ -1,0 +1,22 @@
+{
+  "source": "b27257b2f52b99fd1715271af810f012f719558c",
+  "source_clean": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^Test(FunctionDefaultProducerInventory|FunctionDefaultEventParserControls|NumberFunctionProducerInventory|Meta_UnitAndNativeCannotSatisfyIOSInFinal)$",
+    "./tools/language-acceptance"
+  ],
+  "started": "2026-11-20T07:51:06.936817+00:00",
+  "elapsed_seconds": 9.26500000001397,
+  "exit_code": 0,
+  "raw_sha256": "f513b19d3c54880315a987285711bc22f9d840e2776afa29f43edc791d34a1b2",
+  "pass": 363,
+  "fail": [],
+  "skip": [],
+  "status": "M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? tools/language-acceptance/function_default_execution.go\n?? tools/language-acceptance/function_default_execution_test.go"
+}

@@ -1,0 +1,353 @@
+{
+  "format_version": 1,
+  "requirement": "FN04",
+  "source_commit": "403e05fc4f479a52e2d0098670b1d6e85a27aee7",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "go.mod",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "internal/language/syntax/ast.go",
+      "sha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "88ac1b9aad06ccd467926b8d40394c7151bbc72aa42fdf081a965423ddb85f45"
+    },
+    {
+      "path": "internal/language/analysis/function_arguments.go",
+      "sha256": "5e4a3dfff3739b167da0dd1925e2c1a253bdee5e6a3d327fd3d0d76d48b366c4"
+    },
+    {
+      "path": "internal/language/analysis/optional_presence.go",
+      "sha256": "64f5e8b67aaccc1ce44e7168375900f22dfa157f93de8e29a9cc83abb6c7cd2f"
+    },
+    {
+      "path": "internal/language/analysis/optional_transport.go",
+      "sha256": "af87c40bed82141a8b67e48a8f5c39adeff89fb536f966a5ab663c919cdf2c7e"
+    },
+    {
+      "path": "internal/language/types/types.go",
+      "sha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31"
+    },
+    {
+      "path": "internal/language/types/optional_presence.go",
+      "sha256": "58e3a99cfc260c53d8ff77d6bff09ac22efe201425cc98f8b81cde80b30b1a9c"
+    },
+    {
+      "path": "internal/language/ir/ir.go",
+      "sha256": "165ace82a2892e24a3e5a36a1d7813abe0f83e5a97f204b060d9b23888bc994c"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "043336fa957f79a39f43c93c408d9ddfeb8a8d9bcf2a5a7379877a7a646465c7"
+    },
+    {
+      "path": "internal/language/lower/call_arguments.go",
+      "sha256": "f853ffe2d9393d01236cf55c1dc53ee5e6fdff39ee97b87ade3401f63f8e11a8"
+    },
+    {
+      "path": "internal/language/lower/function_defaults.go",
+      "sha256": "c46f1b5899be7c8a9d57cabf6092c25a034b863a6713642738b73f59226b0d6d"
+    },
+    {
+      "path": "internal/language/lower/function_optional_presence.go",
+      "sha256": "2f2afe2844e85a38c4f43b7f670028b268658e489176843382d3d64233925d13"
+    },
+    {
+      "path": "internal/language/lower/optional_presence_demand.go",
+      "sha256": "c2f34d201ed51c77c44170bfb70b360850673e3c7a88bb6f408f05284efe0e9e"
+    },
+    {
+      "path": "internal/language/lower/optional_transport.go",
+      "sha256": "89bec47fe371eb60a438fafdb1dbbf60fada364a662d840676527e7202bc06cf"
+    },
+    {
+      "path": "internal/language/lower/function_argument_containers.go",
+      "sha256": "7007ff4736f948e20ae4abcf037bc2d56ce0d67d814acba2090699f4760117ea"
+    },
+    {
+      "path": "internal/language/lower/container_evaluation_order.go",
+      "sha256": "0480f90116afe4a9cf4066e6f6d142c9a7dddef5877b253928eff1608777137e"
+    },
+    {
+      "path": "internal/language/lower/container_keys.go",
+      "sha256": "3398748f5fe18dfdd8027a28aa76ab27ffb7beb8ad9aeb9052e36cba628d2b16"
+    },
+    {
+      "path": "internal/language/lower/empty_list.go",
+      "sha256": "d8ca7c7c108dc968f70909568e1d2cc439d7c0408226e73fe98f90cbce10955e"
+    },
+    {
+      "path": "internal/language/lower/literal_list.go",
+      "sha256": "fe186015566a68af90ae7ee50821f40a65e5d4b4a52862805ef40af56ff0b541"
+    },
+    {
+      "path": "internal/language/lower/binding_capture.go",
+      "sha256": "20d197223c554c837e45d528187b227780a878bd380caa13714fa04b6a4e06be"
+    },
+    {
+      "path": "internal/language/lower/scoped_blocks.go",
+      "sha256": "ce3273d28b3809e0e5617337f547371529501999d46244d8d9b868846b782405"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "0186b42b4db6d1c867a57b5b470029c7a3a0afe7527df868ee51ec125764c9c0"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "9791afbe5129914661f4564a449d47d335ca21d4e573131e8e42c3bc47142da1"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "e371deca54c0b2944182b91d32f40a019ad767a3e57a52ae28b04117d0d02914"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "sha256": "d490e6a0b09629cd3cd9e8226481d086daed4f38455c84abfd40466b5c3dd260"
+    },
+    {
+      "path": "shared_codec.go",
+      "sha256": "57da3538aabbfe0a9ce7ad497181f546209d9b20eaef5774ef943a053ebb9bad"
+    },
+    {
+      "path": "shortcutgen.go",
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+    },
+    {
+      "path": "p15_function_default_boundary_test.go",
+      "sha256": "3ea86d8cbbd4d4c9d9f46edfd26873572c4fd6d215e8c735a743cef436746376"
+    },
+    {
+      "path": "p15_function_caller_input_test.go",
+      "sha256": "391c101483c25960c0c7302bf5e0f74343a22ec60fc3595cdb592ec2d781cf22"
+    },
+    {
+      "path": "p15_function_optional_map_default_test.go",
+      "sha256": "258c1ee9098ff4d248211d5a082c34f8ff2910c106e3c204e2f66197ba16f1ad"
+    },
+    {
+      "path": "p15_function_map_default_effect_test.go",
+      "sha256": "16d6236b34be1bd4c4b8cc3d582e54db8420705aca443f213386b7f68453545b"
+    },
+    {
+      "path": "p15_function_native_oracle_test.go",
+      "sha256": "fdc2a57f968dcdbfd95674956f3f88a8ad5baa5909faf98d655517e20c6adc4e"
+    },
+    {
+      "path": "p15_function_acceptance_test.go",
+      "sha256": "65d31430df004b9b93663889b2a400c6b777485aace3b06ef550bb7f0e0c15f2"
+    },
+    {
+      "path": "p15_function_optional_presence_test.go",
+      "sha256": "9ccf4ea4a042dd87f27a3f1ea76a83b96e89cbe78fc5d2c619265f7e932e27f6"
+    },
+    {
+      "path": "p15_container_shape_acceptance_test.go",
+      "sha256": "10b6447a4dfad1c19f53353456c4cc3cc1af3225c44c8e8e23884f1ac7b07438"
+    },
+    {
+      "path": "p15_types_acceptance_test.go",
+      "sha256": "16a78a20cd20415b00b669f019580d658ba83747c5a14d84c00d5819642693a6"
+    },
+    {
+      "path": "p15_short_circuit_test.go",
+      "sha256": "0ce9802e470d8a1b0e7f116294bfadaf21e2d311374225e2ecc78437e027bbe5"
+    },
+    {
+      "path": "p15_call_order_test.go",
+      "sha256": "339746c86c7ce026f6888a7ab226d6fe2602651fd61b554bbe091d1408ac91da"
+    },
+    {
+      "path": "p15_literal_collections_acceptance_test.go",
+      "sha256": "a9c9c675b23dcde1e18c459cf9f6ded3fc5a74ae1c01d75cc3469125fb52e27e"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tools/language-acceptance/function_default_execution.go",
+      "sha256": "ee3b8754f7f8686406819cbcbfd8a678f581ff65e381253ddeebefaf0a223944"
+    },
+    {
+      "path": "tools/language-acceptance/function_default_execution_test.go",
+      "sha256": "4bfa6eaacf636e614bb7c911947f7fb481751b6eae0eb96c967510702cbc3576"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "sha256": "33edb6072872f90ad6f963b6cd0b0c17ba374b09ea31c17e256608b640541239"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "36e5c1ea8a19b2f4a72866fbb2101163bda297c68ecd4198208498c2a4bba7a4"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "9f2b1d714590755323e7e8fcb19a5688fb6f89326eed78819abcf16f63e423a3"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "0736a4e9820e649a849a7bac9fb294a665bbeff27875d16828a219241d9263b3"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "sha256": "e474f6a9d558a9002a27237caee55dcd34f73640b4f05adb1ae352f9e0d2c120"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestP15FN04CallerInputCompleteNativeGraphs|TestP15FN04CallerInputWithoutFunctions|TestP15FN04CallerInputCorruptions)$"
+  ],
+  "required_tests": [
+    "TestP15FN04CallerInputCompleteNativeGraphs",
+    "TestP15FN04CallerInputCompleteNativeGraphs/nested_false",
+    "TestP15FN04CallerInputCompleteNativeGraphs/nested_true",
+    "TestP15FN04CallerInputWithoutFunctions",
+    "TestP15FN04CallerInputCorruptions",
+    "TestP15FN04CallerInputCorruptions/nested_false",
+    "TestP15FN04CallerInputCorruptions/nested_false/initial_snapshot_lost",
+    "TestP15FN04CallerInputCorruptions/nested_false/unguarded_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_false/marker_key_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_false/marker_value_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_false/marker_truthiness",
+    "TestP15FN04CallerInputCorruptions/nested_false/restore_arguments",
+    "TestP15FN04CallerInputCorruptions/nested_false/restore_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_false/body_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_false/caller_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_false/payload_loses_caller",
+    "TestP15FN04CallerInputCorruptions/nested_false/consumer_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_false/call_uses_wrong_input",
+    "TestP15FN04CallerInputCorruptions/nested_true",
+    "TestP15FN04CallerInputCorruptions/nested_true/initial_snapshot_lost",
+    "TestP15FN04CallerInputCorruptions/nested_true/unguarded_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_true/marker_key_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_true/marker_value_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_true/marker_truthiness",
+    "TestP15FN04CallerInputCorruptions/nested_true/restore_arguments",
+    "TestP15FN04CallerInputCorruptions/nested_true/restore_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_true/body_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_true/caller_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_true/payload_loses_caller",
+    "TestP15FN04CallerInputCorruptions/nested_true/consumer_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_true/call_uses_wrong_input",
+    "TestP15FN04CallerInputCorruptions/nested_true/nested_payload_loses_caller",
+    "TestP15FN04CallerInputCorruptions/nested_true/nested_body_reads_transport"
+  ],
+  "discovered_tests": [
+    "TestP15FN04CallerInputCompleteNativeGraphs",
+    "TestP15FN04CallerInputCompleteNativeGraphs/nested_false",
+    "TestP15FN04CallerInputCompleteNativeGraphs/nested_true",
+    "TestP15FN04CallerInputWithoutFunctions",
+    "TestP15FN04CallerInputCorruptions",
+    "TestP15FN04CallerInputCorruptions/nested_false",
+    "TestP15FN04CallerInputCorruptions/nested_false/initial_snapshot_lost",
+    "TestP15FN04CallerInputCorruptions/nested_false/unguarded_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_false/marker_key_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_false/marker_value_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_false/marker_truthiness",
+    "TestP15FN04CallerInputCorruptions/nested_false/restore_arguments",
+    "TestP15FN04CallerInputCorruptions/nested_false/restore_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_false/body_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_false/caller_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_false/payload_loses_caller",
+    "TestP15FN04CallerInputCorruptions/nested_false/consumer_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_false/call_uses_wrong_input",
+    "TestP15FN04CallerInputCorruptions/nested_true",
+    "TestP15FN04CallerInputCorruptions/nested_true/initial_snapshot_lost",
+    "TestP15FN04CallerInputCorruptions/nested_true/unguarded_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_true/marker_key_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_true/marker_value_wrong",
+    "TestP15FN04CallerInputCorruptions/nested_true/marker_truthiness",
+    "TestP15FN04CallerInputCorruptions/nested_true/restore_arguments",
+    "TestP15FN04CallerInputCorruptions/nested_true/restore_envelope",
+    "TestP15FN04CallerInputCorruptions/nested_true/body_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_true/caller_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_true/payload_loses_caller",
+    "TestP15FN04CallerInputCorruptions/nested_true/consumer_reads_transport",
+    "TestP15FN04CallerInputCorruptions/nested_true/call_uses_wrong_input",
+    "TestP15FN04CallerInputCorruptions/nested_true/nested_payload_loses_caller",
+    "TestP15FN04CallerInputCorruptions/nested_true/nested_body_reads_transport"
+  ],
+  "started_utc": "2026-11-20T07:52:25.9188267Z",
+  "finished_utc": "2026-11-20T07:52:28.5283525Z",
+  "elapsed_seconds": 2.6095144,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "f64ada0d6ffab50172c5d9e6ada8fd801849b7855b8183cb466beff8976620ab",
+  "raw_bytes": 30111,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "",
+  "benchmark_bytes": 0
+}

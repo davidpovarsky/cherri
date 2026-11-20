@@ -1,0 +1,32 @@
+{
+  "source": "403e05fc4f479a52e2d0098670b1d6e85a27aee7",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=9m",
+    "-run",
+    "^Test(FunctionDefault|NumberFunctionProducerInventory|Meta_UnitAndNativeCannotSatisfyIOSInFinal)",
+    "./tools/language-acceptance"
+  ],
+  "started_utc": "2026-11-20T07:52:15.427773+00:00",
+  "finished_utc": "2026-11-20T07:52:47.053925+00:00",
+  "elapsed_seconds": 31.625,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "94bd993576ff76dcac565fb566bd2b21e62bd60d8345bf31169264f8af460e50",
+  "raw_bytes": 802988,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pass": 649,
+  "fail": [],
+  "skip": [],
+  "environment": {
+    "CGO_ENABLED": "0",
+    "GOARCH": "amd64",
+    "GOOS": "windows",
+    "GOVERSION": "go1.25.6"
+  }
+}

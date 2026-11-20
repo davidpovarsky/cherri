@@ -1,0 +1,1024 @@
+commit 403e05fc4f479a52e2d0098670b1d6e85a27aee7
+Author:     David Povarsky <davidpovarsky@users.noreply.github.com>
+AuthorDate: Fri Nov 20 09:52:15 2026 +0200
+Commit:     David Povarsky <davidpovarsky@users.noreply.github.com>
+CommitDate: Fri Nov 20 09:52:15 2026 +0200
+
+    test(acceptance): execute typed defaults and caller input boundaries
+
+diff --git a/tools/language-acceptance/assertion_scope.go b/tools/language-acceptance/assertion_scope.go
+index 67f8ef6e..08715886 100644
+--- a/tools/language-acceptance/assertion_scope.go
++++ b/tools/language-acceptance/assertion_scope.go
+@@ -19,12 +19,10 @@ type LocalSmokeObservation struct {
+ // of a larger contract. Remove an entry only with a reviewed scenario producer.
+ var incompleteLocalAssertions = map[string]string{
+ 	"B01":  "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
+-	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
+ 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
+ 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
+ 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
+ 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
+-	"FN04": "Action count does not inspect dispatcher envelope validation.",
+ 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
+ 	"M02":  "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
+ 
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index d191ef7b..e1e4a98f 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -34,6 +34,11 @@ type RequirementsEvidenceMapFile struct {
+ }
+ 
+ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
++	// These complete default/caller-input scenarios need their own Apple proof.
++	// The historical short function trace does not observe their full contract.
++	if _, found := functionDefaultScenarios[id]; found {
++		return
++	}
+ 	// Complete mixed/shadow loop scenarios require their own actual runtime proof.
+ 	// The preserved simple nested-loop trace does not supply these three rows.
+ 	if _, found := loopAcceptanceScenarios[id]; found {
+@@ -75,7 +80,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
+ 	case "F02", "F04", "RP22", "BRG12", "BRG14":
+ 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
+ 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
+-	case "FN01", "FN02", "FN03", "FN04", "T01", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
++	case "FN01", "FN02", "FN03", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
+ 		reqAssertions["function_result"] = "21"
+ 		reqAssertions["caller_continuation"] = "22"
+ 		reqAssertions["defaults_explicit"] = "0:0::"
+@@ -261,6 +266,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
+ }
+ 
+ func deriveAcceptanceTestIDs(id, group string) []string {
++	if scenario, found := functionDefaultScenarios[id]; found {
++		return scenario.testIDs()
++	}
+ 	if id == "U01" {
+ 		return upstreamBoundaryTestIDs()
+ 	}
+@@ -454,6 +462,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
+ }
+ 
+ func deriveAcceptanceFixtures(id, group string) []string {
++	if _, found := functionDefaultScenarios[id]; found {
++		return append([]string{}, functionDefaultProductionPaths...)
++	}
+ 	if id == "U01" {
+ 		return append([]string{}, upstreamBoundaryProductionPaths...)
+ 	}
+diff --git a/tools/language-acceptance/execution_audit.go b/tools/language-acceptance/execution_audit.go
+index 6af72823..4b91a0c6 100644
+--- a/tools/language-acceptance/execution_audit.go
++++ b/tools/language-acceptance/execution_audit.go
+@@ -243,6 +243,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
+ 			row.ProductionPath = []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/service/service.go", "p15_parser_acceptance_test.go"}
+ 			row.PositiveAndNegative = res.Passed
+ 		}
++		if scenario, found := functionDefaultScenarios[row.ID]; found {
++			row.TestNames = append([]string{}, scenario.Tests...)
++			row.ProductionPath = append([]string{}, functionDefaultProductionPaths...)
++			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
++			row.Scope = scenario.Scope
++		}
+ 		if scenario, found := numberFunctionScenarios[row.ID]; found {
+ 			row.TestNames = scenario.tests()
+ 			row.ProductionPath = append([]string{}, scenario.ProductionPaths...)
+diff --git a/tools/language-acceptance/function_default_execution.go b/tools/language-acceptance/function_default_execution.go
+new file mode 100644
+index 00000000..6974f2d6
+--- /dev/null
++++ b/tools/language-acceptance/function_default_execution.go
+@@ -0,0 +1,314 @@
++package main
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"fmt"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"time"
++	"unicode/utf8"
++)
++
++type functionDefaultScenario struct {
++	Group, Title, Level, Expected, Scope string
++	Tests, LocalTiers                    []string
++	Producers                            map[string]string
++}
++
++var functionDefaultScenarios = map[string]functionDefaultScenario{
++	"T01": {
++		Group: "types", Title: "Typed defaults preserve false/zero/empty text/list/map vs omission", Level: "unit+native+iOS",
++		Expected:   "Default applied only when argument absent",
++		Scope:      "Independent typed-default execution: supplied positional and named false, zero, empty Text, List and Map versus omission; empty/default/nested/reserved-key Map values; Optional Map defaults distinguish omitted, None and present empty; authored fallback effects execute once in written order only in the absent branch; complete native graphs and all causal corruptions. Apple execution, general Optional joins and related requirement IDs are not inferred.",
++		Tests:      []string{"TestP15T01TypedDefaultBoundaryGraphs", "TestP15T01TypedDefaultBoundaryCorruptions", "TestP15T01WrongTypedDefaultsRejected", "TestP15T01OptionalMapDefaultGraphs", "TestP15T01OptionalMapDefaultCorruptions", "TestP15T01MapDefaultEffectOrderAndScope"},
++		LocalTiers: []string{"unit", "native-structure"},
++		Producers:  map[string]string{"unit": "TestP15T01WrongTypedDefaultsRejected", "native-structure": "TestP15T01TypedDefaultBoundaryGraphs"},
++	},
++	"FN04": {
++		Group: "functions", Title: "Caller input vs internal dispatcher envelope", Level: "native+iOS",
++		Expected:   "system.input not silently replaced by transport dictionary",
++		Scope:      "Independent caller-input execution: complete direct and nested function graphs preserve every authored system.input and ShortcutInput read, nested payload and final consumer through the guarded private dispatcher; source without functions retains actual ExtensionInput; all causal marker, envelope and input-edge corruptions reject. Apple execution and related defaults/recursion/Void requirements are not inferred.",
++		Tests:      []string{"TestP15FN04CallerInputCompleteNativeGraphs", "TestP15FN04CallerInputWithoutFunctions", "TestP15FN04CallerInputCorruptions"},
++		LocalTiers: []string{"native-structure"},
++		Producers:  map[string]string{"native-structure": "TestP15FN04CallerInputCompleteNativeGraphs"},
++	},
++}
++
++// The whole source commit is immutable; these blobs additionally bind the
++// executed scenarios, their independent graph oracles, compiler transport and
++// the complete acquisition/intake path. No working-tree filter supplies a hash.
++var functionDefaultProductionPaths = []string{
++	"go.mod", "go.sum",
++	"internal/language/syntax/ast.go", "internal/language/syntax/parser.go",
++	"internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/analysis/optional_presence.go", "internal/language/analysis/optional_transport.go",
++	"internal/language/types/types.go", "internal/language/types/optional_presence.go", "internal/language/ir/ir.go",
++	"internal/language/lower/lower.go", "internal/language/lower/call_arguments.go", "internal/language/lower/function_defaults.go", "internal/language/lower/function_optional_presence.go", "internal/language/lower/optional_presence_demand.go", "internal/language/lower/optional_transport.go",
++	"internal/language/lower/function_argument_containers.go", "internal/language/lower/container_evaluation_order.go", "internal/language/lower/container_keys.go", "internal/language/lower/empty_list.go", "internal/language/lower/literal_list.go", "internal/language/lower/binding_capture.go", "internal/language/lower/scoped_blocks.go",
++	"internal/language/backend/contracts.go", "internal/language/schema/generated_registry.go",
++	"language_backend_session.go", "language_backend_adapter.go", "language_emit_adapter.go", "language_value_adapter.go", "shared_codec.go", "shortcutgen.go",
++	"p15_function_default_boundary_test.go", "p15_function_caller_input_test.go", "p15_function_optional_map_default_test.go", "p15_function_map_default_effect_test.go",
++	"p15_function_native_oracle_test.go", "p15_function_acceptance_test.go", "p15_function_optional_presence_test.go", "p15_container_shape_acceptance_test.go", "p15_types_acceptance_test.go", "p15_short_circuit_test.go", "p15_call_order_test.go", "p15_literal_collections_acceptance_test.go",
++	"tests/language-v2/acceptance-contract.json", "tests/language-v2/repair-regression-plan.json", "tests/language-v2/backend-recovery-gates.json",
++	"tools/language-acceptance/function_default_execution.go", "tools/language-acceptance/function_default_execution_test.go", "tools/language-acceptance/strict_go_events.go",
++	"tools/language-acceptance/loop_execution.go", "tools/language-acceptance/editor_source_binding.go", "tools/language-acceptance/editor_performance_execution.go", "tools/language-acceptance/editor_process_other.go", "tools/language-acceptance/editor_process_windows.go", "tools/language-acceptance/native_encoding_intake.go", "tools/language-acceptance/state_acceptance_intake.go", "tools/language-acceptance/state_acceptance_execution.go",
++	"tools/language-acceptance/main.go", "tools/language-acceptance/parser_execution.go", "tools/language-acceptance/evidence_map.go", "tools/language-acceptance/execution_audit.go", "tools/language-acceptance/assertion_scope.go",
++}
++
++var functionDefaultArtifactNames = []string{"function-process.json", "function-go.jsonl", "function-stderr.log"}
++
++func (s functionDefaultScenario) testIDs() []string {
++	var ids []string
++	for _, test := range s.Tests {
++		ids = append(ids, "github.com/electrikmilk/cherri:"+test)
++	}
++	return ids
++}
++
++func (s functionDefaultScenario) producer(tier string) string {
++	if test := s.Producers[tier]; test != "" {
++		return "github.com/electrikmilk/cherri:" + test
++	}
++	return ""
++}
++
++func functionDefaultRequiredEvents(id string) []string {
++	s, found := functionDefaultScenarios[id]
++	if !found {
++		return nil
++	}
++	var names []string
++	add := func(parent string, children []string) {
++		names = append(names, parent)
++		for _, child := range children {
++			names = append(names, parent+"/"+child)
++		}
++	}
++	if id == "T01" {
++		cases := []string{"false", "zero", "empty_text", "empty_list", "empty_map", "empty_list_default", "empty_map_default", "reserved_map_default", "nested_empty_default"}
++		faults := []string{"supplied_absent", "named_absent", "omitted_present", "truthiness_guard", "read_value_as_presence", "wrong_value_slot", "wrong_join", "default_branch_lost", "default_kind_lost", "caller_input_lost", "return_uses_default", "caller_consumer_detached"}
++		add(s.Tests[0], cases)
++		add(s.Tests[1], nil)
++		for _, name := range cases {
++			add(s.Tests[1]+"/"+name, faults)
++			if name == "empty_list_default" {
++				for _, fault := range []string{"empty_clear_lost", "empty_inherits_input", "empty_read_detached"} {
++					names = append(names, s.Tests[1]+"/"+name+"/"+fault)
++				}
++			}
++		}
++		add(s.Tests[2], []string{"bool", "number", "text", "list", "map"})
++		for _, parent := range s.Tests[3:5] {
++			add(parent, nil)
++			for _, name := range []string{"empty", "reserved", "nested_empty", "literal_braces"} {
++				for _, mode := range []string{"omitted", "none", "empty"} {
++					var children []string
++					if parent == s.Tests[4] {
++						children = []string{"default_absent", "default_kind", "default_value", "default_null", "truthiness", "wrong_slot", "wrong_join", "wrong_supplied_flag", "wrong_return"}
++					}
++					add(parent+"/"+name+"/"+mode, children)
++				}
++			}
++		}
++		add(s.Tests[5], nil)
++		for _, name := range []string{"optional_false", "optional_true"} {
++			add(s.Tests[5]+"/"+name, []string{"effects_swapped", "effect_duplicated", "effect_eager", "effect_lost", "previous_parameter_lost", "supplied_absent", "omitted_present", "return_always_default"})
++		}
++	} else {
++		add(s.Tests[0], []string{"nested_false", "nested_true"})
++		add(s.Tests[1], nil)
++		add(s.Tests[2], nil)
++		for _, name := range []string{"nested_false", "nested_true"} {
++			faults := []string{"initial_snapshot_lost", "unguarded_envelope", "marker_key_wrong", "marker_value_wrong", "marker_truthiness", "restore_arguments", "restore_envelope", "body_reads_transport", "caller_reads_transport", "payload_loses_caller", "consumer_reads_transport", "call_uses_wrong_input"}
++			if name == "nested_true" {
++				faults = append(faults, "nested_payload_loses_caller", "nested_body_reads_transport")
++			}
++			add(s.Tests[2]+"/"+name, faults)
++		}
++	}
++	return names
++}
++
++func parseFunctionDefaultOutput(id string, raw []byte) error {
++	scenario, found := functionDefaultScenarios[id]
++	if !found {
++		return fmt.Errorf("unknown function-boundary requirement %s", id)
++	}
++	names := functionDefaultRequiredEvents(id)
++	if err := parseStrictNamedProductionOutput(names, productionTestTimeout(scenario.Tests)+time.Minute, raw); err != nil {
++		return err
++	}
++	// These real tests have nested corruption cases. Require every selected
++	// ancestor to be active; a parent pass cannot precede its selected children.
++	required, run, passed := map[string]bool{}, map[string]bool{}, map[string]bool{}
++	for _, name := range names {
++		required[name] = true
++	}
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event struct{ Action, Test string }
++		if err := json.Unmarshal(line, &event); err != nil {
++			return err
++		}
++		if event.Test == "" {
++			continue
++		}
++		switch event.Action {
++		case "run":
++			for parent := event.Test; strings.Contains(parent, "/"); {
++				parent = parent[:strings.LastIndexByte(parent, '/')]
++				if required[parent] && (!run[parent] || passed[parent]) {
++					return fmt.Errorf("function-boundary child outside selected ancestor %s", parent)
++				}
++			}
++			run[event.Test] = true
++		case "pass":
++			for _, name := range names {
++				if strings.HasPrefix(name, event.Test+"/") && !passed[name] {
++					return fmt.Errorf("function-boundary parent passed before required child %s", name)
++				}
++			}
++			passed[event.Test] = true
++		}
++	}
++	return nil
++}
++
++func validateFunctionDefaultRecord(id string, record EvidenceRecord) error {
++	scenario, found := functionDefaultScenarios[id]
++	if !found {
++		return nil
++	}
++	producer := scenario.producer(record.Tier)
++	if producer == "" || record.Result != "passed" || record.ExitCode != 0 || !reflect.DeepEqual(record.Requirements, []string{id}) ||
++		record.TestID != producer || !reflect.DeepEqual(record.Command, productionTestCommand(scenario.Tests)) ||
++		record.Assertions["required_production_tests"] != strings.Join(scenario.Tests, "\n") || record.Assertions["required_go_events"] != strings.Join(functionDefaultRequiredEvents(id), "\n") || record.Assertions["scope"] != scenario.Scope {
++		return fmt.Errorf("%s record is detached from its complete function-boundary production; no Apple tier is implemented", id)
++	}
++	data, err := stateReadArtifacts(record.Artifacts, functionDefaultArtifactNames)
++	if err != nil {
++		return err
++	}
++	var receipt editorProcessReceipt
++	if err := decodeEditorJSON(data["function-process.json"], &receipt); err != nil {
++		return err
++	}
++	raw, stderr := data["function-go.jsonl"], data["function-stderr.log"]
++	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != record.ImplementationSHA || !receipt.SourceCleanBefore || !receipt.SourceCleanAfter ||
++		!reflect.DeepEqual(receipt.Command, record.Command) || !reflect.DeepEqual(receipt.RequiredTests, functionDefaultRequiredEvents(id)) || !reflect.DeepEqual(receipt.DiscoveredTests, functionDefaultRequiredEvents(id)) ||
++		receipt.ExitCode == nil || *receipt.ExitCode != 0 || receipt.TimedOut == nil || *receipt.TimedOut ||
++		receipt.RawSHA256 != editorSHA(raw) || receipt.RawBytes != len(raw) || receipt.StderrSHA256 != editorSHA(stderr) || receipt.StderrBytes != len(stderr) || !utf8.Valid(stderr) || receipt.BenchmarkSHA256 != "" || receipt.BenchmarkBytes != 0 {
++		return fmt.Errorf("incomplete %s function-boundary process/source/byte binding", id)
++	}
++	if err := stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(scenario.Tests) + time.Minute).Seconds()); err != nil {
++		return err
++	}
++	if err := stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, functionDefaultProductionPaths); err != nil {
++		return err
++	}
++	if err := parseFunctionDefaultOutput(id, raw); err != nil {
++		return err
++	}
++	return loopOutputWithinProcess(raw, receipt)
++}
++
++func (r *Runner) executeFunctionDefaultProduction(id string) ([]EvidenceArtifact, string, bool, error) {
++	scenario, found := functionDefaultScenarios[id]
++	if !found {
++		return nil, "", false, fmt.Errorf("unknown function-boundary requirement %s", id)
++	}
++	root, err := filepath.Abs(resolveRepoRoot())
++	if err != nil {
++		return nil, "", false, err
++	}
++	before, clean, stateErr := editorSourceState(root)
++	if stateErr != nil || !clean || before != r.implSHA {
++		return nil, "", false, fmt.Errorf("%s producer requires exact clean source: %s clean=%t error=%v", id, before, clean, stateErr)
++	}
++	directory, err := stateEvidenceDirectory(r, strings.ToLower(id)+"-function-")
++	if err != nil {
++		return nil, "", false, err
++	}
++	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: id, SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(scenario.Tests), RequiredTests: functionDefaultRequiredEvents(id)}
++	receipt.SourceFiles, err = editorGitSourceFiles(root, before, functionDefaultProductionPaths)
++	if err != nil {
++		return nil, "", false, err
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(scenario.Tests)+time.Minute)
++	defer cancel()
++	command := exec.CommandContext(ctx, receipt.Command[0], receipt.Command[1:]...)
++	command.Dir = root
++	configureEditorProductionProcess(command)
++	var output, errors loopBoundedOutput
++	command.Stdout, command.Stderr = &output, &errors
++	started := time.Now()
++	receipt.StartedUTC = started.UTC().Format(time.RFC3339Nano)
++	processErr := command.Run()
++	receipt.FinishedUTC = time.Now().UTC().Format(time.RFC3339Nano)
++	receipt.ElapsedSeconds = time.Since(started).Seconds()
++	exitCode := -1
++	if command.ProcessState != nil {
++		exitCode = command.ProcessState.ExitCode()
++	}
++	timedOut := ctx.Err() != nil
++	receipt.ExitCode, receipt.TimedOut = &exitCode, &timedOut
++	after, afterClean, afterErr := editorSourceState(root)
++	receipt.SourceCleanAfter = afterErr == nil && afterClean && after == before
++	raw, stderr := output.Bytes(), errors.Bytes()
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(raw), len(raw)
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(stderr), len(stderr)
++	parseErr := parseFunctionDefaultOutput(id, raw)
++	if parseErr == nil {
++		parseErr = loopOutputWithinProcess(raw, receipt)
++	}
++	if parseErr == nil {
++		receipt.DiscoveredTests = functionDefaultRequiredEvents(id)
++	}
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		return nil, "", command.Process != nil, err
++	}
++	contents := map[string][]byte{"function-process.json": append(encoded, '\n'), "function-go.jsonl": raw, "function-stderr.log": stderr}
++	var artifacts []EvidenceArtifact
++	for _, name := range functionDefaultArtifactNames {
++		path := filepath.Join(directory, name)
++		if err := os.WriteFile(path, contents[name], 0600); err != nil {
++			return artifacts, "", command.Process != nil, err
++		}
++		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(contents[name])})
++	}
++	if processErr != nil || parseErr != nil || timedOut || !receipt.SourceCleanAfter {
++		return artifacts, "", command.Process != nil, fmt.Errorf("actual %s process failed: process=%v parse=%v timeout=%t clean=%t", id, processErr, parseErr, timedOut, receipt.SourceCleanAfter)
++	}
++	return artifacts, "Executed complete source-bound function scenario, native graph and causal corruption inventory", true, nil
++}
++
++func (r *Runner) runFunctionDefaultRequirement(id string) bool {
++	scenario, found := functionDefaultScenarios[id]
++	if !found {
++		return false
++	}
++	artifacts, detail, executed, err := r.executeFunctionDefaultProduction(id)
++	if err != nil {
++		detail = err.Error()
++	}
++	if !executed {
++		r.results[id] = CaseResult{ID: id, Group: scenario.Group, Requirement: scenario.Title, TestLevel: scenario.Level, Status: "NOT_RUN", Detail: detail}
++		return true
++	}
++	first := len(r.records)
++	r.Record(id, scenario.Group, scenario.Title, scenario.Level, scenario.LocalTiers, err == nil, "PASSED", detail+"; "+scenario.Scope)
++	for index := first; index < len(r.records); index++ {
++		record := &r.records[index]
++		record.TestID = scenario.producer(record.Tier)
++		record.Command = productionTestCommand(scenario.Tests)
++		record.Artifacts = append([]EvidenceArtifact(nil), artifacts...)
++		record.Assertions["required_production_tests"] = strings.Join(scenario.Tests, "\n")
++		record.Assertions["required_go_events"] = strings.Join(functionDefaultRequiredEvents(id), "\n")
++		record.Assertions["scope"] = scenario.Scope
++	}
++	return true
++}
+diff --git a/tools/language-acceptance/function_default_execution_test.go b/tools/language-acceptance/function_default_execution_test.go
+new file mode 100644
+index 00000000..7ea039db
+--- /dev/null
++++ b/tools/language-acceptance/function_default_execution_test.go
+@@ -0,0 +1,570 @@
++package main
++
++import (
++	"bytes"
++	"encoding/json"
++	"os"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++)
++
++func functionDefaultSelectedContracts(t *testing.T, all *ContractsSet) *ContractsSet {
++	t.Helper()
++	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++	for _, row := range all.Acceptance.Cases {
++		if _, found := functionDefaultScenarios[row.ID]; found {
++			selected.Acceptance.Cases = append(selected.Acceptance.Cases, row)
++		}
++	}
++	selected.Acceptance.CaseCount = len(selected.Acceptance.Cases)
++	if selected.Acceptance.CaseCount != 2 {
++		t.Fatal("missing immutable T01/FN04 contracts")
++	}
++	return selected
++}
++
++func TestFunctionDefaultProducerInventory(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := functionDefaultSelectedContracts(t, all)
++	counts := map[string]int{"T01": 290, "FN04": 33}
++	for _, row := range selected.Acceptance.Cases {
++		s := functionDefaultScenarios[row.ID]
++		if row.Group != s.Group || row.Requirement != s.Title || row.Expected != s.Expected || row.MinimumTestLevel != s.Level ||
++			!reflect.DeepEqual(parseRequiredTiers(row.MinimumTestLevel), append(append([]string{}, s.LocalTiers...), "ios-runtime")) {
++			t.Fatal("function-boundary scenario drifted from immutable requirement", row)
++		}
++		if _, smoke := incompleteLocalAssertions[row.ID]; smoke {
++			t.Fatal("actual complete local producer remains historical smoke", row.ID)
++		}
++		if !reflect.DeepEqual(deriveAcceptanceTestIDs(row.ID, row.Group), s.testIDs()) ||
++			!reflect.DeepEqual(deriveAcceptanceFixtures(row.ID, row.Group), functionDefaultProductionPaths) {
++			t.Fatal("function-boundary mapping lost tests or immutable sources", row.ID)
++		}
++		ids := append([]string{}, s.testIDs()...)
++		assertions, ui := map[string]string{}, map[string]string{}
++		applyRuntimeAndUIMappings(row.ID, parseRequiredTiers(row.MinimumTestLevel), &ids, assertions, ui)
++		if !reflect.DeepEqual(ids, s.testIDs()) || len(assertions) != 0 || len(ui) != 0 || s.producer("ios-runtime") != "" {
++			t.Fatal("historical short runtime trace inherited complete function-boundary credit", row.ID)
++		}
++		names, seen := functionDefaultRequiredEvents(row.ID), map[string]bool{}
++		if len(names) != counts[row.ID] {
++			t.Fatal("complete scenario event count changed", row.ID, len(names))
++		}
++		for _, name := range names {
++			if seen[name] {
++				t.Fatal("duplicate required function event", name)
++			}
++			seen[name] = true
++		}
++		for _, tier := range s.LocalTiers {
++			producer := strings.TrimPrefix(s.producer(tier), "github.com/electrikmilk/cherri:")
++			if !seen[producer] {
++				t.Fatal("tier producer is not in complete actual selection", row.ID, tier)
++			}
++		}
++	}
++	if len(functionDefaultScenarios) != 2 || len(functionDefaultProductionPaths) > 64 {
++		t.Fatal("function-boundary scope or bounded source request changed")
++	}
++	seen := map[string]bool{}
++	for _, path := range functionDefaultProductionPaths {
++		info, err := os.Stat(filepath.Join(resolveRepoRoot(), filepath.FromSlash(path)))
++		if seen[path] || err != nil || !info.Mode().IsRegular() {
++			t.Fatal("missing or duplicate actual function source", path, err)
++		}
++		seen[path] = true
++	}
++	runner := NewRunner()
++	for _, id := range []string{"FN01", "FN02", "FN03", "FN05", "T05", "RP25", "RP26", "BRG11", "BRG15"} {
++		if runner.runFunctionDefaultRequirement(id) {
++			t.Fatal("related obligation inherited an unexecuted scenario", id)
++		}
++	}
++	if len(runner.records) != 0 || len(runner.results) != 0 || len(runner.observations) != 0 {
++		t.Fatal("unexecuted requirement received evidence")
++	}
++}
++
++// Synthetic streams exercise parser control flow only. They are never used as
++// execution evidence; the positive intake below launches the actual compiler.
++func functionDefaultControlEvents(id string) []byte {
++	names := functionDefaultRequiredEvents(id)
++	required := map[string]bool{}
++	for _, name := range names {
++		required[name] = true
++	}
++	children := map[string][]string{}
++	for _, name := range names {
++		parent := name
++		for {
++			slash := strings.LastIndexByte(parent, '/')
++			if slash < 0 {
++				parent = ""
++				break
++			}
++			parent = parent[:slash]
++			if required[parent] {
++				break
++			}
++		}
++		children[parent] = append(children[parent], name)
++	}
++	var lines [][]byte
++	emit := func(action, name string) {
++		event := map[string]any{"Time": "2026-11-20T00:00:00Z", "Action": action, "Package": "github.com/electrikmilk/cherri"}
++		if name != "" {
++			event["Test"] = name
++		}
++		if action == "pass" {
++			event["Elapsed"] = 0.001
++		}
++		line, _ := json.Marshal(event)
++		lines = append(lines, line)
++	}
++	var walk func(string)
++	walk = func(parent string) {
++		for _, name := range children[parent] {
++			emit("run", name)
++			walk(name)
++			emit("pass", name)
++		}
++	}
++	emit("start", "")
++	walk("")
++	emit("pass", "")
++	return append(bytes.Join(lines, []byte("\n")), '\n')
++}
++
++func functionDefaultCorruptRaw(t *testing.T, kind, target string, raw []byte) []byte {
++	t.Helper()
++	switch kind {
++	case "invalid_utf8":
++		return append(append([]byte{}, raw...), 0xff)
++	case "duplicate_json_key":
++		return bytes.Replace(raw, []byte("{"), []byte("{\"Action\":\"start\","), 1)
++	case "trailing_json":
++		return append(append([]byte{}, raw...), []byte("{}\n")...)
++	}
++	var result [][]byte
++	changed := false
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event map[string]any
++		if err := json.Unmarshal(line, &event); err != nil {
++			t.Fatal(err)
++		}
++		test, _ := event["Test"].(string)
++		action, _ := event["Action"].(string)
++		if kind == "missing_event" && test == target {
++			changed = true
++			continue
++		}
++		if kind == "outside_process_interval" {
++			observed, err := time.Parse(time.RFC3339Nano, event["Time"].(string))
++			if err != nil {
++				t.Fatal(err)
++			}
++			event["Time"] = observed.Add(-24 * time.Hour).Format(time.RFC3339Nano)
++			changed = true
++		}
++		if !changed {
++			switch kind {
++			case "orphan_pass":
++				if test == target && action == "run" {
++					changed = true
++					continue
++				}
++			case "skipped_child", "failed_child":
++				if test == target && action == "pass" {
++					if kind == "skipped_child" {
++						event["Action"] = "skip"
++					} else {
++						event["Action"] = "fail"
++					}
++					changed = true
++				}
++			case "foreign_package":
++				event["Package"] = "example.invalid/unexecuted"
++				changed = true
++			case "unknown_child":
++				if test == target {
++					event["Test"] = target + "_unselected"
++					changed = true
++				}
++			case "duplicate_run":
++				if test == target && action == "run" {
++					result = append(result, append([]byte{}, line...))
++					changed = true
++				}
++			case "parent_before_child", "nested_parent_before_child":
++				if test == target && action == "run" {
++					parent := strings.SplitN(target, "/", 2)[0]
++					if kind == "nested_parent_before_child" {
++						parent = target[:strings.LastIndexByte(target, '/')]
++					}
++					extra := map[string]any{"Time": event["Time"], "Action": "pass", "Package": event["Package"], "Test": parent, "Elapsed": 0.001}
++					encoded, _ := json.Marshal(extra)
++					result = append(result, encoded)
++					changed = true
++				}
++			case "missing_time":
++				delete(event, "Time")
++				changed = true
++			case "invalid_time":
++				event["Time"] = "not-a-time"
++				changed = true
++			case "backwards_time":
++				if action != "start" {
++					event["Time"] = "2000-01-01T00:00:00Z"
++					changed = true
++				}
++			case "missing_elapsed", "negative_elapsed", "oversized_elapsed":
++				if action == "pass" {
++					switch kind {
++					case "missing_elapsed":
++						delete(event, "Elapsed")
++					case "negative_elapsed":
++						event["Elapsed"] = -1
++					default:
++						event["Elapsed"] = 3600
++					}
++					changed = true
++				}
++			}
++		}
++		encoded, err := json.Marshal(event)
++		if err != nil {
++			t.Fatal(err)
++		}
++		result = append(result, encoded)
++	}
++	if !changed {
++		t.Fatal("raw fault did not change a targeted event", kind, target)
++	}
++	return append(bytes.Join(result, []byte("\n")), '\n')
++}
++
++func TestFunctionDefaultEventParserControls(t *testing.T) {
++	for _, id := range []string{"T01", "FN04"} {
++		t.Run(id, func(t *testing.T) {
++			raw := functionDefaultControlEvents(id)
++			if err := parseFunctionDefaultOutput(id, raw); err != nil {
++				t.Fatal(err)
++			}
++			for _, name := range functionDefaultRequiredEvents(id) {
++				t.Run("omitted/"+strings.ReplaceAll(name, "/", "_"), func(t *testing.T) {
++					if parseFunctionDefaultOutput(id, functionDefaultCorruptRaw(t, "missing_event", name, raw)) == nil {
++						t.Fatal("missing required scenario or causal control accepted", name)
++					}
++				})
++			}
++			target := functionDefaultScenarios[id].Tests[1] + "/false/supplied_absent"
++			if id == "FN04" {
++				target = functionDefaultScenarios[id].Tests[2] + "/nested_true/nested_payload_loses_caller"
++			}
++			for _, fault := range []string{"orphan_pass", "skipped_child", "failed_child", "foreign_package", "unknown_child", "duplicate_run", "parent_before_child", "nested_parent_before_child", "missing_time", "invalid_time", "backwards_time", "missing_elapsed", "negative_elapsed", "oversized_elapsed", "invalid_utf8", "duplicate_json_key", "trailing_json"} {
++				t.Run(fault, func(t *testing.T) {
++					if parseFunctionDefaultOutput(id, functionDefaultCorruptRaw(t, fault, target, raw)) == nil {
++						t.Fatal("damaged parser control accepted", fault)
++					}
++				})
++			}
++		})
++	}
++	if parseFunctionDefaultOutput("FN05", functionDefaultControlEvents("T01")) == nil {
++		t.Fatal("unknown scenario accepted")
++	}
++}
++
++func functionDefaultRewriteArtifacts(t *testing.T, record *EvidenceRecord, mutate func(map[string][]byte, *editorProcessReceipt)) {
++	t.Helper()
++	data, err := stateReadArtifacts(record.Artifacts, functionDefaultArtifactNames)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var receipt editorProcessReceipt
++	if err := decodeEditorJSON(data["function-process.json"], &receipt); err != nil {
++		t.Fatal(err)
++	}
++	mutate(data, &receipt)
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(data["function-go.jsonl"]), len(data["function-go.jsonl"])
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(data["function-stderr.log"]), len(data["function-stderr.log"])
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		t.Fatal(err)
++	}
++	data["function-process.json"] = append(encoded, '\n')
++	root := t.TempDir()
++	record.Artifacts = nil
++	for _, name := range functionDefaultArtifactNames {
++		path := filepath.Join(root, name)
++		if err := os.WriteFile(path, data[name], 0600); err != nil {
++			t.Fatal(err)
++		}
++		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data[name])})
++	}
++}
++
++func TestFunctionDefaultActualProductionEvidence(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := functionDefaultSelectedContracts(t, all)
++	runner := NewRunner()
++	runner.artifactDir = os.Getenv("CHERRI_FUNCTION_DEFAULT_EVIDENCE_OUTPUT")
++	if runner.artifactDir == "" {
++		runner.artifactDir = t.TempDir()
++	}
++	for _, id := range []string{"T01", "FN04"} {
++		s := functionDefaultScenarios[id]
++		if !runner.runFunctionDefaultRequirement(id) {
++			t.Fatal("missing function producer", id)
++		}
++		result := runner.results[id]
++		if result.Passed || result.Status != "PENDING_EXTERNAL" || result.Group != s.Group || result.Requirement != s.Title ||
++			result.TestLevel != s.Level || !reflect.DeepEqual(result.ExecutedLevels, s.LocalTiers) {
++			t.Fatal("actual function-boundary scope lost or expanded", result)
++		}
++	}
++	if len(runner.results) != 2 || len(runner.records) != 3 || len(runner.observations) != 0 {
++		t.Fatal("actual function-boundary accounting drifted", runner.results, len(runner.records))
++	}
++	for _, record := range runner.records {
++		if len(record.Requirements) != 1 || record.ImplementationSHA != runner.implSHA {
++			t.Fatal("actual function-boundary requirement/source binding lost", record)
++		}
++		if err := validateFunctionDefaultRecord(record.Requirements[0], record); err != nil {
++			t.Fatal(err)
++		}
++	}
++	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
++	report, err := ValidateEvidenceManifest(manifest, selected, "local")
++	if err != nil || report == nil || report.TotalCases != 2 || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != 2 || report.ClosureComplete {
++		t.Fatal("local function-boundary evidence falsely closed native execution", report, err)
++	}
++	for _, row := range report.Results {
++		if row.Status != "NOT_RUN" || row.Passed || !reflect.DeepEqual(row.ExecutedLevels, functionDefaultScenarios[row.ID].LocalTiers) {
++			t.Fatal("missing actual Apple tier was concealed", row)
++		}
++	}
++	if final, err := ValidateEvidenceManifest(manifest, selected, "final"); err == nil || final == nil || final.ClosureComplete || final.PassedCases != 0 {
++		t.Fatal("local function proof bypassed final Apple/release gates", final, err)
++	}
++	if err := os.MkdirAll(runner.artifactDir, 0755); err != nil {
++		t.Fatal(err)
++	}
++	for name, value := range map[string]any{"function-manifest.json": manifest, "function-report.json": report} {
++		data, err := json.MarshalIndent(value, "", "  ")
++		if err != nil {
++			t.Fatal(err)
++		}
++		if err := os.WriteFile(filepath.Join(runner.artifactDir, name), append(data, '\n'), 0600); err != nil {
++			t.Fatal(err)
++		}
++	}
++	auditPath := filepath.Join(runner.artifactDir, "function-execution-audit.json")
++	if err := writeExecutionAudit(runner, all, auditPath); err != nil {
++		t.Fatal(err)
++	}
++	auditData, err := os.ReadFile(auditPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var audit struct{ Rows []ExecutionAuditRow }
++	if err := json.Unmarshal(auditData, &audit); err != nil {
++		t.Fatal(err)
++	}
++	if len(audit.Rows) != 179 {
++		t.Fatal("full original 179 accounting changed", len(audit.Rows))
++	}
++	for _, row := range audit.Rows {
++		if s, found := functionDefaultScenarios[row.ID]; found {
++			if row.Status != "BLOCKED_EXTERNAL" || !row.PositiveAndNegative || !reflect.DeepEqual(row.Tier, s.LocalTiers) ||
++				!reflect.DeepEqual(row.TestNames, s.Tests) || !reflect.DeepEqual(row.ProductionPath, functionDefaultProductionPaths) || row.Scope != s.Scope {
++				t.Fatal("actual local function scope lost in complete audit", row)
++			}
++		} else if row.Status == "PASS" || row.Status == "BLOCKED_EXTERNAL" || row.PositiveAndNegative {
++			t.Fatal("unselected requirement inherited function-boundary credit", row)
++		}
++	}
++	original, err := json.Marshal(manifest)
++	if err != nil {
++		t.Fatal(err)
++	}
++	faults := []string{
++		"wrong_producer", "borrowed_id", "fake_ios", "wrong_tier", "truncated_command", "missing_child_binding", "wrong_scope", "stale_source", "failed_result", "failed_exit",
++		"missing_artifact", "duplicate_artifact", "bad_artifact_digest", "missing_tier", "process_source", "dirty_before", "dirty_after", "missing_exit", "missing_timeout", "timeout",
++		"missing_discovery", "missing_required_test", "bad_time", "forged_source_hash", "missing_source_path", "process_requirement", "process_command", "forged_benchmark",
++		"raw_missing_graph", "raw_missing_corruption", "raw_orphan_pass", "raw_skipped_child", "raw_failed_child", "raw_foreign_package", "raw_unknown_child", "raw_duplicate_run", "raw_parent_before_child", "raw_nested_parent_before_child",
++		"raw_invalid_utf8", "raw_duplicate_json_key", "raw_trailing_json", "raw_missing_time", "raw_invalid_time", "raw_backwards_time", "raw_missing_elapsed", "raw_negative_elapsed", "raw_oversized_elapsed", "raw_outside_process_interval", "stderr_invalid_utf8",
++	}
++	for _, actual := range runner.records {
++		id := actual.Requirements[0]
++		s := functionDefaultScenarios[id]
++		t.Run(id+"/"+actual.Tier, func(t *testing.T) {
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					var broken EvidenceManifest
++					if err := json.Unmarshal(original, &broken); err != nil {
++						t.Fatal(err)
++					}
++					for index := range broken.Records {
++						changed := &broken.Records[index]
++						if changed.EvidenceID != actual.EvidenceID {
++							continue
++						}
++						switch fault {
++						case "wrong_producer":
++							changed.TestID = "tools/language-acceptance:runFunctions"
++						case "borrowed_id":
++							changed.Requirements = append(changed.Requirements, "FN05")
++						case "fake_ios":
++							changed.Tier = "ios-runtime"
++						case "wrong_tier":
++							changed.Tier = "native-roundtrip"
++						case "truncated_command":
++							changed.Command = productionTestCommand(s.Tests[:1])
++						case "missing_child_binding":
++							delete(changed.Assertions, "required_go_events")
++						case "wrong_scope":
++							changed.Assertions["scope"] = "All linked function/native requirements complete"
++						case "stale_source":
++							changed.ImplementationSHA = strings.Repeat("e", 40)
++						case "failed_result":
++							changed.Result = "failed"
++						case "failed_exit":
++							changed.ExitCode = 1
++						case "missing_artifact":
++							changed.Artifacts = changed.Artifacts[:2]
++						case "duplicate_artifact":
++							changed.Artifacts[2] = changed.Artifacts[1]
++						case "bad_artifact_digest":
++							changed.Artifacts[0].SHA256 = strings.Repeat("0", 64)
++						case "missing_tier":
++							broken.Records = append(broken.Records[:index], broken.Records[index+1:]...)
++						default:
++							functionDefaultRewriteArtifacts(t, changed, func(data map[string][]byte, receipt *editorProcessReceipt) {
++								switch fault {
++								case "process_source":
++									receipt.SourceCommit = strings.Repeat("a", 40)
++								case "dirty_before":
++									receipt.SourceCleanBefore = false
++								case "dirty_after":
++									receipt.SourceCleanAfter = false
++								case "missing_exit":
++									receipt.ExitCode = nil
++								case "missing_timeout":
++									receipt.TimedOut = nil
++								case "timeout":
++									value := true
++									receipt.TimedOut = &value
++								case "missing_discovery":
++									receipt.DiscoveredTests = receipt.DiscoveredTests[:len(receipt.DiscoveredTests)-1]
++								case "missing_required_test":
++									receipt.RequiredTests = receipt.RequiredTests[:len(receipt.RequiredTests)-1]
++								case "bad_time":
++									receipt.ElapsedSeconds = 0
++								case "forged_source_hash":
++									receipt.SourceFiles[0].SHA256 = strings.Repeat("0", 64)
++								case "missing_source_path":
++									receipt.SourceFiles = receipt.SourceFiles[:len(receipt.SourceFiles)-1]
++								case "process_requirement":
++									receipt.Requirement = "FN05"
++								case "process_command":
++									receipt.Command = productionTestCommand(s.Tests[:1])
++								case "forged_benchmark":
++									receipt.BenchmarkSHA256, receipt.BenchmarkBytes = strings.Repeat("a", 64), 1
++								case "stderr_invalid_utf8":
++									data["function-stderr.log"] = []byte{0xff}
++								default:
++									target := s.Tests[1] + "/false/supplied_absent"
++									if id == "FN04" {
++										target = s.Tests[2] + "/nested_true/nested_payload_loses_caller"
++									}
++									kind := strings.TrimPrefix(fault, "raw_")
++									if fault == "raw_missing_graph" {
++										kind, target = "missing_event", s.Tests[0]
++									}
++									if fault == "raw_missing_corruption" {
++										kind = "missing_event"
++									}
++									data["function-go.jsonl"] = functionDefaultCorruptRaw(t, kind, target, data["function-go.jsonl"])
++								}
++							})
++						}
++						break
++					}
++					damaged, err := ValidateEvidenceManifest(&broken, selected, "local")
++					if err == nil || damaged == nil || damaged.ClosureComplete || damaged.PassedCases != 0 {
++						t.Fatal("damaged actual function evidence accepted", fault, damaged, err)
++					}
++				})
++			}
++		})
++	}
++	for _, id := range []string{"T01", "FN04"} {
++		var actual EvidenceRecord
++		for _, record := range runner.records {
++			if record.Requirements[0] == id {
++				actual = record
++				break
++			}
++		}
++		for index, path := range functionDefaultProductionPaths {
++			t.Run(id+"/source_digest/"+strings.ReplaceAll(path, "/", "_"), func(t *testing.T) {
++				var changed EvidenceRecord
++				encoded, _ := json.Marshal(actual)
++				if err := json.Unmarshal(encoded, &changed); err != nil {
++					t.Fatal(err)
++				}
++				functionDefaultRewriteArtifacts(t, &changed, func(_ map[string][]byte, receipt *editorProcessReceipt) {
++					receipt.SourceFiles[index].SHA256 = strings.Repeat("0", 64)
++				})
++				if validateFunctionDefaultRecord(id, changed) == nil {
++					t.Fatal("hash-reconciled immutable source corruption accepted", path)
++				}
++			})
++		}
++	}
++	for _, id := range []string{"FN01", "FN02", "FN03", "FN05", "T05", "RP25", "RP26", "BRG11", "BRG15"} {
++		t.Run("no_inheritance/"+id, func(t *testing.T) {
++			related := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++			for _, row := range all.Acceptance.Cases {
++				if row.ID == id {
++					related.Acceptance.Cases = append(related.Acceptance.Cases, row)
++				}
++			}
++			for _, row := range all.Repair.Cases {
++				if row.ID == id {
++					related.Repair.Cases = append(related.Repair.Cases, row)
++				}
++			}
++			for _, row := range all.Gates.Gates {
++				if row.ID == id {
++					related.Gates.Gates = append(related.Gates.Gates, row)
++				}
++			}
++			related.Acceptance.CaseCount = len(related.Acceptance.Cases)
++			if related.Acceptance.CaseCount+len(related.Repair.Cases)+len(related.Gates.Gates) != 1 {
++				t.Fatal("missing related immutable requirement", id)
++			}
++			var rebound EvidenceManifest
++			if err := json.Unmarshal(original, &rebound); err != nil {
++				t.Fatal(err)
++			}
++			for index := range rebound.Records {
++				rebound.Records[index].Requirements = []string{id}
++			}
++			report, err := ValidateEvidenceManifest(&rebound, related, "local")
++			if err == nil || report == nil || report.PassedCases != 0 || report.ClosureComplete {
++				t.Fatal("related unexecuted requirement inherited function evidence", id, report, err)
++			}
++		})
++	}
++}
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index b75192f8..2fd50716 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+ 
++			if err := validateFunctionDefaultRecord(reqID, rec); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
++
+ 			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1603,11 +1607,7 @@ func (r *Runner) runCalls() {
+ 
+ // Group 6: Types
+ func (r *Runner) runTypes() {
+-	// T01: Typed defaults
+-	actBase64, okBase64 := r.reg.LookupAction("base64Encode")
+-	wfT01, errT01 := lowerSrc(r.reg, "base64Encode(\"test\")")
+-	t01Passed := okBase64 && actBase64.StaticParameters != nil && errT01 == nil && len(wfT01.Actions) > 0
+-	r.Record("T01", "types", "Typed defaults preserve false/zero/empty text/list/map vs omission", "unit+native+iOS", []string{"unit", "native"}, t01Passed, "PASSED", "Default values retained across lowering and wire emission")
++	r.runFunctionDefaultRequirement("T01")
+ 
+ 	r.runTypeLiteralRequirement()
+ 
+@@ -1722,11 +1722,7 @@ func (r *Runner) runFunctions() {
+ 		r.runNumberFunctionRequirement(id)
+ 	}
+ 
+-	// FN04: Caller input vs internal dispatcher envelope
+-	srcFN04 := "function test(x: Number) -> Number { return x }\nlet r = test(5)"
+-	wfFN04, errFN04 := lowerSrc(r.reg, srcFN04)
+-	fn04Passed := errFN04 == nil && len(wfFN04.Actions) >= 8
+-	r.Record("FN04", "functions", "Caller input vs internal dispatcher envelope", "native+iOS", []string{"native"}, fn04Passed, "PASSED", "Dispatcher verifies __cherri_fn_call + __cherri_fn + __cherri_args + __cherri_present before branching")
++	r.runFunctionDefaultRequirement("FN04")
+ 
+ 	// FN05: Structured argument transport
+ 	srcFN05 := "function info(name: Text, count: Number) -> Text {\n    return f\"{name}: {count}\"\n}\nlet s = info(\"items\", count: 10)"

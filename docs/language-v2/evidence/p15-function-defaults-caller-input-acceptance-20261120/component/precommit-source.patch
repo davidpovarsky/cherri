@@ -1,0 +1,120 @@
+diff --git a/tools/language-acceptance/assertion_scope.go b/tools/language-acceptance/assertion_scope.go
+index 67f8ef6e..08715886 100644
+--- a/tools/language-acceptance/assertion_scope.go
++++ b/tools/language-acceptance/assertion_scope.go
+@@ -19,12 +19,10 @@ type LocalSmokeObservation struct {
+ // of a larger contract. Remove an entry only with a reviewed scenario producer.
+ var incompleteLocalAssertions = map[string]string{
+ 	"B01":  "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
+-	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
+ 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
+ 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
+ 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
+ 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
+-	"FN04": "Action count does not inspect dispatcher envelope validation.",
+ 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
+ 	"M02":  "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
+ 
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index d191ef7b..e1e4a98f 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -34,6 +34,11 @@ type RequirementsEvidenceMapFile struct {
+ }
+ 
+ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
++	// These complete default/caller-input scenarios need their own Apple proof.
++	// The historical short function trace does not observe their full contract.
++	if _, found := functionDefaultScenarios[id]; found {
++		return
++	}
+ 	// Complete mixed/shadow loop scenarios require their own actual runtime proof.
+ 	// The preserved simple nested-loop trace does not supply these three rows.
+ 	if _, found := loopAcceptanceScenarios[id]; found {
+@@ -75,7 +80,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
+ 	case "F02", "F04", "RP22", "BRG12", "BRG14":
+ 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
+ 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
+-	case "FN01", "FN02", "FN03", "FN04", "T01", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
++	case "FN01", "FN02", "FN03", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
+ 		reqAssertions["function_result"] = "21"
+ 		reqAssertions["caller_continuation"] = "22"
+ 		reqAssertions["defaults_explicit"] = "0:0::"
+@@ -261,6 +266,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
+ }
+ 
+ func deriveAcceptanceTestIDs(id, group string) []string {
++	if scenario, found := functionDefaultScenarios[id]; found {
++		return scenario.testIDs()
++	}
+ 	if id == "U01" {
+ 		return upstreamBoundaryTestIDs()
+ 	}
+@@ -454,6 +462,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
+ }
+ 
+ func deriveAcceptanceFixtures(id, group string) []string {
++	if _, found := functionDefaultScenarios[id]; found {
++		return append([]string{}, functionDefaultProductionPaths...)
++	}
+ 	if id == "U01" {
+ 		return append([]string{}, upstreamBoundaryProductionPaths...)
+ 	}
+diff --git a/tools/language-acceptance/execution_audit.go b/tools/language-acceptance/execution_audit.go
+index 6af72823..4b91a0c6 100644
+--- a/tools/language-acceptance/execution_audit.go
++++ b/tools/language-acceptance/execution_audit.go
+@@ -243,6 +243,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
+ 			row.ProductionPath = []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/service/service.go", "p15_parser_acceptance_test.go"}
+ 			row.PositiveAndNegative = res.Passed
+ 		}
++		if scenario, found := functionDefaultScenarios[row.ID]; found {
++			row.TestNames = append([]string{}, scenario.Tests...)
++			row.ProductionPath = append([]string{}, functionDefaultProductionPaths...)
++			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
++			row.Scope = scenario.Scope
++		}
+ 		if scenario, found := numberFunctionScenarios[row.ID]; found {
+ 			row.TestNames = scenario.tests()
+ 			row.ProductionPath = append([]string{}, scenario.ProductionPaths...)
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index b75192f8..2fd50716 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+ 
++			if err := validateFunctionDefaultRecord(reqID, rec); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
++
+ 			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1603,11 +1607,7 @@ func (r *Runner) runCalls() {
+ 
+ // Group 6: Types
+ func (r *Runner) runTypes() {
+-	// T01: Typed defaults
+-	actBase64, okBase64 := r.reg.LookupAction("base64Encode")
+-	wfT01, errT01 := lowerSrc(r.reg, "base64Encode(\"test\")")
+-	t01Passed := okBase64 && actBase64.StaticParameters != nil && errT01 == nil && len(wfT01.Actions) > 0
+-	r.Record("T01", "types", "Typed defaults preserve false/zero/empty text/list/map vs omission", "unit+native+iOS", []string{"unit", "native"}, t01Passed, "PASSED", "Default values retained across lowering and wire emission")
++	r.runFunctionDefaultRequirement("T01")
+ 
+ 	r.runTypeLiteralRequirement()
+ 
+@@ -1722,11 +1722,7 @@ func (r *Runner) runFunctions() {
+ 		r.runNumberFunctionRequirement(id)
+ 	}
+ 
+-	// FN04: Caller input vs internal dispatcher envelope
+-	srcFN04 := "function test(x: Number) -> Number { return x }\nlet r = test(5)"
+-	wfFN04, errFN04 := lowerSrc(r.reg, srcFN04)
+-	fn04Passed := errFN04 == nil && len(wfFN04.Actions) >= 8
+-	r.Record("FN04", "functions", "Caller input vs internal dispatcher envelope", "native+iOS", []string{"native"}, fn04Passed, "PASSED", "Dispatcher verifies __cherri_fn_call + __cherri_fn + __cherri_args + __cherri_present before branching")
++	r.runFunctionDefaultRequirement("FN04")
+ 
+ 	// FN05: Structured argument transport
+ 	srcFN05 := "function info(name: Text, count: Number) -> Text {\n    return f\"{name}: {count}\"\n}\nlet s = info(\"items\", count: 10)"
