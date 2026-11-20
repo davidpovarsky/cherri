@@ -1,0 +1,1591 @@
+diff --git a/ios/CherriApp/Compiler/CherriCompiler.swift b/ios/CherriApp/Compiler/CherriCompiler.swift
+index 99c8e821..25877fdb 100644
+--- a/ios/CherriApp/Compiler/CherriCompiler.swift
++++ b/ios/CherriApp/Compiler/CherriCompiler.swift
+@@ -273,7 +273,7 @@ enum CherriBuildProfile: String, Sendable {
+ }
+ 
+ enum CherriCompiler {
+-    static func compile(source: String, name: String, mode: String = "auto", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
++    static func compile(source: String, name: String, mode: String = "v2", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
+         try await Task.detached(priority: .userInitiated) {
+             try callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)
+         }.value
+diff --git a/ios/CherriTests/CherriCoreIntegrationTests.swift b/ios/CherriTests/CherriCoreIntegrationTests.swift
+index 945dd5d2..69627667 100644
+--- a/ios/CherriTests/CherriCoreIntegrationTests.swift
++++ b/ios/CherriTests/CherriCoreIntegrationTests.swift
+@@ -3,6 +3,29 @@ import XCTest
+ @testable import Cherri
+ 
+ final class CherriCoreIntegrationTests: XCTestCase {
++    func testRP52DefaultRejectsLegacyAndKeepsExplicitReference() async throws {
++        let legacyBody = "const route = text(\"RP52_LEGACY_REFERENCE\")\nshow(route)\n"
++        for prefix in ["", "// cherri: legacy\n", "#define from sharesheet\n"] {
++            let source = prefix + legacyBody
++            do {
++                _ = try await CherriCompiler.compile(source: source, name: "RP52 Default")
++                XCTFail("Default source entry silently compiled Legacy input")
++            } catch let diagnostic as CompilationDiagnostic {
++                XCTAssertTrue(diagnostic.message.contains("E_LEGACY_SYNTAX"), diagnostic.message)
++            }
++            let explicit = try await CherriCompiler.compile(source: source, name: "RP52 Explicit Reference", mode: "legacy")
++            let actions = try XCTUnwrap(try propertyList(explicit.plist)["WFWorkflowActions"] as? [[String: Any]])
++            let textRows = actions.filter { action in
++                let parameters = action["WFWorkflowActionParameters"] as? [String: Any]
++                return action["WFWorkflowActionIdentifier"] as? String == "is.workflow.actions.gettext"
++                    && parameters?["WFTextActionText"] as? String == "RP52_LEGACY_REFERENCE"
++            }
++            XCTAssertEqual(textRows.count, 1)
++        }
++        let recovery = try await CherriCompiler.compile(source: "let route = text(\"RP52_V2_RECOVERY\")\nshow(route)\n", name: "RP52 Recovery")
++        XCTAssertFalse(recovery.plist.isEmpty)
++    }
++
+     func testCompileProducesShortcutPlist() async throws {
+         let result = try await CherriCompiler.compile(
+             source: "show(\"Hello from iOS tests\")\n",
+@@ -17,8 +40,8 @@ final class CherriCoreIntegrationTests: XCTestCase {
+     func testRepeatedCompileResetsIncludedActions() async throws {
+         let source = "#include 'actions/text'\nshow(\"Repeated compile\")\n"
+ 
+-        let first = try await CherriCompiler.compile(source: source, name: "First")
+-        let second = try await CherriCompiler.compile(source: source, name: "Second")
++        let first = try await CherriCompiler.compile(source: source, name: "First", mode: "legacy")
++        let second = try await CherriCompiler.compile(source: source, name: "Second", mode: "legacy")
+ 
+         let firstActions = try XCTUnwrap(try propertyList(first.plist)["WFWorkflowActions"] as? [[String: Any]])
+         let secondActions = try XCTUnwrap(try propertyList(second.plist)["WFWorkflowActions"] as? [[String: Any]])
+@@ -34,7 +57,7 @@ final class CherriCoreIntegrationTests: XCTestCase {
+         let decompiled = try await CherriCompiler.decompile(plist: original.plist, name: "Round Trip")
+         XCTAssertFalse(decompiled.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+ 
+-        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Round Trip Rebuilt")
++        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Round Trip Rebuilt", mode: "legacy")
+         let rebuiltActions = try XCTUnwrap(try propertyList(rebuilt.plist)["WFWorkflowActions"] as? [[String: Any]])
+         XCTAssertFalse(rebuiltActions.isEmpty)
+     }
+@@ -100,14 +123,14 @@ final class CherriCoreIntegrationTests: XCTestCase {
+         show("Metadata")
+         """
+ 
+-        let original = try await CherriCompiler.compile(source: source, name: "Metadata")
++        let original = try await CherriCompiler.compile(source: source, name: "Metadata", mode: "legacy")
+         let decompiled = try await CherriCompiler.decompile(plist: original.plist, name: "Metadata")
+         XCTAssertTrue(decompiled.contains("#define from"))
+         XCTAssertTrue(decompiled.contains("sharesheet"))
+         XCTAssertTrue(decompiled.contains("quickactions"))
+         XCTAssertTrue(decompiled.contains("#define quickactions finder, services"))
+ 
+-        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Metadata")
++        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Metadata", mode: "legacy")
+         let plist = try propertyList(rebuilt.plist)
+         let workflowTypes = Set((plist["WFWorkflowTypes"] as? [String]) ?? [])
+         let quickActions = Set((plist["WFQuickActionSurfaces"] as? [String]) ?? [])
+diff --git a/mobile_compiler.go b/mobile_compiler.go
+index ca812f18..26f5320d 100644
+--- a/mobile_compiler.go
++++ b/mobile_compiler.go
+@@ -90,7 +90,7 @@ func detectLegacySource(src string) bool {
+ }
+ 
+ func compileForMobile(src string, requestedName string, sign bool) mobileCompileResponse {
+-	return compileForMobileMode(src, requestedName, string(MobileCompileModeAuto), sign)
++	return compileForMobileMode(src, requestedName, string(MobileCompileModeV2), sign)
+ }
+ 
+ func compileForMobileMode(src string, requestedName string, mode string, sign bool) mobileCompileResponse {
+@@ -142,7 +142,7 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
+ 
+ 	selectedMode := MobileCompileMode(strings.ToLower(strings.TrimSpace(mode)))
+ 	if selectedMode == "" {
+-		selectedMode = MobileCompileModeAuto
++		selectedMode = MobileCompileModeV2
+ 	}
+ 
+ 	if selectedMode == MobileCompileModeAuto {
+diff --git a/p10_native_specimen_test.go b/p10_native_specimen_test.go
+index 995255ca..9cbc851e 100644
+--- a/p10_native_specimen_test.go
++++ b/p10_native_specimen_test.go
+@@ -201,7 +201,8 @@ func EvaluateNativeSpecimen(item NativeSpecimenManifestItem, baseDir string, req
+ 	}
+ 
+ 	// 6. Compile equivalent Cherri source
+-	compResp := compileForMobile(string(cherriBytes), item.ShortcutName, false)
++	// This isolated historical specimen reference explicitly selects compatibility mode.
++	compResp := compileForMobileMode(string(cherriBytes), item.ShortcutName, string(MobileCompileModeAuto), false)
+ 	if !compResp.OK {
+ 		res.Status = NativeSpecimenStatusFail
+ 		res.Diagnostic = fmt.Sprintf("equivalent Cherri compilation failed: %s", compResp.Error)
+diff --git a/p15_frontend_entrypoint_audit_test.go b/p15_frontend_entrypoint_audit_test.go
+new file mode 100644
+index 00000000..01aa8414
+--- /dev/null
++++ b/p15_frontend_entrypoint_audit_test.go
+@@ -0,0 +1,507 @@
++package main
++
++import (
++	"bytes"
++	"fmt"
++	"go/ast"
++	"go/format"
++	"go/parser"
++	gotoken "go/token"
++	"os"
++	"reflect"
++	"strings"
++	"testing"
++	"unicode"
++	"unicode/utf8"
++)
++
++// This is a repository route audit, not an execution claim for the iOS ABI.
++func p15RP52CExportError(raw []byte) error {
++	file, err := parser.ParseFile(gotoken.NewFileSet(), "ios_bridge.go", raw, parser.ParseComments)
++	if err != nil {
++		return err
++	}
++	expected := map[string]struct{ mode, sign, core string }{
++		"CherriCompile":              {"string(MobileCompileModeV2)", "false", "compileForMobileMode"},
++		"CherriCompileSigned":        {"string(MobileCompileModeV2)", "true", "compileForMobileMode"},
++		"CherriCompileMode":          {"C.GoString(mode)", "false", "compileForMobileMode"},
++		"CherriCompileSignedMode":    {"C.GoString(mode)", "true", "compileForMobileMode"},
++		"CherriCompileProfile":       {"C.GoString(mode)", "false", "compileForMobileModeWithOptions"},
++		"CherriCompileSignedProfile": {"C.GoString(mode)", "true", "compileForMobileModeWithOptions"},
++	}
++	expression := func(node ast.Node) string {
++		var out bytes.Buffer
++		if format.Node(&out, gotoken.NewFileSet(), node) != nil {
++			return ""
++		}
++		return out.String()
++	}
++	seen := map[string]bool{}
++	for _, declaration := range file.Decls {
++		fn, okay := declaration.(*ast.FuncDecl)
++		if !okay || !strings.HasPrefix(fn.Name.Name, "CherriCompile") {
++			continue
++		}
++		policy, okay := expected[fn.Name.Name]
++		if !okay || seen[fn.Name.Name] || fn.Body == nil || len(fn.Body.List) != 1 {
++			return fmt.Errorf("unreviewed public source entry %s", fn.Name.Name)
++		}
++		seen[fn.Name.Name] = true
++		parameters := "source *C.char, requestedName *C.char"
++		if policy.mode == "C.GoString(mode)" {
++			parameters += ", mode *C.char"
++		}
++		if policy.core == "compileForMobileModeWithOptions" {
++			parameters += ", profile *C.char"
++		}
++		if fn.Recv != nil || expression(fn.Type) != "func("+parameters+") *C.char" {
++			return fmt.Errorf("public compile ABI signature changed: %s", fn.Name.Name)
++		}
++		annotated := false
++		if fn.Doc != nil {
++			for _, comment := range fn.Doc.List {
++				if comment.Text == "//export "+fn.Name.Name {
++					annotated = true
++				}
++			}
++		}
++		if !annotated {
++			return fmt.Errorf("missing actual C export annotation %s", fn.Name.Name)
++		}
++		ret, okay := fn.Body.List[0].(*ast.ReturnStmt)
++		if !okay || len(ret.Results) != 1 {
++			return fmt.Errorf("source entry has additional control flow")
++		}
++		encode, okay := ret.Results[0].(*ast.CallExpr)
++		if !okay || expression(encode.Fun) != "encodeMobileResponse" || len(encode.Args) != 1 {
++			return fmt.Errorf("source entry bypassed response boundary")
++		}
++		core, okay := encode.Args[0].(*ast.CallExpr)
++		if !okay || expression(core.Fun) != policy.core {
++			return fmt.Errorf("source entry bypassed approved compile core")
++		}
++		want := []string{"C.GoString(source)", "C.GoString(requestedName)", policy.mode, policy.sign}
++		if policy.core == "compileForMobileModeWithOptions" {
++			want = append(want, "CompileOptions{BuildProfile: BuildProfile(C.GoString(profile))}")
++		}
++		if len(core.Args) != len(want) {
++			return fmt.Errorf("source entry changed explicit mode/profile arity")
++		}
++		for i, arg := range core.Args {
++			if expression(arg) != want[i] {
++				return fmt.Errorf("source entry lost mode/source argument %s/%d", fn.Name.Name, i)
++			}
++		}
++	}
++	if len(seen) != len(expected) {
++		return fmt.Errorf("public compile export inventory incomplete")
++	}
++	return nil
++}
++
++// The small lexical audit keeps comments and all Swift string forms opaque;
++// it does not replace the Swift parser or type checker. Only the canonical
++// compile entry body below is approved by this repository gate.
++func p15RP52SwiftCommentEnd(s string, start int) (int, bool, error) {
++	if strings.HasPrefix(s[start:], "//") {
++		i := strings.IndexByte(s[start:], '\n')
++		if i < 0 {
++			return len(s), true, nil
++		}
++		return start + i, true, nil
++	}
++	if !strings.HasPrefix(s[start:], "/*") {
++		return start, false, nil
++	}
++	nesting := 1
++	for i := start + 2; i < len(s); {
++		if strings.HasPrefix(s[i:], "/*") {
++			nesting++
++			i += 2
++			continue
++		}
++		if strings.HasPrefix(s[i:], "*/") {
++			nesting--
++			i += 2
++			if nesting == 0 {
++				return i, true, nil
++			}
++			continue
++		}
++		i++
++	}
++	return 0, true, fmt.Errorf("unterminated Swift comment")
++}
++func p15RP52SwiftStringEnd(s string, start, depth int) (int, bool, error) {
++	if depth > 64 {
++		return 0, true, fmt.Errorf("excessive Swift lexical nesting")
++	}
++	quote := start
++	for quote < len(s) && s[quote] == '#' {
++		quote++
++	}
++	if quote >= len(s) || s[quote] != '"' {
++		return start, false, nil
++	}
++	hashes := s[start:quote]
++	width := 1
++	if strings.HasPrefix(s[quote:], "\"\"\"") {
++		width = 3
++	}
++	close := strings.Repeat("\"", width) + hashes
++	for i := quote + width; i < len(s); {
++		if strings.HasPrefix(s[i:], close) {
++			return i + len(close), true, nil
++		}
++		escape := "\\" + hashes
++		if strings.HasPrefix(s[i:], escape) {
++			next := i + len(escape)
++			if next < len(s) && s[next] == '(' {
++				end, err := p15RP52SwiftInterpolationEnd(s, next, depth+1)
++				if err != nil {
++					return 0, true, err
++				}
++				i = end
++				continue
++			}
++			if next >= len(s) {
++				return 0, true, fmt.Errorf("unterminated Swift escape")
++			}
++			_, size := utf8.DecodeRuneInString(s[next:])
++			i = next + size
++			continue
++		}
++		if width == 1 && (s[i] == '\n' || s[i] == '\r') {
++			return 0, true, fmt.Errorf("unescaped line in Swift string")
++		}
++		_, size := utf8.DecodeRuneInString(s[i:])
++		i += size
++	}
++	return 0, true, fmt.Errorf("unterminated Swift string")
++}
++func p15RP52SwiftInterpolationEnd(s string, start, depth int) (int, error) {
++	count := 1
++	for i := start + 1; i < len(s); {
++		if end, yes, err := p15RP52SwiftCommentEnd(s, i); yes {
++			if err != nil {
++				return 0, err
++			}
++			i = end
++			continue
++		}
++		if end, yes, err := p15RP52SwiftStringEnd(s, i, depth+1); yes {
++			if err != nil {
++				return 0, err
++			}
++			i = end
++			continue
++		}
++		switch s[i] {
++		case '(':
++			count++
++		case ')':
++			count--
++			if count == 0 {
++				return i + 1, nil
++			}
++		}
++		i++
++	}
++	return 0, fmt.Errorf("unterminated Swift interpolation")
++}
++func p15RP52SwiftTokens(s string) ([]string, error) {
++	if len(s) > 1<<20 || !utf8.ValidString(s) {
++		return nil, fmt.Errorf("invalid bounded Swift source")
++	}
++	var tokens []string
++	for i := 0; i < len(s); {
++		ch, size := utf8.DecodeRuneInString(s[i:])
++		if unicode.IsSpace(ch) {
++			i += size
++			continue
++		}
++		if end, yes, err := p15RP52SwiftCommentEnd(s, i); yes {
++			if err != nil {
++				return nil, err
++			}
++			i = end
++			continue
++		}
++		if end, yes, err := p15RP52SwiftStringEnd(s, i, 0); yes {
++			if err != nil {
++				return nil, err
++			}
++			tokens = append(tokens, s[i:end])
++			i = end
++			continue
++		}
++		start := i
++		i += size
++		if unicode.IsLetter(ch) || ch == '_' {
++			for i < len(s) {
++				next, n := utf8.DecodeRuneInString(s[i:])
++				if !unicode.IsLetter(next) && !unicode.IsDigit(next) && next != '_' {
++					break
++				}
++				i += n
++			}
++		}
++		tokens = append(tokens, s[start:i])
++	}
++	return tokens, nil
++}
++
++const p15RP52ApprovedSwiftCompile = "static func compile(source: String, name: String, mode: String = \"v2\", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {\ntry await Task.detached(priority: .userInitiated) {\ntry callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)\n}.value\n}"
++const p15RP52ApprovedSwiftBridge = `private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool, buildProfile: CherriBuildProfile) throws -> CompiledShortcut {
++    let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
++        name.withCString { namePointer in
++            mode.withCString { modePointer in
++                buildProfile.rawValue.withCString { profilePointer in
++                    let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
++                    let mutableName = UnsafeMutablePointer(mutating: namePointer)
++                    let mutableMode = UnsafeMutablePointer(mutating: modePointer)
++                    let mutableProfile = UnsafeMutablePointer(mutating: profilePointer)
++                    return signed
++                        ? CherriCompileSignedProfile(mutableSource, mutableName, mutableMode, mutableProfile)
++                        : CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)
++                }
++            }
++        }
++    }
++    let response = try decodeBridgeResponse(resultPointer)
++    guard let plistBase64 = response.plistBase64,
++          let plist = Data(base64Encoded: plistBase64) else {
++        throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
++    }
++    let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
++    return CompiledShortcut(name: response.name ?? name, plist: plist, signedShortcut: signedData)
++}`
++
++func p15RP52SwiftEntryError(raw []byte) error {
++	tokens, err := p15RP52SwiftTokens(string(raw))
++	if err != nil {
++		return err
++	}
++	// The reviewed declaration is unconditional and top-level. Do not guess
++	// Swift build flags or authorize a live alternate declaration from an
++	// inactive/nested canonical decoy. String/comment tokens remain opaque.
++	depth, declarations := 0, 0
++	for i, item := range tokens {
++		if item == "#" && i+1 < len(tokens) {
++			switch tokens[i+1] {
++			case "if", "elseif", "else", "endif":
++				return fmt.Errorf("unreviewed conditional Swift source ownership")
++			}
++		}
++		if i+1 < len(tokens) && tokens[i+1] == "CherriCompiler" {
++			switch item {
++			case "enum", "struct", "class", "actor", "protocol", "extension":
++				if item != "enum" || depth != 0 {
++					return fmt.Errorf("unreviewed alternate or nested Swift compiler declaration")
++				}
++				declarations++
++			}
++		}
++		if item == "{" {
++			depth++
++		}
++		if item == "}" {
++			depth--
++			if depth < 0 {
++				return fmt.Errorf("unbalanced Swift source ownership")
++			}
++		}
++	}
++	if depth != 0 || declarations != 1 {
++		return fmt.Errorf("missing unique top-level Swift compiler declaration")
++	}
++	wanted, err := p15RP52SwiftTokens(p15RP52ApprovedSwiftCompile)
++	if err != nil {
++		return err
++	}
++	bridge, err := p15RP52SwiftTokens(p15RP52ApprovedSwiftBridge)
++	if err != nil {
++		return err
++	}
++	enums, entries, bridges := 0, 0, 0
++	for i := 0; i+2 < len(tokens); i++ {
++		if tokens[i] != "enum" || tokens[i+1] != "CherriCompiler" || tokens[i+2] != "{" {
++			continue
++		}
++		enums++
++		depth := 1
++		for j := i + 3; j < len(tokens) && depth > 0; j++ {
++			if depth == 1 && j+4 < len(tokens) && tokens[j] == "private" && tokens[j+1] == "static" && tokens[j+2] == "func" && tokens[j+3] == "callCompileBridge" && tokens[j+4] == "(" {
++				bridges++
++				opening := j
++				for opening < len(tokens) && tokens[opening] != "{" {
++					opening++
++				}
++				if opening == len(tokens) {
++					return fmt.Errorf("missing Swift bridge body")
++				}
++				end := opening + 1
++				bodyDepth := 1
++				for end < len(tokens) && bodyDepth > 0 {
++					if tokens[end] == "{" {
++						bodyDepth++
++					}
++					if tokens[end] == "}" {
++						bodyDepth--
++					}
++					end++
++				}
++				if bodyDepth != 0 || !reflect.DeepEqual(tokens[j:end], bridge) {
++					return fmt.Errorf("Swift bridge changed source/mode/profile forwarding")
++				}
++			}
++			if depth == 1 && j+3 < len(tokens) && tokens[j] == "static" && tokens[j+1] == "func" && tokens[j+2] == "compile" && tokens[j+3] == "(" {
++				entries++
++				opening := j
++				for opening < len(tokens) && tokens[opening] != "{" {
++					opening++
++				}
++				if opening == len(tokens) {
++					return fmt.Errorf("missing Swift entry body")
++				}
++				end := opening + 1
++				bodyDepth := 1
++				for end < len(tokens) && bodyDepth > 0 {
++					if tokens[end] == "{" {
++						bodyDepth++
++					}
++					if tokens[end] == "}" {
++						bodyDepth--
++					}
++					end++
++				}
++				if bodyDepth != 0 || !reflect.DeepEqual(tokens[j:end], wanted) {
++					return fmt.Errorf("Swift default/forwarding entry differs from explicit V2 policy")
++				}
++			}
++			if tokens[j] == "{" {
++				depth++
++			}
++			if tokens[j] == "}" {
++				depth--
++			}
++		}
++		if depth != 0 {
++			return fmt.Errorf("unterminated compiler enum")
++		}
++	}
++	if enums != 1 || entries != 1 || bridges != 1 {
++		return fmt.Errorf("Swift compile entry inventory differs: enums=%d entries=%d bridges=%d", enums, entries, bridges)
++	}
++	return nil
++}
++
++func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
++	goSource, err := os.ReadFile("ios_bridge.go")
++	if err != nil {
++		t.Fatal(err)
++	}
++	swiftSource, err := os.ReadFile("ios/CherriApp/Compiler/CherriCompiler.swift")
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Run("actual_go_exports", func(t *testing.T) {
++		if err := p15RP52CExportError(goSource); err != nil {
++			t.Fatal(err)
++		}
++	})
++	t.Run("actual_swift_default", func(t *testing.T) {
++		if err := p15RP52SwiftEntryError(swiftSource); err != nil {
++			t.Fatal(err)
++		}
++	})
++	for _, fault := range []string{"unsigned_default_auto", "signed_default_auto", "explicit_mode_dropped", "profile_mode_dropped", "default_extra_statement", "unknown_export", "missing_export", "swapped_parameters", "wrong_parameter_type", "wrong_return_type"} {
++		t.Run("go_"+fault, func(t *testing.T) {
++			s := string(goSource)
++			switch fault {
++			case "unsigned_default_auto":
++				s = strings.Replace(s, "string(MobileCompileModeV2), false", "string(MobileCompileModeAuto), false", 1)
++			case "signed_default_auto":
++				s = strings.Replace(s, "string(MobileCompileModeV2), true", "string(MobileCompileModeAuto), true", 1)
++			case "explicit_mode_dropped":
++				s = strings.Replace(s, "C.GoString(mode), false)", "string(MobileCompileModeLegacy), false)", 1)
++			case "profile_mode_dropped":
++				s = strings.Replace(s, "C.GoString(mode), false, CompileOptions", "string(MobileCompileModeLegacy), false, CompileOptions", 1)
++			case "default_extra_statement":
++				s = strings.Replace(s, "\treturn encodeMobileResponse(compileForMobileMode(", "\t_ = detectLegacySource(C.GoString(source))\n\treturn encodeMobileResponse(compileForMobileMode(", 1)
++			case "unknown_export":
++				s = strings.ReplaceAll(s, "CherriCompileSignedProfile", "CherriCompileUnknown")
++			case "missing_export":
++				s = strings.Replace(s, "//export CherriCompile\n", "// no compile export\n", 1)
++			case "swapped_parameters":
++				s = strings.Replace(s, "func CherriCompile(source *C.char, requestedName *C.char)", "func CherriCompile(requestedName *C.char, source *C.char)", 1)
++			case "wrong_parameter_type":
++				s = strings.Replace(s, "func CherriCompile(source *C.char", "func CherriCompile(source *C.int", 1)
++			case "wrong_return_type":
++				s = strings.Replace(s, "requestedName *C.char) *C.char", "requestedName *C.char) *C.int", 1)
++			}
++			if s == string(goSource) {
++				t.Fatal("source corruption did not occur")
++			}
++			if p15RP52CExportError([]byte(s)) == nil {
++				t.Fatal("public route fault accepted", fault)
++			}
++		})
++	}
++	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment", "bridge_mode_literal", "bridge_mode_pointer", "bridge_swapped_abi", "duplicate_bridge", "inactive_enum_live_struct", "nested_enum_live_struct"} {
++		t.Run("swift_"+fault, func(t *testing.T) {
++			s := string(swiftSource)
++			switch fault {
++			case "auto_default":
++				s = strings.Replace(s, "mode: String = \"v2\"", "mode: String = \"auto\"", 1)
++			case "legacy_default":
++				s = strings.Replace(s, "mode: String = \"v2\"", "mode: String = \"legacy\"", 1)
++			case "mode_literal":
++				s = strings.Replace(s, "name: name, mode: mode, signed: signed", "name: name, mode: \"auto\", signed: signed", 1)
++			case "comment_shadow":
++				s = "/* enum CherriCompiler { " + p15RP52ApprovedSwiftCompile + " } */\n" + strings.Replace(s, "mode: String = \"v2\"", "mode: String = \"auto\"", 1)
++			case "string_shadow":
++				s = "let unused = #\"\"\"\nenum CherriCompiler { " + p15RP52ApprovedSwiftCompile + " }\n\"\"\"#\n" + strings.Replace(s, "mode: String = \"v2\"", "mode: String = \"auto\"", 1)
++			case "duplicate_entry":
++				s = strings.Replace(s, "enum CherriCompiler {", "enum CherriCompiler {\n"+p15RP52ApprovedSwiftCompile, 1)
++			case "duplicate_enum":
++				s += "\nenum CherriCompiler { " + p15RP52ApprovedSwiftCompile + " }\n"
++			case "missing_bridge":
++				s = strings.Replace(s, "try callCompileBridge(source: source", "try bypassCompileBridge(source: source", 1)
++			case "local_shadow":
++				s = strings.Replace(s, "try await Task.detached(priority: .userInitiated) {", "let mode = \"auto\"\n        return try await Task.detached(priority: .userInitiated) {", 1)
++			case "unterminated_comment":
++				s += "\n/*"
++			case "bridge_mode_literal":
++				s = strings.Replace(s, "mode.withCString { modePointer in", "\"auto\".withCString { modePointer in", 1)
++			case "bridge_mode_pointer":
++				s = strings.Replace(s, "mutating: modePointer", "mutating: namePointer", 1)
++			case "bridge_swapped_abi":
++				s = strings.Replace(s, "CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)", "CherriCompileProfile(mutableSource, mutableMode, mutableName, mutableProfile)", 1)
++			case "duplicate_bridge":
++				s = strings.Replace(s, "enum CherriCompiler {", "enum CherriCompiler {\n"+p15RP52ApprovedSwiftBridge, 1)
++			case "inactive_enum_live_struct":
++				s = "#if false\n" + s + "\n#else\n" + strings.Replace(strings.Replace(s, "enum CherriCompiler {", "struct CherriCompiler {", 1), "mode: String = \"v2\"", "mode: String = \"auto\"", 1) + "\n#endif\n"
++			case "nested_enum_live_struct":
++				s = "func auditDecoy() {\n" + s[strings.Index(s, "enum CherriCompiler {"):] + "\n}\n" + strings.Replace(strings.Replace(s, "enum CherriCompiler {", "struct CherriCompiler {", 1), "mode: String = \"v2\"", "mode: String = \"auto\"", 1)
++			}
++			if s == string(swiftSource) {
++				t.Fatal("source corruption did not occur")
++			}
++			if p15RP52SwiftEntryError([]byte(s)) == nil {
++				t.Fatal("Swift route fault accepted", fault)
++			}
++		})
++	}
++	for _, prefix := range []struct{ name, value string }{
++		{"nested_comment", "/* outer /* enum CherriCompiler { invalid } */ end */\n"},
++		{"opaque_interpolation", "let note = \"\\(call(\"enum CherriCompiler { invalid }\"))\"\n"},
++		{"opaque_raw_string", "let note = #\"enum CherriCompiler { invalid }\"#\n"},
++	} {
++		t.Run(prefix.name, func(t *testing.T) {
++			if err := p15RP52SwiftEntryError(append([]byte(prefix.value), swiftSource...)); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
+diff --git a/p15_public_frontend_boundary_test.go b/p15_public_frontend_boundary_test.go
+new file mode 100644
+index 00000000..9cbeb6f0
+--- /dev/null
++++ b/p15_public_frontend_boundary_test.go
+@@ -0,0 +1,130 @@
++package main
++
++import (
++	"encoding/base64"
++	"fmt"
++	"strings"
++	"testing"
++
++	"howett.net/plist"
++)
++
++func p15RP52MobileWire(t *testing.T, response mobileCompileResponse, marker string) {
++	t.Helper()
++	if !response.OK || response.PlistBase64 == "" || response.SignedBase64 != "" {
++		t.Fatalf("actual unsigned mobile compile failed: okay=%t mode=%s error=%s plist=%d signed=%d", response.OK, response.Mode, response.Error, len(response.PlistBase64), len(response.SignedBase64))
++	}
++	raw, err := base64.StdEncoding.DecodeString(response.PlistBase64)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var root map[string]any
++	if _, err := plist.Unmarshal(raw, &root); err != nil {
++		t.Fatal(err)
++	}
++	rows, okay := root["WFWorkflowActions"].([]any)
++	if !okay {
++		t.Fatal("actual mobile output has no actions")
++	}
++	var actions []map[string]any
++	for _, row := range rows {
++		action, okay := row.(map[string]any)
++		if !okay {
++			t.Fatal("actual mobile output has malformed action")
++		}
++		actions = append(actions, action)
++	}
++	if err := p15U04PublicSourceWire(actions, marker); err != nil {
++		t.Fatal(err)
++	}
++	// A success flag alone cannot satisfy the observed payload/reference oracle.
++	if err := p15U04PublicSourceWire(p15V02CorruptLastReference(t, actions, false), marker); err == nil {
++		t.Fatal("wrong producer reference passed the actual mobile route oracle")
++	}
++}
++
++func p15RP52LegacySources() []struct{ name, source string } {
++	const body = "const route = text(\"RP52_LEGACY_REFERENCE\")\nshow(route)\n"
++	return []struct{ name, source string }{
++		{"plain", body},
++		{"file_marker", "// cherri: legacy\n" + body},
++		{"preprocessor", "#define from sharesheet\n" + body},
++	}
++}
++
++func TestP15RP52DefaultMobileFrontend(t *testing.T) {
++	const healthy = "let route = text(\"RP52_V2_DEFAULT\")\nshow(route)\n"
++	routes := []struct {
++		name    string
++		compile func(string) mobileCompileResponse
++	}{
++		{"omitted", func(source string) mobileCompileResponse { return compileForMobile(source, "RP52 default", false) }},
++		{"empty", func(source string) mobileCompileResponse {
++			return compileForMobileMode(source, "RP52 empty", "", false)
++		}},
++		{"whitespace", func(source string) mobileCompileResponse {
++			return compileForMobileMode(source, "RP52 whitespace", " \t\n", false)
++		}},
++		{"explicit_v2", func(source string) mobileCompileResponse {
++			return compileForMobileMode(source, "RP52 explicit V2", "v2", false)
++		}},
++	}
++	for _, route := range routes {
++		t.Run(route.name+"_valid_v2", func(t *testing.T) {
++			response := route.compile(healthy)
++			p15RP52MobileWire(t, response, "RP52_V2_DEFAULT")
++			if response.Mode != "v2" {
++				t.Fatal("default did not report actual V2 selection", response.Mode)
++			}
++		})
++		for _, specimen := range p15RP52LegacySources() {
++			t.Run(route.name+"_reject_"+specimen.name, func(t *testing.T) {
++				response := route.compile(specimen.source)
++				if response.OK {
++					p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE")
++					t.Fatalf("default/V2 public source route silently selected %q and compiled real Legacy source", response.Mode)
++				}
++				if response.PlistBase64 != "" || response.SignedBase64 != "" || !strings.Contains(response.Error, "E_LEGACY_SYNTAX") {
++					t.Fatalf("old source produced bytes or lost migration diagnostic: mode=%q plist=%d signed=%d error=%s", response.Mode, len(response.PlistBase64), len(response.SignedBase64), response.Error)
++				}
++				recovered := route.compile(healthy)
++				p15RP52MobileWire(t, recovered, "RP52_V2_DEFAULT")
++				if recovered.Mode != "v2" {
++					t.Fatal("rejected old source contaminated healthy default", recovered.Mode)
++				}
++			})
++		}
++	}
++}
++
++func TestP15RP52ExplicitLegacyReferenceModes(t *testing.T) {
++	for _, specimen := range p15RP52LegacySources() {
++		t.Run("explicit_legacy_"+specimen.name, func(t *testing.T) {
++			response := compileForMobileMode(specimen.source, "RP52 trusted old reference", "legacy", false)
++			p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE")
++			if response.Mode != "legacy" {
++				t.Fatal("explicitly selected Legacy was not preserved", response.Mode)
++			}
++		})
++	}
++	// Explicit compatibility selection remains distinct from an omitted default.
++	for _, specimen := range p15RP52LegacySources()[1:] {
++		t.Run("explicit_auto_"+specimen.name, func(t *testing.T) {
++			response := compileForMobileMode(specimen.source, "RP52 explicitly selected compatibility", "auto", false)
++			p15RP52MobileWire(t, response, "RP52_LEGACY_REFERENCE")
++			if response.Mode != "legacy" {
++				t.Fatal("explicit compatibility route changed", response.Mode)
++			}
++		})
++	}
++	t.Run("invalid_mode", func(t *testing.T) {
++		response := compileForMobileMode("show(\"RP52\")\n", "RP52 invalid mode", "RP52-no-such-mode", false)
++		if response.OK || response.PlistBase64 != "" || response.SignedBase64 != "" || !strings.Contains(response.Error, "COMPILE_MODE_INVALID") {
++			t.Fatal("invalid mode did not fail closed", fmt.Sprint(response))
++		}
++	})
++	t.Run("recovery", func(t *testing.T) {
++		response := compileForMobileMode("let route = text(\"RP52_V2_DEFAULT\")\nshow(route)\n", "RP52 final recovery", "v2", false)
++		p15RP52MobileWire(t, response, "RP52_V2_DEFAULT")
++	})
++}
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index 09ac0dec..bac990c9 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -487,6 +487,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
+ }
+ 
+ func deriveRepairTestIDs(id, title string) []string {
++	if id == "RP52" {
++		return publicFrontendTestIDs()
++	}
+ 	if id == "RP43" {
+ 		return outputSigningTestIDs()
+ 	}
+@@ -557,6 +560,9 @@ func deriveRepairTestIDs(id, title string) []string {
+ }
+ 
+ func deriveRepairFixtures(id string) []string {
++	if id == "RP52" {
++		return append([]string{}, publicFrontendProductionPaths...)
++	}
+ 	if id == "RP43" {
+ 		return append([]string{}, outputSigningProductionPaths...)
+ 	}
+diff --git a/tools/language-acceptance/execution_audit.go b/tools/language-acceptance/execution_audit.go
+index 6ce5663e..8c3b3e54 100644
+--- a/tools/language-acceptance/execution_audit.go
++++ b/tools/language-acceptance/execution_audit.go
+@@ -267,6 +267,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
+ 			row.PositiveAndNegative = res.Passed
+ 			row.Scope = numberWireScope
+ 		}
++		if row.ID == "RP52" {
++			row.TestNames = append([]string{}, publicFrontendTests...)
++			row.ProductionPath = append([]string{}, publicFrontendProductionPaths...)
++			row.PositiveAndNegative = res.Passed
++			row.Scope = publicFrontendScope
++		}
+ 		if row.ID == "BRG21" {
+ 			row.TestNames = append([]string{}, purePublicTests...)
+ 			row.ProductionPath = append([]string{}, purePublicProductionPaths...)
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index 921522b0..90ddd7e9 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -977,6 +977,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
++			if err := validatePublicFrontendRecord(reqID, rec); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
+ 			if err := validatePurePublicRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1937,6 +1940,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
+ 		if r.runNumberWireRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+ 			continue
+ 		}
++		if r.runPublicFrontendRequirement(c) {
++			continue
++		}
+ 		if r.runOutputSigningRequirement(c) {
+ 			continue
+ 		}
+diff --git a/tools/language-acceptance/public_frontend_execution.go b/tools/language-acceptance/public_frontend_execution.go
+new file mode 100644
+index 00000000..209592fd
+--- /dev/null
++++ b/tools/language-acceptance/public_frontend_execution.go
+@@ -0,0 +1,324 @@
++package main
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"fmt"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"time"
++	"unicode/utf8"
++)
++
++const publicFrontendTitle = "No accidental second user frontend"
++const publicFrontendScenario = "Inspect production entrypoints and compile actual old user source, while running isolated trusted old declaration/migration reference paths."
++const publicFrontendExpected = "Only approved new public language is accepted; preserved upstream inputs remain build/reference resources, not hidden user execution fallback."
++const publicFrontendScope = "Independent RP52 execution of actual default and explicit V2 CLI file/compile/check and mobile routes against old source, anchored Legacy markers and directives, plus healthy recovery and explicit Legacy/compatibility controls. Repository inspection binds all six C compile export signatures and exact mode/profile forwarding, and the Swift public default and complete private compile bridge body; lexical inspection is not iOS ABI execution. The same fresh selection verifies immutable upstream declaration bytes and reviewed corrections, rejects Git replacement-object evidence, and executes the actual isolated Legacy metadata/reference/include program through migration and canonical V2 compilation with native equivalence, rejection preservation and recovery. Explicitly selected Legacy remains authorized under original U04. Only RP52 receives integration/repository records; U01/U04/CL03/RP33/BRG19 and Apple runtime are not inherited."
++
++var publicFrontendTests = []string{
++	"TestP15RP52DefaultMobileFrontend",
++	"TestP15RP52ExplicitLegacyReferenceModes",
++	"TestP15RP52EntrypointSourceBoundaries",
++	"TestP15U04PublicFrontendRouteMatrix",
++	"TestP15CLIDefaultRejectsLegacyWithGuidance",
++	"TestP15U01ActualDeclarationBoundary",
++	"TestP15U01DeclarationBoundaryControls",
++	"TestP15U01GitReplacementIsolation",
++	"TestBackendRecovery19StructuralMigrationIntegration",
++}
++var publicFrontendTiers = []string{"integration", "repository"}
++var publicFrontendArtifacts = []string{"rp52-process.json", "rp52-go.jsonl", "rp52-stderr.log"}
++
++// Immutable Git bytes bind the public routes, source audit, trusted migration and intake.
++// The fresh U01 scenario additionally binds all preserved declaration blobs to its
++// independently reviewed historical manifest; it does not mint U01 evidence here.
++var publicFrontendProductionPaths = []string{
++	"main.go",
++	"args.go",
++	"language_cli_adapter.go",
++	"language_backend_session.go",
++	"language_backend_adapter.go",
++	"language_emit_adapter.go",
++	"language_value_adapter.go",
++	"mobile_compiler.go",
++	"ios_bridge.go",
++	"ios/CherriApp/Compiler/CherriCompiler.swift",
++	"ios/CherriTests/CherriCoreIntegrationTests.swift",
++	"shortcut.go",
++	"shortcutgen.go",
++	"output.go",
++	"legacy_output_transaction.go",
++	"hybrid_import.go",
++	"import_fidelity.go",
++	"import_provenance.go",
++	"ios/CherriApp/App/WorkspaceView.swift",
++	"internal/shortcutcompare/compare.go",
++	"internal/shortcutcompare/normalize.go",
++	"internal/shortcutcompare/edit.go",
++	"internal/language/backend/contracts.go",
++	"internal/language/lower/lower.go",
++	"internal/language/analysis/analyzer.go",
++	"internal/language/syntax/parser.go",
++	"internal/language/syntax/lexer.go",
++	"internal/language/schema/generated_registry.go",
++	"internal/language/migrate/migrate.go",
++	"internal/language/migrate/lexical_source.go",
++	"internal/language/migrate/references.go",
++	"internal/language/migrate/optional_bindings.go",
++	"internal/language/migrate/native_lists.go",
++	"internal/language/migrate/setter_mode.go",
++	"internal/language/migrate/variadic.go",
++	"p15_public_frontend_boundary_test.go",
++	"p15_frontend_entrypoint_audit_test.go",
++	"p15_public_parser_route_test.go",
++	"p15_binding_scope_wire_test.go",
++	"p15_cli_acceptance_test.go",
++	"p15_upstream_boundary_test.go",
++	"p15_brg19_safe_import_edit_test.go",
++	"docs/language-v2/upstream-preservation-boundary.json",
++	"go.mod",
++	"go.sum",
++	"tests/language-v2/repair-regression-plan.json",
++	"tests/language-v2/acceptance-contract.json",
++	"tests/language-v2/backend-recovery-gates.json",
++	"tools/language-acceptance/public_frontend_execution.go",
++	"tools/language-acceptance/public_frontend_execution_test.go",
++	"tools/language-acceptance/structural_migration_execution_test.go",
++	"tools/language-acceptance/strict_go_events.go",
++	"tools/language-acceptance/loop_execution.go",
++	"tools/language-acceptance/editor_source_binding.go",
++	"tools/language-acceptance/editor_performance_execution.go",
++	"tools/language-acceptance/editor_process_other.go",
++	"tools/language-acceptance/editor_process_windows.go",
++	"tools/language-acceptance/native_encoding_intake.go",
++	"tools/language-acceptance/state_acceptance_intake.go",
++	"tools/language-acceptance/state_acceptance_execution.go",
++	"tools/language-acceptance/main.go",
++	"tools/language-acceptance/parser_execution.go",
++	"tools/language-acceptance/evidence_map.go",
++	"tools/language-acceptance/execution_audit.go",
++}
++
++func publicFrontendRequiredEvents() []string {
++	names := append([]string{}, publicFrontendTests...)
++	add := func(index int, children []string) {
++		for _, child := range children {
++			names = append(names, publicFrontendTests[index]+"/"+child)
++		}
++	}
++	for _, route := range []string{"omitted", "empty", "whitespace", "explicit_v2"} {
++		add(0, []string{route + "_valid_v2", route + "_reject_plain", route + "_reject_file_marker", route + "_reject_preprocessor"})
++	}
++	add(1, []string{"explicit_legacy_plain", "explicit_legacy_file_marker", "explicit_legacy_preprocessor", "explicit_auto_file_marker", "explicit_auto_preprocessor", "invalid_mode", "recovery"})
++	add(2, []string{"actual_go_exports", "actual_swift_default", "go_unsigned_default_auto", "go_signed_default_auto", "go_explicit_mode_dropped", "go_profile_mode_dropped", "go_default_extra_statement", "go_unknown_export", "go_missing_export", "go_swapped_parameters", "go_wrong_parameter_type", "go_wrong_return_type", "swift_auto_default", "swift_legacy_default", "swift_mode_literal", "swift_comment_shadow", "swift_string_shadow", "swift_duplicate_entry", "swift_duplicate_enum", "swift_missing_bridge", "swift_local_shadow", "swift_unterminated_comment", "swift_bridge_mode_literal", "swift_bridge_mode_pointer", "swift_bridge_swapped_abi", "swift_duplicate_bridge", "swift_inactive_enum_live_struct", "swift_nested_enum_live_struct", "nested_comment", "opaque_interpolation", "opaque_raw_string"})
++	for _, route := range []string{"file", "compile"} {
++		for _, choice := range []string{"default_v2", "explicit_v2", "default_rejects_legacy", "explicit_v2_rejects_legacy", "legacy_flag", "legacy_mode", "invalid_mode", "conflicting_modes"} {
++			add(3, []string{route + "/" + choice})
++		}
++	}
++	add(6, []string{"missing_current_file", "extra_current_file", "missing_manifest_file", "duplicate_manifest_file", "wrong_base", "wrong_baseline_digest", "wrong_baseline_size", "rewritten_unchanged_file", "forged_recorded_hash", "wrong_correction", "false_upstream_equality", "false_unchanged_class"})
++	add(7, []string{"show", "cat_file_batch", "ls_tree", "diff"})
++	add(8, []string{"metadata", "include", "reference"})
++	return names
++}
++func publicFrontendTestIDs() []string {
++	var ids []string
++	for _, name := range publicFrontendTests {
++		ids = append(ids, "github.com/electrikmilk/cherri:"+name)
++	}
++	return ids
++}
++func publicFrontendProducer(tier string) string {
++	switch tier {
++	case "integration":
++		return publicFrontendTestIDs()[0]
++	case "repository":
++		return publicFrontendTestIDs()[2]
++	}
++	return ""
++}
++func parsePublicFrontendOutput(raw []byte) error {
++	names := publicFrontendRequiredEvents()
++	if err := parseStrictNamedProductionOutput(names, productionTestTimeout(publicFrontendTests)+time.Minute, raw); err != nil {
++		return err
++	}
++	// Route parents own fault children. A selected intermediate parent cannot
++	// complete early even if the outer Go test remains active.
++	selected, run, passed := map[string]bool{}, map[string]bool{}, map[string]bool{}
++	for _, name := range names {
++		selected[name] = true
++	}
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event struct{ Action, Test string }
++		if err := json.Unmarshal(line, &event); err != nil {
++			return err
++		}
++		if event.Test == "" {
++			continue
++		}
++		switch event.Action {
++		case "run":
++			parent := event.Test
++			for {
++				slash := strings.LastIndexByte(parent, '/')
++				if slash < 0 {
++					break
++				}
++				parent = parent[:slash]
++				if selected[parent] && (!run[parent] || passed[parent]) {
++					return fmt.Errorf("RP52 child outside selected route parent")
++				}
++			}
++			run[event.Test] = true
++		case "pass":
++			for name := range selected {
++				if strings.HasPrefix(name, event.Test+"/") && !passed[name] {
++					return fmt.Errorf("RP52 route passed before required child")
++				}
++			}
++			passed[event.Test] = true
++		}
++	}
++	return nil
++}
++func validatePublicFrontendRecord(id string, record EvidenceRecord) error {
++	if id != "RP52" {
++		return nil
++	}
++	producer := publicFrontendProducer(record.Tier)
++	if producer == "" || record.Result != "passed" || record.ExitCode != 0 || !reflect.DeepEqual(record.Requirements, []string{id}) ||
++		record.TestID != producer || !reflect.DeepEqual(record.Command, productionTestCommand(publicFrontendTests)) ||
++		record.Assertions["required_production_tests"] != strings.Join(publicFrontendTests, "\n") ||
++		record.Assertions["required_go_events"] != strings.Join(publicFrontendRequiredEvents(), "\n") ||
++		record.Assertions["scope"] != publicFrontendScope {
++		return fmt.Errorf("RP52 record detached from complete actual frontend and trusted reference scenario")
++	}
++	data, err := stateReadArtifacts(record.Artifacts, publicFrontendArtifacts)
++	if err != nil {
++		return err
++	}
++	var receipt editorProcessReceipt
++	if err = decodeEditorJSON(data[publicFrontendArtifacts[0]], &receipt); err != nil {
++		return err
++	}
++	raw, stderr := data[publicFrontendArtifacts[1]], data[publicFrontendArtifacts[2]]
++	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != record.ImplementationSHA ||
++		!receipt.SourceCleanBefore || !receipt.SourceCleanAfter || !reflect.DeepEqual(receipt.Command, record.Command) ||
++		!reflect.DeepEqual(receipt.RequiredTests, publicFrontendRequiredEvents()) || !reflect.DeepEqual(receipt.DiscoveredTests, publicFrontendRequiredEvents()) ||
++		receipt.ExitCode == nil || *receipt.ExitCode != 0 || receipt.TimedOut == nil || *receipt.TimedOut ||
++		receipt.RawSHA256 != editorSHA(raw) || receipt.RawBytes != len(raw) || receipt.StderrSHA256 != editorSHA(stderr) || receipt.StderrBytes != len(stderr) || !utf8.Valid(stderr) ||
++		receipt.BenchmarkSHA256 != "" || receipt.BenchmarkBytes != 0 {
++		return fmt.Errorf("incomplete RP52 process/source/byte binding")
++	}
++	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(publicFrontendTests) + time.Minute).Seconds()); err != nil {
++		return err
++	}
++	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, publicFrontendProductionPaths); err != nil {
++		return err
++	}
++	if err = parsePublicFrontendOutput(raw); err != nil {
++		return err
++	}
++	return loopOutputWithinProcess(raw, receipt)
++}
++func (r *Runner) executePublicFrontendProduction() ([]EvidenceArtifact, string, bool, error) {
++	root, err := filepath.Abs(resolveRepoRoot())
++	if err != nil {
++		return nil, "", false, err
++	}
++	before, clean, stateErr := editorSourceState(root)
++	if stateErr != nil || !clean || before != r.implSHA {
++		return nil, "", false, fmt.Errorf("RP52 requires exact clean source: %s clean=%t error=%v", before, clean, stateErr)
++	}
++	directory, err := stateEvidenceDirectory(r, "rp52-")
++	if err != nil {
++		return nil, "", false, err
++	}
++	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "RP52", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(publicFrontendTests), RequiredTests: publicFrontendRequiredEvents()}
++	receipt.SourceFiles, err = editorGitSourceFiles(root, before, publicFrontendProductionPaths)
++	if err != nil {
++		return nil, "", false, err
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(publicFrontendTests)+time.Minute)
++	defer cancel()
++	command := exec.CommandContext(ctx, receipt.Command[0], receipt.Command[1:]...)
++	command.Dir = root
++	configureEditorProductionProcess(command)
++	var output, errors loopBoundedOutput
++	command.Stdout, command.Stderr = &output, &errors
++	started := time.Now()
++	receipt.StartedUTC = started.UTC().Format(time.RFC3339Nano)
++	processErr := command.Run()
++	receipt.FinishedUTC = time.Now().UTC().Format(time.RFC3339Nano)
++	receipt.ElapsedSeconds = time.Since(started).Seconds()
++	exitCode := -1
++	if command.ProcessState != nil {
++		exitCode = command.ProcessState.ExitCode()
++	}
++	timedOut := ctx.Err() != nil
++	receipt.ExitCode, receipt.TimedOut = &exitCode, &timedOut
++	after, afterClean, afterErr := editorSourceState(root)
++	receipt.SourceCleanAfter = afterErr == nil && afterClean && after == before
++	raw, stderr := output.Bytes(), errors.Bytes()
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(raw), len(raw)
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(stderr), len(stderr)
++	parseErr := parsePublicFrontendOutput(raw)
++	if parseErr == nil {
++		parseErr = loopOutputWithinProcess(raw, receipt)
++	}
++	if parseErr == nil {
++		receipt.DiscoveredTests = publicFrontendRequiredEvents()
++	}
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		return nil, "", command.Process != nil, err
++	}
++	contents := map[string][]byte{publicFrontendArtifacts[0]: append(encoded, '\n'), publicFrontendArtifacts[1]: raw, publicFrontendArtifacts[2]: stderr}
++	var artifacts []EvidenceArtifact
++	for _, name := range publicFrontendArtifacts {
++		path := filepath.Join(directory, name)
++		if err = os.WriteFile(path, contents[name], 0600); err != nil {
++			return artifacts, "", command.Process != nil, err
++		}
++		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(contents[name])})
++	}
++	if processErr != nil || parseErr != nil || timedOut || !receipt.SourceCleanAfter {
++		return artifacts, "", command.Process != nil, fmt.Errorf("actual RP52 process failed: process=%v parse=%v timeout=%t clean=%t", processErr, parseErr, timedOut, receipt.SourceCleanAfter)
++	}
++	return artifacts, "Executed complete default-V2 public routes and repository source boundaries with actual preserved declarations and isolated Legacy migration references", true, nil
++}
++func (r *Runner) runPublicFrontendRequirement(spec RepairCaseSpec) bool {
++	if spec.ID != "RP52" {
++		return false
++	}
++	level := strings.Join(spec.RequiredTestLevels, "+")
++	if spec.Title != publicFrontendTitle || spec.Scenario != publicFrontendScenario || spec.ExpectedObservation != publicFrontendExpected ||
++		!reflect.DeepEqual(parseRequiredTiers(level), publicFrontendTiers) {
++		r.results[spec.ID] = CaseResult{ID: spec.ID, Group: "repair", Requirement: spec.Title, TestLevel: level, Status: "FAILED", Detail: "RP52 producer does not match the immutable full scenario"}
++		return true
++	}
++	artifacts, detail, executed, err := r.executePublicFrontendProduction()
++	if err != nil {
++		detail = err.Error()
++	}
++	if !executed {
++		r.results[spec.ID] = CaseResult{ID: spec.ID, Group: "repair", Requirement: spec.Title, TestLevel: level, Status: "NOT_RUN", Detail: detail}
++		return true
++	}
++	first := len(r.records)
++	r.Record(spec.ID, "repair", spec.Title, level, publicFrontendTiers, err == nil, "PASSED", detail)
++	for index := first; index < len(r.records); index++ {
++		record := &r.records[index]
++		record.TestID = publicFrontendProducer(record.Tier)
++		record.Command = productionTestCommand(publicFrontendTests)
++		record.Artifacts = append([]EvidenceArtifact{}, artifacts...)
++		record.Assertions["required_production_tests"] = strings.Join(publicFrontendTests, "\n")
++		record.Assertions["required_go_events"] = strings.Join(publicFrontendRequiredEvents(), "\n")
++		record.Assertions["scope"] = publicFrontendScope
++	}
++	return true
++}
+diff --git a/tools/language-acceptance/public_frontend_execution_test.go b/tools/language-acceptance/public_frontend_execution_test.go
+new file mode 100644
+index 00000000..63512201
+--- /dev/null
++++ b/tools/language-acceptance/public_frontend_execution_test.go
+@@ -0,0 +1,421 @@
++package main
++
++import (
++	"bytes"
++	"encoding/json"
++	"os"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++)
++
++func publicFrontendSelectedContracts(t *testing.T, all *ContractsSet) *ContractsSet {
++	t.Helper()
++	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++	for _, row := range all.Repair.Cases {
++		if row.ID == "RP52" {
++			selected.Repair.Cases = append(selected.Repair.Cases, row)
++		}
++	}
++	if len(selected.Repair.Cases) != 1 {
++		t.Fatal("missing immutable RP52 contract")
++	}
++	selected.Repair.CaseCount = 1
++	return selected
++}
++func TestPublicFrontendProducerInventory(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	row := publicFrontendSelectedContracts(t, all).Repair.Cases[0]
++	if row.Title != publicFrontendTitle || row.Scenario != publicFrontendScenario || row.ExpectedObservation != publicFrontendExpected || !reflect.DeepEqual(parseRequiredTiers(strings.Join(row.RequiredTestLevels, "+")), publicFrontendTiers) {
++		t.Fatal("immutable full RP52 contract changed", row)
++	}
++	names := publicFrontendRequiredEvents()
++	if len(names) != 98 || len(publicFrontendProductionPaths) != 64 {
++		t.Fatal("unreviewed RP52 event/source inventory", len(names), len(publicFrontendProductionPaths))
++	}
++	seen := map[string]bool{}
++	for _, name := range names {
++		if name == "" || seen[name] {
++			t.Fatal("invalid event inventory", name)
++		}
++		seen[name] = true
++	}
++	if !reflect.DeepEqual(deriveRepairTestIDs("RP52", row.Title), publicFrontendTestIDs()) || !reflect.DeepEqual(deriveRepairFixtures("RP52"), publicFrontendProductionPaths) {
++		t.Fatal("missing complete production mapping")
++	}
++	for _, path := range publicFrontendProductionPaths {
++		if seen[path] {
++			t.Fatal("duplicate source path", path)
++		}
++		seen[path] = true
++		info, err := os.Stat(filepath.Join(resolveRepoRoot(), filepath.FromSlash(path)))
++		if err != nil || !info.Mode().IsRegular() {
++			t.Fatal("missing production source", path, err)
++		}
++	}
++	runner := NewRunner()
++	for _, foreign := range []string{"U01", "U04", "CL03", "RP33", "BRG19"} {
++		other := row
++		other.ID = foreign
++		if runner.runPublicFrontendRequirement(other) {
++			t.Fatal("related ID inherited producer", foreign)
++		}
++	}
++	if len(runner.records) != 0 || len(runner.results) != 0 || len(runner.observations) != 0 {
++		t.Fatal("unexecuted ID minted evidence")
++	}
++	for _, field := range []string{"title", "scenario", "expected", "tiers"} {
++		changed := row
++		switch field {
++		case "title":
++			changed.Title = "different title"
++		case "scenario":
++			changed.Scenario = "different scenario"
++		case "expected":
++			changed.ExpectedObservation = "different expected"
++		case "tiers":
++			changed.RequiredTestLevels = []string{"integration"}
++		}
++		if !runner.runPublicFrontendRequirement(changed) || runner.results["RP52"].Status != "FAILED" || len(runner.records) != 0 {
++			t.Fatal("altered immutable scenario accepted", field)
++		}
++	}
++}
++
++// Synthetic streams exercise parser rejection only, never production credit.
++func publicFrontendControlEvents() []byte {
++	var lines [][]byte
++	emit := func(action, name string) {
++		e := map[string]any{"Time": "2026-11-20T00:00:00Z", "Action": action, "Package": "github.com/electrikmilk/cherri"}
++		if name != "" {
++			e["Test"] = name
++		}
++		if action == "pass" {
++			e["Elapsed"] = 0.001
++		}
++		b, _ := json.Marshal(e)
++		lines = append(lines, b)
++	}
++	names := publicFrontendRequiredEvents()
++	selected := map[string]bool{}
++	for _, name := range names {
++		selected[name] = true
++	}
++	parent := func(name string) string {
++		for {
++			slash := strings.LastIndexByte(name, '/')
++			if slash < 0 {
++				return ""
++			}
++			name = name[:slash]
++			if selected[name] {
++				return name
++			}
++		}
++	}
++	var execute func(string)
++	execute = func(name string) {
++		emit("run", name)
++		for _, child := range names {
++			if parent(child) == name {
++				execute(child)
++			}
++		}
++		emit("pass", name)
++	}
++	emit("start", "")
++	for _, name := range publicFrontendTests {
++		execute(name)
++	}
++	emit("pass", "")
++	return append(bytes.Join(lines, []byte("\n")), '\n')
++}
++func TestPublicFrontendEventParserControls(t *testing.T) {
++	raw := publicFrontendControlEvents()
++	if err := parsePublicFrontendOutput(raw); err != nil {
++		t.Fatal(err)
++	}
++	for _, name := range publicFrontendRequiredEvents() {
++		t.Run("omitted/"+strings.ReplaceAll(name, "/", "_"), func(t *testing.T) {
++			if parsePublicFrontendOutput(structuralMigrationCorruptRaw(t, "missing_event", name, raw)) == nil {
++				t.Fatal("required real case omitted", name)
++			}
++		})
++	}
++	target := publicFrontendTests[0] + "/omitted_reject_file_marker"
++	for _, fault := range []string{"orphan_pass", "skipped_child", "failed_child", "foreign_package", "unknown_child", "duplicate_run", "parent_before_child", "missing_time", "invalid_time", "backwards_time", "missing_elapsed", "negative_elapsed", "oversized_elapsed", "invalid_utf8", "duplicate_json_key", "trailing_json"} {
++		t.Run(fault, func(t *testing.T) {
++			if parsePublicFrontendOutput(structuralMigrationCorruptRaw(t, fault, target, raw)) == nil {
++				t.Fatal("damaged parser control accepted", fault)
++			}
++		})
++	}
++
++}
++func publicFrontendRewriteArtifacts(t *testing.T, record *EvidenceRecord, mutate func(map[string][]byte, *editorProcessReceipt)) {
++	t.Helper()
++	names := publicFrontendArtifacts
++	data, err := stateReadArtifacts(record.Artifacts, names)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var receipt editorProcessReceipt
++	if err = decodeEditorJSON(data[names[0]], &receipt); err != nil {
++		t.Fatal(err)
++	}
++	mutate(data, &receipt)
++	receipt.RawSHA256 = editorSHA(data[names[1]])
++	receipt.RawBytes = len(data[names[1]])
++	receipt.StderrSHA256 = editorSHA(data[names[2]])
++	receipt.StderrBytes = len(data[names[2]])
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		t.Fatal(err)
++	}
++	data[names[0]] = append(encoded, '\n')
++	root := t.TempDir()
++	record.Artifacts = nil
++	for _, name := range names {
++		path := filepath.Join(root, name)
++		if err = os.WriteFile(path, data[name], 0600); err != nil {
++			t.Fatal(err)
++		}
++		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data[name])})
++	}
++}
++func TestPublicFrontendActualProductionEvidence(t *testing.T) {
++	const id = "RP52"
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := publicFrontendSelectedContracts(t, all)
++	scenario := struct {
++		Tests, Tiers []string
++		Scope        string
++	}{publicFrontendTests, publicFrontendTiers, publicFrontendScope}
++	runner := NewRunner()
++	runner.artifactDir = os.Getenv("CHERRI_PUBLIC_FRONTEND_EVIDENCE_OUTPUT")
++	if runner.artifactDir == "" {
++		runner.artifactDir = t.TempDir()
++	}
++	runner.runRepairCases(selected.Repair)
++	if len(runner.records) != 2 || len(runner.results) != 1 || len(runner.observations) != 0 {
++		t.Fatalf("actual %s accounting: records=%d results=%+v observations=%v", id, len(runner.records), runner.results, runner.observations)
++	}
++	result := runner.results[id]
++	if !result.Passed || result.Status != "PASSED" || result.Group != "repair" || !reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
++		t.Fatalf("actual full %s production did not pass: %+v", id, result)
++	}
++	for _, record := range runner.records {
++		if err = validatePublicFrontendRecord(id, record); err != nil {
++			t.Fatal(err)
++		}
++	}
++	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
++	report, err := ValidateEvidenceManifest(manifest, selected, "local")
++	if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
++		t.Fatal("complete default-frontend/trusted-reference scenario rejected", report, err)
++	}
++	final, finalErr := ValidateEvidenceManifest(manifest, selected, "final")
++	if finalErr == nil || final == nil || final.PassedCases != 1 || final.ClosureComplete || !strings.Contains(finalErr.Error(), "missing required successful CI workflow run") {
++		t.Fatal("local component bypassed global final release gate", final, finalErr)
++	}
++	original, err := json.Marshal(manifest)
++	if err != nil {
++		t.Fatal(err)
++	}
++	faults := []string{"wrong_producer", "borrowed_id", "fake_ios", "wrong_tier", "truncated_command", "missing_child_binding", "wrong_scope", "stale_source", "failed_result", "failed_exit", "missing_artifact", "duplicate_artifact", "bad_artifact_digest", "missing_tier", "process_source", "dirty_before", "dirty_after", "missing_exit", "missing_timeout", "timeout", "missing_discovery", "missing_required_test", "bad_time", "forged_source_hash", "missing_source_path", "process_requirement", "process_command", "forged_benchmark", "stderr_invalid_utf8", "raw_missing_parent", "raw_orphan_pass", "raw_skipped_child", "raw_failed_child", "raw_foreign_package", "raw_unknown_child", "raw_duplicate_run", "raw_parent_before_child", "raw_invalid_utf8", "raw_duplicate_json_key", "raw_trailing_json", "raw_missing_time", "raw_invalid_time", "raw_backwards_time", "raw_missing_elapsed", "raw_negative_elapsed", "raw_oversized_elapsed", "raw_outside_process_interval"}
++	names := publicFrontendArtifacts
++	target := publicFrontendTests[0] + "/omitted_reject_file_marker"
++	for _, actual := range runner.records {
++		t.Run(actual.Tier, func(t *testing.T) {
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					var broken EvidenceManifest
++					if err := json.Unmarshal(original, &broken); err != nil {
++						t.Fatal(err)
++					}
++					for index := range broken.Records {
++						changed := &broken.Records[index]
++						if changed.EvidenceID != actual.EvidenceID {
++							continue
++						}
++						switch fault {
++						case "wrong_producer":
++							changed.TestID = "tools/language-acceptance:runControl"
++						case "borrowed_id":
++							changed.Requirements = append(changed.Requirements, "K01")
++						case "fake_ios":
++							changed.Tier = "ios-runtime"
++						case "wrong_tier":
++							changed.Tier = "security"
++						case "truncated_command":
++							changed.Command = productionTestCommand(scenario.Tests[:1])
++						case "missing_child_binding":
++							delete(changed.Assertions, "required_go_events")
++						case "wrong_scope":
++							changed.Assertions["scope"] = "All linked requirements complete"
++						case "stale_source":
++							changed.ImplementationSHA = strings.Repeat("e", 40)
++						case "failed_result":
++							changed.Result = "failed"
++						case "failed_exit":
++							changed.ExitCode = 1
++						case "missing_artifact":
++							changed.Artifacts = changed.Artifacts[:2]
++						case "duplicate_artifact":
++							changed.Artifacts[2] = changed.Artifacts[1]
++						case "bad_artifact_digest":
++							changed.Artifacts[0].SHA256 = strings.Repeat("0", 64)
++						case "missing_tier":
++							broken.Records = append(broken.Records[:index], broken.Records[index+1:]...)
++						default:
++							publicFrontendRewriteArtifacts(t, changed, func(data map[string][]byte, receipt *editorProcessReceipt) {
++								switch fault {
++								case "process_source":
++									receipt.SourceCommit = strings.Repeat("a", 40)
++								case "dirty_before":
++									receipt.SourceCleanBefore = false
++								case "dirty_after":
++									receipt.SourceCleanAfter = false
++								case "missing_exit":
++									receipt.ExitCode = nil
++								case "missing_timeout":
++									receipt.TimedOut = nil
++								case "timeout":
++									value := true
++									receipt.TimedOut = &value
++								case "missing_discovery":
++									receipt.DiscoveredTests = receipt.DiscoveredTests[:len(receipt.DiscoveredTests)-1]
++								case "missing_required_test":
++									receipt.RequiredTests = receipt.RequiredTests[:len(receipt.RequiredTests)-1]
++								case "bad_time":
++									receipt.ElapsedSeconds = 0
++								case "forged_source_hash":
++									receipt.SourceFiles[0].SHA256 = strings.Repeat("0", 64)
++								case "missing_source_path":
++									receipt.SourceFiles = receipt.SourceFiles[:len(receipt.SourceFiles)-1]
++								case "process_requirement":
++									receipt.Requirement = "K01"
++								case "process_command":
++									receipt.Command = productionTestCommand(scenario.Tests[:1])
++								case "forged_benchmark":
++									receipt.BenchmarkSHA256 = strings.Repeat("a", 64)
++									receipt.BenchmarkBytes = 1
++								case "stderr_invalid_utf8":
++									data[names[2]] = []byte{0xff}
++								default:
++									kind := strings.TrimPrefix(fault, "raw_")
++									changedTarget := target
++									if fault == "raw_missing_parent" {
++										kind = "missing_event"
++										changedTarget = scenario.Tests[0]
++									}
++									var raw = structuralMigrationCorruptRaw(t, kind, changedTarget, data[names[1]])
++									if bytes.Equal(raw, data[names[1]]) {
++										t.Fatal("actual byte corruption did not occur", fault)
++									}
++									data[names[1]] = raw
++								}
++							})
++						}
++						break
++					}
++					corrupted, err := ValidateEvidenceManifest(&broken, selected, "local")
++					if corrupted == nil || corrupted.ClosureComplete || corrupted.PassedCases != 0 {
++						t.Fatal("damaged actual default-frontend/trusted-reference proof accepted", fault, corrupted, err)
++					}
++					if err == nil {
++						t.Fatal("malformed or incomplete actual RP52 proof lacked required error", fault, corrupted)
++					}
++				})
++			}
++		})
++	}
++	for index, path := range publicFrontendProductionPaths {
++		t.Run("source_digest/"+strings.ReplaceAll(path, "/", "_"), func(t *testing.T) {
++			var changed EvidenceRecord
++			encoded, _ := json.Marshal(runner.records[0])
++			if err := json.Unmarshal(encoded, &changed); err != nil {
++				t.Fatal(err)
++			}
++			publicFrontendRewriteArtifacts(t, &changed, func(_ map[string][]byte, receipt *editorProcessReceipt) {
++				receipt.SourceFiles[index].SHA256 = strings.Repeat("0", 64)
++			})
++			if validatePublicFrontendRecord(id, changed) == nil {
++				t.Fatal("hash-reconciled source corruption accepted", path)
++			}
++		})
++	}
++	for _, other := range []string{"U01", "U04", "CL03", "RP33", "BRG19"} {
++		if other == id {
++			continue
++		}
++		t.Run("no_inheritance/"+other, func(t *testing.T) {
++			related := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++			for _, row := range all.Acceptance.Cases {
++				if row.ID == other {
++					related.Acceptance.Cases = append(related.Acceptance.Cases, row)
++				}
++			}
++			for _, row := range all.Repair.Cases {
++				if row.ID == other {
++					related.Repair.Cases = append(related.Repair.Cases, row)
++				}
++			}
++			for _, row := range all.Gates.Gates {
++				if row.ID == other {
++					related.Gates.Gates = append(related.Gates.Gates, row)
++				}
++			}
++			if len(related.Acceptance.Cases)+len(related.Repair.Cases)+len(related.Gates.Gates) != 1 {
++				t.Fatal("missing linked immutable contract", other)
++			}
++			related.Acceptance.CaseCount = len(related.Acceptance.Cases)
++			related.Repair.CaseCount = len(related.Repair.Cases)
++			related.Gates.GateCount = len(related.Gates.Gates)
++			var rebound EvidenceManifest
++			if err := json.Unmarshal(original, &rebound); err != nil {
++				t.Fatal(err)
++			}
++			for index := range rebound.Records {
++				rebound.Records[index].Requirements = []string{other}
++			}
++			borrowed, err := ValidateEvidenceManifest(&rebound, related, "local")
++			if err == nil || borrowed == nil || borrowed.PassedCases != 0 || borrowed.ClosureComplete {
++				t.Fatal("linked requirement inherited component proof", other, borrowed, err)
++			}
++		})
++	}
++	auditPath := filepath.Join(t.TempDir(), "audit.json")
++	if err = writeExecutionAudit(runner, all, auditPath); err != nil {
++		t.Fatal(err)
++	}
++	raw, err := os.ReadFile(auditPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var audit bindingCaptureAuditEnvelope
++	if err = json.Unmarshal(raw, &audit); err != nil || len(audit.Rows) != 179 || audit.ClosureComplete {
++		t.Fatal("component changed formal 179-row scope", err)
++	}
++	for _, row := range audit.Rows {
++		if row.ID == id {
++			if row.Status != "PASS" || !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, scenario.Tests) || !reflect.DeepEqual(row.ProductionPath, publicFrontendProductionPaths) || !reflect.DeepEqual(row.Tier, scenario.Tiers) || row.Scope != scenario.Scope {
++				t.Fatalf("component audit lost actual scope: %+v", row)
++			}
++		} else if row.Status == "PASS" {
++			t.Fatal("unexecuted requirement inherited component proof", row.ID)
++		}
++	}
++	receipt, err := json.Marshal(map[string]any{"requirement": id, "source_sha": runner.implSHA, "scope": scenario.Scope, "report": report, "records": runner.records})
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Log("P15_PUBLIC_FRONTEND_PRODUCTION_RECEIPT:" + string(receipt))
++}

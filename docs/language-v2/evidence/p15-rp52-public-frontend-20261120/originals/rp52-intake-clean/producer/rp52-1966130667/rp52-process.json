@@ -1,0 +1,487 @@
+{
+  "format_version": 1,
+  "requirement": "RP52",
+  "source_commit": "08bf92990f4dee4289cb0e254173ce974e526d7e",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": [
+    {
+      "path": "main.go",
+      "sha256": "35cd76f2bb78d077fa6aa84ea32ba7166657725b16fe5010075202d5c7a063c8"
+    },
+    {
+      "path": "args.go",
+      "sha256": "46915519af85d5c79271fc03beda6363c68ccf1872756d2b6db61b448bd1a96a"
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "sha256": "94b4fd6ab51b679de2dc0a24dce867a6f4fc23a7fa158be5f96d0da7718d2058"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "d32324fdc3aa3667f8280ff9e931a41de568e0a6e3422b7d6d6a7c8c37789762"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "619b704a1faafaa83d67a02a8ed3772c251ef75e4b60ef3a411d4e7987e5d95f"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "sha256": "d490e6a0b09629cd3cd9e8226481d086daed4f38455c84abfd40466b5c3dd260"
+    },
+    {
+      "path": "mobile_compiler.go",
+      "sha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602"
+    },
+    {
+      "path": "ios_bridge.go",
+      "sha256": "6f3baec33cc1619cefd08f70253c74c89b3f4b319724bf4de7d77095bded8a77"
+    },
+    {
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "path": "ios/CherriTests/CherriCoreIntegrationTests.swift",
+      "sha256": "ff65a1c41d485514fcff06e680a49e7377dcdd6de5720a79457128d756246d5d"
+    },
+    {
+      "path": "shortcut.go",
+      "sha256": "c21ff3a195441b1c402ad16ff1009f7eb7a6fc0bd7b29fd382c63d7dd94dd28d"
+    },
+    {
+      "path": "shortcutgen.go",
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+    },
+    {
+      "path": "output.go",
+      "sha256": "e2865c10011359849686e0fcf379ed3f4037ecac19e46771df8651b63d351585"
+    },
+    {
+      "path": "legacy_output_transaction.go",
+      "sha256": "ec4f9ddf0a37c235fc037d29274c81a44f5e13982ad46ab7eae3e34f35c0d497"
+    },
+    {
+      "path": "hybrid_import.go",
+      "sha256": "e5418f8ba31028da3e2f96a7e269916f62d8230bf1e997f6bc0be24db2941c6f"
+    },
+    {
+      "path": "import_fidelity.go",
+      "sha256": "cba3ca8ce5b2a3f444708687d2383f6079ca8db711f56e51e44968613fd80e74"
+    },
+    {
+      "path": "import_provenance.go",
+      "sha256": "6fa32e54161e77ecbc18d3771450ee7704ca0a39c5b58e235c4dc46aa38bd131"
+    },
+    {
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "path": "internal/shortcutcompare/compare.go",
+      "sha256": "903899415feb475f382c09659b3ccfdfa983f5a59e0a38e470b4b483caad472a"
+    },
+    {
+      "path": "internal/shortcutcompare/normalize.go",
+      "sha256": "6f2f57a173aafe14618fdf87779ef2a2e60ba03ddd7ebde67a1d22ac6c57fc69"
+    },
+    {
+      "path": "internal/shortcutcompare/edit.go",
+      "sha256": "90dc403ec069378bb7dfe83fa85c85761b45cf0e88f05f0f7bb1a026d7d990c1"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "1eb7bb7adfd32f459d3745b2cced71b046656cb79e50e796f71d4696bc2c1cb4"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "038e8e48f08b7dbcacb6f57e63b0a7001feb5b22208607effec49387ae0ce811"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "3f98cb3d6f5d32b7ac9b5c4f72fe89842d67fc5b977e8fbe11a37c51ac1d5d18"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33"
+    },
+    {
+      "path": "internal/language/syntax/lexer.go",
+      "sha256": "e85deee166dc6bc2d44c78028cb8bc9fd5e02df5f992e7b69e065ae4f009d692"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474"
+    },
+    {
+      "path": "internal/language/migrate/migrate.go",
+      "sha256": "773028ea07e20ffcd660d55e34ca7b56d0ee332c20e1f756aaffe66fe5b8286c"
+    },
+    {
+      "path": "internal/language/migrate/lexical_source.go",
+      "sha256": "dfe3e85d185dd9e6e0504b57fa615ac2d5468f5611d29e89b90af74296513574"
+    },
+    {
+      "path": "internal/language/migrate/references.go",
+      "sha256": "7bc9d2b41f4f597189199b9f065bada39b5fb847f81601a1102ff003d74ed49d"
+    },
+    {
+      "path": "internal/language/migrate/optional_bindings.go",
+      "sha256": "93bcf69713c0ca51f0a51d2d6fe1281216f85b2dbdec0c4e2253cfb68874187b"
+    },
+    {
+      "path": "internal/language/migrate/native_lists.go",
+      "sha256": "bdd5a235562d67f4d2159ee0221e11b950e82f61bc5f7f3e2a9c5f1f86dc93ed"
+    },
+    {
+      "path": "internal/language/migrate/setter_mode.go",
+      "sha256": "ba31aa7c67bb262e5dc0a5b7a316849d66d0e0fe232e2aca6fb28f1c60979fbc"
+    },
+    {
+      "path": "internal/language/migrate/variadic.go",
+      "sha256": "66f7cedd932883ab8d0a22892929b6795f78942b5978996da7b09a1ee772f3d8"
+    },
+    {
+      "path": "p15_public_frontend_boundary_test.go",
+      "sha256": "174cbb66225c51ceb8688e592422597db3f4c466c27729efc03fea27b78aff93"
+    },
+    {
+      "path": "p15_frontend_entrypoint_audit_test.go",
+      "sha256": "7bbc87ea47c364d876f2c83b1b532666b51d93f85befa0536c8b6e9a3d47bd46"
+    },
+    {
+      "path": "p15_public_parser_route_test.go",
+      "sha256": "54816197aec0ab2755e3e55bb8deb5b50d67c3e575d223f5219c6c2312b53f55"
+    },
+    {
+      "path": "p15_binding_scope_wire_test.go",
+      "sha256": "9acccc84ee84405d9f09d06bf55836d4bd619811d6a6b0ab3af2a3ee13e1815d"
+    },
+    {
+      "path": "p15_cli_acceptance_test.go",
+      "sha256": "40b536a6776072f07177c5f87cd52171a347c06e0ab342bb9a85062218a6fd87"
+    },
+    {
+      "path": "p15_upstream_boundary_test.go",
+      "sha256": "4561f24d3204921fddf0f2055672a59d7343a639897b822b08347a8d06bec378"
+    },
+    {
+      "path": "p15_brg19_safe_import_edit_test.go",
+      "sha256": "651cd06db3900d08f95d5f5fe024edd4697a634d46cc070c2e499d77716daca4"
+    },
+    {
+      "path": "docs/language-v2/upstream-preservation-boundary.json",
+      "sha256": "f69a6a80b79303af7192d45a7056e40c6f90fd18115bdb63e7ae2d77ac8657b8"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tools/language-acceptance/public_frontend_execution.go",
+      "sha256": "75453800ef738b1f054a6980f5e0a5e11ce37d1453b36c90b4e2c5f864099785"
+    },
+    {
+      "path": "tools/language-acceptance/public_frontend_execution_test.go",
+      "sha256": "7fc417e7487be64ea59a182d2631926c2f6cdfc2d88f6aee4468ac4db1361b06"
+    },
+    {
+      "path": "tools/language-acceptance/structural_migration_execution_test.go",
+      "sha256": "ac259b0527131e7c9a866f457d4e44170a9d7a24f329ff983e3aad1beeda8abb"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "sha256": "33edb6072872f90ad6f963b6cd0b0c17ba374b09ea31c17e256608b640541239"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "3583caf780ce2f7e283ae16aad639e4fdf78d17d0f59c95507bad868d70a5899"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "6c39da5801159c394158b45109b4f6dfc8ba0ce162e4a3f5a164ecfc52f8ec4f"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "d7c5a3fab529410506e9edc4aa5aacc1e676f3e775945af534730e8cf3a17aa5"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m0s",
+    ".",
+    "-run",
+    "^(TestP15RP52DefaultMobileFrontend|TestP15RP52ExplicitLegacyReferenceModes|TestP15RP52EntrypointSourceBoundaries|TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation|TestBackendRecovery19StructuralMigrationIntegration)$"
+  ],
+  "required_tests": [
+    "TestP15RP52DefaultMobileFrontend",
+    "TestP15RP52ExplicitLegacyReferenceModes",
+    "TestP15RP52EntrypointSourceBoundaries",
+    "TestP15U04PublicFrontendRouteMatrix",
+    "TestP15CLIDefaultRejectsLegacyWithGuidance",
+    "TestP15U01ActualDeclarationBoundary",
+    "TestP15U01DeclarationBoundaryControls",
+    "TestP15U01GitReplacementIsolation",
+    "TestBackendRecovery19StructuralMigrationIntegration",
+    "TestP15RP52DefaultMobileFrontend/omitted_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/empty_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/whitespace_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_reject_preprocessor",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_plain",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_file_marker",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_preprocessor",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_auto_file_marker",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_auto_preprocessor",
+    "TestP15RP52ExplicitLegacyReferenceModes/invalid_mode",
+    "TestP15RP52ExplicitLegacyReferenceModes/recovery",
+    "TestP15RP52EntrypointSourceBoundaries/actual_go_exports",
+    "TestP15RP52EntrypointSourceBoundaries/actual_swift_default",
+    "TestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto",
+    "TestP15RP52EntrypointSourceBoundaries/go_signed_default_auto",
+    "TestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped",
+    "TestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped",
+    "TestP15RP52EntrypointSourceBoundaries/go_default_extra_statement",
+    "TestP15RP52EntrypointSourceBoundaries/go_unknown_export",
+    "TestP15RP52EntrypointSourceBoundaries/go_missing_export",
+    "TestP15RP52EntrypointSourceBoundaries/go_swapped_parameters",
+    "TestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type",
+    "TestP15RP52EntrypointSourceBoundaries/go_wrong_return_type",
+    "TestP15RP52EntrypointSourceBoundaries/swift_auto_default",
+    "TestP15RP52EntrypointSourceBoundaries/swift_legacy_default",
+    "TestP15RP52EntrypointSourceBoundaries/swift_mode_literal",
+    "TestP15RP52EntrypointSourceBoundaries/swift_comment_shadow",
+    "TestP15RP52EntrypointSourceBoundaries/swift_string_shadow",
+    "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry",
+    "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum",
+    "TestP15RP52EntrypointSourceBoundaries/swift_missing_bridge",
+    "TestP15RP52EntrypointSourceBoundaries/swift_local_shadow",
+    "TestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment",
+    "TestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal",
+    "TestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer",
+    "TestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi",
+    "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge",
+    "TestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct",
+    "TestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct",
+    "TestP15RP52EntrypointSourceBoundaries/nested_comment",
+    "TestP15RP52EntrypointSourceBoundaries/opaque_interpolation",
+    "TestP15RP52EntrypointSourceBoundaries/opaque_raw_string",
+    "TestP15U04PublicFrontendRouteMatrix/file/default_v2",
+    "TestP15U04PublicFrontendRouteMatrix/file/explicit_v2",
+    "TestP15U04PublicFrontendRouteMatrix/file/default_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/file/explicit_v2_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/file/legacy_flag",
+    "TestP15U04PublicFrontendRouteMatrix/file/legacy_mode",
+    "TestP15U04PublicFrontendRouteMatrix/file/invalid_mode",
+    "TestP15U04PublicFrontendRouteMatrix/file/conflicting_modes",
+    "TestP15U04PublicFrontendRouteMatrix/compile/default_v2",
+    "TestP15U04PublicFrontendRouteMatrix/compile/explicit_v2",
+    "TestP15U04PublicFrontendRouteMatrix/compile/default_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/compile/explicit_v2_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/compile/legacy_flag",
+    "TestP15U04PublicFrontendRouteMatrix/compile/legacy_mode",
+    "TestP15U04PublicFrontendRouteMatrix/compile/invalid_mode",
+    "TestP15U04PublicFrontendRouteMatrix/compile/conflicting_modes",
+    "TestP15U01DeclarationBoundaryControls/missing_current_file",
+    "TestP15U01DeclarationBoundaryControls/extra_current_file",
+    "TestP15U01DeclarationBoundaryControls/missing_manifest_file",
+    "TestP15U01DeclarationBoundaryControls/duplicate_manifest_file",
+    "TestP15U01DeclarationBoundaryControls/wrong_base",
+    "TestP15U01DeclarationBoundaryControls/wrong_baseline_digest",
+    "TestP15U01DeclarationBoundaryControls/wrong_baseline_size",
+    "TestP15U01DeclarationBoundaryControls/rewritten_unchanged_file",
+    "TestP15U01DeclarationBoundaryControls/forged_recorded_hash",
+    "TestP15U01DeclarationBoundaryControls/wrong_correction",
+    "TestP15U01DeclarationBoundaryControls/false_upstream_equality",
+    "TestP15U01DeclarationBoundaryControls/false_unchanged_class",
+    "TestP15U01GitReplacementIsolation/show",
+    "TestP15U01GitReplacementIsolation/cat_file_batch",
+    "TestP15U01GitReplacementIsolation/ls_tree",
+    "TestP15U01GitReplacementIsolation/diff",
+    "TestBackendRecovery19StructuralMigrationIntegration/metadata",
+    "TestBackendRecovery19StructuralMigrationIntegration/include",
+    "TestBackendRecovery19StructuralMigrationIntegration/reference"
+  ],
+  "discovered_tests": [
+    "TestP15RP52DefaultMobileFrontend",
+    "TestP15RP52ExplicitLegacyReferenceModes",
+    "TestP15RP52EntrypointSourceBoundaries",
+    "TestP15U04PublicFrontendRouteMatrix",
+    "TestP15CLIDefaultRejectsLegacyWithGuidance",
+    "TestP15U01ActualDeclarationBoundary",
+    "TestP15U01DeclarationBoundaryControls",
+    "TestP15U01GitReplacementIsolation",
+    "TestBackendRecovery19StructuralMigrationIntegration",
+    "TestP15RP52DefaultMobileFrontend/omitted_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/omitted_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/empty_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/empty_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/whitespace_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/whitespace_reject_preprocessor",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_valid_v2",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_reject_plain",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_reject_file_marker",
+    "TestP15RP52DefaultMobileFrontend/explicit_v2_reject_preprocessor",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_plain",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_file_marker",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_legacy_preprocessor",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_auto_file_marker",
+    "TestP15RP52ExplicitLegacyReferenceModes/explicit_auto_preprocessor",
+    "TestP15RP52ExplicitLegacyReferenceModes/invalid_mode",
+    "TestP15RP52ExplicitLegacyReferenceModes/recovery",
+    "TestP15RP52EntrypointSourceBoundaries/actual_go_exports",
+    "TestP15RP52EntrypointSourceBoundaries/actual_swift_default",
+    "TestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto",
+    "TestP15RP52EntrypointSourceBoundaries/go_signed_default_auto",
+    "TestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped",
+    "TestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped",
+    "TestP15RP52EntrypointSourceBoundaries/go_default_extra_statement",
+    "TestP15RP52EntrypointSourceBoundaries/go_unknown_export",
+    "TestP15RP52EntrypointSourceBoundaries/go_missing_export",
+    "TestP15RP52EntrypointSourceBoundaries/go_swapped_parameters",
+    "TestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type",
+    "TestP15RP52EntrypointSourceBoundaries/go_wrong_return_type",
+    "TestP15RP52EntrypointSourceBoundaries/swift_auto_default",
+    "TestP15RP52EntrypointSourceBoundaries/swift_legacy_default",
+    "TestP15RP52EntrypointSourceBoundaries/swift_mode_literal",
+    "TestP15RP52EntrypointSourceBoundaries/swift_comment_shadow",
+    "TestP15RP52EntrypointSourceBoundaries/swift_string_shadow",
+    "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry",
+    "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum",
+    "TestP15RP52EntrypointSourceBoundaries/swift_missing_bridge",
+    "TestP15RP52EntrypointSourceBoundaries/swift_local_shadow",
+    "TestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment",
+    "TestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal",
+    "TestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer",
+    "TestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi",
+    "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge",
+    "TestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct",
+    "TestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct",
+    "TestP15RP52EntrypointSourceBoundaries/nested_comment",
+    "TestP15RP52EntrypointSourceBoundaries/opaque_interpolation",
+    "TestP15RP52EntrypointSourceBoundaries/opaque_raw_string",
+    "TestP15U04PublicFrontendRouteMatrix/file/default_v2",
+    "TestP15U04PublicFrontendRouteMatrix/file/explicit_v2",
+    "TestP15U04PublicFrontendRouteMatrix/file/default_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/file/explicit_v2_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/file/legacy_flag",
+    "TestP15U04PublicFrontendRouteMatrix/file/legacy_mode",
+    "TestP15U04PublicFrontendRouteMatrix/file/invalid_mode",
+    "TestP15U04PublicFrontendRouteMatrix/file/conflicting_modes",
+    "TestP15U04PublicFrontendRouteMatrix/compile/default_v2",
+    "TestP15U04PublicFrontendRouteMatrix/compile/explicit_v2",
+    "TestP15U04PublicFrontendRouteMatrix/compile/default_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/compile/explicit_v2_rejects_legacy",
+    "TestP15U04PublicFrontendRouteMatrix/compile/legacy_flag",
+    "TestP15U04PublicFrontendRouteMatrix/compile/legacy_mode",
+    "TestP15U04PublicFrontendRouteMatrix/compile/invalid_mode",
+    "TestP15U04PublicFrontendRouteMatrix/compile/conflicting_modes",
+    "TestP15U01DeclarationBoundaryControls/missing_current_file",
+    "TestP15U01DeclarationBoundaryControls/extra_current_file",
+    "TestP15U01DeclarationBoundaryControls/missing_manifest_file",
+    "TestP15U01DeclarationBoundaryControls/duplicate_manifest_file",
+    "TestP15U01DeclarationBoundaryControls/wrong_base",
+    "TestP15U01DeclarationBoundaryControls/wrong_baseline_digest",
+    "TestP15U01DeclarationBoundaryControls/wrong_baseline_size",
+    "TestP15U01DeclarationBoundaryControls/rewritten_unchanged_file",
+    "TestP15U01DeclarationBoundaryControls/forged_recorded_hash",
+    "TestP15U01DeclarationBoundaryControls/wrong_correction",
+    "TestP15U01DeclarationBoundaryControls/false_upstream_equality",
+    "TestP15U01DeclarationBoundaryControls/false_unchanged_class",
+    "TestP15U01GitReplacementIsolation/show",
+    "TestP15U01GitReplacementIsolation/cat_file_batch",
+    "TestP15U01GitReplacementIsolation/ls_tree",
+    "TestP15U01GitReplacementIsolation/diff",
+    "TestBackendRecovery19StructuralMigrationIntegration/metadata",
+    "TestBackendRecovery19StructuralMigrationIntegration/include",
+    "TestBackendRecovery19StructuralMigrationIntegration/reference"
+  ],
+  "started_utc": "2026-11-20T10:31:08.8332885Z",
+  "finished_utc": "2026-11-20T10:31:20.7198172Z",
+  "elapsed_seconds": 11.8864693,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "a504ecb61555029bcabf60441f6c15209592f1a5d6c3e17b8be973b6313ffaf0",
+  "raw_bytes": 145338,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "benchmark_sha256": "",
+  "benchmark_bytes": 0
+}

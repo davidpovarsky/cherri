@@ -1,0 +1,38 @@
+{
+  "source_sha": "e7f7dabccaabcc363df2b57e85f44bb9f5804854",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "head_after": "e7f7dabccaabcc363df2b57e85f44bb9f5804854",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15RP52EntrypointSourceBoundaries$",
+    "."
+  ],
+  "started_utc": "2026-11-20T10:25:39.174523+00:00",
+  "finished_utc": "2026-11-20T10:28:01.965918+00:00",
+  "elapsed_seconds": 142.7970000000205,
+  "exit_code": 1,
+  "timed_out": false,
+  "GOMAXPROCS": "2",
+  "go_jsonl_bytes": 27987,
+  "go_jsonl_sha256": "ed88e2c02db3a475ba6f31eb170a74c94d7121c45a4558be4c197c7aa2cd3bc6",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "event_counts": {
+    "run": 31,
+    "output": 63,
+    "pass": 29,
+    "fail": 2
+  },
+  "failed_tests": [
+    "TestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct",
+    "TestP15RP52EntrypointSourceBoundaries"
+  ],
+  "json_decode_errors": [],
+  "free_bytes": 6793445376
+}
