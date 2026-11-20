@@ -20,6 +20,7 @@ ALLOWED = {
     "runtime/instrumentation-vs-original.json", "runtime/output-assertions.json",
     "runtime/signing-provenance.json", "runtime/callback-events.json", "runtime/runtime-trace.jsonl",
     "runtime/http-probe-diagnostic.json", "runtime/simulator-session-recovery.json",
+    "runtime/json-body-diagnostic.json",
     "runtime/debug-label-acceptance.json", "editor/debug-label-preview.json",
     "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
@@ -206,6 +207,16 @@ def stage(root, output, trusted_sources):
                             json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8")))
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_HTTP_DIAGNOSTIC"})
+                        continue
+                if name == "runtime/json-body-diagnostic.json":
+                    from json_body_probe import validate_public_diagnostic
+                    try:
+                        validate_public_diagnostic(parsed,
+                            public_json((root / "compiler-manifest.json").read_text(encoding="utf-8")),
+                            public_json((root / "runtime/output-assertions.json").read_text(encoding="utf-8")),
+                            (root / "runtime/callback-events.json").read_bytes())
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_JSON_BODY_DIAGNOSTIC"})
                         continue
                 if name == "runtime/simulator-session-recovery.json":
                     from simulator_session_recovery import validate_receipt
