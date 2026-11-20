@@ -450,7 +450,7 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
 	if model < 0 || consumer < 0 {
 		t.Fatal("missing actual mutation target")
 	}
-	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid", "wrong_uuid_type", "empty_uuid", "consumer_uuid_type", "wrong_output_name_type", "missing_model_parameters", "missing_consumer_parameters", "malformed_action_identifier", "duplicate_nonmodel_uuid"} {
+	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid", "wrong_uuid_type", "empty_uuid", "consumer_uuid_type", "wrong_output_name_type", "missing_model_parameters", "missing_consumer_parameters", "malformed_action_identifier", "duplicate_nonmodel_uuid", "producer_after_consumer"} {
 		t.Run(fault, func(t *testing.T) {
 			changed := p15ContainerCloneNative(t, original)
 			if bindings, err := p10JSONModelBindings(changed); err != nil || !reflect.DeepEqual(bindings, expected) {
@@ -492,6 +492,17 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
 				changed[consumer]["WFWorkflowActionIdentifier"] = 7
 			case "duplicate_nonmodel_uuid":
 				changed = append(changed, p10CloneJSONWire(changed[consumer]).(map[string]any))
+			case "producer_after_consumer":
+				var producer = changed[model]
+				changed = append(changed[:model], changed[model+1:]...)
+				var movedConsumer = consumer
+				if model < consumer {
+					movedConsumer--
+				}
+				var insertion = movedConsumer + 1
+				changed = append(changed, nil)
+				copy(changed[insertion+1:], changed[insertion:])
+				changed[insertion] = producer
 			}
 			if got, err := p10JSONModelBindings(changed); err == nil {
 				t.Fatalf("corrupt producer binding accepted: %s %#v", fault, got)
