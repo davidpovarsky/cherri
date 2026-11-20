@@ -20,6 +20,7 @@ ALLOWED = {
     "runtime/instrumentation-vs-original.json", "runtime/output-assertions.json",
     "runtime/signing-provenance.json", "runtime/callback-events.json", "runtime/runtime-trace.jsonl",
     "runtime/http-probe-diagnostic.json",
+    "runtime/debug-label-acceptance.json", "editor/debug-label-preview.json",
     "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
     "editor/editor-foreground-recovery.json",
@@ -189,6 +190,14 @@ def stage(root, output, trusted_sources):
             if name.endswith(".json"):
                 parsed = public_json(text)
                 structured.append(parsed)
+                if name in ("runtime/debug-label-acceptance.json", "editor/debug-label-preview.json"):
+                    from debug_label_preview import validate_public_diagnostic
+                    try:
+                        label_diagnostic = public_json((root / "runtime/debug-label-acceptance.json").read_text(encoding="utf-8"))
+                        validate_public_diagnostic(label_diagnostic, root)
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_LABEL_PREVIEW"})
+                        continue
                 if name == "runtime/http-probe-diagnostic.json":
                     from retry_http_probe import validate_public_diagnostic
                     try:

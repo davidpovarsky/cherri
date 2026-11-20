@@ -318,6 +318,34 @@ def causal_faults(program, events, compiler, commit, fid, nonce, expected, basel
     return {"status": "PASS_LOCAL_ORACLE_MUTATIONS_ONLY", "rejected": rejected}
 
 
+def label_preview_replay(artifact, commit, fid, semantic_pass, run_attempt):
+    if not fid.startswith("qa-debug-label-") or fid not in REVIEWED_SELECTORS:
+        return None
+    helpers = ("debug_label_acceptance.py", "debug_label_preview.py")
+    raw_helpers = {name: source_bytes(commit, "tools/shortcuts-simulator-qa/" + name) for name in helpers}
+    program = """import json,sys
+from pathlib import Path
+from debug_label_preview import validate_public_diagnostic
+root=Path(sys.argv[1])
+data=json.loads((root/'runtime/debug-label-acceptance.json').read_text(encoding='utf-8'))
+print(json.dumps(validate_public_diagnostic(data,root)))
+"""
+    with tempfile.TemporaryDirectory(prefix="cherri-label-preview-source-") as directory:
+        root = Path(directory)
+        for name, raw in raw_helpers.items():
+            (root/name).write_bytes(raw)
+        checked = subprocess.run([sys.executable, "-X", "utf8", "-c", program, str(Path(artifact).resolve())],
+            cwd=root, capture_output=True, text=True, encoding="utf-8", timeout=15, check=True)
+        data = json.loads(checked.stdout)
+    require(type(run_attempt) is int and data.get("runAttempt") == run_attempt,
+            "label preview does not match actual workflow attempt")
+    require(data.get("semanticContractVerified") is semantic_pass,
+            "label visual receipt cannot replace exact callback replay")
+    return {"diagnostic": data, "immutableHelperSha256": {name:digest(raw) for name,raw in raw_helpers.items()},
+            "nativeVisibleLabelsVerified": data["preview"]["visibleLabelsVerified"],
+            "creationDateValueIndependentlyVerified": False, "physicalDeviceVerified": False}
+
+
 def audit(artifact, commit, run_id, fid, metadata):
     artifact = Path(artifact)
     require(fid in FIXTURES and re.fullmatch(r"[0-9a-f]{40}", commit), "unreviewed fixture or mutable commit")
@@ -393,6 +421,9 @@ def audit(artifact, commit, run_id, fid, metadata):
         program, compiler, commit, source, events) if storage else None
     verified = strict and (not storage or (storage_report["crossRunTextVerified"]
                 and expected == case["expectedSummary"]))
+    label_report = label_preview_replay(artifact, commit, fid, strict, metadata.get("run_attempt"))
+    if label_report is not None:
+        verified = verified and label_report["diagnostic"]["runtimeContractVerified"]
     require(summary.get("runtimeContractVerified") is verified
             and assertions.get("runtimeContractVerified") is verified,
             "published runtime success disagrees with independent oracle")
@@ -418,6 +449,9 @@ def audit(artifact, commit, run_id, fid, metadata):
     }
     if storage:
         report["storage"] = storage_report
+    if label_report is not None:
+        report["debugLabelAcceptance"] = label_report
+        report["notProven"] += ["Creation Date value independently compared against the visible suffix", "Physical six-mode label display"]
     if fid in (FIXTURES[3], "qa-number-coercion-control-v2"):
         report["observedNumericFlags"] = numeric_flags(observed["resultSummary"])
         report["expectedNumericFlags"] = numeric_flags(case["expectedSummary"])
