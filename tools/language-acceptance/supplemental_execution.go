@@ -31,6 +31,7 @@ var supplementalProductionScenarios = map[string]supplementalProductionScenario{
 		},
 	},
 
+	"BRG33": approvedFrontendScenario,
 	"BRG24": {
 		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
 		TestNames: []string{"TestP15CanonicalBehaviorSourcePropagation"},
