@@ -38,7 +38,7 @@ func productionTestTimeout(required []string) time.Duration {
 	for _, name := range required {
 		// Canonical schema scenarios build and restore multiple actual consumers
 		// in an isolated Git worktree; preserve a finite whole-pipeline budget.
-		if strings.HasPrefix(name, "TestP15Schema") {
+		if strings.HasPrefix(name, "TestP15Schema") || name == "TestP15CanonicalBehaviorSourcePropagation" {
 			return 8 * time.Minute
 		}
 		if strings.HasPrefix(name, "TestP15K05") {

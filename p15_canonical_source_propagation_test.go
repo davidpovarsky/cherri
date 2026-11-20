@@ -169,6 +169,15 @@ func TestP15CanonicalBehaviorSourcePropagation(t *testing.T) {
 			}
 			p15SchemaWrite(t, path, []byte(strings.Replace(string(original), tc.old, tc.replacement, 1)))
 			defer p15SchemaWrite(t, path, original)
+			changedPaths := strings.TrimSpace(string(p15SchemaRun(t, repo, "git", "diff", "--name-only")))
+			if changedPaths != tc.path {
+				t.Fatalf("canonical edit changed unrelated tracked source: %s", changedPaths)
+			}
+			changedSource, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Logf("actual canonical edit path=%s before_SHA256=%x after_SHA256=%x", tc.path, sha256.Sum256(original), sha256.Sum256(changedSource))
 			expected := p15CanonicalRebuildClone(t, baseline)
 			tc.expected(t, expected)
 			if reflect.DeepEqual(expected, baseline) {
