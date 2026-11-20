@@ -259,3 +259,45 @@ func TestP15S01EnclosingInputOracleRejectsCausalCorruption(t *testing.T) {
 		})
 	}
 }
+
+func TestP15S01UnprovenPreviousOutputBoundaries(t *testing.T) {
+	prefix := "let suffix=text(\"SUFFIX\")\nlet seed=text(\"S01_ENCLOSING_SEED\")\n"
+	cases := []struct{ name, previous string }{
+		{"canonical_void_wait", "wait(0)\n"},
+		{"canonical_void_show", "show(\"S01_PUBLIC\")\n"},
+		{"canonical_unknown_comment", "comment(\"S01_PUBLIC\")\n"},
+		{"native_void_show", "native.action(\"is.workflow.actions.showresult\", {\"WFShowResultActionText\":\"S01_PUBLIC\"})\n"},
+		{"native_unknown_action", "native.action(\"com.example.synthetic.s01-output-unknown\", {\"Public\":\"value\"})\n"},
+	}
+	for _, tc := range cases {
+		for _, explicit := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s_explicit_%t", tc.name, explicit), func(t *testing.T) {
+				input := ""
+				if explicit {
+					input = "\"WFInput\":seed,"
+				}
+				source := prefix + tc.previous + "native.action(\"is.workflow.actions.setitemname\", {" + input + "\"WFName\":f\"\uFFFC{suffix}\"})\n"
+				if !explicit {
+					data, err := CompileSourceToPlist("s01-output-boundary.cherri", source)
+					if err == nil || !strings.Contains(err.Error(), "S01_IMPLICIT_INPUT_UNAVAILABLE") || len(data) != 0 {
+						t.Fatalf("unproven previous output was treated as an established native value: bytes=%d error=%v", len(data), err)
+					}
+					return
+				}
+				actions := p15CompiledActions(t, source)
+				if err := p15S01EnclosingInputError(actions); err != nil {
+					t.Fatal(err)
+				}
+				if _, invented := p15Param(actions[2])["UUID"]; invented {
+					t.Fatal("explicit-input control changed unused previous output identity")
+				}
+			})
+		}
+	}
+	t.Run("known_unbound_canonical_text", func(t *testing.T) {
+		actions := p15CompiledActions(t, "let suffix=text(\"SUFFIX\")\ntext(\"S01_ENCLOSING_SEED\")\nnative.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"\uFFFC{suffix}\"})\n")
+		if err := p15S01EnclosingInputError(actions); err != nil {
+			t.Fatal(err)
+		}
+	})
+}
