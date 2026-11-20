@@ -415,7 +415,7 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment", "bridge_mode_literal", "bridge_mode_pointer", "bridge_swapped_abi", "duplicate_bridge"} {
+	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment", "bridge_mode_literal", "bridge_mode_pointer", "bridge_swapped_abi", "duplicate_bridge", "inactive_enum_live_struct"} {
 		t.Run("swift_"+fault, func(t *testing.T) {
 			s := string(swiftSource)
 			switch fault {
@@ -447,6 +447,8 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 				s = strings.Replace(s, "CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)", "CherriCompileProfile(mutableSource, mutableMode, mutableName, mutableProfile)", 1)
 			case "duplicate_bridge":
 				s = strings.Replace(s, "enum CherriCompiler {", "enum CherriCompiler {\n"+p15RP52ApprovedSwiftBridge, 1)
+			case "inactive_enum_live_struct":
+				s = "#if false\n" + s + "\n#else\n" + strings.Replace(strings.Replace(s, "enum CherriCompiler {", "struct CherriCompiler {", 1), "mode: String = \"v2\"", "mode: String = \"auto\"", 1) + "\n#endif\n"
 			}
 			if s == string(swiftSource) {
 				t.Fatal("source corruption did not occur")
