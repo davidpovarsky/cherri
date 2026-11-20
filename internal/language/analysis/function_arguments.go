@@ -71,6 +71,13 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 				return
 			}
 		}
+		// A literal None is explicitly tagged by the optional function envelope.
+		// Other possibly absent values still require their own presence provenance.
+		if literal, ok := argument.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
+			if _, optional := param.TypeExpr.(*syntax.OptionalTypeAnnotation); optional {
+				return
+			}
+		}
 		a.requirePresentTransport(argument, actual, "function argument")
 	}
 	if call.PrimaryArg != nil {

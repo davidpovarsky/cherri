@@ -37,6 +37,7 @@ type BindingRef struct {
 	Type              types.Type
 	PolymorphicLookup bool
 	AppendVariable    bool
+	OptionalPresence  interface{} // compiler-owned value presence, independent of argument omission
 }
 
 func lookupContentItemClass(prop string) (string, bool) {
@@ -58,44 +59,46 @@ func lookupContentItemClass(prop string) (string, bool) {
 
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
-	registry                *schema.Registry
-	session                 backend.Session
-	workflow                *ir.NativeWorkflow
-	bindings                map[string]BindingRef
-	functions               map[string]*syntax.FunctionDecl
-	setupQuestions          map[string]*syntax.SetupDecl
-	setupBindings           map[string]*setupQuestionLoweringBinding
-	setupDeclarationOrder   []*setupQuestionLoweringBinding
-	enums                   map[string]*syntax.EnumDecl
-	types                   map[string]*syntax.TypeDecl
-	actions                 map[string]*syntax.ActionDecl
-	copyBlocks              map[string]*syntax.CopyBlockStmt
-	importStack             []string
-	modules                 map[string]string
-	virtualModules          map[string]string
-	baseFilePath            string
-	importedFunctions       []*syntax.FunctionDecl
-	moduleGraph             *modules.Graph
-	moduleRegistries        map[*modules.Module]*schema.Registry
-	moduleScopes            map[*modules.Module]*moduleScope
-	functionModules         map[*syntax.FunctionDecl]*modules.Module
-	functionDispatchNames   map[*syntax.FunctionDecl]string
-	WorkflowName            string
-	uuidCounter             int
-	autoNumberProducerCount int
-	repeatDepth             int
-	currentBindingName      string
-	emitErr                 error
-	isMac                   *bool
-	exprTypes               map[syntax.Expression]types.Type
-	enumValues              map[syntax.Expression]string
-	inExprStmt              bool
-	hasImportProvenance     bool
-	provenanceUUIDs         map[string]string
-	provenanceSymbols       map[string]bool
-	provenanceOutputNames   map[string]provenanceOutputNameSpec
-	lexical                 lexicalLoweringState
-	provenanceVarNames      map[string]string
+	registry                   *schema.Registry
+	session                    backend.Session
+	workflow                   *ir.NativeWorkflow
+	bindings                   map[string]BindingRef
+	functions                  map[string]*syntax.FunctionDecl
+	setupQuestions             map[string]*syntax.SetupDecl
+	setupBindings              map[string]*setupQuestionLoweringBinding
+	setupDeclarationOrder      []*setupQuestionLoweringBinding
+	enums                      map[string]*syntax.EnumDecl
+	types                      map[string]*syntax.TypeDecl
+	actions                    map[string]*syntax.ActionDecl
+	copyBlocks                 map[string]*syntax.CopyBlockStmt
+	importStack                []string
+	modules                    map[string]string
+	virtualModules             map[string]string
+	baseFilePath               string
+	importedFunctions          []*syntax.FunctionDecl
+	moduleGraph                *modules.Graph
+	moduleRegistries           map[*modules.Module]*schema.Registry
+	moduleScopes               map[*modules.Module]*moduleScope
+	functionModules            map[*syntax.FunctionDecl]*modules.Module
+	functionDispatchNames      map[*syntax.FunctionDecl]string
+	WorkflowName               string
+	uuidCounter                int
+	autoNumberProducerCount    int
+	repeatDepth                int
+	currentBindingName         string
+	emitErr                    error
+	isMac                      *bool
+	exprTypes                  map[syntax.Expression]types.Type
+	enumValues                 map[syntax.Expression]string
+	inExprStmt                 bool
+	hasImportProvenance        bool
+	provenanceUUIDs            map[string]string
+	provenanceSymbols          map[string]bool
+	provenanceOutputNames      map[string]provenanceOutputNameSpec
+	lexical                    lexicalLoweringState
+	provenanceVarNames         map[string]string
+	optionalFunctionReturn     bool
+	optionalExpressionPresence map[syntax.Expression]interface{}
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -1234,6 +1237,17 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.bindings = make(map[string]BindingRef)
 
 		for idx, param := range fn.Parameters {
+			if optionalFunctionParameter(param.TypeExpr) {
+				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr)
+				if err != nil {
+					return nil, fmt.Errorf("function %s optional parameter %s: %w", fn.Name, param.Name, err)
+				}
+				l.bindings[param.Name] = BindingRef{
+					Type: l.resolveTypeAnnotation(param.TypeExpr), OutputUUID: value, OutputName: param.Name,
+					OptionalPresence: &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence},
+				}
+				continue
+			}
 			argKey := fmt.Sprintf("arg_%d", idx)
 			isNumParam := false
 			if named, ok := param.TypeExpr.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Bool") {
@@ -1258,13 +1272,10 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 				suppliedUUID := l.GenerateUUID()
 				l.emitAction(&ir.NativeActionNode{
-					NodeID:          suppliedUUID,
-					AppleIdentifier: "is.workflow.actions.getvalueforkey",
-					OutputUUID:      suppliedUUID,
+					NodeID: suppliedUUID, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: suppliedUUID,
 					Parameters: map[string]interface{}{
-						"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
-						"WFDictionaryKey":          argKey,
-						"WFGetDictionaryValueType": "Value",
+						"WFInput":         &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey": argKey, "WFGetDictionaryValueType": "Value",
 					},
 				})
 
@@ -1300,14 +1311,10 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 			} else {
 				argItemUUID := l.GenerateUUID()
 				l.emitAction(&ir.NativeActionNode{
-					NodeID:          argItemUUID,
-					AppleIdentifier: "is.workflow.actions.getvalueforkey",
-					OutputUUID:      argItemUUID,
-					OutputName:      param.Name,
+					NodeID: argItemUUID, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: argItemUUID, OutputName: param.Name,
 					Parameters: map[string]interface{}{
-						"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
-						"WFDictionaryKey":          argKey,
-						"WFGetDictionaryValueType": "Value",
+						"WFInput":         &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey": argKey, "WFGetDictionaryValueType": "Value",
 					},
 				})
 				if isNumParam {
@@ -1333,14 +1340,18 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		}
 
 		hasReturn := false
+		priorOptionalReturn := l.optionalFunctionReturn
+		l.optionalFunctionReturn = optionalFunctionParameter(fn.ReturnType)
 		for _, stmt := range fn.Body.Statements {
 			if _, ok := stmt.(*syntax.ReturnStmt); ok {
 				hasReturn = true
 			}
 			if err := l.lowerStatement(stmt); err != nil {
+				l.optionalFunctionReturn = priorOptionalReturn
 				return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 			}
 		}
+		l.optionalFunctionReturn = priorOptionalReturn
 
 		l.bindings = savedBindings
 
@@ -1468,6 +1479,13 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 			val, err := l.lowerRuntimeLiteral(s.Value)
 			if err != nil {
 				return err
+			}
+			if l.optionalFunctionReturn {
+				presence, err := l.optionalValuePresence(s.Value, val)
+				if err != nil {
+					return err
+				}
+				val = l.optionalCarrier(val, presence, "has_value", "value", "_cherri_optional_result_v1")
 			}
 			if val == nil {
 				// An omitted output input otherwise inherits the preceding action.
@@ -5381,7 +5399,18 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					}
 				}
 			}
+			optionalValue := optionalFunctionParameter(param.TypeExpr)
+			if optionalValue {
+				presence := "0"
+				if supplied && argVal != nil {
+					presence = "1"
+				}
+				dispatchDict[fmt.Sprintf("has_value_%d", i)] = presence
+			}
 			if supplied {
+				if argVal == nil && !optionalValue {
+					return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function argument transport requires an explicit Optional parameter for optional absence at %s", call.Span)
+				}
 				if b, isBool := argVal.(bool); isBool {
 					if b {
 						argVal = 1.0
@@ -5389,8 +5418,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						argVal = 0.0
 					}
 				}
+				argVal = functionEnvelopeValue(argVal)
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "1"
-				dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal
+				if argVal != nil {
+					dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal
+				}
 				argsList[i] = argVal
 			} else {
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "0"
@@ -5445,6 +5477,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		l.emitAction(runNode)
 
+		if optionalFunctionParameter(fn.ReturnType) {
+			value, presence := l.decodeOptionalCarrier(uuid, "has_value", "value", outName)
+			if l.optionalExpressionPresence == nil {
+				l.optionalExpressionPresence = make(map[syntax.Expression]interface{})
+			}
+			l.optionalExpressionPresence[call] = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence}
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: value, OutputName: outName}, nil
+		}
 		if named, ok := fn.ReturnType.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Int" || named.Name == "Float") {
 			detectUUID := l.GenerateUUID()
 			detectNode := &ir.NativeActionNode{
