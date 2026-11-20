@@ -211,10 +211,9 @@ func p15LazyKeyError(actions []map[string]any, nested bool) error {
 			return fmt.Errorf("raw key acquired unauthored parameters")
 		}
 	}
+	// An authored native action without an output name produces an intentionally
+	// nameless attachment. A later binding label must not invent an OutputName.
 	ref := map[string]any{"Type": "ActionOutput", "OutputUUID": uuid}
-	if name, exists := p["CustomOutputName"]; exists {
-		ref["OutputName"] = name
-	}
 	row := map[string]any{"WFItemType": uint64(0), "WFKey": p15ComputedKeyText(ref, "", "", 0), "WFValue": p15ContainerText("P15_LAZY_KEY")}
 	wrap := func(row map[string]any) map[string]any {
 		return map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": []any{row}}}
@@ -224,7 +223,7 @@ func p15LazyKeyError(actions []map[string]any, nested bool) error {
 		want = wrap(map[string]any{"WFItemType": uint64(1), "WFKey": p15ContainerText("nested"), "WFValue": want})
 	}
 	if !reflect.DeepEqual(p15Param(actions[1])["WFItems"], want) {
-		return fmt.Errorf("lazy key's exact typed text/reference payload changed")
+		return fmt.Errorf("lazy key typed payload changed: actual=%#v want=%#v", p15Param(actions[1])["WFItems"], want)
 	}
 	dictionaryID, _ := p15Param(actions[1])["UUID"].(string)
 	if dictionaryID == "" || dictionaryID == uuid {
@@ -253,7 +252,10 @@ func TestP15ComputedKeysResolveLazyNativeActions(t *testing.T) {
 			}
 			for _, fault := range []string{"missing_uuid", "wrong_reference", "missing_range", "literal_key", "changed_value", "duplicate_producer"} {
 				t.Run(fault, func(t *testing.T) {
-					bad := p15C01Clone(t, actions)
+					bad := p15ContainerCloneNative(t, actions)
+					if err := p15LazyKeyError(bad, nested); err != nil {
+						t.Fatalf("unchanged native clone must pass before mutation: %v", err)
+					}
 					switch fault {
 					case "missing_uuid":
 						delete(p15Param(bad[0]), "UUID")
