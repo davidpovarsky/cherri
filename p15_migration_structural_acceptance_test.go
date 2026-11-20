@@ -105,6 +105,9 @@ literal-end")
 			if err != nil {
 				t.Fatalf("V2_FAILED_AFTER_VALID_LEGACY: %v stdout=%s stderr=%s migrated=%s", err, stdout, stderr, converted)
 			}
+			if tc.name == "full_program" {
+				p15RP33QuestionTargets(t, legacy, v2)
+			}
 			comparison, err := shortcutcompare.CompareFilesNormalized(legacy, v2)
 			if err != nil {
 				t.Fatal(err)
