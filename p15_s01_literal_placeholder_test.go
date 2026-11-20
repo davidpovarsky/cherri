@@ -242,7 +242,7 @@ func TestP15S01LiteralCarriersPreserveImplicitInputOrder(t *testing.T) {
 		t.Run(route, func(t *testing.T) {
 			// Native Get Text intentionally has no WFInput. The previous real
 			// action is its implicit input; a pure literal must not replace it.
-			value := "f\"\\uFFFC{native.action(\\\"is.workflow.actions.detect.text\\\", {})}\\uFFFC{native.action(\\\"is.workflow.actions.detect.text\\\", {})}\""
+			value := `f"\uFFFC{native.action("is.workflow.actions.detect.text", {})}\uFFFC{native.action("is.workflow.actions.detect.text", {})}"`
 			prefix := "let seed=text(\"S01_IMPLICIT_SEED\")\n"
 			var source string
 			switch route {
