@@ -4480,30 +4480,7 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 
 func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticValue, error) {
 	if m, ok := expr.(*syntax.MapExpr); ok {
-		expressions := make([]syntax.Expression, len(m.Entries))
-		for index, entry := range m.Entries {
-			expressions[index] = entry.Value
-		}
-		laterWrites := l.semanticSiblingWrites(expressions)
-		entries := make([]backend.DictEntry, 0, len(m.Entries))
-		for index, entry := range m.Entries {
-			kVal, err := l.lowerExpression(entry.Key)
-			if err != nil {
-				return backend.SemanticValue{}, err
-			}
-			vVal, err := l.lowerSemanticValue(entry.Value)
-			if err != nil {
-				return backend.SemanticValue{}, err
-			}
-			entries = append(entries, backend.DictEntry{
-				Key:   fmt.Sprint(kVal),
-				Value: l.captureCallSemanticValue(vVal, laterWrites[index]),
-			})
-		}
-		return backend.SemanticValue{
-			Kind:    backend.ValDict,
-			DictVal: entries,
-		}, nil
+		return l.lowerSemanticMap(m)
 	}
 	if list, ok := expr.(*syntax.ListExpr); ok {
 		laterWrites := l.semanticSiblingWrites(list.Elements)

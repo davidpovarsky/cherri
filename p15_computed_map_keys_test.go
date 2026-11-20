@@ -71,7 +71,11 @@ func TestP15ComputedMapKeysPreserveTextIdentity(t *testing.T) {
 						if !ok || uuid == "" {
 							t.Fatal("computed-key action has no output identity")
 						}
-						want = p15ComputedKeyText(map[string]any{"Type": "ActionOutput", "OutputUUID": uuid}, "", "", 0)
+						ref := map[string]any{"Type": "ActionOutput", "OutputUUID": uuid}
+						if outputName, ok := p["CustomOutputName"].(string); ok && outputName != "" {
+							ref["OutputName"] = outputName
+						}
+						want = p15ComputedKeyText(ref, "", "", 0)
 						count++
 					}
 				}
@@ -96,9 +100,15 @@ func TestP15ComputedMapKeysPreserveTextIdentity(t *testing.T) {
 func TestP15ComputedMapKeyWritesCaptureEarlierValue(t *testing.T) {
 	source := "var state=\"P15_CONTAINER_BEFORE\"\nlet data={\"before\":state," + p15ContainerWriteExpression + ":\"key-result\"}\ngetVariable(data)"
 	actions := p15CompiledActions(t, source)
-	// This existing independent oracle requires one real Get Variable before the
-	// later conditional, the original binding, and exactly one later write effect.
-	if err := p15ContainerEntryCaptureError(actions, "map"); err != nil {
+	rows, err := p15ComputedKeyRows(actions)
+	if err != nil || len(rows) != 2 || !reflect.DeepEqual(rows[0]["WFKey"], p15ContainerText("before")) {
+		t.Fatalf("authored literal/dynamic row order changed: %#v %v", rows, err)
+	}
+	value, ok := rows[0]["WFValue"].(map[string]any)
+	if !ok || len(value) != 2 || value["WFSerializationType"] != "WFTextTokenAttachment" {
+		t.Fatal("early field lost its native reference wrapper")
+	}
+	if err := p15ComputedSnapshotError(actions, value["Value"]); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -110,8 +120,37 @@ func TestP15ComputedMapKeyCapturesBeforeOwnValueWrite(t *testing.T) {
 	if err != nil || len(rows) != 1 {
 		t.Fatalf("key/value source row missing: %#v %v", rows, err)
 	}
+	key, ok := rows[0]["WFKey"].(map[string]any)
+	if !ok {
+		t.Fatal("computed key lost its text-token wrapper")
+	}
+	value, ok := key["Value"].(map[string]any)
+	if !ok {
+		t.Fatal("computed key lost its text-token value")
+	}
+	attachments, ok := value["attachmentsByRange"].(map[string]any)
+	if !ok {
+		t.Fatal("computed key lost its captured reference")
+	}
+	ref, ok := attachments["{0, 1}"].(map[string]any)
+	if !ok || !reflect.DeepEqual(key, p15ComputedKeyText(ref, "", "", 0)) {
+		t.Fatal("computed key is not exactly one reference text token")
+	}
+	if err := p15ComputedSnapshotError(actions, ref); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func p15ComputedSnapshotError(actions []map[string]any, rawReference any) error {
+	ref, ok := rawReference.(map[string]any)
+	if !ok || len(ref) != 2 || ref["Type"] != "ActionOutput" {
+		return fmt.Errorf("earlier computed-key/value reference was not snapshotted")
+	}
+	uuid, ok := ref["OutputUUID"].(string)
+	if !ok || uuid == "" {
+		return fmt.Errorf("computed-key/value snapshot has no identity")
+	}
 	init, capture, branch, write, stores, effects := -1, -1, -1, -1, 0, 0
-	want := map[string]any(nil)
 	for index, action := range actions {
 		p := p15Param(action)
 		if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" && p["WFVariableName"] == "state" {
@@ -128,15 +167,15 @@ func TestP15ComputedMapKeyCapturesBeforeOwnValueWrite(t *testing.T) {
 		if init >= 0 && branch < 0 && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" {
 			branch = index
 		}
-		if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && reflect.DeepEqual(p["WFVariable"], map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "Variable", "VariableName": "state"}}) {
-			if capture >= 0 {
-				t.Fatal("computed key captured more than once")
+		if p["UUID"] == uuid {
+			if capture >= 0 || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" || !reflect.DeepEqual(p["WFVariable"], map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "Variable", "VariableName": "state"}}) {
+				return fmt.Errorf("computed-key snapshot is not one direct read of the original binding")
 			}
 			capture = index
-			want = p15ComputedKeyText(map[string]any{"Type": "ActionOutput", "OutputUUID": p["UUID"]}, "", "", 0)
 		}
 	}
-	if stores != 2 || effects != 1 || !(init < capture && capture < branch && branch < write) || !reflect.DeepEqual(rows[0]["WFKey"], want) {
-		t.Fatalf("computed key was not consumed once before its own value writes: init=%d capture=%d branch=%d write=%d stores=%d effects=%d key=%#v", init, capture, branch, write, stores, effects, rows[0]["WFKey"])
+	if stores != 2 || effects != 1 || !(init < capture && capture < branch && branch < write) {
+		return fmt.Errorf("computed-key/value reference was not consumed once before its later write: init=%d capture=%d branch=%d write=%d stores=%d effects=%d", init, capture, branch, write, stores, effects)
 	}
+	return nil
 }

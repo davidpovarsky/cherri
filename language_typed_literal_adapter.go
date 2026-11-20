@@ -40,17 +40,39 @@ func encodeTypedLiteralParam(value backend.SemanticValue) any {
 	}
 }
 
-// Keep the existing canonical sorted-key order. Only the source's explicit
-// literal identity changes: a key spelling "{name}" remains that exact key.
+func dictionaryHasComputedKeys(entries []backend.DictEntry) bool {
+	for _, entry := range entries {
+		if len(entry.KeySegments) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// Keep canonical sorted order for literal keys. Computed keys can collide with
+// each other or a literal key, so their rows retain authored source order.
 func encodeTypedLiteralDictionaryItems(entries []backend.DictEntry) []WFDictionaryFieldValueItem {
-	sorted := append([]backend.DictEntry(nil), entries...)
-	sort.SliceStable(sorted, func(i, j int) bool { return sorted[i].Key < sorted[j].Key })
-	items := make([]WFDictionaryFieldValueItem, 0, len(sorted))
-	for _, entry := range sorted {
+	ordered := append([]backend.DictEntry(nil), entries...)
+	if !dictionaryHasComputedKeys(ordered) {
+		sort.SliceStable(ordered, func(i, j int) bool { return ordered[i].Key < ordered[j].Key })
+	}
+	items := make([]WFDictionaryFieldValueItem, 0, len(ordered))
+	for _, entry := range ordered {
 		item := EncodeDictionaryItemShared("", encodeTypedLiteralParam(entry.Value))
-		item.WFKey = WFTextTokenString{
-			WFSerializationType: "WFTextTokenString",
-			Value:               WFTextTokenStringValue{String: entry.Key},
+		key := entry.Key
+		if len(entry.KeySegments) > 0 {
+			encoded := EncodeTextSegmentsShared(entry.KeySegments)
+			if literal, ok := encoded.(string); ok {
+				key = literal
+			} else {
+				item.WFKey = encoded
+			}
+		}
+		if item.WFKey == nil {
+			item.WFKey = WFTextTokenString{
+				WFSerializationType: "WFTextTokenString",
+				Value:               WFTextTokenStringValue{String: key},
+			}
 		}
 		items = append(items, item)
 	}

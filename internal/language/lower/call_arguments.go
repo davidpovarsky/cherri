@@ -146,7 +146,12 @@ func (l *Lowerer) captureCallSemanticValue(value backend.SemanticValue, writes m
 	case backend.ValDict:
 		value.DictVal = append([]backend.DictEntry(nil), value.DictVal...)
 		for index := range value.DictVal {
-			value.DictVal[index].Value = l.captureCallSemanticValue(value.DictVal[index].Value, writes)
+			entry := &value.DictVal[index]
+			if len(entry.KeySegments) > 0 {
+				key := l.captureCallSemanticValue(backend.SemanticValue{Kind: backend.ValTextSegments, Segments: entry.KeySegments}, writes)
+				entry.KeySegments = key.Segments
+			}
+			entry.Value = l.captureCallSemanticValue(entry.Value, writes)
 		}
 	}
 	return value
