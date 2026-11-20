@@ -1,0 +1,30 @@
+{
+  "source": "4d93d34ba04c5caff13a2a99858baa1bdd3bd9f3",
+  "source_after": "4d93d34ba04c5caff13a2a99858baa1bdd3bd9f3",
+  "status_after": "",
+  "clean_before": true,
+  "argv": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=9m",
+    "-run",
+    "^TestP15CanonicalBehaviorSourcePropagation$",
+    "."
+  ],
+  "started": "2026-11-20T00:04:58.518736+00:00",
+  "finished": "2026-11-20T00:05:45.841909+00:00",
+  "elapsed_seconds": 47.328,
+  "exit_code": 1,
+  "timed_out": false,
+  "sha256": "1a4474a247b572adcbe48f5fbb62869ab4d5d8e1a0015c4de6ac40887d848d03",
+  "bytes": 4854,
+  "passed": [],
+  "failed": [
+    "TestP15CanonicalBehaviorSourcePropagation",
+    "PACKAGE"
+  ],
+  "skipped": [],
+  "tail": "=== RUN   TestP15CanonicalBehaviorSourcePropagation\n    p15_canonical_source_propagation_test.go:116: rebuilt native probe baseline failed: exit status 1\n        {\"Time\":\"2026-11-20T02:05:43.6569042+02:00\",\"Action\":\"start\",\"Package\":\"github.com/electrikmilk/cherri\"}\n        {\"Time\":\"2026-11-20T02:05:43.8776791+02:00\",\"Action\":\"run\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15BRG24RebuiltNativeProbe\"}\n        {\"Time\":\"2026-11-20T02:05:43.8776791+02:00\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15BRG24RebuiltNativeProbe\",\"Output\":\"=== RUN   TestP15BRG24RebuiltNativeProbe\\n\"}\n        {\"Time\":\"2026-11-20T02:05:43.9122776+02:00\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15BRG24RebuiltNativeProbe\",\"Output\":\"    p15_brg24_rebuilt_probe_test.go:19: compile debug fixture (legacy=true): legacy compile failed: Path 'actions/basic' has already been included.\\n\"}\n        {\"Time\":\"2026-11-20T02:05:43.9122776+02:00\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15BRG24RebuiltNativeProbe\",\"Output\":\"--- FAIL: TestP15BRG24RebuiltNativeProbe (0.03s)\\n\"}\n        {\"Time\":\"2026-11-20T02:05:43.9122776+02:00\",\"Action\":\"fail\",\"Package\":\"github.com/electrikmilk/cherri\",\"Test\":\"TestP15BRG24RebuiltNativeProbe\",\"Elapsed\":0.03}\n        {\"Time\":\"2026-11-20T02:05:43.9122776+02:00\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Output\":\"FAIL\\n\"}\n        {\"Time\":\"2026-11-20T02:05:43.9168178+02:00\",\"Action\":\"output\",\"Package\":\"github.com/electrikmilk/cherri\",\"Output\":\"FAIL\\tgithub.com/electrikmilk/cherri\\t0.259s\\n\"}\n        {\"Time\":\"2026-11-20T02:05:43.9168178+02:00\",\"Action\":\"fail\",\"Package\":\"github.com/electrikmilk/cherri\",\"Elapsed\":0.26}\n--- FAIL: TestP15CanonicalBehaviorSourcePropagation (31.32s)\nFAIL\nFAIL\tgithub.com/electrikmilk/cherri\t31.549s\n"
+}

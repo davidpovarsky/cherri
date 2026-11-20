@@ -1,0 +1,114 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-BRG24-repository",
+      "requirements": [
+        "BRG24"
+      ],
+      "tier": "repository",
+      "implementation_sha": "a846e9046a400806dfb44eaf3bd82d3879bb7ca2",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalBehaviorSourcePropagation",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "8m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalBehaviorSourcePropagation)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalBehaviorSourcePropagation",
+        "required_production_tests": "TestP15CanonicalBehaviorSourcePropagation"
+      },
+      "detail": "Executed production tests: TestP15CanonicalBehaviorSourcePropagation"
+    },
+    {
+      "evidence_id": "ev-local-BRG24-integration",
+      "requirements": [
+        "BRG24"
+      ],
+      "tier": "integration",
+      "implementation_sha": "a846e9046a400806dfb44eaf3bd82d3879bb7ca2",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalBehaviorSourcePropagation",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "8m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalBehaviorSourcePropagation)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalBehaviorSourcePropagation",
+        "required_production_tests": "TestP15CanonicalBehaviorSourcePropagation"
+      },
+      "detail": "Executed production tests: TestP15CanonicalBehaviorSourcePropagation"
+    },
+    {
+      "evidence_id": "ev-local-BRG24-native-structure",
+      "requirements": [
+        "BRG24"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "a846e9046a400806dfb44eaf3bd82d3879bb7ca2",
+      "test_id": "github.com/electrikmilk/cherri:TestP15CanonicalBehaviorSourcePropagation",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "8m0s",
+        ".",
+        "-run",
+        "^(TestP15CanonicalBehaviorSourcePropagation)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15CanonicalBehaviorSourcePropagation",
+        "required_production_tests": "TestP15CanonicalBehaviorSourcePropagation"
+      },
+      "detail": "Executed production tests: TestP15CanonicalBehaviorSourcePropagation"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T00:11:41Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG24",
+        "group": "gate",
+        "requirement": "Real canonical behavior propagation",
+        "test_level": "repository+integration+native-structure",
+        "executed_levels": [
+          "repository",
+          "integration",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Actual owned detached-worktree canonical source edits, rebuilt Legacy/V2 native outputs and restoration only; no Apple runtime or linked-ID inheritance.",
+  "source_sha": "a846e9046a400806dfb44eaf3bd82d3879bb7ca2"
+}

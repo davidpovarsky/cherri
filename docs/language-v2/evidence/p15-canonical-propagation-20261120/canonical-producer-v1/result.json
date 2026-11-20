@@ -1,0 +1,65 @@
+{
+  "source": "a846e9046a400806dfb44eaf3bd82d3879bb7ca2",
+  "source_after": "a846e9046a400806dfb44eaf3bd82d3879bb7ca2",
+  "status_after": "",
+  "clean_before": true,
+  "argv": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=9m",
+    "-run",
+    "^TestP15BRG24ProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "started": "2026-11-20T00:09:58.125956+00:00",
+  "finished": "2026-11-20T00:11:42.400140+00:00",
+  "elapsed_seconds": 104.265,
+  "exit_code": 0,
+  "timed_out": false,
+  "sha256": "1e4318714ce1b159e2e8a41139f25d669c78713279fd0331b6bd688e66adf97e",
+  "bytes": 13238,
+  "passed": [
+    "TestP15BRG24ProductionEvidence/zero_selection",
+    "TestP15BRG24ProductionEvidence/wrong_producer",
+    "TestP15BRG24ProductionEvidence/missing_assertion",
+    "TestP15BRG24ProductionEvidence/stale_source",
+    "TestP15BRG24ProductionEvidence/missing_repository",
+    "TestP15BRG24ProductionEvidence/missing_integration",
+    "TestP15BRG24ProductionEvidence/missing_native",
+    "TestP15BRG24ProductionEvidence/invented_runtime",
+    "TestP15BRG24ProductionEvidence/wrong_requirement",
+    "TestP15BRG24ProductionEvidence"
+  ],
+  "failed": [],
+  "skipped": [],
+  "tail": "=== RUN   TestP15BRG24ProductionEvidence\n=== RUN   TestP15BRG24ProductionEvidence/zero_selection\n--- PASS: TestP15BRG24ProductionEvidence/zero_selection (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/wrong_producer\n--- PASS: TestP15BRG24ProductionEvidence/wrong_producer (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/missing_assertion\n--- PASS: TestP15BRG24ProductionEvidence/missing_assertion (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/stale_source\n--- PASS: TestP15BRG24ProductionEvidence/stale_source (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/missing_repository\n--- PASS: TestP15BRG24ProductionEvidence/missing_repository (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/missing_integration\n--- PASS: TestP15BRG24ProductionEvidence/missing_integration (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/missing_native\n--- PASS: TestP15BRG24ProductionEvidence/missing_native (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/invented_runtime\n--- PASS: TestP15BRG24ProductionEvidence/invented_runtime (0.00s)\n=== RUN   TestP15BRG24ProductionEvidence/wrong_requirement\n--- PASS: TestP15BRG24ProductionEvidence/wrong_requirement (0.00s)\n    canonical_propagation_execution_test.go:130: P15_CANONICAL_PROPAGATION_PRODUCER_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-BRG24-repository\",\"requirements\":[\"BRG24\"],\"tier\":\"repository\",\"implementation_sha\":\"a846e9046a400806dfb44eaf3bd82d3879bb7ca2\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15CanonicalBehaviorSourcePropagation\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"8m0s\",\".\",\"-run\",\"^(TestP15CanonicalBehaviorSourcePropagation)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15CanonicalBehaviorSourcePropagation\",\"required_production_tests\":\"TestP15CanonicalBehaviorSourcePropagation\"},\"detail\":\"Executed production tests: TestP15CanonicalBehaviorSourcePropagation\"},{\"evidence_id\":\"ev-local-BRG24-integration\",\"requirements\":[\"BRG24\"],\"tier\":\"integration\",\"implementation_sha\":\"a846e9046a400806dfb44eaf3bd82d3879bb7ca2\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15CanonicalBehaviorSourcePropagation\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"8m0s\",\".\",\"-run\",\"^(TestP15CanonicalBehaviorSourcePropagation)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15CanonicalBehaviorSourcePropagation\",\"required_production_tests\":\"TestP15CanonicalBehaviorSourcePropagation\"},\"detail\":\"Executed production tests: TestP15CanonicalBehaviorSourcePropagation\"},{\"evidence_id\":\"ev-local-BRG24-native-structure\",\"requirements\":[\"BRG24\"],\"tier\":\"native-structure\",\"implementation_sha\":\"a846e9046a400806dfb44eaf3bd82d3879bb7ca2\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15CanonicalBehaviorSourcePropagation\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"8m0s\",\".\",\"-run\",\"^(TestP15CanonicalBehaviorSourcePropagation)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15CanonicalBehaviorSourcePropagation\",\"required_production_tests\":\"TestP15CanonicalBehaviorSourcePropagation\"},\"detail\":\"Executed production tests: TestP15CanonicalBehaviorSourcePropagation\"}],\"report\":{\"timestamp\":\"2026-11-20T00:11:41Z\",\"phase\":\"local\",\"closure_complete\":false,\"language_version\":\"2.0\",\"schema_fingerprint\":\"\",\"total_cases\":1,\"passed_cases\":1,\"failed_cases\":0,\"skipped_cases\":0,\"results\":[{\"id\":\"BRG24\",\"group\":\"gate\",\"requirement\":\"Real canonical behavior propagation\",\"test_level\":\"repository+integration+native-structure\",\"executed_levels\":[\"repository\",\"integration\",\"native-structure\"],\"passed\":true,\"status\":\"PASSED\",\"detail\":\"All required tiers satisfied by verified evidence\"}]},\"scope\":\"Actual owned detached-worktree canonical source edits, rebuilt Legacy/V2 native outputs and restoration only; no Apple runtime or linked-ID inheritance.\",\"source_sha\":\"a846e9046a400806dfb44eaf3bd82d3879bb7ca2\"}\n--- PASS: TestP15BRG24ProductionEvidence (96.02s)\nPASS\nok  \tgithub.com/electrikmilk/cherri/tools/language-acceptance\t98.222s\n",
+  "report": {
+    "timestamp": "2026-11-20T00:11:41Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG24",
+        "group": "gate",
+        "requirement": "Real canonical behavior propagation",
+        "test_level": "repository+integration+native-structure",
+        "executed_levels": [
+          "repository",
+          "integration",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  }
+}

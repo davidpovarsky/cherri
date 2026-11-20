@@ -127,3 +127,7 @@ R2 remains frozen at 4e56dbcf. R3 assembles the locally verified loop-index repa
 ## P15 schema producer and full-suite session repair — 2026-11-19
 
 Four actual schema scenarios RP06/RP07/BRG22/BRG23 passed at clean a278d9f3 with32 named events and28 rejected receipt mutations; original179 accounting and immutable contracts remain unchanged. Canonical label fixes and fail-closed generator validation are integrated with correct implementation ancestry. R2 Linux full suite exposed nested V2/Legacy test-session ownership; the unchanged regex oracle passes after explicit V2 close at9ee950b1. R2 full CI is still failed; the focused replay does not rewrite it. See docs/language-v2/p15-schema-generation-20261119.md and p15-r2-session-deadlock-20261119.md.
+
+## 2026-11-20 — BRG24 actual canonical source propagation
+
+[תומר | INT] [MAIN_SESSION] Clean a846e904 executed the complete actual static declaration/callback/shared codec rebuild and native-tree scenario, plus nine receipt controls. One bounded BRG24 PASS; full release remains open. Original failed test setup and clean corrected runs retained in [the report](docs/language-v2/p15-canonical-propagation-20261120.md). No Apple or linked-ID inheritance.

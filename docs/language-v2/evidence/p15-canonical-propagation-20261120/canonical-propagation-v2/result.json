@@ -1,0 +1,32 @@
+{
+  "source": "33ca6f7cc2a523d4cf1647c534705e3bbdd9ffaf",
+  "source_after": "33ca6f7cc2a523d4cf1647c534705e3bbdd9ffaf",
+  "status_after": "",
+  "clean_before": true,
+  "argv": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=9m",
+    "-run",
+    "^TestP15CanonicalBehaviorSourcePropagation$",
+    "."
+  ],
+  "started": "2026-11-20T00:06:49.006299+00:00",
+  "finished": "2026-11-20T00:07:59.980385+00:00",
+  "elapsed_seconds": 70.984,
+  "exit_code": 0,
+  "timed_out": false,
+  "sha256": "16b29d8df42e5212ac286b69ceaea5548ff393ad67ee087b775514e55c963d19",
+  "bytes": 7216,
+  "passed": [
+    "TestP15CanonicalBehaviorSourcePropagation/static",
+    "TestP15CanonicalBehaviorSourcePropagation/callback",
+    "TestP15CanonicalBehaviorSourcePropagation/codec",
+    "TestP15CanonicalBehaviorSourcePropagation"
+  ],
+  "failed": [],
+  "skipped": [],
+  "tail": "=== RUN   TestP15CanonicalBehaviorSourcePropagation\n    p15_canonical_source_propagation_test.go:116: phase=baseline actual child Go JSON SHA256=57b81d8b8459df45cf8bfa6de6d2efe84f19909ba2992743d27795e35ccc4796 emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95\n=== RUN   TestP15CanonicalBehaviorSourcePropagation/static\n    p15_canonical_source_propagation_test.go:177: phase=static actual child Go JSON SHA256=99cb582d8d88d6298645af9e5f0ebd21f6cb5b0b1e2a93d09d3a409f9826245c emitted native tree SHA256=0547a19e6220811eecec4fb8fb6996577f116e1b9b7bec2f8d3a33f4ad06ea87\n    p15_canonical_source_propagation_test.go:206: phase=static-restored actual child Go JSON SHA256=981e5d28a3289ef96e2654692cc7f5dca78e0f7bcc21d846c290a118d757a470 emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95\n--- PASS: TestP15CanonicalBehaviorSourcePropagation/static (11.14s)\n=== RUN   TestP15CanonicalBehaviorSourcePropagation/callback\n    p15_canonical_source_propagation_test.go:177: phase=callback actual child Go JSON SHA256=0e748a20852a05fb7d76ee8fdf244d40c874ba38b0e5c200c99293be665bfb1c emitted native tree SHA256=3b126933d07bbd2c8899aa213114f203f8230994e29476c36f329ae0c69999f4\n    p15_canonical_source_propagation_test.go:206: phase=callback-restored actual child Go JSON SHA256=3644a1937b811f43b399d23797b2b795725eea3042f9e68845011a0dc9d80a71 emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95\n--- PASS: TestP15CanonicalBehaviorSourcePropagation/callback (11.27s)\n=== RUN   TestP15CanonicalBehaviorSourcePropagation/codec\n    p15_canonical_source_propagation_test.go:177: phase=codec actual child Go JSON SHA256=878373b3b8adda2e2c63be22a7c6e04fa4ce85f3dcd0fbd88eab02504935e128 emitted native tree SHA256=79b8ecf1878ce9ea80ef7bc8c789419a8c784d3539716be3b109d66ff7d5d9f4\n    p15_canonical_source_propagation_test.go:206: phase=codec-restored actual child Go JSON SHA256=300943c2095d672d06013170f67f668e715574c86b402da598ff70426c9217d6 emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95\n--- PASS: TestP15CanonicalBehaviorSourcePropagation/codec (13.99s)\n    p15_canonical_source_propagation_test.go:222: Actual static declaration, canonical callback and shared codec source mutations propagated through both rebuilt compiler routes; exact native controls, restoration, unchanged V2/generated sources and original worktree preservation passed.\n--- PASS: TestP15CanonicalBehaviorSourcePropagation (59.91s)\nPASS\nok  \tgithub.com/electrikmilk/cherri\t60.162s\n"
+}
