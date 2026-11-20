@@ -206,3 +206,5 @@ Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 pas
 - Added separate public control and experimental native List-row diagnostics with explicit main returns; no production encoding or formal requirement promotion.
 - Local full graphs cover56/78actions;28/33 actual graph corruptions and15 bounded observation controls. Clean-source replay and native selector/callback/publication integration remain separate gates.
 - Preserve actual contradictions and type-name bytes. A shape match or Dictionary carrier does not establish native nested-List type. See docs/apple-runtime/p10r15/nested-list-native-observation.md.
+
+- Clean nested-List preparation proof sealed: source15c5d1af,4 Go named passes,15 actual observer controls,56/78 action graphs,61 actual graph corruptions,2 altered-output artifacts rejected; actual fresh CLI unsigned gates passed. Native execution and type evidence remain open. Proof: docs/language-v2/evidence/p15-nested-list-native-probe-20261120.
