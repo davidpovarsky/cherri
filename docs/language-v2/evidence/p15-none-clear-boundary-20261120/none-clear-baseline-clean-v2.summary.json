@@ -1,0 +1,44 @@
+{
+  "source_sha": "856e326850b1891204dfa1c7ed6924cbc5e9ef1a",
+  "head_after": "856e326850b1891204dfa1c7ed6924cbc5e9ef1a",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15NoneBindingsClearPreviousOutput|TestP15NoneReturnClearsPreviousOutput|TestP15NoneClearingPreservesPresentEmptyValues|TestP15NoneClearOracleRejectsCorruption)$",
+    "."
+  ],
+  "selected_parents": [
+    "TestP15NoneBindingsClearPreviousOutput",
+    "TestP15NoneReturnClearsPreviousOutput",
+    "TestP15NoneClearingPreservesPresentEmptyValues",
+    "TestP15NoneClearOracleRejectsCorruption"
+  ],
+  "started_at_utc": "2026-11-20T01:57:59.230978+00:00",
+  "finished_at_utc": "2026-11-20T01:58:20.810405+00:00",
+  "elapsed_seconds": 21.57799999997951,
+  "exit_code": 1,
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "named_passes": 10,
+  "failed_tests": [
+    "TestP15NoneBindingsClearPreviousOutput/immutable",
+    "TestP15NoneBindingsClearPreviousOutput/mutable",
+    "TestP15NoneBindingsClearPreviousOutput/assignment",
+    "TestP15NoneBindingsClearPreviousOutput",
+    "TestP15NoneReturnClearsPreviousOutput/top_level",
+    "TestP15NoneReturnClearsPreviousOutput/function",
+    "TestP15NoneReturnClearsPreviousOutput/nested_branch",
+    "TestP15NoneReturnClearsPreviousOutput",
+    "TestP15NoneClearOracleRejectsCorruption",
+    "<package>"
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "1cdd104c1ba3cbc1b3bd184a1a2e74b8235fbcb03edcdb9b698fffb93d7903a9",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
