@@ -100,8 +100,20 @@ func TestP15HybridNativeLoopOutputReference(t *testing.T) {
 					if plan.Lifecycle == nil || plan.Lifecycle.DemotedActionCount != 0 {
 						t.Fatalf("existing native result demoted: %+v", plan.Lifecycle)
 					}
-					if plan.NaturalVerifiedCount != len(doc.Actions)-body.fallback {
+					// The preserved parameter-free Nothing also requires an exact
+					// native escape. Assert its position and every other decision.
+					if plan.NaturalVerifiedCount != len(doc.Actions)-body.fallback-1 ||
+						plan.ExactNativeCount != body.fallback+1 || len(plan.Decisions) != len(doc.Actions) {
 						t.Fatalf("unexpected native fixture classification: %+v", plan.Decisions)
+					}
+					for i, decision := range plan.Decisions {
+						want := "NATURAL_VERIFIED"
+						if i == len(doc.Actions)-2 || body.name == "empty_list" && i == 1 {
+							want = "EXACT_NATIVE_FALLBACK"
+						}
+						if decision.ActionIndex != i || string(decision.Classification) != want {
+							t.Fatalf("native action %d classification changed: %+v, want %s", i, decision, want)
+						}
 					}
 					for _, dialect := range []string{"legacy", "v2"} {
 						if len(preByDialect[dialect]) != len(doc.Actions) {
