@@ -1,0 +1,35 @@
+{
+  "source_sha": "69804fe0e3335f6c6e466002b046b8201977f2e9",
+  "source_status": " M internal/language/analysis/analyzer.go\n M internal/language/lower/lower.go\n M p15_raw_null_boundary_test.go\n?? internal/language/lower/native_plist_value.go",
+  "status_after": " M internal/language/analysis/analyzer.go\n M internal/language/lower/lower.go\n M p15_raw_null_boundary_test.go\n?? internal/language/lower/native_plist_value.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15RawNativeJSONNullCannotDisappear|TestP15NativePlistEncodedNullCannotDisappear|TestP15JSONNullTextRemainsData|TestP15T05AuthoredNullRejected|TestP15T05PresenceBinding|TestP15T05PresenceNativeWire)$",
+    "."
+  ],
+  "selected_parents": [
+    "TestP15RawNativeJSONNullCannotDisappear",
+    "TestP15NativePlistEncodedNullCannotDisappear",
+    "TestP15JSONNullTextRemainsData",
+    "TestP15T05AuthoredNullRejected",
+    "TestP15T05PresenceBinding",
+    "TestP15T05PresenceNativeWire"
+  ],
+  "missing_parents": [],
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T01:41:22.357167+00:00",
+  "finished_at_utc": "2026-11-20T01:41:51.216816+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 28.85899999999674,
+  "named_passes": 39,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "1af9c1a65764839b5c5e2887ebd806865a43198a106ba95630131805f7c8053d",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
