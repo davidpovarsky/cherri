@@ -48,7 +48,7 @@ func p15ExtractedRevision(t *testing.T, root string) string {
 	return strings.TrimSpace(string(p15ExtractedGit(t, root, "rev-parse", "HEAD")))
 }
 
-func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string) string {
+func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string, extraFlags ...string) string {
 	t.Helper()
 	if p15ExtractedRevision(t, root) != sourceSHA || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 		t.Fatal("real component build requires the exact clean source")
@@ -82,7 +82,9 @@ func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string) string
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "go", "build", "-buildvcs=true", "-trimpath", "-o", path, packagePath)
+	args := append([]string{"build", "-buildvcs=true", "-trimpath"}, extraFlags...)
+	args = append(args, "-o", path, packagePath)
+	cmd := exec.CommandContext(ctx, "go", args...)
 	cmd.Dir = buildRoot
 	cmd.Env = append(p15InstallEnv(nil), "GOWORK=off", "GIT_NO_REPLACE_OBJECTS=1")
 	if out, err := cmd.CombinedOutput(); err != nil {

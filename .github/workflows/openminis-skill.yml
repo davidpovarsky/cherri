@@ -78,10 +78,16 @@ jobs:
       - name: Build Linux CLIs
         run: |
           mkdir -p dist
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags='-s -w' -o dist/cherri-linux-arm64 .
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o dist/cherri-linux-amd64 .
-          chmod +x dist/cherri-linux-arm64 dist/cherri-linux-amd64
-          ls -lh dist/cherri-linux-*
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-linux-arm64 .
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-linux-amd64 .
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-migrate-linux-arm64 ./cmd/cherri-migrate
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-migrate-linux-amd64 ./cmd/cherri-migrate
+          for BIN in dist/cherri-linux-arm64 dist/cherri-linux-amd64 dist/cherri-migrate-linux-arm64 dist/cherri-migrate-linux-amd64; do
+            chmod +x "$BIN"
+            printf '%s\n' "$GITHUB_SHA" > "$BIN.commit"
+            sha256sum "$BIN" | awk '{print $1}' > "$BIN.sha256"
+          done
+          ls -lh dist/cherri-*
 
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
@@ -112,12 +118,16 @@ jobs:
       - name: Test skill wrappers on Linux
         env:
           CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
+          CHERRI_MIGRATE_BIN: ${{ github.workspace }}/dist/cherri-migrate-linux-amd64
+          CHERRI_REF: ${{ github.sha }}
           SKILL_DIR: ${{ github.workspace }}/skills/cherri-shortcuts
         run: sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-wrapper-observations.json
 
       - name: Verify isolated compiler and docs drift diagnostics
         env:
           CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
+          CHERRI_MIGRATE_BIN: ${{ github.workspace }}/dist/cherri-migrate-linux-amd64
+          CHERRI_REF: ${{ github.sha }}
         run: sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
 
       - name: Verify actual pinned installs, checksum and rollback
@@ -195,18 +205,19 @@ jobs:
           PINNED_SOURCE="$RUNNER_TEMP/cherri-skill-pinned-source"
           test ! -e "$PINNED_SOURCE"
           git init --quiet "$PINNED_SOURCE"
-          git -C "$PINNED_SOURCE" config core.autocrlf false
-          git -C "$PINNED_SOURCE" remote add origin https://github.com/davidpovarsky/cherri.git
-          git -C "$PINNED_SOURCE" fetch --quiet --no-tags --depth=1 origin "$PIN"
-          git -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"
-          git -C "$PINNED_SOURCE" cat-file -e "$PIN^{tree}"
-          test "$(git -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"
-          test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
+          git --no-replace-objects -C "$PINNED_SOURCE" config core.autocrlf false
+          git --no-replace-objects -C "$PINNED_SOURCE" remote add origin https://github.com/davidpovarsky/cherri.git
+          git --no-replace-objects -C "$PINNED_SOURCE" fetch --quiet --no-tags --depth=1 origin "$PIN"
+          git --no-replace-objects -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"
+          git --no-replace-objects -C "$PINNED_SOURCE" cat-file -e "$PIN^{tree}"
+          test "$(git --no-replace-objects -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"
+          test -z "$(git --no-replace-objects -C "$PINNED_SOURCE" status --porcelain)"
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-pinned-linux-arm64" .
-          test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-migrate-pinned-linux-arm64" ./cmd/cherri-migrate
+          test -z "$(git --no-replace-objects -C "$PINNED_SOURCE" status --porcelain)"
           python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind source --archive dist/cherri-shortcuts-skill-source.zip --report dist/skill-source-integrity.json
-          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --report dist/skill-runtime-integrity.json
-          python3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --unpack dist/unpacked-arm64 --report dist/skill-unpacked-integrity.json
+          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --migrator dist/cherri-migrate-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --report dist/skill-runtime-integrity.json
+          python3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --migrator dist/cherri-migrate-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --unpack dist/unpacked-arm64 --report dist/skill-unpacked-integrity.json
 
       - name: Test unpacked pinned ARM64 package in Alpine
         run: |
@@ -215,6 +226,10 @@ jobs:
             alpine:3.22 \
             sh -c '
               apk add --no-cache git >/dev/null &&
+              CHERRI_HOME=/tmp/cherri-json-parser-home \
+              SKILL_DIR=/repo/dist/unpacked-arm64/cherri-shortcuts \
+              sh /repo/dist/unpacked-arm64/cherri-shortcuts/scripts/test-json-boundary.sh > /repo/dist/skill-json-boundary-alpine-arm64.log &&
+              cat /repo/dist/skill-json-boundary-alpine-arm64.log &&
               CHERRI_HOME=/tmp/cherri-package-empty-home \
               SKILL_DIR=/repo/dist/unpacked-arm64/cherri-shortcuts \
               sh /repo/dist/unpacked-arm64/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out /repo/dist/skill-package-arm64-observations.json
