@@ -97,6 +97,7 @@ var supplementalProductionScenarios = map[string]supplementalProductionScenario{
 		Tiers:           []string{"integration", "negative"},
 		ProductionPaths: []string{"language_cli_adapter.go", "internal/language/migrate/migrate.go", "p15_migration_atomic_contract_test.go"},
 	},
+	"BRG09": containerRecoveryScenario,
 	"RP28":  standardFunctionRepairScenario,
 	"BRG20": moduleRecoveryScenario,
 	"RP05": {
@@ -358,6 +359,10 @@ func (r *Runner) runSupplementalProduction(id, group, title string, levels []str
 		r.records[index].TestID = scenario.testIDs()[0]
 		r.records[index].Command = productionTestCommandInPackage(scenario.PackagePath, scenario.TestNames)
 		r.records[index].Assertions["required_production_tests"] = strings.Join(scenario.TestNames, "\n")
+		if id == "BRG09" {
+			r.records[index].TestID = containerRecoveryProducer(r.records[index].Tier)
+			r.records[index].Assertions["container_scope"] = containerRecoveryScope
+		}
 		if id == "BRG32" {
 			r.records[index].Assertions["required_python_tests"] = strings.Join(aiEvaluationPythonTests, "\n")
 			r.records[index].Assertions["harness_scope"] = "installed-control-flow-only"
@@ -381,7 +386,14 @@ func validateSupplementalProductionRecord(id string, record EvidenceRecord) erro
 	if !executedTier {
 		return fmt.Errorf("record %s claims unexecuted supplemental tier %s for %s", record.EvidenceID, record.Tier, id)
 	}
-	if record.TestID != scenario.testIDs()[0] ||
+	var producer = scenario.testIDs()[0]
+	if id == "BRG09" {
+		producer = containerRecoveryProducer(record.Tier)
+		if !reflect.DeepEqual(record.Requirements, []string{"BRG09"}) || record.Assertions["container_scope"] != containerRecoveryScope {
+			return fmt.Errorf("record %s is detached from the independent BRG09 native container scenario", record.EvidenceID)
+		}
+	}
+	if record.TestID != producer ||
 		!reflect.DeepEqual(record.Command, productionTestCommandInPackage(scenario.PackagePath, scenario.TestNames)) ||
 		record.Assertions["required_production_tests"] != strings.Join(scenario.TestNames, "\n") {
 		return fmt.Errorf("record %s is detached from the complete supplemental production scenario for %s", record.EvidenceID, id)
