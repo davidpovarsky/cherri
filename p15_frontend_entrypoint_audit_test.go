@@ -47,6 +47,16 @@ func p15RP52CExportError(raw []byte) error {
 			return fmt.Errorf("unreviewed public source entry %s", fn.Name.Name)
 		}
 		seen[fn.Name.Name] = true
+		parameters := "source *C.char, requestedName *C.char"
+		if policy.mode == "C.GoString(mode)" {
+			parameters += ", mode *C.char"
+		}
+		if policy.core == "compileForMobileModeWithOptions" {
+			parameters += ", profile *C.char"
+		}
+		if fn.Recv != nil || expression(fn.Type) != "func("+parameters+") *C.char" {
+			return fmt.Errorf("public compile ABI signature changed: %s", fn.Name.Name)
+		}
 		annotated := false
 		if fn.Doc != nil {
 			for _, comment := range fn.Doc.List {
@@ -242,6 +252,30 @@ func p15RP52SwiftTokens(s string) ([]string, error) {
 }
 
 const p15RP52ApprovedSwiftCompile = "static func compile(source: String, name: String, mode: String = \"v2\", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {\ntry await Task.detached(priority: .userInitiated) {\ntry callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)\n}.value\n}"
+const p15RP52ApprovedSwiftBridge = `private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool, buildProfile: CherriBuildProfile) throws -> CompiledShortcut {
+    let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+        name.withCString { namePointer in
+            mode.withCString { modePointer in
+                buildProfile.rawValue.withCString { profilePointer in
+                    let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
+                    let mutableName = UnsafeMutablePointer(mutating: namePointer)
+                    let mutableMode = UnsafeMutablePointer(mutating: modePointer)
+                    let mutableProfile = UnsafeMutablePointer(mutating: profilePointer)
+                    return signed
+                        ? CherriCompileSignedProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+                        : CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+                }
+            }
+        }
+    }
+    let response = try decodeBridgeResponse(resultPointer)
+    guard let plistBase64 = response.plistBase64,
+          let plist = Data(base64Encoded: plistBase64) else {
+        throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
+    }
+    let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
+    return CompiledShortcut(name: response.name ?? name, plist: plist, signedShortcut: signedData)
+}`
 
 func p15RP52SwiftEntryError(raw []byte) error {
 	tokens, err := p15RP52SwiftTokens(string(raw))
@@ -252,7 +286,11 @@ func p15RP52SwiftEntryError(raw []byte) error {
 	if err != nil {
 		return err
 	}
-	enums, entries := 0, 0
+	bridge, err := p15RP52SwiftTokens(p15RP52ApprovedSwiftBridge)
+	if err != nil {
+		return err
+	}
+	enums, entries, bridges := 0, 0, 0
 	for i := 0; i+2 < len(tokens); i++ {
 		if tokens[i] != "enum" || tokens[i+1] != "CherriCompiler" || tokens[i+2] != "{" {
 			continue
@@ -260,6 +298,30 @@ func p15RP52SwiftEntryError(raw []byte) error {
 		enums++
 		depth := 1
 		for j := i + 3; j < len(tokens) && depth > 0; j++ {
+			if depth == 1 && j+4 < len(tokens) && tokens[j] == "private" && tokens[j+1] == "static" && tokens[j+2] == "func" && tokens[j+3] == "callCompileBridge" && tokens[j+4] == "(" {
+				bridges++
+				opening := j
+				for opening < len(tokens) && tokens[opening] != "{" {
+					opening++
+				}
+				if opening == len(tokens) {
+					return fmt.Errorf("missing Swift bridge body")
+				}
+				end := opening + 1
+				bodyDepth := 1
+				for end < len(tokens) && bodyDepth > 0 {
+					if tokens[end] == "{" {
+						bodyDepth++
+					}
+					if tokens[end] == "}" {
+						bodyDepth--
+					}
+					end++
+				}
+				if bodyDepth != 0 || !reflect.DeepEqual(tokens[j:end], bridge) {
+					return fmt.Errorf("Swift bridge changed source/mode/profile forwarding")
+				}
+			}
 			if depth == 1 && j+3 < len(tokens) && tokens[j] == "static" && tokens[j+1] == "func" && tokens[j+2] == "compile" && tokens[j+3] == "(" {
 				entries++
 				opening := j
@@ -295,8 +357,8 @@ func p15RP52SwiftEntryError(raw []byte) error {
 			return fmt.Errorf("unterminated compiler enum")
 		}
 	}
-	if enums != 1 || entries != 1 {
-		return fmt.Errorf("Swift compile entry inventory differs: enums=%d entries=%d", enums, entries)
+	if enums != 1 || entries != 1 || bridges != 1 {
+		return fmt.Errorf("Swift compile entry inventory differs: enums=%d entries=%d bridges=%d", enums, entries, bridges)
 	}
 	return nil
 }
@@ -320,7 +382,7 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-	for _, fault := range []string{"unsigned_default_auto", "signed_default_auto", "explicit_mode_dropped", "profile_mode_dropped", "default_extra_statement", "unknown_export", "missing_export"} {
+	for _, fault := range []string{"unsigned_default_auto", "signed_default_auto", "explicit_mode_dropped", "profile_mode_dropped", "default_extra_statement", "unknown_export", "missing_export", "swapped_parameters", "wrong_parameter_type", "wrong_return_type"} {
 		t.Run("go_"+fault, func(t *testing.T) {
 			s := string(goSource)
 			switch fault {
@@ -338,6 +400,12 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 				s = strings.ReplaceAll(s, "CherriCompileSignedProfile", "CherriCompileUnknown")
 			case "missing_export":
 				s = strings.Replace(s, "//export CherriCompile\n", "// no compile export\n", 1)
+			case "swapped_parameters":
+				s = strings.Replace(s, "func CherriCompile(source *C.char, requestedName *C.char)", "func CherriCompile(requestedName *C.char, source *C.char)", 1)
+			case "wrong_parameter_type":
+				s = strings.Replace(s, "func CherriCompile(source *C.char", "func CherriCompile(source *C.int", 1)
+			case "wrong_return_type":
+				s = strings.Replace(s, "requestedName *C.char) *C.char", "requestedName *C.char) *C.int", 1)
 			}
 			if s == string(goSource) {
 				t.Fatal("source corruption did not occur")
@@ -347,7 +415,7 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment"} {
+	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment", "bridge_mode_literal", "bridge_mode_pointer", "bridge_swapped_abi", "duplicate_bridge"} {
 		t.Run("swift_"+fault, func(t *testing.T) {
 			s := string(swiftSource)
 			switch fault {
@@ -371,6 +439,14 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 				s = strings.Replace(s, "try await Task.detached(priority: .userInitiated) {", "let mode = \"auto\"\n        return try await Task.detached(priority: .userInitiated) {", 1)
 			case "unterminated_comment":
 				s += "\n/*"
+			case "bridge_mode_literal":
+				s = strings.Replace(s, "mode.withCString { modePointer in", "\"auto\".withCString { modePointer in", 1)
+			case "bridge_mode_pointer":
+				s = strings.Replace(s, "mutating: modePointer", "mutating: namePointer", 1)
+			case "bridge_swapped_abi":
+				s = strings.Replace(s, "CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)", "CherriCompileProfile(mutableSource, mutableMode, mutableName, mutableProfile)", 1)
+			case "duplicate_bridge":
+				s = strings.Replace(s, "enum CherriCompiler {", "enum CherriCompiler {\n"+p15RP52ApprovedSwiftBridge, 1)
 			}
 			if s == string(swiftSource) {
 				t.Fatal("source corruption did not occur")
