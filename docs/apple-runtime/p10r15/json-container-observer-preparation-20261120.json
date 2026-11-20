@@ -1,0 +1,157 @@
+{
+  "schema_version": "1",
+  "component": "JSON/null/container and S01 direct native-object observation preparation",
+  "implementation_sha": "c6b0a69912b6e94f24a0fcf7c6b3b64bc909360e",
+  "base_sha": "81ac029bd30148252137fbae3838d88c8a3cdbba",
+  "local_source_clean_before_and_after": true,
+  "source_files": [
+    {
+      "path": ".github/workflows/macos-shortcuts-deep-extract.yml",
+      "sha256": "fde34d17d007ee01319c0ac3eefaea119fdf28dc7f5a3d8daff2d1eb0d56f7a3"
+    },
+    {
+      "path": "tools/shortcut-runtime/observe_literal_object_character.py",
+      "sha256": "a290d1809a6d2d656d85805ca56ca674eeded7a323b67e53677c231428c4cfa4"
+    },
+    {
+      "path": "tools/shortcut-runtime/jxa/observe_json_container_null.js",
+      "sha256": "a2e62b5ceda7363fc7df7529c50fe57bc521556099fd1c701729a00f741b2e19"
+    },
+    {
+      "path": "tools/shortcut-runtime/fixtures/json-null-frozen-k-wfjsonvalues.json",
+      "sha256": "3b91ec031a1cd3411d22eb9d1001802ab042149274516ee5568051373d9e785f"
+    },
+    {
+      "path": "tools/shortcut-runtime/fixtures/s01-omitted-range-native-hop-controls.json",
+      "sha256": "cde2ee7a20f7acbb7053ab7b6204774b74ff8a7e6bec298fb9781975ac84ee35"
+    },
+    {
+      "path": "tools/shortcut-runtime/test_native_object_hops.js",
+      "sha256": "d13d02a5aeda896ca8463a549e52bc57724d1231aea9adca912926c2c3e6912f"
+    },
+    {
+      "path": "tools/shortcut-runtime/test_json_container_observer.py",
+      "sha256": "eaef0eb465abe76b11cfec8a4d4551a609d4248ae995436b2eed405023563967"
+    }
+  ],
+  "local_verification": {
+    "receipt_sha256": "dea68ec72a028d0f6e0f85c0e2e4dc21596414980e340b6411170bac8bf2e211",
+    "node_mock_assertions": 109,
+    "python_tests": 6,
+    "actual_git_input_blob_checks": 3,
+    "commands": [
+      {
+        "name": "node-syntax",
+        "exit_code": 0,
+        "elapsed_seconds": 0.062,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "node-controls",
+        "exit_code": 0,
+        "elapsed_seconds": 0.078,
+        "stdout_sha256": "042f852e6d387918e9d854fd5087ca4f1dbcf1b35574ca96e4620d08efbd35f4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "python-controls",
+        "exit_code": 0,
+        "elapsed_seconds": 0.438,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "469809cb376ff2e1af97e0ea31b3b4c2cfcc57ca46232782cabc99a9766353be"
+      },
+      {
+        "name": "actual-git-source-closure",
+        "exit_code": 0,
+        "elapsed_seconds": 0.422,
+        "stdout_sha256": "14f11e6e0913b8500ec3ac49efde0aa90681ef390fd4e793308428094db766ad",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "native_observation": "NOT_RUN",
+    "shortcut_runtime": false
+  },
+  "frozen_k_capture": {
+    "source_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "test_path": "p10_http_json_test.go",
+    "test_file_sha256": "bfc0304ca82b1be3e7b0c81bedb26837a828272ae7ba716a0b9ed03367456c09",
+    "derived_source_sha256": "e0cbc62ea7f41fdf8b3fa19c81ba97ed56642e9bcbb60770b0a6e28caf63ce52",
+    "source_adaptation": "Only fmt URL argument substituted with loopback port9; no Shortcut or HTTP execution",
+    "compiler_sha256": "229f5e0884a63bc02655995f33c2d3620fa2df6928928cdd38d09a18f40c1587",
+    "embedded_vcs_revision_observed": false,
+    "embedded_vcs_limitation": "The linked-worktree Go build does not embed vcs.revision; identity is bound by the actual clean checkout, exact command record and output hashes, not inferred binary metadata.",
+    "build_identity_log_sha256": "521f4bba643cd7996ab246922768c90ea76c38dcd940e49e2f27910af32d40d5",
+    "unsigned_plist_sha256": "68a4a4f9af0ce0ab54d41217fcdb344a0061da19f6717fc756e67d2c69f94f11",
+    "wfjsonvalues_sha256": "3b91ec031a1cd3411d22eb9d1001802ab042149274516ee5568051373d9e785f",
+    "native_action_count": 2,
+    "capture_receipt_sha256": "24c7ba27fe6aed52b474d49ba6ff991843e5cedfbdece9a9b61652b8342d7fd6",
+    "build_exit_code": 0,
+    "compile_exit_code": 0,
+    "observed_compiler_encoding": "Authored empty_val:nil becomes WFItemType 0 with WFTextTokenString Value.string equal to empty Text. This is not a native JSON-null observation.",
+    "shortcut_runtime": false,
+    "http_executed": false
+  },
+  "observation_design": {
+    "native_object_hops": 3,
+    "container_specimens": 16,
+    "metadata_only_action_cases": 10,
+    "original_s01_authored_cases": 7,
+    "original_s01_class_observations": 19,
+    "total_maximum_observation_rows": 45,
+    "native_roundtrip_input": "Exact native serializedRepresentation object; typed Foundation JSON snapshots are observations only and are never rehydrated into the next hop.",
+    "snapshot_controls": [
+      "number zero",
+      "Boolean false",
+      "NSNull versus Objective-C nil",
+      "empty Text",
+      "missing key versus null value",
+      "14 levels of nested dictionaries",
+      "deep number/Boolean/null/empty Array/empty Dictionary"
+    ],
+    "wfjsonvalues_inspection": "Known action-provider metadata APIs and parameterStateForKey only; no action execution and no WFURL in copied action metadata.",
+    "candidate_scope": "WFItemType 5, missing WFValue and explicit JSON null are explicitly labelled candidate shapes, not asserted native schema or compiler output.",
+    "partial_failure": "Earlier observed hops remain in the original output if a later initializer or serializer fails.",
+    "source_controls": "Exact clean Git HEAD, selected JXA Git blob, three fixed input hashes and blobs, fixed external prelude hash and commit, fresh output directory.",
+    "original_source_prelude_commit": "ee52c32937053268e4a035eba4b372fe77ec6411",
+    "original_source_prelude_sha256": "d6fbcaad5104562b04004b39ca098486449399c15c83176c49b2ac28f47a3461"
+  },
+  "prior_s01_scope": {
+    "source_sha": "81ac029bd30148252137fbae3838d88c8a3cdbba",
+    "jxa_sha256": "5e6a502f8c292d1e6db5d7df7cc49f48bbadb426679e4260ccce7d419f082454",
+    "frozen_run_id": "44682741096",
+    "source_and_run_changed": false,
+    "limitation": "Its historical plain() helper converts NSNumber to String, conflates nil/null and truncates deep values before rebuilding later-hop objects. Its shallow literal-text observations do not establish full typed-container native-object fidelity. The seven authored follow-up payloads and original class selections are preserved exactly in this new observer."
+  },
+  "workflow": {
+    "path": ".github/workflows/macos-shortcuts-deep-extract.yml",
+    "new_input": "json_container_null_only",
+    "default": false,
+    "job_timeout_minutes": 10,
+    "step_timeout_minutes": 5,
+    "process_timeout_seconds": 120,
+    "artifact": "json-container-native-observation",
+    "retention_days": 14,
+    "runner_choices_unchanged": true,
+    "recommended_inputs": {
+      "json_container_null_only": true,
+      "literal_object_character_only": false,
+      "literal_observer_runner": "macos-15-intel"
+    },
+    "mutually_exclusive_modes": true
+  },
+  "evidence_status": {
+    "native_observation": "NOT_RUN",
+    "shortcut_runtime": "NOT_RUN",
+    "formal_requirement_credit": [],
+    "observation_execution_marker": "OBSERVED is an execution marker only; specimen fidelity and pass/fail require inspection of the original returned representations."
+  },
+  "privacy": {
+    "fixture_sources": "Public repository fixture body and fixed synthetic controls only.",
+    "http_headers_published": false,
+    "personal_shortcuts_accessed": false,
+    "http_executed": false
+  }
+}
