@@ -1,0 +1,34 @@
+{
+  "label": "root",
+  "source": "fd691b96fb661697a1cbaddab92476d457636ba9",
+  "status_before": "M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? p15_native_paths_gate_test.go\n?? tools/language-acceptance/native_paths_execution.go\n?? tools/language-acceptance/native_paths_execution_test.go",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^TestBackendRecovery18",
+    "."
+  ],
+  "started_utc": "2026-11-20T09:28:30.350714+00:00",
+  "exit": 0,
+  "elapsed_seconds": 38.07799999997951,
+  "finished_utc": "2026-11-20T09:29:08.440520+00:00",
+  "status_after": "M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? p15_native_paths_gate_test.go\n?? tools/language-acceptance/native_paths_execution.go\n?? tools/language-acceptance/native_paths_execution_test.go",
+  "named_counts": {
+    "pass": 47,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed": [],
+  "root-go.jsonl": {
+    "bytes": 543443,
+    "sha256": "e7270a486759f9f54ba6b142e92d169c5dcdb710507addcbd1e2786c31e50d1c"
+  },
+  "root-stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

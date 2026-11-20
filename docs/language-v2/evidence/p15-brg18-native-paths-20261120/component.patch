@@ -1,0 +1,1336 @@
+diff --git a/p15_native_paths_gate_test.go b/p15_native_paths_gate_test.go
+new file mode 100644
+index 00000000..4aa3a283
+--- /dev/null
++++ b/p15_native_paths_gate_test.go
+@@ -0,0 +1,475 @@
++package main
++
++import (
++	"bytes"
++	"crypto/sha256"
++	"encoding/base64"
++	"encoding/json"
++	"fmt"
++	"path/filepath"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/shortcutcompare"
++	"howett.net/plist"
++)
++
++const p15BRG18Producer = "10000000-0000-4000-8000-000000000018"
++const p15BRG18Region = "20000000-0000-4000-8000-000000000018"
++
++// JSON has no native data/date scalar. Its strings remain strings; plist inputs
++// independently exercise the actual data/date categories, including nested data.
++func p15BRG18NativeRoot(jsonInput bool) map[string]any {
++	var data any = []byte{0, 1, 128, 254, 255}
++	var date any = time.Date(2026, 11, 20, 1, 2, 3, 0, time.UTC)
++	if jsonInput {
++		data, date = "AAGA/v8=", "2026-11-20T01:02:03Z"
++	}
++	var root = baseTestHeader()
++	root["BRG18UnknownHeader"] = map[string]any{
++		"bytes": data, "date": date, "big": uint64(9007199254740993),
++		"negative": int64(-9007199254740993), "real": 1.25,
++		"false": false, "zero": uint64(0), "empty": "", "array": []any{}, "map": map[string]any{},
++		"ordered": []any{"first", data, date, "last"}, "uuidLikeLiteral": p15BRG18Producer,
++	}
++	var unknown = p15AcceptanceAction("com.example.brg18.future", map[string]any{
++		"UUID": p15BRG18Producer, "CustomOutputName": "BRG18 exact result",
++		"Opaque": map[string]any{"payload": data, "date": date, "nested": []any{false, uint64(0), "0", []any{uint64(9007199254740993)}}},
++	})
++	unknown["BRG18UnknownActionField"] = map[string]any{"future": []any{"left", false, "right"}}
++	var descriptor = p15AcceptanceAction("com.example.brg18.intent", map[string]any{
++		"AppIntentDescriptor": map[string]any{
++			"AppIntentIdentifier": "BRG18FutureIntent", "BundleIdentifier": "com.example.brg18", "Name": "Synthetic BRG18",
++			"TeamIdentifier": "BRG18TEAM", "UnknownDescriptor": map[string]any{"data": data, "date": date, "number": uint64(9007199254740993)},
++		},
++		"IntentAppDefinition": map[string]any{"BundleIdentifier": "com.example.brg18", "TeamIdentifier": "BRG18TEAM", "Future": false},
++		"mode":                "future-wire-variant", "payload": []any{"preserve", uint64(0), false},
++	})
++	var chain = []any{
++		map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFDictionaryContentItem"},
++		map[string]any{"Type": "WFDictionaryValueVariableAggrandizement", "DictionaryKey": "payload"},
++		map[string]any{"Type": "WFPropertyVariableAggrandizement", "PropertyName": "Name", "Future": []any{false, uint64(0)}},
++	}
++	root["WFWorkflowActions"] = []any{
++		p15AcceptanceAction("is.workflow.actions.comment", map[string]any{"WFCommentActionText": "BRG18_READABLE"}),
++		p15AcceptanceAction("is.workflow.actions.appearance", map[string]any{"operation": "set", "style": "dark"}),
++		p15AcceptanceAction("is.workflow.actions.appearance", map[string]any{}),
++		unknown,
++		p15AcceptanceAction("is.workflow.actions.getvariable", map[string]any{"WFVariable": p15AcceptanceRef(p15BRG18Producer, chain)}),
++		p15AcceptanceAction("is.workflow.actions.conditional", map[string]any{
++			"GroupingIdentifier": "BRG18_OPAQUE_REGION", "WFControlFlowMode": uint64(0), "WFCondition": uint64(4),
++			"WFInput": p15AcceptanceRef(p15BRG18Producer, nil), "WFConditionalActionString": "alpha", "WFNumberValue": "9",
++		}),
++		descriptor,
++		p15AcceptanceAction("is.workflow.actions.conditional", map[string]any{
++			"GroupingIdentifier": "BRG18_OPAQUE_REGION", "WFControlFlowMode": uint64(2), "UUID": p15BRG18Region,
++			"CustomOutputName": "BRG18 region result",
++		}),
++		p15AcceptanceAction("is.workflow.actions.getvariable", map[string]any{"WFVariable": p15AcceptanceRef(p15BRG18Region, nil)}),
++		p15AcceptanceAction("is.workflow.actions.notification", map[string]any{"WFNotificationActionBody": "omitted sound"}),
++		p15AcceptanceAction("is.workflow.actions.notification", map[string]any{"WFNotificationActionBody": "explicit false", "WFNotificationActionSound": false}),
++		p15AcceptanceAction("is.workflow.actions.exit", map[string]any{}),
++		map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.exit"},
++	}
++	root["WFWorkflowImportQuestions"] = []any{map[string]any{
++		"ActionIndex": uint64(0), "Category": "Parameter", "ParameterKey": "WFCommentActionText", "Text": "Synthetic exact target", "DefaultValue": "BRG18_READABLE",
++	}}
++	return root
++}
++
++func p15BRG18ExactError(expected, actual map[string]any) error {
++	if comparison := shortcutcompare.CompareDocumentsExact(expected, actual); !comparison.Equal {
++		return fmt.Errorf("BRG18 exact native tree/reference mismatch: %+v", comparison)
++	}
++	if hasImportProvenanceKey(actual) {
++		return fmt.Errorf("BRG18 compiler provenance escaped into native data")
++	}
++	return nil
++}
++
++func p15BRG18Decode(t *testing.T, raw []byte) map[string]any {
++	t.Helper()
++	var actual map[string]any
++	if _, err := plist.Unmarshal(raw, &actual); err != nil {
++		t.Fatal(err)
++	}
++	return actual
++}
++
++func p15BRG18ReadabilityError(source []byte, plan HybridImportPlan) error {
++	var natural = map[int]bool{0: true, 1: true, 8: true, 9: true, 10: true, 11: true}
++	if len(plan.Decisions) != 13 || plan.NaturalVerifiedCount != 6 || plan.ExactNativeCount != 7 || plan.SourceInvalidCount != 0 {
++		return fmt.Errorf("BRG18 complete native/readable decision inventory changed")
++	}
++	for index, decision := range plan.Decisions {
++		var classification = "EXACT_NATIVE_FALLBACK"
++		if natural[index] {
++			classification = "NATURAL_VERIFIED"
++		}
++		if decision.ActionIndex != index || decision.Classification != classification {
++			return fmt.Errorf("BRG18 action/region/variant classification changed at %d", index)
++		}
++	}
++	var program, err = p15BRG19Parse(string(source))
++	if err != nil {
++		return err
++	}
++	var calls []*syntax.CallExpr
++	for _, statement := range program.Statements {
++		expression, okay := statement.(*syntax.ExprStmt)
++		if !okay {
++			continue
++		}
++		call, okay := expression.Expr.(*syntax.CallExpr)
++		if !okay {
++			continue
++		}
++		if _, okay := call.Callee.(*syntax.IdentExpr); okay {
++			calls = append(calls, call)
++		}
++	}
++	var names = []string{"comment", "darkMode", "getVariable", "showNotification", "showNotification", "stop"}
++	if len(calls) != len(names) {
++		return fmt.Errorf("BRG18 supported calls were replaced by opaque source or extra calls")
++	}
++	for index, call := range calls {
++		if call.Callee.(*syntax.IdentExpr).Name != names[index] {
++			return fmt.Errorf("BRG18 readable call identity/order changed at %d", index)
++		}
++		switch index {
++		case 0, 3, 4:
++			var expected = map[int]string{0: "BRG18_READABLE", 3: "omitted sound", 4: "explicit false"}[index]
++			literal, okay := call.PrimaryArg.(*syntax.LiteralExpr)
++			if !okay || literal.Value != expected {
++				return fmt.Errorf("BRG18 readable parameter changed at %d", index)
++			}
++			if index != 4 && len(call.NamedArgs) != 0 {
++				return fmt.Errorf("BRG18 omitted readable parameters were invented")
++			}
++			if index == 4 {
++				if len(call.NamedArgs) != 1 || call.NamedArgs[0].Label != "playSound" {
++					return fmt.Errorf("BRG18 explicit false parameter became omitted")
++				}
++				literal, okay := call.NamedArgs[0].Value.(*syntax.LiteralExpr)
++				if !okay || literal.Type != syntax.TokenFalse {
++					return fmt.Errorf("BRG18 explicit false parameter changed")
++				}
++			}
++		case 1, 5:
++			if call.PrimaryArg != nil || len(call.NamedArgs) != 0 {
++				return fmt.Errorf("BRG18 readable zero-argument variant changed")
++			}
++		case 2:
++			reference, okay := call.PrimaryArg.(*syntax.CallExpr)
++			if !okay || len(call.NamedArgs) != 0 {
++				return fmt.Errorf("BRG18 readable reference consumer became opaque")
++			}
++			member, okay := reference.Callee.(*syntax.MemberExpr)
++			if !okay || member.Property != "ref" {
++				return fmt.Errorf("BRG18 native reference is no longer a structured source call")
++			}
++			target, okay := member.Target.(*syntax.IdentExpr)
++			if !okay || target.Name != "native" {
++				return fmt.Errorf("BRG18 reference namespace changed")
++			}
++		}
++	}
++	return nil
++}
++
++func p15BRG18Log(t *testing.T, name string, files map[string][]byte) {
++	t.Helper()
++	var receipt = map[string]any{"scenario": name, "exact_native_tree": true, "apple_runtime_observed": false}
++	for key, data := range files {
++		receipt[key] = map[string]any{"bytes": len(data), "sha256": fmt.Sprintf("%x", sha256.Sum256(data)), "base64": base64.StdEncoding.EncodeToString(data)}
++	}
++	var raw, err = json.Marshal(receipt)
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Log("BRG18_NATIVE_PATH_RECEIPT:" + string(raw))
++}
++
++func TestBackendRecovery18PublicNativeImportPaths(t *testing.T) {
++	var binary = p15AcceptanceCLI(t)
++	for _, format := range []string{"xml", "binary", "shortcut", "json"} {
++		t.Run(format, func(t *testing.T) {
++			var expected = p15BRG18NativeRoot(format == "json")
++			var raw []byte
++			var err error
++			if format == "json" {
++				raw, err = json.Marshal(expected)
++			} else {
++				var encoding = plist.BinaryFormat
++				if format == "xml" {
++					encoding = plist.XMLFormat
++				}
++				raw, err = plist.Marshal(expected, encoding)
++			}
++			if err != nil {
++				t.Fatal(err)
++			}
++			var directory = t.TempDir()
++			var filename = map[string]string{"xml": "source.xml.plist", "binary": "source.binary.plist", "shortcut": "source.shortcut", "json": "source.json"}[format]
++			var input = filepath.Join(directory, filename)
++			p15BRG19Write(t, input, raw)
++			for _, fidelity := range []string{"hybrid", "lossless"} {
++				t.Run(fidelity, func(t *testing.T) {
++					var sourcePath = filepath.Join(directory, fidelity+".cherri")
++					var outputPath = filepath.Join(directory, fidelity+".shortcut")
++					var planPath = filepath.Join(directory, fidelity+"-plan.json")
++					var arguments = []string{"import", input, "--fidelity=" + fidelity, "--output=" + sourcePath}
++					if fidelity == "hybrid" {
++						arguments = append(arguments, "--plan-json="+planPath)
++					}
++					var out, stderr, importErr = p15RunCLI(t, binary, directory, nil, arguments...)
++					if importErr != nil {
++						t.Fatalf("public %s/%s import failed: %v\n%s\n%s", format, fidelity, importErr, out, stderr)
++					}
++					var source = p15BRG19Read(t, sourcePath)
++					var files = map[string][]byte{"input": raw, "source": source}
++					if fidelity == "hybrid" {
++						var plan HybridImportPlan
++						files["plan"] = p15BRG19Read(t, planPath)
++						if err := json.Unmarshal(files["plan"], &plan); err != nil {
++							t.Fatal(err)
++						}
++						if err := p15BRG18ReadabilityError(source, plan); err != nil {
++							t.Fatal(err)
++						}
++					}
++					out, stderr, err = p15RunCLI(t, binary, directory, nil, "compile", sourcePath, "--skip-sign", "--output="+outputPath)
++					if err != nil {
++						t.Fatalf("public imported compile failed: %v\n%s\n%s", err, out, stderr)
++					}
++					files["output"] = p15BRG19Read(t, outputPath)
++					if err := p15BRG18ExactError(expected, p15BRG18Decode(t, files["output"])); err != nil {
++						t.Fatal(err)
++					}
++					if !bytes.Equal(raw, p15BRG19Read(t, input)) || !bytes.Equal(source, p15BRG19Read(t, sourcePath)) {
++						t.Fatal("import/compile changed the original input or generated source")
++					}
++					p15BRG18Log(t, format+"/"+fidelity, files)
++				})
++			}
++		})
++	}
++}
++
++func TestBackendRecovery18ExactWorkflowBypass(t *testing.T) {
++	for _, encoding := range []string{"xml", "binary"} {
++		t.Run(encoding, func(t *testing.T) {
++			var expected = p15BRG18NativeRoot(false)
++			var format = plist.XMLFormat
++			if encoding == "binary" {
++				format = plist.BinaryFormat
++			}
++			var raw, err = plist.Marshal(expected, format)
++			if err != nil {
++				t.Fatal(err)
++			}
++			var literal = string(raw)
++			if encoding == "binary" {
++				literal = "b64:" + base64.StdEncoding.EncodeToString(raw)
++			}
++			var source = "native.workflow(native.plist(" + formatCherriDoubleQuotedString(literal) + "), exact: true)\n"
++			var program, parseErr = p15BRG19Parse(source)
++			if parseErr != nil || len(program.Statements) != 1 {
++				t.Fatal("full-native input was not the single authored bypass call", parseErr)
++			}
++			var actual, compileErr = CompileSourceToPlist("brg18-full-native.cherri", source)
++			if compileErr != nil {
++				t.Fatal(compileErr)
++			}
++			if err := p15BRG18ExactError(expected, p15BRG18Decode(t, actual)); err != nil {
++				t.Fatal(err)
++			}
++			p15BRG18Log(t, "full-native/"+encoding, map[string][]byte{"input": raw, "source": []byte(source), "output": actual})
++		})
++	}
++}
++
++func TestBackendRecovery18RejectsNativeAndReadabilityFaults(t *testing.T) {
++	var expected = p15BRG18NativeRoot(false)
++	var faults = []string{"header", "action_field", "data_type", "data_byte", "date_type", "date_value", "large_integer", "negative_integer", "false_type", "zero_type", "empty_text", "empty_array", "empty_map", "order", "descriptor", "variant", "producer_uuid", "consumer_uuid", "chain_order", "region_group", "region_result", "omitted_default", "explicit_false", "missing_parameters", "question_index", "provenance"}
++	for _, fault := range faults {
++		t.Run(fault, func(t *testing.T) {
++			var actual = p15BRG18NativeRoot(false)
++			var header = actual["BRG18UnknownHeader"].(map[string]any)
++			var actions = actual["WFWorkflowActions"].([]any)
++			var params = func(index int) map[string]any {
++				return actions[index].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
++			}
++			switch fault {
++			case "header":
++				delete(actual, "BRG18UnknownHeader")
++			case "action_field":
++				delete(actions[3].(map[string]any), "BRG18UnknownActionField")
++			case "data_type":
++				header["bytes"] = "AAGA/v8="
++			case "data_byte":
++				header["bytes"] = []byte{0, 1, 128, 255, 254}
++			case "date_type":
++				header["date"] = "2026-11-20T01:02:03Z"
++			case "date_value":
++				header["date"] = header["date"].(time.Time).Add(time.Second)
++			case "large_integer":
++				header["big"] = uint64(9007199254740992)
++			case "negative_integer":
++				header["negative"] = int64(-9007199254740992)
++			case "false_type":
++				header["false"] = int64(0)
++			case "zero_type":
++				header["zero"] = "0"
++			case "empty_text":
++				delete(header, "empty")
++			case "empty_array":
++				header["array"] = ""
++			case "empty_map":
++				header["map"] = []any{}
++			case "order":
++				actions[3], actions[4] = actions[4], actions[3]
++			case "descriptor":
++				delete(params(6)["AppIntentDescriptor"].(map[string]any), "UnknownDescriptor")
++			case "variant":
++				params(1)["style"] = "light"
++			case "producer_uuid":
++				params(3)["UUID"] = p15BRG18Region
++			case "consumer_uuid":
++				params(4)["WFVariable"].(map[string]any)["Value"].(map[string]any)["OutputUUID"] = p15BRG18Region
++			case "chain_order":
++				var chain = params(4)["WFVariable"].(map[string]any)["Value"].(map[string]any)["Aggrandizements"].([]any)
++				chain[0], chain[2] = chain[2], chain[0]
++			case "region_group":
++				params(7)["GroupingIdentifier"] = "OTHER_GROUP"
++			case "region_result":
++				params(8)["WFVariable"].(map[string]any)["Value"].(map[string]any)["OutputUUID"] = p15BRG18Producer
++			case "omitted_default":
++				params(9)["WFNotificationActionSound"] = true
++			case "explicit_false":
++				delete(params(10), "WFNotificationActionSound")
++			case "missing_parameters":
++				actions[12].(map[string]any)["WFWorkflowActionParameters"] = map[string]any{}
++			case "question_index":
++				actual["WFWorkflowImportQuestions"].([]any)[0].(map[string]any)["ActionIndex"] = int64(1)
++			case "provenance":
++				actual[importProvenanceKey] = map[string]any{"leaked": true}
++			}
++			if p15BRG18ExactError(expected, actual) == nil {
++				t.Fatalf("native oracle accepted %s", fault)
++			}
++		})
++	}
++	var directory = t.TempDir()
++	var raw, err = plist.Marshal(expected, plist.XMLFormat)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var input = filepath.Join(directory, "readability.shortcut")
++	p15BRG19Write(t, input, raw)
++	var result, importErr = ExecuteImportPipeline(ImportOptions{InputPath: input, OutputPath: filepath.Join(directory, "readability.cherri"), Fidelity: "hybrid"})
++	if importErr != nil || result.Plan == nil {
++		t.Fatal(importErr)
++	}
++	if err := p15BRG18ReadabilityError([]byte(result.FinalSource), *result.Plan); err != nil {
++		t.Fatal(err)
++	}
++	for _, fault := range []string{"plan_natural", "plan_opaque", "source_call", "encoded_comment_only"} {
++		t.Run(fault, func(t *testing.T) {
++			var encoded, err = json.Marshal(result.Plan)
++			if err != nil {
++				t.Fatal(err)
++			}
++			var changed HybridImportPlan
++			if err := json.Unmarshal(encoded, &changed); err != nil {
++				t.Fatal(err)
++			}
++			var source = result.FinalSource
++			switch fault {
++			case "plan_natural":
++				changed.Decisions[0].Classification = "EXACT_NATIVE_FALLBACK"
++			case "plan_opaque":
++				changed.Decisions[6].Classification = "NATURAL_VERIFIED"
++			case "source_call":
++				source = strings.Replace(source, "comment(\"BRG18_READABLE\")", "comment(\"WRONG\")", 1)
++			case "encoded_comment_only":
++				var literal, encodeErr = encodePlistValueToLiteral(expected)
++				if encodeErr != nil {
++					t.Fatal(encodeErr)
++				}
++				source = "native.workflow(native.plist(" + formatCherriDoubleQuotedString(literal) + "), exact: true)\n"
++			}
++			if p15BRG18ReadabilityError([]byte(source), changed) == nil {
++				t.Fatal("readability oracle accepted", fault)
++			}
++		})
++	}
++}
++
++func TestBackendRecovery18ReadabilityRejectsCompiledFallbacks(t *testing.T) {
++	var expected = p15BRG18NativeRoot(false)
++	var raw, err = plist.Marshal(expected, plist.XMLFormat)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var directory = t.TempDir()
++	var input = filepath.Join(directory, "readable.shortcut")
++	p15BRG19Write(t, input, raw)
++	var imported, importErr = ExecuteImportPipeline(ImportOptions{InputPath: input, OutputPath: filepath.Join(directory, "readable.cherri"), Fidelity: "hybrid"})
++	if importErr != nil || imported.Plan == nil {
++		t.Fatal(importErr)
++	}
++	if err := p15BRG18ReadabilityError([]byte(imported.FinalSource), *imported.Plan); err != nil {
++		t.Fatal(err)
++	}
++	var program, parseErr = p15BRG19Parse(imported.FinalSource)
++	if parseErr != nil {
++		t.Fatal(parseErr)
++	}
++	var calls []*syntax.CallExpr
++	for _, statement := range program.Statements {
++		expression, okay := statement.(*syntax.ExprStmt)
++		if !okay {
++			continue
++		}
++		call, okay := expression.Expr.(*syntax.CallExpr)
++		if !okay {
++			continue
++		}
++		if _, okay := call.Callee.(*syntax.IdentExpr); okay {
++			calls = append(calls, call)
++		}
++	}
++	if len(calls) != 6 {
++		t.Fatal("actual importer changed the six supported readable calls", len(calls))
++	}
++	var indices = []int{0, 1, 8, 9, 10, 11}
++	for ordinal, name := range []string{"comment", "static_variant", "reference", "omitted_parameter", "explicit_false", "empty_parameters"} {
++		t.Run(name, func(t *testing.T) {
++			var call = calls[ordinal]
++			var begin, end = call.Span.Start.ByteOffset, call.Span.End.ByteOffset
++			if begin < 0 || end <= begin || end > len(imported.FinalSource) {
++				t.Fatal("invalid actual call span")
++			}
++			var action = expected["WFWorkflowActions"].([]any)[indices[ordinal]].(map[string]any)
++			var literal, encodeErr = encodePlistValueToLiteral(action["WFWorkflowActionParameters"].(map[string]any))
++			if encodeErr != nil {
++				t.Fatal(encodeErr)
++			}
++			var replacement = "native.action(" + formatCherriDoubleQuotedString(action["WFWorkflowActionIdentifier"].(string)) + ", parameters: native.plist(" + formatCherriDoubleQuotedString(literal) + "))"
++			var changed = imported.FinalSource[:begin] + replacement + imported.FinalSource[end:]
++			var actual, compileErr = CompileSourceToPlist("brg18-readable-fallback.cherri", changed)
++			if compileErr != nil {
++				t.Fatal("causal fallback control did not compile", compileErr)
++			}
++			if err := p15BRG18ExactError(expected, p15BRG18Decode(t, actual)); err != nil {
++				t.Fatal("fallback control changed native semantics", err)
++			}
++			if p15BRG18ReadabilityError([]byte(changed), *imported.Plan) == nil {
++				t.Fatal("readability accepted a compiled exact-native substitution for supported typed call", name)
++			}
++		})
++	}
++}
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index 26ac36bf..98b29e5f 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -582,6 +582,9 @@ func deriveRepairFixtures(id string) []string {
+ }
+ 
+ func deriveGateTestIDs(id, proposedPrefix string) []string {
++	if id == "BRG18" {
++		return nativePathsTestIDs()
++	}
+ 	if id == "BRG19" {
+ 		return safeImportEditTestIDs()
+ 	}
+@@ -665,6 +668,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
+ }
+ 
+ func deriveGateFixtures(id string) []string {
++	if id == "BRG18" {
++		return append([]string{}, nativePathsProductionPaths...)
++	}
+ 	if id == "BRG19" {
+ 		return append([]string{}, safeImportEditProductionPaths...)
+ 	}
+diff --git a/tools/language-acceptance/execution_audit.go b/tools/language-acceptance/execution_audit.go
+index 165f9284..2367cec4 100644
+--- a/tools/language-acceptance/execution_audit.go
++++ b/tools/language-acceptance/execution_audit.go
+@@ -267,6 +267,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
+ 			row.PositiveAndNegative = res.Passed
+ 			row.Scope = numberWireScope
+ 		}
++		if row.ID == "BRG18" {
++			row.TestNames = append([]string{}, nativePathsTests...)
++			row.ProductionPath = append([]string{}, nativePathsProductionPaths...)
++			row.PositiveAndNegative = res.Passed
++			row.Scope = nativePathsScope
++		}
+ 		if row.ID == "BRG19" {
+ 			row.TestNames = append([]string{}, safeImportEditTests...)
+ 			row.ProductionPath = append([]string{}, safeImportEditProductionPaths...)
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index 1c2ef5b3..66b38075 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -977,6 +977,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
++			if err := validateNativePathsRecord(reqID, rec); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
+ 			if err := validateOutputSigningRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1966,6 +1969,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
+ 		return
+ 	}
+ 	for _, g := range gates.Gates {
++		if r.runNativePathsRequirement(g) {
++			continue
++		}
+ 		if r.runSafeImportEditRequirement(g) {
+ 			continue
+ 		}
+diff --git a/tools/language-acceptance/native_paths_execution.go b/tools/language-acceptance/native_paths_execution.go
+new file mode 100644
+index 00000000..9c3691d7
+--- /dev/null
++++ b/tools/language-acceptance/native_paths_execution.go
+@@ -0,0 +1,307 @@
++package main
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"fmt"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"time"
++	"unicode/utf8"
++)
++
++const nativePathsTitle = "Native action/block/full workflow paths"
++const nativePathsScenario = "Import unknown nested/top-level keys, descriptors, variants, references, binary/date/large integer data across supported input formats."
++const nativePathsExpected = "Exact tree and reference graph survive; full-native bypass actually works; typed readability retained for supported cases."
++const nativePathsScope = "Independent BRG18 actual public V2 import and compile of a complete thirteen-action native workflow across XML plist, binary plist, unsigned Shortcut and JSON, each in hybrid and lossless mode. Exact typed tree, unknown header/action/descriptor fields, static and unmodeled variants, ordered transformations, output references, opaque balanced region and outward result, integer precision, data/date, omission and explicit empty/false/zero values are preserved. JSON strings remain strings; actual data/date categories are exercised in plist inputs. A single explicit native.workflow call independently proves full-native bypass. Complete native-tree and parsed-readability corruption controls are mandatory, including six actual compiled exact-native substitutions for each supported readable call. This does not execute Apple actions, validate unknown action runtime behavior, or grant R01/R02/R04/R05/R06/RP35/RP36 or other related-ID credit."
++
++var nativePathsTests = []string{
++	"TestBackendRecovery18PublicNativeImportPaths",
++	"TestBackendRecovery18ExactWorkflowBypass",
++	"TestBackendRecovery18RejectsNativeAndReadabilityFaults",
++	"TestBackendRecovery18ReadabilityRejectsCompiledFallbacks",
++}
++var nativePathsTiers = []string{"native-roundtrip", "integration"}
++var nativePathsArtifacts = []string{"brg18-process.json", "brg18-go.jsonl", "brg18-stderr.log"}
++
++// Immutable Git bytes bind the public entrypoints, independent native oracle and intake.
++var nativePathsProductionPaths = []string{
++	"main.go",
++	"args.go",
++	"import.go",
++	"import_fidelity.go",
++	"import_provenance.go",
++	"import_provenance_restore.go",
++	"import_provenance_oracle_nopatch.go",
++	"hybrid_import.go",
++	"semantic_import_planner.go",
++	"semantic_import_native_operands.go",
++	"semantic_import_native_loop_results.go",
++	"language_cli_adapter.go",
++	"language_backend_session.go",
++	"language_backend_adapter.go",
++	"language_emit_adapter.go",
++	"language_value_adapter.go",
++	"mobile_compiler.go",
++	"shared_codec.go",
++	"shortcutgen.go",
++	"shortcut.go",
++	"raw_actions.go",
++	"native_action_envelope.go",
++	"native_action_result_binding.go",
++	"internal/language/backend/contracts.go",
++	"internal/language/backend/native_envelope.go",
++	"internal/language/lower/lower.go",
++	"internal/language/lower/native_action_envelope.go",
++	"internal/language/analysis/analyzer.go",
++	"internal/language/syntax/parser.go",
++	"internal/language/schema/generated_registry.go",
++	"internal/language/schema/schema.go",
++	"internal/shortcutcompare/compare.go",
++	"internal/shortcutcompare/edit.go",
++	"internal/shortcutcompare/normalize.go",
++	"internal/shortcutcompare/strict_scalars.go",
++	"go.mod",
++	"go.sum",
++	"p15_native_paths_gate_test.go",
++	"p15_native_acceptance_test.go",
++	"p15_brg19_safe_import_edit_test.go",
++	"p15_cli_acceptance_test.go",
++	"p10r9_hybrid_test.go",
++	"tests/language-v2/repair-regression-plan.json",
++	"tests/language-v2/acceptance-contract.json",
++	"tests/language-v2/backend-recovery-gates.json",
++	"tools/language-acceptance/native_paths_execution.go",
++	"tools/language-acceptance/native_paths_execution_test.go",
++	"tools/language-acceptance/structural_migration_execution_test.go",
++	"tools/language-acceptance/strict_go_events.go",
++	"tools/language-acceptance/loop_execution.go",
++	"tools/language-acceptance/editor_source_binding.go",
++	"tools/language-acceptance/editor_performance_execution.go",
++	"tools/language-acceptance/editor_process_other.go",
++	"tools/language-acceptance/editor_process_windows.go",
++	"tools/language-acceptance/native_encoding_intake.go",
++	"tools/language-acceptance/state_acceptance_intake.go",
++	"tools/language-acceptance/state_acceptance_execution.go",
++	"tools/language-acceptance/main.go",
++	"tools/language-acceptance/parser_execution.go",
++	"tools/language-acceptance/evidence_map.go",
++	"tools/language-acceptance/execution_audit.go",
++}
++
++func nativePathsRequiredEvents() []string {
++	var names = append([]string{}, nativePathsTests...)
++	for _, format := range []string{"xml", "binary", "shortcut", "json"} {
++		var parent = nativePathsTests[0] + "/" + format
++		names = append(names, parent, parent+"/hybrid", parent+"/lossless")
++	}
++	names = append(names, nativePathsTests[1]+"/xml", nativePathsTests[1]+"/binary")
++	for _, fault := range []string{"header", "action_field", "data_type", "data_byte", "date_type", "date_value", "large_integer", "negative_integer", "false_type", "zero_type", "empty_text", "empty_array", "empty_map", "order", "descriptor", "variant", "producer_uuid", "consumer_uuid", "chain_order", "region_group", "region_result", "omitted_default", "explicit_false", "missing_parameters", "question_index", "provenance", "plan_natural", "plan_opaque", "source_call", "encoded_comment_only"} {
++		names = append(names, nativePathsTests[2]+"/"+fault)
++	}
++	for _, name := range []string{"comment", "static_variant", "reference", "omitted_parameter", "explicit_false", "empty_parameters"} {
++		names = append(names, nativePathsTests[3]+"/"+name)
++	}
++	return names
++}
++func nativePathsTestIDs() []string {
++	var ids []string
++	for _, name := range nativePathsTests {
++		ids = append(ids, "github.com/electrikmilk/cherri:"+name)
++	}
++	return ids
++}
++func nativePathsProducer(tier string) string {
++	if tier == "integration" {
++		return nativePathsTestIDs()[0]
++	}
++	if tier == "native-roundtrip" {
++		return nativePathsTestIDs()[1]
++	}
++	return ""
++}
++func parseNativePathsOutput(raw []byte) error {
++	names := nativePathsRequiredEvents()
++	if err := parseStrictNamedProductionOutput(names, productionTestTimeout(nativePathsTests)+time.Minute, raw); err != nil {
++		return err
++	}
++	// Route parents own fault children. A selected intermediate parent cannot
++	// complete early even if the outer Go test remains active.
++	selected, run, passed := map[string]bool{}, map[string]bool{}, map[string]bool{}
++	for _, name := range names {
++		selected[name] = true
++	}
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event struct{ Action, Test string }
++		if err := json.Unmarshal(line, &event); err != nil {
++			return err
++		}
++		if event.Test == "" {
++			continue
++		}
++		switch event.Action {
++		case "run":
++			parent := event.Test
++			for {
++				slash := strings.LastIndexByte(parent, '/')
++				if slash < 0 {
++					break
++				}
++				parent = parent[:slash]
++				if selected[parent] && (!run[parent] || passed[parent]) {
++					return fmt.Errorf("BRG18 child outside selected route parent")
++				}
++			}
++			run[event.Test] = true
++		case "pass":
++			for name := range selected {
++				if strings.HasPrefix(name, event.Test+"/") && !passed[name] {
++					return fmt.Errorf("BRG18 route passed before required child")
++				}
++			}
++			passed[event.Test] = true
++		}
++	}
++	return nil
++}
++func validateNativePathsRecord(id string, record EvidenceRecord) error {
++	if id != "BRG18" {
++		return nil
++	}
++	producer := nativePathsProducer(record.Tier)
++	if producer == "" || record.Result != "passed" || record.ExitCode != 0 || !reflect.DeepEqual(record.Requirements, []string{id}) ||
++		record.TestID != producer || !reflect.DeepEqual(record.Command, productionTestCommand(nativePathsTests)) ||
++		record.Assertions["required_production_tests"] != strings.Join(nativePathsTests, "\n") ||
++		record.Assertions["required_go_events"] != strings.Join(nativePathsRequiredEvents(), "\n") ||
++		record.Assertions["scope"] != nativePathsScope {
++		return fmt.Errorf("BRG18 record detached from complete public native import/bypass scenario")
++	}
++	data, err := stateReadArtifacts(record.Artifacts, nativePathsArtifacts)
++	if err != nil {
++		return err
++	}
++	var receipt editorProcessReceipt
++	if err = decodeEditorJSON(data[nativePathsArtifacts[0]], &receipt); err != nil {
++		return err
++	}
++	raw, stderr := data[nativePathsArtifacts[1]], data[nativePathsArtifacts[2]]
++	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != record.ImplementationSHA ||
++		!receipt.SourceCleanBefore || !receipt.SourceCleanAfter || !reflect.DeepEqual(receipt.Command, record.Command) ||
++		!reflect.DeepEqual(receipt.RequiredTests, nativePathsRequiredEvents()) || !reflect.DeepEqual(receipt.DiscoveredTests, nativePathsRequiredEvents()) ||
++		receipt.ExitCode == nil || *receipt.ExitCode != 0 || receipt.TimedOut == nil || *receipt.TimedOut ||
++		receipt.RawSHA256 != editorSHA(raw) || receipt.RawBytes != len(raw) || receipt.StderrSHA256 != editorSHA(stderr) || receipt.StderrBytes != len(stderr) || !utf8.Valid(stderr) ||
++		receipt.BenchmarkSHA256 != "" || receipt.BenchmarkBytes != 0 {
++		return fmt.Errorf("incomplete BRG18 process/source/byte binding")
++	}
++	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(nativePathsTests) + time.Minute).Seconds()); err != nil {
++		return err
++	}
++	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, nativePathsProductionPaths); err != nil {
++		return err
++	}
++	if err = parseNativePathsOutput(raw); err != nil {
++		return err
++	}
++	return loopOutputWithinProcess(raw, receipt)
++}
++func (r *Runner) executeNativePathsProduction() ([]EvidenceArtifact, string, bool, error) {
++	root, err := filepath.Abs(resolveRepoRoot())
++	if err != nil {
++		return nil, "", false, err
++	}
++	before, clean, stateErr := editorSourceState(root)
++	if stateErr != nil || !clean || before != r.implSHA {
++		return nil, "", false, fmt.Errorf("BRG18 requires exact clean source: %s clean=%t error=%v", before, clean, stateErr)
++	}
++	directory, err := stateEvidenceDirectory(r, "brg18-")
++	if err != nil {
++		return nil, "", false, err
++	}
++	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "BRG18", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(nativePathsTests), RequiredTests: nativePathsRequiredEvents()}
++	receipt.SourceFiles, err = editorGitSourceFiles(root, before, nativePathsProductionPaths)
++	if err != nil {
++		return nil, "", false, err
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(nativePathsTests)+time.Minute)
++	defer cancel()
++	command := exec.CommandContext(ctx, receipt.Command[0], receipt.Command[1:]...)
++	command.Dir = root
++	configureEditorProductionProcess(command)
++	var output, errors loopBoundedOutput
++	command.Stdout, command.Stderr = &output, &errors
++	started := time.Now()
++	receipt.StartedUTC = started.UTC().Format(time.RFC3339Nano)
++	processErr := command.Run()
++	receipt.FinishedUTC = time.Now().UTC().Format(time.RFC3339Nano)
++	receipt.ElapsedSeconds = time.Since(started).Seconds()
++	exitCode := -1
++	if command.ProcessState != nil {
++		exitCode = command.ProcessState.ExitCode()
++	}
++	timedOut := ctx.Err() != nil
++	receipt.ExitCode, receipt.TimedOut = &exitCode, &timedOut
++	after, afterClean, afterErr := editorSourceState(root)
++	receipt.SourceCleanAfter = afterErr == nil && afterClean && after == before
++	raw, stderr := output.Bytes(), errors.Bytes()
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(raw), len(raw)
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(stderr), len(stderr)
++	parseErr := parseNativePathsOutput(raw)
++	if parseErr == nil {
++		parseErr = loopOutputWithinProcess(raw, receipt)
++	}
++	if parseErr == nil {
++		receipt.DiscoveredTests = nativePathsRequiredEvents()
++	}
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		return nil, "", command.Process != nil, err
++	}
++	contents := map[string][]byte{nativePathsArtifacts[0]: append(encoded, '\n'), nativePathsArtifacts[1]: raw, nativePathsArtifacts[2]: stderr}
++	var artifacts []EvidenceArtifact
++	for _, name := range nativePathsArtifacts {
++		path := filepath.Join(directory, name)
++		if err = os.WriteFile(path, contents[name], 0600); err != nil {
++			return artifacts, "", command.Process != nil, err
++		}
++		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(contents[name])})
++	}
++	if processErr != nil || parseErr != nil || timedOut || !receipt.SourceCleanAfter {
++		return artifacts, "", command.Process != nil, fmt.Errorf("actual BRG18 process failed: process=%v parse=%v timeout=%t clean=%t", processErr, parseErr, timedOut, receipt.SourceCleanAfter)
++	}
++	return artifacts, "Executed the full public native import/compile cross-product, full-workflow bypass and independent complete-tree/readability corruption controls", true, nil
++}
++func (r *Runner) runNativePathsRequirement(spec RecoveryGate) bool {
++	if spec.ID != "BRG18" {
++		return false
++	}
++	level := strings.Join(spec.MinimumEvidenceTiers, "+")
++	if spec.Title != nativePathsTitle || spec.Scenario != nativePathsScenario || spec.ExpectedObservation != nativePathsExpected ||
++		!reflect.DeepEqual(parseRequiredTiers(level), nativePathsTiers) {
++		r.results[spec.ID] = CaseResult{ID: spec.ID, Group: "recovery_gate", Requirement: spec.Title, TestLevel: level, Status: "FAILED", Detail: "BRG18 producer does not match the immutable full scenario"}
++		return true
++	}
++	artifacts, detail, executed, err := r.executeNativePathsProduction()
++	if err != nil {
++		detail = err.Error()
++	}
++	if !executed {
++		r.results[spec.ID] = CaseResult{ID: spec.ID, Group: "recovery_gate", Requirement: spec.Title, TestLevel: level, Status: "NOT_RUN", Detail: detail}
++		return true
++	}
++	first := len(r.records)
++	r.Record(spec.ID, "recovery_gate", spec.Title, level, nativePathsTiers, err == nil, "PASSED", detail)
++	for index := first; index < len(r.records); index++ {
++		record := &r.records[index]
++		record.TestID = nativePathsProducer(record.Tier)
++		record.Command = productionTestCommand(nativePathsTests)
++		record.Artifacts = append([]EvidenceArtifact{}, artifacts...)
++		record.Assertions["required_production_tests"] = strings.Join(nativePathsTests, "\n")
++		record.Assertions["required_go_events"] = strings.Join(nativePathsRequiredEvents(), "\n")
++		record.Assertions["scope"] = nativePathsScope
++	}
++	return true
++}
+diff --git a/tools/language-acceptance/native_paths_execution_test.go b/tools/language-acceptance/native_paths_execution_test.go
+new file mode 100644
+index 00000000..0d437f08
+--- /dev/null
++++ b/tools/language-acceptance/native_paths_execution_test.go
+@@ -0,0 +1,471 @@
++package main
++
++import (
++	"bytes"
++	"encoding/json"
++	"os"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++)
++
++func nativePathsSelectedContracts(t *testing.T, all *ContractsSet) *ContractsSet {
++	t.Helper()
++	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++	for _, row := range all.Gates.Gates {
++		if row.ID == "BRG18" {
++			selected.Gates.Gates = append(selected.Gates.Gates, row)
++		}
++	}
++	if len(selected.Gates.Gates) != 1 {
++		t.Fatal("missing immutable BRG18 contract")
++	}
++	selected.Gates.GateCount = 1
++	return selected
++}
++func TestNativePathsProducerInventory(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	row := nativePathsSelectedContracts(t, all).Gates.Gates[0]
++	if row.Title != nativePathsTitle || row.Scenario != nativePathsScenario || row.ExpectedObservation != nativePathsExpected || !reflect.DeepEqual(parseRequiredTiers(strings.Join(row.MinimumEvidenceTiers, "+")), nativePathsTiers) {
++		t.Fatal("immutable full BRG18 contract changed", row)
++	}
++	names := nativePathsRequiredEvents()
++	if len(names) != 54 || len(nativePathsProductionPaths) != 61 {
++		t.Fatal("unreviewed BRG18 event/source inventory", len(names), len(nativePathsProductionPaths))
++	}
++	seen := map[string]bool{}
++	for _, name := range names {
++		if name == "" || seen[name] {
++			t.Fatal("invalid event inventory", name)
++		}
++		seen[name] = true
++	}
++	if !reflect.DeepEqual(deriveGateTestIDs("BRG18", row.ProposedTestPrefix), nativePathsTestIDs()) || !reflect.DeepEqual(deriveGateFixtures("BRG18"), nativePathsProductionPaths) {
++		t.Fatal("missing complete production mapping")
++	}
++	for _, path := range nativePathsProductionPaths {
++		if seen[path] {
++			t.Fatal("duplicate source path", path)
++		}
++		seen[path] = true
++		info, err := os.Stat(filepath.Join(resolveRepoRoot(), filepath.FromSlash(path)))
++		if err != nil || !info.Mode().IsRegular() {
++			t.Fatal("missing production source", path, err)
++		}
++	}
++	runner := NewRunner()
++	for _, foreign := range []string{"R01", "R02", "R04", "R05", "R06", "RP35", "RP36", "BRG19"} {
++		other := row
++		other.ID = foreign
++		if runner.runNativePathsRequirement(other) {
++			t.Fatal("related ID inherited producer", foreign)
++		}
++	}
++	if len(runner.records) != 0 || len(runner.results) != 0 || len(runner.observations) != 0 {
++		t.Fatal("unexecuted ID minted evidence")
++	}
++	for _, field := range []string{"title", "scenario", "expected", "tiers"} {
++		changed := row
++		switch field {
++		case "title":
++			changed.Title = "different title"
++		case "scenario":
++			changed.Scenario = "different scenario"
++		case "expected":
++			changed.ExpectedObservation = "different expected"
++		case "tiers":
++			changed.MinimumEvidenceTiers = []string{"integration"}
++		}
++		if !runner.runNativePathsRequirement(changed) || runner.results["BRG18"].Status != "FAILED" || len(runner.records) != 0 {
++			t.Fatal("altered immutable scenario accepted", field)
++		}
++	}
++}
++
++// Synthetic streams exercise parser rejection only, never production credit.
++func nativePathsControlEvents() []byte {
++	var lines [][]byte
++	emit := func(action, name string) {
++		e := map[string]any{"Time": "2026-11-20T00:00:00Z", "Action": action, "Package": "github.com/electrikmilk/cherri"}
++		if name != "" {
++			e["Test"] = name
++		}
++		if action == "pass" {
++			e["Elapsed"] = 0.001
++		}
++		b, _ := json.Marshal(e)
++		lines = append(lines, b)
++	}
++	names := nativePathsRequiredEvents()
++	selected := map[string]bool{}
++	for _, name := range names {
++		selected[name] = true
++	}
++	parent := func(name string) string {
++		for {
++			slash := strings.LastIndexByte(name, '/')
++			if slash < 0 {
++				return ""
++			}
++			name = name[:slash]
++			if selected[name] {
++				return name
++			}
++		}
++	}
++	var execute func(string)
++	execute = func(name string) {
++		emit("run", name)
++		for _, child := range names {
++			if parent(child) == name {
++				execute(child)
++			}
++		}
++		emit("pass", name)
++	}
++	emit("start", "")
++	for _, name := range nativePathsTests {
++		execute(name)
++	}
++	emit("pass", "")
++	return append(bytes.Join(lines, []byte("\n")), '\n')
++}
++func nativePathsNestedFault(t *testing.T, raw []byte) []byte {
++	t.Helper()
++	parent := nativePathsTests[0] + "/xml"
++	child := parent + "/hybrid"
++	var events []map[string]any
++	var pass map[string]any
++	var childTime any
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var e map[string]any
++		if err := json.Unmarshal(line, &e); err != nil {
++			t.Fatal(err)
++		}
++		events = append(events, e)
++		if e["Action"] == "pass" && e["Test"] == parent {
++			pass = e
++		}
++		if e["Action"] == "run" && e["Test"] == child {
++			childTime = e["Time"]
++		}
++	}
++	if pass == nil || childTime == nil {
++		t.Fatal("actual nested target is absent")
++	}
++	pass["Time"] = childTime
++	var lines [][]byte
++	for _, e := range events {
++		if e["Action"] == "pass" && e["Test"] == parent {
++			continue
++		}
++		if e["Action"] == "run" && e["Test"] == child {
++			b, _ := json.Marshal(pass)
++			lines = append(lines, b)
++		}
++		b, _ := json.Marshal(e)
++		lines = append(lines, b)
++	}
++	return append(bytes.Join(lines, []byte("\n")), '\n')
++}
++func TestNativePathsEventParserControls(t *testing.T) {
++	raw := nativePathsControlEvents()
++	if err := parseNativePathsOutput(raw); err != nil {
++		t.Fatal(err)
++	}
++	for _, name := range nativePathsRequiredEvents() {
++		t.Run("omitted/"+strings.ReplaceAll(name, "/", "_"), func(t *testing.T) {
++			if parseNativePathsOutput(structuralMigrationCorruptRaw(t, "missing_event", name, raw)) == nil {
++				t.Fatal("required real case omitted", name)
++			}
++		})
++	}
++	target := nativePathsTests[0] + "/xml/hybrid"
++	for _, fault := range []string{"orphan_pass", "skipped_child", "failed_child", "foreign_package", "unknown_child", "duplicate_run", "parent_before_child", "missing_time", "invalid_time", "backwards_time", "missing_elapsed", "negative_elapsed", "oversized_elapsed", "invalid_utf8", "duplicate_json_key", "trailing_json"} {
++		t.Run(fault, func(t *testing.T) {
++			if parseNativePathsOutput(structuralMigrationCorruptRaw(t, fault, target, raw)) == nil {
++				t.Fatal("damaged parser control accepted", fault)
++			}
++		})
++	}
++	nested := nativePathsNestedFault(t, raw)
++	if err := parseStrictNamedProductionOutput(nativePathsRequiredEvents(), productionTestTimeout(nativePathsTests), nested); err != nil {
++		t.Fatal("nested-only control damaged another invariant", err)
++	}
++	if parseNativePathsOutput(nested) == nil {
++		t.Fatal("selected route completed before its fault child")
++	}
++}
++func nativePathsRewriteArtifacts(t *testing.T, record *EvidenceRecord, mutate func(map[string][]byte, *editorProcessReceipt)) {
++	t.Helper()
++	names := nativePathsArtifacts
++	data, err := stateReadArtifacts(record.Artifacts, names)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var receipt editorProcessReceipt
++	if err = decodeEditorJSON(data[names[0]], &receipt); err != nil {
++		t.Fatal(err)
++	}
++	mutate(data, &receipt)
++	receipt.RawSHA256 = editorSHA(data[names[1]])
++	receipt.RawBytes = len(data[names[1]])
++	receipt.StderrSHA256 = editorSHA(data[names[2]])
++	receipt.StderrBytes = len(data[names[2]])
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		t.Fatal(err)
++	}
++	data[names[0]] = append(encoded, '\n')
++	root := t.TempDir()
++	record.Artifacts = nil
++	for _, name := range names {
++		path := filepath.Join(root, name)
++		if err = os.WriteFile(path, data[name], 0600); err != nil {
++			t.Fatal(err)
++		}
++		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data[name])})
++	}
++}
++func TestNativePathsActualProductionEvidence(t *testing.T) {
++	const id = "BRG18"
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := nativePathsSelectedContracts(t, all)
++	scenario := struct {
++		Tests, Tiers []string
++		Scope        string
++	}{nativePathsTests, nativePathsTiers, nativePathsScope}
++	runner := NewRunner()
++	runner.artifactDir = os.Getenv("CHERRI_NATIVE_PATHS_EVIDENCE_OUTPUT")
++	if runner.artifactDir == "" {
++		runner.artifactDir = t.TempDir()
++	}
++	runner.runRecoveryGates(selected.Gates)
++	if len(runner.records) != 2 || len(runner.results) != 1 || len(runner.observations) != 0 {
++		t.Fatalf("actual %s accounting: records=%d results=%+v observations=%v", id, len(runner.records), runner.results, runner.observations)
++	}
++	result := runner.results[id]
++	if !result.Passed || result.Status != "PASSED" || result.Group != "recovery_gate" || !reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
++		t.Fatalf("actual full %s production did not pass: %+v", id, result)
++	}
++	for _, record := range runner.records {
++		if err = validateNativePathsRecord(id, record); err != nil {
++			t.Fatal(err)
++		}
++	}
++	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
++	report, err := ValidateEvidenceManifest(manifest, selected, "local")
++	if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
++		t.Fatal("complete native import/bypass scenario rejected", report, err)
++	}
++	final, finalErr := ValidateEvidenceManifest(manifest, selected, "final")
++	if finalErr == nil || final == nil || final.PassedCases != 1 || final.ClosureComplete || !strings.Contains(finalErr.Error(), "missing required successful CI workflow run") {
++		t.Fatal("local component bypassed global final release gate", final, finalErr)
++	}
++	original, err := json.Marshal(manifest)
++	if err != nil {
++		t.Fatal(err)
++	}
++	faults := []string{"wrong_producer", "borrowed_id", "fake_ios", "wrong_tier", "truncated_command", "missing_child_binding", "wrong_scope", "stale_source", "failed_result", "failed_exit", "missing_artifact", "duplicate_artifact", "bad_artifact_digest", "missing_tier", "process_source", "dirty_before", "dirty_after", "missing_exit", "missing_timeout", "timeout", "missing_discovery", "missing_required_test", "bad_time", "forged_source_hash", "missing_source_path", "process_requirement", "process_command", "forged_benchmark", "stderr_invalid_utf8", "raw_missing_parent", "raw_orphan_pass", "raw_skipped_child", "raw_failed_child", "raw_foreign_package", "raw_unknown_child", "raw_duplicate_run", "raw_parent_before_child", "raw_invalid_utf8", "raw_duplicate_json_key", "raw_trailing_json", "raw_missing_time", "raw_invalid_time", "raw_backwards_time", "raw_missing_elapsed", "raw_negative_elapsed", "raw_oversized_elapsed", "raw_outside_process_interval"}
++	faults = append(faults, "raw_nested_parent_before_child")
++	names := nativePathsArtifacts
++	target := nativePathsTests[0] + "/xml/hybrid"
++	for _, actual := range runner.records {
++		t.Run(actual.Tier, func(t *testing.T) {
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					var broken EvidenceManifest
++					if err := json.Unmarshal(original, &broken); err != nil {
++						t.Fatal(err)
++					}
++					for index := range broken.Records {
++						changed := &broken.Records[index]
++						if changed.EvidenceID != actual.EvidenceID {
++							continue
++						}
++						switch fault {
++						case "wrong_producer":
++							changed.TestID = "tools/language-acceptance:runControl"
++						case "borrowed_id":
++							changed.Requirements = append(changed.Requirements, "K01")
++						case "fake_ios":
++							changed.Tier = "ios-runtime"
++						case "wrong_tier":
++							changed.Tier = "repository"
++						case "truncated_command":
++							changed.Command = productionTestCommand(scenario.Tests[:1])
++						case "missing_child_binding":
++							delete(changed.Assertions, "required_go_events")
++						case "wrong_scope":
++							changed.Assertions["scope"] = "All linked requirements complete"
++						case "stale_source":
++							changed.ImplementationSHA = strings.Repeat("e", 40)
++						case "failed_result":
++							changed.Result = "failed"
++						case "failed_exit":
++							changed.ExitCode = 1
++						case "missing_artifact":
++							changed.Artifacts = changed.Artifacts[:2]
++						case "duplicate_artifact":
++							changed.Artifacts[2] = changed.Artifacts[1]
++						case "bad_artifact_digest":
++							changed.Artifacts[0].SHA256 = strings.Repeat("0", 64)
++						case "missing_tier":
++							broken.Records = append(broken.Records[:index], broken.Records[index+1:]...)
++						default:
++							nativePathsRewriteArtifacts(t, changed, func(data map[string][]byte, receipt *editorProcessReceipt) {
++								switch fault {
++								case "process_source":
++									receipt.SourceCommit = strings.Repeat("a", 40)
++								case "dirty_before":
++									receipt.SourceCleanBefore = false
++								case "dirty_after":
++									receipt.SourceCleanAfter = false
++								case "missing_exit":
++									receipt.ExitCode = nil
++								case "missing_timeout":
++									receipt.TimedOut = nil
++								case "timeout":
++									value := true
++									receipt.TimedOut = &value
++								case "missing_discovery":
++									receipt.DiscoveredTests = receipt.DiscoveredTests[:len(receipt.DiscoveredTests)-1]
++								case "missing_required_test":
++									receipt.RequiredTests = receipt.RequiredTests[:len(receipt.RequiredTests)-1]
++								case "bad_time":
++									receipt.ElapsedSeconds = 0
++								case "forged_source_hash":
++									receipt.SourceFiles[0].SHA256 = strings.Repeat("0", 64)
++								case "missing_source_path":
++									receipt.SourceFiles = receipt.SourceFiles[:len(receipt.SourceFiles)-1]
++								case "process_requirement":
++									receipt.Requirement = "K01"
++								case "process_command":
++									receipt.Command = productionTestCommand(scenario.Tests[:1])
++								case "forged_benchmark":
++									receipt.BenchmarkSHA256 = strings.Repeat("a", 64)
++									receipt.BenchmarkBytes = 1
++								case "stderr_invalid_utf8":
++									data[names[2]] = []byte{0xff}
++								default:
++									kind := strings.TrimPrefix(fault, "raw_")
++									changedTarget := target
++									if fault == "raw_missing_parent" {
++										kind = "missing_event"
++										changedTarget = scenario.Tests[0]
++									}
++									var raw []byte
++									if fault == "raw_nested_parent_before_child" {
++										raw = nativePathsNestedFault(t, data[names[1]])
++									} else {
++										raw = structuralMigrationCorruptRaw(t, kind, changedTarget, data[names[1]])
++									}
++									if bytes.Equal(raw, data[names[1]]) {
++										t.Fatal("actual byte corruption did not occur", fault)
++									}
++									data[names[1]] = raw
++								}
++							})
++						}
++						break
++					}
++					corrupted, err := ValidateEvidenceManifest(&broken, selected, "local")
++					if corrupted == nil || corrupted.ClosureComplete || corrupted.PassedCases != 0 {
++						t.Fatal("damaged actual native import/bypass proof accepted", fault, corrupted, err)
++					}
++					if err == nil {
++						t.Fatal("malformed or incomplete actual BRG18 proof lacked required error", fault, corrupted)
++					}
++				})
++			}
++		})
++	}
++	for index, path := range nativePathsProductionPaths {
++		t.Run("source_digest/"+strings.ReplaceAll(path, "/", "_"), func(t *testing.T) {
++			var changed EvidenceRecord
++			encoded, _ := json.Marshal(runner.records[0])
++			if err := json.Unmarshal(encoded, &changed); err != nil {
++				t.Fatal(err)
++			}
++			nativePathsRewriteArtifacts(t, &changed, func(_ map[string][]byte, receipt *editorProcessReceipt) {
++				receipt.SourceFiles[index].SHA256 = strings.Repeat("0", 64)
++			})
++			if validateNativePathsRecord(id, changed) == nil {
++				t.Fatal("hash-reconciled source corruption accepted", path)
++			}
++		})
++	}
++	for _, other := range []string{"R01", "R02", "R04", "R05", "R06", "RP35", "RP36", "BRG19"} {
++		if other == id {
++			continue
++		}
++		t.Run("no_inheritance/"+other, func(t *testing.T) {
++			related := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++			for _, row := range all.Acceptance.Cases {
++				if row.ID == other {
++					related.Acceptance.Cases = append(related.Acceptance.Cases, row)
++				}
++			}
++			for _, row := range all.Repair.Cases {
++				if row.ID == other {
++					related.Repair.Cases = append(related.Repair.Cases, row)
++				}
++			}
++			for _, row := range all.Gates.Gates {
++				if row.ID == other {
++					related.Gates.Gates = append(related.Gates.Gates, row)
++				}
++			}
++			if len(related.Acceptance.Cases)+len(related.Repair.Cases)+len(related.Gates.Gates) != 1 {
++				t.Fatal("missing linked immutable contract", other)
++			}
++			related.Acceptance.CaseCount = len(related.Acceptance.Cases)
++			related.Repair.CaseCount = len(related.Repair.Cases)
++			related.Gates.GateCount = len(related.Gates.Gates)
++			var rebound EvidenceManifest
++			if err := json.Unmarshal(original, &rebound); err != nil {
++				t.Fatal(err)
++			}
++			for index := range rebound.Records {
++				rebound.Records[index].Requirements = []string{other}
++			}
++			borrowed, err := ValidateEvidenceManifest(&rebound, related, "local")
++			if err == nil || borrowed == nil || borrowed.PassedCases != 0 || borrowed.ClosureComplete {
++				t.Fatal("linked requirement inherited component proof", other, borrowed, err)
++			}
++		})
++	}
++	auditPath := filepath.Join(t.TempDir(), "audit.json")
++	if err = writeExecutionAudit(runner, all, auditPath); err != nil {
++		t.Fatal(err)
++	}
++	raw, err := os.ReadFile(auditPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var audit bindingCaptureAuditEnvelope
++	if err = json.Unmarshal(raw, &audit); err != nil || len(audit.Rows) != 179 || audit.ClosureComplete {
++		t.Fatal("component changed formal 179-row scope", err)
++	}
++	for _, row := range audit.Rows {
++		if row.ID == id {
++			if row.Status != "PASS" || !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, scenario.Tests) || !reflect.DeepEqual(row.ProductionPath, nativePathsProductionPaths) || !reflect.DeepEqual(row.Tier, scenario.Tiers) || row.Scope != scenario.Scope {
++				t.Fatalf("component audit lost actual scope: %+v", row)
++			}
++		} else if row.Status == "PASS" {
++			t.Fatal("unexecuted requirement inherited component proof", row.ID)
++		}
++	}
++	receipt, err := json.Marshal(map[string]any{"requirement": id, "source_sha": runner.implSHA, "scope": scenario.Scope, "report": report, "records": runner.records})
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Log("P15_NATIVE_PATHS_PRODUCTION_RECEIPT:" + string(receipt))
++}
