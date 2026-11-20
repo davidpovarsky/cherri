@@ -26,6 +26,18 @@ MANIFEST = "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json"
 # Reviewed synthetic selectors use their immutable orchestration contract.
 # They never derive the expected result from the downloaded artifact.
 REVIEWED_SELECTORS = {
+    "qa-debug-label-plain-v2": "qa-debug-label-plain-v2",
+    "qa-debug-label-plain-legacy": "qa-debug-label-plain-legacy",
+    "qa-debug-label-dated-v2": "qa-debug-label-dated-v2",
+    "qa-debug-label-dated-legacy": "qa-debug-label-dated-legacy",
+    "qa-debug-label-typed-v2": "qa-debug-label-typed-v2",
+    "qa-debug-label-typed-legacy": "qa-debug-label-typed-legacy",
+    "qa-debug-label-dated-typed-v2": "qa-debug-label-dated-typed-v2",
+    "qa-debug-label-dated-typed-legacy": "qa-debug-label-dated-typed-legacy",
+    "qa-debug-label-text-v2": "qa-debug-label-text-v2",
+    "qa-debug-label-text-legacy": "qa-debug-label-text-legacy",
+    "qa-debug-label-dated-text-v2": "qa-debug-label-dated-text-v2",
+    "qa-debug-label-dated-text-legacy": "qa-debug-label-dated-text-legacy",
     "qa-file-materialization-diagnostic-v2": "qa-file-materialization-diagnostic",
     "qa-n03-text-equality-diagnostic-v2": "qa-n03-text-equality-diagnostic",
     "CherriBindingCapturePOC": "qa-binding-capture",
@@ -112,7 +124,9 @@ def reviewed_case(commit, fid):
     if fid in REVIEWED_FILES:
         require(assignment("TARGET_SOURCE_RELATIVE") == filename,
                 "source selector nested path mismatch")
-    require(matching == [(fid, filename, "v2")], "source fixture compilation identity mismatch")
+    reviewed_legacy_labels = ('qa-debug-label-plain-legacy', 'qa-debug-label-dated-legacy', 'qa-debug-label-typed-legacy', 'qa-debug-label-dated-typed-legacy', 'qa-debug-label-text-legacy', 'qa-debug-label-dated-text-legacy')
+    dialect = "legacy" if fid in reviewed_legacy_labels else "v2"
+    require(matching == [(fid, filename, dialect)], "source fixture compilation identity mismatch")
     path = "tools/shortcuts-simulator-qa/fixtures/" + filename
     return {"id": fid, "path": path, "sourceSha256": digest(source_bytes(commit, path)),
             "expectedSummary": expected, "contractSource": SHELL}
