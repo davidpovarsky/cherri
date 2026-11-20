@@ -1,0 +1,1568 @@
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index b67a7a36..51ee7028 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -1130,6 +1130,8 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
+ 		if binding, found := scope.Lookup(node.Name); found {
+ 			a.exprAbsent[expr] = binding.Initialized && binding.knownAbsent
+ 		}
++	case *syntax.IfStmt, *syntax.MenuStmt:
++		a.exprAbsent[expr] = a.controlValueKnownAbsent(expr)
+ 	}
+ 	if name := a.enumContexts[expr]; name != "" {
+ 		a.validateEnumValue(expr, name, a.enumCatalog.Values(name))
+diff --git a/internal/language/analysis/control_presence.go b/internal/language/analysis/control_presence.go
+new file mode 100644
+index 00000000..1a48df9d
+--- /dev/null
++++ b/internal/language/analysis/control_presence.go
+@@ -0,0 +1,121 @@
++package analysis
++
++import (
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++type controlValueEvidence struct {
++	value                    types.Type
++	knownAbsent, hasPresence bool
++}
++
++// Only normally completing branches contribute a joined value. A literal or
++// path-local known None supplies absence, not an unknown present inner value.
++// An opaque native Unknown retains its unknown inner value and no presence.
++func (a *Analyzer) normalControlValueEvidence(expr syntax.Expression) []controlValueEvidence {
++	var values []controlValueEvidence
++	add := func(body *syntax.BlockStmt) {
++		if body == nil || !statementMayContinue(body) {
++			return
++		}
++		result := syntax.BlockResultExpression(body)
++		if result != nil && len(body.Statements) != 0 {
++			if _, yielded := body.Statements[len(body.Statements)-1].(*syntax.YieldStmt); yielded {
++				value := a.exprTypes[result]
++				if value == nil {
++					value = types.AnyContent
++				}
++				values = append(values, controlValueEvidence{value, a.exprAbsent[result], a.exprPresence[result]})
++				return
++			}
++		}
++		switch control := result.(type) {
++		case *syntax.IfStmt, *syntax.MenuStmt:
++			values = append(values, a.normalControlValueEvidence(control)...)
++		case *syntax.ForStmt, *syntax.RepeatStmt:
++			value := a.controlExpressionResultType(control)
++			values = append(values, controlValueEvidence{value, false, types.DefinitelyPresent(value)})
++		default:
++			values = append(values, controlValueEvidence{types.AnyContent, false, false})
++		}
++	}
++	switch control := expr.(type) {
++	case *syntax.IfStmt:
++		add(control.ThenBlock)
++		switch alternate := control.ElseBlock.(type) {
++		case *syntax.BlockStmt:
++			add(alternate)
++		case *syntax.IfStmt:
++			if statementMayContinue(alternate) {
++				values = append(values, a.normalControlValueEvidence(alternate)...)
++			}
++		default:
++			values = append(values, controlValueEvidence{types.AnyContent, false, false})
++		}
++	case *syntax.MenuStmt:
++		for _, item := range control.Cases {
++			add(item.BodyBlock)
++		}
++	}
++	return values
++}
++
++func joinControlValueEvidence(values []controlValueEvidence) types.Type {
++	var present []types.Type
++	mayBeAbsent := false
++	var add func(types.Type)
++	add = func(value types.Type) {
++		switch typed := value.(type) {
++		case types.OptionalType:
++			mayBeAbsent = true
++			add(typed.Inner)
++		case types.UnionType:
++			for _, member := range typed.Members {
++				add(member)
++			}
++		default:
++			present = append(present, value)
++		}
++	}
++	for _, branch := range values {
++		if branch.knownAbsent {
++			mayBeAbsent = true
++		} else {
++			add(branch.value)
++		}
++	}
++	joined := types.NewUnion(present...)
++	if mayBeAbsent {
++		// NewOptional(Unknown) intentionally collapses to Unknown for an
++		// unproved annotation; an observed None path must retain absence.
++		return types.OptionalType{Inner: joined}
++	}
++	return joined
++}
++
++func (a *Analyzer) controlValueHasPresence(expr syntax.Expression) bool {
++	values := a.normalControlValueEvidence(expr)
++	if len(values) == 0 {
++		return false
++	}
++	for _, branch := range values {
++		if !branch.hasPresence {
++			return false
++		}
++	}
++	return true
++}
++
++func (a *Analyzer) controlValueKnownAbsent(expr syntax.Expression) bool {
++	values := a.normalControlValueEvidence(expr)
++	if len(values) == 0 {
++		return false
++	}
++	for _, branch := range values {
++		if !branch.knownAbsent {
++			return false
++		}
++	}
++	return true
++}
+diff --git a/internal/language/analysis/control_results.go b/internal/language/analysis/control_results.go
+index 50387f5e..605a1b7b 100644
+--- a/internal/language/analysis/control_results.go
++++ b/internal/language/analysis/control_results.go
+@@ -10,32 +10,13 @@ import (
+ // branch's output, and an early yield can be followed by a different action.
+ func (a *Analyzer) controlExpressionResultType(expr syntax.Expression) types.Type {
+ 	switch control := expr.(type) {
+-	case *syntax.IfStmt:
+-		thenType := a.normalControlBranchResultType(control.ThenBlock)
+-		var elseType types.Type = types.AnyContent
+-		switch alternate := control.ElseBlock.(type) {
+-		case *syntax.BlockStmt:
+-			elseType = a.normalControlBranchResultType(alternate)
+-		case *syntax.IfStmt:
+-			if statementMayContinue(alternate) {
+-				elseType = a.controlExpressionResultType(alternate)
+-			} else {
+-				elseType = nil
+-			}
+-		}
+-		return types.NewUnion(thenType, elseType)
++	case *syntax.IfStmt, *syntax.MenuStmt:
++		return joinControlValueEvidence(a.normalControlValueEvidence(expr))
+ 	case *syntax.ForStmt:
+ 		return types.NewList(a.controlBranchResultType(control.BodyBlock))
+ 	case *syntax.RepeatStmt:
+ 		return types.NewList(a.controlBranchResultType(control.BodyBlock))
+-	case *syntax.MenuStmt:
+-		branches := make([]types.Type, 0, len(control.Cases))
+-		for _, item := range control.Cases {
+-			branches = append(branches, a.normalControlBranchResultType(item.BodyBlock))
+-		}
+-		if len(branches) != 0 {
+-			return types.NewUnion(branches...)
+-		}
++
+ 	}
+ 	return types.AnyContent
+ }
+diff --git a/internal/language/analysis/optional_presence.go b/internal/language/analysis/optional_presence.go
+index c3cbca0b..34eb63d7 100644
+--- a/internal/language/analysis/optional_presence.go
++++ b/internal/language/analysis/optional_presence.go
+@@ -9,7 +9,7 @@ import (
+ 
+ // Provenance records whether lowering can obtain an independent presence flag,
+ // not whether the value is present. It follows bindings and checked function
+-// carriers; arbitrary native content and unimplemented value joins have none.
++// carriers and complete normal branch values; arbitrary native content has none.
+ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Type, scope *Scope) bool {
+ 	if types.DefinitelyPresent(value) {
+ 		return true
+@@ -22,6 +22,8 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
+ 		return found && binding.Initialized && binding.optionalPresence
+ 	case *syntax.CallExpr:
+ 		return a.exprPresence[expr]
++	case *syntax.IfStmt, *syntax.MenuStmt:
++		return a.controlValueHasPresence(expr)
+ 	case *syntax.IndexExpr:
+ 		if a.dictionaryIndexes[expr] {
+ 			return true
+diff --git a/internal/language/backend/contracts.go b/internal/language/backend/contracts.go
+index 8da0826d..5bb6ae42 100644
+--- a/internal/language/backend/contracts.go
++++ b/internal/language/backend/contracts.go
+@@ -19,6 +19,7 @@ func CodecFingerprint() string {
+ 		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
+ 		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
+ 		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n:optional_arg_n=_cherri_optional_argument_v1,has_value=0-absent-1-present,value-present-only:result=_cherri_optional_result_v1,has_value,value\n" +
++		"optional_control_join:_cherri_optional_join_v1:has_value=0-absent-1-present:value-present-only:normal-branch-yields:source-demand:no-truthiness\n" +
+ 		"text_literal_object_character:plain_text_producer:deferred_after_interpolated_calls:exact_output_reference:complete_utf16_placeholder_coverage:pure_string_without_references:enclosing_native_input=existing_result_handle:checked_native_declaration_output_contract:semantic_container_fields_after_authored_values:literal_key_order_preserved:function_and_optional_fields:removed_diagnostics_without_pure_carriers\n"
+ 	sum := sha256.Sum256([]byte(codecDescriptor))
+ 	return hex.EncodeToString(sum[:])
+diff --git a/internal/language/lower/function_optional_presence.go b/internal/language/lower/function_optional_presence.go
+index d1b53db8..01005cae 100644
+--- a/internal/language/lower/function_optional_presence.go
++++ b/internal/language/lower/function_optional_presence.go
+@@ -97,6 +97,9 @@ func (l *Lowerer) staticIndexHasPresentValue(expr syntax.Expression) bool {
+ // Only compiler-owned presence participates in these predicates. Imported raw
+ // native predicates and unrelated action-content tests retain their own wire.
+ func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
++	if l.optionalJoinNeeded(expr) {
++		return true
++	}
+ 	if l.staticIndexHasPresentValue(expr) {
+ 		return true
+ 	}
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 806e59fe..879f3d52 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -102,6 +102,8 @@ type Lowerer struct {
+ 	optionalFunctionReturn     bool
+ 	optionalExpressionPresence map[syntax.Expression]interface{}
+ 	optionalPresenceDemand     map[*syntax.BindingStmt]bool
++	optionalJoinDemand         map[syntax.Expression]bool
++	optionalJoinYields         map[*syntax.YieldStmt]bool
+ 	knownDictionaryIndexes     map[syntax.Expression]bool
+ 	literalTextCarriers        map[*ir.NativeActionNode]bool
+ 	nativeResultReferences     map[*ir.NativeActionNode]*ir.AttachmentToken
+@@ -1509,6 +1511,9 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
+ 	case *syntax.MenuStmt:
+ 		return l.lowerMenu(s)
+ 	case *syntax.YieldStmt:
++		if l.optionalJoinYields[s] {
++			return l.lowerOptionalJoinYield(s)
++		}
+ 		val, err := l.lowerRuntimeLiteral(s.Value)
+ 		if err != nil {
+ 			return err
+@@ -3650,12 +3655,18 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
+ 
+ 	switch e := expr.(type) {
+ 	case *syntax.IfStmt:
++		if l.optionalJoinNeeded(e) {
++			return l.lowerOptionalControlValue(e)
++		}
+ 		return l.lowerIfWithOutput(e, true)
+ 	case *syntax.RepeatStmt:
+ 		return l.lowerRepeatWithOutput(e, true)
+ 	case *syntax.ForStmt:
+ 		return l.lowerForWithOutput(e, true)
+ 	case *syntax.MenuStmt:
++		if l.optionalJoinNeeded(e) {
++			return l.lowerOptionalControlValue(e)
++		}
+ 		return l.lowerMenuWithOutput(e, true)
+ 
+ 	case *syntax.LiteralExpr:
+diff --git a/internal/language/lower/optional_control_presence.go b/internal/language/lower/optional_control_presence.go
+new file mode 100644
+index 00000000..09db3e4f
+--- /dev/null
++++ b/internal/language/lower/optional_control_presence.go
+@@ -0,0 +1,167 @@
++package lower
++
++import (
++	"fmt"
++
++	"github.com/electrikmilk/cherri/internal/language/ir"
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++// Presence is emitted only for a nullable control value with an actual source
++// consumer. Unknown generated nodes retain the conservative demand policy.
++// Ordinary unconsumed control values keep their existing native last output.
++func (l *Lowerer) optionalJoinNeeded(expr syntax.Expression) bool {
++	switch expr.(type) {
++	case *syntax.IfStmt, *syntax.MenuStmt:
++	default:
++		return false
++	}
++	needed, analyzed := l.optionalJoinDemand[expr]
++	return (!analyzed || needed) && types.MayBeAbsent(l.exprTypes[expr])
++}
++
++// Each normally completing branch supplies a private tagged Dictionary. A
++// return exits the invocation using its existing function-result carrier and
++// does not supply a join value. The tag is consumed once after the control end.
++func (l *Lowerer) lowerOptionalControlValue(expr syntax.Expression) (*ir.AttachmentToken, error) {
++	leaves := map[*syntax.YieldStmt]bool{}
++	if err := collectOptionalJoinYields(expr, leaves); err != nil {
++		return nil, err
++	}
++	if len(leaves) == 0 {
++		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control has no normal value path at %s", expr.NodeSpan())
++	}
++	previous := l.optionalJoinYields
++	l.optionalJoinYields = make(map[*syntax.YieldStmt]bool, len(previous)+len(leaves))
++	for yield, tracked := range previous {
++		l.optionalJoinYields[yield] = tracked
++	}
++	for yield := range leaves {
++		l.optionalJoinYields[yield] = true
++	}
++	defer func() { l.optionalJoinYields = previous }()
++
++	var carrier *ir.AttachmentToken
++	var err error
++	switch control := expr.(type) {
++	case *syntax.IfStmt:
++		carrier, err = l.lowerIfWithOutput(control, true)
++	case *syntax.MenuStmt:
++		carrier, err = l.lowerMenuWithOutput(control, true)
++	}
++	if err != nil {
++		return nil, err
++	}
++	if carrier == nil || carrier.OutputUUID == "" {
++		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control has no joined carrier at %s", expr.NodeSpan())
++	}
++	value, presence := l.decodeOptionalCarrier(carrier.OutputUUID, "has_value", "value", "")
++	if l.optionalExpressionPresence == nil {
++		l.optionalExpressionPresence = map[syntax.Expression]interface{}{}
++	}
++	l.optionalExpressionPresence[expr] = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence}
++	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: value}, nil
++}
++
++func (l *Lowerer) lowerOptionalJoinYield(yield *syntax.YieldStmt) error {
++	previous := l.inExprStmt
++	l.inExprStmt = false
++	defer func() { l.inExprStmt = previous }()
++	var value interface{}
++	var err error
++	switch yield.Value.(type) {
++	case *syntax.MapExpr, *syntax.ListExpr:
++		// An ordinary container retains its AST identity and explicit empty
++		// fields inside the private carrier. It is never a raw native template.
++		value, err = l.lowerSemanticValue(yield.Value)
++	default:
++		value, err = l.lowerRuntimeLiteral(yield.Value)
++	}
++	if err != nil {
++		return err
++	}
++	presence, err := l.optionalValuePresence(yield.Value, value)
++	if err != nil {
++		return err
++	}
++	l.optionalCarrier(value, presence, "has_value", "value", "_cherri_optional_join_v1")
++	return nil
++}
++
++func collectOptionalJoinYields(expr syntax.Expression, leaves map[*syntax.YieldStmt]bool) error {
++	var collectBlock func(*syntax.BlockStmt) error
++	collectBlock = func(body *syntax.BlockStmt) error {
++		if !optionalJoinMayContinue(body) {
++			return nil
++		}
++		if body == nil || len(body.Statements) == 0 {
++			return fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control branch has no explicit value")
++		}
++		switch last := body.Statements[len(body.Statements)-1].(type) {
++		case *syntax.YieldStmt:
++			leaves[last] = true
++			return nil
++		case *syntax.IfStmt:
++			return collectOptionalJoinYields(last, leaves)
++		case *syntax.MenuStmt:
++			return collectOptionalJoinYields(last, leaves)
++		default:
++			return fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional control transport requires an explicit normal-branch yield at %s", body.NodeSpan())
++		}
++	}
++	switch control := expr.(type) {
++	case *syntax.IfStmt:
++		if err := collectBlock(control.ThenBlock); err != nil {
++			return err
++		}
++		switch alternate := control.ElseBlock.(type) {
++		case *syntax.BlockStmt:
++			return collectBlock(alternate)
++		case *syntax.IfStmt:
++			return collectOptionalJoinYields(alternate, leaves)
++		default:
++			return fmt.Errorf("E_TARGET_VALUE_SHAPE: Optional If has no alternate value at %s", control.NodeSpan())
++		}
++	case *syntax.MenuStmt:
++		for _, item := range control.Cases {
++			if err := collectBlock(item.BodyBlock); err != nil {
++				return err
++			}
++		}
++		return nil
++	}
++	return fmt.Errorf("E_TARGET_VALUE_SHAPE: unsupported Optional control %T", expr)
++}
++
++// Match the analyzer's normal-completion boundary. Loop bodies do not prove
++// that the loop executes, whereas a return reached unconditionally terminates
++// the invocation, including through an If or every Menu case.
++func optionalJoinMayContinue(statement syntax.Statement) bool {
++	switch node := statement.(type) {
++	case *syntax.ReturnStmt:
++		return false
++	case *syntax.BlockStmt:
++		if node == nil {
++			return true
++		}
++		for _, child := range node.Statements {
++			if !optionalJoinMayContinue(child) {
++				return false
++			}
++		}
++	case *syntax.IfStmt:
++		return optionalJoinMayContinue(node.ThenBlock) || node.ElseBlock == nil || optionalJoinMayContinue(node.ElseBlock)
++	case *syntax.MenuStmt:
++		if len(node.Cases) == 0 {
++			return true
++		}
++		for _, item := range node.Cases {
++			if optionalJoinMayContinue(item.BodyBlock) {
++				return true
++			}
++		}
++		return false
++	}
++	return true
++}
+diff --git a/internal/language/lower/optional_control_presence_test.go b/internal/language/lower/optional_control_presence_test.go
+new file mode 100644
+index 00000000..14b0dca7
+--- /dev/null
++++ b/internal/language/lower/optional_control_presence_test.go
+@@ -0,0 +1,75 @@
++package lower
++
++import (
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/source"
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++func TestOptionalControlPresenceDemandFollowsConsumers(t *testing.T) {
++	const join = `if true{yield none}else{yield ""}`
++	for _, tc := range []struct {
++		name, source string
++		needed       bool
++	}{
++		{"value_only", "let candidate=" + join + ";getVariable(candidate)", false},
++		{"unconsumed_alias", "let candidate=" + join + ";let alias=candidate;getVariable(alias)", false},
++		{"none_comparison", "let candidate=" + join + ";getVariable(candidate==none)", true},
++		{"alias_comparison", "let candidate=" + join + ";let alias=candidate;getVariable(alias!=none)", true},
++		{"function_argument", "function f(v:Text?)->Text?{return v};let candidate=" + join + ";f(candidate)", true},
++		{"qualified_function_argument", "function f(v:Text?)->Text?{return v};let candidate=" + join + ";dep.f(candidate)", true},
++		{"function_return", "function f()->Text?{let candidate=" + join + ";return candidate}", true},
++		{"reassignment", "var alias:Text?=none;let candidate=" + join + ";alias=candidate;getVariable(alias==none)", true},
++		{"branch_consumer", "let candidate=" + join + ";if true{getVariable(candidate==none)}", true},
++		{"loop_consumer", "let candidate=" + join + ";repeat 2{getVariable(candidate==none)}", true},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			parser := syntax.NewParser(source.NewFile("join-demand.cherri", "join-demand.cherri", 1, tc.source))
++			program := parser.ParseProgram()
++			if len(parser.Errors()) != 0 {
++				t.Fatal(parser.Errors())
++			}
++			before := syntax.Format(program)
++			lowerer := NewLowerer(nil)
++			lowerer.prepareOptionalPresenceDemand(program)
++			var value syntax.Expression
++			optionalDemandWalk(program, func(node syntax.Node) {
++				if binding, ok := node.(*syntax.BindingStmt); ok && binding.Name == "candidate" {
++					if value != nil {
++						t.Fatal("test source has ambiguous candidate")
++					}
++					value = binding.Value
++				}
++			})
++			if value == nil {
++				t.Fatal("source join missing")
++			}
++			got, known := lowerer.optionalJoinDemand[value]
++			if !known || got != tc.needed {
++				t.Fatalf("join demand got %t/%t want %t", got, known, tc.needed)
++			}
++			if syntax.Format(program) != before {
++				t.Fatal("demand analysis changed source syntax")
++			}
++			// Renamed scoped bodies retain exact positive and negative demand,
++			// together with the checked nullable type of the source expression.
++			lowerer.exprTypes = map[syntax.Expression]types.Type{value: types.OptionalType{Inner: types.Text}}
++			renamer := scopedBlockRenamer{lowerer: lowerer, prefix: "test_scope"}
++			cloned, err := renamer.expression(value, map[string]string{})
++			if err != nil || cloned == value || lowerer.optionalJoinNeeded(cloned) != tc.needed {
++				t.Fatalf("renamed join lost its demand/type fact: %v", err)
++			}
++			unknown := &syntax.IfStmt{}
++			lowerer.exprTypes[unknown] = types.OptionalType{Inner: types.Text}
++			if !lowerer.optionalJoinNeeded(unknown) {
++				t.Fatal("unknown generated nullable control lost conservative demand")
++			}
++			lowerer.exprTypes[unknown] = types.Text
++			if lowerer.optionalJoinNeeded(unknown) {
++				t.Fatal("definitely present generated control gained Optional carrier")
++			}
++		})
++	}
++}
+diff --git a/internal/language/lower/optional_presence_demand.go b/internal/language/lower/optional_presence_demand.go
+index 4f4f1b40..a0911851 100644
+--- a/internal/language/lower/optional_presence_demand.go
++++ b/internal/language/lower/optional_presence_demand.go
+@@ -28,6 +28,16 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 	})
+ 	bindings := map[*syntax.BindingStmt]string{}
+ 	dependencies := map[string]map[string]bool{}
++	dependencyExpressions := map[string][]syntax.Expression{}
++	l.optionalJoinDemand = map[syntax.Expression]bool{}
++	optionalDemandWalk(roots, func(node syntax.Node) {
++		switch value := node.(type) {
++		case *syntax.IfStmt:
++			l.optionalJoinDemand[value] = false
++		case *syntax.MenuStmt:
++			l.optionalJoinDemand[value] = false
++		}
++	})
+ 	needed := map[string]bool{}
+ 	addNames := func(target map[string]bool, expression syntax.Expression) {
+ 		optionalDemandWalk(expression, func(node syntax.Node) {
+@@ -36,7 +46,22 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 			}
+ 		})
+ 	}
++	markJoins := func(expression syntax.Expression) {
++		optionalDemandWalk(expression, func(node syntax.Node) {
++			switch value := node.(type) {
++			case *syntax.IfStmt:
++				l.optionalJoinDemand[value] = true
++			case *syntax.MenuStmt:
++				l.optionalJoinDemand[value] = true
++			}
++		})
++	}
++	seed := func(expression syntax.Expression) {
++		addNames(needed, expression)
++		markJoins(expression)
++	}
+ 	depend := func(name string, expression syntax.Expression) {
++		dependencyExpressions[name] = append(dependencyExpressions[name], expression)
+ 		if dependencies[name] == nil {
+ 			dependencies[name] = map[string]bool{}
+ 		}
+@@ -56,10 +81,10 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 		case *syntax.ReturnStmt:
+ 			// All authored returns are retained conservatively; only Optional
+ 			// bindings actually emit paired flags during lowering.
+-			addNames(needed, value.Value)
++			seed(value.Value)
+ 		case *syntax.FunctionDecl:
+ 			for _, parameter := range value.Parameters {
+-				addNames(needed, parameter.DefaultExpr)
++				seed(parameter.DefaultExpr)
+ 			}
+ 		case *syntax.CallExpr:
+ 			name := ""
+@@ -74,18 +99,18 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 			if functions[name] {
+ 				// Include every written argument of a user-function call.
+ 				// Ordinary canonical action inputs do not consume this flag.
+-				addNames(needed, value.PrimaryArg)
++				seed(value.PrimaryArg)
+ 				for _, argument := range value.NamedArgs {
+-					addNames(needed, argument.Value)
++					seed(argument.Value)
+ 				}
+ 			}
+ 		case *syntax.BinaryExpr:
+ 			if value.Op == syntax.TokenEqual || value.Op == syntax.TokenNotEqual {
+ 				if isNone(value.Right) {
+-					addNames(needed, value.Left)
++					seed(value.Left)
+ 				}
+ 				if isNone(value.Left) {
+-					addNames(needed, value.Right)
++					seed(value.Right)
+ 				}
+ 			}
+ 		}
+@@ -104,6 +129,11 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+ 			}
+ 		}
+ 	}
++	for name := range needed {
++		for _, expression := range dependencyExpressions[name] {
++			markJoins(expression)
++		}
++	}
+ 	l.optionalPresenceDemand = map[*syntax.BindingStmt]bool{}
+ 	for binding, name := range bindings {
+ 		l.optionalPresenceDemand[binding] = needed[name]
+diff --git a/internal/language/lower/scoped_blocks.go b/internal/language/lower/scoped_blocks.go
+index 51815566..7a1a6fbc 100644
+--- a/internal/language/lower/scoped_blocks.go
++++ b/internal/language/lower/scoped_blocks.go
+@@ -261,6 +261,11 @@ func (r *scopedBlockRenamer) expression(expression syntax.Expression, names map[
+ 				r.lowerer.enumValues[result] = value
+ 			}
+ 		}
++		if result != nil {
++			if needed, analyzed := r.lowerer.optionalJoinDemand[expression]; analyzed {
++				r.lowerer.optionalJoinDemand[result] = needed
++			}
++		}
+ 		if result != nil && r.lowerer.knownDictionaryIndexes[expression] {
+ 			r.lowerer.knownDictionaryIndexes[result] = true
+ 		}
+diff --git a/p15_function_native_oracle_test.go b/p15_function_native_oracle_test.go
+index 207b8071..086a3b6f 100644
+--- a/p15_function_native_oracle_test.go
++++ b/p15_function_native_oracle_test.go
+@@ -239,6 +239,11 @@ func (g *p15FunctionGraph) call(payload string) string {
+ 
+ func (g *p15FunctionGraph) finish() error {
+ 	g.boundary(g.outer, 2, false)
++	return g.compare()
++}
++
++// compare also checks complete workflows without the function dispatcher.
++func (g *p15FunctionGraph) compare() error {
+ 	if g.err != nil {
+ 		return g.err
+ 	}
+diff --git a/p15_optional_value_join_boundary_test.go b/p15_optional_value_join_boundary_test.go
+new file mode 100644
+index 00000000..658dae49
+--- /dev/null
++++ b/p15_optional_value_join_boundary_test.go
+@@ -0,0 +1,176 @@
++package main
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++)
++
++type p15OptionalValueJoinCase struct {
++	name, source string
++}
++
++// This first boundary test specifies source-owned branch presence. It is not a
++// full native graph or an Apple execution; those need separate causal proof.
++func p15OptionalJoinPresenceBoundary(actions []map[string]any) error {
++	flags := map[string]bool{}
++	readsPresence := false
++	for _, action := range actions {
++		params := p15C01Params(action)
++		if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvalueforkey" && params["WFDictionaryKey"] == "has_value" {
++			readsPresence = true
++		}
++		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.dictionary" {
++			continue
++		}
++		fields, err := p15ContainerFields(params["WFItems"])
++		if err != nil {
++			continue
++		}
++		marker, exists := fields["_cherri_optional_join_v1"]
++		if !exists {
++			continue
++		}
++		if fmt.Sprint(marker["WFItemType"]) != "0" || !p15OptionalJoinLiteralText(marker["WFValue"], "1") {
++			return fmt.Errorf("join carrier marker is not exact compiler-owned Text")
++		}
++		presence, exists := fields["has_value"]
++		if !exists || fmt.Sprint(presence["WFItemType"]) != "0" {
++			return fmt.Errorf("join has no independent Text presence field")
++		}
++		for _, flag := range []string{"0", "1"} {
++			if p15OptionalJoinLiteralText(presence["WFValue"], flag) {
++				if flag == "0" {
++					if len(fields) != 2 {
++						return fmt.Errorf("absent join carrier fabricated a value")
++					}
++				} else if _, exists := fields["value"]; !exists || len(fields) != 3 {
++					return fmt.Errorf("present join carrier omitted its value")
++				}
++				flags[flag] = true
++			}
++		}
++	}
++	if !flags["0"] || !flags["1"] || !readsPresence {
++		return fmt.Errorf("None/present control paths lack separate observed carrier flags and presence read: flags=%v read=%t", flags, readsPresence)
++	}
++	return nil
++}
++
++func p15OptionalJoinLiteralText(value any, want string) bool {
++	wrapper, ok := value.(map[string]any)
++	if !ok || len(wrapper) != 2 || wrapper["WFSerializationType"] != "WFTextTokenString" {
++		return false
++	}
++	payload, ok := wrapper["Value"].(map[string]any)
++	return ok && len(payload) == 1 && payload["string"] == want
++}
++
++func p15OptionalValueJoinCases() []p15OptionalValueJoinCase {
++	var cases []p15OptionalValueJoinCase
++	for _, value := range []struct{ name, expression string }{
++		{"empty_text", `""`}, {"false", "false"}, {"zero", "0"}, {"empty_list", "[]"}, {"empty_map", "{}"},
++	} {
++		for _, control := range []string{"if", "menu"} {
++			for _, first := range []bool{false, true} {
++				left, right := "none", value.expression
++				if first {
++					left, right = right, left
++				}
++				expression := "if flag {yield " + left + "} else {yield " + right + "}"
++				if control == "menu" {
++					expression = `menu("Pick"){case "A"{yield ` + left + `} case "B"{yield ` + right + `}}`
++				}
++				source := "var flag:Bool=true\nlet candidate=" + expression + "\ngetVariable(candidate)\nlet absent=candidate==none\ngetVariable(absent)"
++				cases = append(cases, p15OptionalValueJoinCase{fmt.Sprintf("%s/%s/present_first_%t", control, value.name, first), source})
++			}
++		}
++	}
++	return cases
++}
++
++func TestP15OptionalValueJoinsPreservePresence(t *testing.T) {
++	for _, tc := range p15OptionalValueJoinCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			p15FunctionTypedProgram(t, tc.source, map[string]string{})
++			actions := p15CompiledActions(t, tc.source)
++			p15FunctionBoundaryRetain(t, "optional-join-"+strings.ReplaceAll(tc.name, "/", "-"), actions)
++			if err := p15OptionalJoinPresenceBoundary(actions); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func TestP15OptionalValueJoinsTypedConsumers(t *testing.T) {
++	const choose = `if flag {yield none} else {yield ""}`
++	const echo = "function echo(value:Text?)->Text?{return value}\n"
++	for _, tc := range []p15OptionalValueJoinCase{
++		{"annotation", "var flag:Bool=true\nlet value:Text? = " + choose + "\ngetVariable(value==none)"},
++		{"return", "function pick(flag:Bool)->Text?{return " + choose + "}\ngetVariable(pick(true))"},
++		{"direct_argument", echo + "var flag:Bool=true\ngetVariable(echo(" + choose + "))"},
++		{"inferred_argument", echo + "var flag:Bool=true\nlet value=" + choose + "\ngetVariable(echo(value))"},
++		{"alias_argument", echo + "var flag:Bool=true\nlet initial=" + choose + "\nlet value=initial\ngetVariable(echo(value))"},
++		{"reassignment", echo + "var flag:Bool=true\nvar value:Text?=none\nvalue=" + choose + "\ngetVariable(echo(value))"},
++		{"nested_if", "var flag:Bool=true\nlet value=if flag {if flag {yield none}else{yield \"\"}}else{yield \"END\"}\ngetVariable(value==none)"},
++		{"yielded_if", "var flag:Bool=true\nlet value=if flag {yield " + choose + "}else{yield \"END\"}\ngetVariable(value==none)"},
++		{"nested_menu", "var flag:Bool=true\nlet value=if flag {menu(\"Pick\"){case \"A\"{yield none}case \"B\"{yield \"\"}}}else{yield \"END\"}\ngetVariable(value==none)"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			p15FunctionTypedProgram(t, tc.source, map[string]string{})
++			actions := p15CompiledActions(t, tc.source)
++			p15FunctionBoundaryRetain(t, "optional-join-"+tc.name, actions)
++			if err := p15OptionalJoinPresenceBoundary(actions); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func TestP15OptionalValueJoinsKeepUnconsumedNoneClear(t *testing.T) {
++	for _, expression := range []string{
++		"if flag {text(\"NOISE\");yield none} else {yield \"NORMAL\"}",
++		`menu("Pick"){case "A"{text("NOISE");yield none}case "B"{yield "NORMAL"}}`,
++	} {
++		source := "let flag=true\nlet value=" + expression + "\ngetVariable(value)"
++		actions, err := p15C03Actions(source, false)
++		if err != nil {
++			t.Fatal(err)
++		}
++		if err := p15F03NoneBranchOracle(actions); err != nil {
++			t.Fatal(err)
++		}
++		for _, action := range actions {
++			params := action.WFWorkflowActionParameters
++			if action.WFWorkflowActionIdentifier == "is.workflow.actions.getvalueforkey" && params["WFDictionaryKey"] == "has_value" {
++				t.Fatal("unconsumed Optional join gained presence metadata")
++			}
++		}
++	}
++}
++
++func TestP15OptionalValueJoinsDoNotInventTypeOrPresence(t *testing.T) {
++	for _, tc := range []struct{ name, source, code string }{
++		{"wrong_present_type", "function echo(value:Text?)->Text?{return value}\ngetVariable(echo(if true {yield 0}else{yield none}))", analysis.CodeArgumentType},
++		{"opaque_native", "function echo(value:AnyContent?)->AnyContent?{return value}\ngetVariable(echo(if true {yield native.action(\"is.workflow.actions.getclipboard\")}else{yield none}))", analysis.CodeTargetValueShape},
++		{"missing_yield", "let value=if true {yield none}else{text(\"UNKNOWN\")}\ngetVariable(value==none)", analysis.CodeYieldContext},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			found := false
++			for _, d := range p15TypeDiagnostics(t, tc.source) {
++				if d.Severity == analysis.SeverityError && d.Code == tc.code {
++					found = true
++				}
++			}
++			if !found {
++				t.Fatal("unsupported value acquired fabricated type/presence evidence", p15TypeDiagnostics(t, tc.source))
++			}
++			raw, err := CompileSourceToPlist("p15-optional-join-rejection.cherri", tc.source)
++			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), tc.code) {
++				t.Fatalf("invalid join emitted native bytes=%d err=%v", len(raw), err)
++			}
++		})
++	}
++}
+diff --git a/p15_optional_value_join_consumers_test.go b/p15_optional_value_join_consumers_test.go
+new file mode 100644
+index 00000000..9f31c4ab
+--- /dev/null
++++ b/p15_optional_value_join_consumers_test.go
+@@ -0,0 +1,293 @@
++package main
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++)
++
++func p15OptionalJoinConsumerCases() []p15OptionalValueJoinCase {
++	const choose = `if flag {yield none} else {yield ""}`
++	const echo = "function echo(value:Text?)->Text?{return value}\n"
++	return []p15OptionalValueJoinCase{
++		{"annotation", "var flag:Bool=true\nlet value:Text? = " + choose + "\ngetVariable(value==none)"},
++		{"return", "function pick(flag:Bool)->Text?{return " + choose + "}\ngetVariable(pick(true))"},
++		{"direct_argument", echo + "var flag:Bool=true\ngetVariable(echo(" + choose + "))"},
++		{"inferred_argument", echo + "var flag:Bool=true\nlet value=" + choose + "\ngetVariable(echo(value))"},
++		{"alias_argument", echo + "var flag:Bool=true\nlet initial=" + choose + "\nlet value=initial\ngetVariable(echo(value))"},
++		{"reassignment", echo + "var flag:Bool=true\nvar value:Text?=none\nvalue=" + choose + "\ngetVariable(echo(value))"},
++		{"nested_if", "var flag:Bool=true\nlet value=if flag {if flag {yield none}else{yield \"\"}}else{yield \"END\"}\ngetVariable(value==none)"},
++		{"yielded_if", "var flag:Bool=true\nlet value=if flag {yield " + choose + "}else{yield \"END\"}\ngetVariable(value==none)"},
++		{"nested_menu", "var flag:Bool=true\nlet value=if flag {menu(\"Pick\"){case \"A\"{yield none}case \"B\"{yield \"\"}}}else{yield \"END\"}\ngetVariable(value==none)"},
++	}
++}
++
++func p15OptionalJoinReturnGraph(g *p15FunctionGraph, value string, presence any) {
++	carrier := p15OptionalJoinDynamicCarrier(g, "_cherri_optional_result_v1", p15FunctionArgument{true, 0, p15FunctionEdge(value)}, presence)
++	g.output(carrier)
++}
++
++func p15OptionalJoinCallResultGraph(g *p15FunctionGraph, name string, argument p15FunctionArgument) {
++	called := g.call(g.payload(name, argument))
++	decoded, _ := p15DecodeOptionalGraph(g, called, "has_value", "value")
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(decoded)})
++}
++
++func p15OptionalJoinNestedGraph(g *p15FunctionGraph, variant string) (value, presence string) {
++	outer := g.conditional(4, p15FunctionVariable("flag"), "WFNumberValue", 1)
++	if variant == "nested_menu" {
++		inner := p15OptionalJoinMenuStart(g)
++		p15OptionalJoinMenuCase(g, inner, "A")
++		p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++		p15OptionalJoinMenuCase(g, inner, "B")
++		p15OptionalJoinCarrierGraph(g, true, p15FunctionString(""))
++		p15OptionalJoinMenuEnd(g, inner, false)
++	} else if variant == "nested_if" {
++		inner := g.conditional(4, p15FunctionVariable("flag"), "WFNumberValue", 1)
++		p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++		g.boundary(inner, 1, false)
++		p15OptionalJoinCarrierGraph(g, true, p15FunctionString(""))
++		g.boundary(inner, 2, false)
++	} else {
++		decoded, flag := p15OptionalJoinControlGraph(g, "if", p15FunctionVariable("flag"), p15FunctionString(""), false)
++		p15OptionalJoinDynamicCarrier(g, "_cherri_optional_join_v1", p15FunctionArgument{true, 0, p15FunctionEdge(decoded)}, p15FunctionEdge(flag))
++	}
++	g.boundary(outer, 1, false)
++	p15OptionalJoinCarrierGraph(g, true, p15FunctionString("END"))
++	joined := g.boundary(outer, 2, true)
++	return p15DecodeOptionalGraph(g, joined, "has_value", "value")
++}
++
++func p15OptionalJoinConsumerGraphError(actions []map[string]any, variant string) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	if variant == "annotation" || strings.HasPrefix(variant, "nested_") || variant == "yielded_if" {
++		p15OptionalJoinFlagGraph(g)
++		var presence string
++		if variant == "annotation" {
++			_, presence = p15OptionalJoinControlGraph(g, "if", p15FunctionVariable("flag"), p15FunctionString(""), false)
++		} else {
++			_, presence = p15OptionalJoinNestedGraph(g, variant)
++		}
++		absent := p15OptionalJoinNonePredicateGraph(g, p15FunctionEdge(presence))
++		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(absent)})
++		return g.compare()
++	}
++	if variant == "return" {
++		envelope := g.header("pick")
++		flag := g.numberCast(g.get("arg_0", envelope))
++		value, presence := p15OptionalJoinControlGraph(g, "if", p15FunctionEdge(flag), p15FunctionString(""), false)
++		p15OptionalJoinReturnGraph(g, value, p15FunctionEdge(presence))
++		g.caller()
++		p15OptionalJoinCallResultGraph(g, "pick", p15FunctionNumber("1"))
++		return g.finish()
++	}
++	envelope := g.header("echo")
++	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
++	p15OptionalJoinReturnGraph(g, value, p15FunctionEdge(presence))
++	g.caller()
++	p15OptionalJoinFlagGraph(g)
++	flagName := ""
++	if variant == "reassignment" {
++		zero := g.value("gettext", map[string]any{"WFTextActionText": "0"})
++		if len(g.expected) < len(g.actual) {
++			flagName, _ = p15C01Params(g.actual[len(g.expected)])["WFVariableName"].(string)
++		}
++		if !strings.HasPrefix(flagName, "_cherri_optional_presence_") {
++			g.err = fmt.Errorf("missing independent mutable presence identity")
++		}
++		g.emit("setvariable", map[string]any{"WFVariableName": flagName, "WFInput": p15FunctionEdge(zero)})
++		g.emit("nothing", nil)
++		g.emit("setvariable", map[string]any{"WFVariableName": "value"})
++	}
++	value, presence = p15OptionalJoinControlGraph(g, "if", p15FunctionVariable("flag"), p15FunctionString(""), false)
++	valueEdge, presenceEdge := p15FunctionEdge(value), p15FunctionEdge(presence)
++	if variant == "reassignment" {
++		g.emit("setvariable", map[string]any{"WFVariableName": flagName, "WFInput": presenceEdge})
++		g.emit("setvariable", map[string]any{"WFVariableName": "value", "WFInput": valueEdge})
++		valueEdge, presenceEdge = p15FunctionVariable("value"), p15FunctionVariable(flagName)
++	}
++	carrier := p15OptionalJoinDynamicCarrier(g, "_cherri_optional_argument_v1", p15FunctionArgument{true, 0, valueEdge}, presenceEdge)
++	p15OptionalJoinCallResultGraph(g, "echo", p15FunctionArgument{true, 0, p15FunctionEdge(carrier)})
++	return g.finish()
++}
++
++func TestP15OptionalValueJoinsCompleteConsumerGraphs(t *testing.T) {
++	for _, tc := range p15OptionalJoinConsumerCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			actions := p15CompiledActions(t, tc.source)
++			p15FunctionBoundaryRetain(t, "optional-join-complete-"+tc.name, actions)
++			if err := p15OptionalJoinConsumerGraphError(actions, tc.name); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func TestP15OptionalValueJoinsConsumerGraphRejectsCorruption(t *testing.T) {
++	for _, tc := range p15OptionalJoinConsumerCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			original := p15CompiledActions(t, tc.source)
++			if err := p15OptionalJoinConsumerGraphError(original, tc.name); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"wrong_join_marker", "value_as_flag", "unrelated_input", "lost_operation", "extra_operation"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15ContainerCloneNative(t, original)
++					if err := p15OptionalJoinConsumerGraphError(bad, tc.name); err != nil {
++						t.Fatal("unchanged copy rejected", err)
++					}
++					changed := false
++					for _, action := range bad {
++						p := p15C01Params(action)
++						if fault == "wrong_join_marker" {
++							fields, err := p15ContainerFields(p["WFItems"])
++							if err == nil && fields["_cherri_optional_join_v1"] != nil {
++								fields["_cherri_optional_join_v1"]["WFValue"] = p15FunctionText("forged")
++								changed = true
++								break
++							}
++						} else if p["WFDictionaryKey"] == "has_value" {
++							if fault == "value_as_flag" {
++								p["WFDictionaryKey"] = "value"
++							} else if fault == "unrelated_input" {
++								p["WFInput"] = p15FunctionVariable("not_the_carrier")
++							} else {
++								continue
++							}
++							changed = true
++							break
++						}
++					}
++					if fault == "lost_operation" {
++						bad = bad[1:]
++						changed = true
++					}
++					if fault == "extra_operation" {
++						bad = append(bad, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
++						changed = true
++					}
++					if !changed || p15OptionalJoinConsumerGraphError(bad, tc.name) == nil {
++						t.Fatal("damaged consumer graph accepted or target missing")
++					}
++				})
++			}
++		})
++	}
++}
++
++func p15OptionalJoinEarlyReturnCases() []p15OptionalValueJoinCase {
++	cases := []p15OptionalValueJoinCase{
++		{"if", `if flag {return "EARLY"}else{yield none}`},
++		{"else", `if flag {yield none}else{return "EARLY"}`},
++		{"menu", `menu("Pick"){case "A"{return "EARLY"}case "B"{yield none}}`},
++		{"nested_if", `if flag {if flag{return "EARLY"}else{yield none}}else{yield ""}`},
++		{"nested_menu", `if flag {menu("Pick"){case "A"{return "EARLY"}case "B"{yield none}}}else{yield ""}`},
++	}
++	for i := range cases {
++		cases[i].source = "function pick(flag:Bool)->Text?{\nlet value=" + cases[i].source + "\nreturn value\n}\ngetVariable(pick(true))"
++	}
++	return cases
++}
++
++func p15OptionalJoinEarlyReturnGraphError(actions []map[string]any, variant string) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	envelope := g.header("pick")
++	flag := g.numberCast(g.get("arg_0", envelope))
++	early := func() {
++		carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionString("EARLY"))
++		g.output(carrier)
++	}
++	var joined string
++	if variant == "menu" {
++		group := p15OptionalJoinMenuStart(g)
++		p15OptionalJoinMenuCase(g, group, "A")
++		early()
++		p15OptionalJoinMenuCase(g, group, "B")
++		p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++		joined = p15OptionalJoinMenuEnd(g, group, true)
++	} else {
++		group := g.conditional(4, p15FunctionEdge(flag), "WFNumberValue", 1)
++		switch variant {
++		case "else":
++			p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++		case "nested_if":
++			inner := g.conditional(4, p15FunctionEdge(flag), "WFNumberValue", 1)
++			early()
++			g.boundary(inner, 1, false)
++			p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++			g.boundary(inner, 2, false)
++		case "nested_menu":
++			inner := p15OptionalJoinMenuStart(g)
++			p15OptionalJoinMenuCase(g, inner, "A")
++			early()
++			p15OptionalJoinMenuCase(g, inner, "B")
++			p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++			p15OptionalJoinMenuEnd(g, inner, false)
++		default:
++			early()
++		}
++		g.boundary(group, 1, false)
++		if variant == "else" {
++			early()
++		} else {
++			p15OptionalJoinCarrierGraph(g, strings.HasPrefix(variant, "nested_"), p15FunctionString(""))
++		}
++		joined = g.boundary(group, 2, true)
++	}
++	value, presence := p15DecodeOptionalGraph(g, joined, "has_value", "value")
++	p15OptionalJoinReturnGraph(g, value, p15FunctionEdge(presence))
++	g.caller()
++	p15OptionalJoinCallResultGraph(g, "pick", p15FunctionNumber("1"))
++	return g.finish()
++}
++
++func TestP15OptionalValueJoinsEarlyReturnOwnership(t *testing.T) {
++	for _, tc := range p15OptionalJoinEarlyReturnCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			p15FunctionTypedProgram(t, tc.source, map[string]string{})
++			original := p15CompiledActions(t, tc.source)
++			p15FunctionBoundaryRetain(t, "optional-join-early-"+tc.name, original)
++			if err := p15OptionalJoinEarlyReturnGraphError(original, tc.name); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"return_as_join", "join_as_return", "missing_early_output", "output_after_join"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15ContainerCloneNative(t, original)
++					changed := false
++					firstOutput := -1
++					for i, action := range bad {
++						p := p15C01Params(action)
++						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.output" && firstOutput < 0 {
++							firstOutput = i
++						}
++						fields, err := p15ContainerFields(p["WFItems"])
++						if err != nil {
++							continue
++						}
++						if fault == "return_as_join" && fields["_cherri_optional_result_v1"] != nil {
++							fields["_cherri_optional_result_v1"]["WFKey"] = p15FunctionText("_cherri_optional_join_v1")
++							changed = true
++							break
++						}
++						if fault == "join_as_return" && fields["_cherri_optional_join_v1"] != nil {
++							fields["_cherri_optional_join_v1"]["WFKey"] = p15FunctionText("_cherri_optional_result_v1")
++							changed = true
++							break
++						}
++					}
++					if fault == "missing_early_output" && firstOutput >= 0 {
++						bad = append(bad[:firstOutput], bad[firstOutput+1:]...)
++						changed = true
++					}
++					if fault == "output_after_join" && firstOutput >= 0 && firstOutput+2 < len(bad) {
++						bad[firstOutput], bad[firstOutput+2] = bad[firstOutput+2], bad[firstOutput]
++						changed = true
++					}
++					if !changed || p15OptionalJoinEarlyReturnGraphError(bad, tc.name) == nil {
++						t.Fatal("early return lost function-result ownership")
++					}
++				})
++			}
++		})
++	}
++}
+diff --git a/p15_optional_value_join_graph_test.go b/p15_optional_value_join_graph_test.go
+new file mode 100644
+index 00000000..cb66a109
+--- /dev/null
++++ b/p15_optional_value_join_graph_test.go
+@@ -0,0 +1,216 @@
++package main
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++)
++
++func p15OptionalJoinValue(name string) p15FunctionArgument {
++	switch name {
++	case "empty_text":
++		return p15FunctionString("")
++	case "false":
++		return p15FunctionArgument{true, 4, map[string]any{"WFSerializationType": "WFNumberSubstitutableState", "Value": false}}
++	case "zero":
++		return p15FunctionNumber("0")
++	case "empty_list":
++		return p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": []any{}}}
++	case "empty_map":
++		return p15FunctionArgument{true, 1, map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": []any{}}}}
++	}
++	panic("unmodeled Optional source value: " + name)
++}
++
++func p15OptionalJoinFlagGraph(g *p15FunctionGraph) {
++	value := g.value("number", map[string]any{"WFNumberActionNumber": 1})
++	g.emit("setvariable", map[string]any{"WFVariableName": "flag", "WFInput": p15FunctionEdge(value)})
++}
++
++func p15OptionalJoinMenuStart(g *p15FunctionGraph) string {
++	group := ""
++	if len(g.expected) < len(g.actual) {
++		group, _ = p15C01Params(g.actual[len(g.expected)])["GroupingIdentifier"].(string)
++	}
++	if group == "" || g.groups[group] {
++		g.err = fmt.Errorf("missing or reused menu control identity")
++	}
++	g.groups[group] = true
++	g.emit("choosefrommenu", map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": 0,
++		"WFMenuPrompt": "Pick", "WFMenuItems": []any{
++			map[string]any{"WFItemType": 0, "WFValue": "A"},
++			map[string]any{"WFItemType": 0, "WFValue": "B"},
++		}})
++	return group
++}
++
++func p15OptionalJoinMenuCase(g *p15FunctionGraph, group, name string) {
++	g.emit("choosefrommenu", map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": 1,
++		"WFMenuItemTitle": name, "WFMenuItemAttributedTitle": name})
++}
++
++func p15OptionalJoinMenuEnd(g *p15FunctionGraph, group string, result bool) string {
++	p := map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": 2}
++	if result {
++		return g.value("choosefrommenu", p)
++	}
++	return g.emit("choosefrommenu", p)
++}
++
++func p15OptionalJoinCarrierGraph(g *p15FunctionGraph, present bool, value p15FunctionArgument) string {
++	return p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_join_v1", present, value)
++}
++
++func p15OptionalJoinDynamicCarrier(g *p15FunctionGraph, marker string, value p15FunctionArgument, presence any) string {
++	group := g.conditional(4, presence, "WFConditionalActionString", "1")
++	p15OptionalCarrierGraph(g, "has_value", "value", marker, true, value)
++	g.boundary(group, 1, false)
++	p15OptionalCarrierGraph(g, "has_value", "value", marker, false, p15FunctionArgument{})
++	return g.boundary(group, 2, true)
++}
++
++// The control source and branch values specify every operation. Native UUIDs
++// are bound only as alpha identities at the required producer positions.
++func p15OptionalJoinControlGraph(g *p15FunctionGraph, control string, input any, value p15FunctionArgument, presentFirst bool) (decoded, presence string) {
++	var joined string
++	if control == "if" {
++		group := g.conditional(4, input, "WFNumberValue", 1)
++		p15OptionalJoinCarrierGraph(g, presentFirst, value)
++		g.boundary(group, 1, false)
++		p15OptionalJoinCarrierGraph(g, !presentFirst, value)
++		joined = g.boundary(group, 2, true)
++	} else {
++		group := p15OptionalJoinMenuStart(g)
++		p15OptionalJoinMenuCase(g, group, "A")
++		p15OptionalJoinCarrierGraph(g, presentFirst, value)
++		p15OptionalJoinMenuCase(g, group, "B")
++		p15OptionalJoinCarrierGraph(g, !presentFirst, value)
++		joined = p15OptionalJoinMenuEnd(g, group, true)
++	}
++	return p15DecodeOptionalGraph(g, joined, "has_value", "value")
++}
++
++func p15OptionalJoinNonePredicateGraph(g *p15FunctionGraph, presence any) string {
++	group := g.conditional(4, presence, "WFConditionalActionString", "0")
++	g.emit("number", map[string]any{"WFNumberActionNumber": 1})
++	g.boundary(group, 1, false)
++	g.emit("number", map[string]any{"WFNumberActionNumber": 0})
++	return g.boundary(group, 2, true)
++}
++
++func p15OptionalJoinCompleteGraphError(actions []map[string]any, tc p15OptionalValueJoinCase) error {
++	parts := strings.Split(tc.name, "/")
++	if len(parts) != 3 {
++		return fmt.Errorf("unknown join source case %q", tc.name)
++	}
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	p15OptionalJoinFlagGraph(g)
++	value, presence := p15OptionalJoinControlGraph(g, parts[0], p15FunctionVariable("flag"), p15OptionalJoinValue(parts[1]), parts[2] == "present_first_true")
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(value)})
++	absent := p15OptionalJoinNonePredicateGraph(g, p15FunctionEdge(presence))
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(absent)})
++	return g.compare()
++}
++
++func TestP15OptionalValueJoinsCompleteNativeGraphs(t *testing.T) {
++	for _, tc := range p15OptionalValueJoinCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			actions := p15CompiledActions(t, tc.source)
++			if err := p15OptionalJoinCompleteGraphError(actions, tc); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func TestP15OptionalValueJoinsGraphRejectsCorruption(t *testing.T) {
++	for _, tc := range p15OptionalValueJoinCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			original := p15CompiledActions(t, tc.source)
++			if err := p15OptionalJoinCompleteGraphError(original, tc); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"swap_branch_values", "wrong_flag", "wrong_flag_type", "wrong_present_type", "wrong_present_value",
++				"branch_instead_of_join", "value_instead_of_presence", "presence_instead_of_value", "truthiness_decode", "truthiness_predicate",
++				"missing_clear", "wrong_end", "missing_operation", "extra_operation", "forward_value_edge", "duplicate_producer"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15ContainerCloneNative(t, original)
++					if err := p15OptionalJoinCompleteGraphError(bad, tc); err != nil {
++						t.Fatal("unchanged copy rejected", err)
++					}
++					dicts := []int{}
++					decoder, valueRead, clear := -1, -1, -1
++					var presentFields map[string]map[string]any
++					for index, action := range bad {
++						p := p15C01Params(action)
++						switch action["WFWorkflowActionIdentifier"] {
++						case "is.workflow.actions.dictionary":
++							fields, err := p15ContainerFields(p["WFItems"])
++							if err == nil && fields["_cherri_optional_join_v1"] != nil {
++								dicts = append(dicts, index)
++								if fields["value"] != nil {
++									presentFields = fields
++								}
++							}
++						case "is.workflow.actions.getvalueforkey":
++							if p["WFDictionaryKey"] == "has_value" {
++								decoder = index
++							} else if p["WFDictionaryKey"] == "value" {
++								valueRead = index
++							}
++						case "is.workflow.actions.nothing":
++							clear = index
++						}
++					}
++					if len(dicts) != 2 || presentFields == nil || decoder < 0 || valueRead < 0 || clear < 0 {
++						t.Fatal("exact mutation targets absent")
++					}
++					predicate := len(bad) - 6
++					switch fault {
++					case "swap_branch_values":
++						left, right := p15C01Params(bad[dicts[0]]), p15C01Params(bad[dicts[1]])
++						left["WFItems"], right["WFItems"] = right["WFItems"], left["WFItems"]
++						// The initial marker-only boundary cannot detect this. The
++						// complete source-owned branch oracle must reject it.
++						if err := p15OptionalJoinPresenceBoundary(bad); err != nil {
++							t.Fatal("branch-swap control should retain both marker flags", err)
++						}
++					case "wrong_flag":
++						presentFields["has_value"]["WFValue"] = p15FunctionText("0")
++					case "wrong_flag_type":
++						presentFields["has_value"]["WFItemType"] = uint64(4)
++					case "wrong_present_type":
++						presentFields["value"]["WFItemType"] = uint64(77)
++					case "wrong_present_value":
++						presentFields["value"]["WFValue"] = p15FunctionText("CORRUPTED")
++					case "branch_instead_of_join":
++						p15C01Params(bad[decoder])["WFInput"] = p15FunctionEdge(p15C01Params(bad[dicts[0]])["UUID"].(string))
++					case "value_instead_of_presence":
++						p15C01Params(bad[decoder])["WFDictionaryKey"] = "value"
++					case "presence_instead_of_value":
++						p15C01Params(bad[valueRead])["WFDictionaryKey"] = "has_value"
++					case "truthiness_decode":
++						p15C01Params(bad[decoder+1])["WFCondition"] = uint64(100)
++					case "truthiness_predicate":
++						p15C01Params(bad[predicate])["WFCondition"] = uint64(100)
++					case "missing_clear":
++						bad[clear]["WFWorkflowActionIdentifier"] = "is.workflow.actions.comment"
++					case "wrong_end":
++						p15C01Params(bad[decoder-1])["GroupingIdentifier"] = "not-the-source-control"
++					case "missing_operation":
++						bad = append(bad[:clear], bad[clear+1:]...)
++					case "extra_operation":
++						bad = append(bad, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
++					case "forward_value_edge":
++						p15C01Params(bad[valueRead])["WFInput"] = p15FunctionEdge(p15C01Params(bad[len(bad)-2])["UUID"].(string))
++					case "duplicate_producer":
++						p15C01Params(bad[dicts[1]])["UUID"] = p15C01Params(bad[dicts[0]])["UUID"]
++					}
++					if p15OptionalJoinCompleteGraphError(bad, tc) == nil {
++						t.Fatal("damaged complete join graph accepted")
++					}
++				})
++			}
++		})
++	}
++}
+diff --git a/p15_optional_value_join_semantics_test.go b/p15_optional_value_join_semantics_test.go
+new file mode 100644
+index 00000000..a8030896
+--- /dev/null
++++ b/p15_optional_value_join_semantics_test.go
+@@ -0,0 +1,192 @@
++package main
++
++import (
++	"strings"
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/schema"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++func TestP15OptionalValueJoinsRefineOnlySourceOwnedAbsence(t *testing.T) {
++	for _, tc := range []struct {
++		name, setup, expression string
++		want                    types.Type
++	}{
++		{"literal_text", "", `if true{yield none}else{yield ""}`, types.OptionalType{Inner: types.Text}},
++		{"literal_zero", "", `if true{yield none}else{yield 0}`, types.OptionalType{Inner: types.Number}},
++		{"literal_false", "", `if true{yield none}else{yield false}`, types.OptionalType{Inner: types.Bool}},
++		{"known_none_alias", "let missing=none\n", `if true{yield missing}else{yield ""}`, types.OptionalType{Inner: types.Text}},
++		{"all_absent", "", `if true{yield none}else{yield none}`, types.OptionalType{Inner: types.Unknown}},
++		{"all_present", "", `if true{yield ""}else{yield "VALUE"}`, types.Text},
++		{"menu", "", `menu("Pick"){case "A"{yield ""}case "B"{yield none}}`, types.OptionalType{Inner: types.Text}},
++		{"nested", "", `if true{if true{yield none}else{yield ""}}else{yield "VALUE"}`, types.OptionalType{Inner: types.Text}},
++		{"union", "", `if true{yield none}else{if true{yield ""}else{yield 0}}`, types.OptionalType{Inner: types.NewUnion(types.Text, types.Number)}},
++		{"opaque_not_absent", "", `if true{yield native.action("is.workflow.actions.getclipboard")}else{yield none}`, types.OptionalType{Inner: types.AnyContent}},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			source := tc.setup + "let candidate=" + tc.expression + "\ngetVariable(candidate)"
++			program, analyzer := p15F03Analysis(t, source)
++			if errors := p15F03Errors(analyzer); len(errors) != 0 {
++				t.Fatal(errors)
++			}
++			actual := analyzer.ExprTypes()[p15BindingValue(t, program, "candidate")]
++			if actual == nil || !actual.Equals(tc.want) || types.MayBeAbsent(actual) != types.MayBeAbsent(tc.want) {
++				t.Fatalf("joined type erased absence or invented a present inner value: got %v want %v", actual, tc.want)
++			}
++		})
++	}
++}
++
++func TestP15OptionalValueJoinsAnalysisReuse(t *testing.T) {
++	analyzer := analysis.NewAnalyzer(schema.DefaultRegistry())
++	for _, opaque := range []bool{false, true, false} {
++		value := `""`
++		if opaque {
++			value = `native.action("is.workflow.actions.getclipboard")`
++		}
++		source := "function echo(value:AnyContent?)->AnyContent?{return value}\ngetVariable(echo(if true{yield none}else{yield " + value + "}))"
++		program, parseErrors := p15ParseProgram(source)
++		if len(parseErrors) != 0 {
++			t.Fatal(parseErrors)
++		}
++		analyzer.Analyze(program)
++		errors := p15F03Errors(analyzer)
++		if !opaque && len(errors) != 0 {
++			t.Fatal("valid join retained stale absent/presence facts", errors)
++		}
++		if opaque && (len(errors) != 1 || errors[0].Code != analysis.CodeTargetValueShape || !strings.Contains(errors[0].Message, "compiler-owned")) {
++			t.Fatal("opaque native branch inherited an earlier source-owned presence fact", errors)
++		}
++	}
++}
++
++func p15OptionalJoinEffectsSource(control string) string {
++	expression := `if flag{text("LEFT");yield none}else{text("RIGHT");yield text("")}`
++	if control == "menu" {
++		expression = `menu("Pick"){case "A"{text("LEFT");yield none}case "B"{text("RIGHT");yield text("")}}`
++	}
++	return "var flag:Bool=true\nlet candidate=" + expression + "\ngetVariable(candidate==none)"
++}
++
++func p15OptionalJoinEffectsGraphError(actions []map[string]any, control string) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	p15OptionalJoinFlagGraph(g)
++	var group string
++	if control == "menu" {
++		group = p15OptionalJoinMenuStart(g)
++		p15OptionalJoinMenuCase(g, group, "A")
++	} else {
++		group = g.conditional(4, p15FunctionVariable("flag"), "WFNumberValue", 1)
++	}
++	g.emit("gettext", map[string]any{"WFTextActionText": "LEFT"})
++	p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++	if control == "menu" {
++		p15OptionalJoinMenuCase(g, group, "B")
++	} else {
++		g.boundary(group, 1, false)
++	}
++	g.emit("gettext", map[string]any{"WFTextActionText": "RIGHT"})
++	value := g.value("gettext", map[string]any{"WFTextActionText": ""})
++	p15OptionalJoinCarrierGraph(g, true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
++	var joined string
++	if control == "menu" {
++		joined = p15OptionalJoinMenuEnd(g, group, true)
++	} else {
++		joined = g.boundary(group, 2, true)
++	}
++	_, presence := p15DecodeOptionalGraph(g, joined, "has_value", "value")
++	absent := p15OptionalJoinNonePredicateGraph(g, p15FunctionEdge(presence))
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(absent)})
++	return g.compare()
++}
++
++func p15OptionalJoinArgumentsSource(reverse bool) string {
++	first := `if flag{text("FIRST");yield none}else{yield ""}`
++	arguments := first + `,later:text("SECOND")`
++	if reverse {
++		arguments = `later:text("SECOND"),value:` + first
++	}
++	return "function pick(value:Text?,later:Text)->Text?{return value}\nvar flag:Bool=true\ngetVariable(pick(" + arguments + "))"
++}
++
++func p15OptionalJoinArgumentsGraphError(actions []map[string]any, reverse bool) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	envelope := g.header("pick")
++	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
++	g.get("arg_1", envelope)
++	p15OptionalJoinReturnGraph(g, value, p15FunctionEdge(presence))
++	g.caller()
++	p15OptionalJoinFlagGraph(g)
++	later := ""
++	if reverse {
++		later = g.value("gettext", map[string]any{"WFTextActionText": "SECOND"})
++	}
++	group := g.conditional(4, p15FunctionVariable("flag"), "WFNumberValue", 1)
++	g.emit("gettext", map[string]any{"WFTextActionText": "FIRST"})
++	p15OptionalJoinCarrierGraph(g, false, p15FunctionArgument{})
++	g.boundary(group, 1, false)
++	p15OptionalJoinCarrierGraph(g, true, p15FunctionString(""))
++	joined := g.boundary(group, 2, true)
++	value, presence = p15DecodeOptionalGraph(g, joined, "has_value", "value")
++	if !reverse {
++		later = g.value("gettext", map[string]any{"WFTextActionText": "SECOND"})
++	}
++	carrier := p15OptionalJoinDynamicCarrier(g, "_cherri_optional_argument_v1", p15FunctionArgument{true, 0, p15FunctionEdge(value)}, p15FunctionEdge(presence))
++	result := g.call(g.payload("pick", p15FunctionArgument{true, 0, p15FunctionEdge(carrier)}, p15FunctionArgument{true, 0, p15FunctionEdge(later)}))
++	decoded, _ := p15DecodeOptionalGraph(g, result, "has_value", "value")
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(decoded)})
++	return g.finish()
++}
++
++func TestP15OptionalValueJoinsPreserveAuthoredEffectsAndOrder(t *testing.T) {
++	cases := []struct {
++		name, source string
++		check        func([]map[string]any) error
++	}{
++		{"if_branch_effects", p15OptionalJoinEffectsSource("if"), func(a []map[string]any) error { return p15OptionalJoinEffectsGraphError(a, "if") }},
++		{"menu_branch_effects", p15OptionalJoinEffectsSource("menu"), func(a []map[string]any) error { return p15OptionalJoinEffectsGraphError(a, "menu") }},
++		{"argument_order", p15OptionalJoinArgumentsSource(false), func(a []map[string]any) error { return p15OptionalJoinArgumentsGraphError(a, false) }},
++		{"named_written_order", p15OptionalJoinArgumentsSource(true), func(a []map[string]any) error { return p15OptionalJoinArgumentsGraphError(a, true) }},
++	}
++	for _, tc := range cases {
++		t.Run(tc.name, func(t *testing.T) {
++			p15FunctionTypedProgram(t, tc.source, map[string]string{})
++			original := p15CompiledActions(t, tc.source)
++			p15FunctionBoundaryRetain(t, "optional-join-effects-"+tc.name, original)
++			if err := tc.check(original); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"move_effect", "duplicate_effect", "drop_effect", "wrong_effect_value"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15ContainerCloneNative(t, original)
++					target := -1
++					for index, action := range bad {
++						p := p15C01Params(action)
++						if p["WFTextActionText"] == "LEFT" || p["WFTextActionText"] == "FIRST" {
++							target = index
++							break
++						}
++					}
++					if target < 0 || target+1 >= len(bad) {
++						t.Fatal("effect mutation target absent")
++					}
++					switch fault {
++					case "move_effect":
++						bad[target], bad[target+1] = bad[target+1], bad[target]
++					case "duplicate_effect":
++						bad = append(bad[:target], append([]map[string]any{bad[target]}, bad[target:]...)...)
++					case "drop_effect":
++						bad = append(bad[:target], bad[target+1:]...)
++					case "wrong_effect_value":
++						p15C01Params(bad[target])["WFTextActionText"] = "WRONG"
++					}
++					if tc.check(bad) == nil {
++						t.Fatal("authored effect loss, duplication or reorder was accepted")
++					}
++				})
++			}
++		})
++	}
++}
+diff --git a/p15_value_flow_test.go b/p15_value_flow_test.go
+index b74284d6..03ee611b 100644
+--- a/p15_value_flow_test.go
++++ b/p15_value_flow_test.go
+@@ -612,10 +612,10 @@ func TestP15F03NoneYieldClearsPrecedingOutput(t *testing.T) {
+ 			if errors := p15F03Errors(analyzer); len(errors) != 0 {
+ 				t.Fatal(errors)
+ 			}
+-			// Authored None retains absence even when its inner value is unknown.
+-			// NewOptional(Unknown) deliberately normalizes to Unknown and would
+-			// erase the very distinction this branch-result test must preserve.
+-			want := types.NewUnion(types.OptionalType{Inner: types.Unknown}, types.Text)
++			// The source-owned None branch supplies absence, not an unknown
++			// present value. The only normal present branch supplies Text.
++			// The Optional wrapper must remain; native clear checks below are unchanged.
++			want := types.OptionalType{Inner: types.Text}
+ 			actual := analyzer.ExprTypes()[p15BindingValue(t, program, "value")]
+ 			if actual == nil || !actual.Equals(want) || !types.MayBeAbsent(actual) {
+ 				t.Fatalf("None became Void/present Text: got %v want %v", actual, want)

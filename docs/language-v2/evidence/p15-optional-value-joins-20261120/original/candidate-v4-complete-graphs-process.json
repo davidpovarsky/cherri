@@ -1,0 +1,41 @@
+{
+  "source_parent": "d2bd7958f89d36fb5ab6f75a4a94f0a5817d18ad",
+  "source_clean": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15OptionalValueJoins|TestP15F03NoneYieldClearsPrecedingOutput$)",
+    "."
+  ],
+  "started_utc": "2026-11-20T08:28:48.742366+00:00",
+  "finished_utc": "2026-11-20T08:29:04.621875+00:00",
+  "elapsed_seconds": 15.860000000044238,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "30dc79cda040a2e01be7a73339d30f50e8c6adc84d1420e84b412b8dc2c3adf1",
+  "raw_bytes": 431424,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "patch_sha256": "e8b8e0fd6e9fdd8d85cc32e405bf7fe2751dce4655549879250cad4643937512",
+  "pass": 399,
+  "fail": [],
+  "skip": [],
+  "source_files": {
+    "internal/language/analysis/analyzer.go": "3f98cb3d6f5d32b7ac9b5c4f72fe89842d67fc5b977e8fbe11a37c51ac1d5d18",
+    "internal/language/analysis/control_results.go": "20f106e6d82f3e115857d1fd93f26a1c8ab1046c50fc396e54f8f2bb127c9035",
+    "internal/language/analysis/optional_presence.go": "d9542c9b3146a5b0f53023c761ed9f5069b57df1936a8ab78b5a671e7faad4e5",
+    "internal/language/analysis/control_presence.go": "7dfdd9791d0775c2e3c3652cbc2773c9e9e9eb402d6d5725186a14c0bdcb4376",
+    "internal/language/lower/lower.go": "038e8e48f08b7dbcacb6f57e63b0a7001feb5b22208607effec49387ae0ce811",
+    "internal/language/lower/optional_presence_demand.go": "eac1cdb39a2b61f16a74c842b0c6e7991ba925a8accf17314798f9492422a8cf",
+    "internal/language/lower/scoped_blocks.go": "af88f52f8739be3123e51a63f734b481c9af2c887211b459e0025f376993fc56",
+    "internal/language/lower/function_optional_presence.go": "279c6bd790df108070412d9ab94c4c32edbb9ddf55b2b617490c2160e63808d1",
+    "internal/language/lower/optional_control_presence.go": "d4ed2f967ff57356d35b74d69377a356fe6962a9a15b051913da4cad2449c30f",
+    "internal/language/backend/contracts.go": "a8d8de789d262fc6abb8fea2b5b8760c31a53e4334a5f16273d383957b61fa99",
+    "p15_optional_value_join_graph_test.go": "9a7298b4dddf9bab83a7c996b85b2f3d1c60b51e3d88cbd55c533ee78dde8483",
+    "p15_function_native_oracle_test.go": "934e37220dc88e3cf2eb3c7d1f6a40b59bbfabad9246c6af1ec15e8db0fd88eb",
+    "p15_value_flow_test.go": "0e7f46af79b120a46c4e24cf149fd501664978c53190b145d8912f94dcffd88e"
+  }
+}
