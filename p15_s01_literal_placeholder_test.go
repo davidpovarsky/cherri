@@ -236,3 +236,50 @@ func TestP15S01LiteralCarrierRejectsCausalMutations(t *testing.T) {
 		})
 	}
 }
+
+func TestP15S01LiteralCarriersPreserveImplicitInputOrder(t *testing.T) {
+	for _, route := range []string{"argument", "immutable", "mutable", "assignment", "list", "dictionary"} {
+		t.Run(route, func(t *testing.T) {
+			// Native Get Text intentionally has no WFInput. The previous real
+			// action is its implicit input; a pure literal must not replace it.
+			value := "f\"\\uFFFC{native.action(\\\"is.workflow.actions.detect.text\\\", {})}\\uFFFC{native.action(\\\"is.workflow.actions.detect.text\\\", {})}\""
+			prefix := "let seed=text(\"S01_IMPLICIT_SEED\")\n"
+			var source string
+			switch route {
+			case "argument":
+				source = prefix + "text(" + value + ")\n"
+			case "immutable":
+				source = prefix + "let message=" + value + "\ngetVariable(message)\n"
+			case "mutable":
+				source = prefix + "var message=" + value + "\ngetVariable(message)\n"
+			case "assignment":
+				source = "var message=\"old\"\n" + prefix + "message=" + value + "\ngetVariable(message)\n"
+			case "list":
+				source = prefix + "let message=[" + value + "]\ngetVariable(message)\n"
+			case "dictionary":
+				source = prefix + "let message={\"payload\":" + value + "}\ngetVariable(message)\n"
+			}
+			actions := p15CompiledActions(t, source)
+			seed, calls := -1, []int{}
+			for index, action := range actions {
+				if p15Param(action)["WFTextActionText"] == "S01_IMPLICIT_SEED" {
+					seed = index
+				}
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.detect.text" {
+					if _, exists := p15Param(action)["WFInput"]; exists {
+						t.Fatal("probe no longer exercises implicit input")
+					}
+					calls = append(calls, index)
+				}
+			}
+			if seed < 0 || len(calls) != 2 || calls[0] != seed+1 || calls[1] != calls[0]+1 {
+				t.Fatalf("literal helper changed actual implicit-input predecessors: seed=%d calls=%v", seed, calls)
+			}
+			for _, action := range actions {
+				if err := p15S01CompletePlaceholderCoverage(action); err != nil {
+					t.Fatal(err)
+				}
+			}
+		})
+	}
+}
