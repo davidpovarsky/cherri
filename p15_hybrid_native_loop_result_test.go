@@ -38,9 +38,13 @@ func p15NativeLoopResultFixture(t *testing.T, kind, body string, outputName bool
 	}
 	end, ok := endAction["WFWorkflowActionParameters"].(map[string]any)
 	startAction, startOK := actions[0].(map[string]any)
+	if !ok || !startOK {
+		t.Fatal("native outer loop endpoints lost their parameter maps")
+	}
 	start := p15Param(startAction)
-	if !ok || !startOK || p15Int(end["WFControlFlowMode"]) != 2 ||
-		end["GroupingIdentifier"] == "" || end["GroupingIdentifier"] != start["GroupingIdentifier"] ||
+	group, groupOK := end["GroupingIdentifier"].(string)
+	if !groupOK || group == "" || group != start["GroupingIdentifier"] ||
+		p15Int(start["WFControlFlowMode"]) != 0 || p15Int(end["WFControlFlowMode"]) != 2 ||
 		endAction["WFWorkflowActionIdentifier"] != startAction["WFWorkflowActionIdentifier"] {
 		t.Fatal("native outer loop closure identity changed")
 	}
