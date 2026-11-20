@@ -12,8 +12,10 @@ import (
 )
 
 var (
-	writeFlag = flag.Bool("write", false, "Write migrated content back to input file in-place")
-	checkFlag = flag.Bool("check", false, "Verify whether input file can be cleanly migrated and parsed")
+	writeFlag        = flag.Bool("write", false, "Write migrated content back to input file in-place")
+	checkFlag        = flag.Bool("check", false, "Verify whether input file can be cleanly migrated and parsed")
+	capabilitiesFlag = flag.Bool("capabilities-json", false, "Print compatibility and exact clean build identity as JSON")
+	inspectBuildFlag = flag.Bool("inspect-build-json", false, "Read a Cherri binary role, clean source revision and SHA-256 without executing it")
 )
 
 func atomicWriteFile(filePath string, data []byte, perm os.FileMode) error {
@@ -53,12 +55,32 @@ func atomicWriteFile(filePath string, data []byte, perm os.FileMode) error {
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintln(flag.CommandLine.Output(), "Usage: cherri-migrate <file.cherri> [--write] [--check]")
+		fmt.Fprintln(flag.CommandLine.Output(), "       cherri-migrate --capabilities-json")
+		fmt.Fprintln(flag.CommandLine.Output(), "       cherri-migrate --inspect-build-json <binary>")
 		flag.PrintDefaults()
 	}
 	if err := flag.CommandLine.Parse(migrationFlagArguments(os.Args[1:])); err != nil {
 		os.Exit(2)
 	}
 	args := flag.Args()
+	if *capabilitiesFlag || *inspectBuildFlag {
+		if *writeFlag || *checkFlag || (*capabilitiesFlag && *inspectBuildFlag) || (*capabilitiesFlag && len(args) != 0) || (*inspectBuildFlag && len(args) != 1) {
+			fmt.Fprintln(os.Stderr, "Identity modes require their documented arguments and cannot be combined with migration modes")
+			flag.Usage()
+			os.Exit(2)
+		}
+		var err error
+		if *capabilitiesFlag {
+			err = emitMigrationCapabilities(os.Stdout)
+		} else {
+			err = emitInspectedBuildIdentity(os.Stdout, args[0])
+		}
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
+	}
 	if len(args) != 1 {
 		fmt.Fprintln(os.Stderr, "cherri-migrate requires exactly one input file")
 		flag.Usage()
