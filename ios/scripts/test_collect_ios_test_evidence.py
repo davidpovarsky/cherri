@@ -295,6 +295,61 @@ class IOSTestEvidenceTests(unittest.TestCase):
             self.assertEqual(diagnostic["inputReceipts"][0]["actualSource"], "[REDACTED_UNEXPECTED_CONTENT]")
             self.assertNotIn(source, "".join(outputs.values()))
 
+    def test_paste_lifecycle_receipts_preserve_real_failure_without_promoting_evidence(self):
+        method = "testSingleCharacterPasteDoesNotConsumeGeneratedText"
+        target = "CherriEditorInputTests/" + method
+        start = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' started.\n"
+        finish = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' failed (3.123 seconds).\n"
+        def receipt(**updates):
+            data = dict(testName=target, fixtureId="single-character-paste", stage="after-paste-wait",
+                        actualSource='text("x"))', pasteElapsedMilliseconds=3123,
+                        viewIsFirstResponder=True, windowAttached=True, windowIsKey=True)
+            data.update(updates)
+            return self.input_receipt(**data)
+        diagnostic, records, outputs = self.collect(start + receipt() + "\n" + finish, 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+        row = diagnostic["inputReceipts"][0]
+        self.assertEqual(row["actualSource"], 'text("x"))')
+        self.assertEqual(row["pasteElapsedMilliseconds"], 3123)
+        for changes in ({"testName": "CherriEditorInputTests/testOther"}, {"fixtureId": "nested-call"},
+                        {"stage": "fixture-complete"}, {"pasteElapsedMilliseconds": True},
+                        {"pasteElapsedMilliseconds": -1}, {"pasteElapsedMilliseconds": 120001},
+                        {"windowIsKey": "PRIVATE"}, {"windowAttached": None},
+                        {"isolatedSyntheticEditor": False}):
+            with self.subTest(changes=changes):
+                d, _, _ = self.collect(start + receipt(**changes) + "\n" + finish, 65)
+                self.assertEqual(d["inputReceipts"], [])
+        d, _, outputs = self.collect(start + receipt(actualSource="a private document") + "\n" + finish, 65)
+        self.assertEqual(d["inputReceipts"][0]["actualSource"], "[REDACTED_UNEXPECTED_CONTENT]")
+        self.assertNotIn("a private document", "".join(outputs.values()))
+        self.assertEqual(self.collect(receipt(), 65)[0]["inputReceipts"], [])
+
+    def test_startup_deadline_receipt_is_bounded_and_cannot_authorize_source(self):
+        method = "testE01CompletionDisplayAndInsertionUI"
+        target = "CherriEditorUITests/" + method
+        base = dict(schemaVersion="1.0", testName=target, stage="editor-wait",
+                    waitCompleted=False, windowExists=True, appRunningForeground=True,
+                    createDocumentExists=False, createDocumentHittable=False,
+                    editorExists=True, editorHittable=True,
+                    elapsedMilliseconds=29000, budgetMilliseconds=28000,
+                    documentCreationIssued=True, actualSource="PRIVATE_RESTORED_SOURCE",
+                    syntheticSourceResetVerified=True)
+        def collect(changes):
+            row = {**base, **changes}
+            return self.collect(self.block(method=method, status="failed",
+                body=collector.STARTUP_PREFIX + json.dumps(row)), 65)
+        diagnostic, records, outputs = collect({})
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["startupReceipts"][0]["elapsedMilliseconds"], 29000)
+        self.assertFalse(diagnostic["startupReceipts"][0]["waitCompleted"])
+        self.assertNotIn("PRIVATE_RESTORED_SOURCE", "".join(outputs.values()))
+        for changes in ({"elapsedMilliseconds": True}, {"elapsedMilliseconds": -1},
+                        {"elapsedMilliseconds": 120001}, {"budgetMilliseconds": 29000},
+                        {"budgetMilliseconds": 28000.0}, {"documentCreationIssued": "true"}):
+            with self.subTest(changes=changes):
+                self.assertEqual(collect(changes)[0]["startupReceipts"], [])
+
     def test_candidate_identifiers_require_exact_synthetic_prefix_and_safe_shape(self):
         identifiers = ["completionItem_show", "suggestionItem_show", "private/path", "completionItem_" + "x" * 100]
         receipt = self.receipt(actualSource="sho", completionCandidateIdentifiers=identifiers)

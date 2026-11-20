@@ -36,16 +36,26 @@ final class CherriEditorInputTests: XCTestCase {
     }
 
     private func recordInputReceipt(_ view: CodeView, fixture: String, stage: String,
-                                    keyIndex: Int, key: String = "") {
+                                    keyIndex: Int, key: String = "", pasteElapsedMilliseconds: Int? = nil) {
         let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
         let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
-        let receipt: [String: Any] = [
+        var receipt: [String: Any] = [
             "schemaVersion": "1.0", "testName": "CherriEditorInputTests/\(method)",
             "isolatedSyntheticEditor": true, "fixtureId": fixture, "stage": stage,
             "keyIndex": keyIndex, "inputUTF16": Array(key.utf16).map(Int.init),
             "actualSource": view.text ?? "", "actualUTF16Length": ((view.text ?? "") as NSString).length,
             "selectionLocation": view.selectedRange.location, "selectionLength": view.selectedRange.length,
         ]
+        if fixture == "single-character-paste", let elapsed = pasteElapsedMilliseconds {
+            let allowed = ["", "text(\"x\")", "text(\"x\"))", "text(\"x\")))", "text(\"x\"))))"]
+            if !allowed.contains(view.text ?? "") {
+                receipt["actualSource"] = "[REDACTED_UNEXPECTED_CONTENT]"
+            }
+            receipt["pasteElapsedMilliseconds"] = min(120_000, max(0, elapsed))
+            receipt["viewIsFirstResponder"] = view.isFirstResponder
+            receipt["windowAttached"] = view.window != nil
+            receipt["windowIsKey"] = view.window?.isKeyWindow == true
+        }
         if let bytes = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
            let json = String(data: bytes, encoding: .utf8) {
             print("[CHERRI_INPUT_RECEIPT] \(json)")
@@ -144,9 +154,23 @@ final class CherriEditorInputTests: XCTestCase {
         type("text(\"x\"", into: view)
         // This is the disposable simulator's own synthetic clipboard content.
         UIPasteboard.general.string = ")"
+        guard UIPasteboard.general.string == ")" else {
+            XCTFail("The isolated synthetic pasteboard write must be retained before paste")
+            return
+        }
         let pasted = expectation(for: NSPredicate(format: "text == %@", "text(\"x\"))"), evaluatedWith: view)
+        let startedAt = ProcessInfo.processInfo.systemUptime
+        func elapsedMilliseconds() -> Int {
+            Int(min(120_000, max(0, ProcessInfo.processInfo.systemUptime - startedAt) * 1_000))
+        }
+        recordInputReceipt(view, fixture: "single-character-paste", stage: "before-paste",
+                           keyIndex: 0, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds())
         view.paste(nil)
+        recordInputReceipt(view, fixture: "single-character-paste", stage: "after-paste-call",
+                           keyIndex: 1, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds())
         await fulfillment(of: [pasted], timeout: 3)
+        recordInputReceipt(view, fixture: "single-character-paste", stage: "after-paste-wait",
+                           keyIndex: 2, key: ")", pasteElapsedMilliseconds: elapsedMilliseconds())
         XCTAssertEqual(view.text, "text(\"x\"))")
     }
 }

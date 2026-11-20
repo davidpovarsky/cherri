@@ -90,25 +90,46 @@ final class CherriEditorUITests: XCTestCase {
         }
     }
 
-    /// Startup receipts contain only fixed control state, including before a reset.
-    /// They never inspect a restored document's source, title, or accessibility tree.
-    private func recordStartupReceipt(stage: String, waitCompleted: Bool) {
-        guard let app else { return }
+    /// Each fixed control is queried once. The receipt reuses these observations,
+    /// avoiding additional accessibility queries after a readiness wait expires.
+    private func observeStartupControls() -> CherriEditorStartupObservation {
+        let foreground = app.state == .runningForeground
+        guard foreground else {
+            return CherriEditorStartupObservation(
+                windowExists: false, appRunningForeground: false,
+                createDocumentExists: false, createDocumentHittable: false,
+                editorExists: false, editorHittable: false)
+        }
+        let windowExists = app.windows.firstMatch.exists
         let editor = app.textViews["cherriCodeEditor"]
+        let editorExists = editor.exists
+        let editorHittable = editorExists && editor.isHittable
         let createDoc = app.buttons["Create Document"]
-        let nameSeparators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
-        let method = name.components(separatedBy: nameSeparators).first { $0.hasPrefix("test") } ?? "unknown"
+        let createExists = createDoc.exists
+        let createHittable = createExists && createDoc.isHittable
+        return CherriEditorStartupObservation(
+            windowExists: windowExists, appRunningForeground: app.state == .runningForeground,
+            createDocumentExists: createExists, createDocumentHittable: createHittable,
+            editorExists: editorExists, editorHittable: editorHittable)
+    }
+
+    /// No source, document title, AX tree or screenshot is read before an empty reset.
+    private func recordStartupReceipt(stage: String, waitCompleted: Bool,
+                                      state: CherriEditorStartupObservation,
+                                      deadline: CherriEditorStartupDeadline) {
+        let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
         let receipt: [String: Any] = [
-            "schemaVersion": "1.0",
-            "testName": "CherriEditorUITests/\(method)",
-            "stage": stage,
-            "waitCompleted": waitCompleted,
-            "windowExists": app.windows.firstMatch.exists,
-            "appRunningForeground": app.state == .runningForeground,
-            "createDocumentExists": createDoc.exists,
-            "createDocumentHittable": createDoc.exists && createDoc.isHittable,
-            "editorExists": editor.exists,
-            "editorHittable": editor.exists && editor.isHittable,
+            "schemaVersion": "1.0", "testName": "CherriEditorUITests/\(method)",
+            "stage": stage, "waitCompleted": waitCompleted,
+            "windowExists": state.windowExists,
+            "appRunningForeground": state.appRunningForeground,
+            "createDocumentExists": state.createDocumentExists,
+            "createDocumentHittable": state.createDocumentHittable,
+            "editorExists": state.editorExists, "editorHittable": state.editorHittable,
+            "elapsedMilliseconds": deadline.elapsedMilliseconds,
+            "budgetMilliseconds": Int(CherriEditorStartupDeadline.budgetSeconds * 1_000),
+            "documentCreationIssued": deadline.documentCreationIssued,
         ]
         if let bytes = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
            let json = String(data: bytes, encoding: .utf8) {
@@ -118,32 +139,54 @@ final class CherriEditorUITests: XCTestCase {
 
     @discardableResult
     private func ensureEditorReady() -> XCUIElement {
+        var deadline = CherriEditorStartupDeadline()
         let window = app.windows.firstMatch
-        let windowReady = window.waitForExistence(timeout: 10)
-        recordStartupReceipt(stage: "window-wait", waitCompleted: windowReady)
-        XCTAssertTrue(windowReady, "Main application window must exist")
-
         let editor = app.textViews["cherriCodeEditor"]
-        if editor.waitForExistence(timeout: 2) {
-            recordStartupReceipt(stage: "editor-wait", waitCompleted: true)
+        let windowReady = window.waitForExistence(timeout: deadline.remaining(maximum: 10))
+        let windowState = observeStartupControls()
+        recordStartupReceipt(stage: "window-wait", waitCompleted: windowReady,
+                             state: windowState, deadline: deadline)
+        guard windowReady, windowState.windowExists, windowState.appRunningForeground,
+              deadline.remaining() > 0 else {
+            XCTFail("Main application window must exist in the foreground within the startup budget")
             return editor
         }
 
-        let createDoc = app.buttons["Create Document"]
-        // DocumentGroup can expose the button before its transition allows a tap.
-        // Wait for both properties instead of abandoning creation on one snapshot.
-        let creationReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            createDoc.exists && createDoc.isHittable
-        }, object: createDoc)
-        let canCreateDocument = XCTWaiter.wait(for: [creationReady], timeout: 6) == .completed
-        recordStartupReceipt(stage: "document-wait", waitCompleted: canCreateDocument)
-        if canCreateDocument {
-            createDoc.tap()
+        let initiallyReady = editor.waitForExistence(timeout: deadline.remaining(maximum: 2))
+        let initialState = observeStartupControls()
+        if deadline.accepts(initialState, waitCompleted: initiallyReady) {
+            recordStartupReceipt(stage: "editor-wait", waitCompleted: true,
+                                 state: initialState, deadline: deadline)
+            return editor
         }
 
-        let editorReady = editor.waitForExistence(timeout: 10)
-        recordStartupReceipt(stage: "editor-wait", waitCompleted: editorReady)
-        XCTAssertTrue(editorReady, "cherriCodeEditor must exist in workspace")
+        if !initialState.editorExists, deadline.remaining() > 0 {
+            let createDoc = app.buttons["Create Document"]
+            let creationReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                self.app.state == .runningForeground && createDoc.exists && createDoc.isHittable
+            }, object: createDoc)
+            let canCreate = XCTWaiter.wait(for: [creationReady],
+                                          timeout: deadline.remaining(maximum: 6)) == .completed
+            let creationState = observeStartupControls()
+            recordStartupReceipt(stage: "document-wait", waitCompleted: canCreate,
+                                 state: creationState, deadline: deadline)
+            if canCreate, !creationState.editorExists,
+               deadline.claimDocumentCreation(creationState) {
+                createDoc.tap()
+            }
+        }
+
+        // The original total allowance is shared across transitions. Fast earlier
+        // stages leave their unused time for the actual document-to-editor transition.
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            self.app.state == .runningForeground && window.exists && editor.exists && editor.isHittable
+        }, object: editor)
+        let waitCompleted = XCTWaiter.wait(for: [ready], timeout: deadline.remaining()) == .completed
+        let finalState = observeStartupControls()
+        let editorReady = deadline.accepts(finalState, waitCompleted: waitCompleted)
+        recordStartupReceipt(stage: "editor-wait", waitCompleted: waitCompleted,
+                             state: finalState, deadline: deadline)
+        XCTAssertTrue(editorReady, "cherriCodeEditor must exist and be interactive in the foreground within the startup budget")
         return editor
     }
 

@@ -79,6 +79,12 @@ jobs:
       - name: Test bounded iOS evidence collector
         run: python3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v
 
+      - name: Verify bounded editor startup policy
+        run: |
+          cat ios/CherriUITests/EditorStartupDeadline.swift ios/scripts/verify_editor_startup.swift > "$RUNNER_TEMP/cherri-editor-startup-controls.swift"
+          swiftc "$RUNNER_TEMP/cherri-editor-startup-controls.swift" -o "$RUNNER_TEMP/cherri-editor-startup-controls"
+          "$RUNNER_TEMP/cherri-editor-startup-controls"
+
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
         continue-on-error: true
