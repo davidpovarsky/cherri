@@ -371,20 +371,150 @@ class AcquisitionTests(unittest.TestCase):
         self.assertEqual(summary["gates"]["COMPILER_ARTIFACT_IMPORTED"],"NOT_RUN")
         self.assertFalse(summary["runtimeContractVerified"])
 
+    def scoped_assertion(self):
+        return {"schemaVersion":"1.5","compilerCommitSha":SOURCE,"targetFixtureId":FIXTURE,
+                "compiledSourceSha256":self.expected["compiledSourceSha256"],
+                "unsignedPlistSha256":self.expected["unsignedPlistSha256"],
+                "buildProfile":self.expected["buildProfile"],
+                "traceExpectation":self.expected["traceExpectation"],
+                "expectedRunId":"fresh-control-nonce","runId":RUN,
+                "runtimeContractVerified":False}
+
+    def test_existing_assertions_reject_foreign_nonce_run_and_compiler_payload_scope(self):
+        self.start()
+        mutations={"expectedRunId":"foreign-run-nonce","runId":"other-run",
+                   "compiledSourceSha256":"b"*64,"unsignedPlistSha256":"c"*64,
+                   "buildProfile":"release","traceExpectation":"ABSENT_RELEASE"}
+        path=self.root/"runtime/output-assertions.json"
+        for key,wrong in mutations.items():
+            with self.subTest(key=key):
+                value=self.scoped_assertion();value[key]=wrong
+                original=json.dumps(value).encode();path.write_bytes(original)
+                try:
+                    with self.assertRaisesRegex(ValueError,"EXISTING_ASSERTION_IDENTITY"):
+                        terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
+                finally:
+                    self.assertEqual(path.read_bytes(),original)
+                    for relative in ("summary.json","runtime/terminal-acquisition.json"):
+                        file=self.root/relative
+                        if file.exists():file.unlink()
+
+    def test_existing_summary_wrong_fixture_or_profile_is_rejected_without_rewrite(self):
+        self.start()
+        (self.root/"runtime/output-assertions.json").write_text(json.dumps(self.scoped_assertion()))
+        path=self.root/"summary.json"
+        for key,wrong in (("targetFixtureId","qa-unrelated-v2"),("buildProfile","release"),
+                          ("traceExpectation","ABSENT_RELEASE")):
+            with self.subTest(key=key):
+                value={"compilerCommitSha":SOURCE,"runId":RUN,"targetFixtureId":FIXTURE,
+                       "buildProfile":"debug","traceExpectation":"REQUIRED_NDJSON",
+                       "runtimeContractVerified":False}
+                value[key]=wrong;original=json.dumps(value).encode();path.write_bytes(original)
+                with self.assertRaisesRegex(ValueError,"EXISTING_SUMMARY_IDENTITY"):
+                    terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
+                self.assertEqual(path.read_bytes(),original)
+
+    def test_assertion_file_exists_race_cannot_bind_foreign_nonce(self):
+        self.start()
+        original_write=terminal.write_new
+        wrong=self.scoped_assertion();wrong["expectedRunId"]="foreign-race-nonce"
+        original=json.dumps(wrong).encode()
+        def race(root,relative,value):
+            if relative=="runtime/output-assertions.json":
+                (Path(root)/relative).write_bytes(original)
+            return original_write(root,relative,value)
+        with patch.object(terminal,"write_new",race):
+            with self.assertRaisesRegex(ValueError,"EXISTING_ASSERTION_IDENTITY"):
+                terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
+        self.assertEqual((self.root/"runtime/output-assertions.json").read_bytes(),original)
+        self.assertFalse((self.root/"summary.json").exists())
+
+    def scoped_summary(self, verified=False):
+        return {"schemaVersion":"1.4","compilerCommitSha":SOURCE,"runId":RUN,
+                "targetFixtureId":FIXTURE,"buildProfile":"debug",
+                "traceExpectation":"REQUIRED_NDJSON","runtimeContractVerified":verified}
+
+    def test_emitter_context_binds_actual_reader_nonce_without_rewriting_assertions(self):
+        self.start()
+        self.clock += 3_000_000
+        nonce="fresh-reader-control-nonce"
+        terminal.output_context(self.root,self.expected,nonce,now_ns=self.now)
+        assertion=self.scoped_assertion();assertion["expectedRunId"]=nonce
+        # The existing normal emitter omits CI runId. Its nonce is still bound
+        # to this exact source/run/fixture by the immutable emitter context.
+        assertion.pop("runId")
+        data=json.dumps(assertion).encode()
+        path=self.root/"runtime/output-assertions.json";path.write_bytes(data)
+        terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
+        receipt=json.loads((self.root/"runtime/terminal-acquisition.json").read_text())
+        self.assertEqual(receipt["outputContextBinding"],
+                         terminal.file_binding(self.root,terminal.OUTPUT_CONTEXT_PATH))
+        terminal.validate_terminal(receipt,self.root,self.expected)
+        self.assertEqual(path.read_bytes(),data)
+        self.assertFalse(receipt["runtimeAcceptanceGranted"])
+        self.assertFalse((self.root/"runtime/callback-events.json").exists())
+
+    def test_emitter_context_is_exclusive_and_cannot_bind_foreign_run_or_future_time(self):
+        self.start()
+        nonce="fresh-reader-control-nonce"
+        terminal.output_context(self.root,self.expected,nonce,now_ns=self.now)
+        path=self.root/terminal.OUTPUT_CONTEXT_PATH;original=path.read_bytes()
+        with self.assertRaises(FileExistsError):
+            terminal.output_context(self.root,self.expected,"unrelated",now_ns=self.now)
+        self.assertEqual(path.read_bytes(),original)
+        for key,value,reason in (("runId","other-run","OUTPUT_CONTEXT_IDENTITY"),
+                                 ("compiledSourceSha256","a"*64,"OUTPUT_CONTEXT_IDENTITY"),
+                                 ("monotonicNs",self.clock+1_000_000,"FINALIZER_CLOCK_INVALID")):
+            with self.subTest(key=key):
+                bad=json.loads(original);bad[key]=value
+                path.write_text(json.dumps(bad))
+                with self.assertRaisesRegex(ValueError,reason):
+                    terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
+                self.assertFalse((self.root/"runtime/output-assertions.json").exists())
+        path.write_bytes(original)
+
+    def test_terminal_receipt_rejects_changed_or_missing_emitter_context_original(self):
+        self.start()
+        terminal.output_context(self.root,self.expected,"fresh-reader-control-nonce",now_ns=self.now)
+        terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
+        receipt=json.loads((self.root/"runtime/terminal-acquisition.json").read_text())
+        path=self.root/terminal.OUTPUT_CONTEXT_PATH;original=path.read_bytes()
+        path.write_bytes(original+b" ")
+        with self.assertRaisesRegex(ValueError,"TERMINAL_OUTPUT_CONTEXT_BINDING"):
+            terminal.validate_terminal(receipt,self.root,self.expected)
+        path.unlink()
+        with self.assertRaisesRegex(ValueError,"TERMINAL_OUTPUT_CONTEXT_BINDING"):
+            terminal.validate_terminal(receipt,self.root,self.expected)
+
+    def test_existing_summary_cannot_hide_foreign_assertion_nonce(self):
+        self.start()
+        summary=json.dumps(self.scoped_summary()).encode()
+        (self.root/"summary.json").write_bytes(summary)
+        assertion=self.scoped_assertion();assertion["expectedRunId"]="foreign-nonce"
+        original=json.dumps(assertion).encode()
+        (self.root/"runtime/output-assertions.json").write_bytes(original)
+        with self.assertRaisesRegex(ValueError,"EXISTING_ASSERTION_IDENTITY"):
+            terminal.finalize(self.root,self.expected,"failure",now_ns=self.now)
+        self.assertEqual((self.root/"summary.json").read_bytes(),summary)
+        self.assertEqual((self.root/"runtime/output-assertions.json").read_bytes(),original)
+
     def test_existing_completed_summary_is_byte_identical_after_late_finalizer(self):
         self.start()
-        data=b'{"compilerCommitSha":"'+SOURCE.encode()+b'","runId":"'+RUN.encode()+b'","runtimeContractVerified":true,"control":"completed receipt"}\n'
+        data=(json.dumps({**self.scoped_summary(True),"control":"completed receipt"})+"\n").encode()
+        assertion=self.scoped_assertion();assertion["runtimeContractVerified"]=True
+        assertion_bytes=json.dumps(assertion).encode()
+        (self.root/"runtime/output-assertions.json").write_bytes(assertion_bytes)
         (self.root/"summary.json").write_bytes(data)
         self.clock+=2_000_000_000_000
         out=terminal.finalize(self.root,self.expected,"cancelled",now_ns=self.now)
         self.assertEqual(out["status"],"EXISTING_SUMMARY_RETAINED")
         self.assertEqual((self.root/"summary.json").read_bytes(),data)
-        self.assertFalse((self.root/"runtime/output-assertions.json").exists())
+        self.assertEqual((self.root/"runtime/output-assertions.json").read_bytes(),assertion_bytes)
 
     def test_completed_summary_race_wins_exclusive_write_without_overwrite(self):
         self.start()
         original=terminal.write_new
-        data=json.dumps({"compilerCommitSha":SOURCE,"runId":RUN,"runtimeContractVerified":True}).encode()
+        data=json.dumps(self.scoped_summary(True)).encode()
         def race(root,relative,value):
             if relative=="summary.json":
                 (Path(root)/relative).write_bytes(data)
@@ -397,8 +527,8 @@ class AcquisitionTests(unittest.TestCase):
     def test_existing_callback_assertion_and_trace_bytes_are_never_rewritten(self):
         self.start()
         originals={
-            "runtime/output-assertions.json":json.dumps({"compilerCommitSha":SOURCE,
-                "targetFixtureId":FIXTURE,"runtimeContractVerified":True}).encode(),
+            "runtime/output-assertions.json":json.dumps({**self.scoped_assertion(),
+                "runtimeContractVerified":True}).encode(),
             "runtime/callback-events.json":b'[{"observed":"PUBLIC_CONTROL"}]\n',
             "runtime/runtime-trace.jsonl":b'{"observed":"PUBLIC_TRACE_CONTROL"}\n',
         }
@@ -571,6 +701,52 @@ class SourceAndShellTests(unittest.TestCase):
                 "--root",str(self.root),"--source-sha",self.source,"--run-id",RUN,
                 "--fixture-id",FIXTURE,"--stage","COMPILED","--require-runtime","true",
                 "--gates",*self.gates]
+
+    def test_actual_publication_step_stops_after_finalizer_rejection(self):
+        import yaml
+        workflow=yaml.safe_load((REPO/".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml").read_text())
+        step=next(x for x in workflow["jobs"]["simulator-qa"]["steps"]
+                  if x["name"]=="Stage synthetic text artifacts; quarantine raster and raw inputs")
+        script=step["run"].replace("${{ github.run_id }}",RUN)
+        bash=os.environ.get("CHERRI_TEST_BASH")or shutil.which("bash")
+        if not bash:self.skipTest("Bash unavailable")
+        bins=self.home/"publisher-bin";bins.mkdir()
+        marker=self.home/"publisher-executed"
+        executable=bins/"python3"
+        executable.write_text('#!/usr/bin/env bash\nprintf CALLED > "$PUBLISHER_MARKER"\nexit 0\n')
+        executable.chmod(0o755)
+        env=dict(os.environ,PATH=str(bins)+os.pathsep+os.environ["PATH"],
+                 PUBLISHER_MARKER=marker.as_posix(),QA_ACQUISITION_FINALIZER_OUTCOME="failure")
+        result=subprocess.run([bash,"-c",script],cwd=self.repo,env=env,capture_output=True,timeout=10)
+        self.assertNotEqual(result.returncode,0)
+        self.assertFalse(marker.exists())
+
+    def test_actual_output_emitter_context_uses_current_nonce_and_cannot_repeat(self):
+        done=subprocess.run(self.command(),capture_output=True,timeout=30)
+        self.assertEqual(done.returncode,0,done.stderr.decode(errors="replace"))
+        shell=SCRIPT.read_text(encoding="utf-8")
+        start=shell.index('# Bind the actual current invocation before the normal assertion emitter.')
+        block=shell[start:shell.index('# Write output-assertions.json and runtime-trace.jsonl',start)]
+        bash=os.environ.get("CHERRI_TEST_BASH")or shutil.which("bash")
+        if not bash:self.skipTest("Bash unavailable")
+        bins=self.home/"emitter-bin";bins.mkdir()
+        executable=bins/"python3"
+        executable.write_text("#!/usr/bin/env bash\nexec "+ "'" + sys.executable.replace("\\","/").replace("'","'\"'\"'") + "' \"$@\"\n")
+        executable.chmod(0o755)
+        env=dict(os.environ,PATH=str(bins)+os.pathsep+os.environ["PATH"],
+                 ROOT_DIR=self.repo.as_posix(),ARTIFACT_DIR=self.root.as_posix(),
+                 SOURCE_SHA=self.source,RUN_ID=RUN,TARGET_FIXTURE_ID=FIXTURE,
+                 EXEC_RUN_NONCE="fresh-current-reader-nonce")
+        done=subprocess.run([bash,"-c",block],env=env,capture_output=True,timeout=30)
+        self.assertEqual(done.returncode,0,done.stderr.decode(errors="replace"))
+        path=self.root/terminal.OUTPUT_CONTEXT_PATH;original=path.read_bytes()
+        value=json.loads(original)
+        self.assertEqual(value["expectedRunId"],"fresh-current-reader-nonce")
+        self.assertEqual(value["runId"],RUN)
+        env["EXEC_RUN_NONCE"]="different-nonce"
+        repeated=subprocess.run([bash,"-c",block],env=env,capture_output=True,timeout=30)
+        self.assertNotEqual(repeated.returncode,0)
+        self.assertEqual(path.read_bytes(),original)
 
     def test_actual_cli_uses_exact_owned_checkout_and_source_fixture_bytes(self):
         done=subprocess.run(self.command(),capture_output=True,timeout=30)

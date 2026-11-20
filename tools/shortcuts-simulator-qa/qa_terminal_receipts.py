@@ -403,38 +403,94 @@ def receiver_path(root, expected):
     return str(path)
 
 
-def _retained_summary(root, expected):
+OUTPUT_CONTEXT_PATH = "builds/qa-output-context.json"
+
+
+def check_output_context(value, expected, records, bindings):
+    require(isinstance(value, dict) and set(value) == CONTEXT_KEYS | {
+        "schemaVersion", "stage", "monotonicNs", "expectedRunId",
+        "requireRuntime", "checkpointBindings", "formalAcceptanceGranted"},
+        "OUTPUT_CONTEXT_FIELDS")
+    require(all(value.get(k) == v for k, v in expected.items()), "OUTPUT_CONTEXT_IDENTITY")
+    require(value["schemaVersion"] == "1.0" and value["stage"] == "ASSERTIONS_EMITTER_STARTED"
+            and value["formalAcceptanceGranted"] is False, "OUTPUT_CONTEXT_STAGE")
+    require(integer(value["monotonicNs"], records[-1]["monotonicNs"]), "OUTPUT_CONTEXT_CLOCK")
+    require(type(value["requireRuntime"]) is bool
+            and value["requireRuntime"] == records[-1]["requireRuntime"], "OUTPUT_CONTEXT_REQUIREMENT")
+    require(value["checkpointBindings"] == bindings, "OUTPUT_CONTEXT_CHECKPOINTS")
+    require(isinstance(value["expectedRunId"], str)
+            and (not value["expectedRunId"] or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value["expectedRunId"])),
+            "OUTPUT_CONTEXT_NONCE")
+
+
+def read_output_context(root, expected, records, bindings):
+    path = contained(root, OUTPUT_CONTEXT_PATH, exists=False)
+    if not path.exists():
+        return None, None
+    value = unique_json(read_bytes(root, OUTPUT_CONTEXT_PATH))
+    check_output_context(value, expected, records, bindings)
+    return value, file_binding(root, OUTPUT_CONTEXT_PATH)
+
+
+def output_context(root, expected, nonce, *, now_ns=time.monotonic_ns):
+    records, bindings = read_checkpoints(root, expected)
+    value = {"schemaVersion": "1.0", **expected, "stage": "ASSERTIONS_EMITTER_STARTED",
+             "monotonicNs": now_ns(), "expectedRunId": nonce,
+             "requireRuntime": records[-1]["requireRuntime"], "checkpointBindings": bindings,
+             "formalAcceptanceGranted": False}
+    check_output_context(value, expected, records, bindings)
+    write_new(root, OUTPUT_CONTEXT_PATH, value)
+    return value
+
+
+def check_existing_assertions(value, expected, nonce):
+    # Normal oracle output has no CI runId field; its current invocation nonce
+    # is bound by the source/run/fixture-owned emitter context (or acquisition
+    # checkpoint before the emitter is reached). Reject any supplied foreign
+    # runId as well as a borrowed compiler/fixture/profile tuple.
+    keys = ("compilerCommitSha", "targetFixtureId", "compiledSourceSha256",
+            "unsignedPlistSha256", "buildProfile", "traceExpectation")
+    require(isinstance(value, dict) and value.get("schemaVersion") == "1.5"
+            and all(value.get(k) == expected[k] for k in keys)
+            and value.get("expectedRunId") == nonce
+            and ("runId" not in value or value["runId"] == expected["runId"]),
+            "EXISTING_ASSERTION_IDENTITY")
+
+
+def _retained_summary(root, expected, nonce):
     path = contained(root, "summary.json", exists=False)
     if not path.exists():
         return None
     value = unique_json(read_bytes(root, "summary.json"))
-    require(isinstance(value, dict) and value.get("compilerCommitSha") == expected["compilerCommitSha"]
-            and value.get("runId") == expected["runId"], "EXISTING_SUMMARY_IDENTITY")
+    keys = ("compilerCommitSha", "runId", "targetFixtureId", "buildProfile", "traceExpectation")
+    require(isinstance(value, dict) and all(value.get(k) == expected[k] for k in keys),
+            "EXISTING_SUMMARY_IDENTITY")
+    check_existing_assertions(unique_json(read_bytes(root, "runtime/output-assertions.json")), expected, nonce)
     return {"status": "EXISTING_SUMMARY_RETAINED", "sha256": sha(path.read_bytes())}
 
 
 def finalize(root, expected, outcome, *, now_ns=time.monotonic_ns, custom_server=""):
     require(outcome in ("success", "failure", "cancelled", "skipped"), "STEP_OUTCOME_INVALID")
-    prior = _retained_summary(root, expected)
-    if prior:
-        return prior
     records, bindings = read_checkpoints(root, expected)
     latest = records[-1]
+    emitter, emitter_binding = read_output_context(root, expected, records, bindings)
+    nonce = emitter["expectedRunId"] if emitter else latest["expectedRunId"]
     now = now_ns()
-    require(integer(now, latest["monotonicNs"]), "FINALIZER_CLOCK_INVALID")
+    require(integer(now, emitter["monotonicNs"] if emitter else latest["monotonicNs"]),
+            "FINALIZER_CLOCK_INVALID")
+    prior = _retained_summary(root, expected, nonce)
+    if prior:
+        return prior
     phase_elapsed = ((now - records[1]["monotonicNs"]) // 1_000_000 if len(records) > 1 else None)
     assertion_path = contained(root, "runtime/output-assertions.json", exists=False)
     if assertion_path.exists():
         assertions = unique_json(read_bytes(root, "runtime/output-assertions.json"))
-        require(isinstance(assertions, dict)
-                and assertions.get("compilerCommitSha") == expected["compilerCommitSha"]
-                and assertions.get("targetFixtureId") == expected["targetFixtureId"],
-                "EXISTING_ASSERTION_IDENTITY")
+        check_existing_assertions(assertions, expected, nonce)
     else:
         assertions = {"schemaVersion": "1.5", **{k: expected[k] for k in CONTEXT_KEYS
                       if k != "compilerManifestSha256"},
                       "releaseBuildVerified": False, "runtimeContractVerified": False,
-                      "traceObserved": "UNVERIFIED", "expectedRunId": latest["expectedRunId"],
+                      "traceObserved": "UNVERIFIED", "expectedRunId": nonce,
                       "expectedSemanticOutput": "", "shortcutRunCompletedGate": "NOT_RUN",
                       "callbackCapturedGate": "NOT_RUN", "traceCapturedGate": "NOT_RUN",
                       "receiverSelfCallbackVerified": False, "compiledShortcutCallbackVerified": False,
@@ -448,13 +504,11 @@ def finalize(root, expected, outcome, *, now_ns=time.monotonic_ns, custom_server
             write_new(root, "runtime/output-assertions.json", assertions)
         except FileExistsError:
             assertions = unique_json(read_bytes(root, "runtime/output-assertions.json"))
-            require(isinstance(assertions, dict)
-                    and assertions.get("compilerCommitSha") == expected["compilerCommitSha"]
-                    and assertions.get("targetFixtureId") == expected["targetFixtureId"],
-                    "EXISTING_ASSERTION_IDENTITY")
+            check_existing_assertions(assertions, expected, nonce)
     terminal = {"schemaVersion": "1.0", **expected, "status": "INCOMPLETE_COLLECTION",
                 "stepOutcome": outcome, "lastAcquiredStage": latest["stage"],
-                "checkpointBindings": bindings, "phaseElapsedMs": phase_elapsed,
+                "checkpointBindings": bindings, "outputContextBinding": emitter_binding,
+                "phaseElapsedMs": phase_elapsed,
                 "phaseExpired": phase_elapsed is not None and phase_elapsed >= PHASE_MS,
                 "test02PhaseExitCode": latest["test02PhaseExitCode"], "runtimeAcceptanceGranted": False,
                 "formalAcceptanceGranted": False,
@@ -482,7 +536,7 @@ def finalize(root, expected, outcome, *, now_ns=time.monotonic_ns, custom_server
     try:
         write_new(root, "summary.json", summary)
     except FileExistsError:
-        return _retained_summary(root, expected)
+        return _retained_summary(root, expected, nonce)
     return {"status": "INCOMPLETE_SUMMARY_RETAINED", "privacyGatePassed": privacy["passed"],
             "runtimeAcceptanceGranted": False}
 
@@ -491,7 +545,7 @@ def validate_terminal(value, root, expected):
     require(isinstance(value, dict) and set(value) == CONTEXT_KEYS | {
         "schemaVersion", "status", "stepOutcome", "lastAcquiredStage", "checkpointBindings",
         "phaseElapsedMs", "phaseExpired", "test02PhaseExitCode", "runtimeAcceptanceGranted",
-        "formalAcceptanceGranted", "assertionBinding"}, "TERMINAL_FIELDS")
+        "formalAcceptanceGranted", "assertionBinding", "outputContextBinding"}, "TERMINAL_FIELDS")
     require(all(value.get(k) == v for k, v in expected.items()), "TERMINAL_CONTEXT")
     records, bindings = read_checkpoints(root, expected)
     require(value["checkpointBindings"] == bindings and value["lastAcquiredStage"] == records[-1]["stage"],
@@ -500,10 +554,13 @@ def validate_terminal(value, root, expected):
             and value["stepOutcome"] in ("success", "failure", "cancelled", "skipped")
             and value["runtimeAcceptanceGranted"] is False and value["formalAcceptanceGranted"] is False,
             "TERMINAL_FALSE_ACCEPTANCE")
+    emitter, emitter_binding = read_output_context(root, expected, records, bindings)
+    require(value["outputContextBinding"] == emitter_binding, "TERMINAL_OUTPUT_CONTEXT_BINDING")
+    last_clock = emitter["monotonicNs"] if emitter else records[-1]["monotonicNs"]
     elapsed = value["phaseElapsedMs"]
     require((len(records) == 1 and elapsed is None)
             or (len(records) > 1 and integer(elapsed)
-                and elapsed >= (records[-1]["monotonicNs"] - records[1]["monotonicNs"]) // 1_000_000),
+                and elapsed >= (last_clock - records[1]["monotonicNs"]) // 1_000_000),
             "TERMINAL_ELAPSED")
     require(type(value["phaseExpired"]) is bool
             and value["phaseExpired"] == (elapsed is not None and elapsed >= PHASE_MS),
@@ -511,6 +568,8 @@ def validate_terminal(value, root, expected):
     require(value["test02PhaseExitCode"] == records[-1]["test02PhaseExitCode"]
             and type(value["test02PhaseExitCode"]) is type(records[-1]["test02PhaseExitCode"]), "TERMINAL_TEST_EXIT")
     check_binding(root, value["assertionBinding"], "runtime/output-assertions.json")
+    nonce = emitter["expectedRunId"] if emitter else records[-1]["expectedRunId"]
+    check_existing_assertions(unique_json(read_bytes(root, "runtime/output-assertions.json")), expected, nonce)
 
 
 SOURCE_FILES = (
@@ -565,7 +624,7 @@ def _cli_context(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("mode", choices=("checkpoint", "collect", "receiver-path", "finalize"))
+    parser.add_argument("mode", choices=("checkpoint", "output-context", "collect", "receiver-path", "finalize"))
     parser.add_argument("--repo", required=True)
     parser.add_argument("--root", required=True)
     parser.add_argument("--source-sha", required=True)
@@ -586,6 +645,9 @@ def main():
         checkpoint(args.root, expected, args.stage, dict(zip(GATES, args.gates)),
                    device=args.udid, nonce=args.nonce, code=args.test_exit_code,
                    require_runtime=args.require_runtime == "true")
+        return 0
+    if args.mode == "output-context":
+        output_context(args.root, expected, args.nonce)
         return 0
     if args.mode == "receiver-path":
         print(receiver_path(args.root, expected))

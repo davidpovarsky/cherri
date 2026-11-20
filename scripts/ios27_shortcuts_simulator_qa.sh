@@ -2712,6 +2712,12 @@ fi
 # explicit publisher quarantines them; no build/raw path is uploaded.
 rm -rf "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
+# Bind the actual current invocation before the normal assertion emitter.
+# Storage cross-run may have advanced to its reader nonce after test02.
+python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" output-context \
+  --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
+  --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --nonce "${EXEC_RUN_NONCE:-}" || exit 2
+
 # Write output-assertions.json and runtime-trace.jsonl
 python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
 import json

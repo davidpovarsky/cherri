@@ -221,6 +221,7 @@ jobs:
             "$QA_REQUIRE_RUNTIME"
 
       - name: Retain explicitly incomplete acquisition after interruption
+        id: terminal_receipts
         if: always()
         env:
           CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
@@ -233,7 +234,13 @@ jobs:
       - name: Stage synthetic text artifacts; quarantine raster and raw inputs
         id: privacy_gate
         if: always()
+        env:
+          QA_ACQUISITION_FINALIZER_OUTCOME: ${{ steps.terminal_receipts.outcome }}
         run: |
+          if [ "$QA_ACQUISITION_FINALIZER_OUTCOME" != "success" ]; then
+            echo "Acquisition identity was not verified; original evidence remains quarantined."
+            exit 2
+          fi
           python3 tools/shortcuts-simulator-qa/prepare_public_artifacts.py \
             --root "artifacts/cherri-ios27-simulator-qa/${{ github.run_id }}" \
             --output "artifacts/cherri-ios27-simulator-qa-public/${{ github.run_id }}" \
