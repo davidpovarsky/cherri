@@ -1,0 +1,277 @@
+{
+  "schema_version": "1",
+  "fixture_id": "qa-json-body-control-v2",
+  "case": "control",
+  "source_sha256": "292d75762a0bc9f6924bc3ec5f9f2649795043768f45405ceec4c6015ac25a6c",
+  "frozen_k_source_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "frozen_k_capture_sha256": "3b91ec031a1cd3411d22eb9d1001802ab042149274516ee5568051373d9e785f",
+  "expected_native_parameters": {
+    "WFHTTPMethod": "POST",
+    "WFHTTPBodyType": "JSON",
+    "WFURL": {
+      "Value": {
+        "string": "http://127.0.0.1:￼/control",
+        "attachmentsByRange": {
+          "{17, 1}": {
+            "Type": "ExtensionInput"
+          }
+        }
+      },
+      "WFSerializationType": "WFTextTokenString"
+    },
+    "WFJSONValues": {
+      "Value": {
+        "WFDictionaryFieldValueItems": [
+          {
+            "WFItemType": 0,
+            "WFKey": {
+              "Value": {
+                "string": "empty_val"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": {
+                "string": ""
+              },
+              "WFSerializationType": "WFTextTokenString"
+            }
+          },
+          {
+            "WFItemType": 3,
+            "WFKey": {
+              "Value": {
+                "string": "max_tokens"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": {
+                "string": "256"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            }
+          },
+          {
+            "WFItemType": 0,
+            "WFKey": {
+              "Value": {
+                "string": "model"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": {
+                "string": "CHERRI_JSON_BODY_SYNTHETIC"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            }
+          },
+          {
+            "WFItemType": 1,
+            "WFKey": {
+              "Value": {
+                "string": "nested"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": {
+                "WFDictionaryFieldValueItems": [
+                  {
+                    "WFItemType": 0,
+                    "WFKey": {
+                      "Value": {
+                        "string": "env"
+                      },
+                      "WFSerializationType": "WFTextTokenString"
+                    },
+                    "WFValue": {
+                      "Value": {
+                        "string": "prod"
+                      },
+                      "WFSerializationType": "WFTextTokenString"
+                    }
+                  },
+                  {
+                    "WFItemType": 2,
+                    "WFKey": {
+                      "Value": {
+                        "string": "flags"
+                      },
+                      "WFSerializationType": "WFTextTokenString"
+                    },
+                    "WFValue": {
+                      "Value": [
+                        {
+                          "WFItemType": 4,
+                          "WFValue": {
+                            "Value": true,
+                            "WFSerializationType": "WFNumberSubstitutableState"
+                          }
+                        },
+                        {
+                          "WFItemType": 4,
+                          "WFValue": {
+                            "Value": false,
+                            "WFSerializationType": "WFNumberSubstitutableState"
+                          }
+                        }
+                      ],
+                      "WFSerializationType": "WFArrayParameterState"
+                    }
+                  },
+                  {
+                    "WFItemType": 2,
+                    "WFKey": {
+                      "Value": {
+                        "string": "matrix"
+                      },
+                      "WFSerializationType": "WFTextTokenString"
+                    },
+                    "WFValue": {
+                      "Value": [
+                        {
+                          "WFItemType": 2,
+                          "WFValue": {
+                            "Value": [
+                              {
+                                "WFItemType": 3,
+                                "WFValue": {
+                                  "Value": {
+                                    "string": "1"
+                                  },
+                                  "WFSerializationType": "WFTextTokenString"
+                                }
+                              },
+                              {
+                                "WFItemType": 3,
+                                "WFValue": {
+                                  "Value": {
+                                    "string": "2"
+                                  },
+                                  "WFSerializationType": "WFTextTokenString"
+                                }
+                              }
+                            ],
+                            "WFSerializationType": "WFArrayParameterState"
+                          }
+                        },
+                        {
+                          "WFItemType": 2,
+                          "WFValue": {
+                            "Value": [
+                              {
+                                "WFItemType": 3,
+                                "WFValue": {
+                                  "Value": {
+                                    "string": "3"
+                                  },
+                                  "WFSerializationType": "WFTextTokenString"
+                                }
+                              },
+                              {
+                                "WFItemType": 3,
+                                "WFValue": {
+                                  "Value": {
+                                    "string": "4"
+                                  },
+                                  "WFSerializationType": "WFTextTokenString"
+                                }
+                              }
+                            ],
+                            "WFSerializationType": "WFArrayParameterState"
+                          }
+                        }
+                      ],
+                      "WFSerializationType": "WFArrayParameterState"
+                    }
+                  }
+                ]
+              },
+              "WFSerializationType": "WFDictionaryFieldValue"
+            }
+          },
+          {
+            "WFItemType": 4,
+            "WFKey": {
+              "Value": {
+                "string": "stream"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": false,
+              "WFSerializationType": "WFNumberSubstitutableState"
+            }
+          },
+          {
+            "WFItemType": 3,
+            "WFKey": {
+              "Value": {
+                "string": "zero"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": {
+                "string": "0"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            }
+          },
+          {
+            "WFItemType": 0,
+            "WFKey": {
+              "Value": {
+                "string": "marker"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            },
+            "WFValue": {
+              "Value": {
+                "string": "CHERRI_JSON_BODY_CONTROL"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            }
+          }
+        ]
+      },
+      "WFSerializationType": "WFDictionaryFieldValue"
+    },
+    "UUID": "448B0C50-5380-5029-B02D-10F24796C60D",
+    "CustomOutputName": "response"
+  },
+  "expected_control_json": {
+    "empty_val": "",
+    "max_tokens": 256,
+    "model": "CHERRI_JSON_BODY_SYNTHETIC",
+    "nested": {
+      "env": "prod",
+      "flags": [
+        true,
+        false
+      ],
+      "matrix": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    "stream": false,
+    "zero": 0,
+    "marker": "CHERRI_JSON_BODY_CONTROL"
+  },
+  "required_absent_key": "missing_val",
+  "candidate_null_field": null,
+  "candidate_null_semantics": "NOT_ASSUMED",
+  "expected_callback_prefix": "CHERRI_QA_JSON_BODY_CONTROL_RESULT:",
+  "expected_callback_body": "P15_JSON_BODY_OBSERVED",
+  "runtime_status": "NOT_RUN",
+  "formal_requirements_proved": []
+}

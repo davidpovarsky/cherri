@@ -16,6 +16,8 @@ func p15T04NegativeCases() []struct{ name, source, span, code string } {
 		{"unvalidated_json_annotation", "let payload: JsonValue = ShortcutInput", "ShortcutInput", analysis.CodeArgumentType},
 		{"unknown_annotation", "let claimed: Text = chooseFromList(Clipboard)", "chooseFromList(Clipboard)", analysis.CodeArgumentType},
 		{"opaque_void_annotation", "let claimed: Void = Clipboard", "Clipboard", analysis.CodeArgumentType},
+		// An Optional annotation cannot create an absence witness for opaque content.
+		{"opaque_optional_binding", "let value: AnyContent? = Clipboard\nshow(value)", "Clipboard", analysis.CodeTargetValueShape},
 		{"function_argument", "function accept(value: Number) -> Number { return value }\naccept(Clipboard)", "Clipboard", analysis.CodeArgumentType},
 		{"function_default", "function accept(value: Number = Clipboard) -> Number { return value }", "Clipboard", analysis.CodeArgumentType},
 		{"function_return", "function make() -> Number { return Clipboard }", "return Clipboard", analysis.CodeReturnType},
@@ -89,7 +91,10 @@ func TestP15T04OpaqueTypeProduction(t *testing.T) {
 		"let claimed: Text | Number = if true { yield \"text\" } else { yield 1 }\nshow(claimed)",
 		"let values: List<Number> = []\nshow(values)",
 		"let values: Map<Text, Number> = {}\nshow(values)",
-		"let value: AnyContent? = Clipboard\nshow(value)",
+		// These falsey values carry source-owned presence; Clipboard remains AnyContent above.
+		"let value: AnyContent? = false\nshow(value)",
+		"let value: AnyContent? = 0\nshow(value)",
+		"let value: AnyContent? = \"\"\nshow(value)",
 		"let value: Text? = none\nshow(value)",
 		"let opaque:Unknown=chooseFromList(Clipboard)\nshow(opaque)",
 		"let concrete:Number=number(Clipboard)\nwait(concrete)",

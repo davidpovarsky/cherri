@@ -1,0 +1,259 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "json-body-null-candidate")
+// Fixed public native payload; the harness supplies only a loopback port/nonce.
+// Type5 is an explicitly experimental wire candidate, never a compiler null encoding.
+let response = native.action("is.workflow.actions.downloadurl", parameters: native.plist({
+  "WFHTTPMethod": "POST",
+  "WFHTTPBodyType": "JSON",
+  "WFURL": {
+    "Value": {
+      "string": "http://127.0.0.1:￼/null-candidate",
+      "attachmentsByRange": {
+        "{17, 1}": {
+          "Type": "ExtensionInput"
+        }
+      }
+    },
+    "WFSerializationType": "WFTextTokenString"
+  },
+  "WFJSONValues": {
+    "Value": {
+      "WFDictionaryFieldValueItems": [
+        {
+          "WFItemType": 0,
+          "WFKey": {
+            "Value": {
+              "string": "empty_val"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": {
+              "string": ""
+            },
+            "WFSerializationType": "WFTextTokenString"
+          }
+        },
+        {
+          "WFItemType": 3,
+          "WFKey": {
+            "Value": {
+              "string": "max_tokens"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": {
+              "string": "256"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          }
+        },
+        {
+          "WFItemType": 0,
+          "WFKey": {
+            "Value": {
+              "string": "model"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": {
+              "string": "CHERRI_JSON_BODY_SYNTHETIC"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          }
+        },
+        {
+          "WFItemType": 1,
+          "WFKey": {
+            "Value": {
+              "string": "nested"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": {
+              "WFDictionaryFieldValueItems": [
+                {
+                  "WFItemType": 0,
+                  "WFKey": {
+                    "Value": {
+                      "string": "env"
+                    },
+                    "WFSerializationType": "WFTextTokenString"
+                  },
+                  "WFValue": {
+                    "Value": {
+                      "string": "prod"
+                    },
+                    "WFSerializationType": "WFTextTokenString"
+                  }
+                },
+                {
+                  "WFItemType": 2,
+                  "WFKey": {
+                    "Value": {
+                      "string": "flags"
+                    },
+                    "WFSerializationType": "WFTextTokenString"
+                  },
+                  "WFValue": {
+                    "Value": [
+                      {
+                        "WFItemType": 4,
+                        "WFValue": {
+                          "Value": true,
+                          "WFSerializationType": "WFNumberSubstitutableState"
+                        }
+                      },
+                      {
+                        "WFItemType": 4,
+                        "WFValue": {
+                          "Value": false,
+                          "WFSerializationType": "WFNumberSubstitutableState"
+                        }
+                      }
+                    ],
+                    "WFSerializationType": "WFArrayParameterState"
+                  }
+                },
+                {
+                  "WFItemType": 2,
+                  "WFKey": {
+                    "Value": {
+                      "string": "matrix"
+                    },
+                    "WFSerializationType": "WFTextTokenString"
+                  },
+                  "WFValue": {
+                    "Value": [
+                      {
+                        "WFItemType": 2,
+                        "WFValue": {
+                          "Value": [
+                            {
+                              "WFItemType": 3,
+                              "WFValue": {
+                                "Value": {
+                                  "string": "1"
+                                },
+                                "WFSerializationType": "WFTextTokenString"
+                              }
+                            },
+                            {
+                              "WFItemType": 3,
+                              "WFValue": {
+                                "Value": {
+                                  "string": "2"
+                                },
+                                "WFSerializationType": "WFTextTokenString"
+                              }
+                            }
+                          ],
+                          "WFSerializationType": "WFArrayParameterState"
+                        }
+                      },
+                      {
+                        "WFItemType": 2,
+                        "WFValue": {
+                          "Value": [
+                            {
+                              "WFItemType": 3,
+                              "WFValue": {
+                                "Value": {
+                                  "string": "3"
+                                },
+                                "WFSerializationType": "WFTextTokenString"
+                              }
+                            },
+                            {
+                              "WFItemType": 3,
+                              "WFValue": {
+                                "Value": {
+                                  "string": "4"
+                                },
+                                "WFSerializationType": "WFTextTokenString"
+                              }
+                            }
+                          ],
+                          "WFSerializationType": "WFArrayParameterState"
+                        }
+                      }
+                    ],
+                    "WFSerializationType": "WFArrayParameterState"
+                  }
+                }
+              ]
+            },
+            "WFSerializationType": "WFDictionaryFieldValue"
+          }
+        },
+        {
+          "WFItemType": 4,
+          "WFKey": {
+            "Value": {
+              "string": "stream"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": false,
+            "WFSerializationType": "WFNumberSubstitutableState"
+          }
+        },
+        {
+          "WFItemType": 3,
+          "WFKey": {
+            "Value": {
+              "string": "zero"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": {
+              "string": "0"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          }
+        },
+        {
+          "WFItemType": 0,
+          "WFKey": {
+            "Value": {
+              "string": "marker"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          },
+          "WFValue": {
+            "Value": {
+              "string": "CHERRI_JSON_BODY_NULL_CANDIDATE"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          }
+        },
+        {
+          "WFItemType": 5,
+          "WFKey": {
+            "Value": {
+              "string": "candidate_null"
+            },
+            "WFSerializationType": "WFTextTokenString"
+          }
+        }
+      ]
+    },
+    "WFSerializationType": "WFDictionaryFieldValue"
+  },
+  "UUID": "4C01CBB8-16CB-5FAD-A843-9173EAB13C3E",
+  "CustomOutputName": "response"
+}))
+downloadURL(f"http://127.0.0.1:{ShortcutInput}/continued")
+let semanticResult = text(f"CHERRI_QA_JSON_BODY_NULL_CANDIDATE_RESULT:{response}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "json-body-null-candidate")
+let traceEnvelope = debugExportTrace(runId: "qa-json-body-null-candidate-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

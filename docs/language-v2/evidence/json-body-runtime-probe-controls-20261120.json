@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "status": "PASS_CLEAN_SOURCE_LOCAL_CONTROLS",
+  "implementation_sha": "a8b69008d70f48989bf3c3db6258e0e22ee85eda",
+  "parent_sha": "a50a090fc9b59e4a8f79824b7fc193f56179d810",
+  "source_files": [
+    {
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "sha256": "b2f5ab6f2f22f3c95fe3260a4997eb0b1e98d1ccb7d7cb95e4cd687ca64131fd",
+      "bytes": 166778
+    },
+    {
+      "path": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "sha256": "65124b261a7a0d4f1a76f6622bb9ccfcbf69b838bf0bcdeea04cd141d623aaf4",
+      "bytes": 9159
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+      "sha256": "f74ce989ec313c5502e80c898e199a521d5b5927d1155d1250c03acc209cb4a9",
+      "bytes": 15133
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/json_body_probe.py",
+      "sha256": "2ff40c0d18450ff5d5fcd1d151dbe544db71127bfe6c106812030cdcf076d798",
+      "bytes": 36983
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_json_body_probe.py",
+      "sha256": "ec9beaf357425d76ff89e32fd6249da2ee953cfdcc9eff6924e7d7b617dc7317",
+      "bytes": 19886
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-json-body-control-v2.cherri",
+      "sha256": "292d75762a0bc9f6924bc3ec5f9f2649795043768f45405ceec4c6015ac25a6c",
+      "bytes": 7984
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-json-body-control-v2.expected.json",
+      "sha256": "e893d69244f75d85b4582fbcfb3216296d942850109795ff6b263a9548f05122",
+      "bytes": 8754
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-json-body-null-candidate-v2.cherri",
+      "sha256": "6803a3efe34a1f374a255c948d9f401a752b0eec7bf55b6b492c4748b4bf50f0",
+      "bytes": 8241
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-json-body-null-candidate-v2.expected.json",
+      "sha256": "fb984a98169609c93962f86098b91f986169bdf31895b45e787e6c6cf8e20fc3",
+      "bytes": 9041
+    }
+  ],
+  "actual_local_commands": [
+    {
+      "name": "fresh-source-build",
+      "exit_code": 0,
+      "elapsed_seconds": 11.39100000000326,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "actual-phase0",
+      "exit_code": 0,
+      "elapsed_seconds": 9.375,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "test_json_body_probe.py",
+      "exit_code": 0,
+      "elapsed_seconds": 3.5310000000172295,
+      "raw_sha256": "e76a565ed95d0f728b4a151328f2043ab8600990a7079c54547784e072994e72"
+    },
+    {
+      "name": "test_retry_http_probe.py",
+      "exit_code": 0,
+      "elapsed_seconds": 14.98399999999674,
+      "raw_sha256": "96c158ae742143c8654a7930783c06b8c9164022bca04ba797d0ccbcb1d8f5bd"
+    },
+    {
+      "name": "test_public_artifacts.py",
+      "exit_code": 0,
+      "elapsed_seconds": 37.59399999998277,
+      "raw_sha256": "fef0f0d333a5127d98ae8ce00301a3258aedef7f1a22f98b170ab34d995ed2e1"
+    },
+    {
+      "name": "test_simulator_session_recovery.py",
+      "exit_code": 0,
+      "elapsed_seconds": 1.3910000000032596,
+      "raw_sha256": "e8a118677057b758c66579aaed95632f7b37560d92c551fc797961e200e96d46"
+    }
+  ],
+  "python_counts": {
+    "json_body": {
+      "pass": 13,
+      "skip": 0
+    },
+    "retry": {
+      "pass": 25,
+      "skip": 0
+    },
+    "publication": {
+      "pass": 17,
+      "skip": 0
+    },
+    "session": {
+      "pass": 17,
+      "skip": 2,
+      "skip_reason": "Windows cannot execute the two POSIX process-group timeout controls"
+    }
+  },
+  "phase0_counts": {
+    "compileAttempts": 83,
+    "compiledArtifactCount": 81,
+    "expectedDiagnosticRejectionCount": 2
+  },
+  "actual_json_graphs": [
+    {
+      "fixtureId": "qa-json-body-control-v2",
+      "fileName": "qa-json-body-control-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "httpProbeGraph": null,
+      "jsonBodySource": {
+        "sourceSha256": "292d75762a0bc9f6924bc3ec5f9f2649795043768f45405ceec4c6015ac25a6c",
+        "expectedContractSha256": "e893d69244f75d85b4582fbcfb3216296d942850109795ff6b263a9548f05122",
+        "case": "control",
+        "syntheticOnly": true,
+        "candidateNullSemantics": "NOT_ASSUMED",
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "jsonBodyGraph": {
+        "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+        "nativeActionCount": 16,
+        "httpActionCount": 2,
+        "primaryMethod": "POST",
+        "continuationMethod": "GET",
+        "case": "control",
+        "bodySha256": "50103cbcffdeeeb4230c47e5fad78b2fac22fbba52b444bd440d7a42e025be6a",
+        "candidateNullSemantics": "NOT_ASSUMED",
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "jsonBodyCausalMutations": {
+        "status": "PASS_LOCAL_NEGATIVE_CONTROLS",
+        "rejected": [
+          "external-host",
+          "changed-loopback-path",
+          "borrowed-input",
+          "wrong-url-range",
+          "get-instead-of-post",
+          "form-instead-of-json",
+          "missing-json-body",
+          "extra-header",
+          "dropped-first-field",
+          "wrong-item-type",
+          "lost-zero",
+          "false-coerced-to-text",
+          "extra-candidate-value",
+          "continuation-post",
+          "continuation-wrong-input",
+          "borrowed-response-producer",
+          "unreviewed-extra-network",
+          "extra-nothing",
+          "clear-borrows-input",
+          "trace-current-date-lost",
+          "trace-store-replaced",
+          "response-edge-replaced",
+          "trace-envelope-replaced",
+          "final-output-replaced"
+        ],
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "exportUnicodeDiagnosticGraph": null,
+      "fileMaterializationSource": null,
+      "n03TextEqualitySource": null,
+      "fileMaterializationGraph": null,
+      "bindingDefaultsSource": null,
+      "bindingDefaultsGraph": null,
+      "recordEmptyFeasibilitySource": null,
+      "recordEmptyFeasibilityGraph": null,
+      "nativeBoundarySource": null,
+      "nativeBoundaryGraph": null,
+      "debugLabelSource": null,
+      "debugLabelGraph": null,
+      "debugLabelCausalMutations": null,
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "292d75762a0bc9f6924bc3ec5f9f2649795043768f45405ceec4c6015ac25a6c",
+      "unsignedPlistSha256": "622c9fd50da41a375a77a7908feb280edf4b4e4148756dadd54f077c52776038",
+      "nativeActionCount": 16,
+      "actionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.nothing",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.text.combine",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ]
+    },
+    {
+      "fixtureId": "qa-json-body-null-candidate-v2",
+      "fileName": "qa-json-body-null-candidate-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "httpProbeGraph": null,
+      "jsonBodySource": {
+        "sourceSha256": "6803a3efe34a1f374a255c948d9f401a752b0eec7bf55b6b492c4748b4bf50f0",
+        "expectedContractSha256": "fb984a98169609c93962f86098b91f986169bdf31895b45e787e6c6cf8e20fc3",
+        "case": "null-candidate",
+        "syntheticOnly": true,
+        "candidateNullSemantics": "NOT_ASSUMED",
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "jsonBodyGraph": {
+        "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+        "nativeActionCount": 16,
+        "httpActionCount": 2,
+        "primaryMethod": "POST",
+        "continuationMethod": "GET",
+        "case": "null-candidate",
+        "bodySha256": "7423de3b4519b7ee778449f575822bf656b91b1a85fbb800cedfd619987298af",
+        "candidateNullSemantics": "NOT_ASSUMED",
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "jsonBodyCausalMutations": {
+        "status": "PASS_LOCAL_NEGATIVE_CONTROLS",
+        "rejected": [
+          "external-host",
+          "changed-loopback-path",
+          "borrowed-input",
+          "wrong-url-range",
+          "get-instead-of-post",
+          "form-instead-of-json",
+          "missing-json-body",
+          "extra-header",
+          "dropped-first-field",
+          "wrong-item-type",
+          "lost-zero",
+          "false-coerced-to-text",
+          "extra-candidate-value",
+          "continuation-post",
+          "continuation-wrong-input",
+          "borrowed-response-producer",
+          "unreviewed-extra-network",
+          "extra-nothing",
+          "clear-borrows-input",
+          "trace-current-date-lost",
+          "trace-store-replaced",
+          "response-edge-replaced",
+          "trace-envelope-replaced",
+          "final-output-replaced"
+        ],
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      },
+      "exportUnicodeDiagnosticGraph": null,
+      "fileMaterializationSource": null,
+      "n03TextEqualitySource": null,
+      "fileMaterializationGraph": null,
+      "bindingDefaultsSource": null,
+      "bindingDefaultsGraph": null,
+      "recordEmptyFeasibilitySource": null,
+      "recordEmptyFeasibilityGraph": null,
+      "nativeBoundarySource": null,
+      "nativeBoundaryGraph": null,
+      "debugLabelSource": null,
+      "debugLabelGraph": null,
+      "debugLabelCausalMutations": null,
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "6803a3efe34a1f374a255c948d9f401a752b0eec7bf55b6b492c4748b4bf50f0",
+      "unsignedPlistSha256": "782040ef656fead1307fc5ed0ed3eaf64b8f45372c4ab378e929fdddedbeb557",
+      "nativeActionCount": 16,
+      "actionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.nothing",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.text.combine",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ]
+    }
+  ],
+  "compiler_binary_sha256": "70c37704293081896af89304505a28eb009504fe739dc88e96b85cdb1bb0bedd",
+  "local_build_vcs_revision_embedded": false,
+  "local_build_source_binding": "Clean linked worktree, explicit source SHA, exact source hashes, fresh build command and binary digest; no embedded VCS revision is asserted when Go omits linked-worktree metadata.",
+  "python_version": "3.12.5 (tags/v3.12.5:ff3bc82, Aug  6 2024, 20:45:27) [MSC v.1940 64 bit (AMD64)]",
+  "clean_receipt_sha256": "2f25480dd9fbe7d1968292364b0019ac51f28acf49b77bfd7c9d65d715e72a1b",
+  "phase0_manifest_sha256": "8d3988cb1c5c3bfbe07a4e3e960e3dbb78c0950ec83a5beb223872df297252be",
+  "phase0_instrumentation_sha256": "18bbe34e17d056d5e1f04a59f3536fb777cdc722187845860eb1a2e82a0a1455",
+  "source_guard": "Fixed two-fixture source/contract hashes and complete actual16-action graph before signing.",
+  "listener_limits": {
+    "host": "127.0.0.1",
+    "port": "ephemeral",
+    "fresh_nonce": true,
+    "body_bytes": 8192,
+    "requests": 4,
+    "lifetime_seconds": 1800,
+    "socket_timeout_seconds": 2,
+    "expected_order": [
+      "POST primary",
+      "GET continued"
+    ]
+  },
+  "interpretation": {
+    "observation_status_is_not_null_support": true,
+    "candidate_null_semantics": "NOT_ASSUMED",
+    "native_runtime": "NOT_RUN",
+    "formal_acceptance_granted": false,
+    "formal_requirements_proved": []
+  },
+  "retained_draft_failures": [
+    {
+      "stage": "initial raw native fixture",
+      "result": "NATIVE_OUTPUT_ID_MISSING",
+      "raw_sha256": "44beda712a2ea35db408cf725b2cb8e6807466d7ca20c7e3d7e45c98bbd0d35b",
+      "correction": "Added explicit fixed UUID/name to the consumed native POST producer; no compiler change."
+    },
+    {
+      "stage": "initial graph observer",
+      "result": "JSON_HTTP_PRODUCERS",
+      "correction": "Unused GET has no output UUID; replaced assumption with exact full16-action and all edge validation."
+    },
+    {
+      "stage": "first source transfer",
+      "result": "SyntaxError before execution from truncated orchestration payload",
+      "job_id": "job_a3517001d068",
+      "correction": "Validated complete compressed transfer and every source hash before replay."
+    },
+    {
+      "stage": "mistyped old publication test pattern",
+      "result": "0 tests; exit5",
+      "raw_sha256": "b0281afc5a8f851fedc2bba09c88d720f4dcc47a2a487e40928c779cb967ff8c",
+      "correction": "Actual test_public_artifacts.py17 tests executed and passed."
+    },
+    {
+      "stage": "standalone Phase0 setup",
+      "result": "FileNotFoundError on missing runtime output directory",
+      "raw_sha256": "05aadbb2fcc06fed71bd848a943693958a5fe173a4cc0484a7917ab4a46dc7bf",
+      "correction": "Restored the same owned output directories created by the unchanged outer shell; identical Phase0 then passed."
+    }
+  ]
+}

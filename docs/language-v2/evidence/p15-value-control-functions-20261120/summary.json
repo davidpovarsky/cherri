@@ -1,0 +1,79 @@
+{
+  "formatVersion": 1,
+  "baselineSource": "5bfa6823ac05b24a67ecb2d0d9bc70a679057f56",
+  "implementation": "9d675c8ac60bf5f5716b15730185d8d1ffa1e082",
+  "cleanSource": "8196315a89ba3e0b13d5424d93f859fabe51e657",
+  "baseline": {
+    "failedLeaves": 10,
+    "passedLeaves": 7,
+    "rawSHA256": "1292c4fbae1fa78ff6af1f84ebde3d4144a520dc73d8417acb1f535c67832f07"
+  },
+  "cleanRecords": [
+    {
+      "name": "root",
+      "argv": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "6m",
+        "-run",
+        "^TestP15(ValueControlFunctionDiscovery.*|FunctionOptionalPresence.*|OptionalEmptyListResultIsPresent|F04.*)$",
+        "."
+      ],
+      "startedUTC": "2026-11-20T10:44:42.392904+00:00",
+      "finishedUTC": "2026-11-20T10:44:49.025603+00:00",
+      "elapsed": 6.625,
+      "exit": 0,
+      "rawSHA256": "b77eead7b6fa1b21ee73b9134275bad324aeb6494686ed74b99c848b1092d4e3",
+      "rawBytes": 240648,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "passCount": 246,
+      "failures": [],
+      "skips": []
+    },
+    {
+      "name": "lower",
+      "argv": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "6m",
+        "./internal/language/lower"
+      ],
+      "startedUTC": "2026-11-20T10:44:49.167299+00:00",
+      "finishedUTC": "2026-11-20T10:44:52.494174+00:00",
+      "elapsed": 3.3290000000270084,
+      "exit": 0,
+      "rawSHA256": "8242bb8b425082d3a0f16c61545f5901a1311cea19625695266c755c879f62cb",
+      "rawBytes": 66403,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "passCount": 69,
+      "failures": [],
+      "skips": []
+    }
+  ],
+  "completeNativeGraphs": 17,
+  "causalGraphCorruptions": 128,
+  "archiveSHA256": "4df6eacee367d13d680e855ced25eac39f780bd6724db2f742bbfebded1fbc9a",
+  "archiveBytes": 110648,
+  "archiveMembers": 104,
+  "sourceWitnesses": 20,
+  "asanaTask": "1220736208498128",
+  "appleRuntimeExecuted": false,
+  "collectedOptionalFidelityClaimed": false,
+  "formal179Credit": false,
+  "consumerTupleChanged": false,
+  "review": {
+    "reviewer": "/root/acceptance",
+    "kind": "read_only_independent_review",
+    "recordedUTC": "2026-11-20T10:50:34.127740+00:00",
+    "statement": "No concrete regression/fail-open found. Four expression-role controls delegate to existing statement traversal;17 complete native graphs model dispatcher/caller/control/output;8 corruptions for each called case target actual edges/markers. Reviewer did not execute tests or grant collected Optional/List native fidelity."
+  },
+  "scope": "Bounded value-control user-function discovery repair; existing canonical dispatcher and control paths"
+}
