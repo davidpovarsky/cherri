@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "compiler_source_sha": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+  "runtime_source_sha": "7f044196d042dcdbbcc7401dcc96177f059b0db3",
+  "source_path": "tools/shortcuts-simulator-qa/fixtures/qa-date-difference-diagnostic-v2.cherri",
+  "source_sha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+  "local_unsigned_sha256": "2c7b10160a569845c47327e5daee68388c4a26041ba1759ca78f497b2dad4c0a",
+  "scope": "Same-production-source clean local compilation, not downloaded native unsigned bytes; metadata-only observation inputs.",
+  "date_producers": [
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.date",
+      "WFWorkflowActionParameters": {
+        "CustomOutputName": "startDate",
+        "UUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+        "WFDateActionDate": "2001-02-03T04:05:06Z",
+        "WFDateActionMode": "Specified Date"
+      }
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.date",
+      "WFWorkflowActionParameters": {
+        "CustomOutputName": "sameDate",
+        "UUID": "AFE38682-03B4-482F-A388-9F42DF5D9000",
+        "WFDateActionDate": "2001-02-03T04:05:06Z",
+        "WFDateActionMode": "Specified Date"
+      }
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.date",
+      "WFWorkflowActionParameters": {
+        "CustomOutputName": "laterDate",
+        "UUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+        "WFDateActionDate": "2001-02-03T04:06:06Z",
+        "WFDateActionMode": "Specified Date"
+      }
+    }
+  ],
+  "positive_seconds": {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.gettimebetweendates",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "positiveSeconds",
+      "UUID": "9A16988F-F205-4684-89B0-4AEC9AFFB135",
+      "WFInput": {
+        "Value": {
+          "OutputName": "laterDate",
+          "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFTimeUntilFromDate": {
+        "Value": {
+          "OutputName": "startDate",
+          "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFTimeUntilUnit": "Seconds"
+    }
+  },
+  "format_start": {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.format.date",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "startDateFormatted",
+      "UUID": "FD7806F7-20E3-4277-9250-D57B2932D4C5",
+      "WFDate": {
+        "Value": {
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "￼"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "WFDateFormat": "yyyy-MM-dd'T'HH:mm:ssXXXXX",
+      "WFDateFormatStyle": "Custom",
+      "WFLocale": "en_US_POSIX",
+      "WFTimeFormatStyle": "None"
+    }
+  }
+}

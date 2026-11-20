@@ -21,6 +21,13 @@ JSON_INPUT_PINS = {
     SCRIPT: "5e6a502f8c292d1e6db5d7df7cc49f48bbadb426679e4260ccce7d419f082454",
 }
 
+DATE_WIRE = "tools/shortcut-runtime/fixtures/date-field-compiled-controls.json"
+DATE_INPUT_PINS = {
+    DATE_WIRE: "6978f99988123cb91be759648ca5fc476ae83a02ea33e8e3481c6b4a4275edf6",
+    "tools/shortcut-runtime/jxa/probe_single_action.js": "872975cda77ab0dda41de0e1aa97214b1a73dd9f9d7bda12a2c7d486b50db415",
+}
+
+
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
@@ -28,8 +35,9 @@ def digest(data):
 
 def checked_input_files(root, source_sha, kind, git):
     inputs = {}
-    if kind == "json-container-null":
-        for relative, expected in JSON_INPUT_PINS.items():
+    pins = JSON_INPUT_PINS if kind == "json-container-null" else DATE_INPUT_PINS if kind == "date-field-parameters" else {}
+    if pins:
+        for relative, expected in pins.items():
             data = (root / relative).read_bytes()
             if digest(data) != expected or data != git("show", source_sha + ":" + relative):
                 raise SystemExit("Pinned authored observation input differs from source")
@@ -49,7 +57,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--observation-kind", choices=("literal-object-character", "json-container-null"),
+    parser.add_argument("--observation-kind", choices=("literal-object-character", "json-container-null", "date-field-parameters"),
                         default="literal-object-character")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
@@ -64,7 +72,7 @@ def main():
     prelude = args.prelude.read_bytes()
     if digest(prelude) != PRELUDE_SHA256:
         raise SystemExit("Pinned prelude bytes differ")
-    script_path = JSON_SCRIPT if args.observation_kind == "json-container-null" else SCRIPT
+    script_path = JSON_SCRIPT if args.observation_kind in ("json-container-null", "date-field-parameters") else SCRIPT
     script = (root / script_path).read_bytes()
     if script != git("show", args.source_sha + ":" + script_path):
         raise SystemExit("Observation script differs from source")
@@ -75,13 +83,17 @@ def main():
     command = ["/usr/bin/osascript", "-l", "JavaScript", str(combined), str(args.output / "observations-original.json")]
     if args.observation_kind == "json-container-null":
         command.extend([str(root / JSON_BODY), str(root / S01_CONTROLS)])
-        for relative, data in input_files.items():
-            (args.output / ("input-original-" + Path(relative).name)).write_bytes(data)
+    elif args.observation_kind == "date-field-parameters":
+        command.extend(["date-field-parameters", str(root / DATE_WIRE)])
+    for relative, data in input_files.items():
+        (args.output / ("input-original-" + Path(relative).name)).write_bytes(data)
     now = lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
     receipt = {
         "format_version": 1, "source_sha": args.source_sha, "run_id": args.run_id,
         "source_clean_before": True,
-        "scope": "JSON/null/container and S01 serialization observations only" if input_files else "S01 serialization observation only",
+        "scope": {"literal-object-character": "S01 serialization observation only",
+                  "json-container-null": "JSON/null/container and S01 serialization observations only",
+                  "date-field-parameters": "Date parameter-state serialization observations only"}[args.observation_kind],
         "observation_kind": args.observation_kind,
         "shortcut_runtime": False, "mock": False, "command": command,
         "http_executed": False, "formal_acceptance_granted": False,

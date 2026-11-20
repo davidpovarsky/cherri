@@ -17,6 +17,11 @@ on:
         required: false
         default: false
         type: boolean
+      date_field_parameter_only:
+        description: Observe fixed public Date references and parameter states without running actions
+        required: false
+        default: false
+        type: boolean
       literal_observer_runner:
         description: Native observer runner; platform is recorded and does not establish final target runtime
         required: false
@@ -42,7 +47,7 @@ env:
 jobs:
   literal-object-character:
     name: S01 literal object character serialization observations
-    if: ${{ inputs.literal_object_character_only && !inputs.json_container_null_only }}
+    if: ${{ inputs.literal_object_character_only && !inputs.json_container_null_only && !inputs.date_field_parameter_only }}
     runs-on: ${{ inputs.literal_observer_runner }}
     timeout-minutes: 10
     steps:
@@ -74,7 +79,7 @@ jobs:
 
   json-container-null:
     name: JSON/null and S01 direct native-object serialization observations
-    if: ${{ inputs.json_container_null_only }}
+    if: ${{ inputs.json_container_null_only && !inputs.date_field_parameter_only }}
     runs-on: ${{ inputs.literal_observer_runner }}
     timeout-minutes: 10
     steps:
@@ -106,8 +111,43 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  date-field-parameters:
+    name: Date parameter-state metadata observations
+    if: ${{ inputs.date_field_parameter_only }}
+    runs-on: ${{ inputs.literal_observer_runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Observe Date reference serialization without executing actions
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          test '${{ inputs.literal_object_character_only }}' != 'true'
+          test '${{ inputs.json_container_null_only }}' != 'true'
+          prelude_repo="$RUNNER_TEMP/date-parameter-shortcutkit"
+          git init "$prelude_repo"
+          git -C "$prelude_repo" remote add origin https://github.com/frontboat/shortcutkit.git
+          git -C "$prelude_repo" fetch --depth=1 origin ee52c32937053268e4a035eba4b372fe77ec6411
+          git -C "$prelude_repo" checkout --detach FETCH_HEAD
+          test "$(git -C "$prelude_repo" rev-parse HEAD)" = ee52c32937053268e4a035eba4b372fe77ec6411
+          python3 -B tools/shortcut-runtime/observe_literal_object_character.py \
+            --observation-kind date-field-parameters \
+            --prelude "$prelude_repo/tools/jxa-prelude.js" \
+            --output "$RUNNER_TEMP/date-parameter-observation" \
+            --source-sha "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+      - name: Retain original Date parameter observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: date-parameter-native-observation
+          path: ${{ runner.temp }}/date-parameter-observation/
+          if-no-files-found: error
+          retention-days: 14
+
   preflight:
-    if: ${{ !inputs.literal_object_character_only && !inputs.json_container_null_only }}
+    if: ${{ !inputs.literal_object_character_only && !inputs.json_container_null_only && !inputs.date_field_parameter_only }}
     name: Host preflight verification (macOS 27)
     runs-on: xcode-27
     timeout-minutes: 5
