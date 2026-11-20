@@ -114,9 +114,7 @@ func TestP15RP44ExtractedCacheAndBundleSelection(t *testing.T) {
 				}
 				p15AssertDoctorBinary(t, doctorOutput, selected)
 				wantMigration := filepath.ToSlash(filepath.Join(filepath.Dir(selected), "cherri-migrate"))
-				if !strings.Contains(strings.ReplaceAll(doctorOutput, "\\", "/"), "Migration tool: "+wantMigration+" (source and role verified)") {
-					t.Fatalf("doctor selected an unrelated migration companion: %s", doctorOutput)
-				}
+				p15AssertDoctorMigration(t, doctorOutput, wantMigration)
 			}
 			for path, data := range before {
 				if !bytes.Equal(p15InstallRead(t, path), data) {

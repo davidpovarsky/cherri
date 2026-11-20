@@ -77,3 +77,22 @@ func p15InstallCopyPair(t *testing.T, from, to string) {
 		}
 	}
 }
+
+// Compare the selected file identity, not Git Bash's /tmp vs Windows spelling.
+func p15AssertDoctorMigration(t *testing.T, output, expected string) {
+	t.Helper()
+	chosen := ""
+	for _, line := range strings.Split(output, "\n") {
+		if !strings.HasPrefix(line, "Migration tool: ") {
+			continue
+		}
+		if chosen != "" || !strings.HasSuffix(line, " (source and role verified)") {
+			t.Fatalf("missing/duplicate migration identity assertion: %s", output)
+		}
+		chosen = strings.TrimSuffix(strings.TrimPrefix(line, "Migration tool: "), " (source and role verified)")
+	}
+	if chosen == "" {
+		t.Fatalf("doctor omitted selected migration file: %s", output)
+	}
+	p15AssertDoctorBinary(t, "Cherri: "+chosen+"\n", expected)
+}

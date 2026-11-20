@@ -57,9 +57,7 @@ func TestP15RP45ExtractedRuntimePair(t *testing.T) {
 			t.Fatalf("actual extracted runtime doctor: %v\n%s", err, out)
 		}
 		p15AssertDoctorBinary(t, out, compiler)
-		if !strings.Contains(strings.ReplaceAll(out, "\\", "/"), "Migration tool: "+filepath.ToSlash(helper)+" (source and role verified)") {
-			t.Fatalf("runtime doctor did not select the shipped migration file: %s", out)
-		}
+		p15AssertDoctorMigration(t, out, helper)
 		if _, err := os.Stat(filepath.Join(home, "bin", "cherri")); !os.IsNotExist(err) {
 			t.Fatalf("runtime positive accidentally used a built/cached compiler: %v", err)
 		}
