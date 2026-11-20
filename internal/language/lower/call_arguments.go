@@ -25,14 +25,14 @@ func (l *Lowerer) lowerProvidedFunctionValues(call *syntax.CallExpr) (interface{
 	var primary interface{}
 	var err error
 	if call.PrimaryArg != nil {
-		primary, err = l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
+		primary, err = l.lowerFunctionArgumentValue(call, -1, call.PrimaryArg)
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 	named := make([]interface{}, len(call.NamedArgs))
 	for index, argument := range call.NamedArgs {
-		named[index], err = l.lowerCallArgumentValue(call, index, argument.Value)
+		named[index], err = l.lowerFunctionArgumentValue(call, index, argument.Value)
 		if err != nil {
 			return nil, nil, err
 		}
