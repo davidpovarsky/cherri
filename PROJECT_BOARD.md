@@ -149,3 +149,7 @@ The real full179 result at frozen K 8e66254d is 95 PASS / 2 FAIL / 82 pending or
 RP11 now independently executes eleven captured-Apple native parameter comparisons, semantic Number checks and58 causal wire/reference/range controls. Clean8c1305b3 produced248 outer and83 inner named passes with45 source hashes and two RP11-only tier records. Original failed test expectations remain retained. No linked T03/T09/R03 or Apple/runtime/final release credit is inherited. See docs/language-v2/p15-rp11-parameter-wire-20261120.md.
 
 RP11 follow-up: independent review found unbound mutable initializer/store inputs in the first consumer-only oracle. Clean8cb6ae7b exposed12 causal failures. Strengthened8042bdf8 independently binds each source producer/value to its store and consumer;260 outer and95 inner named cases now pass, including70 causal native controls. The earlier receipts remain unchanged and are qualified by their narrower historical scope.
+
+## 2026-11-20 — U01 repository declaration boundary component
+
+Actual clean-source production passed 135 outer / 14 child named tests on 6bdddd6d5ea3012b806ae82239cd7a7fe49e2138. All 26 declaration inputs were reconciled with four immutable baselines: 24 unchanged since the continuation and two reviewed one-token label corrections. Fifty producer source blobs and the three original child artifacts were independently verified. U01 receives one local repository record only; final 179-row closure remains open. See [the original evidence audit](docs/language-v2/p15-u01-upstream-boundary-20261120.md).
