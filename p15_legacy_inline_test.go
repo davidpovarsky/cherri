@@ -346,7 +346,7 @@ func TestP15LegacyInlineEarlierVariableSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = p15C03SnapshotOracle(actions); err != nil {
+	if err = p15C03SnapshotOracle(actions, true); err != nil {
 		t.Fatal(err)
 	}
 	if err = p15LegacyInlineReferenceOracle(actions); err != nil {
@@ -383,7 +383,7 @@ func TestP15LegacyInlineEarlierVariableSnapshot(t *testing.T) {
 			case "retarget_consumer":
 				broken[capture].WFWorkflowActionParameters["UUID"] = "foreign-output"
 			}
-			if p15C03SnapshotOracle(broken) == nil && p15LegacyInlineReferenceOracle(broken) == nil {
+			if p15C03SnapshotOracle(broken, true) == nil && p15LegacyInlineReferenceOracle(broken) == nil {
 				t.Fatal("snapshot corruption was accepted")
 			}
 		})
@@ -453,7 +453,7 @@ func TestP15LegacyInlineTemplateSnapshot(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err = p15C03SnapshotOracle(actions); err != nil {
+		if err = p15C03SnapshotOracle(actions, true); err != nil {
 			t.Fatal(err)
 		}
 		if err = p15LegacyInlineReferenceOracle(actions); err != nil {

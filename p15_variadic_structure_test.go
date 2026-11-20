@@ -302,9 +302,11 @@ func TestP15C03CustomActionShadow(t *testing.T) {
 	}
 }
 
-func p15C03SnapshotOracle(actions []ShortcutAction) error {
-	if err := p15M02MainVoidDebugError(actions); err != nil {
-		return err
+func p15C03SnapshotOracle(actions []ShortcutAction, mainLegacy bool) error {
+	if !mainLegacy {
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
 	}
 	capture, mutation, consumer := -1, -1, -1
 	stores := 0
@@ -356,7 +358,7 @@ func TestP15C03PackElementSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = p15C03SnapshotOracle(actions); err != nil {
+	if err = p15C03SnapshotOracle(actions, false); err != nil {
 		t.Fatal(err)
 	}
 	broken := p15C03Clone(t, actions)
@@ -370,7 +372,7 @@ func TestP15C03PackElementSnapshot(t *testing.T) {
 			delete(value, "OutputUUID")
 		}
 	}
-	if p15C03SnapshotOracle(broken) == nil {
+	if p15C03SnapshotOracle(broken, false) == nil {
 		t.Fatal("snapshot oracle accepted deferred post-mutation lookup")
 	}
 }

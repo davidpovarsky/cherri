@@ -261,8 +261,19 @@ func TestP15SetterNamedModeWordsRemainData(t *testing.T) {
 					if err := p15M02MainVoidBoundaryError(actions); err != nil {
 						t.Fatal(err)
 					}
-					if len(actions) != 3 {
-						t.Fatal("literal input, setter, and main result changed cardinality")
+					want := 3
+					if action == "editEvent" {
+						// Calendar's native variable codec materializes the literal;
+						// Reminder's Text field retains the direct scalar.
+						want++
+					}
+					if len(actions) != want || actions[0]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" ||
+						p15Param(actions[0])["WFTextActionText"] != "PUBLIC_SYNTHETIC_TARGET" {
+						t.Fatal("literal input, setter, and main result changed cardinality or identity")
+					}
+					if action == "editEvent" && (actions[1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" ||
+						p15Param(actions[1])["WFTextActionText"] != value) {
+						t.Fatal("Calendar lost the exact literal value producer")
 					}
 					last := actions[len(actions)-2]
 					kind, property := "is.workflow.actions.setters.calendarevents", "WFCalendarEventContentItemURL"
@@ -270,6 +281,10 @@ func TestP15SetterNamedModeWordsRemainData(t *testing.T) {
 						kind, property = "is.workflow.actions.setters.reminders", "WFReminderContentItemURL"
 					}
 					p := p15Param(last)
+					target, okay := p15Param(actions[0])["UUID"].(string)
+					if !okay || target == "" || requireOutputUUID(p["WFInput"]) != target {
+						t.Fatal("setter lost the actual target producer")
+					}
 					if last["WFWorkflowActionIdentifier"] != kind || p["Mode"] != mode || p["WFContentItemPropertyName"] != "URL" {
 						t.Fatalf("named data changed setter identity/mode/property: %v", last)
 					}
