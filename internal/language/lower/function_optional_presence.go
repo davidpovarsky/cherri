@@ -31,6 +31,56 @@ func functionEnvelopeValue(value interface{}) interface{} {
 	return value
 }
 
+// Store the presence before the corresponding value write. The authored RHS
+// has already been evaluated; keeping the value write last preserves its
+// ordinary native output for a following action with implicit input.
+func (l *Lowerer) storeOptionalPresence(name string, presence interface{}) *ir.AttachmentToken {
+	input := l.materializeToAttachment(presence)
+	l.emitAction(&ir.NativeActionNode{
+		NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{"WFVariableName": name, "WFInput": input},
+	})
+	return &ir.AttachmentToken{Type: "Variable", OutputName: name}
+}
+
+func (l *Lowerer) newMutableOptionalPresence(presence interface{}) *ir.AttachmentToken {
+	return l.storeOptionalPresence("_cherri_optional_presence_"+l.GenerateUUID(), presence)
+}
+
+// An immutable value snapshot must freeze its presence too. A deferred
+// mutable flag would otherwise observe a later assignment to the source.
+func (l *Lowerer) snapshotOptionalPresence(presence interface{}) interface{} {
+	token, variable := presence.(*ir.AttachmentToken)
+	if !variable || token.Type != "Variable" {
+		return presence
+	}
+	uuid := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID: uuid, AppleIdentifier: "is.workflow.actions.getvariable", OutputUUID: uuid,
+		Parameters: map[string]interface{}{"WFVariable": token},
+	})
+	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}
+}
+
+func (l *Lowerer) assignOptionalPresence(binding BindingRef, assignment *syntax.AssignStmt, value interface{}) (interface{}, error) {
+	tracked := binding.OptionalPresence != nil || types.MayBeAbsent(binding.Type) || value == nil || l.hasOptionalPresence(assignment.Value)
+	if !tracked {
+		return nil, nil
+	}
+	var presence interface{} = "1"
+	if assignment.Op == syntax.TokenAssign {
+		var err error
+		presence, err = l.optionalValuePresence(assignment.Value, value)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if token, okay := binding.OptionalPresence.(*ir.AttachmentToken); okay && token.Type == "Variable" {
+		return l.storeOptionalPresence(token.OutputName, presence), nil
+	}
+	return l.newMutableOptionalPresence(presence), nil
+}
+
 // Only compiler-owned presence participates in these predicates. Imported raw
 // native predicates and unrelated action-content tests retain their own wire.
 func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {

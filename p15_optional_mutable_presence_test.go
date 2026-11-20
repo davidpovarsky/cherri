@@ -301,3 +301,152 @@ func TestP15OptionalMutableCompoundKeepsNarrowedPresence(t *testing.T) {
 		})
 	}
 }
+
+func p15MutableOptionalCopyError(actions []map[string]any) error {
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	envelope := g.header("echo")
+	g.get("arg_0", envelope)
+	tc := p15MutableOptionalPresentValues()[0]
+	original := p15MutableOptionalAssignGraph(g, "", false, tc)
+	copied := p15MutablePresenceName(g)
+	if copied == original {
+		g.err = fmt.Errorf("independent mutable values share one presence variable")
+	}
+	g.emit("setvariable", map[string]any{"WFVariableName": copied, "WFInput": p15FunctionVariable(original)})
+	g.emit("setvariable", map[string]any{"WFVariableName": "kept", "WFInput": p15FunctionVariable("candidate")})
+	p15MutableOptionalAssignGraph(g, original, true, tc)
+	group := g.conditional(4, p15FunctionVariable(copied), "WFConditionalActionString", "0")
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(1)})
+	g.boundary(group, 1, false)
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(0)})
+	g.output(g.boundary(group, 2, true))
+	g.caller()
+	result := g.call(g.payload("echo", p15FunctionString("unused")))
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
+	return g.finish()
+}
+
+func TestP15OptionalMutableCopyHasIndependentPresence(t *testing.T) {
+	source := "function echo(seed:Text)->Bool{var candidate:Text?=none;var kept:Text?=candidate;candidate=\"\";return kept==none}\ngetVariable(echo(\"unused\"))"
+	if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
+		t.Fatal(diagnostics)
+	}
+	actions := p15CompiledActions(t, source)
+	if err := p15MutableOptionalCopyError(actions); err != nil {
+		t.Fatal(err)
+	}
+	bad := p15ContainerCloneNative(t, actions)
+	if err := p15MutableOptionalCopyError(bad); err != nil {
+		t.Fatal("unchanged typed clone must pass", err)
+	}
+	names := []string{}
+	for _, action := range bad {
+		if name, ok := p15Param(action)["WFVariableName"].(string); ok && strings.HasPrefix(name, "_cherri_optional_presence_") {
+			if len(names) == 0 || name != names[0] {
+				names = append(names, name)
+			}
+		}
+	}
+	if len(names) != 2 {
+		t.Fatal("independent presence identities missing", names)
+	}
+	var replace func(any)
+	replace = func(value any) {
+		switch v := value.(type) {
+		case map[string]any:
+			for key, child := range v {
+				if text, ok := child.(string); ok && text == names[1] {
+					v[key] = names[0]
+				} else {
+					replace(child)
+				}
+			}
+		case []any:
+			for _, child := range v {
+				replace(child)
+			}
+		}
+	}
+	for _, action := range bad {
+		replace(action)
+	}
+	if p15MutableOptionalCopyError(bad) == nil {
+		t.Fatal("shared mutable presence identities accepted")
+	}
+}
+
+func p15MutableOptionalImplicitInputError(actions []map[string]any) error {
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	envelope := g.header("echo")
+	g.get("arg_0", envelope)
+	g.emit("gettext", map[string]any{"WFTextActionText": "OPTIONAL_PREVIOUS_SEED"})
+	authored := g.value("detect.text", map[string]any{"UUID": "alpha"})
+	present := g.value("gettext", map[string]any{"WFTextActionText": "1"})
+	flag := p15MutablePresenceName(g)
+	g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(present)})
+	value := g.value("gettext", map[string]any{"WFTextActionText": p15FunctionText("\ufffc", authored)})
+	g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})
+	g.emit("detect.text", nil)
+	p15MutableOptionalAssignGraph(g, flag, false, p15MutableOptionalPresentValues()[0])
+	g.emit("detect.text", nil)
+	g.output(g.value("gettext", map[string]any{"WFTextActionText": "DONE"}))
+	g.caller()
+	result := g.call(g.payload("echo", p15FunctionString("unused")))
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
+	return g.finish()
+}
+
+func TestP15OptionalMutableMetadataPreservesImplicitInputOrder(t *testing.T) {
+	source := `function echo(seed:Text)->Text{
+text("OPTIONAL_PREVIOUS_SEED")
+var candidate:Text?=f"{native.action("is.workflow.actions.detect.text", {})}"
+native.action("is.workflow.actions.detect.text", {})
+candidate=none
+native.action("is.workflow.actions.detect.text", {})
+return "DONE"
+}
+getVariable(echo("unused"))`
+	if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
+		t.Fatal(diagnostics)
+	}
+	actions := p15CompiledActions(t, source)
+	if err := p15MutableOptionalImplicitInputError(actions); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"metadata_before_rhs", "metadata_after_value", "lost_clear"} {
+		t.Run(fault, func(t *testing.T) {
+			bad := p15ContainerCloneNative(t, actions)
+			if err := p15MutableOptionalImplicitInputError(bad); err != nil {
+				t.Fatal("unchanged typed clone must pass", err)
+			}
+			first, last, write := -1, -1, -1
+			for i, action := range bad {
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.detect.text" {
+					if first < 0 {
+						first = i
+					}
+					last = i
+				}
+				if p15Param(action)["WFVariableName"] == "candidate" && write < 0 {
+					write = i
+				}
+			}
+			if first < 0 || last <= first || write <= first {
+				t.Fatal("implicit-input control target missing")
+			}
+			switch fault {
+			case "metadata_before_rhs":
+				bad[first], bad[first+1] = bad[first+1], bad[first]
+			case "metadata_after_value":
+				metadata := bad[write-2]
+				copy(bad[write-2:write], bad[write-1:write+1])
+				bad[write] = metadata
+			case "lost_clear":
+				bad = append(bad[:last-2], bad[last-1:]...)
+			}
+			if p15MutableOptionalImplicitInputError(bad) == nil {
+				t.Fatal("metadata changed an authored implicit input without rejection")
+			}
+		})
+	}
+}
