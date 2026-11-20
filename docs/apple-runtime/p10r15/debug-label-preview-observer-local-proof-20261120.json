@@ -1,0 +1,90 @@
+{
+  "schema_version": "1",
+  "implementation_sha": "b22c5e5163f515778ec507eb575ab845c4f83a71",
+  "source_fixture_component": "7ce7ceaec1134d6b37140d075d27c2b7a2b3947b",
+  "clean_source_replay": {
+    "schema_version": "1",
+    "implementation_sha": "b22c5e5163f515778ec507eb575ab845c4f83a71",
+    "clean_before": true,
+    "clean_after": true,
+    "native_execution": "NOT_RUN",
+    "commands": [
+      {
+        "label": "preview-policy-compile",
+        "exit_code": 0,
+        "elapsed_seconds": 7.484,
+        "log_name": "preview-policy-compile-clean.log",
+        "sha256": "71201513bf6a7cf7aae9773acd271b5c64481916ba4625fea253e58e653b2a5b",
+        "bytes": 255
+      },
+      {
+        "label": "preview-policy-controls",
+        "exit_code": 0,
+        "elapsed_seconds": 0.172,
+        "log_name": "preview-policy-controls-clean.log",
+        "sha256": "f5ea656ffadf8f67d17980b4b4a3f2d0599b1d6e72b65ae9a8bdf8ed148f10a9",
+        "bytes": 88
+      },
+      {
+        "label": "preview-swift-parse",
+        "exit_code": 0,
+        "elapsed_seconds": 0.281,
+        "log_name": "preview-swift-parse-clean.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "label": "preview-python-controls",
+        "exit_code": 0,
+        "elapsed_seconds": 16.235,
+        "log_name": "preview-python-controls-clean.log",
+        "sha256": "fc72c9f5df354e05cf2626e2310d57e24299b38d4d0860b71ae40bf0e18cb0f8",
+        "bytes": 4014
+      },
+      {
+        "label": "preview-publication-controls",
+        "exit_code": 1,
+        "elapsed_seconds": 0.203,
+        "log_name": "preview-publication-controls-clean.log",
+        "sha256": "246ea32ffe7187fb954ef28335191516268056a16a8389e08288fd4abdb0403a",
+        "bytes": 840
+      },
+      {
+        "label": "preview-publication-controls-corrected",
+        "exit_code": 0,
+        "elapsed_seconds": 38.5,
+        "log_name": "preview-publication-controls-corrected-clean.log",
+        "sha256": "769e99b7a18f4fe1d6d73f59ad203a93d8f1381c27c0ed868ebf7349a9d4c44d",
+        "bytes": 2789
+      }
+    ],
+    "verified_gates": [
+      "84 compiled Swift policy assertions",
+      "Swift frontend parse of actual UI files",
+      "21 Python semantic/preview/intake controls",
+      "17 existing publication controls"
+    ],
+    "execution_note": "The first wrapper failed only because the requested publication test module name did not exist; its original failed log is preserved. The existing test_public_artifacts module was then executed without source changes and passed."
+  },
+  "raw_replay_receipt_sha256": "c3af97dd35aa81958aca2a5067e19caea7988046a8e0e2c6815ba6ec7b7c89f0",
+  "result": "PASS_LOCAL_CONTROLS_ONLY",
+  "native_six_mode_status": "NOT_RUN",
+  "formal_acceptance_granted": false,
+  "physical_device_verified": false,
+  "creation_date_value_independently_verified": false,
+  "scope": [
+    "Twelve fixed public Legacy/V2 fixtures retain exact 50-field callback and native trace requirements.",
+    "Four display modes additionally require a fresh current-source/current-run/current-attempt/nonce-bound Quick Look receipt.",
+    "The observer is bounded to 22 seconds, six swipes and sixteen observations and checks current foreground ownership before interaction.",
+    "Only reviewed titles and five fixed visible-label Boolean slots are recorded; no raw title, accessibility tree, source screenshot or image is published.",
+    "Native semantic callback failure cannot be replaced by preview success; plain modes require the exact semantic callback without inventing a preview.",
+    "Creation Date display suffix and second-precision Date comparison do not independently prove an arbitrary Date payload or physical-device behavior."
+  ],
+  "peer_review_controls": [
+    "An owned preview followed by an unrelated sheet with a Done button loses ownership.",
+    "An app.state response arriving after the deadline does not permit a new action.",
+    "Non-overlapping receipt timings and action completion intervals bind to observed total elapsed.",
+    "Non-dated modes reject an observed date suffix.",
+    "Source-bound helper intake rejects fake callback success and a borrowed workflow attempt."
+  ]
+}
