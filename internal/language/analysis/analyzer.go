@@ -1862,15 +1862,17 @@ func (a *Analyzer) resolveType(t syntax.TypeAnnotation) (resolved types.Type) {
 
 	switch ta := t.(type) {
 	case *syntax.NamedTypeAnnotation:
-		if nt, ok := types.ParseNamedType(ta.Name); ok {
-			return nt
-		}
 		aliasName := ta.Name
 		if ta.Namespace != "" {
 			aliasName = ta.Namespace + "." + aliasName
 		}
 		if alias, found := a.typeAliases[aliasName]; found {
 			return alias.owner.resolveTypeAlias(alias.declaration)
+		}
+		if ta.Namespace == "" {
+			if primitive, found := types.ParseNamedType(ta.Name); found {
+				return primitive
+			}
 		}
 		if ta.Namespace != "" {
 			return types.NewEntity(ta.Namespace, ta.Name)
