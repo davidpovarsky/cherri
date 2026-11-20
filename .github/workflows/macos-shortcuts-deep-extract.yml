@@ -6,6 +6,12 @@ on:
       - agent/apple-runtime-extraction-v2
       - agent/cherri-p10-apple-actions-coverage
   workflow_dispatch:
+    inputs:
+      literal_object_character_only:
+        description: Run only the synthetic S01 native serialization observer (no runtime or release credit)
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   actions: read
@@ -20,7 +26,40 @@ env:
   SHORTCUTKIT_COMMIT: ee52c32937053268e4a035eba4b372fe77ec6411
 
 jobs:
+  literal-object-character:
+    name: S01 literal object character serialization observations
+    if: ${{ inputs.literal_object_character_only }}
+    runs-on: xcode-27
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Observe real WorkflowKit serialization
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          prelude_repo="$RUNNER_TEMP/s01-token-shortcutkit"
+          git init "$prelude_repo"
+          git -C "$prelude_repo" remote add origin https://github.com/frontboat/shortcutkit.git
+          git -C "$prelude_repo" fetch --depth=1 origin ee52c32937053268e4a035eba4b372fe77ec6411
+          git -C "$prelude_repo" checkout --detach FETCH_HEAD
+          test "$(git -C "$prelude_repo" rev-parse HEAD)" = ee52c32937053268e4a035eba4b372fe77ec6411
+          python3 -B tools/shortcut-runtime/observe_literal_object_character.py \
+            --prelude "$prelude_repo/tools/jxa-prelude.js" \
+            --output "$RUNNER_TEMP/s01-token-observation" \
+            --source-sha "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+      - name: Retain original native observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: s01-native-token-observation
+          path: ${{ runner.temp }}/s01-token-observation/
+          if-no-files-found: error
+          retention-days: 14
+
   preflight:
+    if: ${{ !inputs.literal_object_character_only }}
     name: Host preflight verification (macOS 27)
     runs-on: xcode-27
     timeout-minutes: 5
