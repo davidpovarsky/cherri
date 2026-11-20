@@ -87,7 +87,12 @@ func (l *Lowerer) restoreNativeInputAfterLiteralCarriers(target *ir.NativeAction
 	previous := l.workflow.Actions[index]
 	if previous.AppleIdentifier == "is.workflow.actions.nothing" {
 		l.materializeYieldValue(nil)
-	} else if reference := l.nativeResultReferences[previous]; reference != nil {
+		return l.emitErr
+	}
+	if !l.knownNativeValueOutput(previous.AppleIdentifier) {
+		return fmt.Errorf("S01_IMPLICIT_INPUT_UNAVAILABLE: preceding action has no established value-output contract; supply an explicit native input")
+	}
+	if reference := l.nativeResultReferences[previous]; reference != nil {
 		l.materializeYieldValue(reference)
 	} else if previous.OutputUUID != "" {
 		l.materializeYieldValue(&ir.AttachmentToken{
