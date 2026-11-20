@@ -58,10 +58,13 @@ func TestP15RP45IdentityValidationOrder(t *testing.T) {
 					other = "amd64"
 				}
 				before, after := []byte("build\tGOARCH="+runtime.GOARCH+"\n"), []byte("build\tGOARCH="+other+"\n")
-				if len(before) != len(after) || bytes.Count(original[f.compiler], before) != 1 {
-					t.Fatal("platform mutation requires one independently observed same-length build setting")
+				copies := bytes.Count(original[f.compiler], before)
+				if len(before) != len(after) || copies < 1 || copies > 2 {
+					t.Fatal("platform mutation requires bounded copies of one independently observed same-length build setting")
 				}
-				changed := bytes.Replace(original[f.compiler], before, after, 1)
+				// Go retains both static build-info and runtime module-info copies.
+				changed := bytes.ReplaceAll(original[f.compiler], before, after)
+				f.receipt["platform_metadata_copies"] = copies
 				p15InstallWrite(t, f.compiler, changed)
 				info, err := buildinfo.ReadFile(f.compiler)
 				if err != nil {
