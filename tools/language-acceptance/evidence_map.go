@@ -470,6 +470,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP11" {
+		return numberWireTestIDs()
+	}
 	if id == "RP16" {
 		return exhaustiveNodeTestIDs()
 	}
@@ -528,6 +531,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP11" {
+		return append([]string{}, numberWireProductionPaths...)
+	}
 	if id == "RP16" {
 		return append([]string{}, exhaustiveNodeProductionPaths...)
 	}
