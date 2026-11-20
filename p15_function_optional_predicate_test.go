@@ -50,7 +50,7 @@ func p15OptionalPredicateSource(tc p15OptionalPredicateCase) string {
 func p15OptionalPredicateError(actions []map[string]any, tc p15OptionalPredicateCase) error {
 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
 	envelope := g.header("echo")
-	_, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+	_, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
 	predicate := g.conditional(tc.code, p15FunctionEdge(presence), "WFConditionalActionString", "0")
 	if tc.context == "value" {
 		g.emit("number", map[string]any{"WFNumberActionNumber": float64(1)})
@@ -144,7 +144,7 @@ func TestP15OptionalNonePredicateOracleRejectsCorruption(t *testing.T) {
 func p15OptionalCallPredicateError(actions []map[string]any, tc p15FunctionOptionalCase, code int) error {
 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
 	envelope := g.header("echo")
-	value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
 	resultGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
 	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
 	g.boundary(resultGroup, 1, false)

@@ -211,7 +211,7 @@ func (l *Lowerer) optionalValuePresence(expr syntax.Expression, value interface{
 	if presence := l.optionalExpressionPresence[expr]; presence != nil {
 		return presence, nil
 	}
-	if types.MayBeAbsent(l.exprTypes[expr]) {
+	if !types.DefinitelyPresent(l.exprTypes[expr]) {
 		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function result transport lacks compiler-owned optional absence at %s", expr.NodeSpan())
 	}
 	return "1", nil
@@ -252,13 +252,12 @@ func (l *Lowerer) optionalCarrier(value, presence interface{}, presenceKey, valu
 }
 
 func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name string, fallback syntax.Expression) (value, presence string, err error) {
-	presenceKey, valueKey := fmt.Sprintf("has_value_%d", slot), fmt.Sprintf("arg_%d", slot)
+	valueKey := fmt.Sprintf("arg_%d", slot)
 	if fallback != nil {
 		supplied := l.optionalField(dictionary, fmt.Sprintf("has_arg_%d", slot), "")
 		group := l.GenerateUUID()
 		l.emitIfStart(group, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: supplied}, 4, "1", true)
-		// Reuse the supplied envelope without touching an absent arg_n field.
-		l.materializeYieldValue(&ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictionary})
+		l.optionalField(dictionary, valueKey, "")
 		l.emitIfElse(group)
 		defaultValue, err := l.lowerCallValue(fallback)
 		if err != nil {
@@ -268,11 +267,13 @@ func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name strin
 		if err != nil {
 			return "", "", err
 		}
-		l.optionalCarrier(defaultValue, defaultPresence, presenceKey, valueKey, "")
+		l.optionalCarrier(defaultValue, defaultPresence, "has_value", "value", "_cherri_optional_argument_v1")
 		selected := l.GenerateUUID()
 		l.emitIfEnd(group, selected, "OptionalArgument")
 		dictionary = selected
+	} else {
+		dictionary = l.optionalField(dictionary, valueKey, "")
 	}
-	value, presence = l.decodeOptionalCarrier(dictionary, presenceKey, valueKey, name)
+	value, presence = l.decodeOptionalCarrier(dictionary, "has_value", "value", name)
 	return value, presence, nil
 }

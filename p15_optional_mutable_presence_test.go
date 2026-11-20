@@ -26,7 +26,7 @@ func p15MutablePresenceName(g *p15FunctionGraph) string {
 func p15MutableOptionalReturnError(actions []map[string]any, tc p15FunctionOptionalCase) error {
 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
 	envelope := g.header("echo")
-	value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
 	flag := p15MutablePresenceName(g)
 	g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(presence)})
 	g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})
@@ -246,7 +246,7 @@ func p15MutableOptionalCompoundError(actions []map[string]any, narrowed bool, tc
 	envelope := g.header("echo")
 	flag, guard := "", ""
 	if narrowed {
-		value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+		value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
 		flag = p15MutablePresenceName(g)
 		g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(presence)})
 		g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})

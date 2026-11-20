@@ -55,6 +55,9 @@ func p15OptionalTransportDiagnostic(diagnostics []analysis.Diagnostic, tc p15Opt
 }
 func TestP15OptionalTransportFailsPrecisely(t *testing.T) {
 	for _, tc := range p15OptionalTransportCases() {
+		if tc.context == "function argument" {
+			continue
+		} // exercised as positive forwarding routes
 		t.Run(tc.name, func(t *testing.T) {
 			diagnostics := p15TypeDiagnostics(t, tc.source)
 			diagnosticErr := p15OptionalTransportDiagnostic(diagnostics, tc)
@@ -150,8 +153,15 @@ func TestP15OptionalTransportKeepsPresentValues(t *testing.T) {
 						t.Fatal("missing or duplicated present producer")
 					}
 				}
+				inner, err := p15OptionalArgumentFields(actions, 0)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !reflect.DeepEqual(inner["has_value"]["WFValue"], p15FunctionText("1")) {
+					t.Fatal("present value became absent")
+				}
 				kind, wire := p15ContainerFieldValue(want)
-				row := fields["arg_0"]
+				row := inner["value"]
 				if row == nil || row["WFItemType"] != kind || !reflect.DeepEqual(row["WFValue"], wire) {
 					t.Fatal("present argument lost native value", row, wire)
 				}

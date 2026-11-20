@@ -5448,7 +5448,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 	// Check user-defined function
 	if fn, ok := l.functions[actionName]; ok {
-		primaryValue, namedValues, err := l.lowerProvidedFunctionValues(call)
+		providedValues, err := l.lowerProvidedFunctionValues(fn, call)
 		if err != nil {
 			return nil, err
 		}
@@ -5459,42 +5459,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			"function":             l.functionDispatchName(fn),
 			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
 		}
-		unnamedArgIdx := 0
+		// All authored arguments have now executed in written order. Only now
+		// construct Optional carriers, so metadata cannot become implicit input
+		// to a later authored argument call.
 		for i, param := range fn.Parameters {
-			var argVal interface{}
-			supplied := false
-			if i == 0 && call.PrimaryArg != nil {
-				argVal = primaryValue
-				supplied = true
-			}
-			if !supplied {
-				for argumentIndex, nArg := range call.NamedArgs {
-					if nArg.Label != "" && (nArg.Label == param.Name || strings.TrimPrefix(param.Name, "_") == nArg.Label) {
-						argVal = namedValues[argumentIndex]
-						supplied = true
-						break
-					}
-				}
-			}
-			if !supplied {
-				for unnamedArgIdx < len(call.NamedArgs) {
-					nArg := call.NamedArgs[unnamedArgIdx]
-					unnamedArgIdx++
-					if nArg.Label == "" {
-						argVal = namedValues[unnamedArgIdx-1]
-						supplied = true
-						break
-					}
-				}
-			}
+			provided := providedValues[i]
+			argVal, supplied := provided.value, provided.supplied
 			optionalValue := l.optionalFunctionParameter(param.TypeExpr)
-			if optionalValue {
-				presence := "0"
-				if supplied && argVal != nil {
-					presence = "1"
-				}
-				dispatchDict[fmt.Sprintf("has_value_%d", i)] = presence
-			}
 			if supplied {
 				if argVal == nil && !optionalValue {
 					return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function argument transport requires an explicit Optional parameter for optional absence at %s", call.Span)
@@ -5506,7 +5477,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						argVal = 0.0
 					}
 				}
-				argVal = functionEnvelopeValue(argVal)
+				if optionalValue {
+					argVal = l.optionalCarrier(argVal, provided.presence, "has_value", "value", "_cherri_optional_argument_v1")
+				} else {
+					argVal = functionEnvelopeValue(argVal)
+				}
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "1"
 				if argVal != nil {
 					dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal

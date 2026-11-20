@@ -60,44 +60,57 @@ func p15FunctionOptionalSource(tc p15FunctionOptionalCase) string {
 }
 
 func p15FunctionOptionalPayload(g *p15FunctionGraph, tc p15FunctionOptionalCase) string {
-	fields := map[string]p15FunctionArgument{
-		"_cherri_caller_input": {true, 0, p15FunctionVariable("_cherri_caller_input")},
-		"_cherri_magic":        p15FunctionString("__cherri_fn_envelope_v2__"),
-		"cherri_functions":     p15FunctionString("1"), "function": p15FunctionString("echo"),
-	}
-	slot := 0
-	values := []any{}
+	args := []p15FunctionArgument{}
 	if tc.named {
-		fields["arg_0"] = p15FunctionString("FIRST")
-		fields["has_arg_0"] = p15FunctionString("1")
-		values = append(values, map[string]any{"WFItemType": 0, "WFValue": p15FunctionText("FIRST")})
-		slot++
+		args = append(args, p15FunctionString("FIRST"))
 	}
-	supplied, present := "0", "0"
+	value := p15FunctionArgument{}
 	if tc.supplied {
-		supplied = "1"
+		carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", tc.valuePresent, tc.value)
+		value = p15FunctionArgument{true, 0, p15FunctionEdge(carrier)}
 	}
-	value := p15FunctionString("") // legacy positional mirror; flags own meaning
-	if tc.valuePresent {
-		present = "1"
-		value = tc.value
-		fields[fmt.Sprintf("arg_%d", slot)] = tc.value
+	args = append(args, value)
+	return g.payload("echo", args...)
+}
+
+func p15DecodeOptionalArgumentGraph(g *p15FunctionGraph, envelope string, slot int) (value, presence string) {
+	carrier := g.get(fmt.Sprintf("arg_%d", slot), envelope)
+	return p15DecodeOptionalGraph(g, carrier, "has_value", "value")
+}
+
+// Resolve the actual supplied static carrier through its exact envelope edge.
+// This helper selects mutation targets; the full graph remains the oracle.
+func p15OptionalArgumentFields(actions []map[string]any, slot int) (map[string]map[string]any, error) {
+	fields, err := p15FunctionContainerPayload(actions)
+	if err != nil {
+		return nil, err
 	}
-	fields[fmt.Sprintf("has_arg_%d", slot)] = p15FunctionString(supplied)
-	fields[fmt.Sprintf("has_value_%d", slot)] = p15FunctionString(present)
-	values = append(values, map[string]any{"WFItemType": value.kind, "WFValue": value.value})
-	fields["arguments"] = p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": values}}
-	keys := []string{}
-	for key := range fields {
-		keys = append(keys, key)
+	row := fields[fmt.Sprintf("arg_%d", slot)]
+	if row == nil {
+		return nil, fmt.Errorf("supplied Optional carrier is absent")
 	}
-	sort.Strings(keys)
-	rows := []any{}
-	for _, key := range keys {
-		field := fields[key]
-		rows = append(rows, map[string]any{"WFKey": p15FunctionText(key), "WFItemType": field.kind, "WFValue": field.value})
+	wire, ok := row["WFValue"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("Optional argument is not a native reference")
 	}
-	return g.value("dictionary", map[string]any{"WFItems": map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": rows}}})
+	descriptor, ok := wire["Value"].(map[string]any)
+	if !ok || descriptor["Type"] != "ActionOutput" {
+		return nil, fmt.Errorf("Optional argument has no exact carrier edge")
+	}
+	for _, action := range actions {
+		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.dictionary" || p15Param(action)["UUID"] != descriptor["OutputUUID"] {
+			continue
+		}
+		inner, err := p15ContainerFields(p15Param(action)["WFItems"])
+		if err != nil {
+			return nil, err
+		}
+		if marker := inner["_cherri_optional_argument_v1"]; marker == nil || !reflect.DeepEqual(marker["WFValue"], p15FunctionText("1")) {
+			return nil, fmt.Errorf("wrong Optional argument carrier marker")
+		}
+		return inner, nil
+	}
+	return nil, fmt.Errorf("Optional argument carrier edge is unresolved")
 }
 
 func p15OptionalCarrierGraph(g *p15FunctionGraph, presenceKey, valueKey, marker string, present bool, value p15FunctionArgument) string {
@@ -140,11 +153,11 @@ func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCa
 		g.get("arg_0", envelope)
 		slot++
 	}
-	valueKey, presenceKey := fmt.Sprintf("arg_%d", slot), fmt.Sprintf("has_value_%d", slot)
+	valueKey := fmt.Sprintf("arg_%d", slot)
 	if tc.fallback != "" {
 		supplied := g.get(fmt.Sprintf("has_arg_%d", slot), envelope)
 		defaultGroup := g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
-		g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(envelope)})
+		g.get(valueKey, envelope)
 		g.boundary(defaultGroup, 1, false)
 		fallback := p15FunctionString(tc.fallback)
 		switch tc.fallback {
@@ -157,10 +170,12 @@ func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCa
 			producer := g.value("gettext", map[string]any{"WFTextActionText": tc.fallback})
 			fallback = p15FunctionArgument{true, 0, p15FunctionEdge(producer)}
 		}
-		p15OptionalCarrierGraph(g, presenceKey, valueKey, "", tc.fallback != "none", fallback)
+		p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_argument_v1", tc.fallback != "none", fallback)
 		envelope = g.boundary(defaultGroup, 2, true)
+	} else {
+		envelope = g.get(valueKey, envelope)
 	}
-	value, presence := p15DecodeOptionalGraph(g, envelope, presenceKey, valueKey)
+	value, presence := p15DecodeOptionalGraph(g, envelope, "has_value", "value")
 	resultGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
 	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
 	g.boundary(resultGroup, 1, false)
@@ -275,12 +290,16 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
+					inner, err := p15OptionalArgumentFields(bad, 0)
+					if err != nil {
+						t.Fatal(err)
+					}
 					decoder, condition, nothing, fallback, join, call, consumer := -1, -1, -1, -1, -1, -1, -1
 					for index, action := range bad {
 						p := p15Param(action)
 						switch action["WFWorkflowActionIdentifier"] {
 						case "is.workflow.actions.getvalueforkey":
-							if p["WFDictionaryKey"] == "has_value_0" {
+							if decoder < 0 && p["WFDictionaryKey"] == "has_value" {
 								decoder = index
 								condition = index + 1
 							}
@@ -289,7 +308,7 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 							join = index + 1
 						case "is.workflow.actions.dictionary":
 							if fields, err := p15ContainerFields(p["WFItems"]); err == nil {
-								if row := fields["arg_0"]; row != nil && reflect.DeepEqual(row["WFValue"], p15FunctionText("DEFAULT")) {
+								if row := fields["value"]; row != nil && reflect.DeepEqual(row["WFValue"], p15FunctionText("DEFAULT")) {
 									fallback = index
 								}
 							}
@@ -308,13 +327,13 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 						if tc.valuePresent {
 							wrong = "0"
 						}
-						fields["has_value_0"]["WFValue"] = p15FunctionText(wrong)
+						inner["has_value"]["WFValue"] = p15FunctionText(wrong)
 					case "omission_flag":
 						fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
 					case "flag_type":
-						fields["has_value_0"]["WFItemType"] = uint64(4)
+						inner["has_value"]["WFItemType"] = uint64(4)
 					case "decode_argument_as_presence":
-						p15Param(bad[decoder])["WFDictionaryKey"] = "arg_0"
+						p15Param(bad[decoder])["WFDictionaryKey"] = "value"
 					case "decode_truthiness":
 						p15Param(bad[condition])["WFCondition"] = uint64(100)
 					case "no_nothing":
@@ -327,10 +346,10 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 						p15Param(bad[join])["GroupingIdentifier"] = "wrong-join"
 					case "none_as_empty_value":
 						if tc.valuePresent {
-							fields["arg_0"]["WFValue"] = p15FunctionText("changed")
+							inner["value"]["WFValue"] = p15FunctionText("changed")
 						} else {
-							fields["has_value_0"]["WFKey"] = p15FunctionText("arg_0")
-							fields["has_value_0"]["WFValue"] = p15FunctionText("")
+							inner["has_value"]["WFKey"] = p15FunctionText("value")
+							inner["has_value"]["WFValue"] = p15FunctionText("")
 						}
 					case "call_input":
 						p15Param(bad[call])["WFInput"] = p15FunctionEdge("missing-payload")

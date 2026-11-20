@@ -118,7 +118,7 @@ func TestP15OptionalImmutablePresentValuesDoNotBecomeNone(t *testing.T) {
 func p15OptionalImmutableScopeError(actions []map[string]any, tc p15FunctionOptionalCase) error {
 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
 	envelope := g.header("echo")
-	_, outerPresence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+	_, outerPresence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
 	// The inner immutable empty Text shadows the alias, so its presence is
 	// compiler-owned 1. Leaving the lexical block restores the parameter flag.
 	g.value("gettext", map[string]any{"WFTextActionText": ""})
