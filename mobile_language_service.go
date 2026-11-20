@@ -12,9 +12,7 @@ func analyzeVersionedForMobile(docURI string, ver int, src string) protocol.Anal
 		docURI = "file:///mobile.cherri"
 	}
 	svc := sharedMobileService()
-	svc.ChangeDocument(docURI, ver, src)
-	diags, fp := svc.Analyze(docURI)
-	activeVer := svc.DocumentVersion(docURI)
+	diags, fp, activeVer := svc.AnalyzeVersioned(docURI, ver, src)
 
 	wireDiags := make([]protocol.DiagnosticItem, 0)
 	hasErrors := false
