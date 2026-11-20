@@ -1,6 +1,11 @@
 name: P10R15 Packaging Evidence
 
 on:
+  push:
+    branches:
+      - probe/cherri-p10r15-packaging-evidence-20261120
+    paths:
+      - .github/workflows/p10r15-packaging-evidence.yml
   workflow_dispatch:
 
 permissions:
@@ -11,7 +16,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  register-workflow:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Register the manual packaging evidence workflow
+        run: echo 'Workflow registered; actual packaging evidence requires an explicit dispatch.'
+
   actual-extracted-install:
+    if: github.event_name == 'workflow_dispatch'
     name: Actual ${{ matrix.requirement }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -133,6 +147,7 @@ jobs:
           retention-days: 30
 
   actual-busybox-json:
+    if: github.event_name == 'workflow_dispatch'
     name: Actual Alpine JSON byte controls
     runs-on: ubuntu-latest
     timeout-minutes: 8
@@ -147,7 +162,7 @@ jobs:
           P15_EVIDENCE: ${{ runner.temp }}/cherri-packaging-busybox-json
         run: |
           python3 - <<'PY'
-          import datetime, hashlib, json, os, pathlib, subprocess, time
+          import datetime, hashlib, json, os, pathlib, re, subprocess, time
           root = pathlib.Path.cwd()
           evidence = pathlib.Path(os.environ['P15_EVIDENCE'])
           assert not evidence.exists()
@@ -161,24 +176,68 @@ jobs:
           receipt = {'source': source, 'source_files': {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in paths},
                      'run_id': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'],
                      'scope': 'Actual Alpine BusyBox execution of synthetic byte-parser controls only; no formal requirement or native Shortcut credit.'}
-          with (evidence / 'image-pull.log').open('wb') as log:
-              subprocess.run(['docker', 'pull', 'alpine:3.22'], stdout=log, stderr=subprocess.STDOUT, check=True, timeout=180)
-          receipt['image'] = json.loads(subprocess.check_output(['docker', 'image', 'inspect', 'alpine:3.22', '--format', '{{json .}}'], text=True))
-          command = ['docker', 'run', '--rm', '--network=none', '-v', str(root)+':/repo:ro', 'alpine:3.22', 'sh', '-c',
-                     'busybox | head -n 1; CHERRI_HOME=/tmp/cherri-parser-home SKILL_DIR=/repo/skills/cherri-shortcuts sh /repo/skills/cherri-shortcuts/scripts/test-json-boundary.sh']
-          receipt['command'] = command
+          receipt['commands'] = []
+          cidfile = evidence / 'owned-container.cid'
+          assert not cidfile.exists()
           receipt['started_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
           started = time.monotonic()
-          with (evidence / 'stdout.log').open('wb') as out, (evidence / 'stderr.log').open('wb') as err:
-              result = subprocess.run(command, stdout=out, stderr=err, timeout=120)
-          receipt.update(exit_code=result.returncode, elapsed_seconds=time.monotonic()-started,
-                         completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                         source_after=git('rev-parse','HEAD'), clean_after=not git('status','--porcelain'))
-          receipt['artifacts'] = {name: {'bytes': (evidence/name).stat().st_size, 'sha256': hashlib.sha256((evidence/name).read_bytes()).hexdigest()}
-                                  for name in ('stdout.log', 'stderr.log', 'image-pull.log')}
-          (evidence/'process-result.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          receipt['timed_out'] = False
+          def observed(command, seconds, output, error):
+              observation = {'command': command, 'timeout_seconds': seconds,
+                             'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+              receipt['commands'].append(observation)
+              tick = time.monotonic()
+              try:
+                  with (evidence/output).open('wb') as out, (evidence/error).open('wb') as err:
+                      result = subprocess.run(command, stdout=out, stderr=err, timeout=seconds)
+                  observation['exit_code'] = result.returncode
+                  return result.returncode
+              except subprocess.TimeoutExpired:
+                  observation['timed_out'] = True
+                  receipt['timed_out'] = True
+                  raise
+              finally:
+                  observation.update(elapsed_seconds=time.monotonic()-tick,
+                                     completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+          code = 1
+          try:
+              assert observed(['docker', 'pull', 'alpine:3.22'], 180, 'image-pull.log', 'image-pull.stderr') == 0
+              assert observed(['docker', 'image', 'inspect', 'alpine:3.22', '--format', '{{json .}}'], 15,
+                              'image-inspect.json', 'image-inspect.stderr') == 0
+              receipt['image'] = json.loads((evidence/'image-inspect.json').read_text(encoding='utf-8'))
+              image_id = receipt['image']['Id']
+              assert re.fullmatch(r'sha256:[0-9a-f]{64}', image_id), 'invalid inspected image identity'
+              command = ['docker', 'run', '--rm', '--network=none', '--cidfile', str(cidfile),
+                         '-v', str(root)+':/repo:ro', image_id, 'sh', '-c',
+                         'busybox | head -n 1; CHERRI_HOME=/tmp/cherri-parser-home SKILL_DIR=/repo/skills/cherri-shortcuts sh /repo/skills/cherri-shortcuts/scripts/test-json-boundary.sh']
+              receipt['command'] = command
+              code = observed(command, 120, 'stdout.log', 'stderr.log')
+          except subprocess.TimeoutExpired:
+              code = 124
+          except (AssertionError, OSError, ValueError, KeyError) as error:
+              receipt['error'] = type(error).__name__ + ': ' + str(error)
+          finally:
+              # The CID file is created by this owned docker run. Never target other containers.
+              if cidfile.exists():
+                  container_id = cidfile.read_text(encoding='ascii').strip()
+                  receipt['owned_container_id'] = container_id
+                  if re.fullmatch(r'[0-9a-f]{64}', container_id):
+                      try:
+                          observed(['docker', 'rm', '--force', container_id], 15, 'cleanup.log', 'cleanup.stderr')
+                      except subprocess.TimeoutExpired:
+                          code = 124
+                  else:
+                      receipt['error'] = 'invalid owned container ID'
+                      code = 1
+              receipt.update(exit_code=code, elapsed_seconds=time.monotonic()-started,
+                             completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                             source_after=git('rev-parse','HEAD'), clean_after=not git('status','--porcelain'))
+              receipt['artifacts'] = {path.name: {'bytes': path.stat().st_size, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+                                      for path in evidence.iterdir() if path.is_file()}
+              (evidence/'process-result.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          assert code == 0 and not receipt['timed_out'] and 'error' not in receipt, 'actual BusyBox process failed'
           output=(evidence/'stdout.log').read_text(encoding='utf-8')
-          assert result.returncode == 0 and receipt['source_after'] == source and receipt['clean_after']
+          assert receipt['source_after'] == source and receipt['clean_after']
           assert output.splitlines().count('CHERRI_JSON_BOUNDARY_CONTROLS pass=10 scope=synthetic_parser_only') == 1
           print(output)
           PY
