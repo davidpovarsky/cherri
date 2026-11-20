@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"net/url"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
@@ -10,6 +12,8 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/source"
+	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
 	"os"
 )
@@ -239,4 +243,89 @@ func TestP15E01ContextualLabelsAndEnums(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestP15E01QualifiedModuleOwnership(t *testing.T) {
+	const dependency = "type Amount = Number\nfunction take(amount: Amount, label: Text = \"\") -> Number { return amount }\n"
+	const declarations = "import \"./dependency.cherri\" as dep\ntype Amount = Text\nlet numberValue = 7\nlet textValue = \"seven\"\n"
+	for _, tc := range []struct {
+		name, marked, completed string
+		kind                    CompletionItemKind
+		want                    []string
+	}{
+		{"qualified_primary", "dep.take(|)", "dep.take(numberValue)", CompletionKindVariable, []string{"numberValue"}},
+		{"qualified_named", "dep.take(label: \"x\", amount: |)", "dep.take(label: \"x\", amount: numberValue)", CompletionKindVariable, []string{"numberValue"}},
+		{"qualified_labels", "dep.take(1, |)", "dep.take(1, label: \"x\")", CompletionKindParameter, []string{"label"}},
+		{"qualified_partial_identifier", "dep.take(nu|)", "dep.take(numberValue)", CompletionKindVariable, []string{"numberValue"}},
+		{"unknown_export_no_borrow", "dep.round(|)", "", CompletionKindParameter, []string{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			directory := t.TempDir()
+			if err := os.WriteFile(filepath.Join(directory, "dependency.cherri"), []byte(dependency), 0600); err != nil {
+				t.Fatal(err)
+			}
+			entry := filepath.Join(directory, "main.cherri")
+			path := filepath.ToSlash(entry)
+			if !strings.HasPrefix(path, "/") {
+				path = "/" + path
+			}
+			uri := (&url.URL{Scheme: "file", Path: path}).String()
+			svc := NewService(nil)
+			text, line, col := p15EditorCursor(t, declarations+tc.marked)
+			svc.OpenDocument(uri, 1, text)
+			if err := p15E01KindSetError(svc.Complete(uri, line, col), tc.kind, tc.want); err != nil {
+				t.Fatal(err)
+			}
+			if tc.completed != "" {
+				svc.ChangeDocument(uri, 2, declarations+tc.completed)
+				diagnostics, _ := svc.Analyze(uri)
+				for _, d := range diagnostics {
+					if d.Severity == analysis.SeverityError {
+						t.Fatal("completed qualified source failed", d)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestP15E01ContextFactIsolation(t *testing.T) {
+	const uri = "file:///p15-e01-isolation.cherri"
+	svc := NewService(nil)
+	code, line, col := p15EditorCursor(t, p15E01Declarations+"needNumber(|)")
+	svc.OpenDocument(uri, 1, code)
+	doc := svc.documents[uri]
+	_, context := enumCompletionTokens(doc.File, byteOffsetAtLineCol(doc.File, line, col))
+	info, values, found := doc.Analyzer.EditorCallAt(context.calleeSpan.End.ByteOffset, 0)
+	if !found || len(info.Parameters) != 1 || !info.Parameters[0].Type.Equals(types.Number) ||
+		values["numberValue"] == nil || !values["numberValue"].Equals(types.Number) {
+		t.Fatal("actual contextual semantic facts absent", info, values)
+	}
+	t.Run("returned_collections_are_copies", func(t *testing.T) {
+		info.Parameters[0].Type = types.Text
+		info.Parameters[0].Label = "forged"
+		values["numberValue"] = types.Text
+		values["foreign"] = types.Number
+		if err := p15E01VariableSetError(svc.Complete(uri, line, col), []string{"numberValue"}); err != nil {
+			t.Fatal(err)
+		}
+		if err := p15E01KindSetError(svc.Complete(uri, line, col), CompletionKindParameter, []string{"value"}); err != nil {
+			t.Fatal(err)
+		}
+	})
+	t.Run("analysis_resets_old_exact_identity", func(t *testing.T) {
+		file := source.NewFile(source.DocumentID(uri), uri, 2, "let fresh=\"value\"\n")
+		parser := syntax.NewParser(file)
+		doc.Analyzer.Analyze(parser.ParseProgram())
+		if _, _, found := doc.Analyzer.EditorCallAt(context.calleeSpan.End.ByteOffset, 0); found {
+			t.Fatal("old call facts survived fresh analysis")
+		}
+	})
+	t.Run("fresh_document_does_not_borrow_old_context", func(t *testing.T) {
+		code, line, col := p15EditorCursor(t, p15E01Declarations+"needText(|)")
+		svc.ChangeDocument(uri, 3, code)
+		if err := p15E01VariableSetError(svc.Complete(uri, line, col), []string{"textValue"}); err != nil {
+			t.Fatal(err)
+		}
+	})
 }

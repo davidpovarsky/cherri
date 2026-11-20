@@ -15,6 +15,7 @@ func (s *Service) analyzeDocumentLocked(uri string, version int, text string) *D
 	parser := syntax.NewParser(file)
 	program := parser.ParseProgram()
 	analyzer := analysis.NewAnalyzer(s.registry)
+	analyzer.EnableEditorContexts()
 	var dependencyDiagnostics []analysis.Diagnostic
 	if len(parser.Errors()) == 0 && modules.HasImports(program) {
 		overlays := map[string]string{}

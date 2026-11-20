@@ -232,51 +232,13 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 	}
 
 	_, context := enumCompletionTokens(doc.File, byteOffsetAtLineCol(doc.File, line, col))
-	callIdent := context.name
-	usedLabels := make(map[string]bool)
-	for _, argument := range context.arguments {
-		if label, _ := enumArgumentLabel(argument); label != "" {
-			usedLabels[label] = true
-		}
-	}
-
-	// 1. Contextual parameter labels and enum values for the active call
-	if callIdent != "" {
-		if act, ok := s.documentRegistry(doc).LookupAction(callIdent); ok {
-			for _, p := range act.Parameters {
-				if p.Label != "" && !usedLabels[p.Label] {
-					items = append(items, CompletionItem{
-						Label:         p.Label,
-						Kind:          CompletionKindParameter,
-						Detail:        fmt.Sprintf("%s: %s (parameter)", p.Label, p.TypeName),
-						Documentation: p.DisplayName,
-						InsertText:    p.Label + ": ",
-					})
-				}
-
-			}
-		}
-		if doc.Program != nil {
-			for _, decl := range doc.Program.Declarations {
-				if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Name == callIdent {
-					for _, p := range fn.Parameters {
-						if p.Name != "" && !usedLabels[p.Name] {
-							typeStr := annotationText(doc.File, p.TypeExpr, "AnyContent")
-							items = append(items, CompletionItem{
-								Label:      p.Name,
-								Kind:       CompletionKindParameter,
-								Detail:     fmt.Sprintf("%s: %s (parameter)", p.Name, typeStr),
-								InsertText: p.Name + ": ",
-							})
-						}
-					}
-				}
-			}
-		}
-	}
+	// Parameter ownership and types come from the same analyzed call as variables.
+	items = append(items, s.contextualParameterCompletions(doc, context)...)
 
 	// 2. Members of only the active enum domain.
 	items = append(items, s.enumCompletions(doc, line, col)...)
+
+	compatible, typedContext := s.compatibleCompletionVariables(doc, context)
 
 	// 3. Use the same lexical resolution as definition and rename. A binding
 	// becomes visible after its initializer and never leaks beyond its block.
@@ -293,6 +255,11 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 				continue
 			}
 			seen[candidate.name] = true
+			if !declaration.isFunc && typedContext {
+				if _, proven := compatible[declaration.name]; !proven {
+					continue
+				}
+			}
 			item := CompletionItem{Label: declaration.name, Kind: CompletionKindVariable, Detail: "variable"}
 			if declaration.isFunc {
 				item.Kind = CompletionKindFunction
