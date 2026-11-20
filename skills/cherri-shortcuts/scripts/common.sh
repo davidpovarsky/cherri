@@ -317,7 +317,7 @@ validate_docs_dir() {
       echo "[CHERRI_DOCS_GIT_UNAVAILABLE] Cannot validate Cherri docs commit without git" >&2
       return 1
     fi
-    if ! _docs_head=$(git -C "$_docs" rev-parse HEAD 2>/dev/null); then
+    if ! _docs_head=$(git --no-replace-objects -C "$_docs" rev-parse HEAD 2>/dev/null); then
       echo "[CHERRI_DOCS_GIT_INVALID] Cannot resolve Cherri docs commit in $_docs" >&2
       return 1
     fi

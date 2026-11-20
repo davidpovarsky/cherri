@@ -32,7 +32,7 @@ else
 fi
 
 if [ -d "$CHERRI_DOCS_DIR" ]; then
-  if validate_docs_dir "$CHERRI_DOCS_DIR"; then
+  if validate_cherri_installed_docs "$CHERRI_DOCS_DIR"; then
     printf 'Docs: %s (verified)\n' "$CHERRI_DOCS_DIR"
   else
     status=1
