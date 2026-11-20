@@ -1,0 +1,291 @@
+{
+  "schema_version": "1",
+  "implementation_sha": "0284f41c1783b81d5aac002c097357481f6b2308",
+  "base_candidate_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "run": {
+    "id": 44663872632,
+    "head_sha": "0284f41c1783b81d5aac002c097357481f6b2308",
+    "head_branch": "agent/cherri-p10r15-startup-k-replay-20261120",
+    "run_attempt": 1,
+    "path": ".github/workflows/ios-build.yml",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/davidpovarsky/cherri/actions/runs/44663872632",
+    "created_at": "2026-11-20T02:52:48Z",
+    "updated_at": "2026-11-20T03:35:14Z"
+  },
+  "job": {
+    "id": 136048349087,
+    "name": "ios-build",
+    "started_at": "2026-11-20T02:59:52Z",
+    "completed_at": "2026-11-20T03:35:13Z",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "artifact": {
+    "id": 14598293526,
+    "name": "ios-build-evidence",
+    "size_in_bytes": 65969,
+    "digest": "sha256:a0c7b020601f6eb8fabdc1350dcd8ebda98ae143fe671d8a4b6747a50c7ac97b",
+    "expired": false,
+    "created_at": "2026-11-20T03:34:22Z"
+  },
+  "original_sha256": {
+    "original.zip": "a0c7b020601f6eb8fabdc1350dcd8ebda98ae143fe671d8a4b6747a50c7ac97b",
+    "run.json": "f1d4800dba2570b5bc277cf1791384cc8aafb11bbe86ac3fe9fb7e7537ea37d6",
+    "job.json": "32305e16163ac8af91987e21f5357463714f00cdf7958db558d37cff77ce65a0",
+    "artifact.json": "9695ab9687a0219b861cb1bf2b2ee16e250b2d0012134c81a3f8a0f8b3a5ceff",
+    "job.log": "e02d29c7bd11ae2dd9475a1954a6d26dd09d251d28733ac6139a413a052fedaa",
+    "retention-receipt.json": "7c84103e90888983b6516732c9804c5f7fa5e9e05a01be8068a554dd925876bd"
+  },
+  "published_sha256": {
+    "documentation-compatibility-manifest.json": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a",
+    "documentation-index.json": "858bb2225a60d9eb3136b9613dd445c4419e89929196e0163db32e67eebf2bda",
+    "documentation-receipt.json": "ae9c29f1965dc563ead4eed201b6386d8ef527eee3e58b68c2ead0ad75323bfb",
+    "ios-test-diagnostics.json": "84b70d37a1c12c7fc4a2b3a51654ec3e53db4a1fab06018f5fc1c1c0780adeb5",
+    "ios-test-evidence.json": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359",
+    "xcodetest.log": "2455a50c0c8425009f1ca9730dd5f9de3e9b810a3d4baca1d27ad579ebbc940a"
+  },
+  "observed_test_counts": {
+    "passed": 44,
+    "failed": 9
+  },
+  "failures": [
+    {
+      "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "sourceLine": 171
+    },
+    {
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "sourceLine": 191
+    },
+    {
+      "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "sourceLine": 191
+    }
+  ],
+  "failed_startup_receipts": [
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 30353,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 41288,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 34117,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 28754,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 29256,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 28879,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 43183,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 39729,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "waitCompleted": false,
+      "windowExists": true
+    }
+  ],
+  "paste_receipts": [
+    {
+      "actualSource": "text(\"x\")",
+      "actualUTF16Length": 9,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 0,
+      "pasteElapsedMilliseconds": 0,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 8,
+      "stage": "before-paste",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\")",
+      "actualUTF16Length": 9,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 1,
+      "pasteElapsedMilliseconds": 9,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 8,
+      "stage": "after-paste-call",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\"))",
+      "actualUTF16Length": 10,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 2,
+      "pasteElapsedMilliseconds": 7030,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 9,
+      "stage": "after-paste-wait",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    }
+  ],
+  "xcodebuild_exit_code": 65,
+  "formal_record_count": 0,
+  "documentation_evidence": {
+    "status": "NOT_VERIFIED",
+    "errorCodes": [
+      "RUN_NOT_ELIGIBLE"
+    ]
+  },
+  "documentation_ui_observed": false,
+  "late_editor_is_success": false,
+  "paste_first_change_time_known": false,
+  "native_startup_fix_verified": false,
+  "physical_device_verified": false,
+  "formal_acceptance_granted": false,
+  "interpretation": [
+    "The original 28-second ready predicate failed in eight UI tests before their bodies were entered. A later interactive editor does not pass that deadline.",
+    "The real paste action returned immediately with the old text. The 3-second asynchronous wait failed. Exact expected text was observed after the failed wait at 7030 milliseconds, without proof of its first change time.",
+    "The actual test job failed, not cancelled or timed out. Forty-four observed test passes do not turn this failed run into formal native acceptance."
+  ]
+}
