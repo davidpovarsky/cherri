@@ -19,7 +19,7 @@ import (
 
 func p15InstallGit(t *testing.T, dir string, args ...string) string {
 	t.Helper()
-	cmd := exec.Command("git", args...)
+	cmd := exec.Command("git", append([]string{"--no-replace-objects"}, args...)...)
 	cmd.Dir = dir
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -115,9 +115,13 @@ func (f p15InstallFixture) script(name string) string {
 
 func (f p15InstallFixture) seedActualPair(t *testing.T, binary string) {
 	t.Helper()
-	p15InstallWrite(t, filepath.Join(f.home, "bin", "cherri"), p15InstallRead(t, binary))
-	p15InstallWrite(t, filepath.Join(f.home, "bin", "cherri.commit"), []byte(f.sourceSHA+"\n"))
-	p15InstallGit(t, f.root, "clone", "--quiet", "--no-hardlinks", f.docsRepo, filepath.Join(f.home, "docs"))
+	p15InstallSeedTool(t, filepath.Join(f.home, "bin", "cherri"), binary, f.sourceSHA, "github.com/electrikmilk/cherri")
+	migration := p15InstallActualTool(t, f.root, f.sourceSHA, "./cmd/cherri-migrate", "")
+	p15InstallSeedTool(t, filepath.Join(f.home, "bin", "cherri-migrate"), migration, f.sourceSHA, "github.com/electrikmilk/cherri/cmd/cherri-migrate")
+	docs := filepath.Join(f.home, "docs")
+	p15InstallGit(t, f.root, "clone", "--quiet", "--no-hardlinks", "--no-checkout", f.docsRepo, docs)
+	p15InstallGit(t, docs, "config", "core.autocrlf", "false")
+	p15InstallGit(t, docs, "checkout", "--quiet", "--detach", f.docsSHA)
 	out, err := p15InstallRun(t, f.script("doctor"), f.env)
 	if err != nil {
 		t.Fatalf("healthy actual binary and canonical docs control failed: %v\n%s", err, out)
@@ -126,7 +130,7 @@ func (f p15InstallFixture) seedActualPair(t *testing.T, binary string) {
 
 func TestP15K03LateDocsFailurePreservesWorkingPair(t *testing.T) {
 	f := p15NewInstallFixture(t)
-	f.seedActualPair(t, roundTripBinary(t))
+	f.seedActualPair(t, p15InstallActualCompiler(t))
 	oldPath := filepath.Join(f.home, "bin", "cherri")
 	oldHash := sha256.Sum256(p15InstallRead(t, oldPath))
 	oldCommit := p15InstallRead(t, oldPath+".commit")
@@ -134,18 +138,7 @@ func TestP15K03LateDocsFailurePreservesWorkingPair(t *testing.T) {
 
 	// A second real compiler build has different bytes but identical reviewed
 	// source/capabilities. The update must not commit it before docs validation.
-	nextBinary := filepath.Join(t.TempDir(), "next-cherri")
-	if isWindowsRuntime() {
-		nextBinary += ".exe"
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
-	defer cancel()
-	build := exec.CommandContext(ctx, "go", "build", "-trimpath", "-ldflags=-buildid=cherri-k03-controlled-build", "-o", nextBinary, ".")
-	build.Dir = f.root
-	if out, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("second actual compiler build: %v\n%s", err, out)
-	}
-	nextBytes := p15InstallRead(t, nextBinary)
+	nextBytes := p15InstallCandidate(t, f.root)
 	nextHash := sha256.Sum256(nextBytes)
 	if nextHash == oldHash {
 		t.Fatal("atomic-update control requires distinct real compiler bytes")
@@ -208,17 +201,8 @@ func TestP15K03LateDocsFailurePreservesWorkingPair(t *testing.T) {
 
 func p15InstallCandidate(t *testing.T, root string) []byte {
 	t.Helper()
-	path := filepath.Join(t.TempDir(), "candidate-cherri")
-	if isWindowsRuntime() {
-		path += ".exe"
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "go", "build", "-trimpath", "-ldflags=-buildid=cherri-k03-controlled-build", "-o", path, ".")
-	cmd.Dir = root
-	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("actual candidate build: %v\n%s", err, out)
-	}
+	source := p15ExtractedRevision(t, root)
+	path := p15InstallActualTool(t, root, source, ".", "cherri-k03-controlled-build")
 	return p15InstallRead(t, path)
 }
 
@@ -251,9 +235,10 @@ func p15InstallShellQuote(value string) string {
 }
 
 type p15InstalledState struct {
-	binary, commit, checksum, docs []byte
-	hasChecksum                    bool
-	docsSHA                        string
+	binary, commit, checksum, docs                []byte
+	migration, migrationCommit, migrationChecksum []byte
+	hasChecksum                                   bool
+	docsSHA                                       string
 }
 
 func p15InstallState(t *testing.T, f p15InstallFixture) p15InstalledState {
@@ -264,6 +249,8 @@ func p15InstallState(t *testing.T, f p15InstallFixture) p15InstalledState {
 		docs:    p15InstallRead(t, filepath.Join(f.home, "docs", "fork-language", "actions.md")),
 		docsSHA: p15InstallGit(t, filepath.Join(f.home, "docs"), "rev-parse", "HEAD"),
 	}
+	m := filepath.Join(f.home, "bin", "cherri-migrate")
+	s.migration, s.migrationCommit, s.migrationChecksum = p15InstallRead(t, m), p15InstallRead(t, m+".commit"), p15InstallRead(t, m+".sha256")
 	var err error
 	s.checksum, err = os.ReadFile(p + ".sha256")
 	if err != nil && !os.IsNotExist(err) {
@@ -282,6 +269,7 @@ func p15AssertInstallPreserved(t *testing.T, f p15InstallFixture, old p15Install
 	}{
 		{"compiler", old.binary, got.binary}, {"commit receipt", old.commit, got.commit},
 		{"checksum receipt", old.checksum, got.checksum}, {"docs content", old.docs, got.docs},
+		{"migration", old.migration, got.migration}, {"migration source receipt", old.migrationCommit, got.migrationCommit}, {"migration checksum receipt", old.migrationChecksum, got.migrationChecksum},
 	} {
 		if string(field.a) != string(field.b) {
 			t.Errorf("failed update changed %s", field.name)
@@ -331,7 +319,7 @@ func TestP15K03DownloadedChecksumBeforeExecution(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
-			f.seedActualPair(t, roundTripBinary(t))
+			f.seedActualPair(t, p15InstallActualCompiler(t))
 			old := p15InstallState(t, f)
 			marker := filepath.Join(f.home, "must-not-execute")
 			payload := []byte("#!/bin/sh\nprintf executed > " + p15InstallShellQuote(marker) + "\nexit 91\n")
@@ -369,7 +357,7 @@ func TestP15K03PromotionFailuresRestoreActualPair(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
-			f.seedActualPair(t, roundTripBinary(t))
+			f.seedActualPair(t, p15InstallActualCompiler(t))
 			old := p15InstallState(t, f)
 			if sha256.Sum256(old.binary) == candidateHash {
 				t.Fatal("rollback control needs distinct real binaries")
@@ -398,7 +386,7 @@ func TestP15K03PromotionFailuresRestoreActualPair(t *testing.T) {
 			if tc.pattern != "" {
 				shim = "#!/bin/sh\ncase \"$1\" in\n" + tc.pattern + ")\n" + observe + "echo '[P15_INJECTED_PROMOTION_FAILURE]' >&2\nexit 73\n;;\nesac\n"
 			} else {
-				shim = "#!/bin/sh\nif [ \"$1\" = '-C' ] && [ \"$2\" = " + p15InstallShellQuote(filepath.Join(f.home, "docs")) + " ] && [ \"$3\" = 'rev-parse' ]; then\n" + observe + "exit 74\nfi\n"
+				shim = "#!/bin/sh\nif [ \"$1\" = '--no-replace-objects' ]; then shift; fi\nif [ \"$1\" = '-C' ] && [ \"$2\" = " + p15InstallShellQuote(filepath.Join(f.home, "docs")) + " ] && [ \"$3\" = 'rev-parse' ]; then\n" + observe + "exit 74\nfi\n"
 			}
 			shim += "exec " + p15InstallShellQuote(strings.TrimSpace(string(actual))) + " \"$@\"\n"
 			p15InstallWrite(t, filepath.Join(shimDir, command), []byte(shim))
@@ -426,7 +414,7 @@ func TestP15K03PromotionFailuresRestoreActualPair(t *testing.T) {
 
 func TestP15K03SuccessfulUpdateCommitsValidatedPair(t *testing.T) {
 	f := p15NewInstallFixture(t)
-	f.seedActualPair(t, roundTripBinary(t))
+	f.seedActualPair(t, p15InstallActualCompiler(t))
 	old := p15InstallState(t, f)
 	candidate := p15InstallCandidate(t, f.root)
 	wantHash := sha256.Sum256(candidate)
@@ -516,11 +504,11 @@ func TestP15SkillFreshPinnedInstall(t *testing.T) {
 }
 
 func TestP15K02ActualCacheAndBundleSelection(t *testing.T) {
-	actual := p15InstallRead(t, roundTripBinary(t))
+	actual := p15InstallRead(t, p15InstallActualCompiler(t))
 	for _, name := range []string{"cache_preferred_without_executing_bad_bundle", "bad_cache_uses_verified_bundle", "tampered_cache_not_executed", "both_incompatible_fail", "explicit_incompatible_never_falls_back"} {
 		t.Run(name, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
-			f.seedActualPair(t, roundTripBinary(t))
+			f.seedActualPair(t, p15InstallActualCompiler(t))
 			cache := filepath.Join(f.home, "bin", "cherri")
 			bundle := filepath.Join(f.skill, "bin", "cherri")
 			hash := fmt.Sprintf("%x\n", sha256.Sum256(actual))
@@ -528,6 +516,9 @@ func TestP15K02ActualCacheAndBundleSelection(t *testing.T) {
 			p15InstallWrite(t, bundle, actual)
 			p15InstallWrite(t, bundle+".commit", []byte(f.sourceSHA+"\n"))
 			p15InstallWrite(t, bundle+".sha256", []byte(hash))
+			for _, suffix := range []string{"", ".commit", ".sha256"} {
+				p15InstallWrite(t, filepath.Join(filepath.Dir(bundle), "cherri-migrate"+suffix), p15InstallRead(t, filepath.Join(f.home, "bin", "cherri-migrate"+suffix)))
+			}
 			env := p15InstallEnvCopy(f.env)
 			selected := cache
 			wantFailure := ""
@@ -629,9 +620,9 @@ func TestP15K03ImmutableInstallRefsRequired(t *testing.T) {
 	for _, key := range []string{"CHERRI_REF", "CHERRI_DOCS_REF"} {
 		t.Run(key, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
-			f.seedActualPair(t, roundTripBinary(t))
+			f.seedActualPair(t, p15InstallActualCompiler(t))
 			old := p15InstallState(t, f)
-			url, requests := p15InstallServer(t, p15InstallRead(t, roundTripBinary(t)))
+			url, requests := p15InstallServer(t, p15InstallRead(t, p15InstallActualCompiler(t)))
 			env := p15InstallEnvCopy(f.env)
 			env[key] = "main"
 			env["CHERRI_PREBUILT_URL"], env["CHERRI_PREBUILT_SHA256"] = url, strings.Repeat("0", 64)
@@ -651,7 +642,7 @@ func TestP15K03LocalStateIsPreserved(t *testing.T) {
 	for _, name := range []string{"dirty_docs", "invalid_docs_git", "dirty_source"} {
 		t.Run(name, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
-			f.seedActualPair(t, roundTripBinary(t))
+			f.seedActualPair(t, p15InstallActualCompiler(t))
 			old := p15InstallState(t, f)
 			docs := filepath.Join(f.home, "docs")
 			userPath := filepath.Join(docs, "fork-language", "actions.md")
@@ -679,7 +670,7 @@ func TestP15K03LocalStateIsPreserved(t *testing.T) {
 				wantDiagnostic = "CHERRI_SOURCE_DIRTY"
 			}
 			if name != "dirty_source" {
-				actual := p15InstallRead(t, roundTripBinary(t))
+				actual := p15InstallRead(t, p15InstallActualCompiler(t))
 				url, _ := p15InstallServer(t, actual)
 				env["CHERRI_PREBUILT_URL"], env["CHERRI_PREBUILT_SHA256"] = url, fmt.Sprintf("%x", sha256.Sum256(actual))
 			}

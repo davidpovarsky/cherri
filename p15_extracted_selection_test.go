@@ -141,3 +141,21 @@ func TestP15RP44ExtractedCacheAndBundleSelection(t *testing.T) {
 		t.Fatalf("healthy complete pair did not recover after selection controls: %v\n%s", err, out)
 	}
 }
+
+// This executes the shipped offline compatibility consumer against a disposable
+// tuple derived from the real compiler and real generated reference. The final
+// published K04 tuple is independently verified without this fixture override.
+func TestP15RP44ExtractedCompatibilityConsumer(t *testing.T) {
+	f := p15ExtractedFixture(t, "RP44", false)
+	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
+	consumer := p15CopySkillOracle(t)
+	p15InstallWrite(t, filepath.Join(consumer, "skills", "cherri-shortcuts", "compatibility-manifest.json"), p15InstallRead(t, filepath.Join(f.skill, "compatibility-manifest.json")))
+	p15InstallWrite(t, filepath.Join(consumer, "docs", "language-v2", "actions-reference.md"), p15InstallRead(t, filepath.Join(f.env["CHERRI_DOCS_REPO"], "fork-language", "actions.md")))
+	env := map[string]string{"CHERRI_BIN": filepath.ToSlash(f.compiler), "CHERRI_MIGRATE_BIN": filepath.ToSlash(migration), "CHERRI_REF": f.sourceSHA}
+	out, err := p15InstallRun(t, filepath.Join(consumer, "skills", "cherri-shortcuts", "scripts", "test-compatibility-isolation.sh"), env)
+	p15ExtractedRecordControl(f, t.Name(), []byte(out), err)
+	if err != nil {
+		t.Fatalf("actual same-source compatibility consumer: %v\n%s", err, out)
+	}
+	p15AssertSkillCases(t, out)
+}

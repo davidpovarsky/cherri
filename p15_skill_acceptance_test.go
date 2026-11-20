@@ -35,10 +35,12 @@ func p15SkillBash(t *testing.T) string {
 
 func p15RunSkillIsolation(t *testing.T, root, binary string) (string, error) {
 	t.Helper()
-	rev, err := exec.Command("git", "rev-parse", "HEAD").Output()
+	sourceRoot, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)
 	}
+	rev := p15ExtractedRevision(t, sourceRoot)
+	migration := p15InstallActualTool(t, sourceRoot, rev, "./cmd/cherri-migrate", "")
 	env := make([]string, 0, len(os.Environ())+2)
 	for _, value := range os.Environ() {
 		key := strings.SplitN(value, "=", 2)[0]
@@ -47,7 +49,7 @@ func p15RunSkillIsolation(t *testing.T, root, binary string) (string, error) {
 		}
 		env = append(env, value)
 	}
-	env = append(env, "CHERRI_BIN="+filepath.ToSlash(binary), "CHERRI_REF="+strings.TrimSpace(string(rev)))
+	env = append(env, "CHERRI_BIN="+filepath.ToSlash(binary), "CHERRI_MIGRATE_BIN="+filepath.ToSlash(migration), "CHERRI_REF="+rev)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	script := filepath.Join(root, "skills", "cherri-shortcuts", "scripts", "test-compatibility-isolation.sh")
@@ -74,7 +76,7 @@ func TestP15K04OfflineCacheProduction(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	output, err := p15RunSkillIsolation(t, root, roundTripBinary(t))
+	output, err := p15RunSkillIsolation(t, root, p15InstallActualCompiler(t))
 	if err != nil {
 		t.Fatalf("real compiler offline compatibility failed: %v\n%s", err, output)
 	}
@@ -87,6 +89,8 @@ func p15CopySkillOracle(t *testing.T) string {
 	for _, relative := range []string{
 		"skills/cherri-shortcuts/compatibility-manifest.json",
 		"skills/cherri-shortcuts/scripts/common.sh",
+		"skills/cherri-shortcuts/scripts/installation.sh",
+		"skills/cherri-shortcuts/scripts/json-object.awk",
 		"skills/cherri-shortcuts/scripts/doctor.sh",
 		"skills/cherri-shortcuts/scripts/setup.sh",
 		"skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh",
@@ -108,7 +112,7 @@ func p15CopySkillOracle(t *testing.T) string {
 }
 
 func TestP15K04OfflineOracleRejectsBypasses(t *testing.T) {
-	binary := roundTripBinary(t)
+	binary := p15InstallActualCompiler(t)
 	root := p15CopySkillOracle(t)
 	healthy, err := p15RunSkillIsolation(t, root, binary)
 	if err != nil {
@@ -123,7 +127,7 @@ func TestP15K04OfflineOracleRejectsBypasses(t *testing.T) {
 			"if false; then",
 			"FAIL: expected nonzero status and CHERRI_STALE_DOCS_SCHEMA"},
 		{"missing_docs_bypass", "setup.sh",
-			"    validate_docs_dir \"$CHERRI_DOCS_DIR\"\n",
+			"    validate_cherri_installed_docs \"$CHERRI_DOCS_DIR\"\n",
 			"    : # deliberately bypass missing docs validation\n",
 			"FAIL: expected offline failure: missing_docs_rejected"},
 		{"unexpected_offline_network", "setup.sh",

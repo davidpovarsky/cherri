@@ -8,12 +8,18 @@ MANIFEST="$SKILL_DIR/compatibility-manifest.json"
 echo "=== P10R2 Real Release Integration Test ==="
 echo "Manifest: $MANIFEST"
 
-# Read declared manifest refs
-COMPILER_REPO=$(grep '"compilerRepo"' "$MANIFEST" | sed 's/.*: *"//;s/".*//')
-COMPILER_COMMIT=$(grep '"compilerCommit"' "$MANIFEST" | sed 's/.*: *"//;s/".*//')
-DOCS_REPO=$(grep '"docsRepo"' "$MANIFEST" | sed 's/.*: *"//;s/".*//')
-DOCS_COMMIT=$(grep '"docsCommit"' "$MANIFEST" | sed 's/.*: *"//;s/".*//')
-SCHEMA_FP=$(grep '"schemaFingerprint"' "$MANIFEST" | sed 's/.*: *"//;s/".*//')
+# This release check always consumes the declared published tuple. Development
+# overrides and prebuilt transports belong to separate component controls.
+unset CHERRI_BIN CHERRI_MIGRATE_BIN CHERRI_DOCS_DIR CHERRI_MANIFEST_FILE
+unset CHERRI_REPO CHERRI_REF CHERRI_DOCS_REPO CHERRI_DOCS_REF CHERRI_OFFLINE
+unset CHERRI_PREBUILT_URL CHERRI_PREBUILT_SHA256 CHERRI_MIGRATE_PREBUILT_URL CHERRI_MIGRATE_PREBUILT_SHA256
+. "$SCRIPT_DIR/common.sh"
+. "$SCRIPT_DIR/installation.sh"
+COMPILER_REPO=$MANIFEST_COMPILER_REPO
+COMPILER_COMMIT=$MANIFEST_COMPILER_COMMIT
+DOCS_REPO=$MANIFEST_DOCS_REPO
+DOCS_COMMIT=$MANIFEST_DOCS_COMMIT
+SCHEMA_FP=$MANIFEST_SCHEMA_FP
 
 echo "Pinned compilerCommit: $COMPILER_COMMIT"
 echo "Pinned docsCommit:     $DOCS_COMMIT"
@@ -39,32 +45,35 @@ echo "Using clean isolated CHERRI_HOME: $TMP_HOME"
 
 # Test 1: Real installation using genuine GitHub clones and pinned SHAs
 export CHERRI_HOME="$TMP_HOME"
-unset CHERRI_BIN CHERRI_DOCS_DIR || true
 
 echo "Running setup.sh against real repos..."
-sh "$SCRIPT_DIR/setup.sh"
+sh "$SCRIPT_DIR/setup.sh" --force
 
 echo "Running doctor.sh..."
 sh "$SCRIPT_DIR/doctor.sh"
 
-# Verify checked out SHAs match manifest exactly
-if [ -d "$TMP_HOME/src/.git" ]; then
-  ACTUAL_COMPILER_SHA=$(git -C "$TMP_HOME/src" rev-parse HEAD)
-  if [ "$ACTUAL_COMPILER_SHA" != "$COMPILER_COMMIT" ]; then
-    echo "ERROR: Installed compiler SHA $ACTUAL_COMPILER_SHA != manifest $COMPILER_COMMIT" >&2
-    exit 1
-  fi
-  echo "PASS: Installed compiler SHA verified ($ACTUAL_COMPILER_SHA)"
-fi
-
-if [ -d "$TMP_HOME/docs/.git" ]; then
-  ACTUAL_DOCS_SHA=$(git -C "$TMP_HOME/docs" rev-parse HEAD)
-  if [ "$ACTUAL_DOCS_SHA" != "$DOCS_COMMIT" ]; then
-    echo "ERROR: Installed docs SHA $ACTUAL_DOCS_SHA != manifest $DOCS_COMMIT" >&2
-    exit 1
-  fi
-  echo "PASS: Installed docs SHA verified ($ACTUAL_DOCS_SHA)"
-fi
+# Actual source builds and documentation clones are mandatory here; a bundled
+# binary or a skipped clone cannot count as this release integration route.
+[ -d "$TMP_HOME/src/.git" ] && [ -d "$TMP_HOME/docs/.git" ] || {
+  echo 'ERROR: real release integration requires both exact Git clones' >&2; exit 1;
+}
+ACTUAL_COMPILER_SHA=$(git --no-replace-objects -C "$TMP_HOME/src" rev-parse HEAD)
+ACTUAL_DOCS_SHA=$(git --no-replace-objects -C "$TMP_HOME/docs" rev-parse HEAD)
+[ "$ACTUAL_COMPILER_SHA" = "$COMPILER_COMMIT" ] && [ "$ACTUAL_DOCS_SHA" = "$DOCS_COMMIT" ] || {
+  echo 'ERROR: installed immutable source/docs pins differ from the manifest' >&2; exit 1;
+}
+[ -z "$(git --no-replace-objects -C "$TMP_HOME/src" status --porcelain)" ]
+[ -z "$(git --no-replace-objects -C "$TMP_HOME/docs" status --porcelain)" ]
+for TOOL_NAME in cherri cherri-migrate; do
+  TOOL="$TMP_HOME/bin/$TOOL_NAME"
+  require_install_tool_receipts "$TOOL" "$TOOL_NAME"
+  "$TMP_HOME/bin/cherri-migrate" --inspect-build-json "$TOOL" > "$TMP_HOME/$TOOL_NAME.identity.json"
+  json_file_is_valid_object "$TMP_HOME/$TOOL_NAME.identity.json"
+  [ "$(json_parse_object tool < "$TMP_HOME/$TOOL_NAME.identity.json")" = "$TOOL_NAME" ]
+  [ "$(json_parse_object sourceCommit < "$TMP_HOME/$TOOL_NAME.identity.json")" = "$COMPILER_COMMIT" ]
+  [ "$(json_parse_object buildState < "$TMP_HOME/$TOOL_NAME.identity.json")" = clean ]
+done
+echo "PASS: Actual compiler and migration builds use exact clean source $ACTUAL_COMPILER_SHA and docs $ACTUAL_DOCS_SHA"
 
 # Test 2: Negative Mutation - Corrupted / Non-existent compiler SHA fails closed
 echo "Testing negative mutation: invalid compiler SHA..."
@@ -123,9 +132,9 @@ fi
 
 # Mutation 3b: Tamper ONLY with docs .git commit SHA while keeping Schema Fingerprint and compiler valid
 echo "Testing negative mutation 3b: mismatched docs git commit SHA..."
-git -C "$STALE_DOCS_DIR" config user.email "test@example.com"
-git -C "$STALE_DOCS_DIR" config user.name "Test"
-git -C "$STALE_DOCS_DIR" commit --allow-empty -m "mutated docs commit" >/dev/null 2>&1
+git --no-replace-objects -C "$STALE_DOCS_DIR" config user.email "test@example.com"
+git --no-replace-objects -C "$STALE_DOCS_DIR" config user.name "Test"
+git --no-replace-objects -C "$STALE_DOCS_DIR" commit --allow-empty -m "mutated docs commit" >/dev/null 2>&1
 DOCTOR_STATUS=0
 DOCTOR_COMMIT_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1) || DOCTOR_STATUS=$?
 if [ "$DOCTOR_STATUS" -ne 0 ] && printf '%s\n' "$DOCTOR_COMMIT_OUT" | grep -Fq '[CHERRI_STALE_DOCS_COMMIT]'; then

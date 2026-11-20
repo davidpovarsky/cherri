@@ -2,6 +2,7 @@
 set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
+. "$SCRIPT_DIR/installation.sh"
 
 SIGN=0
 SKIP_SETUP=0
@@ -102,305 +103,253 @@ if [ "$SIGN" -eq 1 ]; then
   fi
 fi
 
-printf 'Testing 10 Skill Pinning, Compatibility, Offline, and Atomic Update Scenarios...\n'
-unset CHERRI_DOCS_DIR || true
-
-# Verify manifest does not reference moving branches or stale d2e7506 commit
+printf 'Testing 10 controlled transport, compatibility, and pinned-document scenarios with real tools...\n'
+# Download responses and the small documentation repository below are owned
+# fixtures. Compiler/migration bytes and embedded identities are real. These
+# controls do not prove a source build; RP45 independently executes that route.
 if grep -q 'agent/language-redesign\|agent/language-v2-docs' "$SKILL_DIR/scripts/common.sh" "$SKILL_DIR/compatibility-manifest.json"; then
-  echo "Stale mutable branch reference found in Skill configuration" >&2
+  echo 'Mutable branch reference found in Skill configuration' >&2
   exit 1
 fi
-if [ "$MANIFEST_COMPILER_COMMIT" = "d2e7506f466addf687e6b5dfd3cb8198ab1a73ca" ]; then
-  echo "Stale compilerCommit d2e7506f466addf687e6b5dfd3cb8198ab1a73ca found in compatibility-manifest.json" >&2
+if [ "$MANIFEST_COMPILER_COMMIT" = 'd2e7506f466addf687e6b5dfd3cb8198ab1a73ca' ]; then
+  echo 'Stale compilerCommit d2e7506 remains in the manifest' >&2
   exit 1
 fi
 
-# Helper to create a mock compiler script with custom capabilities output
-make_mock_cherri() {
-  _target=$1
-  _cap_json=$2
-  cat > "$_target" <<EOF
-#!/bin/sh
-if [ "\${1:-}" = "--capabilities-json" ]; then
-  cat <<'JSON'
-$_cap_json
-JSON
-  exit 0
-fi
-if [ "\${1:-}" = "--version" ]; then
-  echo "Cherri Mock v2.0"
-  exit 0
-fi
-exec "$CHERRI_BIN_RESOLVED" "\$@"
-EOF
-  chmod +x "$_target"
-}
+CONTROL_COMPILER_INPUT=$CHERRI_BIN_RESOLVED
+CONTROL_MIGRATION_INPUT=$(cherri_migration_for_compiler "$CONTROL_COMPILER_INPUT")
+validate_cherri_installation "$CONTROL_COMPILER_INPUT" "$CONTROL_MIGRATION_INPUT"
+"$CONTROL_MIGRATION_INPUT" --inspect-build-json "$CONTROL_COMPILER_INPUT" > "$TMP/control-compiler-identity.json"
+json_file_is_valid_object "$TMP/control-compiler-identity.json"
+PINNED_COMPILER_SHA=$(json_parse_object sourceCommit < "$TMP/control-compiler-identity.json")
+CONTROL_COMPILER_SHA=$(cherri_file_sha256 "$CONTROL_COMPILER_INPUT")
+CONTROL_MIGRATION_SHA=$(cherri_file_sha256 "$CONTROL_MIGRATION_INPUT")
 
-VALID_CAP_JSON=$("$CHERRI_BIN_RESOLVED" --capabilities-json)
-COMPAT_MOCK_BIN="$TMP/compat-cherri"
-make_mock_cherri "$COMPAT_MOCK_BIN" "$VALID_CAP_JSON"
-
-# Create a controlled mock compiler git repository with pinned commit
-MOCK_COMPILER_REPO="$TMP/mock-compiler-repo"
-mkdir -p "$MOCK_COMPILER_REPO"
-cp "$COMPAT_MOCK_BIN" "$MOCK_COMPILER_REPO/.cherri-prebuilt-bin"
-chmod +x "$MOCK_COMPILER_REPO/.cherri-prebuilt-bin"
-git -C "$MOCK_COMPILER_REPO" init -q
-git -C "$MOCK_COMPILER_REPO" config user.email "test@cherri.local"
-git -C "$MOCK_COMPILER_REPO" config user.name "Cherri Skill Test"
-git -C "$MOCK_COMPILER_REPO" add .cherri-prebuilt-bin
-git -C "$MOCK_COMPILER_REPO" commit -q -m "Initial pinned compiler commit"
-PINNED_COMPILER_SHA=$(git -C "$MOCK_COMPILER_REPO" rev-parse HEAD)
-
-# Create a controlled mock docs git repository with the exact expected schemaFingerprint
-MOCK_DOCS_REPO="$TMP/mock-docs-repo"
+MOCK_DOCS_REPO="$TMP/controlled-docs-repo"
 mkdir -p "$MOCK_DOCS_REPO/fork-language"
 cat > "$MOCK_DOCS_REPO/fork-language/actions.md" <<EOF
-# Cherri Language v2.0 — Action Reference
-
-**Language Version:** $MANIFEST_LANG_VERSION  
-**Catalog Schema:** $MANIFEST_CATALOG_VERSION  
-**Schema Fingerprint:** \`$MANIFEST_SCHEMA_FP\`  
+# Controlled documentation fixture; not the published reference
+**Language Version:** $MANIFEST_LANG_VERSION
+**Catalog Schema:** $MANIFEST_CATALOG_VERSION
+**Schema Fingerprint:** \`$MANIFEST_SCHEMA_FP\`
 EOF
 if [ -n "$MANIFEST_MACRO_FP" ]; then
-  printf '\n**Compiler Macro Fingerprint:** `%s`\n' "$MANIFEST_MACRO_FP" >> "$MOCK_DOCS_REPO/fork-language/actions.md"
+  printf '**Compiler Macro Fingerprint:** `%s`\n' "$MANIFEST_MACRO_FP" >> "$MOCK_DOCS_REPO/fork-language/actions.md"
 fi
-git -C "$MOCK_DOCS_REPO" init -q
-git -C "$MOCK_DOCS_REPO" config user.email "test@cherri.local"
-git -C "$MOCK_DOCS_REPO" config user.name "Cherri Skill Test"
-git -C "$MOCK_DOCS_REPO" add fork-language/actions.md
-git -C "$MOCK_DOCS_REPO" commit -q -m "Initial pinned docs commit"
-PINNED_DOCS_SHA=$(git -C "$MOCK_DOCS_REPO" rev-parse HEAD)
+git --no-replace-objects -C "$MOCK_DOCS_REPO" init -q
+git --no-replace-objects -C "$MOCK_DOCS_REPO" config core.autocrlf false
+git --no-replace-objects -C "$MOCK_DOCS_REPO" add fork-language/actions.md
+git --no-replace-objects -C "$MOCK_DOCS_REPO" -c user.name=Cherri-QA -c user.email=qa@example.invalid commit -qm 'Controlled pinned docs fixture'
+PINNED_DOCS_SHA=$(git --no-replace-objects -C "$MOCK_DOCS_REPO" rev-parse HEAD)
 
-# Create a test skill copy pinned to PINNED_COMPILER_SHA and PINNED_DOCS_SHA so git commit verification is exercised end-to-end
 SKILL_TEST_COPY="$TMP/skill-copy"
 mkdir -p "$SKILL_TEST_COPY"
 cp -R "$SKILL_DIR/." "$SKILL_TEST_COPY/"
 rm -rf "$SKILL_TEST_COPY/bin"
-MACRO_MANIFEST_LINE=""
-if [ -n "$MANIFEST_MACRO_FP" ]; then
-  MACRO_MANIFEST_LINE="  \"macroFingerprint\": \"$MANIFEST_MACRO_FP\","
-fi
 cat > "$SKILL_TEST_COPY/compatibility-manifest.json" <<EOF
 {
   "skillVersion": "2.0.0",
   "languageVersion": "$MANIFEST_LANG_VERSION",
   "catalogSchemaVersion": "$MANIFEST_CATALOG_VERSION",
+  "protocolVersion": "$MANIFEST_PROTOCOL_VERSION",
   "schemaFingerprint": "$MANIFEST_SCHEMA_FP",
-$MACRO_MANIFEST_LINE
+  "macroFingerprint": "$MANIFEST_MACRO_FP",
   "codecFingerprint": "$MANIFEST_CODEC_FP",
-  "compilerRepo": "$MOCK_COMPILER_REPO",
+  "compilerRepo": "$MANIFEST_COMPILER_REPO",
   "compilerCommit": "$PINNED_COMPILER_SHA",
   "docsRepo": "$MOCK_DOCS_REPO",
   "docsCommit": "$PINNED_DOCS_SHA"
 }
 EOF
 
-# Scenario 1: Fresh install on clean environment from immutable compiler and docs refs
-HOME1="$TMP/home-s1"
-mkdir -p "$HOME1/bin"
-(
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  CHERRI_REPO="$MOCK_COMPILER_REPO" \
-  CHERRI_REF="$PINNED_COMPILER_SHA" \
-  CHERRI_DOCS_REPO="$MOCK_DOCS_REPO" \
-  CHERRI_DOCS_REF="$PINNED_DOCS_SHA" \
-  sh "$SKILL_TEST_COPY/scripts/setup.sh" >/dev/null
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  CHERRI_REF="$PINNED_COMPILER_SHA" \
-  CHERRI_DOCS_REF="$PINNED_DOCS_SHA" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null
-)
-[ "$(git -C "$HOME1/src" rev-parse HEAD)" = "$PINNED_COMPILER_SHA" ]
-[ "$(git -C "$HOME1/docs" rev-parse HEAD)" = "$PINNED_DOCS_SHA" ]
-printf '  [PASS] Scenario 1: fresh install from immutable refs\n'
+CONTROL_TRANSPORT="$TMP/controlled-transport"
+CONTROL_TRANSPORT_LOG="$TMP/controlled-downloads.log"
+mkdir -p "$CONTROL_TRANSPORT"
+cat > "$CONTROL_TRANSPORT/wget" <<'CONTROL_WGET'
+#!/bin/sh
+set -eu
+destination=
+request=
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -q) shift ;;
+    -O) destination=$2; shift 2 ;;
+    *) request=$1; shift ;;
+  esac
+done
+[ -n "$destination" ] && [ -n "$request" ] || exit 96
+printf '%s\n' "$request" >> "$CONTROL_TRANSPORT_LOG"
+case "$request" in
+  controlled://compiler) cp "$CONTROL_COMPILER_INPUT" "$destination" ;;
+  controlled://migration) cp "$CONTROL_MIGRATION_INPUT" "$destination" ;;
+  *) echo '[CONTROLLED_DOWNLOAD_REJECTED]' >&2; exit 97 ;;
+esac
+CONTROL_WGET
+chmod +x "$CONTROL_TRANSPORT/wget"
+export CONTROL_COMPILER_INPUT CONTROL_MIGRATION_INPUT CONTROL_TRANSPORT_LOG
 
-# Scenario 2: Compatible cached compiler offline
-(
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  CHERRI_OFFLINE=1 \
-  sh "$SKILL_TEST_COPY/scripts/setup.sh" --offline >/dev/null
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  CHERRI_OFFLINE=1 \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null
+control_environment() {
+  # Each owned invocation is isolated from optional caller overrides.
+  unset CHERRI_BIN CHERRI_MIGRATE_BIN CHERRI_DOCS_DIR CHERRI_MANIFEST_FILE
+  unset CHERRI_REPO CHERRI_DOCS_REPO CHERRI_PREBUILT_URL CHERRI_PREBUILT_SHA256
+  unset CHERRI_MIGRATE_PREBUILT_URL CHERRI_MIGRATE_PREBUILT_SHA256 CHERRI_OFFLINE
+  SKILL_DIR=$SKILL_TEST_COPY
+  CHERRI_HOME=$1
+  CHERRI_REF=$PINNED_COMPILER_SHA
+  CHERRI_DOCS_REF=$PINNED_DOCS_SHA
+  export SKILL_DIR CHERRI_HOME CHERRI_REF CHERRI_DOCS_REF
+}
+control_setup() (
+  control_environment "$1"
+  shift
+  CHERRI_PREBUILT_URL=${CONTROL_DOWNLOAD_URL:-controlled://compiler}
+  CHERRI_PREBUILT_SHA256=$CONTROL_COMPILER_SHA
+  CHERRI_MIGRATE_PREBUILT_URL=controlled://migration
+  CHERRI_MIGRATE_PREBUILT_SHA256=$CONTROL_MIGRATION_SHA
+  PATH="$CONTROL_TRANSPORT:$PATH"
+  export PATH CHERRI_PREBUILT_URL CHERRI_PREBUILT_SHA256 CHERRI_MIGRATE_PREBUILT_URL CHERRI_MIGRATE_PREBUILT_SHA256
+  [ "$(command -v wget)" = "$CONTROL_TRANSPORT/wget" ] || exit 95
+  sh "$SKILL_TEST_COPY/scripts/setup.sh" "$@"
 )
-printf '  [PASS] Scenario 2: compatible cached compiler offline\n'
-
-# Scenario 3: Incompatible cached compiler offline -> clear failure
-HOME3="$TMP/home-s3"
-mkdir -p "$HOME3/bin"
-make_mock_cherri "$HOME3/bin/cherri" '{"languageVersion":"1.0","schemaFingerprint":"0000000000000000000000000000000000000000000000000000000000000000"}'
-if (
-  unset CHERRI_BIN
-  PATH="/usr/bin:/bin" \
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME3" \
-  CHERRI_OFFLINE=1 \
-  sh "$SKILL_TEST_COPY/scripts/setup.sh" --offline >/dev/null 2>&1
-); then
-  echo "Scenario 3 failed: incompatible cached compiler succeeded offline" >&2
-  exit 1
+control_doctor() (
+  control_environment "$1"
+  shift
+  env "$@" sh "$SKILL_TEST_COPY/scripts/doctor.sh"
+)
+control_pair_unchanged() {
+  for _control_tool in cherri cherri-migrate; do
+    for _control_suffix in '' .commit .sha256; do
+      cmp -s "$1/bin/$_control_tool$_control_suffix" "$2/bin/$_control_tool$_control_suffix" || return 1
+    done
+  done
+  cmp -s "$1/docs/fork-language/actions.md" "$2/docs/fork-language/actions.md"
+}
+control_caps() {
+  printf '{"languageVersion":"%s","catalogSchemaVersion":"%s","protocolVersion":"%s","schemaFingerprint":"%s","codecFingerprint":"%s","macroFingerprint":"%s"}' \
+    "$1" "$MANIFEST_CATALOG_VERSION" "$MANIFEST_PROTOCOL_VERSION" "$2" "$MANIFEST_CODEC_FP" "$MANIFEST_MACRO_FP"
+}
+make_mock_cherri() {
+  _target=$1
+  _cap_json=$2
+  mkdir -p "$(dirname -- "$_target")"
+  cat > "$_target" <<EOF
+#!/bin/sh
+if [ "\${1:-}" = '--capabilities-json' ]; then
+  printf observed > "$_target.observed"
+  cat <<'JSON'
+$_cap_json
+JSON
+  exit 0
 fi
-printf '  [PASS] Scenario 3: incompatible cached compiler rejected offline\n'
+exec "$CONTROL_COMPILER_INPUT" "\$@"
+EOF
+  chmod +x "$_target"
+  printf '%s\n' "$PINNED_COMPILER_SHA" > "$_target.commit"
+  cherri_file_sha256 "$_target" > "$_target.sha256"
+}
+reject_mock_doctor() {
+  _control_candidate=$1
+  _control_expected=$2
+  if control_doctor "$HOME1" CHERRI_BIN="$_control_candidate" > "$TMP/controlled-rejection.log" 2>&1; then
+    echo 'Adversarial capabilities were accepted' >&2
+    exit 1
+  fi
+  [ "$(cat "$_control_candidate.observed")" = observed ]
+  grep -Fq "$_control_expected" "$TMP/controlled-rejection.log"
+}
 
-# Scenario 4: Stale bundled binary present alongside newly built compatible cache -> compatible cache must win
+# 1: Actual tools, authenticated bytes/source, controlled download transport.
+HOME1="$TMP/home-s1"
+control_setup "$HOME1" > "$TMP/controlled-fresh.log" 2>&1 || { cat "$TMP/controlled-fresh.log" >&2; exit 1; }
+control_doctor "$HOME1" >/dev/null
+[ "$(wc -l < "$CONTROL_TRANSPORT_LOG")" -eq 2 ]
+cmp -s "$CONTROL_COMPILER_INPUT" "$HOME1/bin/cherri"
+cmp -s "$CONTROL_MIGRATION_INPUT" "$HOME1/bin/cherri-migrate"
+[ "$(git --no-replace-objects -C "$HOME1/docs" rev-parse HEAD)" = "$PINNED_DOCS_SHA" ]
+printf '  [PASS] Scenario 1: real same-source pair installed through controlled downloads\n'
+
+# 2: A valid complete cache performs no further controlled download.
+control_setup "$HOME1" --offline >/dev/null
+control_doctor "$HOME1" >/dev/null
+[ "$(wc -l < "$CONTROL_TRANSPORT_LOG")" -eq 2 ]
+printf '  [PASS] Scenario 2: compatible complete cache is reusable offline\n'
+
+# 3: The invalid protocol response is actually requested before rejection.
+HOME3="$TMP/home-s3"
+make_mock_cherri "$HOME3/bin/cherri" "$(control_caps 1.0 "$MANIFEST_SCHEMA_FP")"
+if control_setup "$HOME3" --offline > "$TMP/controlled-offline-rejection.log" 2>&1; then exit 1; fi
+[ "$(cat "$HOME3/bin/cherri.observed")" = observed ]
+grep -Fq 'no compatible cached or bundled binary available' "$TMP/controlled-offline-rejection.log"
+printf '  [PASS] Scenario 3: incompatible cached response rejected offline\n'
+
+# 4: The valid complete cache wins without executing an unselected bundle.
 SKILL_S4="$TMP/skill-s4"
 cp -R "$SKILL_TEST_COPY/." "$SKILL_S4/"
-mkdir -p "$SKILL_S4/bin"
-make_mock_cherri "$SKILL_S4/bin/cherri" '{"languageVersion":"2.0","catalogSchemaVersion":"3.0","schemaFingerprint":"32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694"}'
+make_mock_cherri "$SKILL_S4/bin/cherri" "$(control_caps "$MANIFEST_LANG_VERSION" 0000000000000000000000000000000000000000000000000000000000000000)"
 RESOLVED_S4=$(
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_S4" \
-  CHERRI_HOME="$HOME1" \
-  sh -c '. "$SKILL_DIR/scripts/common.sh" && resolve_cherri'
+  control_environment "$HOME1"
+  SKILL_DIR=$SKILL_S4
+  export SKILL_DIR
+  sh -c '. "$SKILL_DIR/scripts/common.sh"; . "$SKILL_DIR/scripts/installation.sh"; resolve_cherri_installation'
 )
-[ "$RESOLVED_S4" = "$HOME1/bin/cherri" ] || {
-  echo "Scenario 4 failed: expected $HOME1/bin/cherri to win over stale bundled binary, got $RESOLVED_S4" >&2
-  exit 1
-}
-printf '  [PASS] Scenario 4: compatible cached compiler wins over stale bundled binary\n'
+[ "$RESOLVED_S4" = "$HOME1/bin/cherri" ]
+[ ! -e "$SKILL_S4/bin/cherri.observed" ]
+printf '  [PASS] Scenario 4: verified cache wins without running an incompatible bundle\n'
 
-# Scenario 5: Explicit incompatible CHERRI_BIN -> error, not a silent bypass
+# 5-7: Synthetic response controls, with mandatory real-byte receipts and
+# observed response execution; unrelated missing-receipt failures cannot pass.
 BAD_CHERRI_BIN="$TMP/bad-explicit-cherri"
-make_mock_cherri "$BAD_CHERRI_BIN" '{"languageVersion":"1.0","schemaFingerprint":"0000000000000000000000000000000000000000000000000000000000000000"}'
-if (
-  CHERRI_BIN="$BAD_CHERRI_BIN" \
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null 2>&1
-); then
-  echo "Scenario 5 failed: explicit incompatible CHERRI_BIN was not rejected" >&2
-  exit 1
-fi
-printf '  [PASS] Scenario 5: explicit incompatible CHERRI_BIN rejected without silent fallback\n'
-
-# Scenario 6: Same languageVersion ("2.0") but different schemaFingerprint -> error
+make_mock_cherri "$BAD_CHERRI_BIN" "$(control_caps 1.0 "$MANIFEST_SCHEMA_FP")"
+reject_mock_doctor "$BAD_CHERRI_BIN" 'languageVersion mismatch'
+printf '  [PASS] Scenario 5: explicit incompatible response never falls back\n'
 WRONG_FP_BIN="$TMP/wrong-fp-cherri"
-make_mock_cherri "$WRONG_FP_BIN" '{"languageVersion":"2.0","catalogSchemaVersion":"3.0","schemaFingerprint":"32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694"}'
-if (
-  CHERRI_BIN="$WRONG_FP_BIN" \
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null 2>&1
-); then
-  echo "Scenario 6 failed: mismatched schemaFingerprint with languageVersion 2.0 was accepted" >&2
-  exit 1
-fi
-printf '  [PASS] Scenario 6: same languageVersion with wrong schemaFingerprint rejected\n'
-
-# Scenario 7: Missing or malformed schemaFingerprint / malformed JSON -> error
+make_mock_cherri "$WRONG_FP_BIN" "$(control_caps "$MANIFEST_LANG_VERSION" 0000000000000000000000000000000000000000000000000000000000000000)"
+reject_mock_doctor "$WRONG_FP_BIN" 'schemaFingerprint mismatch'
+printf '  [PASS] Scenario 6: same language with incorrect schema is rejected\n'
 MALFORMED_FP_BIN="$TMP/malformed-fp-cherri"
-make_mock_cherri "$MALFORMED_FP_BIN" '{"languageVersion":"2.0","catalogSchemaVersion":"3.0","schemaFingerprint":"not-a-64-char-hex"}'
+make_mock_cherri "$MALFORMED_FP_BIN" "$(control_caps "$MANIFEST_LANG_VERSION" not-a-64-char-hex)"
+reject_mock_doctor "$MALFORMED_FP_BIN" 'malformed schemaFingerprint'
 BROKEN_JSON_BIN="$TMP/broken-json-cherri"
-make_mock_cherri "$BROKEN_JSON_BIN" '{"languageVersion":"2.0","schemaFingerprint":"'"$MANIFEST_SCHEMA_FP"'"'
-if (
-  CHERRI_BIN="$MALFORMED_FP_BIN" \
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null 2>&1
-); then
-  echo "Scenario 7a failed: malformed schemaFingerprint was accepted" >&2
-  exit 1
-fi
-if (
-  CHERRI_BIN="$BROKEN_JSON_BIN" \
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null 2>&1
-); then
-  echo "Scenario 7b failed: malformed capabilities JSON was accepted" >&2
-  exit 1
-fi
-printf '  [PASS] Scenario 7: missing/malformed schemaFingerprint and broken JSON rejected\n'
+make_mock_cherri "$BROKEN_JSON_BIN" '{"languageVersion":"2.0"'
+reject_mock_doctor "$BROKEN_JSON_BIN" 'malformed JSON'
+printf '  [PASS] Scenario 7: malformed schema and malformed JSON responses are rejected\n'
 
-# Scenario 8: Docs SHA or fingerprint mismatch -> error
+# 8: Alter only the reference fingerprint in an owned exact-pin Git copy.
 BAD_DOCS_DIR="$TMP/bad-docs"
-mkdir -p "$BAD_DOCS_DIR/fork-language"
-cat > "$BAD_DOCS_DIR/fork-language/actions.md" <<'EOF'
-# Actions Reference
-**Schema Fingerprint:** `32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694`
-EOF
-if (
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  CHERRI_DOCS_DIR="$BAD_DOCS_DIR" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null 2>&1
-); then
-  echo "Scenario 8 failed: docs with mismatched Schema Fingerprint were accepted" >&2
-  exit 1
-fi
-printf '  [PASS] Scenario 8: docs SHA/fingerprint mismatch rejected\n'
+cp -R "$HOME1/docs" "$BAD_DOCS_DIR"
+sed "s/$MANIFEST_SCHEMA_FP/0000000000000000000000000000000000000000000000000000000000000000/" \
+  "$HOME1/docs/fork-language/actions.md" > "$BAD_DOCS_DIR/fork-language/actions.md"
+if control_doctor "$HOME1" CHERRI_DOCS_DIR="$BAD_DOCS_DIR" > "$TMP/controlled-docs-rejection.log" 2>&1; then exit 1; fi
+grep -Fq '[CHERRI_STALE_DOCS_SCHEMA]' "$TMP/controlled-docs-rejection.log"
+printf '  [PASS] Scenario 8: altered documentation fingerprint is rejected\n'
 
-# Scenario 9: Update deliberately requested -> controlled atomic replacement (no broken binary on failure)
+# 9: A deliberately failed transport leaves every previous tool/receipt intact.
 HOME9="$TMP/home-s9"
-mkdir -p "$HOME9/bin"
-cp "$COMPAT_MOCK_BIN" "$HOME9/bin/cherri"
-printf '%s\n' "$PINNED_COMPILER_SHA" > "$HOME9/bin/cherri.commit"
+mkdir -p "$HOME9"
+cp -R "$HOME1/bin" "$HOME9/bin"
 cp -R "$HOME1/docs" "$HOME9/docs"
-if (
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME9" \
-  CHERRI_PREBUILT_URL="http://127.0.0.1:1/unreachable-cherri-binary" \
-  CHERRI_PREBUILT_SHA256="0000000000000000000000000000000000000000000000000000000000000000" \
-  sh "$SKILL_TEST_COPY/scripts/setup.sh" --update >/dev/null 2>&1
-); then
-  echo "Scenario 9 failed: setup.sh --update with broken download URL unexpectedly succeeded" >&2
-  exit 1
-fi
-# Verify existing working binary in HOME9 was preserved intact
-(
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME9" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null
-)
-printf '  [PASS] Scenario 9: failed download preserved existing working binary\n'
+if (CONTROL_DOWNLOAD_URL=controlled://unavailable; control_setup "$HOME9" --update) > "$TMP/controlled-update-failure.log" 2>&1; then exit 1; fi
+grep -Fq '[CONTROLLED_DOWNLOAD_REJECTED]' "$TMP/controlled-update-failure.log"
+control_pair_unchanged "$HOME1" "$HOME9"
+control_doctor "$HOME9" >/dev/null
+[ ! -e "$HOME9/.install-lock" ]
+printf '  [PASS] Scenario 9: controlled download failure preserves the real working pair\n'
 
-# Scenario 10: Branch advance after install -> must NOT silently change the installed version
-make_mock_cherri "$MOCK_COMPILER_REPO/.cherri-prebuilt-bin" '{"languageVersion":"2.0","catalogSchemaVersion":"3.0","schemaFingerprint":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}'
-git -C "$MOCK_COMPILER_REPO" add .cherri-prebuilt-bin
-git -C "$MOCK_COMPILER_REPO" commit -q -m "Advance compiler branch past pinned commit"
-ADVANCED_COMPILER_SHA=$(git -C "$MOCK_COMPILER_REPO" rev-parse HEAD)
-[ "$ADVANCED_COMPILER_SHA" != "$PINNED_COMPILER_SHA" ]
-
-cat > "$MOCK_DOCS_REPO/fork-language/actions.md" <<'EOF'
-# Advanced Unverified Branch Commit
-**Schema Fingerprint:** `ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`
-EOF
-git -C "$MOCK_DOCS_REPO" add fork-language/actions.md
-git -C "$MOCK_DOCS_REPO" commit -q -m "Advance docs branch past pinned commit"
-ADVANCED_DOCS_SHA=$(git -C "$MOCK_DOCS_REPO" rev-parse HEAD)
+# 10: An advanced docs branch cannot change the original pin. The compiler
+# remains the real supplied immutable artifact; no fake source-build is claimed.
+printf '\nAdvanced unselected documentation branch.\n' >> "$MOCK_DOCS_REPO/fork-language/actions.md"
+git --no-replace-objects -C "$MOCK_DOCS_REPO" add fork-language/actions.md
+git --no-replace-objects -C "$MOCK_DOCS_REPO" -c user.name=Cherri-QA -c user.email=qa@example.invalid commit -qm 'Advance controlled docs branch'
+ADVANCED_DOCS_SHA=$(git --no-replace-objects -C "$MOCK_DOCS_REPO" rev-parse HEAD)
 [ "$ADVANCED_DOCS_SHA" != "$PINNED_DOCS_SHA" ]
-(
-  unset CHERRI_BIN
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  CHERRI_REPO="$MOCK_COMPILER_REPO" \
-  CHERRI_DOCS_REPO="$MOCK_DOCS_REPO" \
-  sh "$SKILL_TEST_COPY/scripts/setup.sh" --update >/dev/null
-  SKILL_DIR="$SKILL_TEST_COPY" \
-  CHERRI_HOME="$HOME1" \
-  sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null
-)
-INSTALLED_COMPILER_SHA=$(git -C "$HOME1/src" rev-parse HEAD)
-[ "$INSTALLED_COMPILER_SHA" = "$PINNED_COMPILER_SHA" ] || {
-  echo "Scenario 10 failed: branch advance changed installed compiler commit from $PINNED_COMPILER_SHA to $INSTALLED_COMPILER_SHA" >&2
-  exit 1
-}
-INSTALLED_DOCS_SHA=$(git -C "$HOME1/docs" rev-parse HEAD)
-[ "$INSTALLED_DOCS_SHA" = "$PINNED_DOCS_SHA" ] || {
-  echo "Scenario 10 failed: branch advance changed installed docs commit from $PINNED_DOCS_SHA to $INSTALLED_DOCS_SHA" >&2
-  exit 1
-}
-printf '  [PASS] Scenario 10: branch advance did not alter pinned installed version\n'
+control_setup "$HOME1" --update >/dev/null
+control_doctor "$HOME1" >/dev/null
+cmp -s "$CONTROL_COMPILER_INPUT" "$HOME1/bin/cherri"
+cmp -s "$CONTROL_MIGRATION_INPUT" "$HOME1/bin/cherri-migrate"
+[ "$(cat "$HOME1/bin/cherri.commit")" = "$PINNED_COMPILER_SHA" ]
+[ "$(cat "$HOME1/bin/cherri-migrate.commit")" = "$PINNED_COMPILER_SHA" ]
+[ "$(git --no-replace-objects -C "$HOME1/docs" rev-parse HEAD)" = "$PINNED_DOCS_SHA" ]
+printf '  [PASS] Scenario 10: controlled reinstall preserves real tool source and original docs pin\n'
 
 if [ -n "$EVIDENCE_OUT" ]; then
   mkdir -p "$(dirname -- "$EVIDENCE_OUT")"
@@ -413,12 +362,15 @@ if [ -n "$EVIDENCE_OUT" ]; then
     "status": "PASS_WRAPPER_SELF_TEST",
     "actual_cli_operations": ["version", "actions", "catalog", "unsigned-build", "decompile", "recompile", "prepare-edit", "reject-AEA1-input"],
     "mock_installation_scenarios": 10,
+    "controlled_installation_scope": "real supplied compiler and companion; synthetic download transport and owned minimal docs fixture; no source-build claim",
+    "observed_control_compiler_source": "$PINNED_COMPILER_SHA",
+    "observed_control_docs_pin": "$PINNED_DOCS_SHA",
     "declared_compiler_pin": "$MANIFEST_COMPILER_COMMIT",
     "declared_docs_pin": "$MANIFEST_DOCS_COMMIT",
     "schema_fingerprint": "$MANIFEST_SCHEMA_FP",
     "codec_fingerprint": "$MANIFEST_CODEC_FP",
     "macro_fingerprint": "$MANIFEST_MACRO_FP",
-    "scope": "Wrapper execution and mock installation controls only. Package integrity, actual installer transactions and full edit/sign contracts are separately verified."
+    "scope": "Wrapper execution and controlled-transport installation checks with actual tools only. Published docs, complete real source-build transactions and full edit/sign contracts are independently verified."
   }
 }
 EOF
