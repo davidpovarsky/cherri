@@ -1,0 +1,22 @@
+{
+  "schema": "cherri.p15.r3.schema5.combined.v1",
+  "source_sha": "8257b5b89251d5a3b6d82f278d5ae7b1fea2f8df",
+  "branch": "agent/cherri-p10r15-completion-r3-20261119",
+  "source_clean_before": true,
+  "started_at": "2026-11-20T00:29:43.029302+00:00",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=25m",
+    "-run",
+    "^TestSchemaSupplementalProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "go_version": "go version go1.25.6 windows/amd64",
+  "environment": {
+    "GOMAXPROCS": "2",
+    "GOFLAGS": "-p=2"
+  }
+}

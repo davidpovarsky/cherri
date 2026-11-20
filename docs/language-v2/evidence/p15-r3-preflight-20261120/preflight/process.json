@@ -1,0 +1,180 @@
+{
+  "source_sha": "9bf99c8b8a4b3c611b9bd1b87bb9a1b38df77c71",
+  "source_clean_before": true,
+  "started_at": "2026-11-20T00:48:42.276517+00:00",
+  "status": "PASSED",
+  "commands": [
+    {
+      "name": "build",
+      "argv": [
+        "go",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r3-preflight-9bf99c8b\\cherri.exe",
+        "."
+      ],
+      "started_at": "2026-11-20T00:48:42.277571+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 127.766,
+      "finished_at": "2026-11-20T00:50:50.046734+00:00",
+      "outputs": [
+        {
+          "path": "build.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "build.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "legacy-parity",
+      "argv": [
+        "go",
+        "run",
+        "./tools/legacy-parity",
+        "-output",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r3-preflight-9bf99c8b\\legacy-parity.json"
+      ],
+      "started_at": "2026-11-20T00:50:50.048875+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 17.016,
+      "finished_at": "2026-11-20T00:51:07.059905+00:00",
+      "outputs": [
+        {
+          "path": "legacy-parity.stdout",
+          "bytes": 6725,
+          "sha256": "13e16292d7fefd53e860b465dfd24ae26aa488bb8e6ed62f9057211b0df09b22"
+        },
+        {
+          "path": "legacy-parity.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "metadata-session-provenance",
+      "argv": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=8m",
+        "-run",
+        "^(TestMETA00[1-3].*|TestLANG00[1-4].*|TestForkActionProvenanceRegistry|TestP10_RegexQuantifiersPreserved)$",
+        "."
+      ],
+      "started_at": "2026-11-20T00:51:07.081517+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 96.735,
+      "finished_at": "2026-11-20T00:52:43.815995+00:00",
+      "outputs": [
+        {
+          "path": "metadata-session-provenance.stdout",
+          "bytes": 25839,
+          "sha256": "a40393a4db5f575abe52a2db67634121abd97b0e3c87ad5ea89758bdcc88fe56"
+        },
+        {
+          "path": "metadata-session-provenance.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "named_passes": [
+        "TestForkActionProvenanceRegistry",
+        "TestMETA001_WorkflowHeaderMetadata",
+        "TestMETA002_NoInputBehaviorAndQuestions",
+        "TestMETA003_Triggers/Supported",
+        "TestMETA003_Triggers/Unsupported",
+        "TestMETA003_Triggers",
+        "TestLANG001_ImportsAndCustomAction/ImportRejected",
+        "TestLANG001_ImportsAndCustomAction/CustomAction",
+        "TestLANG001_ImportsAndCustomAction",
+        "TestLANG002_EnumAndTypeAliases/LiteralReferenceControl",
+        "TestLANG002_EnumAndTypeAliases/ValidEnum",
+        "TestLANG002_EnumAndTypeAliases/InvalidEnum",
+        "TestLANG002_EnumAndTypeAliases",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/wrong_text",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/unbound_uuid",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/literal_bypasses_required_reference",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/variable_instead_of_exact_output",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/unexpected_coercion",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/missing_producer",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/duplicated_producer",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/consumer_before_producer",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption/wrong_native_consumer",
+        "TestLANG002ScalarReferenceOracleRejectsCorruption",
+        "TestLANG003_NativeEscapeAPIs/NativeAction",
+        "TestLANG003_NativeEscapeAPIs/NativePlist",
+        "TestLANG003_NativeEscapeAPIs/NativeRef",
+        "TestLANG003_NativeEscapeAPIs/NativeWorkflow",
+        "TestLANG003_NativeEscapeAPIs/NativeNegativeFailClosed",
+        "TestLANG003_NativeEscapeAPIs",
+        "TestLANG004_UnhandledDeclarationsNotSilent",
+        "TestP10_RegexQuantifiersPreserved"
+      ],
+      "named_failures": [],
+      "named_skips": []
+    },
+    {
+      "name": "generated-docs",
+      "argv": [
+        "go",
+        "run",
+        "./tools/language-docs",
+        "--check"
+      ],
+      "started_at": "2026-11-20T00:52:43.831929+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 2.766,
+      "finished_at": "2026-11-20T00:52:46.604143+00:00",
+      "outputs": [
+        {
+          "path": "generated-docs.stdout",
+          "bytes": 112,
+          "sha256": "f39991d49a5dfbd3cd6181b65df824477df8798965935f3726f285a946d15433"
+        },
+        {
+          "path": "generated-docs.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "capabilities",
+      "argv": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r3-preflight-9bf99c8b\\cherri.exe",
+        "--capabilities-json"
+      ],
+      "started_at": "2026-11-20T00:52:46.607994+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.329,
+      "finished_at": "2026-11-20T00:52:46.942429+00:00",
+      "outputs": [
+        {
+          "path": "capabilities.stdout",
+          "bytes": 26054,
+          "sha256": "46d16891afa5663c9af8444e761975ac9907226ad29a580346660d01633babc4"
+        },
+        {
+          "path": "capabilities.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "finished_at": "2026-11-20T00:52:46.970376+00:00",
+  "source_sha_after": "9bf99c8b8a4b3c611b9bd1b87bb9a1b38df77c71",
+  "source_clean_after": true,
+  "binary_sha256": "0913ea8d9be37bc42058ea7af31ad9c2bf8f2072e3eba1fa3281b4b9ae5fb39e",
+  "parity_sha256": "0c706c369e9f1f33cb6e16fd4bb325bcd20ce23e8b085e398c8b308e577d2c8a",
+  "parity_summary": null
+}
