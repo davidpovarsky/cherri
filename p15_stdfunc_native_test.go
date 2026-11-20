@@ -320,7 +320,9 @@ func p15StdfuncNativeError(actions []map[string]any) error {
 		return map[string]p15StdfuncEdge{"{0, 1}": {uuid: uuid, coercion: coercion}}
 	}
 	var replace = p15C01Params(js[1])
-	if replace["WFReplaceTextFind"] != "#" || replace["WFReplaceTextReplace"] != "#" {
+	// The preserved Legacy source contains "\u0023". Its lexer decodes only
+	// newline, carriage-return and tab escapes; this literal is therefore "u0023".
+	if replace["WFReplaceTextFind"] != "#" || replace["WFReplaceTextReplace"] != "u0023" {
 		return fmt.Errorf("preserved JavaScript replacement changed")
 	}
 	if err := p15StdfuncTextError(replace["WFInput"], "\ufffc", one(id(js[0]), "")); err != nil {
@@ -457,7 +459,7 @@ func TestP15IM03StandardFunctionNativeBehavior(t *testing.T) {
 			if err := p15StdfuncNativeError(actions); err != nil {
 				t.Fatal(err)
 			}
-			for _, mutation := range []string{"replacement", "html", "decode", "richtext", "filename", "contact", "prompt_edge", "parameter_slot", "call_target", "call_value", "return_edge", "drop_operation", "duplicate_uuid", "unknown_parameter"} {
+			for _, mutation := range []string{"replacement", "replacement_unicode_reinterpretation", "html", "decode", "richtext", "filename", "contact", "prompt_edge", "parameter_slot", "call_target", "call_value", "return_edge", "drop_operation", "duplicate_uuid", "unknown_parameter"} {
 				t.Run(mutation, func(t *testing.T) {
 					var broken = p15C01Clone(t, actions)
 					var changed bool
@@ -467,6 +469,9 @@ func TestP15IM03StandardFunctionNativeBehavior(t *testing.T) {
 						switch {
 						case mutation == "replacement" && name == "_ios17bug":
 							p["WFReplaceTextReplace"] = "changed"
+							changed = true
+						case mutation == "replacement_unicode_reinterpretation" && name == "_ios17bug":
+							p["WFReplaceTextReplace"] = "#"
 							changed = true
 						case mutation == "html" && name == "_uri":
 							p["WFURLActionURL"] = []any{"https://example.invalid/changed"}
@@ -553,6 +558,31 @@ func TestP15RP28StandardFunctionLegacyDifferential(t *testing.T) {
 	var candidateActions, candidateOK = candidate["WFWorkflowActions"].([]any)
 	if !legacyOK || !candidateOK || len(legacyActions) == 0 || len(candidateActions) == 0 {
 		t.Fatal("actual compiler returned no native action graph")
+	}
+	// Assert the independently observed Legacy literal before comparing graphs,
+	// so equal but reinterpreted outputs cannot satisfy this differential.
+	for _, compiled := range []struct {
+		name    string
+		actions []any
+	}{{"legacy_literal_replacement", legacyActions}, {"v2_literal_replacement", candidateActions}} {
+		t.Run(compiled.name, func(t *testing.T) {
+			var replacements int
+			for _, raw := range compiled.actions {
+				var action, _ = raw.(map[string]any)
+				if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.text.replace" {
+					continue
+				}
+				replacements++
+				var params, _ = action["WFWorkflowActionParameters"].(map[string]any)
+				if params["WFReplaceTextFind"] != "#" || params["WFReplaceTextReplace"] != "u0023" {
+					t.Fatalf("preserved Legacy literal changed: find=%#v replace=%#v",
+						params["WFReplaceTextFind"], params["WFReplaceTextReplace"])
+				}
+			}
+			if replacements != 1 {
+				t.Fatalf("want one actual replacement operation, got %d", replacements)
+			}
+		})
 	}
 	if difference := shortcutcompare.CompareDocumentsNormalized(
 		map[string]any{"WFWorkflowActions": legacyActions},
