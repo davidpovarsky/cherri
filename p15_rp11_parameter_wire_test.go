@@ -168,6 +168,39 @@ func (fixture p15RP11WireCase) expectedParameter(t *testing.T, states p15RP11App
 		if stores != 1 || name == "" {
 			return nil, fmt.Errorf("mutable source lost its unique native store")
 		}
+		// Bind the independently located store to its original source producer,
+		// not merely to the variable token that the consumer happens to carry.
+		if len(actions) != 3 || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
+			return nil, fmt.Errorf("mutable initializer/store/consumer order changed")
+		}
+		producerAction, producerKey, defaultName := "is.workflow.actions.number", "WFNumberActionNumber", "Number"
+		if fixture.name == "mutable_text" {
+			producerAction, producerKey, defaultName = "is.workflow.actions.gettext", "WFTextActionText", "Text"
+		}
+		producer := actions[0].WFWorkflowActionParameters
+		if actions[0].WFWorkflowActionIdentifier != producerAction || !reflect.DeepEqual(p15RP11Clone(t, producer[producerKey]), fixture.literal) {
+			return nil, fmt.Errorf("mutable original initializer action/value changed")
+		}
+		uuid, _ := producer["UUID"].(string)
+		if uuid == "" {
+			return nil, fmt.Errorf("mutable initializer producer identity is empty")
+		}
+		outputName, _ := producer["CustomOutputName"].(string)
+		if outputName == "" {
+			outputName = defaultName
+		}
+		input, ok := p15RP11Clone(t, states["WFNumberSubstitutableState"]["variable:ActionOutput"]).(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("independent native action-output sample is missing")
+		}
+		inputValue, ok := input["Value"].(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("independent native action-output sample has no Value")
+		}
+		inputValue["OutputUUID"], inputValue["OutputName"] = uuid, outputName
+		if !reflect.DeepEqual(p15RP11Clone(t, actions[1].WFWorkflowActionParameters["WFInput"]), input) {
+			return nil, fmt.Errorf("mutable store is disconnected from its original initializer")
+		}
 		token["VariableName"] = name
 	} else {
 		if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions."+fixture.reference {
