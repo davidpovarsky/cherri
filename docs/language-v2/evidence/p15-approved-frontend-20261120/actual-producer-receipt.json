@@ -1,0 +1,142 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-BRG33-unit",
+      "requirements": [
+        "BRG33"
+      ],
+      "tier": "unit",
+      "implementation_sha": "04c5e847c68c6b4a71c4d309fd36b0887b9afaca",
+      "test_id": "github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults|TestP15C05UnknownEnumNativeImport|TestP15NativeRoundTripOracleRejectsCorruption|TestP15F05UnsupportedLoopControlProduction|TestP15F05SupportedLoopsAndKeywordText|TestP15P04ReturnTerminators|TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService|TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations|TestP15T06ControlResultsRequireAllBranches|TestP15T07PerPlatformVersionProduction|TestP15T07MissingPlatformIsUnverified|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07PlatformVersionService|TestP15T07PlatformVersionSchemaIdentity|TestP15T07CanonicalCatalogPropagation|TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService|TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire",
+        "required_production_tests": "TestP15B02AC01CatalogMigrationAndNativeOutputs\nTestP15B02AC01RejectsCatalogIdentityFaults\nTestP15B02AC01RejectsNativeCaptureFaults\nTestP15C05UnknownEnumNativeImport\nTestP15NativeRoundTripOracleRejectsCorruption\nTestP15F05UnsupportedLoopControlProduction\nTestP15F05SupportedLoopsAndKeywordText\nTestP15P04ReturnTerminators\nTestP15T04OpaqueTypeProduction\nTestP15T04OpaqueTypeService\nTestP15T06RecordAnnotationsDoNotValidateExternalValues\nTestP15T06RecordProofTypeRelations\nTestP15T06ControlResultsRequireAllBranches\nTestP15T07PerPlatformVersionProduction\nTestP15T07MissingPlatformIsUnverified\nTestP15T07MalformedPlatformMetadataFailsClosed\nTestP15T07PlatformVersionService\nTestP15T07PlatformVersionSchemaIdentity\nTestP15T07CanonicalCatalogPropagation\nTestP15T08ConditionalCardinalityProduction\nTestP15T08ConditionalCardinalityService\nTestP15T09ContentConversionEvidence\nTestP15T09ContentConversionNativeWire"
+      },
+      "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+    },
+    {
+      "evidence_id": "ev-local-BRG33-analysis",
+      "requirements": [
+        "BRG33"
+      ],
+      "tier": "analysis",
+      "implementation_sha": "04c5e847c68c6b4a71c4d309fd36b0887b9afaca",
+      "test_id": "github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults|TestP15C05UnknownEnumNativeImport|TestP15NativeRoundTripOracleRejectsCorruption|TestP15F05UnsupportedLoopControlProduction|TestP15F05SupportedLoopsAndKeywordText|TestP15P04ReturnTerminators|TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService|TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations|TestP15T06ControlResultsRequireAllBranches|TestP15T07PerPlatformVersionProduction|TestP15T07MissingPlatformIsUnverified|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07PlatformVersionService|TestP15T07PlatformVersionSchemaIdentity|TestP15T07CanonicalCatalogPropagation|TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService|TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire",
+        "required_production_tests": "TestP15B02AC01CatalogMigrationAndNativeOutputs\nTestP15B02AC01RejectsCatalogIdentityFaults\nTestP15B02AC01RejectsNativeCaptureFaults\nTestP15C05UnknownEnumNativeImport\nTestP15NativeRoundTripOracleRejectsCorruption\nTestP15F05UnsupportedLoopControlProduction\nTestP15F05SupportedLoopsAndKeywordText\nTestP15P04ReturnTerminators\nTestP15T04OpaqueTypeProduction\nTestP15T04OpaqueTypeService\nTestP15T06RecordAnnotationsDoNotValidateExternalValues\nTestP15T06RecordProofTypeRelations\nTestP15T06ControlResultsRequireAllBranches\nTestP15T07PerPlatformVersionProduction\nTestP15T07MissingPlatformIsUnverified\nTestP15T07MalformedPlatformMetadataFailsClosed\nTestP15T07PlatformVersionService\nTestP15T07PlatformVersionSchemaIdentity\nTestP15T07CanonicalCatalogPropagation\nTestP15T08ConditionalCardinalityProduction\nTestP15T08ConditionalCardinalityService\nTestP15T09ContentConversionEvidence\nTestP15T09ContentConversionNativeWire"
+      },
+      "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+    },
+    {
+      "evidence_id": "ev-local-BRG33-service",
+      "requirements": [
+        "BRG33"
+      ],
+      "tier": "service",
+      "implementation_sha": "04c5e847c68c6b4a71c4d309fd36b0887b9afaca",
+      "test_id": "github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults|TestP15C05UnknownEnumNativeImport|TestP15NativeRoundTripOracleRejectsCorruption|TestP15F05UnsupportedLoopControlProduction|TestP15F05SupportedLoopsAndKeywordText|TestP15P04ReturnTerminators|TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService|TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations|TestP15T06ControlResultsRequireAllBranches|TestP15T07PerPlatformVersionProduction|TestP15T07MissingPlatformIsUnverified|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07PlatformVersionService|TestP15T07PlatformVersionSchemaIdentity|TestP15T07CanonicalCatalogPropagation|TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService|TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire",
+        "required_production_tests": "TestP15B02AC01CatalogMigrationAndNativeOutputs\nTestP15B02AC01RejectsCatalogIdentityFaults\nTestP15B02AC01RejectsNativeCaptureFaults\nTestP15C05UnknownEnumNativeImport\nTestP15NativeRoundTripOracleRejectsCorruption\nTestP15F05UnsupportedLoopControlProduction\nTestP15F05SupportedLoopsAndKeywordText\nTestP15P04ReturnTerminators\nTestP15T04OpaqueTypeProduction\nTestP15T04OpaqueTypeService\nTestP15T06RecordAnnotationsDoNotValidateExternalValues\nTestP15T06RecordProofTypeRelations\nTestP15T06ControlResultsRequireAllBranches\nTestP15T07PerPlatformVersionProduction\nTestP15T07MissingPlatformIsUnverified\nTestP15T07MalformedPlatformMetadataFailsClosed\nTestP15T07PlatformVersionService\nTestP15T07PlatformVersionSchemaIdentity\nTestP15T07CanonicalCatalogPropagation\nTestP15T08ConditionalCardinalityProduction\nTestP15T08ConditionalCardinalityService\nTestP15T09ContentConversionEvidence\nTestP15T09ContentConversionNativeWire"
+      },
+      "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+    },
+    {
+      "evidence_id": "ev-local-BRG33-integration",
+      "requirements": [
+        "BRG33"
+      ],
+      "tier": "integration",
+      "implementation_sha": "04c5e847c68c6b4a71c4d309fd36b0887b9afaca",
+      "test_id": "github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults|TestP15C05UnknownEnumNativeImport|TestP15NativeRoundTripOracleRejectsCorruption|TestP15F05UnsupportedLoopControlProduction|TestP15F05SupportedLoopsAndKeywordText|TestP15P04ReturnTerminators|TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService|TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations|TestP15T06ControlResultsRequireAllBranches|TestP15T07PerPlatformVersionProduction|TestP15T07MissingPlatformIsUnverified|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07PlatformVersionService|TestP15T07PlatformVersionSchemaIdentity|TestP15T07CanonicalCatalogPropagation|TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService|TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire",
+        "required_production_tests": "TestP15B02AC01CatalogMigrationAndNativeOutputs\nTestP15B02AC01RejectsCatalogIdentityFaults\nTestP15B02AC01RejectsNativeCaptureFaults\nTestP15C05UnknownEnumNativeImport\nTestP15NativeRoundTripOracleRejectsCorruption\nTestP15F05UnsupportedLoopControlProduction\nTestP15F05SupportedLoopsAndKeywordText\nTestP15P04ReturnTerminators\nTestP15T04OpaqueTypeProduction\nTestP15T04OpaqueTypeService\nTestP15T06RecordAnnotationsDoNotValidateExternalValues\nTestP15T06RecordProofTypeRelations\nTestP15T06ControlResultsRequireAllBranches\nTestP15T07PerPlatformVersionProduction\nTestP15T07MissingPlatformIsUnverified\nTestP15T07MalformedPlatformMetadataFailsClosed\nTestP15T07PlatformVersionService\nTestP15T07PlatformVersionSchemaIdentity\nTestP15T07CanonicalCatalogPropagation\nTestP15T08ConditionalCardinalityProduction\nTestP15T08ConditionalCardinalityService\nTestP15T09ContentConversionEvidence\nTestP15T09ContentConversionNativeWire"
+      },
+      "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption, TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText, TestP15P04ReturnTerminators, TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService, TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches, TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation, TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService, TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T00:18:52Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG33",
+        "group": "gate",
+        "requirement": "Approved frontend semantics remain enforced",
+        "test_level": "unit+analysis+service+integration",
+        "executed_levels": [
+          "unit",
+          "analysis",
+          "service",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Independently executed complete approved frontend scenarios across actual parser, analyzer, service, native encoding/import and catalog propagation; original minimum levels and independent IDs remain mandatory.",
+  "source_sha": "04c5e847c68c6b4a71c4d309fd36b0887b9afaca"
+}
