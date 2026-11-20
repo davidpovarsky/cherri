@@ -194,6 +194,29 @@ class IOSTestEvidenceTests(unittest.TestCase):
         self.assertEqual(len(diagnostic.get("startupReceipts", [])), 1)
         self.assertEqual(records, [])
 
+    def test_direct_document_check_retains_actual_observation_without_inventing_wait(self):
+        receipt = self.startup_receipt(stage="document-check", waitCompleted=False,
+            createDocumentHittable=True, elapsedMilliseconds=4743,
+            budgetMilliseconds=28000, documentCreationIssued=False)
+        diagnostic, records, _ = self.collect(self.block(status="failed", body=receipt), 65)
+        self.assertEqual(len(diagnostic["startupReceipts"]), 1)
+        self.assertFalse(diagnostic["startupReceipts"][0]["waitCompleted"])
+        self.assertTrue(diagnostic["startupReceipts"][0]["createDocumentHittable"])
+        self.assertEqual(records, [])
+        for changes in ({"waitCompleted": True}, {"budgetMilliseconds": 28001},
+                        {"documentCreationIssued": 1}, {"elapsedMilliseconds": -1}):
+            with self.subTest(changes=changes):
+                changed = json.loads(receipt[len(collector.STARTUP_PREFIX):])
+                changed.update(changes)
+                diagnostic, records, _ = self.collect(self.block(status="failed",
+                    body=collector.STARTUP_PREFIX + json.dumps(changed)), 65)
+                self.assertEqual(diagnostic["startupReceipts"], [])
+                self.assertEqual(records, [])
+        missing_time = self.startup_receipt(stage="document-check", waitCompleted=False)
+        diagnostic, records, _ = self.collect(self.block(status="failed", body=missing_time), 65)
+        self.assertEqual(diagnostic["startupReceipts"], [])
+        self.assertEqual(records, [])
+
     def documentation_ui_state(self, **updates):
         value = {key: False for key in collector.docs.UI_STATE_BOOLS}
         value.update(schemaVersion="1.0", testName=collector.docs.UI,

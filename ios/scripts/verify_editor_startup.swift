@@ -63,4 +63,31 @@ clock.value = 20
 check(budget.remaining(maximum: -1) == 0, "negative wait refused")
 check(budget.remaining(maximum: .nan) == 0, "nonfinite wait refused")
 check(budget.elapsedMilliseconds == 20_000, "observed monotonic time retained")
+// Actual policy used by ensureEditorReady. These times come from the K run;
+// they establish local control flow only, never a repaired Apple UI result.
+let fastClock = StartupTestClock()
+var fast = CherriEditorStartupDeadline(now: { fastClock.value })
+fastClock.value = 4.743
+check(!fast.needsDocumentWait(creationState), "ready Create Document must not trigger another wait")
+check(!fast.needsDocumentWait(editorAppeared), "existing editor bypasses creation wait")
+var waits = 0
+if fast.needsDocumentWait(creationState) { waits += 1; fastClock.value += 26 }
+check(waits == 0, "ready observation avoids the reproduced redundant waiting path")
+check(fast.claimDocumentCreation(creationState), "fresh creation state is actionable before the unchanged deadline")
+check(!fast.claimDocumentCreation(creationState), "optimized path still permits only one tap")
+let pendingCreation = CherriEditorStartupObservation(
+    windowExists: true, appRunningForeground: true,
+    createDocumentExists: true, createDocumentHittable: false,
+    editorExists: false, editorHittable: false)
+var pending = CherriEditorStartupDeadline(now: { fastClock.value })
+check(pending.needsDocumentWait(pendingCreation), "non-hittable control still needs real readiness")
+check(!fast.needsDocumentWait(pendingCreation), "already-issued creation does not start another document wait")
+check(!pending.claimDocumentCreation(pendingCreation), "non-hittable control never authorizes a tap")
+check(!pending.needsDocumentWait(states[0]), "missing window does not enter another wait")
+check(!pending.needsDocumentWait(states[1]), "background app does not enter another wait")
+fastClock.value = 28.001
+check(!fast.needsDocumentWait(pendingCreation), "expired total budget cannot start a control wait")
+check(!fast.claimDocumentCreation(creationState), "optimized path cannot issue a late tap")
+check(!fast.accepts(readyState, waitCompleted: true), "optimized path still rejects late readiness")
+check(!pending.claimDocumentCreation(editorAppeared), "editor arriving during wait remains protected")
 print("PASS_LOCAL_STARTUP_DEADLINE_CONTROLS: \(checked); Apple UI NOT_RUN")

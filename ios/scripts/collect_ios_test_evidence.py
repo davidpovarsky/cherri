@@ -81,7 +81,7 @@ BOOL_FIELDS = {
 CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
 STARTUP_PREFIX = "[CHERRI_UI_STARTUP] "
-STARTUP_STAGES = {"window-wait", "document-wait", "editor-wait"}
+STARTUP_STAGES = {"window-wait", "document-wait", "document-check", "editor-wait"}
 STARTUP_BOOL_FIELDS = {"waitCompleted", "windowExists", "appRunningForeground",
                        "createDocumentExists", "createDocumentHittable", "editorExists", "editorHittable"}
 INPUT_PREFIX = "[CHERRI_INPUT_RECEIPT] "
@@ -149,6 +149,9 @@ def safe_startup_receipt(line, active_test):
     # cannot authorize source, document names, AX labels, or an arbitrary tree.
     receipt = {key: raw[key] for key in ("schemaVersion", "testName", "stage", *sorted(STARTUP_BOOL_FIELDS))}
     timing = {"elapsedMilliseconds", "budgetMilliseconds", "documentCreationIssued"}
+    if raw["stage"] == "document-check" and (
+            raw["waitCompleted"] is not False or not timing.issubset(raw)):
+        return None
     if timing.intersection(raw):
         if (type(raw.get("elapsedMilliseconds")) is not int or not 0 <= raw["elapsedMilliseconds"] <= 120000
                 or type(raw.get("budgetMilliseconds")) is not int or raw["budgetMilliseconds"] != 28000
