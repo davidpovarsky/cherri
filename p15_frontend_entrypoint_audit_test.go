@@ -282,6 +282,39 @@ func p15RP52SwiftEntryError(raw []byte) error {
 	if err != nil {
 		return err
 	}
+	// The reviewed declaration is unconditional and top-level. Do not guess
+	// Swift build flags or authorize a live alternate declaration from an
+	// inactive/nested canonical decoy. String/comment tokens remain opaque.
+	depth, declarations := 0, 0
+	for i, item := range tokens {
+		if item == "#" && i+1 < len(tokens) {
+			switch tokens[i+1] {
+			case "if", "elseif", "else", "endif":
+				return fmt.Errorf("unreviewed conditional Swift source ownership")
+			}
+		}
+		if i+1 < len(tokens) && tokens[i+1] == "CherriCompiler" {
+			switch item {
+			case "enum", "struct", "class", "actor", "protocol", "extension":
+				if item != "enum" || depth != 0 {
+					return fmt.Errorf("unreviewed alternate or nested Swift compiler declaration")
+				}
+				declarations++
+			}
+		}
+		if item == "{" {
+			depth++
+		}
+		if item == "}" {
+			depth--
+			if depth < 0 {
+				return fmt.Errorf("unbalanced Swift source ownership")
+			}
+		}
+	}
+	if depth != 0 || declarations != 1 {
+		return fmt.Errorf("missing unique top-level Swift compiler declaration")
+	}
 	wanted, err := p15RP52SwiftTokens(p15RP52ApprovedSwiftCompile)
 	if err != nil {
 		return err
@@ -415,7 +448,7 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment", "bridge_mode_literal", "bridge_mode_pointer", "bridge_swapped_abi", "duplicate_bridge", "inactive_enum_live_struct"} {
+	for _, fault := range []string{"auto_default", "legacy_default", "mode_literal", "comment_shadow", "string_shadow", "duplicate_entry", "duplicate_enum", "missing_bridge", "local_shadow", "unterminated_comment", "bridge_mode_literal", "bridge_mode_pointer", "bridge_swapped_abi", "duplicate_bridge", "inactive_enum_live_struct", "nested_enum_live_struct"} {
 		t.Run("swift_"+fault, func(t *testing.T) {
 			s := string(swiftSource)
 			switch fault {
@@ -449,6 +482,8 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 				s = strings.Replace(s, "enum CherriCompiler {", "enum CherriCompiler {\n"+p15RP52ApprovedSwiftBridge, 1)
 			case "inactive_enum_live_struct":
 				s = "#if false\n" + s + "\n#else\n" + strings.Replace(strings.Replace(s, "enum CherriCompiler {", "struct CherriCompiler {", 1), "mode: String = \"v2\"", "mode: String = \"auto\"", 1) + "\n#endif\n"
+			case "nested_enum_live_struct":
+				s = "func auditDecoy() {\n" + s[strings.Index(s, "enum CherriCompiler {"):] + "\n}\n" + strings.Replace(strings.Replace(s, "enum CherriCompiler {", "struct CherriCompiler {", 1), "mode: String = \"v2\"", "mode: String = \"auto\"", 1)
 			}
 			if s == string(swiftSource) {
 				t.Fatal("source corruption did not occur")
