@@ -451,7 +451,8 @@ def bounded_log(raw_text):
 
 
 def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
-            documentation_index=None, documentation_manifest=None, documentation_receipt=None):
+            documentation_index=None, documentation_manifest=None, documentation_receipt=None,
+            diagnostic_only=False):
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValueError("evidence output already contains files; refusing to overwrite a prior run")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -498,6 +499,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
     passed_tests = {key for key, (status, _) in test_blocks.items() if status == "passed"}
     eligible_run = xcode_exit == 0 and bool(test_results) and all(entry["observedStatus"] == "passed" for entry in test_results)
 
+    acceptance_eligible = eligible_run and not diagnostic_only
     records = []
     for test_id, (reqs, assertions, required_checkpoint) in sorted(ui_test_map.items()):
         method = test_id.split("/")[1]
@@ -508,7 +510,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         test_passed = (test_status == "passed")
         checkpoint_verified = (required_checkpoint in test_body)
 
-        if eligible_run and test_passed and checkpoint_verified:
+        if acceptance_eligible and test_passed and checkpoint_verified:
             canonical_test_id = f"CherriUITests/{method}"
             records.append({
                 "evidence_id": f"ev-ios-ui-{method}",
@@ -532,7 +534,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
 
     for test_id, (reqs, assertions) in sorted(service_test_map.items()):
         method = test_id.split("/")[1]
-        if eligible_run and (test_id in passed_tests or f"CherriTests/{method}" in passed_tests):
+        if acceptance_eligible and (test_id in passed_tests or f"CherriTests/{method}" in passed_tests):
             safe_name = method
             records.append({
                 "evidence_id": f"ev-ios-service-{safe_name}",
@@ -587,6 +589,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
             for name, payload in documentation_files.items():
                 (output_dir / name).write_bytes(payload)
             docs.require(documentation_receipt is not None, "MISSING_GENERATION_RECEIPT")
+            docs.require(not diagnostic_only, "DIAGNOSTIC_ONLY_SCOPE")
             docs.require(eligible_run and run_id != "UNKNOWN", "RUN_NOT_ELIGIBLE")
             documentation_value = docs.receipt_from_log(log_text)
             docs.bind_receipt(documentation_value, index,
@@ -621,6 +624,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "schemaVersion": "1.0", "implementationSha": impl_sha, "runId": run_id,
         "xcodebuildExitCode": xcode_exit, "runStatus": run_status,
         "rawLogPresent": raw_present, "sanitizedLogSha256": log_sha,
+        "diagnosticOnly": diagnostic_only,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
         "documentationEvidence": documentation,
         "documentationUIStates": [json.loads(line[len(docs.UI_STATE_PREFIX):]) for line in log_text.splitlines() if line.startswith(docs.UI_STATE_PREFIX)],
@@ -656,6 +660,9 @@ if __name__ == "__main__":
     parser.add_argument("--documentation-index", type=Path)
     parser.add_argument("--documentation-manifest", type=Path)
     parser.add_argument("--documentation-receipt", type=Path)
+    parser.add_argument("--diagnostic-only", action="store_true",
+                        help="Retain actual outcomes without emitting any formal acceptance records")
     args = parser.parse_args()
     collect(args.log_path, args.output_dir, args.implementation_sha, args.run_id, args.exit_code_path,
-            args.documentation_index, args.documentation_manifest, args.documentation_receipt)
+            args.documentation_index, args.documentation_manifest, args.documentation_receipt,
+            diagnostic_only=args.diagnostic_only)

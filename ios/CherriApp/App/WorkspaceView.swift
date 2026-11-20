@@ -42,6 +42,7 @@ struct WorkspaceView: View {
     @State private var showDocumentation = false
 
     var body: some View {
+        let _ = CherriStartupLifecycleObserver.shared?.record(.workspaceBody, documentID: document.startupObservationID)
         VStack(spacing: 0) {
             if horizontalSizeClass == .regular {
                 HStack(spacing: 0) {
@@ -70,6 +71,9 @@ struct WorkspaceView: View {
             }
 
             statusBar
+        }
+        .onAppear {
+            CherriStartupLifecycleObserver.shared?.record(.workspaceAppeared, documentID: document.startupObservationID)
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -178,7 +182,8 @@ struct WorkspaceView: View {
             text: $document.text,
             diagnostic: diagnostic,
             diagnostics: diagnostics,
-            actions: actionCatalog
+            actions: actionCatalog,
+            startupObservationID: document.startupObservationID
         )
     }
 

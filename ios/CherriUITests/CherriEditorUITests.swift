@@ -13,23 +13,109 @@ final class CherriEditorUITests: XCTestCase {
     var app: XCUIApplication!
     private var syntheticSourceResetVerified = false
     private var expectedSyntheticSource: String?
+    private var startupObservationNonce: String?
+    private var startupObservationTestID: String?
+    private var startupObservationIssueCount = 0
+    private var observedStartupTrace: CherriEditorStartupTimingTrace?
 
     override func setUpWithError() throws {
         continueAfterFailure = false
         syntheticSourceResetVerified = false
         expectedSyntheticSource = nil
+        startupObservationNonce = nil
+        startupObservationTestID = nil
+        startupObservationIssueCount = 0
+        observedStartupTrace = nil
         app = XCUIApplication()
         app.launchArguments.append(contentsOf: [
             "--uitesting",
             "-AppleLanguages", "(en)",
             "-AppleKeyboards", "('en_US@hw=US;sw=QWERTY')"
         ])
+        configureStartupObservation()
+        recordStartupObservationSession("before-launch")
         app.launch()
+        recordStartupObservationSession("after-launch")
     }
 
     override func tearDownWithError() throws {
+        recordStartupObservationSession("teardown-start")
         recordEditorReceipt(stage: "teardown")
+        recordStartupObservationSession("teardown-finished")
         app = nil
+    }
+
+
+    /// Diagnostics are enabled only for these existing, fixed test identities.
+    /// They never query controls or contribute to a readiness decision.
+    private func configureStartupObservation() {
+        let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
+        let testID = "CherriEditorUITests/\(method)"
+        let selected = [
+            "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+            "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+            "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        ]
+        guard selected.contains(testID) else { return }
+        let nonce = UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
+        startupObservationNonce = nonce
+        startupObservationTestID = testID
+        app.launchEnvironment["CHERRI_STARTUP_OBSERVATION_NONCE"] = nonce
+        app.launchEnvironment["CHERRI_STARTUP_OBSERVATION_TEST"] = testID
+    }
+
+    private func recordStartupObservationSession(_ phase: String, readinessStartedAt: TimeInterval? = nil) {
+        guard let nonce = startupObservationNonce, let testID = startupObservationTestID else { return }
+        var row: [String: Any] = [
+            "schemaVersion": "1", "nonce": nonce, "testId": testID, "phase": phase,
+            "uptimeMs": Int((ProcessInfo.processInfo.systemUptime * 1_000).rounded(.down)),
+        ]
+        if let readinessStartedAt {
+            row["readinessStartedAtMs"] = Int((readinessStartedAt * 1_000).rounded(.down))
+        }
+        if let bytes = try? JSONSerialization.data(withJSONObject: row, options: [.sortedKeys]),
+           let json = String(data: bytes, encoding: .utf8) {
+            print("[CHERRI_UI_OBSERVATION_SESSION] \(json)")
+        }
+    }
+
+    override func record(_ issue: XCTIssue) {
+        if let nonce = startupObservationNonce, let testID = startupObservationTestID,
+           startupObservationIssueCount < 8 {
+            startupObservationIssueCount += 1
+            // The original trace is observed as-is, including an unfinished AX
+            // call. This does not retry the query or satisfy an expectation.
+            if let trace = observedStartupTrace { recordStartupTiming(trace) }
+            func bounded(_ text: String) -> [String: Any] {
+                let bytes = Data(text.utf8)
+                return ["base64": bytes.prefix(4_096).base64EncodedString(),
+                        "originalByteCount": bytes.count, "truncated": bytes.count > 4_096]
+            }
+            let error = issue.associatedError.map { $0 as NSError }
+            let location = issue.sourceCodeContext.location
+            let row: [String: Any] = [
+                "schemaVersion": "1", "nonce": nonce, "testId": testID,
+                "uptimeMs": Int((ProcessInfo.processInfo.systemUptime * 1_000).rounded(.down)),
+                "issueIndex": startupObservationIssueCount,
+                "issueType": String(describing: issue.type),
+                "sourceFile": location?.fileURL.lastPathComponent ?? "",
+                "sourceLine": location?.lineNumber ?? 0,
+                "errorPresent": error != nil,
+                "errorDomain": bounded(error?.domain ?? ""),
+                "errorCode": error?.code ?? 0,
+                "compact": bounded(issue.compactDescription),
+                "detailed": bounded(issue.detailedDescription ?? ""),
+                "errorDescription": bounded(error?.localizedDescription ?? ""),
+            ]
+            // Raw descriptions remain in the quarantined xcodebuild log.
+            // The collector publishes only fixed metadata and byte digests.
+            if let bytes = try? JSONSerialization.data(withJSONObject: row, options: [.sortedKeys]),
+               bytes.count <= 32_768, let json = String(data: bytes, encoding: .utf8) {
+                print("[CHERRI_UI_OBSERVATION_ISSUE_PRIVATE] \(json)")
+            }
+        }
+        super.record(issue)
     }
 
     private func waitForEditorValue(_ editor: XCUIElement, timeout: TimeInterval = 5,
@@ -183,6 +269,8 @@ final class CherriEditorUITests: XCTestCase {
     private func ensureEditorReady() -> XCUIElement {
         var deadline = CherriEditorStartupDeadline()
         let trace = CherriEditorStartupTimingTrace(startedAt: deadline.diagnosticStartedAt)
+        observedStartupTrace = trace
+        recordStartupObservationSession("readiness-start", readinessStartedAt: deadline.diagnosticStartedAt)
         let window = app.windows.firstMatch
         let editor = app.textViews["cherriCodeEditor"]
         trace.mark(.windowWait, .entered, value: true)
