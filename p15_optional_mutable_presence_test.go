@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 )
 
 // A mutable Optional needs a distinct runtime flag. The variable identity is
@@ -215,6 +217,86 @@ func TestP15OptionalImmutableSnapshotCapturesMutablePresence(t *testing.T) {
 						t.Fatal("damaged mutable Optional snapshot accepted")
 					}
 				})
+			}
+		})
+	}
+}
+
+func TestP15OptionalCompoundAssignmentRequiresPresentOperands(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"absent_target", "function echo(seed:Text)->Number?{var candidate:Number?=none;candidate+=1;return candidate}\ngetVariable(echo(\"unused\"))"},
+		{"absent_rhs", "function echo(seed:Text)->Number?{var candidate:Number?=0;candidate+=none;return candidate}\ngetVariable(echo(\"unused\"))"},
+		{"optional_target", "function echo(value:Number?)->Number?{var candidate:Number?=value;candidate+=1;return candidate}\ngetVariable(echo(none))"},
+		{"optional_rhs", "function echo(value:Number?)->Number?{var candidate:Number?=0;candidate+=value;return candidate}\ngetVariable(echo(none))"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			diagnostics := p15TypeDiagnostics(t, tc.source)
+			if len(diagnostics) != 1 || diagnostics[0].Code != analysis.CodeArgumentType || !strings.Contains(diagnostics[0].Message, "compound assignment requires present operands") {
+				t.Fatal("possibly absent arithmetic must not invent value presence", diagnostics)
+			}
+			if raw, err := CompileSourceToPlist("p15-optional-compound.cherri", tc.source); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) {
+				t.Fatalf("absent compound operand emitted native bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
+}
+
+func p15MutableOptionalCompoundError(actions []map[string]any, narrowed bool, tc p15FunctionOptionalCase) error {
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	envelope := g.header("echo")
+	flag, guard := "", ""
+	if narrowed {
+		value, presence := p15DecodeOptionalGraph(g, envelope, "has_value_0", "arg_0")
+		flag = p15MutablePresenceName(g)
+		g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(presence)})
+		g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})
+		guard = g.conditional(5, p15FunctionVariable(flag), "WFConditionalActionString", "0")
+	} else {
+		g.get("arg_0", envelope)
+		flag = p15MutableOptionalAssignGraph(g, "", true, p15MutableOptionalPresentValues()[2])
+	}
+	present := g.value("gettext", map[string]any{"WFTextActionText": "1"})
+	g.emit("setvariable", map[string]any{"WFVariableName": flag, "WFInput": p15FunctionEdge(present)})
+	value := g.value("math", map[string]any{"WFInput": p15FunctionVariable("candidate"), "WFMathOperation": "+", "WFMathOperand": uint64(1)})
+	g.emit("setvariable", map[string]any{"WFVariableName": "candidate", "WFInput": p15FunctionEdge(value)})
+	if narrowed {
+		g.boundary(guard, 2, false)
+	}
+	resultGroup := g.conditional(4, p15FunctionVariable(flag), "WFConditionalActionString", "1")
+	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionVariable("candidate")})
+	g.boundary(resultGroup, 1, false)
+	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", false, p15FunctionArgument{})
+	g.output(g.boundary(resultGroup, 2, true))
+	g.caller()
+	argument := ""
+	if narrowed {
+		argument = p15FunctionOptionalPayload(g, tc)
+	} else {
+		argument = g.payload("echo", p15FunctionString("unused"))
+	}
+	result := g.call(argument)
+	result, _ = p15DecodeOptionalGraph(g, result, "has_value", "value")
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
+	return g.finish()
+}
+
+func TestP15OptionalMutableCompoundKeepsNarrowedPresence(t *testing.T) {
+	for _, route := range []string{"present_literal", "narrowed_none", "narrowed_zero"} {
+		t.Run(route, func(t *testing.T) {
+			narrowed := route != "present_literal"
+			tc := p15FunctionOptionalCases()[3]
+			source := "function echo(seed:Text)->Number?{var candidate:Number?=0;candidate+=1;return candidate}\ngetVariable(echo(\"unused\"))"
+			if narrowed {
+				if route == "narrowed_none" {
+					tc = p15FunctionOptionalCase{name: "none", typ: "Number", argument: "none", supplied: true}
+				}
+				source = "function echo(value:Number?)->Number?{var candidate:Number?=value;if candidate!=none{candidate+=1};return candidate}\ngetVariable(echo(" + tc.argument + "))"
+			}
+			if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
+				t.Fatal(diagnostics)
+			}
+			if err := p15MutableOptionalCompoundError(p15CompiledActions(t, source), narrowed, tc); err != nil {
+				t.Fatal(err)
 			}
 		})
 	}
