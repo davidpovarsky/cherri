@@ -4404,7 +4404,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("unhandled expression %T: expressions must not be silently dropped", expr)
 }
 
 func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
