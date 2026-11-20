@@ -406,8 +406,30 @@ func extractedInstallActualEvidence(t *testing.T, id string) {
 						break
 					}
 					corrupted, err := ValidateEvidenceManifest(&broken, selected, "local")
-					if err == nil || corrupted == nil || corrupted.ClosureComplete || corrupted.PassedCases != 0 {
+					if corrupted == nil || corrupted.ClosureComplete || corrupted.PassedCases != 0 {
 						t.Fatal("damaged actual extracted-install proof accepted", fault, corrupted, err)
+					}
+					if fault == "missing_tier" && actual.Tier == "skill-package" {
+						// Absence is incomplete evidence under the existing local
+						// external-tier policy, not a malformed record. It must
+						// never accept a case or satisfy final acceptance.
+						remaining := []string{}
+						for _, tier := range scenario.Tiers {
+							if tier != "skill-package" {
+								remaining = append(remaining, tier)
+							}
+						}
+						if err != nil || corrupted.TotalCases != 1 || corrupted.FailedCases != 0 || corrupted.SkippedCases != 1 ||
+							len(corrupted.Results) != 1 || corrupted.Results[0].ID != id || corrupted.Results[0].Passed ||
+							corrupted.Results[0].Status != "NOT_RUN" || !reflect.DeepEqual(corrupted.Results[0].ExecutedLevels, remaining) {
+							t.Fatal("missing package tier did not remain exactly incomplete", corrupted, err)
+						}
+						finalMissing, finalMissingErr := ValidateEvidenceManifest(&broken, selected, "final")
+						if finalMissingErr == nil || finalMissing == nil || finalMissing.PassedCases != 0 || finalMissing.ClosureComplete {
+							t.Fatal("missing package tier satisfied final acceptance", finalMissing, finalMissingErr)
+						}
+					} else if err == nil {
+						t.Fatal("malformed actual extracted-install proof lacked required error", fault, corrupted)
 					}
 				})
 			}
