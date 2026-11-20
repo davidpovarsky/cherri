@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -308,6 +309,62 @@ func TestSafeImportEditEventParserControls(t *testing.T) {
 		t.Run(fault, func(t *testing.T) {
 			if parseSafeImportEditOutput(safeImportEditCorruptRaw(t, fault, target, raw)) == nil {
 				t.Fatal("damaged synthetic parser control accepted", fault)
+			}
+		})
+	}
+}
+
+// Synthetic Git-size metadata exercises only the aggregate-bound parser. The
+// production path always obtains metadata from the exact immutable Git commit.
+func TestSafeImportEditSourceBudgetControls(t *testing.T) {
+	metadata := func(sizes []int64) []byte {
+		var out strings.Builder
+		for _, size := range sizes {
+			fmt.Fprintf(&out, "%s blob %d\n", strings.Repeat("a", 40), size)
+		}
+		return []byte(out.String())
+	}
+	healthy := make([]int64, 68)
+	for index := range healthy {
+		healthy[index] = 1024
+	}
+	healthy[0], healthy[1], healthy[2] = 4<<20, 4<<20, 4<<20
+	if err := safeImportEditSourceBudget(metadata(healthy), 68); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"aggregate_across_batch", "headers_cross_limit", "oversize_object", "negative_size", "overflow_size", "wrong_type", "wrong_hash", "missing_object", "extra_object", "truncated"} {
+		t.Run(fault, func(t *testing.T) {
+			sizes := append([]int64(nil), healthy...)
+			switch fault {
+			case "aggregate_across_batch":
+				sizes[64] = 4 << 20
+			case "headers_cross_limit":
+				for index := range sizes {
+					sizes[index] = 0
+				}
+				sizes[0], sizes[1], sizes[2], sizes[64] = 4<<20, 4<<20, 4<<20, 4<<20
+			case "oversize_object":
+				sizes[67] = (4 << 20) + 1
+			case "negative_size":
+				sizes[67] = -1
+			case "missing_object":
+				sizes = sizes[:67]
+			case "extra_object":
+				sizes = append(sizes, 1)
+			}
+			raw := metadata(sizes)
+			switch fault {
+			case "overflow_size":
+				raw = bytes.Replace(raw, []byte("blob 4194304"), []byte("blob 9223372036854775808"), 1)
+			case "wrong_type":
+				raw = bytes.Replace(raw, []byte(" blob "), []byte(" tree "), 1)
+			case "wrong_hash":
+				raw[0] = 'z'
+			case "truncated":
+				raw = raw[:len(raw)-1]
+			}
+			if safeImportEditSourceBudget(raw, 68) == nil {
+				t.Fatal("invalid aggregate/source metadata accepted", fault)
 			}
 		})
 	}

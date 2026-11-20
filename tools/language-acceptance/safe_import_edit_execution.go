@@ -9,7 +9,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 )
@@ -99,6 +101,9 @@ func safeImportEditSourceFiles(repository, commit string) ([]editorSourceFile, e
 		}
 		seen[path] = true
 	}
+	if err := safeImportEditVerifySourceBudget(repository, commit); err != nil {
+		return nil, err
+	}
 	var files []editorSourceFile
 	for start := 0; start < len(safeImportEditProductionPaths); start += 64 {
 		end := start + 64
@@ -112,6 +117,70 @@ func safeImportEditSourceFiles(repository, commit string) ([]editorSourceFile, e
 		files = append(files, batch...)
 	}
 	return files, nil
+}
+
+var safeImportEditSourceBudgetCache sync.Map
+
+func safeImportEditVerifySourceBudget(repository, commit string) error {
+	if !documentationHash(commit, 40) {
+		return fmt.Errorf("invalid immutable BRG19 source commit")
+	}
+	root, err := filepath.Abs(repository)
+	if err != nil {
+		return err
+	}
+	key := root + "\x00" + commit + "\x00" + strings.Join(safeImportEditProductionPaths, "\n")
+	if _, found := safeImportEditSourceBudgetCache.Load(key); found {
+		return nil
+	}
+	var requests strings.Builder
+	for _, path := range safeImportEditProductionPaths {
+		requests.WriteString(commit + ":" + path + "\n")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, "git", "--no-replace-objects", "-C", root, "cat-file", "--batch-check")
+	command.Stdin = strings.NewReader(requests.String())
+	command.WaitDelay = 2 * time.Second
+	var output editorGitSourceOutput
+	var stderr bytes.Buffer
+	command.Stdout, command.Stderr = &output, &stderr
+	if err := command.Run(); err != nil {
+		return fmt.Errorf("immutable BRG19 source size preflight unavailable: %w", err)
+	}
+	if err := safeImportEditSourceBudget(output.Bytes(), len(safeImportEditProductionPaths)); err != nil {
+		return err
+	}
+	safeImportEditSourceBudgetCache.Store(key, true)
+	return nil
+}
+
+// The metadata is observed directly from immutable Git objects, never from a
+// receipt. Count the same header/data/separator bytes as one cat-file batch.
+func safeImportEditSourceBudget(raw []byte, required int) error {
+	if len(raw) == 0 || raw[len(raw)-1] != '\n' {
+		return fmt.Errorf("truncated immutable BRG19 source size preflight")
+	}
+	lines := bytes.Split(raw[:len(raw)-1], []byte("\n"))
+	if len(lines) != required {
+		return fmt.Errorf("incomplete immutable BRG19 source size inventory")
+	}
+	var total int64
+	for _, line := range lines {
+		header := strings.Fields(string(line))
+		if len(header) != 3 || !documentationHash(header[0], 40) || header[1] != "blob" {
+			return fmt.Errorf("invalid immutable BRG19 source size object")
+		}
+		size, err := strconv.ParseInt(header[2], 10, 64)
+		if err != nil || size < 0 || size > 4<<20 {
+			return fmt.Errorf("invalid immutable BRG19 source object size")
+		}
+		total += int64(len(line)) + 1 + size + 1
+		if total > 16<<20 {
+			return fmt.Errorf("immutable BRG19 source aggregate exceeds16MiB")
+		}
+	}
+	return nil
 }
 
 func parseSafeImportEditOutput(raw []byte) error {
