@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "1",
+  "status": "LOCAL_VERIFIED_APPLE_NOT_RUN",
+  "implementationSha": "3e1fe7933713077374d8c3cbaec3e864ebd21ad0",
+  "parentSha": "c513b2d6d6cac9a94b58e3f7fc834f130afc1d80",
+  "fixtureId": "qa-optional-forwarding-diagnostic-v2",
+  "fixtureSourceSha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+  "expectedContractSha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef",
+  "expectedSummarySha256": "86c2f4ae634e41a462d7b273f76513bd667a5f667f726f510885f54310585a1b",
+  "sourceCleanBeforeAndAfter": true,
+  "goNamedTests": {
+    "pass": 66,
+    "fail": 0,
+    "skip": 0
+  },
+  "pythonTests": {
+    "artifactGate": 9,
+    "callbackOracle": 27,
+    "immutableSourceAuditor": 15
+  },
+  "compiledActualSwiftReceiverControls": 14,
+  "compilationRoute": {
+    "attempts": 70,
+    "compiled": 68,
+    "expectedRejections": 2,
+    "exactHeredocSha256": "54a90c0a8229d1fa0583943c985695d42402b69db40dfd2083f0a3eb578bccca",
+    "compilerManifestSha256": "fb89e4ddf245dcc3714bb5ca81d3b5b2a388e6264412a4befa1b38a957e8c5d3",
+    "optionalUnsignedSha256": "ccae7e39e995916f6387531e18792d0f46e5042087941aae3bc7c6ae512e1cf7",
+    "nativeActionCount": 399,
+    "preparedGraphReceipt": {
+      "schemaVersion": "1.0",
+      "fixtureId": "qa-optional-forwarding-diagnostic-v2",
+      "status": "PASS_NATIVE_STRUCTURE_ONLY",
+      "sourceSha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+      "expectedContractSha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef",
+      "unsignedPlistSha256": "ccae7e39e995916f6387531e18792d0f46e5042087941aae3bc7c6ae512e1cf7",
+      "nativeActionCount": 399,
+      "appleRuntime": "NOT_RUN",
+      "formalAcceptanceGranted": false,
+      "testStdoutSha256": "b536eaf685f8565f3e17b719d4e61493a7a4eed18b6adb756e2e12e495027241",
+      "testStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "compiler": {
+    "sha256": "e8d406aefa5af8360925c5064232365462cde51ab1b437ca1579ee25a56e6f18",
+    "identityOutputSha256": "b27e356883caf74f47f8ab07813712061c5570ebe7fa6ecca915e50b7ba11e05",
+    "embeddedVcsSettingsPresent": false,
+    "identityScope": "actual clean linked-worktree build, externally bound source and artifact"
+  },
+  "sourceFileSha256": {
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": "471fc3e69e1aba51d47736faa42e038396826013bf1646d92f6d3bb048854e22",
+    "scripts/ios27_shortcuts_simulator_qa.sh": "5f33d7dfc9eae0d683ef8fcfcfa7ffcf4c2e1377da183e3ee39bcafea3a2d0db",
+    "p15_optional_artifact_gate_test.go": "235e6bf77ac23eabf3ee3020287ee03c0757976ae0d1e55717c701673766dc8b",
+    "p15_optional_native_diagnostic_test.go": "78f29d31560ea6075bb37a0ba6407d513baa7691d47a6508198ce018acd22151",
+    "tools/shortcuts-simulator-qa/optional_forwarding_diagnostic.py": "87bdc793a5f209ab39532a7beba978f15f5adba07c8ed2fa4311633f9cad9328",
+    "tools/shortcuts-simulator-qa/test_optional_forwarding_diagnostic.py": "23ae6c23f4193f495aed6b85f822d7acb7c97627f7fecdefc1df35bc0502f821",
+    "tools/shortcuts-simulator-qa/test_runtime_callback_contract.py": "b3fa1f938bdec9b5c58f8aa37a5bdeb42ba1da71cda7ea687479c25dea792ee2",
+    "tools/shortcuts-simulator-qa/test_native_continuation_audit.py": "f4e509fefe85145f308bd9a301d14212a46d83f9e49cd0e626c9d8dbc59dd2b1",
+    "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift": "4d37b52d5ea4a3b41c91e702cc39f57d92ddd6ab460e4b672fe7adbcaa5bba56",
+    "tools/shortcuts-simulator-qa/verify_optional_receiver.py": "c51c476e3f63f26afa309c6b7507efee6e9c6c9db36e7e63219d4b94e8ac12f8",
+    "tools/shortcuts-simulator-qa/verify_foundation_contracts.sh": "e894d834908b65fcba3d0f6e5191ea562083944e38c69e85b6eec876976b454c",
+    "tools/p10r15/audit_native_continuation.py": "427da39642067960a292826e5ef99bdb8decb205f9345f4a0caf91a22279c0c1"
+  },
+  "originalReceipts": {
+    "precommit": "755ccad83a99eae10f3e9406b89359031dce66375d002db1805566ec7aba669d",
+    "cleanChecksAndInitialSetupFailure": "592f2dd38cd48061d88a7b1f675e9b1979f496d3aac98c77a120183042dd2c1d",
+    "correctedOuterDirectorySetup": "d14c39cf09b0b68f1e381b153b5bb5fc9eac37cb945c9b3be4a5ab827b225206"
+  },
+  "priorLocalSetupFailure": {
+    "exitCode": 1,
+    "reason": "local extraction omitted outer-shell runtime directory; original shell already creates it",
+    "stderrSha256": "33d6c835cc286dba3e7b3cbfc73ddd5f1ed6419eea6d02ac84ff0ee8ed737dc9",
+    "sourceOrOracleChanged": false
+  },
+  "checks": [
+    {
+      "name": "python-optional",
+      "exitCode": 0,
+      "seconds": 0.938,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "0a3a6a8fb84c28de4a2782b164cae748c3c5d2423c3886cab929e73bd41c7069"
+    },
+    {
+      "name": "python-callback",
+      "exitCode": 0,
+      "seconds": 50.265,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "010d4f093fe1adbd30610ef0cd4ddf897a5f68d90e25d1f02467714832d3f5d5"
+    },
+    {
+      "name": "swift-receiver",
+      "exitCode": 0,
+      "seconds": 3.219,
+      "stdoutSha256": "142abb667d782acac9a744c98cc4dafd17cbf8db43c857faafaba6612736fd97",
+      "stderrSha256": "3c82ec16df9c4d3453302ad6be1c80830f2682cdb8a99b6fcb3bb736c2230720"
+    },
+    {
+      "name": "go-optional",
+      "exitCode": 0,
+      "seconds": 3.797,
+      "stdoutSha256": "53c6004eca45e47e56ed06addb890c40478045a22406b4e5cb74697bbda41e10",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python-audit",
+      "exitCode": 0,
+      "seconds": 15.781,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "d5fc1f1edbb9630a4f27f21337bc6fb3e5c73120ef37cefd67a5535c99147358"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "seconds": 1.766,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "compile",
+      "exitCode": 0,
+      "seconds": 0.171,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "actual-artifact-gate",
+      "exitCode": 0,
+      "seconds": 3.391,
+      "stdoutSha256": "4cacd241fdbaffc70345b40a2b98c3dce3d7ce9ec85f52bdaf6b9b4305e53f50",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "appleRuntime": "NOT_RUN",
+  "signing": "NOT_RUN",
+  "formalAcceptanceGranted": false,
+  "proposedWorkflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+  "proposedInputs": {
+    "verify_local_ocr": "false",
+    "probe_level": "full",
+    "device_profile": "ipad-default",
+    "sample_id": "qa-optional-forwarding-diagnostic",
+    "capture_full_editor": "false",
+    "max_editor_pages": "1",
+    "require_runtime": "true",
+    "upload_sanitized_artifacts": "true"
+  }
+}
