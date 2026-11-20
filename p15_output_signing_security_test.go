@@ -19,7 +19,47 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/electrikmilk/args-parser"
 )
+
+func TestP15RP43EncodingFaultProcessHelper(t *testing.T) {
+	var target = os.Getenv("CHERRI_RP43_ENCODING_OUTPUT")
+	if target == "" {
+		t.Skip("only the owned encoding-fault subprocess invokes this helper")
+	}
+	args.Args = map[string]string{"skip-sign": "", "output": target, "no-ansi": ""}
+	workflowName = "encoding"
+	relativePath = filepath.Dir(target) + string(os.PathSeparator)
+	shortcut = BuildWorkflowHeader()
+	importedWorkflowHeader = map[string]any{"P15ActualEncoderFault": make(chan int)}
+	fmt.Println("P15_RP43_ENCODING_FAULT_REACHED")
+	createShortcut()
+	t.Fatal("the real output entrypoint swallowed the injected encoding failure")
+}
+
+func TestP15RP43LegacyEncodingFailurePreservesDestination(t *testing.T) {
+	var directory = t.TempDir()
+	var output = filepath.Join(directory, "encoding_unsigned.shortcut")
+	var original = []byte("P15_RP43_ENCODING_PRIOR_DESTINATION\x00\xff")
+	p15SchemaWrite(t, output, original)
+	var before = p15DirectoryDigest(t, directory)
+	var executable, err = os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ctx, cancel = context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	var command = exec.CommandContext(ctx, executable, "-test.run=^TestP15RP43EncodingFaultProcessHelper$")
+	command.Dir = directory
+	command.Env = append(os.Environ(), "CHERRI_RP43_ENCODING_OUTPUT="+output)
+	var diagnostic, commandErr = command.CombinedOutput()
+	var exit, ok = commandErr.(*exec.ExitError)
+	if ctx.Err() != nil || !ok || exit.ExitCode() != 1 || !bytes.Contains(diagnostic, []byte("P15_RP43_ENCODING_FAULT_REACHED")) || !bytes.Contains(diagnostic, []byte("chan int")) {
+		t.Fatalf("did not observe the real encoder error/exit: err=%v context=%v output=%s", commandErr, ctx.Err(), diagnostic)
+	}
+	p15RP43AssertSameFiles(t, directory, before)
+}
 
 func TestP15RP43EncodingFailureReturnsNoPartialBytes(t *testing.T) {
 	for _, format := range []string{"xml", "binary"} {
@@ -137,6 +177,9 @@ func TestP15RP43PublicSignerFailureBoundaries(t *testing.T) {
 			}
 			for fault, diagnostic := range []string{"P15_RP43_HTTP_FAILURE", "P15_RP43_REJECTED", "corrupted signing service JSON", "unsigned XML/plist", "truncated AEA1 archive", "all zero"} {
 				t.Run(fmt.Sprintf("fault_%d", fault), func(t *testing.T) {
+					p15SchemaWrite(t, sibling, []byte("P15_RP43_PRIOR_UNSIGNED_SIBLING\x00\xff"))
+					p15SchemaWrite(t, output, original)
+					p15SchemaWrite(t, manifest, []byte("P15_RP43_PRIOR_MANIFEST"))
 					response.Store(int32(fault))
 					var before = p15DirectoryDigest(t, directory)
 					lock.Lock()
@@ -196,13 +239,23 @@ func TestP15RP43UnsignedAndAnalysisBoundaries(t *testing.T) {
 	defer receiver.Close()
 	var networkEnv = []string{"HTTP_PROXY=" + receiver.URL, "HTTPS_PROXY=" + receiver.URL, "NO_PROXY=", "http_proxy=" + receiver.URL, "https_proxy=" + receiver.URL, "no_proxy="}
 	for _, route := range []string{"compile_v2", "file_v2", "compile_legacy", "file_legacy"} {
-		t.Run("implicit_unsigned/"+route, func(t *testing.T) {
+		var scope = "implicit_unsigned/"
+		if route == "file_legacy" {
+			scope = "explicit_unsigned/"
+		}
+		t.Run(scope+route, func(t *testing.T) {
 			var directory = t.TempDir()
 			var input = filepath.Join(directory, "source--hubsign.cherri")
 			p15SchemaWrite(t, input, []byte("text(\""+p15RP43Text+"\")\n"))
 			var output = filepath.Join(directory, "implicit.shortcut")
 			var before = requests.Load()
-			var stdout, stderr, err = p15RunCLI(t, binary, directory, networkEnv, p15RP43CompileArgs(route, input, output)...)
+			var options []string
+			if route == "file_legacy" {
+				// Bare Legacy file invocation retains its documented signing
+				// default. An explicit local-only request is the contract here.
+				options = append(options, "--skip-sign")
+			}
+			var stdout, stderr, err = p15RunCLI(t, binary, directory, networkEnv, p15RP43CompileArgs(route, input, output, options...)...)
 			if err != nil || requests.Load() != before {
 				t.Fatalf("implicit unsigned compilation attempted signing: requests=%d err=%v stdout=%s stderr=%s", requests.Load()-before, err, stdout, stderr)
 			}
