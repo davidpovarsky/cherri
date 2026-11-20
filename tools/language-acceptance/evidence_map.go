@@ -487,6 +487,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP43" {
+		return outputSigningTestIDs()
+	}
 	if _, found := extractedInstallScenarios[id]; found {
 		return extractedInstallTestIDs(id)
 	}
@@ -554,6 +557,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP43" {
+		return append([]string{}, outputSigningProductionPaths...)
+	}
 	if _, found := extractedInstallScenarios[id]; found {
 		return append([]string{}, extractedInstallProductionPaths...)
 	}
