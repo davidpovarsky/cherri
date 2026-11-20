@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-json-body-control|qa-json-body-null-candidate|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -51,6 +51,18 @@ SOURCE_SHA="$(git rev-parse HEAD 2>/dev/null || echo "unknown")"
 HTTP_PROBE_PID=""
 HTTP_PROBE_STARTED="false"
 HTTP_PROBE_DIAGNOSTIC_RC=0
+http_probe() {
+  # Only fixed, reviewed fixture IDs may select an endpoint implementation.
+  case "$TARGET_FIXTURE_ID" in
+    qa-json-body-control-v2|qa-json-body-null-candidate-v2)
+      python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/json_body_probe.py" "$@"
+      ;;
+    qa-retry-control-v2|qa-retry-http500-v2|qa-retry-http404-v2|qa-retry-http429-v2|qa-retry-transport-v2)
+      python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" "$@"
+      ;;
+    *) echo "ERROR: unreviewed HTTP probe fixture" >&2; return 2 ;;
+  esac
+}
 stop_http_probe() {
   if [ -n "$HTTP_PROBE_PID" ]; then
     touch "$ARTIFACT_DIR/runtime/http-probe.stop"
@@ -486,6 +498,20 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="qa-measure-release-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
     ;;
+  qa-json-body-control)
+    TARGET_FIXTURE_ID="qa-json-body-control-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-json-body-control-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_JSON_BODY_CONTROL_RESULT:P15_JSON_BODY_OBSERVED"
+    HTTP_PROBE_ENABLED="true"
+    ;;
+  qa-json-body-null-candidate)
+    TARGET_FIXTURE_ID="qa-json-body-null-candidate-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-json-body-null-candidate-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_JSON_BODY_NULL_CANDIDATE_RESULT:P15_JSON_BODY_OBSERVED"
+    HTTP_PROBE_ENABLED="true"
+    ;;
   qa-retry-control)
     TARGET_FIXTURE_ID="qa-retry-control-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -611,6 +637,7 @@ import sys
 root_dir, artifact_dir, source_sha = sys.argv[1], sys.argv[2], sys.argv[3]
 sys.path.insert(0, os.path.join(root_dir, "tools", "shortcuts-simulator-qa"))
 from retry_http_probe import validate_fixture_graph
+from json_body_probe import verify_source as verify_json_body_source, verify_graph as verify_json_body_graph, verify_mutations as verify_json_body_mutations
 from export_unicode_diagnostic import validate_export_unicode_graph
 from file_materialization_diagnostic import verify_source as verify_file_materialization_source, verify_graph as verify_file_materialization_graph
 from n03_text_equality_diagnostic import verify_source as verify_n03_text_equality_source
@@ -624,6 +651,8 @@ fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtur
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-json-body-control-v2", "qa-json-body-control-v2.cherri", "v2"),
+    ("qa-json-body-null-candidate-v2", "qa-json-body-null-candidate-v2.cherri", "v2"),
     ("qa-debug-label-plain-v2", "qa-debug-label-plain-v2.cherri", "v2"),
     ("qa-debug-label-plain-legacy", "qa-debug-label-plain-legacy.cherri", "legacy"),
     ("qa-debug-label-dated-v2", "qa-debug-label-dated-v2.cherri", "v2"),
@@ -782,6 +811,9 @@ for fid, fname, dialect in fixture_specs:
         "buildProfile": profile,
         "runtimeTraceExpectation": trace_expectation,
         "httpProbeGraph": validate_fixture_graph(fid, actions),
+        "jsonBodySource": verify_json_body_source(root_dir, fid, src_bytes),
+        "jsonBodyGraph": verify_json_body_graph(root_dir, fid, actions),
+        "jsonBodyCausalMutations": verify_json_body_mutations(root_dir, fid, actions),
         "exportUnicodeDiagnosticGraph": validate_export_unicode_graph(fid, actions),
         "fileMaterializationSource": verify_file_materialization_source(root_dir, fid, src_bytes),
         "n03TextEqualitySource": verify_n03_text_equality_source(root_dir, fid, src_bytes),
@@ -1621,13 +1653,13 @@ PY
     if [ "$HTTP_PROBE_ENABLED" = "true" ]; then
       # Static source bytes are never rewritten: only reviewed loopback port/nonce
       # enter through ShortcutInput. Keep this finite server alive through Phase 4B.
-      python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" serve --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA" >"$ARTIFACT_DIR/runtime/http-probe-server.log" 2>&1 &
+      http_probe serve --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA" >"$ARTIFACT_DIR/runtime/http-probe-server.log" 2>&1 &
       HTTP_PROBE_PID=$!
       HTTP_PROBE_STARTED="true"
-      if ! SHORTCUT_INPUT_VALUE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" input --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA")"; then
+      if ! SHORTCUT_INPUT_VALUE="$(http_probe input --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA")"; then
         # The helper emits an exact bounded startup schema; never print raw
         # server stdout, exception messages, paths, headers or response bodies.
-        python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" startup-report --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA"
+        http_probe startup-report --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA"
         stop_http_probe
         echo "ERROR: bounded HTTP probe did not bind its reviewed loopback endpoint" >&2
         exit 2
@@ -2760,7 +2792,7 @@ esac
 
 if [ "$HTTP_PROBE_STARTED" = "true" ]; then
   stop_http_probe
-  python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" diagnose --root "$ARTIFACT_DIR" --fixtures-dir "$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA"
+  http_probe diagnose --root "$ARTIFACT_DIR" --fixtures-dir "$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA"
   HTTP_PROBE_DIAGNOSTIC_RC=$?
 fi
 
