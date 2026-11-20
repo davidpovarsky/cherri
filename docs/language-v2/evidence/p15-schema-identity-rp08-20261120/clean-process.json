@@ -1,0 +1,232 @@
+{
+  "schema": "cherri.p15.rp08.clean-replay.v1",
+  "source_sha": "35373c2d25fd171c5370521b7e7e1802273a59f6",
+  "branch": "agent/cherri-p10r15-rp08-schema-20261119",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119",
+  "environment": {
+    "GOMAXPROCS": "2",
+    "GOFLAGS": "-p=2"
+  },
+  "go_version": "go version go1.25.6 windows/amd64",
+  "started_at": "2026-11-20T00:08:43.910709+00:00",
+  "clean_before": true,
+  "status": "PASSED",
+  "commands": [
+    {
+      "name": "production",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=20m",
+        "-run",
+        "^TestP15RP08SchemaIdentityProduction$",
+        "."
+      ],
+      "started_at": "2026-11-20T00:08:43.910709+00:00",
+      "completed_at": "2026-11-20T00:11:23.725563+00:00",
+      "elapsed_seconds": 159.81199999997625,
+      "exit_code": 0,
+      "timed_out": false,
+      "named_passes": [
+        "TestP15RP08SchemaIdentityProduction/public_capabilities_and_macro_descriptors",
+        "TestP15RP08SchemaIdentityProduction/typed_default_presence_through_live_generation",
+        "TestP15RP08SchemaIdentityProduction/changed_default_changes_schema_identity",
+        "TestP15RP08SchemaIdentityProduction/absent_and_explicit_empty_have_distinct_identity",
+        "TestP15RP08SchemaIdentityProduction/changed_constant_changes_schema_identity",
+        "TestP15RP08SchemaIdentityProduction/typed_constant_identity_does_not_alias",
+        "TestP15RP08SchemaIdentityProduction/codec_version_changes_identity_tuple",
+        "TestP15RP08SchemaIdentityProduction/restored_actual_generation",
+        "TestP15RP08SchemaIdentityProduction"
+      ],
+      "named_failures": [],
+      "named_skips": [],
+      "json_errors": [],
+      "stdout": {
+        "path": "production.jsonl",
+        "bytes": 198569,
+        "sha256": "b8f79b70e188841533d344cdab2040cad55f66d591c450e99950a4e91df8002c"
+      },
+      "stderr": {
+        "path": "production.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "focused-packages",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=8m",
+        "./internal/language/schema",
+        "./internal/language/protocol",
+        "./tools/language-schema",
+        "./tools/language-docs"
+      ],
+      "started_at": "2026-11-20T00:11:23.747850+00:00",
+      "completed_at": "2026-11-20T00:11:37.006671+00:00",
+      "elapsed_seconds": 13.25,
+      "exit_code": 0,
+      "timed_out": false,
+      "named_passes": [
+        "TestRP08SemanticConstantIdentityEncoding/bool_and_text",
+        "TestRP08SemanticConstantIdentityEncoding/number_and_text",
+        "TestRP08SemanticConstantIdentityEncoding/real_and_integer",
+        "TestRP08SemanticConstantIdentityEncoding/data_and_text",
+        "TestRP08SemanticConstantIdentityEncoding/nil_and_text",
+        "TestRP08SemanticConstantIdentityEncoding/empty_list_and_text",
+        "TestRP08SemanticConstantIdentityEncoding/empty_map_and_text",
+        "TestRP08SemanticConstantIdentityEncoding/nested_literal_type",
+        "TestRP08SemanticConstantIdentityEncoding/list_cardinality",
+        "TestRP08SemanticConstantIdentityEncoding/key_value_separator",
+        "TestRP08SemanticConstantIdentityEncoding/record_separator",
+        "TestRP08SemanticConstantIdentityEncoding/deterministic_map_order",
+        "TestRP08SemanticConstantIdentityEncoding/documentation_is_not_semantic",
+        "TestRP08SemanticConstantIdentityEncoding",
+        "TestRP08UnencodableConstantIdentityFailsClosed",
+        "TestRP08CustomRegistrationRejectsUnencodableMetadata",
+        "TestRP08RegistryCloneDetachesDefaultPresence/absent",
+        "TestRP08RegistryCloneDetachesDefaultPresence/empty",
+        "TestRP08RegistryCloneDetachesDefaultPresence/text",
+        "TestRP08RegistryCloneDetachesDefaultPresence",
+        "TestRP08CompilerMacroDefaultDescriptorsAreDetached",
+        "TestRP08SemanticRecordBoundaryEncoding/enum_records",
+        "TestRP08SemanticRecordBoundaryEncoding/parameter_fields",
+        "TestRP08SemanticRecordBoundaryEncoding/action_fields",
+        "TestRP08SemanticRecordBoundaryEncoding/accepted_form_elements",
+        "TestRP08SemanticRecordBoundaryEncoding/finite_version_precision",
+        "TestRP08SemanticRecordBoundaryEncoding",
+        "TestCompilerMacroMetadataIsSeparateAndImmutable",
+        "TestCompilerMacroFingerprintRejectsSignatureMutations",
+        "TestRegistryReplacementIndexes",
+        "TestRegistryCloneDetachesMetadata",
+        "TestGEN001_StaticParametersNestedMapsPreserved",
+        "TestGEN002_FingerprintDetectsMutations",
+        "TestGEN003_DuplicateAppleIdentifierRetainsAllVariants",
+        "TestDefaultRegistry",
+        "TestCapabilitiesExposeCompilerMacrosWithoutInflatingNativeCatalog",
+        "TestBuildCapabilities",
+        "TestToDiagnosticItem",
+        "TestValidateFacets_DetectsInvalidAction",
+        "TestValidateFacets_DetectsInvalidParameter",
+        "TestUpstreamPropagation_AddsParameterAndPreservesAllFields",
+        "TestGeneratedReferenceIncludesSeparateMacroContracts",
+        "TestP15D01PrimaryParameterContract",
+        "TestP15D01AllGeneratedSignaturesAndCategories",
+        "TestLanguageSchema_FailsClosedWithoutSilentBaselineFallback",
+        "TestLanguageSchema_VerifyGeneratedDetectsDrift",
+        "TestP15D01CheckGateProducesAndRejectsFaults/optional_primary",
+        "TestP15D01CheckGateProducesAndRejectsFaults/typed_default",
+        "TestP15D01CheckGateProducesAndRejectsFaults/callable_identity",
+        "TestP15D01CheckGateProducesAndRejectsFaults/wire_key",
+        "TestP15D01CheckGateProducesAndRejectsFaults/return_type",
+        "TestP15D01CheckGateProducesAndRejectsFaults/macro_identity",
+        "TestP15D01CheckGateProducesAndRejectsFaults/missing_category",
+        "TestP15D01CheckGateProducesAndRejectsFaults/extra_section",
+        "TestP15D01CheckGateProducesAndRejectsFaults"
+      ],
+      "named_failures": [],
+      "named_skips": [],
+      "json_errors": [],
+      "stdout": {
+        "path": "focused-packages.jsonl",
+        "bytes": 53617,
+        "sha256": "5113b36e887c66d759d485a94aaae0a7ae0c08f11eb01574ffb19ffd2efb541e"
+      },
+      "stderr": {
+        "path": "focused-packages.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "catalog-consumers",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=8m",
+        "-run",
+        "^(TestP10_CatalogCLIAndMobileRegistryParity|TestP15GetType.*)$",
+        "."
+      ],
+      "started_at": "2026-11-20T00:11:37.010227+00:00",
+      "completed_at": "2026-11-20T00:11:43.640709+00:00",
+      "elapsed_seconds": 6.64000000001397,
+      "exit_code": 0,
+      "timed_out": false,
+      "named_passes": [
+        "TestP10_CatalogCLIAndMobileRegistryParity",
+        "TestP15GetTypeCatalogMatchesAppleFileMetadata",
+        "TestP15GetTypeDualFrontendPreservesNativeWire/legacy=false/explicit=false",
+        "TestP15GetTypeDualFrontendPreservesNativeWire/legacy=false/explicit=true",
+        "TestP15GetTypeDualFrontendPreservesNativeWire/legacy=true/explicit=false",
+        "TestP15GetTypeDualFrontendPreservesNativeWire/legacy=true/explicit=true",
+        "TestP15GetTypeDualFrontendPreservesNativeWire",
+        "TestP15GetTypeInferencePreservesNativeFileCategory"
+      ],
+      "named_failures": [],
+      "named_skips": [],
+      "json_errors": [],
+      "stdout": {
+        "path": "catalog-consumers.jsonl",
+        "bytes": 7551,
+        "sha256": "d29485854fea45fc50dc726a05857be1ef9de7e8ca63c5d85bd7f5a26d20d61f"
+      },
+      "stderr": {
+        "path": "catalog-consumers.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "completed_at": "2026-11-20T00:11:43.817793+00:00",
+  "clean_after": true,
+  "source_files": [
+    {
+      "path": "actions_catalog.go",
+      "sha256": "4a0dcafa435fa63bd93341d09f1e1f9eed0b6e07d590195c1a24790d501d47c7"
+    },
+    {
+      "path": "tools/language-schema/main.go",
+      "sha256": "2ff2ae12a630e18d8c83165c72bca836f1568c77811a5df83237dd3a2d48e0d5"
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "sha256": "7eed6c950890b5624a810f799aa911a4d5908bf3045b52259a8d205c80967aa1"
+    },
+    {
+      "path": "internal/language/schema/semantic_metadata.go",
+      "sha256": "215348ddf835905fb275babcfb14259fee28524b05e8d06a7a1d205aaa79a61d"
+    },
+    {
+      "path": "internal/language/schema/registry_clone.go",
+      "sha256": "068220c9bf1a0067343dc13698a3883def14bccaa3629fc21315f2bb09c5c908"
+    },
+    {
+      "path": "internal/language/schema/macro_metadata.go",
+      "sha256": "a5cfce922d12a3311627eda103f9d5cc87a2e21898e5774909b04d9ad1c4cece"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474"
+    },
+    {
+      "path": "tools/language-docs/main.go",
+      "sha256": "ee2038a8bbd5d0c475b9824e8a12abf5e2a0be2e529eb8da1486e1de4f184573"
+    },
+    {
+      "path": "p15_schema_identity_recovery_test.go",
+      "sha256": "decc74986e91ac77674790b10b58a86144c4609a386560bb33782976f7b6e219"
+    },
+    {
+      "path": "internal/language/schema/identity_encoding_test.go",
+      "sha256": "2740b597d8bc2299660adeb516325f50087238958cd98cfac3d26fe20e767b45"
+    }
+  ]
+}

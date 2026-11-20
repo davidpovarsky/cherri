@@ -3104,6 +3104,28 @@
       "reason": "Real generator accepted malformed live-catalog facts and a deliberately unregistered codec binding.",
       "evidence": "docs/language-v2/p15-schema-generation-20261119.md; ten clean generation events and four complete actual supplemental producer scenarios with28 receipt corruptions.",
       "note": "No baseline fallback, handwritten replacement catalog, fixture mutation or native/runtime closure."
+    },
+    {
+      "name": "P10R15 schema default presence and collision-resistant semantic metadata identity",
+      "locations": [
+        "actions_catalog.go",
+        "tools/language-schema/main.go",
+        "internal/language/schema/schema.go",
+        "internal/language/schema/semantic_metadata.go",
+        "internal/language/schema/generated_registry.go",
+        "internal/language/schema/registry_clone.go",
+        "internal/language/schema/macro_metadata.go",
+        "internal/language/schema/debug_export.go",
+        "internal/language/schema/paginate.go",
+        "tools/language-docs/main.go",
+        "p15_schema_identity_recovery_test.go",
+        "internal/language/schema/identity_encoding_test.go"
+      ],
+      "firstForkCommit": "803eb38b4438562dbec9471c3b0e08a406944e09",
+      "change": "Preserve absent versus present-empty typed defaults through live export, generated schema, public capabilities, documentation and detached clones. Encode semantic constant types and record boundaries without collisions and reject unsupported custom metadata before publication.",
+      "reason": "Clean RP08 production and unit baselines reproduced empty-default presence loss, absent/empty and Bool/Text identity collisions and failed registration publication; further causal controls exposed Data/Text, integer/real, pointer alias and record delimiter/version precision collisions.",
+      "evidence": "docs/language-v2/p15-schema-identity-rp08-20261120.md; exact clean 35373c2d production 9 named passes, focused packages 55 and CLI/mobile consumers 8, all exit 0 with no skips/failures; original failed and dirty draft logs retained separately.",
+      "note": "Generation and unit/consumer proof only. No Apple runtime, complete T01 or 179-row acceptance claim; formal RP08 registration and combined-source replay remain separate. Integrated implementation ancestor is 803eb38b; original source-bound observations retain 35373c2d."
     }
   ]
 }
