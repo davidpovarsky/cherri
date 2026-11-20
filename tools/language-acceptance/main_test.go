@@ -579,7 +579,7 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 	if err == nil {
 		t.Fatalf("expected ValidateEvidenceManifest to reject FN01 missing ios tier in final phase, got nil err")
 	}
-	if err.Error() != "requirement FN01 has unsatisfied required tiers in final phase" {
+	if len(manifestReport.ValidationErrors) != 1 || manifestReport.ValidationErrors[0] != "requirement FN01 has unsatisfied required tiers in final phase" {
 		t.Fatalf("synthetic model must reject only the missing iOS tier, got: %v", err)
 	}
 	if manifestReport.FailedCases != 1 {
