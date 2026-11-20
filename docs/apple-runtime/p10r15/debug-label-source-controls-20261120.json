@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "e324045e999202e5c3411e6a852aaf3502f1ccf0",
+  "scope": "SOURCE_COMPONENT_ONLY",
+  "validation": "PASS_LOCAL_SOURCE_COMPONENT",
+  "clean_start_and_finish": true,
+  "source_head_unchanged": true,
+  "completed_at": "2026-11-20T01:45:15.358027+00:00",
+  "raw_receipt_sha256": "f875e6c83d752cf077b47901017358b259ab4828db0403d54e6e96038f6a5864",
+  "checks": [
+    {
+      "exit_code": 0,
+      "elapsed_seconds": 4.469,
+      "passes": 109,
+      "skips": 0,
+      "failures": [],
+      "label_test_passes": 54,
+      "log_file": "focused.jsonl",
+      "log_sha256": "38d52eb9ed33bef7efcd29f30ffa64ca07b567aa83ee7c0187c0443ff53afcfe",
+      "command_display": "go test -count=1 -json -run ^(TestDebugLabels|TestDebugStdlib|TestBuildProfile) ."
+    },
+    {
+      "exit_code": 0,
+      "elapsed_seconds": 6.688,
+      "passes": 114,
+      "skips": 0,
+      "failures": [],
+      "label_test_passes": 0,
+      "log_file": "schema-analysis-lower-docs.jsonl",
+      "log_sha256": "f3d14bc7d135a69ec480a74c1942f3528bc2587a08b8d630523f03ddb9b092a8",
+      "command_display": "go test -count=1 -json ./internal/language/schema ./internal/language/analysis ./internal/language/lower ./tools/language-docs"
+    },
+    {
+      "exit_code": 0,
+      "elapsed_seconds": 0.703,
+      "passes": 0,
+      "skips": 0,
+      "failures": [],
+      "label_test_passes": 0,
+      "log_file": "reference-check.log",
+      "log_sha256": "f39991d49a5dfbd3cd6181b65df824477df8798965935f3726f285a946d15433",
+      "command_display": "go run ./tools/language-docs --check"
+    },
+    {
+      "exit_code": 0,
+      "elapsed_seconds": 17.203,
+      "passes": 0,
+      "skips": 0,
+      "failures": [],
+      "label_test_passes": 0,
+      "log_file": "macro-ledger.log",
+      "log_sha256": "a1be9d41e0012f23b09f68c3e10660d1d7c59cc663fd2b49143e4dc64cc0d6c2",
+      "command_display": "python tools/p10r15/generate_macro_contract_coverage.py --repo . --out-dir <retained-evidence>/macro-ledger --refresh"
+    }
+  ],
+  "macro_ledger_sha256": "28f70d534d3d5585388bc3ec5912d8fb625394a8bf019c06e999f4fa8b10977a",
+  "label_ledger_row": {
+    "feature": "label",
+    "asanaTask": "1220544718902445",
+    "name": "debugLog labels",
+    "acceptanceRequirement": "Stable per-entry labels without replacing the original raw object or its downstream UUID.",
+    "status": "OPEN",
+    "implementationState": "DECLARED_BUT_NOT_EXERCISED",
+    "canonicalDescriptors": [
+      "debugLog"
+    ],
+    "canonicalContractObservation": "LABEL_PARAMETER_PRESENT_REQUIRES_NEW_ACCEPTANCE",
+    "executedCases": [],
+    "externalPrerequisites": [
+      "Native file/object identity and six-mode label acceptance"
+    ],
+    "limitations": [
+      "Per-entry metadata and bounded source contracts are implemented; signed File-carrier byte identity still requires repair and acceptance."
+    ],
+    "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
+    "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
+    "physicalDevice": "BLOCKED_DEVICE",
+    "closure": "NOT_PROVEN_BY_STRUCTURAL_EVIDENCE"
+  },
+  "native_acceptance": "NOT_RUN_FOR_THIS_COMPONENT",
+  "physical_device": "BLOCKED_DEVICE",
+  "formal_179_requirements_closed": [],
+  "notes": [
+    "The original raw values are never placed in the metadata Dictionary.",
+    "Range metadata uses native Count Items and still requires actual content-class cardinality acceptance.",
+    "Preview uses original output snapshots and Set Name only in the presentation path.",
+    "No source changes were made to frozen K or debugExport.",
+    "Command displays replace the private retained-evidence absolute path; original receipt and logs remain unchanged."
+  ]
+}
