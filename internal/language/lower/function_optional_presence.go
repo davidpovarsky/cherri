@@ -80,9 +80,20 @@ func (l *Lowerer) assignOptionalPresence(binding BindingRef, assignment *syntax.
 	return l.newMutableOptionalPresence(presence), nil
 }
 
+// A literal in-bounds slot has source-owned presence only when its checked
+// element type proves a value. The existing List/index lowering still runs
+// exactly once, including every authored sibling effect and bounds guard.
+func (l *Lowerer) staticIndexHasPresentValue(expr syntax.Expression) bool {
+	element, known := syntax.StaticListElement(expr)
+	return known && types.DefinitelyPresent(l.exprTypes[element])
+}
+
 // Only compiler-owned presence participates in these predicates. Imported raw
 // native predicates and unrelated action-content tests retain their own wire.
 func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
+	if l.staticIndexHasPresentValue(expr) {
+		return true
+	}
 	if l.optionalExpressionPresence[expr] != nil {
 		return true
 	}
@@ -210,6 +221,9 @@ func (l *Lowerer) optionalValuePresence(expr syntax.Expression, value interface{
 	}
 	if presence := l.optionalExpressionPresence[expr]; presence != nil {
 		return presence, nil
+	}
+	if l.staticIndexHasPresentValue(expr) {
+		return "1", nil
 	}
 	if !types.DefinitelyPresent(l.exprTypes[expr]) {
 		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function result transport lacks compiler-owned optional absence at %s", expr.NodeSpan())

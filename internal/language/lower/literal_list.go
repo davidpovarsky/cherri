@@ -32,6 +32,7 @@ func (l *Lowerer) lowerListDictionary(expr *syntax.MapExpr) (*ir.AttachmentToken
 // import payloads retain their own representation.
 func (l *Lowerer) lowerListExpression(expr *syntax.ListExpr, nativeItems bool) (interface{}, error) {
 	list := make([]interface{}, len(expr.Elements))
+	laterWrites := l.semanticSiblingWrites(expr.Elements)
 	for i, element := range expr.Elements {
 		if nativeItems {
 			if err := l.requirePresentTransport(element, "List element"); err != nil {
@@ -52,6 +53,15 @@ func (l *Lowerer) lowerListExpression(expr *syntax.ListExpr, nativeItems bool) (
 		}
 		if err != nil {
 			return nil, err
+		}
+		if nativeItems {
+			// A later authored element can write a mutable reference that this
+			// slot has already read. Freeze that value at its evaluation point;
+			// raw inline native metadata retains its existing separate route.
+			value, err = l.captureCallArgumentValue(element, value, laterWrites[i])
+			if err != nil {
+				return nil, err
+			}
 		}
 		list[i] = value
 	}

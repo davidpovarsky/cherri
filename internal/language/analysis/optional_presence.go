@@ -22,6 +22,9 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
 		return found && binding.Initialized && binding.optionalPresence
 	case *syntax.CallExpr:
 		return a.exprPresence[expr]
+	case *syntax.IndexExpr:
+		element, known := syntax.StaticListElement(node)
+		return known && types.DefinitelyPresent(a.exprTypes[element])
 	}
 	return false
 }
