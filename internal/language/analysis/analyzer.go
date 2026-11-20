@@ -106,6 +106,9 @@ type Analyzer struct {
 	rawNativeDataContext   bool
 	nativeNamespace        *Symbol
 	nativeReferenceCalls   map[syntax.Expression]bool
+	typeAnnotations        map[syntax.TypeAnnotation]types.Type
+	typeAliases            map[string]typeAliasBinding
+	resolvingTypeAliases   map[*syntax.TypeDecl]bool
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -342,6 +345,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.beginProgram()
+	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
 	defer func() { a.analyzing = false }()
 	a.analyzeModuleDependencies()
 	a.expandCopyPaste(prog)
@@ -353,6 +357,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.userFunctions = make(map[string]bool)
 	a.enumNames = make(map[string]bool)
 	a.prepareEnums(prog)
+	a.prepareTypeAliases(prog)
 
 	// Builtin namespace symbols
 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
@@ -1836,15 +1841,36 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
 	}
 }
 
-func (a *Analyzer) resolveType(t syntax.TypeAnnotation) types.Type {
+func (a *Analyzer) resolveType(t syntax.TypeAnnotation) (resolved types.Type) {
 	if t == nil {
 		return types.Unknown
 	}
+	if value, found := a.typeAnnotations[t]; found {
+		return value
+	}
+	if a.moduleGraph != nil {
+		for _, child := range a.moduleAnalyses {
+			if value, found := child.typeAnnotations[t]; found {
+				return value
+			}
+		}
+	}
+	if a.typeAnnotations == nil {
+		a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
+	}
+	defer func() { a.typeAnnotations[t] = resolved }()
 
 	switch ta := t.(type) {
 	case *syntax.NamedTypeAnnotation:
 		if nt, ok := types.ParseNamedType(ta.Name); ok {
 			return nt
+		}
+		aliasName := ta.Name
+		if ta.Namespace != "" {
+			aliasName = ta.Namespace + "." + aliasName
+		}
+		if alias, found := a.typeAliases[aliasName]; found {
+			return alias.owner.resolveTypeAlias(alias.declaration)
 		}
 		if ta.Namespace != "" {
 			return types.NewEntity(ta.Namespace, ta.Name)
