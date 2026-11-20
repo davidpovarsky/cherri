@@ -12,6 +12,7 @@ import (
 
 type p15UnicodeTextCase struct {
 	name, interpolation, text string
+	literalPrefix             string
 	offsets                   []int
 }
 
@@ -27,9 +28,11 @@ func p15UnicodeTextCases() []p15UnicodeTextCase {
 		{
 			name:          "literal_object_replacement_and_surrogate_pair",
 			interpolation: "\uFFFC🙂{first}{mutable}é{first}שָׁ{שֵׁם}",
-			text:          "\uFFFC🙂\uFFFC\uFFFCé\uFFFCשָׁ\uFFFC",
-			// The literal U+FFFC at zero is not a variable attachment.
-			offsets: []int{3, 4, 7, 11},
+			text:          "\uFFFC\uFFFC\uFFFCé\uFFFCשָׁ\uFFFC",
+			literalPrefix: "\uFFFC🙂",
+			// The authored prefix stays in a plain Text producer. Its single
+			// attachment occupies one UTF-16 unit in the native token template.
+			offsets: []int{0, 1, 2, 5, 9},
 		},
 	}
 }
@@ -95,7 +98,7 @@ func p15UnicodeTextValue(actions []map[string]any, route string) (any, error) {
 	return values[0], nil
 }
 
-func p15UnicodeExpectedRefs(actions []map[string]any) ([]map[string]any, error) {
+func p15UnicodeExpectedRefs(actions []map[string]any, tc p15UnicodeTextCase) ([]map[string]any, error) {
 	seeds := map[string]map[string]any{}
 	for _, action := range actions {
 		params := p15Param(action)
@@ -129,12 +132,20 @@ func p15UnicodeExpectedRefs(actions []map[string]any) ([]map[string]any, error) 
 		return nil, fmt.Errorf("mutable Unicode seed has %d assignments", stores)
 	}
 	first := map[string]any{"Type": "ActionOutput", "OutputUUID": seeds["α"]["UUID"], "OutputName": "first"}
-	return []map[string]any{
+	refs := []map[string]any{
 		first,
 		{"Type": "Variable", "VariableName": "mutable"},
 		first,
 		{"Type": "ActionOutput", "OutputUUID": seeds["🌍"]["UUID"], "OutputName": "שֵׁם"},
-	}, nil
+	}
+	if tc.literalPrefix != "" {
+		carrier, err := p15S01LiteralCarrierReference(actions, tc.literalPrefix)
+		if err != nil {
+			return nil, err
+		}
+		refs = append([]map[string]any{carrier}, refs...)
+	}
+	return refs, nil
 }
 
 // The oracle reads the emitted native object, checks exact UTF-8 literal bytes
@@ -172,7 +183,7 @@ func TestP15S01ExactUTF16TokensAndLiteralBytes(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				refs, err := p15UnicodeExpectedRefs(actions)
+				refs, err := p15UnicodeExpectedRefs(actions, tc)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -191,7 +202,7 @@ func TestP15S01UnicodeOracleRejectsCorruption(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	refs, err := p15UnicodeExpectedRefs(actions)
+	refs, err := p15UnicodeExpectedRefs(actions, tc)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -250,7 +261,7 @@ func TestP15S01UnicodeNativeRoundTrip(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			refs, err := p15UnicodeExpectedRefs(actions)
+			refs, err := p15UnicodeExpectedRefs(actions, tc)
 			if err != nil {
 				t.Fatal(err)
 			}
