@@ -15,6 +15,7 @@ type p15FunctionGraph struct {
 	groups           map[string]bool
 	outer, body      string
 	functionName     string
+	workflowName     string
 	err              error
 }
 
@@ -228,8 +229,12 @@ func (g *p15FunctionGraph) payload(name string, args ...p15FunctionArgument) str
 }
 
 func (g *p15FunctionGraph) call(payload string) string {
-	return g.value("runworkflow", map[string]any{"WFInput": p15FunctionEdge(payload), "WFWorkflowName": "p15-short-circuit",
-		"WFWorkflow": map[string]any{"isSelf": true, "workflowName": "p15-short-circuit"}})
+	name := g.workflowName
+	if name == "" {
+		name = "p15-short-circuit"
+	}
+	return g.value("runworkflow", map[string]any{"WFInput": p15FunctionEdge(payload), "WFWorkflowName": name,
+		"WFWorkflow": map[string]any{"isSelf": true, "workflowName": name}})
 }
 
 func (g *p15FunctionGraph) finish() error {
