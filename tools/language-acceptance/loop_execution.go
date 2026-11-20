@@ -1,12 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -49,6 +47,7 @@ var loopProductionPaths = []string{
 	"p15_loop_index_native_test.go", "p15_loop_identity_acceptance_test.go", "p15_loop_identity_native_oracle_test.go",
 	"p15_types_acceptance_test.go", "p15_parser_acceptance_test.go", "p15_short_circuit_test.go",
 	"tools/language-acceptance/loop_execution.go", "tools/language-acceptance/loop_execution_test.go",
+	"tools/language-acceptance/strict_go_events.go",
 	"tools/language-acceptance/editor_source_binding.go",
 	"tools/language-acceptance/editor_performance_execution.go", "tools/language-acceptance/editor_process_other.go",
 	"tools/language-acceptance/editor_process_windows.go", "tools/language-acceptance/native_encoding_intake.go",
@@ -106,98 +105,7 @@ func loopRequiredEvents(id string) []string {
 }
 
 func parseLoopProductionOutput(id string, raw []byte) error {
-	names := loopRequiredEvents(id)
-	if len(names) == 0 || !utf8.Valid(raw) {
-		return fmt.Errorf("unknown loop scenario or invalid UTF-8")
-	}
-	required := map[string]bool{}
-	for _, name := range names {
-		required[name] = true
-	}
-	run, passed := map[string]bool{}, map[string]bool{}
-	starts, packages := 0, 0
-	var previousTime time.Time
-	scanner := bufio.NewScanner(bytes.NewReader(raw))
-	scanner.Buffer(make([]byte, 4096), 4<<20)
-	for scanner.Scan() {
-		if packages != 0 {
-			return fmt.Errorf("loop output continues after package completion")
-		}
-		if _, err := decodeNativeEncodingObject(scanner.Bytes()); err != nil {
-			return fmt.Errorf("invalid loop Go JSON: %w", err)
-		}
-		var event struct {
-			Time, Action, Package, Test, Output string
-			Elapsed                             *float64
-		}
-		if err := decodeEditorJSON(scanner.Bytes(), &event); err != nil {
-			return fmt.Errorf("invalid loop event: %w", err)
-		}
-		eventTime, timeErr := time.Parse(time.RFC3339Nano, event.Time)
-		if timeErr != nil || eventTime.IsZero() || !previousTime.IsZero() && eventTime.Before(previousTime) {
-			return fmt.Errorf("missing, invalid or backwards loop event time")
-		}
-		previousTime = eventTime
-		if event.Action == "pass" && event.Elapsed == nil {
-			return fmt.Errorf("loop pass lacks observed elapsed time")
-		}
-		if event.Elapsed != nil && (event.Action != "pass" || math.IsNaN(*event.Elapsed) || math.IsInf(*event.Elapsed, 0) || *event.Elapsed < 0 || *event.Elapsed > (productionTestTimeout(loopAcceptanceScenarios[id].tests())+time.Minute).Seconds()) {
-			return fmt.Errorf("invalid bounded loop event elapsed time")
-		}
-		if event.Package != "github.com/electrikmilk/cherri" || event.Test != "" && !required[event.Test] {
-			return fmt.Errorf("foreign or unselected loop event %s:%s", event.Package, event.Test)
-		}
-		switch event.Action {
-		case "start":
-			if event.Test != "" || starts != 0 || len(run) != 0 {
-				return fmt.Errorf("duplicate or reordered loop package start")
-			}
-			starts++
-		case "run":
-			if starts != 1 || event.Test == "" || run[event.Test] || passed[event.Test] {
-				return fmt.Errorf("duplicate or missing loop test execution")
-			}
-			if slash := strings.IndexByte(event.Test, '/'); slash >= 0 {
-				parent := event.Test[:slash]
-				if !run[parent] || passed[parent] {
-					return fmt.Errorf("loop child outside its parent execution")
-				}
-			}
-			run[event.Test] = true
-		case "pass":
-			if event.Test == "" {
-				if starts != 1 || len(passed) != len(required) {
-					return fmt.Errorf("loop package passed without complete scenario")
-				}
-				packages++
-			} else {
-				if !run[event.Test] || passed[event.Test] {
-					return fmt.Errorf("loop pass without unique prior run")
-				}
-				if !strings.Contains(event.Test, "/") {
-					for name := range required {
-						if strings.HasPrefix(name, event.Test+"/") && !passed[name] {
-							return fmt.Errorf("loop parent passed before required child %s", name)
-						}
-					}
-				}
-				passed[event.Test] = true
-			}
-		case "output":
-			if starts != 1 || event.Test != "" && (!run[event.Test] || passed[event.Test]) {
-				return fmt.Errorf("loop output outside active execution")
-			}
-		default:
-			return fmt.Errorf("loop test failed, skipped, paused or emitted unknown event %s", event.Action)
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-	if starts != 1 || packages != 1 || len(run) != len(required) || len(passed) != len(required) {
-		return fmt.Errorf("incomplete actual loop scenario execution")
-	}
-	return nil
+	return parseStrictNamedProductionOutput(loopRequiredEvents(id), productionTestTimeout(loopAcceptanceScenarios[id].tests())+time.Minute, raw)
 }
 
 func loopOutputWithinProcess(raw []byte, receipt editorProcessReceipt) error {

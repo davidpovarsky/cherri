@@ -959,6 +959,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateExhaustiveNodeRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateBindingCaptureRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1914,6 +1918,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runExhaustiveNodeRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runLoopRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}

@@ -470,6 +470,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP16" {
+		return exhaustiveNodeTestIDs()
+	}
 	if scenario, found := loopAcceptanceScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -525,6 +528,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP16" {
+		return append([]string{}, exhaustiveNodeProductionPaths...)
+	}
 	if id == "RP29" {
 		return append([]string{}, assetAuthorizationScenario.ProductionPaths...)
 	}
