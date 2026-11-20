@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
@@ -59,6 +60,10 @@ func p15TypedDefaultValueGraph(g *p15FunctionGraph, value any) {
 	case string:
 		g.value("gettext", map[string]any{"WFTextActionText": v})
 	case []any:
+		if len(v) == 0 {
+			p15TypedEmptyDefaultGraph(g)
+			return
+		}
 		rows := []any{}
 		for _, item := range v {
 			rows = append(rows, map[string]any{"WFItemType": 0, "WFValue": item})
@@ -70,6 +75,25 @@ func p15TypedDefaultValueGraph(g *p15FunctionGraph, value any) {
 	default:
 		g.err = fmt.Errorf("unmodeled authored fallback %T", value)
 	}
+}
+
+// Empty runtime Lists already use the verified clear/Get Variable bridge.
+// The private name and UUID are alpha identities; every operation, missing
+// Set input, consumed edge and branch position remains independently authored.
+func p15TypedEmptyDefaultGraph(g *p15FunctionGraph) {
+	index := len(g.expected)
+	if index+2 >= len(g.actual) {
+		g.err = fmt.Errorf("missing empty default clear/producer sequence")
+		return
+	}
+	name, _ := p15C01Params(g.actual[index+1])["WFVariableName"].(string)
+	uuid, _ := p15C01Params(g.actual[index+2])["UUID"].(string)
+	if uuid == "" || !strings.HasPrefix(name, "__cherri_scope_") || !strings.HasSuffix(name, "_emptyList_"+uuid) {
+		g.err = fmt.Errorf("empty default lacks a private producer-bound identity")
+	}
+	g.emit("nothing", nil)
+	g.emit("setvariable", map[string]any{"WFVariableName": name})
+	g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable(name)})
 }
 
 func p15TypedDefaultGraph(actions []map[string]any, tc p15TypedDefaultCase) (map[string]int, error) {
@@ -86,6 +110,7 @@ func p15TypedDefaultGraph(actions []map[string]any, tc p15TypedDefaultCase) (map
 	g.boundary(guard, 1, false)
 	positions["default"] = len(g.expected)
 	p15TypedDefaultValueGraph(g, tc.defaultValue)
+	positions["default_result"] = len(g.expected) - 1
 	positions["join"] = len(g.expected)
 	value := g.boundary(guard, 2, true)
 	if tc.numeric {
@@ -145,7 +170,11 @@ func TestP15T01TypedDefaultBoundaryCorruptions(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			for _, fault := range []string{"supplied_absent", "named_absent", "omitted_present", "truthiness_guard", "read_value_as_presence", "wrong_value_slot", "wrong_join", "default_branch_lost", "default_kind_lost", "caller_input_lost", "return_uses_default", "caller_consumer_detached"} {
+			faults := []string{"supplied_absent", "named_absent", "omitted_present", "truthiness_guard", "read_value_as_presence", "wrong_value_slot", "wrong_join", "default_branch_lost", "default_kind_lost", "caller_input_lost", "return_uses_default", "caller_consumer_detached"}
+			if list, emptyList := tc.defaultValue.([]any); emptyList && len(list) == 0 {
+				faults = append(faults, "empty_clear_lost", "empty_inherits_input", "empty_read_detached")
+			}
+			for _, fault := range faults {
 				t.Run(fault, func(t *testing.T) {
 					bad := p15C01Clone(t, original)
 					switch fault {
@@ -168,11 +197,17 @@ func TestP15T01TypedDefaultBoundaryCorruptions(t *testing.T) {
 					case "default_branch_lost":
 						p15C01Params(bad[positions["else"]])["WFControlFlowMode"] = 2
 					case "default_kind_lost":
-						bad[positions["default"]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.nothing"
+						bad[positions["default_result"]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.nothing"
 					case "caller_input_lost":
 						p15FunctionPayloadRow(t, bad, positions["supplied"], "_cherri_caller_input")["WFValue"] = p15FunctionText("FORGED")
 					case "return_uses_default":
-						p15C01Params(bad[positions["return"]])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(bad[positions["default"]])["UUID"].(string))
+						p15C01Params(bad[positions["return"]])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(bad[positions["default_result"]])["UUID"].(string))
+					case "empty_clear_lost":
+						bad[positions["default"]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.getvariable"
+					case "empty_inherits_input":
+						p15C01Params(bad[positions["default"]+1])["WFInput"] = p15FunctionText("STALE")
+					case "empty_read_detached":
+						p15C01Params(bad[positions["default_result"]])["WFVariable"] = p15FunctionVariable("unrelated")
 					case "caller_consumer_detached":
 						p15C01Params(bad[positions["supplied"]+2])["WFVariable"] = p15FunctionVariable("unrelated")
 					}
