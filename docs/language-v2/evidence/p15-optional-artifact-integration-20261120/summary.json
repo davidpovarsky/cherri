@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "bounded Optional prepared-artifact integration proof",
+  "source": "517c49b9babd3300e521f0ad7b5b99f45699350e",
+  "runtimeIntegration": "8b8093eebf6544aad649a668c7afef147ff0cc32",
+  "exactCountAlignment": "8fd656fab86ebf422fe5c9003060505251ca9c83",
+  "graphActionCount": 400,
+  "sourceFixtureSHA256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+  "expectedContractSHA256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef",
+  "compiler": {
+    "source": "8fd656fab86ebf422fe5c9003060505251ca9c83",
+    "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r5-integration-20261120\\clean-8fd656fa\\warm-cache-retry\\compiler.exe",
+    "sha256": "7ff96e95bcd794bbec66851b418f51e4410d49227bf2985e8330b955b8422858",
+    "bytes": 25481728,
+    "archiveIncluded": false,
+    "buildIdentityClaim": "No installed-source/VCS identity claim; only intervening change is the12-line test hook"
+  },
+  "originalGateFailure": {
+    "utc": "2026-11-20T12:14:18.584577+00:00",
+    "source": "8fd656fab86ebf422fe5c9003060505251ca9c83",
+    "source_status_after": "",
+    "observed_error": {
+      "type": "ValueError",
+      "message": "Optional graph receipt is absent, duplicated or does not bind the unchanged artifact"
+    },
+    "elapsed": 60.76499999995576,
+    "go_pass_events": 66,
+    "go_fail_events": 0,
+    "graph_markers": 0,
+    "stdout_sha256": "05a71fef56b51468d37dfed31272e94b0dfb44d5318f6e1177d2f3c3f7aea3b9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact_sha256": "d3fec6231a2ed6dc9d7f7554cfbf0467ac263dae2272e5d0c03233c7292ed634",
+    "artifact_unchanged": true,
+    "formal_acceptance_granted": false
+  },
+  "actualPositive": {
+    "name": "original",
+    "elapsed": 36.23499999998603,
+    "receipt": {
+      "schemaVersion": "1.0",
+      "fixtureId": "qa-optional-forwarding-diagnostic-v2",
+      "status": "PASS_NATIVE_STRUCTURE_ONLY",
+      "sourceSha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139",
+      "expectedContractSha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef",
+      "unsignedPlistSha256": "d3fec6231a2ed6dc9d7f7554cfbf0467ac263dae2272e5d0c03233c7292ed634",
+      "nativeActionCount": 400,
+      "appleRuntime": "NOT_RUN",
+      "formalAcceptanceGranted": false,
+      "testStdoutSha256": "e2719ff3ff235003fc14db904a3a957f96b59b6b0801de6c077d29fd188e8122",
+      "testStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "error": null,
+    "artifact_sha256": "d3fec6231a2ed6dc9d7f7554cfbf0467ac263dae2272e5d0c03233c7292ed634",
+    "artifact_unchanged": true,
+    "go_pass_events": 66,
+    "go_fail_events": 0,
+    "graph_markers": 1,
+    "stdout_sha256": "e2719ff3ff235003fc14db904a3a957f96b59b6b0801de6c077d29fd188e8122",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualCorruptionRejected": {
+    "name": "forged-final-input",
+    "elapsed": 5.063000000023749,
+    "receipt": null,
+    "error": {
+      "type": "ValueError",
+      "message": "Optional prepared artifact failed the independent Go graph gate"
+    },
+    "artifact_sha256": "2231a27439faf0545dcd7834e33f75b2be8350b43b0b96459dc381ca6d295afe",
+    "artifact_unchanged": true,
+    "go_pass_events": 65,
+    "go_fail_events": 1,
+    "graph_markers": 0,
+    "stdout_sha256": "0dd8869ecf3a5f371cd0525e53eca3f063559e2235f7a8bf4571283c69369a84",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "python": {
+    "command": [
+      "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+      "-m",
+      "unittest",
+      "-v",
+      "test_optional_forwarding_diagnostic",
+      "test_json_body_probe"
+    ],
+    "exitCode": 0,
+    "elapsed": 5.0,
+    "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderrSHA256": "0ea6ff12c2603fe9e7d9cf39fd7d36271c3b8907efc1dde0f9d0aee4806d4bf3",
+    "bash": "C:\\Program Files\\Git\\bin\\bash.exe",
+    "tail": "eTests.test_callback_origin_and_exact_result_corruptions_do_not_pass) ... ok\r\ntest_diagnose_binds_original_request_callback_source_and_failure_truth (test_json_body_probe.JSONBodyProbeTests.test_diagnose_binds_original_request_callback_source_and_failure_truth) ... ok\r\ntest_fixed_sources_are_pinned_and_diagnostic_only (test_json_body_probe.JSONBodyProbeTests.test_fixed_sources_are_pinned_and_diagnostic_only) ... ok\r\ntest_null_absent_empty_false_and_zero_are_distinct_actual_http_observations (test_json_body_probe.JSONBodyProbeTests.test_null_absent_empty_false_and_zero_are_distinct_actual_http_observations) ... ok\r\ntest_receipt_corruptions_cannot_create_an_observation (test_json_body_probe.JSONBodyProbeTests.test_receipt_corruptions_cannot_create_an_observation) ... ok\r\ntest_shell_helper_route_is_closed_and_original_retry_route_is_preserved (test_json_body_probe.JSONBodyProbeTests.test_shell_helper_route_is_closed_and_original_retry_route_is_preserved) ... ok\r\ntest_stopped_server_cannot_be_reused_as_ready (test_json_body_probe.JSONBodyProbeTests.test_stopped_server_cannot_be_reused_as_ready) ... ok\r\ntest_unknown_candidate_string_and_malformed_json_are_quarantined (test_json_body_probe.JSONBodyProbeTests.test_unknown_candidate_string_and_malformed_json_are_quarantined) ... ok\r\ntest_wrong_boolean_zero_nested_shape_or_missing_key_cannot_pass_or_publish (test_json_body_probe.JSONBodyProbeTests.test_wrong_boolean_zero_nested_shape_or_missing_key_cannot_pass_or_publish) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 22 tests in 4.556s\r\n\r\nOK\r\n"
+  },
+  "retainedFailureContexts": [
+    "original cold-cache200s build timeout",
+    "original WSL shell environment route failure",
+    "original unrelated integration41 failure events and399vs400 count failure",
+    "positive gate succeeded before local mutation launcher incorrectly indexed omitted parameter dictionary; correction only used setdefault for canonical parameter-free Nothing"
+  ],
+  "artifactCount": 85,
+  "sourceWitnessCount": 697,
+  "archive": {
+    "path": "originals.zip",
+    "bytes": 245712,
+    "sha256": "c83bef437a420825a849c52d35ead2426edeb1bc0f12912d4aa63db4a865ba07"
+  },
+  "appleRuntime": "NOT_RUN",
+  "formalAcceptanceGranted": false,
+  "limitations": [
+    "This source does not supersede c0 native399-action run",
+    "106 earlier Python passes and3 platform skips remain component evidence;22 relevant tests replayed on517",
+    "Other integration test failures are retained and resolved in their own source/proof commits",
+    "No full Go suite, installed consumer tuple or179 acceptance claim"
+  ],
+  "createdAtUTC": "2026-11-20T12:25:06.646549+00:00"
+}
