@@ -270,6 +270,19 @@ class DocumentationWrapperControls(unittest.TestCase):
         with self.assertRaises(ValueError):
             subject.succeeded(result)
 
+    def test_success_requires_finite_nonnegative_elapsed_within_original_allowance(self):
+        base = {"id": "synthetic-time-control", "timedOut": False, "exitCode": 0,
+                "elapsedSeconds": 0.1, "timeoutSeconds": 1.0}
+        subject.succeeded((base, b"", b""))
+        for field, values in (("elapsedSeconds", (None, True, -1, 2, float("nan"), float("inf"))),
+                              ("timeoutSeconds", (None, True, 0, -1, float("nan"), float("inf")))):
+            for value in values:
+                changed = dict(base)
+                changed[field] = value
+                with self.subTest(field=field, value=value):
+                    with self.assertRaises(ValueError):
+                        subject.succeeded((changed, b"", b""))
+
     def test_environment_cannot_inherit_caller_pin_or_compiler_overrides(self):
         old = dict(os.environ)
         try:

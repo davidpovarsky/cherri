@@ -12,6 +12,7 @@ import argparse
 import datetime
 import hashlib
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -273,6 +274,8 @@ class Recorder:
         self.rows = []
 
     def run(self, label, command, cwd, env, timeout=60):
+        if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
+            raise ValueError("process timeout must be finite and positive")
         if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", label) or any(r["id"] == label for r in self.rows):
             raise ValueError("duplicate or invalid process label")
         out = self.directory / (label + ".stdout")
@@ -288,7 +291,7 @@ class Recorder:
                                            stderr=stderr, stdin=subprocess.DEVNULL,
                                            start_new_session=os.name != "nt")
                 try:
-                    code = process.wait(timeout=timeout)
+                    code = process.wait(timeout=max(0.0, timeout - (time.monotonic() - start)))
                 except subprocess.TimeoutExpired:
                     timed_out = True
                     if os.name == "nt":
@@ -302,6 +305,8 @@ class Recorder:
             row.update({"exitCode": None, "timedOut": timed_out, "launchError": str(error)})
         finally:
             row["elapsedSeconds"] = time.monotonic() - start
+            if row["elapsedSeconds"] > timeout:
+                row["timedOut"] = True
             row["endedUTC"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
             for key, path in (("stdout", out), ("stderr", err)):
                 data = path.read_bytes() if path.exists() else b""
@@ -315,7 +320,11 @@ class Recorder:
 
 def succeeded(result, code=0):
     row, stdout, stderr = result
-    if row["timedOut"] or row["exitCode"] != code:
+    elapsed, allowance = row.get("elapsedSeconds"), row.get("timeoutSeconds")
+    valid_time = (type(elapsed) in (int, float) and type(allowance) in (int, float) and
+                  math.isfinite(elapsed) and math.isfinite(allowance) and
+                  allowance > 0 and 0 <= elapsed <= allowance)
+    if row["timedOut"] or row["exitCode"] != code or not valid_time:
         raise ValueError("unexpected process outcome: " + row["id"])
     return stdout, stderr
 
