@@ -977,6 +977,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validatePurePublicRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateNativePathsRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1969,6 +1972,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runPurePublicRequirement(g) {
+			continue
+		}
 		if r.runNativePathsRequirement(g) {
 			continue
 		}

@@ -267,6 +267,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = numberWireScope
 		}
+		if row.ID == "BRG21" {
+			row.TestNames = append([]string{}, purePublicTests...)
+			row.ProductionPath = append([]string{}, purePublicProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = purePublicScope
+		}
 		if row.ID == "BRG18" {
 			row.TestNames = append([]string{}, nativePathsTests...)
 			row.ProductionPath = append([]string{}, nativePathsProductionPaths...)
