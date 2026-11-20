@@ -43,6 +43,13 @@ struct CherriEditorStartupDeadline {
         return min(maximum, max(0, Self.budgetSeconds - elapsed))
     }
 
+    /// An already interactive creation control needs a fresh pre-tap check,
+    /// not another wait for an absent editor or the same ready button.
+    func needsDocumentWait(_ state: CherriEditorStartupObservation) -> Bool {
+        !documentCreationIssued && remaining() > 0 && state.windowExists && state.appRunningForeground &&
+            !state.editorExists && !(state.createDocumentExists && state.createDocumentHittable)
+    }
+
     mutating func claimDocumentCreation(_ state: CherriEditorStartupObservation) -> Bool {
         guard !documentCreationIssued, remaining() > 0,
               state.windowExists, state.appRunningForeground,

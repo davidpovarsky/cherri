@@ -101,12 +101,14 @@ final class CherriEditorUITests: XCTestCase {
                 editorExists: false, editorHittable: false)
         }
         let windowExists = app.windows.firstMatch.exists
-        let editor = app.textViews["cherriCodeEditor"]
-        let editorExists = editor.exists
-        let editorHittable = editorExists && editor.isHittable
         let createDoc = app.buttons["Create Document"]
         let createExists = createDoc.exists
         let createHittable = createExists && createDoc.isHittable
+        // Check the editor after the creation control: an editor that appeared
+        // meanwhile must prevent a second document from being opened.
+        let editor = app.textViews["cherriCodeEditor"]
+        let editorExists = editor.exists
+        let editorHittable = editorExists && editor.isHittable
         return CherriEditorStartupObservation(
             windowExists: windowExists, appRunningForeground: app.state == .runningForeground,
             createDocumentExists: createExists, createDocumentHittable: createHittable,
@@ -152,27 +154,27 @@ final class CherriEditorUITests: XCTestCase {
             return editor
         }
 
-        let initiallyReady = editor.waitForExistence(timeout: deadline.remaining(maximum: 2))
-        let initialState = observeStartupControls()
-        if deadline.accepts(initialState, waitCompleted: initiallyReady) {
-            recordStartupReceipt(stage: "editor-wait", waitCompleted: true,
-                                 state: initialState, deadline: deadline)
-            return editor
-        }
-
-        if !initialState.editorExists, deadline.remaining() > 0 {
+        if !windowState.editorExists, deadline.remaining() > 0 {
             let createDoc = app.buttons["Create Document"]
-            let creationReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                self.app.state == .runningForeground && createDoc.exists && createDoc.isHittable
-            }, object: createDoc)
-            let canCreate = XCTWaiter.wait(for: [creationReady],
-                                          timeout: deadline.remaining(maximum: 6)) == .completed
-            let creationState = observeStartupControls()
-            recordStartupReceipt(stage: "document-wait", waitCompleted: canCreate,
-                                 state: creationState, deadline: deadline)
-            if canCreate, !creationState.editorExists,
-               deadline.claimDocumentCreation(creationState) {
-                createDoc.tap()
+            if deadline.needsDocumentWait(windowState) {
+                let controlReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                    self.app.state == .runningForeground &&
+                        (editor.exists || (createDoc.exists && createDoc.isHittable))
+                }, object: createDoc)
+                let waitCompleted = XCTWaiter.wait(for: [controlReady],
+                    timeout: deadline.remaining(maximum: 6)) == .completed
+                let creationState = observeStartupControls()
+                recordStartupReceipt(stage: "document-wait", waitCompleted: waitCompleted,
+                                     state: creationState, deadline: deadline)
+                if deadline.claimDocumentCreation(creationState) { createDoc.tap() }
+            } else {
+                // The initial live observation already found a ready button.
+                // Check current state before the one allowed tap; do not spend
+                // the remaining budget waiting again for that same control.
+                let creationState = observeStartupControls()
+                recordStartupReceipt(stage: "document-check", waitCompleted: false,
+                                     state: creationState, deadline: deadline)
+                if deadline.claimDocumentCreation(creationState) { createDoc.tap() }
             }
         }
 
