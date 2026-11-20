@@ -136,9 +136,9 @@ func TestP15OptionalTypeAliasUsesDefiningModule(t *testing.T) {
 
 func TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues(t *testing.T) {
 	for _, tc := range []struct{ name, source, code, detail string }{
-		{"self_cycle", "type Maybe=Maybe?\ngetVariable(\"kept\")", "E_TYPE_ALIAS", "cyclic type alias"},
-		{"mutual_cycle", "type Maybe=Later?\ntype Later=Maybe\ngetVariable(\"kept\")", "E_TYPE_ALIAS", "cyclic type alias"},
-		{"duplicate", "type Maybe=Text?\ntype Maybe=Number?\ngetVariable(\"kept\")", "E_TYPE_ALIAS", "duplicate type alias"},
+		{"self_cycle", "type Maybe=Maybe?\ntext(\"kept\")", "E_TYPE_ALIAS", "cyclic type alias"},
+		{"mutual_cycle", "type Maybe=Later?\ntype Later=Maybe\ntext(\"kept\")", "E_TYPE_ALIAS", "cyclic type alias"},
+		{"duplicate", "type Maybe=Text?\ntype Maybe=Number?\ntext(\"kept\")", "E_TYPE_ALIAS", "duplicate type alias"},
 		{"wrong_value", "type Maybe=Text?\nfunction echo(value:Maybe)->Maybe{return value}\ngetVariable(echo(5))", analysis.CodeArgumentType, "expects Text?, got Number"},
 		{"none_for_present_alias", "type Value=Text\nfunction echo(value:Value)->Value{return value}\ngetVariable(echo(none))", analysis.CodeArgumentType, "expects Text"},
 	} {
