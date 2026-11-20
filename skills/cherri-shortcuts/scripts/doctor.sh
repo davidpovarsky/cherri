@@ -2,6 +2,7 @@
 set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
+. "$SCRIPT_DIR/installation.sh"
 
 status=0
 printf 'Platform: %s %s\n' "$(uname -s 2>/dev/null || echo unknown)" "$(uname -m 2>/dev/null || echo unknown)"
@@ -9,8 +10,9 @@ printf 'Skill dir: %s\n' "$SKILL_DIR"
 printf 'Pinned compiler commit: %s\n' "$MANIFEST_COMPILER_COMMIT"
 printf 'Pinned docs commit: %s\n' "$MANIFEST_DOCS_COMMIT"
 
-if BIN=$(resolve_cherri); then
+if BIN=$(resolve_cherri_installation); then
   printf 'Cherri: %s\n' "$BIN"
+  printf 'Migration tool: %s (source and role verified)\n' "$(cherri_migration_for_compiler "$BIN")"
   "$BIN" --version || status=1
   if validate_cherri_bin "$BIN"; then
     printf 'Cherri Language: v%s ready\n' "$MANIFEST_LANG_VERSION"
