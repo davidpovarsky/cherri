@@ -341,7 +341,9 @@
       "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
       "upstreamLocation": null,
       "forkLocations": [
-        "actions/calendar.cherri"
+        "actions/calendar.cherri",
+        "action.go",
+        "date_field_codec.go"
       ],
       "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
       "change": "Added getTimeBetweenDates, addEvent, and addReminder action definitions with enum arguments to actions/calendar.cherri.",
@@ -349,7 +351,9 @@
       "evidence": "batch-14 corpus evidence in DeveloperKit, OS.MOBIL.",
       "notes": [],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        "2026-11-20 e259c829fa0345702e0989a25b5bbac1296d1fa6: getTimeBetweenDates only: encode both Date reference fields through the existing WFTextTokenString encoder after actual native parameter-state A/B run44696174000; preserve explicit native bytes, literals/omission, public argument types and defaults. Clean local37-outcome replay and P12_PAR_09 strict dual roundtrip passed; original27-field runtime replay remains pending."
+      ]
     },
     {
       "name": "getDirections / getTravelTime / getDistance",

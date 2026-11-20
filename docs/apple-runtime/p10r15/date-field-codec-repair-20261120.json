@@ -1,0 +1,120 @@
+{
+  "schema_version": "1",
+  "scope": "Date arithmetic canonical field serialization only",
+  "implementation_sha": "e259c829fa0345702e0989a25b5bbac1296d1fa6",
+  "production_base": "57ae02df135901b61ce55975cee86fd2dc9907f0",
+  "tests_only_commits": [
+    "d285a3667173231cdd20e09dd73d1a60eab6f758",
+    "0ba11bf23fcdca6fb9a967739428dd8ab3852c06"
+  ],
+  "native_observation": {
+    "run_id": 44696174000,
+    "source_sha": "96f67fae308925f7f647bc4c730f2bca1a307cbf",
+    "artifact_id": 14611107095,
+    "artifact_sha256": "37b5e7efdb775e6bff37dac2e5afbdac7288cb9ab4f65f8a71483100575e107d",
+    "report_commit": "bd1da499322e2c0eec13b5897e17a8a08e296d85",
+    "scope": "Actual native parameter state and three unmodified native-object serialization hops; no action execution"
+  },
+  "red": {
+    "source_sha": "0ba11bf23fcdca6fb9a967739428dd8ab3852c06",
+    "production_base": "57ae02df135901b61ce55975cee86fd2dc9907f0",
+    "clean_after": true,
+    "command": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-timeout=90s",
+      "-run",
+      "^TestP15DateField",
+      "."
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 11.796999999962281,
+    "raw_sha256": "38e205043e106d3c5e6923d100c20c955d32810ee5b5cd867a1e6e0627957fe4",
+    "test_source_sha256": "ca8fde290cc78ea7db1d306403c2fb1ecb8e7003e8c9b44d369e6e0eb1f08356",
+    "counts": {
+      "pass": 8,
+      "fail": 6,
+      "skip": 0
+    },
+    "failure_output": [
+      "    p15_date_field_codec_test.go:78: interval 0 WFTimeUntilFromDate: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"first\", \"OutputUUID\":\"7A0E8DE7-DD4F-4DAB-9657-2432A210C7AD\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:78: interval 0 WFInput: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"second\", \"OutputUUID\":\"DEE76C0C-2A87-4245-BD0D-438D8746A23A\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:78: interval 1 WFTimeUntilFromDate: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"first\", \"OutputUUID\":\"7A0E8DE7-DD4F-4DAB-9657-2432A210C7AD\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:78: interval 1 WFInput: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"first\", \"OutputUUID\":\"7A0E8DE7-DD4F-4DAB-9657-2432A210C7AD\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "--- FAIL: TestP15DateFieldCanonicalProductionReferences/legacy_false (0.02s)\n",
+      "    p15_date_field_codec_test.go:78: interval 0 WFTimeUntilFromDate: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"first\", \"OutputUUID\":\"7b75a579-d48e-4ce2-a62d-e8861c1a57b2\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:78: interval 0 WFInput: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"second\", \"OutputUUID\":\"ec43f38e-1492-4dce-94d7-915a1dd66321\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:78: interval 1 WFTimeUntilFromDate: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"first\", \"OutputUUID\":\"7b75a579-d48e-4ce2-a62d-e8861c1a57b2\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:78: interval 1 WFInput: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"first\", \"OutputUUID\":\"7b75a579-d48e-4ce2-a62d-e8861c1a57b2\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "--- FAIL: TestP15DateFieldCanonicalProductionReferences/legacy_true (0.00s)\n",
+      "--- FAIL: TestP15DateFieldCanonicalProductionReferences (0.03s)\n",
+      "    p15_date_field_codec_test.go:107: mutable WFTimeUntilFromDate: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"Type\":\"Variable\", \"VariableName\":\"selected\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:107: mutable WFInput: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"Type\":\"Variable\", \"VariableName\":\"selected\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "--- FAIL: TestP15DateFieldCanonicalMutableAndOmitted/legacy_false (0.01s)\n",
+      "    p15_date_field_codec_test.go:107: mutable WFTimeUntilFromDate: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"Type\":\"Variable\", \"VariableName\":\"selected\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "    p15_date_field_codec_test.go:107: mutable WFInput: Date reference must use WFTextTokenString: map[string]interface {}{\"Value\":map[string]interface {}{\"Type\":\"Variable\", \"VariableName\":\"selected\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}\n",
+      "--- FAIL: TestP15DateFieldCanonicalMutableAndOmitted/legacy_true (0.00s)\n",
+      "--- FAIL: TestP15DateFieldCanonicalMutableAndOmitted (0.01s)\n"
+    ]
+  },
+  "green": {
+    "source_sha": "e259c829fa0345702e0989a25b5bbac1296d1fa6",
+    "clean_before": true,
+    "clean_after": true,
+    "command": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-timeout=4m",
+      "-run",
+      "^(TestP15DateField|TestP12_PAR_09_|TestCODEC|TestARCH002)",
+      "."
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 10.327999999979511,
+    "raw_sha256": "00c048ce259fbc68194caa79de8274b68bd2f74a46264fdba3ea44f3208dd335",
+    "counts": {
+      "pass": 37,
+      "fail": 0,
+      "skip": 0
+    },
+    "failures": [],
+    "source_files": [
+      {
+        "path": "action.go",
+        "sha256": "d8e0aab1e7d425c879ac225631a4fecfa4e3f42c71bb998daeb1b484cc3ade6c"
+      },
+      {
+        "path": "date_field_codec.go",
+        "sha256": "cf3378ec8120acb496017cdcf21d4d50364fe97d74a5414bae6646bdfede7b30"
+      },
+      {
+        "path": "internal/language/backend/contracts.go",
+        "sha256": "fc2d82158217364b3c28b4aa531a19158d968e2510836b8000d44807efd10fd4"
+      },
+      {
+        "path": "p15_date_field_codec_test.go",
+        "sha256": "3c96f06482191fc064a615e83b8cdde724467c3ee4b296918686e4b8a2485b06"
+      }
+    ]
+  },
+  "preserved_contracts": [
+    "Original Date runtime fixture source and27 expected fields are unchanged; replay remains a separate descendant.",
+    "Existing formatTimestamp token-string positive control passes.",
+    "Both dialects preserve omitted Date arguments; Legacy literal Date arguments remain supported.",
+    "Existing V2 first-slot attachment requirement remains enforced.",
+    "Unrelated type/count input attachments remain unchanged.",
+    "P12_PAR_09 exact native dual-dialect roundtrip passes without Stage3 demotion.",
+    "Existing v2.2 and S01 codec descriptor lines remain; exactly one Date encoding line appended."
+  ],
+  "earlier_draft_limitations": [
+    "The first test-only RED included an incorrectly positioned Legacy format locale argument; corrected on0ba11bf before the clean causal RED.",
+    "The expanded draft initially assumed V2 first-slot literal support; production already rejects it. The final test preserves that restriction and uses actual Date producers for valid first-slot cases.",
+    "The precommit path guard initially stripped Git porcelain status whitespace and stopped before committing; corrected to compare explicit Git path lists."
+  ],
+  "fixed_source_native_runtime": "NOT_RUN",
+  "formal_acceptance_granted": false
+}
