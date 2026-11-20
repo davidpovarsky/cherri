@@ -58,14 +58,6 @@
       "bytes": 33301,
       "sha256": "9e09d7fc1f08437683ddd10c6eeb96b21e41d505e6a87fe23510eae609ca5f71"
     },
-    "source/p15_function_native_oracle_test.go": {
-      "bytes": 12993,
-      "sha256": "fdc2a57f968dcdbfd95674956f3f88a8ad5baa5909faf98d655517e20c6adc4e"
-    },
-    "source/p15_optional_native_diagnostic_test.go": {
-      "bytes": 25271,
-      "sha256": "e04d22548bdb41c7d23513e04a393c8af2f6f599485a7140abbd44e448177daf"
-    },
     "source/tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.cherri": {
       "bytes": 3485,
       "sha256": "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139"
@@ -73,6 +65,39 @@
     "source/tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.expected.json": {
       "bytes": 1870,
       "sha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef"
+    },
+    "source/p15_function_native_oracle_test.go.txt": {
+      "bytes": 12993,
+      "sha256": "fdc2a57f968dcdbfd95674956f3f88a8ad5baa5909faf98d655517e20c6adc4e"
+    },
+    "source/p15_optional_native_diagnostic_test.go.txt": {
+      "bytes": 25271,
+      "sha256": "e04d22548bdb41c7d23513e04a393c8af2f6f599485a7140abbd44e448177daf"
+    },
+    "manifest-before-storage-repair.json": {
+      "bytes": 2955,
+      "sha256": "fbba5ed6030b8e457467586b8dd493063d945f0a44de3b52b67a54a8b83e757f"
     }
+  },
+  "storage_repair": {
+    "kind": "text-suffix-only-for-source-snapshots",
+    "moves": [
+      {
+        "old": "source/p15_function_native_oracle_test.go",
+        "new": "source/p15_function_native_oracle_test.go.txt",
+        "bytes": 12993,
+        "sha256": "fdc2a57f968dcdbfd95674956f3f88a8ad5baa5909faf98d655517e20c6adc4e",
+        "immutable_original_source": "fd691b96fb661697a1cbaddab92476d457636ba9"
+      },
+      {
+        "old": "source/p15_optional_native_diagnostic_test.go",
+        "new": "source/p15_optional_native_diagnostic_test.go.txt",
+        "bytes": 25271,
+        "sha256": "e04d22548bdb41c7d23513e04a393c8af2f6f599485a7140abbd44e448177daf",
+        "immutable_original_source": "fd691b96fb661697a1cbaddab92476d457636ba9"
+      }
+    ],
+    "original_manifest": "manifest-before-storage-repair.json",
+    "original_source_and_test_outcomes_unchanged": true
   }
 }
