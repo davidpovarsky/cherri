@@ -77,7 +77,7 @@ func (s *Service) contextualParameterCompletions(doc *DocumentState, context enu
 		items = append(items, CompletionItem{
 			Label: parameter.Label, Kind: CompletionKindParameter,
 			Detail:     fmt.Sprintf("%s: %s (parameter)", parameter.Label, typeName),
-			InsertText: parameter.Label + ": ",
+			InsertText: parameter.Label + ": ", Documentation: parameter.Documentation,
 		})
 	}
 	return items

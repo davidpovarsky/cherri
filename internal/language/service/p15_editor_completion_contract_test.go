@@ -400,3 +400,33 @@ func TestP15E01IncompleteModuleRecoveryRemainsBounded(t *testing.T) {
 		t.Fatalf("remote module completion issued %d network requests", hits)
 	}
 }
+
+func TestP15E01ParameterMetadataPreserved(t *testing.T) {
+	for _, name := range []string{"round", "resizeImage"} {
+		t.Run(name, func(t *testing.T) {
+			svc := NewService(nil)
+			uri := "file:///p15-e01-parameter-docs.cherri"
+			svc.OpenDocument(uri, 1, name+"()")
+			action, found := schema.DefaultRegistry().LookupAction(name)
+			if !found {
+				t.Fatal("canonical action absent")
+			}
+			items := svc.Complete(uri, 1, len(name)+2)
+			observed := map[string]CompletionItem{}
+			for _, item := range items {
+				if item.Kind == CompletionKindParameter {
+					observed[item.Label] = item
+				}
+			}
+			for _, parameter := range action.Parameters {
+				if parameter.Label == "" {
+					continue
+				}
+				item, found := observed[parameter.Label]
+				if !found || item.Documentation != parameter.DisplayName || item.InsertText != parameter.Label+": " {
+					t.Fatalf("canonical parameter metadata lost: parameter=%+v item=%+v", parameter, item)
+				}
+			}
+		})
+	}
+}

@@ -13,8 +13,8 @@ import (
 // the analyzer's actual scope at each written argument; no editor type parser
 // or global-name inference supplies compatibility or flow guarantees.
 type EditorCallParameter struct {
-	Name, Label string
-	Type        types.Type
+	Name, Label, Documentation string
+	Type                       types.Type
 }
 
 type EditorCallInfo struct {
@@ -126,7 +126,7 @@ func (a *Analyzer) setEditorAction(call *syntax.CallExpr, action *schema.ActionS
 	}
 	for index, parameter := range action.Parameters {
 		facts.info.Parameters = append(facts.info.Parameters, EditorCallParameter{
-			Name: parameter.ID, Label: parameter.Label, Type: parameter.Type,
+			Name: parameter.ID, Label: parameter.Label, Type: parameter.Type, Documentation: parameter.DisplayName,
 		})
 		if primary, found := action.PrimaryParameter(); found && primary == &action.Parameters[index] {
 			facts.info.Primary = index
