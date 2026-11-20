@@ -1,0 +1,685 @@
+{
+  "schema_version": "1",
+  "created_at_utc": "2026-11-20T03:44:43.547399+00:00",
+  "implementation_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+  "branch": "agent/cherri-p10r15-tagged-optional-presence-20261120",
+  "baseline_commit": "46c0763a0db0a6b68a837231dc1031e40bd8a50a",
+  "commits": [
+    "22863b892b952a2a9b693a07e6e474d2d3f1e634 test: distinguish supplied None from value and default presence",
+    "82de3670e415a02d4a015e4a34ad6499abaacb37 test: require tagged optional result and guarded default carriers",
+    "9e44c3c182956ee55db3d430eb618c9ced530a8d test(language): retain authored None in branch result type oracle",
+    "89aeae2caf754087bef377234feba8f3946298e4 test(language): require explicit empty optional values and guarded defaults",
+    "57746c8eda2d82ab282ce6e359bb8ce8dbfc7399 fix(language): tag optional function arguments and results independently",
+    "0aba3359461112d7924b63656c3f9e27c582d642 test(language): require tagged None predicates and fallthrough results",
+    "5004ec753bf21e254038848f4c2019528fa05509 test(language): retain declared Text coercion in optional return oracle",
+    "6f70bbfc35d1372834f5f6fea395b8ea2e793f47 fix(language): consume tagged presence in None predicates and fallthrough",
+    "b94e82f0e42149a042e960f03d75078c7ecd3e09 test(language): require explicit empty array fields in function envelopes"
+  ],
+  "codec_descriptor_version": "v2.1",
+  "codec_fingerprint": "16c8733d5903ac8c96e7cd3b91bbd0503134e760702262323a7f354860dfa5df",
+  "formal_requirements_proved": [],
+  "apple_runtime_proved": false,
+  "attempts": [
+    {
+      "prefix": "tagged-optional-baseline-clean",
+      "classification": "clean RED; new parameter-presence contract absent",
+      "source_sha": "22863b892b952a2a9b693a07e6e474d2d3f1e634",
+      "source_modified": null,
+      "named_passes": 0,
+      "failed_tests": [
+        "TestP15FunctionOptionalPresenceWire/none",
+        "TestP15FunctionOptionalPresenceWire/empty_text",
+        "TestP15FunctionOptionalPresenceWire/false",
+        "TestP15FunctionOptionalPresenceWire/zero",
+        "TestP15FunctionOptionalPresenceWire/empty_list",
+        "TestP15FunctionOptionalPresenceWire/empty_map",
+        "TestP15FunctionOptionalPresenceWire/none_skips_default",
+        "TestP15FunctionOptionalPresenceWire/empty_skips_default",
+        "TestP15FunctionOptionalPresenceWire/omitted_selects_default",
+        "TestP15FunctionOptionalPresenceWire/named_none_skips_default",
+        "TestP15FunctionOptionalPresenceWire",
+        "TestP15FunctionOptionalPresenceOracleRejectsCorruption/none_skips_default",
+        "TestP15FunctionOptionalPresenceOracleRejectsCorruption/empty_skips_default",
+        "TestP15FunctionOptionalPresenceOracleRejectsCorruption",
+        "<package>"
+      ],
+      "skipped_tests": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 38.13999999995576,
+      "raw_sha256": "bc85884ffbf7ff331be187f87ab4a35fd27fa7105951c894a6f9a95c009c599a"
+    },
+    {
+      "prefix": "tagged-optional-result-baseline-clean",
+      "classification": "clean RED; new result-presence contract absent",
+      "source_sha": "82de3670e415a02d4a015e4a34ad6499abaacb37",
+      "source_modified": null,
+      "named_passes": 2,
+      "failed_tests": [
+        "TestP15FunctionOptionalPresenceWire/none",
+        "TestP15FunctionOptionalPresenceWire/empty_text",
+        "TestP15FunctionOptionalPresenceWire/false",
+        "TestP15FunctionOptionalPresenceWire/zero",
+        "TestP15FunctionOptionalPresenceWire/empty_list",
+        "TestP15FunctionOptionalPresenceWire/empty_map",
+        "TestP15FunctionOptionalPresenceWire/none_skips_default",
+        "TestP15FunctionOptionalPresenceWire/empty_skips_default",
+        "TestP15FunctionOptionalPresenceWire/omitted_selects_default",
+        "TestP15FunctionOptionalPresenceWire/omitted_none_default",
+        "TestP15FunctionOptionalPresenceWire/explicit_none_with_none_default",
+        "TestP15FunctionOptionalPresenceWire/named_none_skips_default",
+        "TestP15FunctionOptionalPresenceWire",
+        "TestP15FunctionOptionalPresenceOracleRejectsCorruption/none_skips_default",
+        "TestP15FunctionOptionalPresenceOracleRejectsCorruption/empty_skips_default",
+        "TestP15FunctionOptionalPresenceOracleRejectsCorruption",
+        "TestP15NoneReturnClearsPreviousOutput/function",
+        "TestP15NoneReturnClearsPreviousOutput/nested_branch",
+        "TestP15NoneReturnClearsPreviousOutput",
+        "TestP15TaggedNoneResultRejectsStaleAndInventedValues",
+        "TestP15OptionalTransportKeepsNarrowedAndDefaultValues/omitted_none_default",
+        "TestP15OptionalTransportKeepsNarrowedAndDefaultValues",
+        "<package>"
+      ],
+      "skipped_tests": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 95.21899999998277,
+      "raw_sha256": "8bb9cb8ccc9b310a951e705640a83f2f29f1feaca7fa5712220415fd55a33708"
+    },
+    {
+      "prefix": "tagged-optional-root-precommit",
+      "classification": "dirty precommit failure; supplied empty Array omitted its explicit Value field",
+      "source_sha": "82de3670e415a02d4a015e4a34ad6499abaacb37",
+      "source_modified": true,
+      "named_passes": 604,
+      "failed_tests": [
+        "TestP15FunctionOptionalPresenceWire/empty_list",
+        "TestP15FunctionOptionalPresenceWire",
+        "<package>"
+      ],
+      "skipped_tests": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 202.78200000000652,
+      "raw_sha256": "eb7d81d6a74d061d65c6e9039bb5122614c765fb6e8910c904df00009e57fb29"
+    },
+    {
+      "prefix": "f03-optional-type-integration",
+      "classification": "dirty focused PASS only; root separately replays integrated F03",
+      "source_sha": "9e44c3c182956ee55db3d430eb618c9ced530a8d",
+      "source_modified": true,
+      "named_passes": 1,
+      "failed_tests": [],
+      "skipped_tests": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 147.64100000000326,
+      "raw_sha256": "8ef776feac6cccde16dbc486b44f84ffb208dcafdaab72d62e7c4df417f9e22c"
+    },
+    {
+      "prefix": "tagged-optional-root-precommit-v2",
+      "classification": "INCOMPLETE; original 330-second outer budget reached after 18 passes",
+      "source_sha": "89aeae2caf754087bef377234feba8f3946298e4",
+      "source_modified": true,
+      "named_passes": 18,
+      "failed_tests": [],
+      "skipped_tests": [],
+      "exit_code": -1,
+      "timed_out": true,
+      "elapsed_seconds": 330.31199999997625,
+      "raw_sha256": "bc8c68533773468a70bb781051904ad95a589f0d1b77e17cdf04a9c1a7616a5b"
+    },
+    {
+      "prefix": "tagged-optional-focused-precommit",
+      "classification": "dirty focused PASS; not clean-source proof",
+      "source_sha": "89aeae2caf754087bef377234feba8f3946298e4",
+      "source_modified": true,
+      "named_passes": 145,
+      "failed_tests": [],
+      "skipped_tests": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 44.82900000002701,
+      "raw_sha256": "576cd1c523ff092a53199724fc44e1a7a8bd7d1253e5d61a7ed41f6819b4d2a1"
+    },
+    {
+      "prefix": "tagged-optional-predicate-baseline-clean",
+      "classification": "clean RED: 116 real predicate scenarios and unconditional fallthrough; branch-fallthrough also had a later corrected Text-coercion oracle omission",
+      "source_sha": "0aba3359461112d7924b63656c3f9e27c582d642",
+      "source_modified": false,
+      "named_passes": 1,
+      "failed_tests": [
+        "TestP15OptionalNonePredicatesUsePresence/none/equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/none/equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/none/equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/none/different/value",
+        "TestP15OptionalNonePredicatesUsePresence/none/different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/none/different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/none/reverse_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/none/reverse_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/none/reverse_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/none/reverse_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/none/reverse_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/none/reverse_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/none/negated_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/none/negated_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/none/negated_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/none/negated_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/none/negated_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/none/negated_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/reverse_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/reverse_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/reverse_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/reverse_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/reverse_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/reverse_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/negated_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/negated_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/negated_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/negated_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/negated_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_text/negated_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/false/equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/false/equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/false/equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/false/different/value",
+        "TestP15OptionalNonePredicatesUsePresence/false/different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/false/different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/false/reverse_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/false/reverse_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/false/reverse_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/false/reverse_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/false/reverse_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/false/reverse_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/false/negated_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/false/negated_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/false/negated_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/false/negated_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/false/negated_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/false/negated_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/zero/equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/zero/equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/zero/equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/zero/different/value",
+        "TestP15OptionalNonePredicatesUsePresence/zero/different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/zero/different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/zero/reverse_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/zero/reverse_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/zero/reverse_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/zero/reverse_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/zero/reverse_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/zero/reverse_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/zero/negated_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/zero/negated_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/zero/negated_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/zero/negated_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/zero/negated_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/zero/negated_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/reverse_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/reverse_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/reverse_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/reverse_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/reverse_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/reverse_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/negated_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/negated_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/negated_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/negated_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/negated_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_list/negated_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/reverse_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/reverse_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/reverse_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/reverse_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/reverse_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/reverse_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/negated_equal/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/negated_equal/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/negated_equal/yield",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/negated_different/value",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/negated_different/statement",
+        "TestP15OptionalNonePredicatesUsePresence/empty_map/negated_different/yield",
+        "TestP15OptionalNonePredicatesUsePresence",
+        "TestP15OptionalNonePredicateOracleRejectsCorruption",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/none/equal",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/none/different",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/none/reverse_equal",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/none/reverse_different",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/empty_text/equal",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/empty_text/different",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/empty_text/reverse_equal",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce/empty_text/reverse_different",
+        "TestP15OptionalCallResultPredicateEvaluatesOnce",
+        "TestP15OptionalReturnCompleteness/implicit_none/branch_false",
+        "TestP15OptionalReturnCompleteness/implicit_none/branch_true",
+        "TestP15OptionalReturnCompleteness",
+        "<package>"
+      ],
+      "skipped_tests": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 36.21899999998277,
+      "raw_sha256": "8f6c8b18dbaab5c22367d42ecc69938dc126817e0e59befe6ac94e8e048c081a"
+    },
+    {
+      "prefix": "tagged-optional-predicate-precommit",
+      "classification": "dirty precommit failure: 272 passes; branch-fallthrough oracle omitted existing Text coercion",
+      "source_sha": "0aba3359461112d7924b63656c3f9e27c582d642",
+      "source_modified": true,
+      "named_passes": 272,
+      "failed_tests": [
+        "TestP15OptionalReturnCompleteness/implicit_none/branch_true",
+        "TestP15OptionalReturnCompleteness",
+        "<package>"
+      ],
+      "skipped_tests": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 23.81199999997625,
+      "raw_sha256": "a60f2dcbd368588b5af8fb052524feabb2fa5e82f4dcc69e7371273cca751b17"
+    },
+    {
+      "prefix": "tagged-optional-root-clean",
+      "classification": "clean failed replay: 724 passes; old T01 characterization required historical omitted empty Array Value",
+      "source_sha": "6f70bbfc35d1372834f5f6fea395b8ea2e793f47",
+      "source_modified": false,
+      "named_passes": 724,
+      "failed_tests": [
+        "TestP15T01FunctionPresenceEnvelope/explicit",
+        "TestP15T01FunctionPresenceEnvelope/mixed",
+        "TestP15T01FunctionPresenceEnvelope",
+        "TestP15T01DefaultsGuardedByPresence",
+        "<package>"
+      ],
+      "skipped_tests": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 42.25,
+      "raw_sha256": "a2ad8b47750b11c7cecf5d53e2758f97d84a057393f7c93836b3f534d6bf6c64"
+    },
+    {
+      "prefix": "tagged-optional-root-clean-v2",
+      "classification": "clean complete PASS: 763 named / 95 top-level tests",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "source_modified": false,
+      "named_passes": 763,
+      "failed_tests": [],
+      "skipped_tests": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 83.79699999996228,
+      "raw_sha256": "a4b4dfa4df60cf125aec41febe98ade3d256b85ac4623ed057469d5559bfca15"
+    },
+    {
+      "prefix": "tagged-optional-packages-clean-v2",
+      "classification": "clean complete PASS: all 53 types/analysis/lower tests",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "source_modified": false,
+      "named_passes": 53,
+      "failed_tests": [],
+      "skipped_tests": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 10.078000000037719,
+      "raw_sha256": "25bae8ed6626cfa36e8b718ac2a72082bf4dbce37116a20e01533314a2d016ad"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-baseline-clean.summary.json",
+      "role": "original.summary.json",
+      "sha256": "e15887c3c2076ae481cd0ef91026bb393c554b5c2d62164f164c4a0a22ef0b64",
+      "size": 1696
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-baseline-clean.jsonl",
+      "role": "original.jsonl",
+      "sha256": "bc85884ffbf7ff331be187f87ab4a35fd27fa7105951c894a6f9a95c009c599a",
+      "size": 16103
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-baseline-clean.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-result-baseline-clean.summary.json",
+      "role": "original.summary.json",
+      "sha256": "e4a47158397bbf8ca41b29926b7ee99f3aa2111d923b5daa19aeb0e56a555c15",
+      "size": 2341
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-result-baseline-clean.jsonl",
+      "role": "original.jsonl",
+      "sha256": "8bb9cb8ccc9b310a951e705640a83f2f29f1feaca7fa5712220415fd55a33708",
+      "size": 100953
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-result-baseline-clean.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-precommit.summary.json",
+      "role": "original.summary.json",
+      "sha256": "501c38eebdee0acc414dbc157530e78d5465c62c792a4cfbba884814af3dd4d8",
+      "size": 4547
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-precommit.jsonl",
+      "role": "original.jsonl",
+      "sha256": "eb7d81d6a74d061d65c6e9039bb5122614c765fb6e8910c904df00009e57fb29",
+      "size": 568826
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-precommit.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/f03-optional-type-integration.summary.json",
+      "role": "original.summary.json",
+      "sha256": "f4d48ec904f8465712e1edf2883c1d96042163b1f1ac8034b38a606a0d2277e1",
+      "size": 617
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/f03-optional-type-integration.jsonl",
+      "role": "original.jsonl",
+      "sha256": "8ef776feac6cccde16dbc486b44f84ffb208dcafdaab72d62e7c4df417f9e22c",
+      "size": 1283
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/f03-optional-type-integration.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-precommit-v2.summary.json",
+      "role": "original.summary.json",
+      "sha256": "b7066330691efaee2178ddcaba9a3944d60d5d83cd94b535bc78261ed841e7af",
+      "size": 5661
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-precommit-v2.jsonl",
+      "role": "original.jsonl",
+      "sha256": "bc8c68533773468a70bb781051904ad95a589f0d1b77e17cdf04a9c1a7616a5b",
+      "size": 14893
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-precommit-v2.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-focused-precommit.summary.json",
+      "role": "original.summary.json",
+      "sha256": "f98ed52e0277e7daf2a87acbfd2cc3ad2b699217075082b181214de75175ef79",
+      "size": 1897
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-focused-precommit.jsonl",
+      "role": "original.jsonl",
+      "sha256": "576cd1c523ff092a53199724fc44e1a7a8bd7d1253e5d61a7ed41f6819b4d2a1",
+      "size": 132791
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-focused-precommit.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-focused-precommit.process.json",
+      "role": "original.process.json",
+      "sha256": "b3f9f44f5acd405d988a883f04d2adeadc6dce6c615024484af26f79c8b70a2b",
+      "size": 390
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-baseline-clean.summary.json",
+      "role": "original.summary.json",
+      "sha256": "7bfaefd7b5f25ad4c25aeec1b416cc636ded0d78c07efb5cd4ed83e8a9058dd9",
+      "size": 10238
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-baseline-clean.jsonl",
+      "role": "original.jsonl",
+      "sha256": "8f6c8b18dbaab5c22367d42ecc69938dc126817e0e59befe6ac94e8e048c081a",
+      "size": 298864
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-baseline-clean.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-baseline-clean.process.json",
+      "role": "original.process.json",
+      "sha256": "0dfb881d8ee3acbb0113a724cf89fc40082bad232bb1ce47419a6a8321935c1f",
+      "size": 403
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-precommit.summary.json",
+      "role": "original.summary.json",
+      "sha256": "b9f4ccff906d80090b196b42fcd837929da0f1cbd4e2d628d554b2846d2c5db4",
+      "size": 1307
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-precommit.jsonl",
+      "role": "original.jsonl",
+      "sha256": "a60f2dcbd368588b5af8fb052524feabb2fa5e82f4dcc69e7371273cca751b17",
+      "size": 255271
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-precommit.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-predicate-precommit.process.json",
+      "role": "original.process.json",
+      "sha256": "ea392481ce8e8d74d2ea6f09948479ed6c2fb1c3ed109ce2bdfaceb049e060ae",
+      "size": 494
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean.summary.json",
+      "role": "original.summary.json",
+      "sha256": "d6eb9a53fb0633b1ff61f25385089110593cbdfd056c5e07c9e86e268ec55a45",
+      "size": 5012
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean.jsonl",
+      "role": "original.jsonl",
+      "sha256": "a2ad8b47750b11c7cecf5d53e2758f97d84a057393f7c93836b3f534d6bf6c64",
+      "size": 679110
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean.process.json",
+      "role": "original.process.json",
+      "sha256": "22949b8d535073296adf3bbfd8a84fa2b525518543448e6bad020a2c50b26507",
+      "size": 4241
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean-v2.summary.json",
+      "role": "original.summary.json",
+      "sha256": "3dad573096b315b46198b30b2da6d40a8600f22b3ceed0a6a9af71e2f42a022e",
+      "size": 4815
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean-v2.jsonl",
+      "role": "original.jsonl",
+      "sha256": "a4b4dfa4df60cf125aec41febe98ade3d256b85ac4623ed057469d5559bfca15",
+      "size": 707898
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean-v2.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-root-clean-v2.process.json",
+      "role": "original.process.json",
+      "sha256": "4d85a3412760c955c7cce544ced51ffbb58676d63428ab8dae4e6802ad6ea82c",
+      "size": 4241
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-packages-clean-v2.summary.json",
+      "role": "original.summary.json",
+      "sha256": "1cce55ca9ed0e575187b37755fbe653ee81ed006d52a1f310eb42ff65750b52b",
+      "size": 873
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-packages-clean-v2.jsonl",
+      "role": "original.jsonl",
+      "sha256": "25bae8ed6626cfa36e8b718ac2a72082bf4dbce37116a20e01533314a2d016ad",
+      "size": 45990
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-packages-clean-v2.stderr.log",
+      "role": "original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/attempts/tagged-optional-packages-clean-v2.process.json",
+      "role": "original.process.json",
+      "sha256": "69339f1129cbd87ae3fcbb25b2a487b6f05ab76b0f92cb60b175560a213d9016",
+      "size": 299
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/internal/language/analysis/function_arguments.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "internal/language/analysis/function_arguments.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "f8e6484e0b1c73dfad2a7ebc76d6f8cde3ac3f56c7060dde6810028ae2b99e6e",
+      "size": 3819
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/internal/language/backend/contracts.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "internal/language/backend/contracts.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "b4e823b9a128e26776cae3b69856c379f941ba54ff23da0a832cd0e537e6d572",
+      "size": 5860
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/internal/language/lower/function_argument_containers.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "internal/language/lower/function_argument_containers.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "e0aa66662e75ed9732ce7656b9de9c534a6b5f57ddf230da293ef79088494255",
+      "size": 1868
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/internal/language/lower/function_optional_presence.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "internal/language/lower/function_optional_presence.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "21bce0f2c5d3ff53f6a2456b257f57c10a579b61acce2ddffd32ccb173daae91",
+      "size": 8402
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/internal/language/lower/lower.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "internal/language/lower/lower.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "6471d3ff06d36aeeee86bc972ff6413f86f082ff06290411c0b9f60e6ae85d85",
+      "size": 182767
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_binding_defaults_acceptance_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_binding_defaults_acceptance_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "284b630f0745d668e24d3a1fe43789116430ffd84ca547ed25e2518d03655c7b",
+      "size": 24264
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_function_optional_predicate_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_function_optional_predicate_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "7e5e2731e08d4906981141b48873433ac19b0154170324535a943ef9ceb611b3",
+      "size": 12144
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_function_optional_presence_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_function_optional_presence_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "83313362d2e5a248d855b3a74a0d122c0958200ec2a2c7eae6b033dca6edbd6b",
+      "size": 15334
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_none_clear_boundary_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_none_clear_boundary_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "adee3e7065dd8504be34ee5436fdfac38e851469d1c2fcd5c67be3c65a0aa5fe",
+      "size": 11547
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_optional_transport_boundary_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_optional_transport_boundary_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "3bf03b1e67358f0c35903a1b49a77debade0b5e7944fa9dba73d429965bbc8be",
+      "size": 12861
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_value_flow_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_value_flow_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "e45ae16b66f310d50f3e172f807f5de4e9dfa79b31523b3c967585389e85a5d1",
+      "size": 25106
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_function_native_oracle_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_function_native_oracle_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "cca81179780b99ed174ac87559ba349b771d8088105664bf2887b2fcfadc3522",
+      "size": 12489
+    },
+    {
+      "path": "docs/language-v2/evidence/p15-function-optional-presence-20261120/source/p15_container_shape_acceptance_test.go.txt",
+      "role": "immutable Git source blob",
+      "source_path": "p15_container_shape_acceptance_test.go",
+      "source_sha": "b94e82f0e42149a042e960f03d75078c7ecd3e09",
+      "sha256": "10b6447a4dfad1c19f53353456c4cc3cc1af3225c44c8e8e23884f1ac7b07438",
+      "size": 14487
+    }
+  ]
+}

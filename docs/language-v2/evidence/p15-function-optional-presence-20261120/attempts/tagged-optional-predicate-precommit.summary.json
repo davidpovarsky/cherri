@@ -1,0 +1,33 @@
+{
+  "source_sha": "0aba3359461112d7924b63656c3f9e27c582d642",
+  "source_modified": true,
+  "source_files": {
+    "internal/language/lower/lower.go": "6471d3ff06d36aeeee86bc972ff6413f86f082ff06290411c0b9f60e6ae85d85",
+    "internal/language/lower/function_optional_presence.go": "21bce0f2c5d3ff53f6a2456b257f57c10a579b61acce2ddffd32ccb173daae91"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestP15FunctionOptional.*|TestP15TaggedNone.*|TestP15OptionalEmptyList.*|TestP15F03NoneYieldClearsPrecedingOutput|TestP15NoneReturn.*|TestP15OptionalTransport.*|TestP15OptionalNone.*|TestP15OptionalCallResultPredicateEvaluatesOnce|TestP15OptionalReturnCompleteness)$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T03:32:06.768145+00:00",
+  "finished_at_utc": "2026-11-20T03:32:30.581545+00:00",
+  "elapsed_seconds": 23.81199999997625,
+  "exit_code": 1,
+  "timed_out": false,
+  "outer_budget_seconds": 330,
+  "named_passes": 272,
+  "failed_tests": [
+    "TestP15OptionalReturnCompleteness/implicit_none/branch_true",
+    "TestP15OptionalReturnCompleteness",
+    "<package>"
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "a60f2dcbd368588b5af8fb052524feabb2fa5e82f4dcc69e7371273cca751b17",
+  "source_unchanged_after": true
+}
