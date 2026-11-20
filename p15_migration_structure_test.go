@@ -98,14 +98,16 @@ func p15RP33CheckStructure(program *syntax.Program) error {
 	for _, field := range p.shortcut.Metadata.Fields {
 		fields[field.Name] = field.Value
 	}
-	icon, okay := fields["icon"].(*syntax.RecordExpr)
-	if !okay || len(icon.Fields) != 2 {
+	icon, okay := fields["icon"].(*syntax.MapExpr)
+	if !okay || len(icon.Entries) != 2 {
 		return fmt.Errorf("icon metadata changed")
 	}
 	iconFields := map[string]string{}
-	for _, field := range icon.Fields {
-		if value, okay := field.Value.(*syntax.IdentExpr); okay {
-			iconFields[field.Name] = value.Name
+	for _, field := range icon.Entries {
+		key, keyOkay := field.Key.(*syntax.IdentExpr)
+		value, valueOkay := field.Value.(*syntax.IdentExpr)
+		if keyOkay && valueOkay {
+			iconFields[key.Name] = value.Name
 		}
 	}
 	if iconFields["glyph"] != "apple" || iconFields["color"] != "red" {

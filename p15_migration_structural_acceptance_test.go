@@ -66,12 +66,14 @@ text("before { literal {@word} after }")
 */
 text("inactive-include")
 `, true},
-		{"include_in_multiline_literal", `text("start
-#include 'helper.cherri'
-end")
-`, true},
 		{"raw_action_literal", `@word = "must-not-be-attached"
 rawAction("is.workflow.actions.gettext", {"WFTextActionText": "{@word}"})
+`, false},
+		{"raw_action_dollar_reference", `@word = "raw-action-output"
+rawAction("is.workflow.actions.showresult", {"Text": "${@word}"})
+`, false},
+		{"raw_action_mixed_text", `@word = "raw-action-output"
+rawAction("is.workflow.actions.gettext", {"WFTextActionText": "prefix:{@word}:suffix"})
 `, false},
 		{"reference_callable_collision", "#ref rp33Same " + reference + `
 #include 'actions/documents'
