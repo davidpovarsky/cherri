@@ -282,3 +282,44 @@ func TestP15FunctionContainerUnsupportedNullStillFailsPrecisely(t *testing.T) {
 		t.Fatalf("unsupported JSON null was silently fabricated or dropped: %v", err)
 	}
 }
+
+func TestP15FunctionMapArgumentProducerOrderAndMultiplicity(t *testing.T) {
+	source := `function echo(value:Map<Text,AnyContent>,later:Text)->Map<Text,AnyContent>{return value}
+let result=echo({"producer":text("P15_MAP_FIRST")},later:text("P15_MAP_SECOND"))
+getVariable(result)`
+	actions := p15CompiledActions(t, source)
+	positions := map[string]int{}
+	identities := map[string]p15ContainerReference{}
+	for index, action := range actions {
+		p := p15Param(action)
+		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+			continue
+		}
+		value, _ := p["WFTextActionText"].(string)
+		if value != "P15_MAP_FIRST" && value != "P15_MAP_SECOND" {
+			continue
+		}
+		if _, duplicate := positions[value]; duplicate {
+			t.Fatal("function Map argument expression emitted twice", value)
+		}
+		uuid, _ := p["UUID"].(string)
+		name, _ := p["CustomOutputName"].(string)
+		if uuid == "" {
+			t.Fatal("argument producer lacks identity")
+		}
+		positions[value] = index
+		identities[value] = p15ContainerReference{"Type": "ActionOutput", "OutputUUID": uuid, "OutputName": name}
+	}
+	if len(positions) != 2 || positions["P15_MAP_FIRST"] >= positions["P15_MAP_SECOND"] {
+		t.Fatal("function aggregate arguments evaluated out of source order")
+	}
+	fields, err := p15FunctionContainerPayload(actions)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, wantMap := p15ContainerFieldValue(map[string]any{"producer": identities["P15_MAP_FIRST"]})
+	_, wantLater := p15ContainerFieldValue(identities["P15_MAP_SECOND"])
+	if fields["arg_0"]["WFItemType"] != uint64(1) || !reflect.DeepEqual(fields["arg_0"]["WFValue"], wantMap) || !reflect.DeepEqual(fields["arg_1"]["WFValue"], wantLater) {
+		t.Fatal("function argument envelope detached from once-only source-order producers")
+	}
+}
