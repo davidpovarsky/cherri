@@ -23,7 +23,11 @@ type nativeActionResultBinding struct {
 }
 
 func (s *CanonicalBackendSession) BindNativeActionResult(referenceUUID, defaultUUID string, exact, explicitUUID bool, requestedUUID string) error {
-	if referenceUUID == "" || len(s.shortcut.WFWorkflowActions) == 0 {
+	return s.bindNativeActionResultAt(len(s.shortcut.WFWorkflowActions)-1, referenceUUID, defaultUUID, exact, explicitUUID, requestedUUID)
+}
+
+func (s *CanonicalBackendSession) bindNativeActionResultAt(index int, referenceUUID, defaultUUID string, exact, explicitUUID bool, requestedUUID string) error {
+	if referenceUUID == "" || index < 0 || index >= len(s.shortcut.WFWorkflowActions) {
 		return fmt.Errorf("NATIVE_OUTPUT_BINDING_INTERNAL: native result has no emitted producer")
 	}
 	if s.nativeActionResults == nil {
@@ -32,7 +36,7 @@ func (s *CanonicalBackendSession) BindNativeActionResult(referenceUUID, defaultU
 	if _, exists := s.nativeActionResults[referenceUUID]; exists {
 		return fmt.Errorf("NATIVE_OUTPUT_BINDING_INTERNAL: duplicate compiler result handle")
 	}
-	params := s.shortcut.WFWorkflowActions[len(s.shortcut.WFWorkflowActions)-1].WFWorkflowActionParameters
+	params := s.shortcut.WFWorkflowActions[index].WFWorkflowActionParameters
 	declared, ok := params["UUID"].(string)
 	s.nativeActionResults[referenceUUID] = &nativeActionResultBinding{
 		params: params, exact: exact, defaultUUID: defaultUUID,

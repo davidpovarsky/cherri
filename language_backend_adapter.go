@@ -30,6 +30,7 @@ type CanonicalBackendSession struct {
 	exactActionParams        map[int]bool
 	buildProfile             BuildProfile
 	nativeActionResults      map[string]*nativeActionResultBinding
+	literalCarrierInputs     map[string]literalCarrierInputBinding
 	exactNativeParameterMaps map[uintptr]bool
 	importQuestionBindings   []importQuestionBinding
 	resolvedQuestionNodes    map[string]map[string]any

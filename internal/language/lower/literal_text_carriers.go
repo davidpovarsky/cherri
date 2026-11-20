@@ -3,6 +3,7 @@ package lower
 import (
 	"fmt"
 
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
@@ -22,6 +23,11 @@ func fStringValuesHaveReference(values []interface{}) bool {
 // happen to contain the same bytes.
 func (l *Lowerer) materializeLiteralTextCarrier(literal string) *ir.AttachmentToken {
 	reference := l.materializeToAttachment(literal)
+	if session, ok := l.session.(interface {
+		BindLiteralTextCarrierInput(string, string, string) error
+	}); ok && l.emitErr == nil {
+		l.emitErr = session.BindLiteralTextCarrierInput(reference.OutputUUID, l.GenerateUUID(), l.GenerateUUID())
+	}
 	if l.literalTextCarriers == nil {
 		l.literalTextCarriers = make(map[*ir.NativeActionNode]bool)
 	}
@@ -36,6 +42,31 @@ func (l *Lowerer) materializeLiteralTextCarrier(literal string) *ir.AttachmentTo
 func (l *Lowerer) restoreNativeInputAfterLiteralCarriers(target *ir.NativeActionNode) error {
 	if _, explicit := target.Parameters["WFInput"]; explicit {
 		return nil
+	}
+	if session, ok := l.session.(interface {
+		CurrentLiteralCarrierInput() (*backend.Reference, bool, error)
+	}); ok {
+		reference, found, err := session.CurrentLiteralCarrierInput()
+		if err != nil || !found {
+			return err
+		}
+		if reference == nil {
+			l.materializeYieldValue(nil)
+		} else {
+			var input *ir.AttachmentToken
+			switch reference.Kind {
+			case backend.RefActionResult:
+				input = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: reference.ProducerID}
+			case backend.RefExtensionInput:
+				l.workflow.HasShortcutInputVariables = true
+				l.session.SetMetadata("hasShortcutInputVariables", true)
+				input = &ir.AttachmentToken{Type: "ExtensionInput"}
+			default:
+				return fmt.Errorf("S01_IMPLICIT_INPUT_UNAVAILABLE: unsupported preserved input kind")
+			}
+			l.materializeYieldValue(input)
+		}
+		return l.emitErr
 	}
 	index := len(l.workflow.Actions) - 1
 	if index < 0 || !l.literalTextCarriers[l.workflow.Actions[index]] {
