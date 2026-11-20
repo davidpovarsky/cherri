@@ -157,30 +157,13 @@ func TestP15S02ExactLiteralBytes(t *testing.T) {
 		}
 		for _, route := range []string{"action_argument", "immutable", "mutable", "list", "dictionary", "dictionary_mutable", "dictionary_assignment", "dictionary_return", "dictionary_yield", "dictionary_in_list"} {
 			t.Run(tc.name+"/"+route, func(t *testing.T) {
-				body := ""
-				switch route {
-				case "action_argument":
-					body = "text(" + expression + ")"
-				case "immutable":
-					body = "let literal=" + expression + "\ngetVariable(literal)"
-				case "mutable":
-					body = "var literal=" + expression + "\ngetVariable(literal)"
-				case "list":
-					body = "let literal=[" + expression + "]\ngetVariable(literal)"
-				case "dictionary":
-					body = "let literal={\"payload\":" + expression + "}\ngetVariable(literal)"
-				case "dictionary_mutable":
-					body = "var literal={\"payload\":" + expression + "}\ngetVariable(literal)"
-				case "dictionary_assignment":
-					body = "var literal={}\nliteral={\"payload\":" + expression + "}\ngetVariable(literal)"
-				case "dictionary_return":
-					body = "return {\"payload\":" + expression + "}"
-				case "dictionary_yield":
-					body = "let literal=if true { yield {\"payload\":" + expression + "} } else { yield {\"payload\":" + expression + "} }\ngetVariable(literal)"
-				case "dictionary_in_list":
-					body = "let literal=[{\"payload\":" + expression + "}]\ngetVariable(literal)"
+				actions := p15CompiledActions(t, p15S02LiteralRouteSource(route, expression))
+				if strings.ContainsRune(tc.want, '\uFFFC') && strings.Contains(route, "dictionary") {
+					if err := p15S02LiteralCarrierGraphError(actions, route, tc.want); err != nil {
+						t.Fatal(err)
+					}
+					return
 				}
-				actions := p15CompiledActions(t, "let name=text(\"EXPANSION_MUST_NOT_HAPPEN\")\n"+body)
 				var value any
 				for _, action := range actions {
 					params := p15Param(action)
@@ -348,4 +331,246 @@ func TestP15L03DuplicateAndInvalidIndexDiagnostics(t *testing.T) {
 			}
 		}
 	})
+}
+
+func p15S02LiteralRouteSource(route, expression string) string {
+	body := ""
+	switch route {
+	case "action_argument":
+		body = "text(" + expression + ")"
+	case "immutable":
+		body = "let literal=" + expression + "\ngetVariable(literal)"
+	case "mutable":
+		body = "var literal=" + expression + "\ngetVariable(literal)"
+	case "list":
+		body = "let literal=[" + expression + "]\ngetVariable(literal)"
+	case "dictionary":
+		body = "let literal={\"payload\":" + expression + "}\ngetVariable(literal)"
+	case "dictionary_mutable":
+		body = "var literal={\"payload\":" + expression + "}\ngetVariable(literal)"
+	case "dictionary_assignment":
+		body = "var literal={}\nliteral={\"payload\":" + expression + "}\ngetVariable(literal)"
+	case "dictionary_return":
+		body = "return {\"payload\":" + expression + "}"
+	case "dictionary_yield":
+		body = "let literal=if true { yield {\"payload\":" + expression + "} } else { yield {\"payload\":" + expression + "} }\ngetVariable(literal)"
+	case "dictionary_in_list":
+		body = "let literal=[{\"payload\":" + expression + "}]\ngetVariable(literal)"
+	}
+	return "let name=text(\"EXPANSION_MUST_NOT_HAPPEN\")\n" + body
+}
+
+// The S01 native transport repair lifts only literal U+FFFC text in typed
+// Dictionary fields into a plain String Text producer. The general literal
+// reader above stays attachment-free. These six authored complete graphs bind
+// the exact original bytes, carrier identity/range, every store and consumer,
+// and explicit-return versus empty-main behavior.
+func p15S02LiteralCarrierGraphError(actions []map[string]any, route, want string) error {
+	if !strings.ContainsRune(want, '\uFFFC') {
+		return fmt.Errorf("carrier oracle requires the literal U+FFFC case")
+	}
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	g.value("gettext", map[string]any{"WFTextActionText": "EXPANSION_MUST_NOT_HAPPEN"})
+	payload := func() string {
+		carrier := p15S01Carrier(g, want)
+		return p15S01Dictionary(g, p15S01ContainerRow(p15FunctionText("payload"), 0, p15FunctionText("\uFFFC", carrier)))
+	}
+	consume := func(id string) { g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(id)}) }
+	switch route {
+	case "dictionary_yield":
+		yes := g.value("number", map[string]any{"WFNumberActionNumber": 1})
+		group := g.conditional(4, p15FunctionEdge(yes), "WFNumberValue", 1)
+		payload()
+		g.boundary(group, 1, false)
+		payload()
+		consume(g.boundary(group, 2, true))
+	case "dictionary_assignment":
+		empty := p15S01Dictionary(g, []any{}...)
+		g.emit("setvariable", map[string]any{"WFVariableName": "literal", "WFInput": p15FunctionEdge(empty)})
+		value := payload()
+		g.emit("setvariable", map[string]any{"WFVariableName": "literal", "WFInput": p15FunctionEdge(value)})
+		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionVariable("literal")})
+	case "dictionary", "dictionary_mutable", "dictionary_return", "dictionary_in_list":
+		value := payload()
+		switch route {
+		case "dictionary":
+			consume(value)
+		case "dictionary_mutable":
+			g.emit("setvariable", map[string]any{"WFVariableName": "literal", "WFInput": p15FunctionEdge(value)})
+			g.emit("getvariable", map[string]any{"WFVariable": p15FunctionVariable("literal")})
+		case "dictionary_return":
+			g.output(value)
+		case "dictionary_in_list":
+			list := g.value("list", map[string]any{"WFItems": []any{map[string]any{"WFItemType": 0, "WFValue": p15FunctionEdge(value)}}})
+			consume(list)
+		}
+	default:
+		return fmt.Errorf("unknown literal Dictionary route %q", route)
+	}
+	if route != "dictionary_return" {
+		g.emit("nothing", nil)
+		if err := p15M02MainVoidBoundaryError(actions); err != nil {
+			return err
+		}
+	}
+	if err := p15S01CompleteGraph(g); err != nil {
+		return err
+	}
+	for _, action := range actions {
+		if err := p15S01CompletePlaceholderCoverage(action); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func TestP15S02LiteralCarrierGraphsRejectCausalMutations(t *testing.T) {
+	want := "שָׁלוֹם👩‍💻e\u0301\r\n\t\"\\ {name} \uFFFC"
+	for _, route := range []string{"dictionary", "dictionary_mutable", "dictionary_assignment", "dictionary_return", "dictionary_yield", "dictionary_in_list"} {
+		t.Run(route, func(t *testing.T) {
+			original := p15CompiledActions(t, p15S02LiteralRouteSource(route, strconv.Quote(want)))
+			if err := p15S02LiteralCarrierGraphError(original, route, want); err != nil {
+				t.Fatal("healthy complete literal graph", err)
+			}
+			carriers := []int{}
+			dictionary := -1
+			for index, action := range original {
+				if p15Param(action)["WFTextActionText"] == want && p15Param(action)["CustomOutputName"] == "Text" {
+					carriers = append(carriers, index)
+				}
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.dictionary" {
+					dictionary = index
+				}
+			}
+			expected := 1
+			if route == "dictionary_yield" {
+				expected = 2
+			}
+			if len(carriers) != expected || dictionary < 0 {
+				t.Fatal("actual literal producers missing")
+			}
+			faults := []string{"literal_bytes", "producer_kind", "producer_name", "producer_uuid", "consumer_uuid", "consumer_name", "attachment_range", "field_type", "field_key", "consumed_result_uuid", "consumer_edge", "helper_reordered", "duplicate_uuid", "main_vs_return", "terminal_input"}
+			if route == "dictionary_yield" {
+				faults = append(faults, "second_branch_bytes")
+			}
+			for _, fault := range faults {
+				t.Run(fault, func(t *testing.T) {
+					broken := p15C01Clone(t, original)
+					carrier := carriers[0]
+					id := p15Param(broken[carrier])["UUID"]
+					changed := true
+					switch fault {
+					case "literal_bytes":
+						p15Param(broken[carrier])["WFTextActionText"] = strings.ReplaceAll(want, "\uFFFC", "")
+					case "second_branch_bytes":
+						p15Param(broken[carriers[1]])["WFTextActionText"] = strings.ReplaceAll(want, "e\u0301", "é")
+					case "producer_kind":
+						broken[carrier]["WFWorkflowActionIdentifier"] = "is.workflow.actions.number"
+					case "producer_name":
+						p15Param(broken[carrier])["CustomOutputName"] = "Wrong"
+					case "producer_uuid":
+						delete(p15Param(broken[carrier]), "UUID")
+					case "consumer_uuid", "consumer_name":
+						changed = false
+						for _, action := range broken {
+							if p15S01ChangeFirst(action, func(item map[string]any) bool {
+								if item["Type"] != "ActionOutput" || item["OutputUUID"] != id {
+									return false
+								}
+								if fault == "consumer_uuid" {
+									item["OutputUUID"] = "FOREIGN"
+								} else {
+									item["OutputName"] = "Wrong"
+								}
+								return true
+							}) {
+								changed = true
+								break
+							}
+						}
+					case "attachment_range":
+						changed = false
+						for _, action := range broken {
+							if p15S01ChangeFirst(action, func(item map[string]any) bool {
+								if item["WFSerializationType"] != "WFTextTokenString" {
+									return false
+								}
+								body, _ := item["Value"].(map[string]any)
+								ranges, _ := body["attachmentsByRange"].(map[string]any)
+								ref, _ := ranges["{0, 1}"].(map[string]any)
+								if ref["OutputUUID"] != id {
+									return false
+								}
+								delete(ranges, "{0, 1}")
+								ranges["{1, 1}"] = ref
+								return true
+							}) {
+								changed = true
+								break
+							}
+						}
+					case "field_type", "field_key":
+						changed = false
+						for _, action := range broken {
+							if p15S01ChangeFirst(action, func(item map[string]any) bool {
+								key, err := p15LiteralText(item["WFKey"])
+								if err != nil || key != "payload" {
+									return false
+								}
+								if fault == "field_type" {
+									item["WFItemType"] = 3
+								} else {
+									item["WFKey"] = p15FunctionText("WRONG")
+								}
+								return true
+							}) {
+								changed = true
+								break
+							}
+						}
+					case "consumed_result_uuid":
+						producer := dictionary
+						if route == "dictionary_yield" {
+							producer = -1
+							for index, action := range broken {
+								if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" && p15Int(p15Param(action)["WFControlFlowMode"]) == 2 {
+									producer = index
+								}
+							}
+							if producer < 0 {
+								t.Fatal("actual yielded result producer absent")
+							}
+						}
+						p15Param(broken[producer])["UUID"] = "FOREIGN_CONSUMED_RESULT"
+					case "consumer_edge":
+						index := len(broken) - 2
+						if route == "dictionary_return" {
+							index++
+							p15Param(broken[index])["WFOutput"] = p15FunctionText("\uFFFC", p15Param(broken[0])["UUID"].(string))
+						} else {
+							p15Param(broken[index])["WFVariable"] = p15FunctionEdge(p15Param(broken[0])["UUID"].(string))
+						}
+					case "helper_reordered":
+						broken[carrier], broken[carrier+1] = broken[carrier+1], broken[carrier]
+					case "duplicate_uuid":
+						p15Param(broken[dictionary])["UUID"] = id
+					case "main_vs_return":
+						if route == "dictionary_return" {
+							broken = append(broken, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+						} else {
+							broken = broken[:len(broken)-1]
+						}
+					case "terminal_input":
+						broken[len(broken)-1]["WFWorkflowActionParameters"] = map[string]any{"WFInput": "LEAK"}
+					}
+					if !changed {
+						t.Fatal("causal mutation target absent", fault)
+					}
+					if err := p15S02LiteralCarrierGraphError(broken, route, want); err == nil {
+						t.Fatal("accepted actual literal graph corruption", fault)
+					}
+				})
+			}
+		})
+	}
 }
