@@ -347,6 +347,11 @@ func TestP10JSONOriginalNilRequestFailsPrecisely(t *testing.T) {
 func p10JSONModelBindings(actions []map[string]any) (map[string]any, error) {
 	resolved := map[string]any{}
 	for _, action := range actions {
+		// The canonical main Nothing action can omit its parameter envelope.
+		// No other missing or malformed action shape supplies a binding.
+		if _, present := action["WFWorkflowActionParameters"]; !present && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" {
+			continue
+		}
 		fields, ok := action["WFWorkflowActionParameters"].(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf("invalid actual action parameter shape")
