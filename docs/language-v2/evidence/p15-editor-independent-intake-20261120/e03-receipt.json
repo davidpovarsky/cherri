@@ -1,0 +1,105 @@
+{
+  "label": "E03",
+  "proofCommit": "1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8",
+  "sourceCommit": "456e4dfce3535e100ad5a9ec36cff2b5adc9d371",
+  "baseCommit": "90ec31a82efdc2542fee6567a0cebcc30b510fb8",
+  "provenanceSHA256": "06250a5c25963e638f6b3748818555339b665e7115a8ad99cca61119b95c7464",
+  "archiveSHA256": "2d5aa65c799e03fa657ce65dea7cbedd04740041b1979b66dfafb84c9b18f32e",
+  "archiveBytes": 48949,
+  "originalArtifactsVerified": 19,
+  "gitPresentWitnessesVerified": 40,
+  "gitAbsenceWitnessesVerified": 4,
+  "unchangedContractsVerified": 3,
+  "stages": [
+    {
+      "stage": "e03-baseline-8adbb96b",
+      "source": "8adbb96be0db9e87df26c02981d1072207bea322",
+      "dirty": false,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "pass": 17,
+        "fail": 22
+      },
+      "stdoutSHA256": "6d127c43a6ce5d2c9be4f8bd1c52915d94cc99ed9aa1c7689dfc41fa5db52f91",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E03",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e03-corrected-baseline-99b33e29",
+      "source": "99b33e29119374c42cacb3acd710c863a1dd3781",
+      "dirty": false,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "pass": 19,
+        "fail": 22
+      },
+      "stdoutSHA256": "d3c97d5175e90dfa915d0e0a899d2fee9d74d5a6b23d47c5d97234b6bf84fbbf",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E03",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e03-first-repair-draft",
+      "source": "99b33e29119374c42cacb3acd710c863a1dd3781",
+      "dirty": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "counts": {
+        "pass": 41
+      },
+      "stdoutSHA256": "47218625b8d483cf0205648c100d74007016e0bf6810f574ba62fadde976f587",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E03",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e03-clean-456e4dfc",
+      "source": "456e4dfce3535e100ad5a9ec36cff2b5adc9d371",
+      "dirty": false,
+      "exitCode": 0,
+      "timedOut": false,
+      "counts": {
+        "pass": 235
+      },
+      "stdoutSHA256": "c4b78cd18f47c7459e530425dfaf60aaa1479d320b48c7490dcff6ba135c55c1",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "./internal/language/service",
+        "./internal/language/analysis",
+        "./internal/language/lsp"
+      ]
+    }
+  ],
+  "finalClean": true,
+  "formalRequirementsGranted": [],
+  "appleRuntime": "NOT_RUN",
+  "full179": "NOT_RUN"
+}

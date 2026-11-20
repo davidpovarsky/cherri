@@ -1,0 +1,192 @@
+{
+  "label": "E01",
+  "proofCommit": "4049876b88f5be9f02625f5745917c3f7b797ac1",
+  "sourceCommit": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+  "baseCommit": "1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9",
+  "provenanceSHA256": "5f93c9198109f6a0c13ae96a0a9799f9bb8c8c48be9595231657823c3f80b6cd",
+  "archiveSHA256": "711ab532b70099c2a667e6d5f329a1e135ea302c83b6617e0a5614ccf5be6b48",
+  "archiveBytes": 98573,
+  "originalArtifactsVerified": 44,
+  "gitPresentWitnessesVerified": 46,
+  "gitAbsenceWitnessesVerified": 3,
+  "unchangedContractsVerified": 3,
+  "stages": [
+    {
+      "stage": "e01-baseline-2a4230d9",
+      "source": "2a4230d9a2a94a3fba31a48d83aad8626dc05138",
+      "dirty": false,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "fail": 10,
+        "pass": 6
+      },
+      "stdoutSHA256": "cfdd556fe98b82925666d7ca406bd93342981b25bd93db99f9515d2bb6c5ffa9",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E01",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e01-corrected-baseline-6809ba06",
+      "source": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+      "dirty": false,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "fail": 10,
+        "pass": 16
+      },
+      "stdoutSHA256": "67538555f1764b61033ca0ffb1eecc59e2c2342278e9499621c669031736c8a5",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E01",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e01-first-repair-draft",
+      "source": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+      "dirty": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "pass": 24,
+        "fail": 2
+      },
+      "stdoutSHA256": "b4c38e209351a3804b7c695499dbdc8c2aee62e17dbf7851060f1c4a3ce1d649",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E01",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e01-expanded-baseline-3bbea9f2",
+      "source": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+      "dirty": false,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "fail": 21,
+        "pass": 35
+      },
+      "stdoutSHA256": "cfac807539763f368b406f6640b5ebd869634c3d146aa9689be33d257763c67d",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E01",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e01-expanded-repair-draft",
+      "source": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+      "dirty": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "counts": {
+        "pass": 56
+      },
+      "stdoutSHA256": "706528230598ee46d71c610dc38e8db4041fb02afa0d73c24ae3e76ffefd8e88",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15E01",
+        "./internal/language/service"
+      ]
+    },
+    {
+      "stage": "e01-initial-clean-2f66c81a",
+      "source": "2f66c81a14a37e62a7233715dcca2f8d547972a1",
+      "dirty": false,
+      "exitCode": 1,
+      "timedOut": false,
+      "counts": {
+        "pass": 154,
+        "fail": 2
+      },
+      "stdoutSHA256": "5152ed0e2e3b3a90d861f6ec3712ab0bf24797cf3da7bc6487271cb669b754a3",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "./internal/language/service",
+        "./internal/language/analysis",
+        "./internal/language/lsp"
+      ]
+    },
+    {
+      "stage": "e01-recovery-clean-8da4c027",
+      "source": "8da4c027f855a2721e012669a5c90fba459a751a",
+      "dirty": false,
+      "exitCode": 0,
+      "timedOut": false,
+      "counts": {
+        "pass": 160
+      },
+      "stdoutSHA256": "1f0f12b9bc47c4fb85d7457a0004365a356a4d02128c2458905dff63aa4b6ebf",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "./internal/language/service",
+        "./internal/language/analysis",
+        "./internal/language/lsp"
+      ]
+    },
+    {
+      "stage": "e01-final-clean-73d0c7b3",
+      "source": "73d0c7b3b914d943b4200139dda018f5d6ed02ed",
+      "dirty": false,
+      "exitCode": 0,
+      "timedOut": false,
+      "counts": {
+        "pass": 163
+      },
+      "stdoutSHA256": "1b5431cb315ca3847cd85642965c1de962bd1e81a482672e523d73c27c0009be",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "./internal/language/service",
+        "./internal/language/analysis",
+        "./internal/language/lsp"
+      ]
+    }
+  ],
+  "finalClean": true,
+  "formalRequirementsGranted": [],
+  "appleRuntime": "NOT_RUN",
+  "full179": "NOT_RUN"
+}
