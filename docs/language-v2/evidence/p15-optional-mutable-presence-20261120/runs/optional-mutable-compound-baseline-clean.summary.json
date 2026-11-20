@@ -1,0 +1,36 @@
+{
+  "source_sha": "1a5d0db59959a25bddf22c1532cb119264fe1cc7",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15Optional(MutableCompoundKeepsNarrowedPresence|CompoundAssignmentRequiresPresentOperands)$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T04:18:22.011477+00:00",
+  "finished_at_utc": "2026-11-20T04:18:54.805929+00:00",
+  "elapsed_seconds": 32.78099999995902,
+  "exit_code": 1,
+  "timed_out": false,
+  "outer_budget_seconds": 240,
+  "named_passes": 0,
+  "failed_tests": [
+    "TestP15OptionalCompoundAssignmentRequiresPresentOperands/absent_target",
+    "TestP15OptionalCompoundAssignmentRequiresPresentOperands/absent_rhs",
+    "TestP15OptionalCompoundAssignmentRequiresPresentOperands/optional_target",
+    "TestP15OptionalCompoundAssignmentRequiresPresentOperands/optional_rhs",
+    "TestP15OptionalCompoundAssignmentRequiresPresentOperands",
+    "TestP15OptionalMutableCompoundKeepsNarrowedPresence/present_literal",
+    "TestP15OptionalMutableCompoundKeepsNarrowedPresence/narrowed_none",
+    "TestP15OptionalMutableCompoundKeepsNarrowedPresence/narrowed_zero",
+    "TestP15OptionalMutableCompoundKeepsNarrowedPresence",
+    "<package>"
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "bcc949e4e8ec88a58884046285c3d858403c699b6d97bf6526aca1f36171e112",
+  "clean_after": true
+}
