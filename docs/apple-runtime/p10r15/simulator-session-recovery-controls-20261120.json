@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "implementationCommit": "a52bd7c29b34a6b70771425f34399a2b657aa468",
+  "scope": "Local liveness and publication controls only; no native import/runtime success",
+  "windows": {
+    "sourceCommit": "a52bd7c29b34a6b70771425f34399a2b657aa468",
+    "cleanStart": true,
+    "cleanEnd": true,
+    "files": {
+      "scripts/ios27_shortcuts_simulator_qa.sh": "67bcede6d1c3dbbcbb9124f29616f5e0fc8753ba4c99d044e5fead82e0ad8ff8",
+      "tools/shortcuts-simulator-qa/prepare_public_artifacts.py": "576085688a4bc6836f95b89fef67f1cf79203e3921eee5b00eeef62de86b43f4",
+      "tools/shortcuts-simulator-qa/simulator_session_recovery.py": "11db4e664e8609328aaf1b097aef77f42edfdf16be230e863ebd5205f8222ddf",
+      "tools/shortcuts-simulator-qa/test_simulator_session_recovery.py": "53dacfac8f229d134397c9acdc809fc5cc38cf4a4ee12bdf1fba98ba89793fe7"
+    },
+    "results": [
+      {
+        "name": "session",
+        "exitCode": 0,
+        "elapsedSeconds": 1.266,
+        "sha256": "28655e4e9eb336f489eb387da52314313b0c24a05a4befad81acd6f6dcd940ef",
+        "tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 19 tests in 0.478s",
+          "",
+          "OK (skipped=2)"
+        ]
+      },
+      {
+        "name": "publication",
+        "exitCode": 0,
+        "elapsedSeconds": 48.406,
+        "sha256": "02212504a374fe51447cb7a5db1ae24103d4afdc4019b46eb218f7b3e390d773",
+        "tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 17 tests in 48.117s",
+          "",
+          "OK"
+        ]
+      }
+    ],
+    "nativeRuntime": "NOT_RUN",
+    "formalRequirementsClosed": []
+  },
+  "posix": {
+    "sourceCommit": "a52bd7c29b34a6b70771425f34399a2b657aa468",
+    "snapshotSourceFilesVerified": {
+      "scripts/ios27_shortcuts_simulator_qa.sh": "67bcede6d1c3dbbcbb9124f29616f5e0fc8753ba4c99d044e5fead82e0ad8ff8",
+      "tools/shortcuts-simulator-qa/prepare_public_artifacts.py": "576085688a4bc6836f95b89fef67f1cf79203e3921eee5b00eeef62de86b43f4",
+      "tools/shortcuts-simulator-qa/simulator_session_recovery.py": "11db4e664e8609328aaf1b097aef77f42edfdf16be230e863ebd5205f8222ddf",
+      "tools/shortcuts-simulator-qa/test_simulator_session_recovery.py": "53dacfac8f229d134397c9acdc809fc5cc38cf4a4ee12bdf1fba98ba89793fe7"
+    },
+    "runtime": "Linux local controls; no Apple runtime",
+    "results": [
+      {
+        "name": "posix-session",
+        "exitCode": 0,
+        "elapsedSeconds": 1.217,
+        "sha256": "39fe5afd5d648837753a3e4cd1b358ca0521c41e864c65293e78906aeb497124",
+        "tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 19 tests in 1.073s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "name": "shell-syntax",
+        "exitCode": 0,
+        "elapsedSeconds": 0.008,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tail": []
+      }
+    ]
+  },
+  "nativeMotivation": {
+    "runId": 44644166680,
+    "sourceCommit": "b29d071e44a9a8be5f3c22e7b09d5fe3965f8716",
+    "dictionaryJobId": 135982425602,
+    "dictionaryJobConclusion": "cancelled",
+    "cancellationCause": "UNVERIFIED",
+    "retainedDictionaryLogSha256": "5e5d225635c465432be4bf54b629b13baf0608ccbb64c6a5751a292aeb15249d",
+    "observedRecoveryEntry": "2026-11-20T00:57:06Z",
+    "nextCancellationLine": "2026-11-20T01:05:03Z",
+    "statement": "Existing recovery shutdown/boot/bootstatus had no subprocess timeout; this does not establish the cancellation actor/cause."
+  },
+  "unchangedGates": [
+    "signed artifact/source identity",
+    "fresh target callback nonce",
+    "exact runtime output",
+    "trace events",
+    "import/editor identity",
+    "physical device status"
+  ],
+  "nativeValidation": "PENDING_NEW_COMPONENT_RUN",
+  "formalRequirementsClosed": []
+}
