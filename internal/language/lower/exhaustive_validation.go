@@ -28,8 +28,12 @@ func validateLoweringProgram(program *syntax.Program) error {
 
 func validateLoweringDeclaration(declaration syntax.Declaration) error {
 	switch node := declaration.(type) {
-	case *syntax.ImportDecl, *syntax.TriggerDecl, *syntax.SetupDecl, *syntax.TypeDecl, *syntax.EnumDecl:
+	case *syntax.ImportDecl, *syntax.TriggerDecl, *syntax.EnumDecl:
 		return nil
+	case *syntax.SetupDecl:
+		return validateLoweringType(node.TypeExpr)
+	case *syntax.TypeDecl:
+		return validateLoweringType(node.TypeExpr)
 	case *syntax.ShortcutDecl:
 		if node.Metadata != nil {
 			if err := validateLoweringExpression(node.Metadata); err != nil {
@@ -44,18 +48,27 @@ func validateLoweringDeclaration(declaration syntax.Declaration) error {
 		return nil
 	case *syntax.FunctionDecl:
 		for _, parameter := range node.Parameters {
+			if err := validateLoweringType(parameter.TypeExpr); err != nil {
+				return err
+			}
 			if err := validateLoweringExpression(parameter.DefaultExpr); err != nil {
 				return err
 			}
+		}
+		if err := validateLoweringType(node.ReturnType); err != nil {
+			return err
 		}
 		return validateLoweringBlock(node.Body)
 	case *syntax.ActionDecl:
 		for _, parameter := range node.Parameters {
+			if err := validateLoweringType(parameter.TypeExpr); err != nil {
+				return err
+			}
 			if err := validateLoweringExpression(parameter.DefaultExpr); err != nil {
 				return err
 			}
 		}
-		return nil
+		return validateLoweringType(node.ReturnType)
 	case *syntax.CopyBlockStmt:
 		return validateLoweringBlock(node.Body)
 	default:
@@ -78,6 +91,9 @@ func validateLoweringBlock(block *syntax.BlockStmt) error {
 func validateLoweringStatement(statement syntax.Statement) error {
 	switch node := statement.(type) {
 	case *syntax.BindingStmt:
+		if err := validateLoweringType(node.TypeExpr); err != nil {
+			return err
+		}
 		return validateLoweringExpression(node.Value)
 	case *syntax.AssignStmt:
 		return validateLoweringExpression(node.Value)
@@ -212,5 +228,40 @@ func validateLoweringExpression(expression syntax.Expression) error {
 		return validateLoweringStatement(node)
 	default:
 		return fmt.Errorf("unhandled expression %T: expressions must not be silently dropped", expression)
+	}
+}
+
+func validateLoweringType(annotation syntax.TypeAnnotation) error {
+	if annotation == nil {
+		return nil
+	}
+	switch node := annotation.(type) {
+	case *syntax.NamedTypeAnnotation:
+		return nil
+	case *syntax.OptionalTypeAnnotation:
+		return validateLoweringType(node.Inner)
+	case *syntax.GenericTypeAnnotation:
+		for _, argument := range node.TypeArgs {
+			if err := validateLoweringType(argument); err != nil {
+				return err
+			}
+		}
+		return nil
+	case *syntax.UnionTypeAnnotation:
+		for _, member := range node.Members {
+			if err := validateLoweringType(member); err != nil {
+				return err
+			}
+		}
+		return nil
+	case *syntax.RecordTypeAnnotation:
+		for _, field := range node.Fields {
+			if err := validateLoweringType(field.TypeExpr); err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return fmt.Errorf("unhandled type annotation %T: type annotations must not be silently dropped", annotation)
 	}
 }
