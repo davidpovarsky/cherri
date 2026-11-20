@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -20,6 +21,93 @@ func p15PaginateResultError(actions []ShortcutAction, legacy bool) error {
 	if consumer < 1 || actions[consumer].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" ||
 		actions[consumer-1].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
 		return fmt.Errorf("pagination result producer/consumer order changed")
+	}
+	// Bind the result read to the actual empty List initializer and the
+	// native item append in this fixture. An arbitrary existing variable
+	// (including the separate seen-URL list) is not its result aggregate.
+	attachment := func(raw any, kind string) (map[string]any, error) {
+		outer, okay := raw.(map[string]any)
+		if !okay || len(outer) != 2 || outer["WFSerializationType"] != "WFTextTokenAttachment" {
+			return nil, fmt.Errorf("pagination aggregate lost native attachment")
+		}
+		value, okay := outer["Value"].(map[string]any)
+		if !okay || value["Type"] != kind {
+			return nil, fmt.Errorf("pagination aggregate attachment kind changed")
+		}
+		key := "OutputUUID"
+		if kind == "Variable" {
+			key = "VariableName"
+		}
+		id, okay := value[key].(string)
+		if !okay || id == "" {
+			return nil, fmt.Errorf("pagination aggregate attachment has no concrete identity")
+		}
+		for field := range value {
+			if field != "Type" && field != key && !(kind == "ActionOutput" && field == "OutputName") {
+				return nil, fmt.Errorf("pagination aggregate attachment gained a transformation")
+			}
+		}
+		return value, nil
+	}
+	if consumer < 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.list" ||
+		actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
+		return fmt.Errorf("pagination aggregate initialization order changed")
+	}
+	items := reflect.ValueOf(actions[0].WFWorkflowActionParameters["WFItems"])
+	if !items.IsValid() || items.Kind() != reflect.Slice || items.IsNil() || items.Len() != 0 {
+		return fmt.Errorf("pagination aggregate must start as an actual empty List")
+	}
+	emptyID, okay := actions[0].WFWorkflowActionParameters["UUID"].(string)
+	name, named := actions[1].WFWorkflowActionParameters["WFVariableName"].(string)
+	if !okay || emptyID == "" || !named || name == "" {
+		return fmt.Errorf("pagination aggregate initializer lost identity")
+	}
+	initial, err := attachment(actions[1].WFWorkflowActionParameters["WFInput"], "ActionOutput")
+	if err != nil || initial["OutputUUID"] != emptyID {
+		return fmt.Errorf("pagination aggregate does not store its original empty List")
+	}
+	read, err := attachment(actions[consumer-1].WFWorkflowActionParameters["WFVariable"], "Variable")
+	if err != nil || read["VariableName"] != name {
+		return fmt.Errorf("pagination result reads another aggregate")
+	}
+	stores, appends, emptyOwners := 0, 0, 0
+	for index, action := range actions[:consumer-1] {
+		params := action.WFWorkflowActionParameters
+		if params["UUID"] == emptyID {
+			emptyOwners++
+		}
+		if params["WFVariableName"] != name {
+			continue
+		}
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" {
+			stores++
+		}
+		if action.WFWorkflowActionIdentifier != "is.workflow.actions.appendvariable" {
+			continue
+		}
+		appends++
+		item, err := attachment(params["WFInput"], "ActionOutput")
+		if err != nil {
+			return err
+		}
+		itemOwners := 0
+		for _, prior := range actions[:index] {
+			if prior.WFWorkflowActionParameters["UUID"] != item["OutputUUID"] {
+				continue
+			}
+			itemOwners++
+			input, err := attachment(prior.WFWorkflowActionParameters["WFVariable"], "Variable")
+			if prior.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || err != nil ||
+				input["VariableName"] != "Repeat Item" {
+				return fmt.Errorf("pagination aggregate append lost the original native item")
+			}
+		}
+		if itemOwners != 1 {
+			return fmt.Errorf("pagination aggregate append has %d prior item owners", itemOwners)
+		}
+	}
+	if stores != 1 || appends != 1 || emptyOwners != 1 {
+		return fmt.Errorf("pagination aggregate ownership changed: stores=%d appends=%d initializerOwners=%d", stores, appends, emptyOwners)
 	}
 	uuid, okay := actions[consumer-1].WFWorkflowActionParameters["UUID"].(string)
 	if !okay || uuid == "" {
