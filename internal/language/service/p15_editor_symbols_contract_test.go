@@ -175,9 +175,9 @@ func TestP15E03AuthoredSignatureOwnership(t *testing.T) {
 		active              int
 	}{
 		{"function_shadows_action", "function round(value: Text) -> Text { return value }\nround(\"x|y\")", "function round(value: Text) -> Text", []string{"value: Text"}, 0},
-		{"named_parameter_order", "function combine(value: Text, count: Number = 1) -> Text { return value }\ncombine(count: 2|, value: \"x\")", "function combine(value: Text, count: Number = 1) -> Text", []string{"value: Text", "count: Number = 1"}, 1},
+		{"named_parameter_order", "function combine(value: Text, count: Number = 1) -> Text { return value }\ncombine(count: 2|, value: \"x\")", "function combine(value: Text, count: Number) -> Text", []string{"value: Text", "count: Number"}, 1},
 		{"nested_call_owner", "function outer(value: Number) -> Number { return value }\nfunction inner(value: Text) -> Number { return 1 }\nouter(inner(\"x|y\"))", "function inner(value: Text) -> Number", []string{"value: Text"}, 0},
-		{"multiline_named", "function combine(value: Text, count: Number = 1) -> Text { return value }\ncombine(\n count: 2,\n value: \"x|y\"\n)", "function combine(value: Text, count: Number = 1) -> Text", []string{"value: Text", "count: Number = 1"}, 0},
+		{"multiline_named", "function combine(value: Text, count: Number = 1) -> Text { return value }\ncombine(\n count: 2,\n value: \"x|y\"\n)", "function combine(value: Text, count: Number) -> Text", []string{"value: Text", "count: Number"}, 0},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			const uri = "file:///p15-e03-signature.cherri"
@@ -282,5 +282,42 @@ func TestP15E03RenameCompleteOracleMutations(t *testing.T) {
 				t.Fatal("corrupted actual semantic rename accepted", name)
 			}
 		})
+	}
+}
+
+func TestP15E03NamedParameterRenameOwnership(t *testing.T) {
+	const uri = "file:///p15-e03-parameter-label.cherri"
+	const marked = "function greet(\u00abperson\u00bb: Text) -> Text { return \u00abperson\u00bb }\nfunction other(person: Text) -> Text { return person }\nlet person=\"local\"\nshow(greet(\u00abperson\u00bb: person))\nshow(other(person: person))\n"
+	code, expected, offsets := p15E03MarkedSource(marked, "person", "guest")
+	svc := NewService(nil)
+	svc.OpenDocument(uri, 1, code)
+	p15E03Healthy(t, svc, uri)
+	for _, offset := range offsets {
+		pos := p15EditorExpectedPosition(code, offset)
+		def := svc.Definition(uri, pos.Line, pos.Column)
+		if def == nil || def.Start.ByteOffset != offsets[0] || def.End.ByteOffset != offsets[0]+len("person") {
+			t.Errorf("named parameter did not resolve exact owner at%d: %+v", offset, def)
+		}
+	}
+	pos := p15EditorExpectedPosition(code, offsets[0])
+	actual, edits, err := svc.Rename(uri, pos.Line, pos.Column, "guest")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := p15E03RenameError(code, uri, "person", "guest", actual, expected, edits, offsets); err != nil {
+		t.Fatal(err)
+	}
+	svc.ChangeDocument(uri, 2, actual)
+	p15E03Healthy(t, svc, uri)
+}
+
+func TestP15E03UnusedSameScopeRenameCollision(t *testing.T) {
+	const uri = "file:///p15-e03-unused-collision.cherri"
+	const code = "let first=1\nlet second=2\nshow(first)\n"
+	svc := NewService(nil)
+	svc.OpenDocument(uri, 1, code)
+	p15E03Healthy(t, svc, uri)
+	if updated, edits, err := svc.Rename(uri, 1, 5, "second"); err == nil || updated != "" || len(edits) != 0 {
+		t.Fatalf("unused same-scope duplicate accepted: %v %+v %q", err, edits, updated)
 	}
 }
