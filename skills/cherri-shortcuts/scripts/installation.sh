@@ -64,6 +64,10 @@ validate_cherri_migration_bin() (
 validate_cherri_installation() (
   _compiler=$1
   _migration=$2
+  if [ ! -f "$_compiler" ]; then
+    echo "[CHERRI_COMPILER_NOT_FOUND] Cherri binary not found: $_compiler" >&2
+    return 1
+  fi
   # Authenticate the mandatory byte receipt before any installed code runs.
   require_install_tool_receipts "$_compiler" compiler || return 1
   validate_cherri_bin "$_compiler" || return 1
@@ -105,13 +109,30 @@ validate_cherri_installation() (
   done
 )
 
+validate_cherri_git_index() (
+  _index_directory=$1
+  _index_scope=$2
+  if ! _index_entries=$(git --no-replace-objects -C "$_index_directory" ls-files -v); then
+    echo "[CHERRI_${_index_scope}_GIT_INVALID] Cannot inspect tracked-file index flags" >&2
+    return 1
+  fi
+  # With -v, lowercase flags mean assume-unchanged and S means skip-worktree.
+  # Both can hide edited tracked bytes from status and Go's VCS stamp. Reject
+  # this unverified state without changing the caller's index or local files.
+  if ! printf '%s\n' "$_index_entries" | LC_ALL=C awk 'substr($0, 1, 1) ~ /^[a-zS]$/ { bad=1 } END { exit bad }'; then
+    echo "[CHERRI_${_index_scope}_INDEX_UNVERIFIED] Git index flags can hide tracked-file changes; preserve and review the checkout before setup." >&2
+    return 1
+  fi
+)
+
 validate_cherri_installed_docs() (
   _installed_docs=$1
+  validate_docs_dir "$_installed_docs" || return 1
   if [ ! -e "$_installed_docs/.git" ]; then
     echo "[CHERRI_DOCS_GIT_MISSING] Installed documentation lacks immutable Git provenance: $_installed_docs" >&2
     return 1
   fi
-  validate_docs_dir "$_installed_docs" || return 1
+  validate_cherri_git_index "$_installed_docs" DOCS || return 1
   if ! _installed_docs_state=$(git --no-replace-objects -C "$_installed_docs" status --porcelain); then
     echo "[CHERRI_DOCS_GIT_INVALID] Cannot verify installed documentation bytes" >&2
     return 1

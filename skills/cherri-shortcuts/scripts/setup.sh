@@ -32,6 +32,8 @@ mkdir -p "$CHERRI_HOME/bin"
 BIN_STAGE=""
 DOCS_STAGE=""
 INSTALL_LOCKED=0
+INSTALL_LOCKING=0
+INSTALL_PENDING_SIGNAL=0
 INSTALL_COMMITTED=0
 OLD_BIN_PRESENT=0
 OLD_COMMIT_PRESENT=0
@@ -45,11 +47,25 @@ DOCS_PROMOTING=0
 
 begin_install() {
   if [ "$INSTALL_LOCKED" -eq 0 ]; then
+    # A handled signal after mkdir but before the following assignment must
+    # wait until the command result establishes whether this process owns it.
+    INSTALL_LOCKING=1
     if ! mkdir "$CHERRI_HOME/.install-lock" 2>/dev/null; then
+      INSTALL_LOCKING=0
       echo "[CHERRI_INSTALL_BUSY] Another install owns $CHERRI_HOME/.install-lock; inspect an interrupted install before removing its lock." >&2
       exit 1
     fi
     INSTALL_LOCKED=1
+    INSTALL_LOCKING=0
+    if [ "$INSTALL_PENDING_SIGNAL" -ne 0 ]; then exit "$INSTALL_PENDING_SIGNAL"; fi
+  fi
+}
+
+install_signal() {
+  if [ "$INSTALL_LOCKING" -eq 1 ]; then
+    INSTALL_PENDING_SIGNAL=$1
+  else
+    exit "$1"
   fi
 }
 
@@ -110,9 +126,9 @@ finish_install() {
   exit "$INSTALL_STATUS"
 }
 trap finish_install EXIT
-trap 'exit 129' HUP
-trap 'exit 130' INT
-trap 'exit 143' TERM
+trap 'install_signal 129' HUP
+trap 'install_signal 130' INT
+trap 'install_signal 143' TERM
 
 if [ -n "${CHERRI_BIN:-}" ]; then
   if ! validate_cherri_installation "$CHERRI_BIN" "$(cherri_migration_for_compiler "$CHERRI_BIN")"; then
@@ -220,6 +236,7 @@ else
         echo "[CHERRI_SOURCE_UNMANAGED] Refusing to replace a non-clone source cache: $SRC" >&2
         exit 1
       else
+        validate_cherri_git_index "$SRC" SOURCE
         if ! SOURCE_STATE=$(git --no-replace-objects -C "$SRC" status --porcelain); then
           echo "[CHERRI_SOURCE_GIT_INVALID] Cannot verify source cache state; active installation unchanged." >&2
           exit 1
@@ -237,6 +254,7 @@ else
         echo "Source checkout SHA mismatch: expected $CHERRI_REF, got $ACTUAL_SRC_SHA" >&2
         exit 1
       fi
+      validate_cherri_git_index "$SRC" SOURCE
 
       echo "Building Cherri ($ACTUAL_SRC_SHA) for $(uname -s)/$(uname -m)..."
       (
@@ -244,6 +262,7 @@ else
         CGO_ENABLED=0 GIT_NO_REPLACE_OBJECTS=1 go build -buildvcs=true -trimpath -ldflags='-s -w' -o "$TMP_BIN" .
         CGO_ENABLED=0 GIT_NO_REPLACE_OBJECTS=1 go build -buildvcs=true -trimpath -ldflags='-s -w' -o "$TMP_MIGRATION" ./cmd/cherri-migrate
       )
+      validate_cherri_git_index "$SRC" SOURCE
       if ! BUILT_SRC_SHA=$(git --no-replace-objects -C "$SRC" rev-parse HEAD) ||
          ! BUILT_SRC_STATE=$(git --no-replace-objects -C "$SRC" status --porcelain) ||
          [ "$BUILT_SRC_SHA" != "$ACTUAL_SRC_SHA" ] || [ -n "$BUILT_SRC_STATE" ]; then
@@ -295,6 +314,7 @@ if [ "$DOCS_VALID" -eq 0 ]; then
         echo "[CHERRI_DOCS_UNMANAGED] Refusing to replace non-clone or linked-worktree documentation: $CHERRI_DOCS_DIR" >&2
         exit 1
       fi
+      validate_cherri_git_index "$CHERRI_DOCS_DIR" DOCS
       if ! DOCS_STATE=$(git --no-replace-objects -C "$CHERRI_DOCS_DIR" status --porcelain); then
         echo "[CHERRI_DOCS_GIT_INVALID] Cannot verify documentation state; active installation unchanged." >&2
         exit 1
