@@ -1,0 +1,33 @@
+{
+  "source_sha": "b059a05c1db6fb3855c3576899c431bb1deb8804",
+  "head_after": "b059a05c1db6fb3855c3576899c431bb1deb8804",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestBackendRecovery09SemanticContainersAndNativeTemplates|TestBackendRecovery09NativeRoundTrip|TestBackendRecovery09OracleRejectsCorruption)$",
+    "."
+  ],
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T00:45:31.056977+00:00",
+  "finished_at_utc": "2026-11-20T00:46:35.735899+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 64.40600000001723,
+  "selected_parents": [
+    "TestBackendRecovery09SemanticContainersAndNativeTemplates",
+    "TestBackendRecovery09NativeRoundTrip",
+    "TestBackendRecovery09OracleRejectsCorruption"
+  ],
+  "missing_parents": [],
+  "named_passes": 49,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "363eb07ca9165c54848208addf416e6909140a9f9569c785b04ee149a918af96",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
