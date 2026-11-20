@@ -17,7 +17,7 @@ func p15SupplementalSelection(t *testing.T, all *ContractsSet) (*ContractsSet, i
 	t.Helper()
 	var expectedIDs = strings.Fields(`
 RP01 RP02 RP03 RP04 RP05 RP06 RP07 RP08 RP09 RP10 RP13 RP27 RP28 RP30 RP31 RP32 RP34 RP35 RP36 RP37 RP38
-BRG02 BRG03 BRG04 BRG05 BRG07 BRG17 BRG20 BRG22 BRG23 BRG24 BRG32 BRG33
+BRG02 BRG03 BRG04 BRG05 BRG07 BRG09 BRG17 BRG20 BRG22 BRG23 BRG24 BRG32 BRG33
 `)
 	if len(supplementalProductionScenarios) != len(expectedIDs) {
 		t.Fatal("supplemental producer inventory changed without explicit accounting")
