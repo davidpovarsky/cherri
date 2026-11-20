@@ -125,11 +125,14 @@ def verify_adapter_graph(fid, actions):
             and oa.get("Type")=="ActionOutput" and oa.get("OutputUUID")==p(summary).get("UUID")
             and not oa.get("Aggrandizements"), "final summary edge")
     if fid=="CherriTypedDefaultsPOC":
-        # A declared function compiles to a dispatcher. Main-body output is
-        # followed by the dispatcher's End If, which is not another result.
-        require(output_index==len(actions)-2 and kind(actions[-1],"conditional")
-                and p(actions[-1]).get("WFControlFlowMode")==2, "single dispatcher closure")
-        group = p(actions[-1]).get("GroupingIdentifier")
+        # The function dispatcher closes after main-body output. Default V2
+        # main fallthrough must then end with one parameter-free Nothing.
+        require(output_index==len(actions)-3 and kind(actions[-2],"conditional")
+                and p(actions[-2]).get("WFControlFlowMode")==2, "single dispatcher closure")
+        require(kind(actions[-1],"nothing")
+                and set(actions[-1]) <= {"WFWorkflowActionIdentifier", "WFWorkflowActionParameters"}
+                and p(actions[-1]) == {}, "exact parameter-free main completion")
+        group = p(actions[-2]).get("GroupingIdentifier")
         members = [(i,a) for i,a in enumerate(actions) if p(a).get("GroupingIdentifier")==group]
         require(bool(group) and len(members)==3 and all(kind(a,"conditional") for _,a in members)
                 and [p(a).get("WFControlFlowMode") for _,a in members]==[0,1,2]
