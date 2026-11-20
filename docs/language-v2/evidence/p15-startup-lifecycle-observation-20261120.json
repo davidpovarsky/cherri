@@ -1,0 +1,372 @@
+{
+  "schema_version": "1",
+  "scope": "STARTUP_OBSERVATION_COMPONENT_LOCAL_PROOF",
+  "implementation_sha": "e0a50b8f5d49e0f5cf55c74b5da557d3e2b89a4d",
+  "implementation_parent": "e86a794066faf4c29323c271477ec0cb52fa8475",
+  "base_sha": "fb3b6434e2d338d5595a589416d15078cfeacc6a",
+  "source_files": {
+    ".github/workflows/ios-build.yml": "627da9a34624564960f02658e649fb5b8c4823fcc994c49e0e7db6d532b70840",
+    "ios/CherriApp/App/CherriApp.swift": "1566e855e13f0cb17bce76a810bc2d440d35964f3bb6d68b51fb95d47d27dcfe",
+    "ios/CherriApp/App/WorkspaceView.swift": "5ba4166137fdc1f2a44bcdd97e1c36043047a918f6aa3639d8df05742b602a3b",
+    "ios/CherriApp/Diagnostics/StartupContainerWitness.swift": "b7f69b1c59effe822125645628db6dc379ab5d4cde6e9792b59fc59915efb4bd",
+    "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift": "7b78d454ed7b29ab41d0e41f1ce87fa001314310603838eb4bd18bf25acd40a8",
+    "ios/CherriApp/Documents/CherriDocument.swift": "6c533568992ffd877fa701075bd90047fcb3d22b9c4834e07c0d4da3ed972e6c",
+    "ios/CherriApp/Editor/CherriEditorView.swift": "45581a83f937780dd1b3c430c6285ad103f1a571dc54d292ff41630c152ddbee",
+    "ios/CherriUITests/CherriEditorUITests.swift": "9921e43fe2896972c73a94a25c10c0e07d2b770412dcaa36450c88e619431a79",
+    "ios/scripts/capture_startup_observation.py": "8e8468f0bbbec55fb5fedede42002f31ee7a6de23977d1767b8e8855427af772",
+    "ios/scripts/collect_ios_test_evidence.py": "fb20e3b4246269468322bc8752c35714a722d028344c08894cf8a1bd914be7b8",
+    "ios/scripts/test_capture_startup_observation.py": "4f846a621dc4bfe350fb6edf7240c53931615a53852938e804f85948063e6b76",
+    "ios/scripts/verify_startup_lifecycle_observer.swift": "f43e00c9c01dec665e4016c63a9f0b4dbcfd7569cf88e27e8fc571b687d32211"
+  },
+  "source_binding_uses_actual_git_objects": true,
+  "original_native_baseline": {
+    "run_id": 44716854171,
+    "head_sha": "fb3b6434e2d338d5595a589416d15078cfeacc6a",
+    "passed": 44,
+    "failed": 12,
+    "total": 56,
+    "ui_declared_methods": 13,
+    "editor_feature_tests_failed": 12,
+    "negative_missing_element_test": "PASSED"
+  },
+  "unchanged": {
+    "ios/CherriUITests/EditorStartupDeadline.swift": "a263d9a1fc8dc8476ede4ab09f6096195fa1f1d14368830006a31c8fdfec92c3",
+    "ios/CherriTests/CherriEditorInputTests.swift": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b",
+    "skills/cherri-shortcuts/compatibility-manifest.json": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a",
+    "feature_body_suffix_sha256": "5c96450d7dd7a7ae2861656c481c7f7242bbea8527e0d1c2fd67124862a1f9fb"
+  },
+  "clean_final_python": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_capture_startup_observation.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.171,
+      "stdout_sha256": "27c766ee88d17a946e0c368ae6e913fb4909e8e869952aa74be306b708b155df",
+      "stderr_sha256": "df1a14e56a383f6ed9253abe66b99f899f72e6ac9ed7e1e2d0dfdc599da8c67d"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_collect_ios_test_evidence.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.297,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e6ed4c61432d4900fec45deaddbe6cb550be5089db5675c09f1dbbfcf95a39bf"
+    },
+    {
+      "command": [
+        "python",
+        "-c",
+        "import sys,json,pathlib;sys.path.insert(0,'ios/scripts');import capture_startup_observation as c;print(json.dumps(c.source_binding(pathlib.Path.cwd(),sys.argv[1]),sort_keys=True))",
+        "e0a50b8f5d49e0f5cf55c74b5da557d3e2b89a4d"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.968,
+      "stdout_sha256": "236e64f3128e3156c675dfe58fb2be5e0d8cb6ee3ecfb62083218221b6f1648e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "initial_clean_swift": [
+    {
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.exe",
+        "-swift-version",
+        "5",
+        "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift",
+        "ios/scripts/verify_startup_lifecycle_observer.swift",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\clean-e86a7940\\verify-observer.exe"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.922,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c283b443e7a9e2e1d70a368b83fe8da2b1133623d91ee25825f44f7172f8cfb6"
+    },
+    {
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\clean-e86a7940\\verify-observer.exe"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.516,
+      "stdout_sha256": "ca9d94625dcb10b534b633184dc4f4db3fa2df4079325aaa4b23202be268d024",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "swift_source_unchanged_between_implementation_commits": true,
+  "review_checks": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_capture_startup_observation.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 3.687,
+      "stdout_sha256": "27c766ee88d17a946e0c368ae6e913fb4909e8e869952aa74be306b708b155df",
+      "stderr_sha256": "d05e39acf499fb67536886a5f411ea8bf2a2f7c3e215b19342587cb5ce57ee20"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_collect_ios_test_evidence.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.328,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2ef33a08bec221d199d7984a955943bbae807229493a92a8b34684dbfa6c00d7"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.687,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.exe",
+        "-frontend",
+        "-parse",
+        "ios/CherriUITests/CherriEditorUITests.swift",
+        "ios/CherriApp/Diagnostics/StartupContainerWitness.swift"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.188,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-2.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.078,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-3.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.063,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-4.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-10.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.094,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-11.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-13.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.094,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-15.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.063,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-17.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-19.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-21.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-23.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-27.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-28.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-29.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.094,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\review-final\\workflow-step-33.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "expiry_timestamp_draft_red": {
+    "command": [
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\startup-lifecycle-observation-20261120\\observer-expiry-red\\verify-observer.exe"
+    ],
+    "exit_code": 3221225501,
+    "elapsed_seconds": 3.969,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "0c9079023a6994e55c4292bc04fce06e91ee330fc5e8eede7432b71d8b657a0c"
+  },
+  "git_object_red": {
+    "helper_sha256": "c78cdeffc11d1c953f5625c4d246b42d3c5a077e47e1b7e0d4536d467c60520f",
+    "test_sha256": "4f846a621dc4bfe350fb6edf7240c53931615a53852938e804f85948063e6b76",
+    "exit_code": 1,
+    "stderr_sha256": "30c40f296758018d56938982e5cd13fda9471a17a1f6b4af1e01d3ac0ecb17bf",
+    "stdout_sha256": "27c766ee88d17a946e0c368ae6e913fb4909e8e869952aa74be306b708b155df",
+    "expected_failure": "ValueError not raised for actual replacement object"
+  },
+  "earlier_control_failures_retained": [
+    "observer-controls-1 (Swift test literal syntax)",
+    "git-replacement-red (expected provenance failure plus temporary Git checkout LF/CRLF cleanup error)"
+  ],
+  "host_evidence_relative_paths": [
+    "startup-lifecycle-observation-20261120/observer-expiry-red",
+    "startup-lifecycle-observation-20261120/observer-identity-expiry-green",
+    "startup-lifecycle-observation-20261120/review-final",
+    "startup-lifecycle-observation-20261120/clean-e86a7940",
+    "startup-lifecycle-observation-20261120/git-replacement-red",
+    "startup-lifecycle-observation-20261120/git-replacement-red-exact",
+    "startup-lifecycle-observation-20261120/git-replacement-green"
+  ],
+  "native_execution": "NOT_RUN",
+  "native_sdk_typecheck": "NOT_RUN",
+  "acceptance_records": [],
+  "formal_acceptance_granted": false
+}
