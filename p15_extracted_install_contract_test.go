@@ -386,7 +386,8 @@ func TestP15RP42ExtractedInstallPublicCLI(t *testing.T) {
 			t.Fatalf("installed compile: %v %s", err, stderr)
 		}
 		alias := filepath.Join(dir, "file-alias.shortcut")
-		if _, stderr, err := f.run(t, f.compiler, dir, sourcePath, "--skip-sign", "-o", alias); err != nil {
+		// The actual public help documents -o=VALUE for the file-form alias.
+		if _, stderr, err := f.run(t, f.compiler, dir, sourcePath, "--skip-sign", "-o="+alias); err != nil {
 			t.Fatalf("installed file alias: %v %s", err, stderr)
 		}
 		p15ExtractedNativeEqual(t, native, alias)
