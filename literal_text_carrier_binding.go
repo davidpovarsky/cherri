@@ -14,7 +14,7 @@ type literalCarrierInputBinding struct {
 
 // The canonical emitted sequence includes resolved actions and macro expansion;
 // the lowerer's partial IR list cannot establish the previous runtime value.
-func (s *CanonicalBackendSession) BindLiteralTextCarrierInput(carrierUUID, referenceUUID, defaultUUID string) error {
+func (s *CanonicalBackendSession) BindLiteralTextCarrierInput(carrierUUID, referenceUUID, defaultUUID string, knownOutput func(string) bool) error {
 	actions := s.shortcut.WFWorkflowActions
 	if len(actions) == 0 {
 		return fmt.Errorf("S01_LITERAL_CARRIER_INTERNAL: missing emitted literal carrier")
@@ -51,6 +51,12 @@ func (s *CanonicalBackendSession) BindLiteralTextCarrierInput(carrierUUID, refer
 			s.literalCarrierInputs[carrierUUID] = literalCarrierInputBinding{failure: fmt.Errorf("S01_IMPLICIT_INPUT_UNAVAILABLE: an open control boundary has no proven result identity; supply an explicit native input")}
 			return nil
 		}
+	}
+	// Use the caller's existing checked registry, not UUID presence or a second
+	// native output catalog, to establish a value-producing contract.
+	if knownOutput == nil || !knownOutput(previous.WFWorkflowActionIdentifier) {
+		s.literalCarrierInputs[carrierUUID] = literalCarrierInputBinding{failure: fmt.Errorf("S01_IMPLICIT_INPUT_UNAVAILABLE: preceding action has no established value-output contract; supply an explicit native input")}
+		return nil
 	}
 	exact := s.isExactNativeParameters(previous.WFWorkflowActionParameters)
 	if err := s.bindNativeActionResultAt(index, referenceUUID, defaultUUID, exact, false, ""); err != nil {

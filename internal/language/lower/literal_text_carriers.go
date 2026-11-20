@@ -6,6 +6,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // Ordinary strings preserve literal U+FFFC. Only an actual reference makes the
@@ -24,9 +25,9 @@ func fStringValuesHaveReference(values []interface{}) bool {
 func (l *Lowerer) materializeLiteralTextCarrier(literal string) *ir.AttachmentToken {
 	reference := l.materializeToAttachment(literal)
 	if session, ok := l.session.(interface {
-		BindLiteralTextCarrierInput(string, string, string) error
+		BindLiteralTextCarrierInput(string, string, string, func(string) bool) error
 	}); ok && l.emitErr == nil {
-		l.emitErr = session.BindLiteralTextCarrierInput(reference.OutputUUID, l.GenerateUUID(), l.GenerateUUID())
+		l.emitErr = session.BindLiteralTextCarrierInput(reference.OutputUUID, l.GenerateUUID(), l.GenerateUUID(), l.knownNativeValueOutput)
 	}
 	if l.literalTextCarriers == nil {
 		l.literalTextCarriers = make(map[*ir.NativeActionNode]bool)
@@ -96,4 +97,40 @@ func (l *Lowerer) restoreNativeInputAfterLiteralCarriers(target *ir.NativeAction
 		return fmt.Errorf("S01_IMPLICIT_INPUT_UNAVAILABLE: preceding native input has no provable value identity; supply an explicit native input")
 	}
 	return l.emitErr
+}
+
+// Multiple schema variants must agree that the identifier produces a value.
+// Unknown, Void and absent definitions cannot be promoted by inventing a UUID.
+func (l *Lowerer) knownNativeValueOutput(identifier string) bool {
+	actions := l.registry.LookupByIdentifier(identifier)
+	if len(actions) == 0 {
+		return false
+	}
+	for _, action := range actions {
+		if !knownNativeValueOutputType(action.OutputType) {
+			return false
+		}
+	}
+	return true
+}
+
+func knownNativeValueOutputType(value types.Type) bool {
+	if value == nil {
+		return false
+	}
+	switch typed := value.(type) {
+	case types.OptionalType:
+		return knownNativeValueOutputType(typed.Inner)
+	case types.UnionType:
+		if len(typed.Members) == 0 {
+			return false
+		}
+		for _, member := range typed.Members {
+			if !knownNativeValueOutputType(member) {
+				return false
+			}
+		}
+		return true
+	}
+	return value.Kind() != types.KindUnknown && value.Kind() != types.KindVoid
 }
