@@ -1,0 +1,35 @@
+{
+  "source_sha": "60aa680f445569718924488fc226905bdd4e0605",
+  "head_after": "60aa680f445569718924488fc226905bdd4e0605",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15ComputedMapKeysPreserveTextIdentity|TestP15ComputedMapKeyWritesCaptureEarlierValue|TestP15ComputedMapKeyCapturesBeforeOwnValueWrite)$",
+    "."
+  ],
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T01:02:42.531299+00:00",
+  "finished_at_utc": "2026-11-20T01:03:05.685635+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 22.95299999997951,
+  "named_passes": 2,
+  "failed_tests": [
+    "TestP15ComputedMapKeysPreserveTextIdentity/mutable",
+    "TestP15ComputedMapKeysPreserveTextIdentity/action",
+    "TestP15ComputedMapKeysPreserveTextIdentity/unicode_interpolation",
+    "TestP15ComputedMapKeysPreserveTextIdentity",
+    "TestP15ComputedMapKeyWritesCaptureEarlierValue",
+    "TestP15ComputedMapKeyCapturesBeforeOwnValueWrite",
+    null
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "3cfe9432d7a5c30feb65b6e089f9b6f2a94a546f4cacdf0d4ad2b485446e4b86",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

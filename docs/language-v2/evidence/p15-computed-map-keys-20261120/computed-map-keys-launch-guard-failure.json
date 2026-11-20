@@ -1,0 +1,31 @@
+{
+  "classification": "NO_TEST_EXECUTION",
+  "cause": "Wrapper used str.strip on git porcelain and removed the first record status prefix space; allowlist guard stopped before commit or Go execution.",
+  "notification": {
+    "ok": true,
+    "job": {
+      "id": "job_5a444d2b254f",
+      "type": "job_result",
+      "source": "script_run@host_7ec8382e82747448",
+      "severity": "warning",
+      "tool": "script_run",
+      "host": "host_7ec8382e82747448",
+      "status": "failed",
+      "exit_code": 1,
+      "created_at": 1795137837.8119786,
+      "started_at": "2026-11-20T01:23:57.872949+00:00",
+      "finished_at": "2026-11-20T01:23:58.734988+00:00",
+      "duration_s": 0.86,
+      "error": null,
+      "output_truncated": false,
+      "timeout_s": 360,
+      "read": true,
+      "notified": {
+        "telegram": null,
+        "resend": null
+      },
+      "notify_spec": {},
+      "output": "Traceback (most recent call last):\r\n  File \"C:\\ProgramData\\SentinelX\\uploads\\.sentinelx_uploads\\script_job_3500a74375ff4caea0cdd07d362535ea\\script.py\", line 8, in <module>\r\n    assert set(x[3:] for x in status.splitlines())==set(files),(status,files)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: ('M internal/language/backend/contracts.go\\n M internal/language/lower/call_arguments.go\\n M internal/language/lower/lower.go\\n M language_typed_literal_adapter.go\\n M language_value_adapter.go\\n M p15_computed_map_keys_test.go\\n?? internal/language/lower/container_keys.go\\n?? p15_computed_map_keys_recovery_test.go', ['internal/language/backend/contracts.go', 'internal/language/lower/call_arguments.go', 'internal/language/lower/lower.go', 'internal/language/lower/container_keys.go', 'language_typed_literal_adapter.go', 'language_value_adapter.go', 'p15_computed_map_keys_test.go', 'p15_computed_map_keys_recovery_test.go'])"
+    }
+  }
+}
