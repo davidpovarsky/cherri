@@ -27,8 +27,11 @@ func TestP15NativeOutputNameOmission(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(doc.Actions) != 1 {
-				t.Fatalf("expected one native Text action, got %d", len(doc.Actions))
+			if err := p15M02MainVoidRowsError(doc.RawRoot["WFWorkflowActions"].([]any)); err != nil {
+				t.Fatal(err)
+			}
+			if len(doc.Actions) != 2 || doc.RawRoot["WFWorkflowActions"].([]any)[0].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+				t.Fatalf("expected the native Text action and empty main result, got %d", len(doc.Actions))
 			}
 			serialized, ok := doc.Actions[0].Parameters["WFTextActionText"].(map[string]any)
 			if !ok {

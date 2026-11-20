@@ -31,6 +31,9 @@ func TestP15S01OrdinaryLiteralContainerPlaceholderSafety(t *testing.T) {
 }
 
 func p15S01EnclosingInputError(actions []map[string]any, selected ...string) error {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
 	identifier := "is.workflow.actions.setitemname"
 	if len(selected) == 1 {
 		identifier = selected[0]
@@ -118,18 +121,17 @@ func TestP15S01EnclosingNativeInputBoundaries(t *testing.T) {
 	})
 	t.Run("initial_shortcut_input", func(t *testing.T) {
 		actions := p15CompiledActions(t, "native.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"\uFFFC{ShortcutInput}\"})\n")
-		last := len(actions) - 1
-		if last < 1 || actions[last-1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" ||
-			p15DiagnosticValue(p15Param(actions[last-1])["WFVariable"])["Type"] != "ExtensionInput" {
-			t.Fatal("literal carrier replaced initial ShortcutInput")
+		if err := p15S01EnclosingSpecialGraphError(actions, "initial"); err != nil {
+			t.Fatal(err)
 		}
+		p15S01EnclosingSpecialMutations(t, actions, "initial")
 	})
 	t.Run("explicit_no_output", func(t *testing.T) {
 		actions := p15CompiledActions(t, prefix+"native.action(\"is.workflow.actions.nothing\",{})\n"+target)
-		last := len(actions) - 1
-		if last < 1 || actions[last-1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" {
-			t.Fatal("literal carrier replaced explicit no-output state")
+		if err := p15S01EnclosingSpecialGraphError(actions, "empty"); err != nil {
+			t.Fatal(err)
 		}
+		p15S01EnclosingSpecialMutations(t, actions, "empty")
 	})
 	t.Run("exact_raw_missing_identity_fails_closed", func(t *testing.T) {
 		source := prefix + "native.action(\"is.workflow.actions.gettext\", parameters:native.plist({\"WFTextActionText\":\"S01_ENCLOSING_SEED\"}))\n" + target
@@ -174,8 +176,13 @@ func TestP15S01EnclosingNativeCarrierSequenceControls(t *testing.T) {
 	} {
 		t.Run("pure_"+tc.name, func(t *testing.T) {
 			actions := p15CompiledActions(t, prefix+"native.action(\"is.workflow.actions.setitemname\", {\"WFName\":"+tc.field+"})\n")
-			if len(actions) != 3 || p15Param(actions[2])["WFName"] != tc.want {
-				t.Fatalf("pure string emitted helpers or changed bytes: %#v", actions)
+			g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+			g.value("gettext", map[string]any{"WFTextActionText": "SUFFIX"})
+			g.value("gettext", map[string]any{"WFTextActionText": "S01_ENCLOSING_SEED"})
+			g.emit("setitemname", map[string]any{"WFName": tc.want})
+			g.emit("nothing", nil)
+			if err := p15S01CompleteGraph(g); err != nil {
+				t.Fatalf("pure string complete graph: %v", err)
 			}
 			if err := p15S01EnclosingInputError(actions); err != nil {
 				t.Fatal(err)
@@ -203,10 +210,10 @@ func TestP15S01EnclosingNativeCarrierSequenceControls(t *testing.T) {
 
 func TestP15S01EnclosingInputOracleRejectsCausalCorruption(t *testing.T) {
 	original := p15CompiledActions(t, "let suffix=text(\"SUFFIX\")\nlet seed=text(\"S01_ENCLOSING_SEED\")\nnative.action(\"is.workflow.actions.setitemname\", {\"WFName\":f\"\uFFFC{suffix}\"})\n")
-	if err := p15S01EnclosingInputError(original); err != nil {
+	if err := p15S01EnclosingSpecialGraphError(original, "seed"); err != nil {
 		t.Fatalf("healthy production control: %v", err)
 	}
-	if len(original) != 5 {
+	if len(original) != 6 {
 		t.Fatalf("reviewed control has changed action topology: %d", len(original))
 	}
 	clone := func() []map[string]any {
@@ -225,6 +232,15 @@ func TestP15S01EnclosingInputOracleRejectsCausalCorruption(t *testing.T) {
 		change func([]map[string]any) []map[string]any
 	}{
 		{"removed_restore", func(a []map[string]any) []map[string]any { return append(a[:3], a[4:]...) }},
+		{"removed_main_clear", func(a []map[string]any) []map[string]any { return a[:len(a)-1] }},
+		{"main_clear_input", func(a []map[string]any) []map[string]any {
+			a[len(a)-1]["WFWorkflowActionParameters"] = map[string]any{"WFInput": "LEAK"}
+			return a
+		}},
+		{"main_clear_identity", func(a []map[string]any) []map[string]any {
+			a[len(a)-1]["WFWorkflowActionParameters"] = map[string]any{"UUID": "LEAK"}
+			return a
+		}},
 		{"stale_reference", func(a []map[string]any) []map[string]any {
 			p15DiagnosticValue(p15Param(a[3])["WFVariable"])["OutputUUID"] = p15Param(a[0])["UUID"]
 			return a
@@ -253,7 +269,7 @@ func TestP15S01EnclosingInputOracleRejectsCausalCorruption(t *testing.T) {
 	}
 	for _, mutation := range mutations {
 		t.Run(mutation.name, func(t *testing.T) {
-			if err := p15S01EnclosingInputError(mutation.change(clone())); err == nil {
+			if err := p15S01EnclosingSpecialGraphError(mutation.change(clone()), "seed"); err == nil {
 				t.Fatal("causal input corruption accepted")
 			}
 		})
@@ -300,4 +316,78 @@ func TestP15S01UnprovenPreviousOutputBoundaries(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
+}
+
+// These fixed sources distinguish three different Nothing roles: authored
+// no-output, implicit-input restoration, and the final empty main result.
+// No action is removed before comparing the complete graph.
+func p15S01EnclosingSpecialGraphError(actions []map[string]any, mode string) error {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	var suffix map[string]any
+	var carrier string
+	switch mode {
+	case "initial":
+		carrier = p15S01Carrier(g, "\uFFFC")
+		suffix = map[string]any{"Type": "ExtensionInput"}
+		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionAttachment(suffix)})
+	case "empty", "seed":
+		id := g.value("gettext", map[string]any{"WFTextActionText": "SUFFIX"})
+		suffix = map[string]any{"Type": "ActionOutput", "OutputUUID": id}
+		var seed string
+		if mode == "empty" {
+			g.emit("nothing", nil)
+		} else {
+			seed = g.value("gettext", map[string]any{"WFTextActionText": "S01_ENCLOSING_SEED"})
+		}
+		carrier = p15S01Carrier(g, "\uFFFC")
+		if mode == "empty" {
+			g.emit("nothing", nil)
+		} else {
+			g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(seed)})
+		}
+	default:
+		return fmt.Errorf("unknown enclosing input case %q", mode)
+	}
+	name := map[string]any{"WFSerializationType": "WFTextTokenString", "Value": map[string]any{
+		"string": "\uFFFC\uFFFC", "attachmentsByRange": map[string]any{
+			"{0, 1}": map[string]any{"Type": "ActionOutput", "OutputUUID": carrier, "OutputName": "Text"},
+			"{1, 1}": suffix,
+		},
+	}}
+	g.emit("setitemname", map[string]any{"WFName": name})
+	g.emit("nothing", nil)
+	return p15S01CompleteGraph(g)
+}
+
+func p15S01EnclosingSpecialMutations(t *testing.T, original []map[string]any, mode string) {
+	t.Helper()
+	restore, carrier := 1, 0
+	if mode == "empty" {
+		restore, carrier = 3, 2
+	}
+	for _, fault := range []string{"remove_restore", "change_restore", "carrier_bytes", "target_bytes", "remove_main_clear", "main_clear_input"} {
+		t.Run(fault, func(t *testing.T) {
+			broken := p15C01Clone(t, original)
+			switch fault {
+			case "remove_restore":
+				broken = append(broken[:restore], broken[restore+1:]...)
+			case "change_restore":
+				broken[restore] = map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.getvariable", "WFWorkflowActionParameters": map[string]any{"WFVariable": p15FunctionVariable("FOREIGN")}}
+			case "carrier_bytes":
+				p15Param(broken[carrier])["WFTextActionText"] = ""
+			case "target_bytes":
+				p15Param(broken[len(broken)-2])["WFName"] = "WRONG"
+			case "remove_main_clear":
+				broken = broken[:len(broken)-1]
+			case "main_clear_input":
+				broken[len(broken)-1]["WFWorkflowActionParameters"] = map[string]any{"WFInput": "LEAK"}
+			}
+			if err := p15S01EnclosingSpecialGraphError(broken, mode); err == nil {
+				t.Fatal("accepted changed enclosing input graph", fault)
+			}
+		})
+	}
 }

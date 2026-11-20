@@ -222,7 +222,11 @@ func TestP15EmptyListRawNativeAndImportedArraysUnchanged(t *testing.T) {
 		t.Fatal(err)
 	}
 	raw := p15CompiledActions(t, fmt.Sprintf("native.action(%q, parameters: native.plist(%q))", "com.example.p15.opaque.empty", string(payload)))
-	if len(raw) != 1 || !reflect.DeepEqual(p15EmptyParams(raw[0]), want) {
+	if err := p15M02MainVoidBoundaryError(raw); err != nil {
+		t.Fatal(err)
+	}
+	if len(raw) != 2 || raw[0]["WFWorkflowActionIdentifier"] != "com.example.p15.opaque.empty" ||
+		!reflect.DeepEqual(p15EmptyParams(raw[0]), want) {
 		t.Fatalf("exact raw arrays acquired runtime actions: %#v", raw)
 	}
 

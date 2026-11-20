@@ -88,7 +88,11 @@ func p15FilterTableError(root map[string]any, tc p15FilterCase) error {
 		return fmt.Errorf("compound semantics changed")
 	}
 	raw := root["WFWorkflowActions"].([]any)
-	if len(raw) != 2 || raw[0].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+	if err := p15M02MainVoidRowsError(raw); err != nil {
+		return err
+	}
+	if len(raw) != 3 || raw[0].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" ||
+		raw[1].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.filter.files" {
 		return fmt.Errorf("filter input producer changed")
 	}
 	origin := p15Param(raw[0].(map[string]any))["UUID"]

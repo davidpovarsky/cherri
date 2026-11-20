@@ -35,14 +35,21 @@ func p15V02NativeReferences(value any) (outputs, variables []string) {
 	return
 }
 
-func p15V02OuterReference(actions []map[string]any, outer string, mutable bool) error {
-	if err := p15M02MainVoidBoundaryError(actions); err != nil {
-		return err
+func p15V02OuterReference(actions []map[string]any, outer string, mutable, mainFallthrough bool) error {
+	consumerIndex := len(actions) - 1
+	if mainFallthrough {
+		if err := p15M02MainVoidBoundaryError(actions); err != nil {
+			return err
+		}
+		consumerIndex--
 	}
-	if len(actions) < 2 {
+	if consumerIndex < 0 {
 		return fmt.Errorf("missing final authored scope consumer")
 	}
-	outputs, variables := p15V02NativeReferences(actions[len(actions)-2])
+	if !mainFallthrough && actions[consumerIndex]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+		return fmt.Errorf("imported output contract lost the final authored Text consumer")
+	}
+	outputs, variables := p15V02NativeReferences(actions[consumerIndex])
 	refs := outputs
 	if mutable {
 		refs = variables
@@ -150,13 +157,13 @@ func TestP15V02LexicalWire(t *testing.T) {
 			if outer == "" {
 				t.Fatal("outer producer absent")
 			}
-			if err := p15V02OuterReference(actions, outer, tc.mutable); err != nil {
+			if err := p15V02OuterReference(actions, outer, tc.mutable, true); err != nil {
 				t.Fatal(err)
 			}
 			// Corrupt the observed serialized reference, keeping the independent
 			// original-identity expectation unchanged.
 			mutated := p15V02CorruptLastReference(t, actions, tc.mutable, true)
-			if p15V02OuterReference(mutated, outer, tc.mutable) == nil {
+			if p15V02OuterReference(mutated, outer, tc.mutable, true) == nil {
 				t.Fatal("wrong native reference mutation passed")
 			}
 			if !strings.Contains(tc.name, "for_item") && tc.name != "repeat_index" {
@@ -191,7 +198,7 @@ func TestP15V02LexicalWire(t *testing.T) {
 			t.Fatal("outer assignment was renamed", p15Param(action))
 		}
 	}
-	if err := p15V02OuterReference(actions, "value", true); err != nil {
+	if err := p15V02OuterReference(actions, "value", true, true); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -258,8 +265,14 @@ func TestP15V02ImportedScopeIdentity(t *testing.T) {
 			}
 			edited := source + "\nif true {" + declaration + " " + symbol + "=text(\"authored-inner\");text(" + symbol + ")}\ntext(" + symbol + ")\n"
 			actions := p15CompiledActions(t, edited)
-			if err := p15V02OuterReference(actions, outer, kind == "variable"); err != nil {
+			if err := p15V02OuterReference(actions, outer, kind == "variable", false); err != nil {
 				t.Fatal(err)
+			}
+			// The imported main retains its native output mode. Corrupt the
+			// actual final consumer without inventing a V2 fallthrough action.
+			if p15V02OuterReference(p15V02CorruptLastReference(t, actions, kind == "variable", false),
+				outer, kind == "variable", false) == nil {
+				t.Fatal("imported final consumer accepted a detached native identity")
 			}
 			originalIDs := 0
 			localRead := false
@@ -290,8 +303,14 @@ func TestP15V02ImportedScopeIdentity(t *testing.T) {
 			boolEdited := source + "\nif true {var " + symbol + "=false; if " + symbol + " {text(\"BOOL_BRANCH\")}}\ntext(" + symbol + ")\n"
 			boolActions := p15CompiledActions(t, boolEdited)
 			p15AssertBooleanConditions(t, boolActions, "authored same-name imported Bool shadow")
-			if err := p15V02OuterReference(boolActions, outer, kind == "variable"); err != nil {
+			if err := p15V02OuterReference(boolActions, outer, kind == "variable", false); err != nil {
 				t.Fatal(err)
+			}
+			// The imported main retains its native output mode. Corrupt the
+			// actual final consumer without inventing a V2 fallthrough action.
+			if p15V02OuterReference(p15V02CorruptLastReference(t, boolActions, kind == "variable", false),
+				outer, kind == "variable", false) == nil {
+				t.Fatal("imported final consumer accepted a detached native identity")
 			}
 		})
 	}

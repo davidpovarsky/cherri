@@ -122,8 +122,18 @@ func p15CoverageTree(actions []map[string]any) ([]*p15CoverageNode, error) {
 			}
 		}
 	}
-	for _, action := range actions {
+	for index, action := range actions {
 		var identifier, ok = action["WFWorkflowActionIdentifier"].(string)
+		if ok && identifier == "is.workflow.actions.nothing" {
+			if index != len(actions)-1 || len(stack) != 0 {
+				return nil, fmt.Errorf("main empty result moved into an authored branch")
+			}
+			if err := p15M02MainVoidBoundaryError(actions); err != nil {
+				return nil, err
+			}
+			appendNode(&p15CoverageNode{action: action})
+			continue
+		}
 		if !ok || !strings.HasPrefix(identifier, "is.workflow.actions.") || !allowed[strings.TrimPrefix(identifier, "is.workflow.actions.")] {
 			return nil, fmt.Errorf("unexpected external or unmodeled native action")
 		}
@@ -319,6 +329,9 @@ func p15CoverageMatch(expr *p15CoverageExpr, nodes []*p15CoverageNode) ([]*p15Co
 }
 
 func p15CoverageGraphError(actions []map[string]any) error {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
 	var roots, err = p15CoverageTree(actions)
 	if err != nil {
 		return err
@@ -466,7 +479,7 @@ func p15CoverageGraphError(actions []map[string]any) error {
 		return fmt.Errorf("missing results boundary")
 	}
 	var resultNodes = roots[start+1:]
-	if len(resultNodes) != len(scenarios)+3 {
+	if len(resultNodes) != len(scenarios)+4 {
 		return fmt.Errorf("missing or duplicated observation nodes")
 	}
 	var resultText string
@@ -493,7 +506,7 @@ func p15CoverageGraphError(actions []map[string]any) error {
 		offset++
 	}
 	if resultNodes[len(scenarios)].kind() != "gettext" || resultNodes[len(scenarios)+1].kind() != "gettext" ||
-		resultNodes[len(scenarios)+2].kind() != "setclipboard" {
+		resultNodes[len(scenarios)+2].kind() != "setclipboard" || resultNodes[len(scenarios)+3].kind() != "nothing" {
 		return fmt.Errorf("final observation action sequence changed")
 	}
 	if err := p15CoverageTextError(named["results"]["WFTextActionText"], resultText, resultRefs); err != nil {
@@ -508,10 +521,11 @@ func p15CoverageGraphError(actions []map[string]any) error {
 		}); err != nil {
 		return err
 	}
-	if len(resultNodes[len(resultNodes)-1].params()) != 1 {
+	var clipboard = resultNodes[len(scenarios)+2]
+	if len(clipboard.params()) != 1 {
 		return fmt.Errorf("clipboard observation parameters changed")
 	}
-	return p15CoverageAttachmentError(resultNodes[len(resultNodes)-1].params()["WFInput"], p15CoverageOutput(named["finalResult"]))
+	return p15CoverageAttachmentError(clipboard.params()["WFInput"], p15CoverageOutput(named["finalResult"]))
 }
 
 func p15CoverageLoad(t *testing.T) ([]byte, []byte) {
@@ -577,6 +591,9 @@ func TestP15S01F01CoverageContractRejectsDrift(t *testing.T) {
 func TestP15S01F01CoverageGraphRejectsCausalMutations(t *testing.T) {
 	var source, _ = p15CoverageLoad(t)
 	var actions = p15CompiledActions(t, string(source))
+	if err := p15CoverageGraphError(actions); err != nil {
+		t.Fatal("healthy unchanged coverage fixture", err)
+	}
 	for _, fault := range []string{"rune_offset", "normalized_combining", "wrong_unicode_source", "hardcoded_unicode", "eager_effect", "wrong_bool_test", "fractional_bool", "missing_native_wrapper", "false_or_dropped", "nested_branch_swap", "crosswired_store", "hidden_trace", "hardcoded_results", "wrong_clipboard_source", "external_dependency"} {
 		t.Run(fault, func(t *testing.T) {
 			var broken = p15C01Clone(t, actions)
@@ -662,6 +679,45 @@ func TestP15S01F01CoverageGraphRejectsCausalMutations(t *testing.T) {
 			}
 			if err := p15CoverageGraphError(broken); err == nil {
 				t.Fatal("causal native graph mutation accepted")
+			}
+		})
+	}
+}
+
+func TestP15S01F01CoverageMainBoundaryRejectsCausalMutations(t *testing.T) {
+	source, _ := p15CoverageLoad(t)
+	original := p15CompiledActions(t, string(source))
+	if err := p15CoverageGraphError(original); err != nil {
+		t.Fatal("healthy complete coverage graph", err)
+	}
+	for _, fault := range []string{"missing_clear", "clear_input", "clear_identity", "nested_clear", "clipboard_replaced_by_clear"} {
+		t.Run(fault, func(t *testing.T) {
+			broken := p15C01Clone(t, original)
+			last := len(broken) - 1
+			switch fault {
+			case "missing_clear":
+				broken = broken[:last]
+			case "clear_input":
+				broken[last]["WFWorkflowActionParameters"] = map[string]any{"WFInput": "LEAK"}
+			case "clear_identity":
+				broken[last]["WFWorkflowActionParameters"] = map[string]any{"UUID": "LEAK"}
+			case "nested_clear":
+				at := -1
+				for index, action := range broken {
+					if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" && p15Int(p15Param(action)["WFControlFlowMode"]) == 0 {
+						at = index + 1
+						break
+					}
+				}
+				if at < 0 {
+					t.Fatal("missing conditional mutation target")
+				}
+				broken = append(broken[:at], append([]map[string]any{broken[last]}, broken[at:last]...)...)
+			case "clipboard_replaced_by_clear":
+				broken[last-1] = broken[last]
+			}
+			if err := p15CoverageGraphError(broken); err == nil {
+				t.Fatal("accepted changed coverage main boundary", fault)
 			}
 		})
 	}

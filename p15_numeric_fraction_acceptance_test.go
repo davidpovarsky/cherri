@@ -13,6 +13,9 @@ import (
 // variable assignment, and terminal consumer required by these public cases.
 // It does not simulate Apple execution or accept extra rounding/coercion steps.
 func p15N01GraphResult(actions []map[string]any) (float64, error) {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return 0, err
+	}
 	var outputs = map[string]float64{}
 	var variables = map[string]float64{}
 	var read func(any) (float64, error)
@@ -60,6 +63,7 @@ func p15N01GraphResult(actions []map[string]any) (float64, error) {
 		"math":         {"UUID", "CustomOutputName", "WFInput", "WFMathOperation", "WFMathOperand"},
 		"setvariable":  {"WFInput", "WFVariableName"},
 		"setclipboard": {"WFInput"},
+		"nothing":      {},
 	}
 	var result float64
 	var consumers int
@@ -86,6 +90,11 @@ func p15N01GraphResult(actions []map[string]any) (float64, error) {
 		var number float64
 		var err error
 		switch kind {
+		case "nothing":
+			if index != len(actions)-1 {
+				return 0, fmt.Errorf("unexpected empty result inside numeric dataflow")
+			}
+			continue
 		case "number":
 			number, err = read(parameters["WFNumberActionNumber"])
 		case "math":
@@ -119,7 +128,7 @@ func p15N01GraphResult(actions []map[string]any) (float64, error) {
 			continue
 		case "setclipboard":
 			result, err = read(parameters["WFInput"])
-			if err != nil || index != len(actions)-1 {
+			if err != nil || index != len(actions)-2 {
 				return 0, fmt.Errorf("lost terminal numeric consumer: %v", err)
 			}
 			consumers++
@@ -164,7 +173,7 @@ func TestP15N01FractionalNativeDataflow(t *testing.T) {
 		})
 	}
 	var actions = p15CompiledActions(t, "let result = 5 / 2\nsetClipboard(result)\n")
-	for _, fault := range []string{"integer_fold", "wrong_divisor", "wrong_operation", "text_operand", "wrong_output", "coercion", "rounding", "missing_observation"} {
+	for _, fault := range []string{"integer_fold", "wrong_divisor", "wrong_operation", "text_operand", "wrong_output", "coercion", "rounding", "missing_observation", "missing_main_result", "nonempty_main_result"} {
 		t.Run("corrupt/"+fault, func(t *testing.T) {
 			var broken = p15C01Clone(t, actions)
 			var p = p15C01Params(broken[0])
@@ -179,7 +188,7 @@ func TestP15N01FractionalNativeDataflow(t *testing.T) {
 			case "text_operand":
 				p["WFInput"] = "5"
 			case "wrong_output", "coercion":
-				var input = p15C01Params(broken[len(broken)-1])["WFInput"].(map[string]any)["Value"].(map[string]any)
+				var input = p15C01Params(broken[len(broken)-2])["WFInput"].(map[string]any)["Value"].(map[string]any)
 				if fault == "wrong_output" {
 					input["OutputUUID"] = "not-the-fraction"
 				} else {
@@ -188,7 +197,11 @@ func TestP15N01FractionalNativeDataflow(t *testing.T) {
 			case "rounding":
 				broken = append(broken[:1], append([]map[string]any{{"WFWorkflowActionIdentifier": "is.workflow.actions.round", "WFWorkflowActionParameters": map[string]any{}}}, broken[1:]...)...)
 			case "missing_observation":
+				broken = append(broken[:len(broken)-2], broken[len(broken)-1])
+			case "missing_main_result":
 				broken = broken[:len(broken)-1]
+			case "nonempty_main_result":
+				broken[len(broken)-1]["WFWorkflowActionParameters"] = map[string]any{"WFInput": "incidental-value"}
 			}
 			if actual, err := p15N01GraphResult(broken); err == nil && actual == 2.5 {
 				t.Fatal("damaged native fraction graph retained a passing observation")

@@ -27,7 +27,27 @@ func p15NativeLoopResultFixture(t *testing.T, kind, body string, outputName bool
 	if !ok || len(actions) < 3 {
 		t.Fatalf("fixture must have a balanced native loop: %T %d", doc.RawRoot["WFWorkflowActions"], len(actions))
 	}
-	end := actions[len(actions)-1].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
+	}
+	// Preserve the complete freshly compiled graph, including the explicit
+	// empty main result. The existing outer loop closes immediately before it.
+	endAction, ok := actions[len(actions)-2].(map[string]any)
+	if !ok {
+		t.Fatal("native outer loop closure is not an action")
+	}
+	end, ok := endAction["WFWorkflowActionParameters"].(map[string]any)
+	startAction, startOK := actions[0].(map[string]any)
+	if !ok || !startOK {
+		t.Fatal("native outer loop endpoints lost their parameter maps")
+	}
+	start := p15Param(startAction)
+	group, groupOK := end["GroupingIdentifier"].(string)
+	if !groupOK || group == "" || group != start["GroupingIdentifier"] ||
+		p15Int(start["WFControlFlowMode"]) != 0 || p15Int(end["WFControlFlowMode"]) != 2 ||
+		endAction["WFWorkflowActionIdentifier"] != startAction["WFWorkflowActionIdentifier"] {
+		t.Fatal("native outer loop closure identity changed")
+	}
 	const resultUUID = "33333333-3333-3333-3333-333333330404"
 	end["UUID"] = resultUUID
 	token := map[string]any{"Type": "ActionOutput", "OutputUUID": resultUUID}
@@ -80,8 +100,20 @@ func TestP15HybridNativeLoopOutputReference(t *testing.T) {
 					if plan.Lifecycle == nil || plan.Lifecycle.DemotedActionCount != 0 {
 						t.Fatalf("existing native result demoted: %+v", plan.Lifecycle)
 					}
-					if plan.NaturalVerifiedCount != len(doc.Actions)-body.fallback {
+					// The preserved parameter-free Nothing also requires an exact
+					// native escape. Assert its position and every other decision.
+					if plan.NaturalVerifiedCount != len(doc.Actions)-body.fallback-1 ||
+						plan.ExactNativeCount != body.fallback+1 || len(plan.Decisions) != len(doc.Actions) {
 						t.Fatalf("unexpected native fixture classification: %+v", plan.Decisions)
+					}
+					for i, decision := range plan.Decisions {
+						want := "NATURAL_VERIFIED"
+						if i == len(doc.Actions)-2 || body.name == "empty_list" && i == 1 {
+							want = "EXACT_NATIVE_FALLBACK"
+						}
+						if decision.ActionIndex != i || string(decision.Classification) != want {
+							t.Fatalf("native action %d classification changed: %+v, want %s", i, decision, want)
+						}
 					}
 					for _, dialect := range []string{"legacy", "v2"} {
 						if len(preByDialect[dialect]) != len(doc.Actions) {

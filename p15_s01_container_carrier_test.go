@@ -234,6 +234,12 @@ func p15S01ContainerGraphError(actions []map[string]any, name string) error {
 	case "raw_native_control":
 		g.emit("dictionary", map[string]any{"WFItems": p15S01ContainerRows(p15S01ContainerRow("key", 0, p15S01ContainerLiteral))})
 	}
+	// Every source in this table falls through in authored main, after any
+	// dispatcher has closed. This exact action is distinct from function output.
+	g.emit("nothing", nil)
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
 	if err := p15S01CompleteGraph(g); err != nil {
 		return err
 	}
@@ -395,6 +401,40 @@ func TestP15S01ContainerGraphsRejectCausalMutations(t *testing.T) {
 					}
 					if err := p15S01ContainerGraphError(actions, name); err == nil {
 						t.Fatal("accepted corrupted actual graph", fault)
+					}
+				})
+			}
+		})
+	}
+}
+
+// Corrupt the actual main boundary while retaining every literal/function edge.
+// In particular, a Nothing inside an Optional decoder cannot satisfy main.
+func TestP15S01ContainerMainBoundaryRejectsCausalMutations(t *testing.T) {
+	for _, name := range p15S01ContainerGraphCases() {
+		t.Run(name, func(t *testing.T) {
+			original := p15CompiledActions(t, p15S01ContainerSource(name))
+			if err := p15S01ContainerGraphError(original, name); err != nil {
+				t.Fatal("healthy complete graph", err)
+			}
+			for _, fault := range []string{"missing_clear", "clear_input", "clear_identity", "extra_envelope", "clear_before_consumer"} {
+				t.Run(fault, func(t *testing.T) {
+					broken := p15C01Clone(t, original)
+					last := len(broken) - 1
+					switch fault {
+					case "missing_clear":
+						broken = broken[:last]
+					case "clear_input":
+						broken[last]["WFWorkflowActionParameters"] = map[string]any{"WFInput": "LEAK"}
+					case "clear_identity":
+						broken[last]["WFWorkflowActionParameters"] = map[string]any{"UUID": "INVENTED_MAIN_OUTPUT"}
+					case "extra_envelope":
+						broken[last]["PublicUnexpected"] = "changed"
+					case "clear_before_consumer":
+						broken[last], broken[last-1] = broken[last-1], broken[last]
+					}
+					if err := p15S01ContainerGraphError(broken, name); err == nil {
+						t.Fatal("accepted changed main boundary", fault)
 					}
 				})
 			}

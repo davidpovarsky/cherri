@@ -9,8 +9,15 @@ import (
 func p15OutputNameToken(t *testing.T, root map[string]any) map[string]any {
 	t.Helper()
 	actions, ok := root["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 2 {
-		t.Fatal("synthetic output-name fixture must contain two actions")
+	if !ok || len(actions) != 3 {
+		t.Fatal("synthetic output-name fixture must contain the producer, consumer, and empty main result")
+	}
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
+	}
+	if actions[0].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.number" ||
+		actions[1].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+		t.Fatal("synthetic output-name producer or consumer order changed")
 	}
 	action := actions[1].(map[string]any)
 	params := action["WFWorkflowActionParameters"].(map[string]any)
