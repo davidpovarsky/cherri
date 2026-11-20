@@ -1,0 +1,204 @@
+{
+  "format_version": 1,
+  "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+  "parent": "c8b8babf5803cd2cd43f0d37b3ed9212a56ddaad",
+  "baseline_tests_only": "bc6c178f732eeed556b9479c4d9e6c547885407e",
+  "baseline": {
+    "pass": 7,
+    "fail": 7,
+    "skip": 0,
+    "raw_sha256": "7cc58b3ab90909285fb0604dd558b934ea7c6561d3b6deb446f28cef45576b6f"
+  },
+  "clean_records": [
+    {
+      "name": "build",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "go",
+        "build",
+        "-buildvcs=true",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+        "."
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:01:02.208094+00:00",
+      "elapsed_seconds": 5.25,
+      "exit_code": 0,
+      "expected_exit_for_this_diagnostic": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "build-metadata",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "go",
+        "version",
+        "-m",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe"
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:01:07.922580+00:00",
+      "elapsed_seconds": 0.297,
+      "exit_code": 0,
+      "expected_exit_for_this_diagnostic": 0,
+      "stdout_sha256": "0cdef4280822de1c7d76c13bef8a736e941937f8d02d7822243077a711bd612b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "capabilities",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+        "--capabilities-json"
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:01:08.577767+00:00",
+      "elapsed_seconds": 0.734,
+      "exit_code": 0,
+      "expected_exit_for_this_diagnostic": 0,
+      "stdout_sha256": "01bf10f58fbb4e72b04c34a6c790a0572b109b0687a01bcd3f33e365b32de833",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "focus",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=4m",
+        "-run",
+        "^TestP15(M02|RP16|F03)",
+        "."
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:01:09.646846+00:00",
+      "elapsed_seconds": 16.609,
+      "exit_code": 0,
+      "expected_exit_for_this_diagnostic": 0,
+      "stdout_sha256": "c1ad2d7b5c884632b5f99b005af83625b2618eba2fea665fdfaf5c722f753fad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": 337,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "name": "affected-known-json-failure",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestBackendRecovery06EmitterErrorAndCancellation|TestBackendRecovery06ImportEntryPoints|TestBackendRecovery06MixedEntryPoints|TestBackendRecovery06MobilePanicRecovery|TestBackendRecovery09NativeRoundTrip|TestBackendRecovery09OracleRejectsCorruption|TestBackendRecovery09SemanticContainersAndNativeTemplates|TestBuildProfileInvalidAndSequentialIsolation|TestBuildProfileMobileBridgeIsolation|TestBuildProfileReleasePreservesEffectAndTypedReference|TestBuildProfileReleasePreservesSourceAndAssertions|TestCompileSourceToPlist|TestDebugLabelsCausalGraphRejectsCorruption|TestDebugLabelsMultipleEntriesAndUnlabeledAppend|TestDebugLabelsNamedDisplayModesAndProvenance|TestDebugLabelsPublicLiteralOmissionContract|TestDebugLabelsTypedProducersAndLaterConsumers|TestDebugStdlibCanonicalCompilerSharedSequence|TestDebugStdlibExplicitDisplayHelpers|TestDebugStdlibImplicitPreviousExactlyOneAppend|TestDebugStdlibLoggingDoesNotBreakLaterConsumer|TestDebugStdlibNoArgumentRequiresBoundSource|TestDebugStdlibNoCrossShortcutPersistentState|TestDebugStdlibQAStructuredTracingDoesNotPerturbDebugLogOrSourceGraph|TestDebugStdlibRejectsLiteralInsteadOfAddingText|TestDebugStdlibTimerNativeDateFieldSerialization|TestDebugTimerNativeDateInputsAcrossLegacyAndV2|TestDebugTimerTwoIndependentLabels|TestForkActionRoundTrips|TestGate_MenusAssetWorkspace|TestGate_PositiveEndToEnd|TestGate_PublicGlobalsAndStandard|TestHYB26_SSoTPropagationDeclarativeAndGoHandler|TestLANG002ScalarReferenceOracleRejectsCorruption|TestLANG002_EnumAndTypeAliases|TestLowerBasicWorkflow|TestLowerConditionalWorkflow|TestNATIVE_PlistPassThrough|TestNATIVE_Plist_DeepStructuralTypes|TestNATIVE_RefAggrandizements|TestNATIVE_Ref_ChainedMultiLevelAggrandizements|TestNATIVE_ValidNativeActionEmission|TestNATIVE_Workflow_ImportDecompileBoundedEditRecompilePipeline|TestP10R2_A17_RawActionFallbackLossless|TestP10R2_A27_ExistingFixturesUnbroken|TestP10R9_SSoTPropagation_DeclarativeAndGoHandler|TestP10R_R08_FilterTwoLevelAndOrRoundTrip|TestP10R_R20_UnrepresentableValueRawActionFallback|TestP10_A4_LumenStorage27_SerializationAndRoundTrip|TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer|TestP10_IPadAcceptanceKit_CompileAndStructure|TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison|TestP10_Serialization_Conditional_GetValue_StringVsNumber_RoundTrip|TestP10_Serialization_RunAction_FixedAndDynamicName_DictPayload_LegacyAndV2|TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2|TestP11_WIRE_42_NoProvenanceNormalStandaloneV2Action|TestP15AC02AllCodecFamiliesNativeShape|TestP15ActionDeclarationHealthyControl|TestP15BRG07DirectReferenceKindsRoundTrip|TestP15BRG07SharedReferencePaths|TestP15BindingCaptureTerminalCausality|TestP15BindingDefaultsPublicRoutes|TestP15C01SnapshotBoundaries|TestP15CollectExistingLegacyAndV2Results|TestP15CustomCodecSharedReferenceCausality|TestP15CustomTokenCodecCanonicalParity|TestP15CustomTokenCodecPublicRoutes|TestP15CustomTokenCodecSecondaryAndImplicitBindings|TestP15DateFieldCanonicalMutableAndOmitted|TestP15DateFieldCanonicalProductionReferences|TestP15DateFieldDoesNotWrapUnrelatedInputs|TestP15DateFieldLiteralAndOmittedSlots|TestP15DebugExportBothFrontendsPrivacyAndIdentity|TestP15DebugExportLiteralOptionsAndRelease|TestP15DebugExportUsesBase64FileMaterialization|TestP15DebugExportZeroOneThousandCompileBudget|TestP15DistanceNumberProduction|TestP15ExplicitNativeContainerTemplateRemainsOpaque|TestP15RP04CheckedCompileRejectsSemanticErrors|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15S03EmbeddedAssetSourceRelative|TestP15T09ContentConversionNativeWire|TestP15V01DeclarationSnapshotProduction|TestP15V02LexicalWire|TestP15V03ClipboardCapturedOnceProduction)$|^TestP15(M02|RP16|FN|None|Optional|Tagged|SC|ShortCircuit|Function)|^TestP11_WIRE_41_|^TestP15U04|^TestP15F03",
+        ".",
+        "./internal/language/lower",
+        "./tools/legacy-parity"
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:01:26.640701+00:00",
+      "elapsed_seconds": 165.672,
+      "exit_code": 1,
+      "expected_exit_for_this_diagnostic": 1,
+      "stdout_sha256": "67e57ec96bfe1061855769af49a03e0c70ea8c02b3f113b44adb447d104a44fa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": 2328,
+      "failed": [
+        "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/literal-dict-with-dynamic-fields-and-local-http-echo",
+        "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer"
+      ],
+      "skipped": []
+    },
+    {
+      "name": "internal-language",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "./internal/language/...",
+        "./tools/legacy-parity"
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:04:12.711770+00:00",
+      "elapsed_seconds": 14.75,
+      "exit_code": 0,
+      "expected_exit_for_this_diagnostic": 0,
+      "stdout_sha256": "12bf5d8179857ed59f71b4153e95e4ceb127f3a71d4f0332b660437072558a6a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": 322,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "name": "legacy-parity",
+      "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+      "source_clean_before_after": true,
+      "command": [
+        "go",
+        "run",
+        "./tools/legacy-parity",
+        "--output",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\parity.json"
+      ],
+      "CHERRI_BIN": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r4-main-void\\clean-source-510ecfdd\\compiler.exe",
+      "started_at": "2026-11-20T11:04:27.731823+00:00",
+      "elapsed_seconds": 12.812,
+      "exit_code": 0,
+      "expected_exit_for_this_diagnostic": 0,
+      "stdout_sha256": "4819550a50382af06be63099794d638ac0895818eb4bc22669d946f8915348ec",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "strict_legacy_parity": {
+    "timestamp": "2026-11-20T11:04:30Z",
+    "total_fixtures": 47,
+    "verified_parity": 9,
+    "proven_equivalent": 38,
+    "upstream_baseline_fails": 0,
+    "migration_fails": 0,
+    "v2_compile_fails": 0,
+    "parity_differences": 0,
+    "total_actions_tested": 17,
+    "actions_passed_both": 17
+  },
+  "complete_main_native_graph_cases": 22,
+  "compiler_sha256": "158b6fd0a3c1ed93e73f8579ba44c0797823f3db5748a7c34888538c3bc44bb5",
+  "compiler_embedded_vcs": "absent in observed linked-worktree build; not installed consumer identity proof",
+  "capabilities": {
+    "languageVersion": "2.0",
+    "catalogSchemaVersion": "3.0",
+    "protocolVersion": "1.0",
+    "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+    "codecFingerprint": "eb550a69bd2e0413369d6b0c0863448c755724b4103c5e4a3617125a72ee3122",
+    "macroFingerprint": "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c",
+    "actionCount": 505
+  },
+  "source_witness_files": 67,
+  "archive": {
+    "members": 144,
+    "bytes": 1163478,
+    "sha256": "c47d104325cb999a425393bc753fbda5ac2273a21e9514ae666a31e4e0469829"
+  },
+  "independent_json_failure_retained": true,
+  "counts_overlap_do_not_sum": true,
+  "apple_runtime_executed": false,
+  "original_M02_accepted": false,
+  "BRG14_accepted": false,
+  "full_go_suite_passed": false,
+  "formal_179_accepted": false,
+  "created_at": "2026-11-20T11:12:44.395142+00:00"
+}
