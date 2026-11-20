@@ -1,0 +1,27 @@
+{
+  "schema": "cherri.p15.r3.schema5.combined.v2",
+  "source_sha": "94188983b5f89e56b5935f96c72dc4ef394cfb51",
+  "checkout": "dedicated detached worktree",
+  "source_clean_before": true,
+  "started_at": "2026-11-20T00:45:21.706712+00:00",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=25m",
+    "-run",
+    "^TestSchemaSupplementalProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "go_version": "go version go1.25.6 windows/amd64",
+  "environment": {
+    "GOMAXPROCS": "2",
+    "GOFLAGS": "-p=2"
+  },
+  "inner_go_timeout_seconds": 1500,
+  "subprocess_timeout_seconds": 1560,
+  "sentinel_timeout_seconds": 1800,
+  "previous_attempt": "8257b5b8 incomplete under confirmed600s external limit; no semantic result",
+  "owned_go_pid": 4584
+}
