@@ -93,6 +93,10 @@ final class CherriEditorUITests: XCTestCase {
     private struct ObservedStartupControls {
         let state: CherriEditorStartupObservation
         let creationControl: XCUIElement?
+
+        func recheckingForeground(_ foreground: Bool) -> Self {
+            Self(state: state.recheckingForeground(foreground), creationControl: creationControl)
+        }
     }
 
     /// Resolve only the two fixed startup controls in one immediate query. A
@@ -203,19 +207,29 @@ final class CherriEditorUITests: XCTestCase {
         if !windowState.editorExists, deadline.remaining() > 0 {
             let createDoc = app.buttons["Create Document"]
             var creationControls = windowControls
+            var creationAuthorized = true
             if deadline.needsDocumentWait(windowState) {
+                let observations = CherriEditorStartupWaitObservation<ObservedStartupControls>(phase: .document)
                 let controlReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                    let current = self.observeStartupControls(trace: trace, phase: .documentWait).state
-                    return current.windowExists && current.appRunningForeground &&
-                        (current.editorExists || (current.createDocumentExists && current.createDocumentHittable))
+                    let current = self.observeStartupControls(trace: trace, phase: .documentWait)
+                    return observations.record(current, state: current.state)
                 }, object: createDoc)
                 trace.mark(.documentWait, .entered, value: true)
                 let waitCompleted = XCTWaiter.wait(for: [controlReady],
                     timeout: deadline.remaining(maximum: 6)) == .completed
                 trace.mark(.documentWait, .returned, value: waitCompleted)
-                // A real wait may have allowed the editor to appear. Refresh
-                // both known controls before deciding whether creation is needed.
-                creationControls = observeStartupControls(trace: trace, phase: .documentSnapshot)
+                // The successful predicate already observed both controls and
+                // bound the exact creation element. Do not repeat its full AX
+                // query. A timed-out wait never authorizes a fallback tap.
+                if let completed = observations.takeCompleted(waitCompleted: waitCompleted) {
+                    creationControls = completed.recheckingForeground(
+                        trace.measure(.documentSnapshot, .foregroundFinal) { app.state == .runningForeground })
+                } else {
+                    creationAuthorized = false
+                    // Keep an actual failed-state diagnostic; it cannot authorize
+                    // creation, even if this later observation sees a button.
+                    creationControls = observeStartupControls(trace: trace, phase: .documentSnapshot)
+                }
                 recordStartupReceipt(stage: "document-wait", waitCompleted: waitCompleted,
                                      state: creationControls.state, deadline: deadline)
             } else {
@@ -224,7 +238,8 @@ final class CherriEditorUITests: XCTestCase {
                 recordStartupReceipt(stage: "document-check", waitCompleted: false,
                                      state: creationControls.state, deadline: deadline)
             }
-            if let create = creationControls.creationControl, deadline.claimDocumentCreation(creationControls.state) {
+            if creationAuthorized, let create = creationControls.creationControl,
+               deadline.claimDocumentCreation(creationControls.state) {
                 trace.mark(.documentTap, .entered, value: true)
                 create.tap()
                 trace.mark(.documentTap, .returned, value: true)
@@ -233,14 +248,26 @@ final class CherriEditorUITests: XCTestCase {
 
         // The original total allowance is shared across transitions. Fast earlier
         // stages leave their unused time for the actual document-to-editor transition.
+        let observations = CherriEditorStartupWaitObservation<ObservedStartupControls>(phase: .editor)
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            self.observeStartupControls(trace: trace, phase: .editorWait).state.interactiveEditor
+            let current = self.observeStartupControls(trace: trace, phase: .editorWait)
+            return observations.record(current, state: current.state)
         }, object: editor)
         trace.mark(.editorWait, .entered, value: true)
         let waitCompleted = XCTWaiter.wait(for: [ready], timeout: deadline.remaining()) == .completed
         trace.mark(.editorWait, .returned, value: waitCompleted)
-        let finalState = observeStartupControls(trace: trace, phase: .finalSnapshot).state
-        let editorReady = deadline.accepts(finalState, waitCompleted: waitCompleted)
+        let completed = observations.takeCompleted(waitCompleted: waitCompleted)
+        let finalState: CherriEditorStartupObservation
+        if let completed {
+            finalState = completed.state.recheckingForeground(
+                trace.measure(.finalSnapshot, .foregroundFinal) { app.state == .runningForeground })
+        } else {
+            finalState = observeStartupControls(trace: trace, phase: .finalSnapshot).state
+        }
+        // Success requires the real completed wait, its own full successful
+        // observation, current foreground and the original decision-time limit.
+        // A later diagnostic snapshot can never replace the failed predicate.
+        let editorReady = deadline.accepts(finalState, waitCompleted: waitCompleted && completed != nil)
         recordStartupReceipt(stage: "editor-wait", waitCompleted: waitCompleted,
                              state: finalState, deadline: deadline)
         recordStartupTiming(trace)

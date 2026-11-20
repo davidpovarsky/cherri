@@ -14,6 +14,16 @@ struct CherriEditorStartupObservation {
         windowExists && appRunningForeground && editorExists && editorHittable
     }
 
+    /// A completed predicate supplies the full control observation. A fresh
+    /// foreground check may invalidate it, but cannot repair a missing field.
+    func recheckingForeground(_ foreground: Bool) -> Self {
+        Self(windowExists: windowExists,
+             appRunningForeground: appRunningForeground && foreground,
+             createDocumentExists: createDocumentExists,
+             createDocumentHittable: createDocumentHittable,
+             editorExists: editorExists, editorHittable: editorHittable)
+    }
+
     /// The caller has already evaluated one query restricted to the two fixed
     /// startup controls. Never resolve a missing element to ask if it is hittable.
     /// Ambiguous controls cannot authorize a tap or an interactive editor.
@@ -31,6 +41,47 @@ struct CherriEditorStartupObservation {
             createDocumentHittable: canInspect && createDocumentCount == 1 && createDocumentHittable(),
             editorExists: editorCount > 0,
             editorHittable: canInspect && editorCount == 1 && editorHittable())
+    }
+}
+
+/// Retain only the last predicate evaluation in one actual XCTest wait. The
+/// successful evaluation already queried every required control; querying the
+/// same controls again can consume the remaining startup allowance. This is not
+/// a readiness cache across waits: failure clears the candidate and completion
+/// consumes it once. Locks protect values only, never accessibility queries.
+final class CherriEditorStartupWaitObservation<Value> {
+    enum Phase { case document, editor }
+    private let phase: Phase
+    private let lock = NSLock()
+    private var candidate: Value?
+    private var finished = false
+
+    init(phase: Phase) { self.phase = phase }
+
+    func record(_ value: Value, state: CherriEditorStartupObservation) -> Bool {
+        let ready: Bool
+        switch phase {
+        case .document:
+            ready = state.windowExists && state.appRunningForeground &&
+                (state.editorExists || (state.createDocumentExists && state.createDocumentHittable))
+        case .editor:
+            ready = state.interactiveEditor
+        }
+        lock.lock()
+        defer { lock.unlock() }
+        guard !finished else { return false }
+        candidate = ready ? value : nil
+        return ready
+    }
+
+    func takeCompleted(waitCompleted: Bool) -> Value? {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !finished else { return nil }
+        finished = true
+        let value = candidate
+        candidate = nil
+        return waitCompleted ? value : nil
     }
 }
 
