@@ -3,6 +3,8 @@ package main
 import (
 	"strings"
 	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 )
 
 func TestP15OptionalImmutableAliasesRetainPresence(t *testing.T) {
@@ -141,8 +143,9 @@ func TestP15OptionalImmutableScopeRestoresPresence(t *testing.T) {
 	for _, tc := range p15FunctionOptionalCases()[:2] {
 		t.Run(tc.name, func(t *testing.T) {
 			source := "function echo(value:Text?)->Bool{let alias=value;{let alias:Text?=\"\";getVariable(alias==none)};return alias==none}\ngetVariable(echo(" + tc.argument + "))"
-			if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
-				t.Fatal(diagnostics)
+			diagnostics := p15TypeDiagnostics(t, source)
+			if len(diagnostics) != 1 || diagnostics[0].Code != analysis.CodeShadowing || diagnostics[0].Severity != analysis.SeverityWarning || !strings.Contains(diagnostics[0].Message, `variable "alias" shadows an existing declaration`) {
+				t.Fatal("intentional lexical shadow must retain exactly its existing warning", diagnostics)
 			}
 			actions := p15CompiledActions(t, source)
 			if err := p15OptionalImmutableScopeError(actions, tc); err != nil {
