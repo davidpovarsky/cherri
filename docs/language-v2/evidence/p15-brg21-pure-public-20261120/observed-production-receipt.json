@@ -1,0 +1,163 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-BRG21-security",
+      "requirements": [
+        "BRG21"
+      ],
+      "tier": "security",
+      "implementation_sha": "c63950858f6ac9b13f9c8a68dc19e9e7a209c46c",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls",
+        "required_go_events": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries\nTestBackendRecovery21PublicAndServiceEffects/observer_controls\nTestBackendRecovery21PublicAndServiceEffects/service_valid\nTestBackendRecovery21PublicAndServiceEffects/check_valid\nTestBackendRecovery21PublicAndServiceEffects/service_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/check_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/compile_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/file_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/service_remote_import\nTestBackendRecovery21PublicAndServiceEffects/check_remote_import\nTestBackendRecovery21PublicAndServiceEffects/compile_remote_import\nTestBackendRecovery21PublicAndServiceEffects/file_remote_import\nTestBackendRecovery21PublicAndServiceEffects/service_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/check_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/file_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/missing_module",
+        "required_production_tests": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries",
+        "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-process.json",
+          "sha256": "fb4646d32a34605707aa138f3246997f76ddc73f92b9a94f0ad90d38259d9568"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-go.jsonl",
+          "sha256": "5214675d2391373766de8252caeeacb6ab07386b288db65c6bae6f610dc98db9"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls"
+    },
+    {
+      "evidence_id": "ev-local-BRG21-integration",
+      "requirements": [
+        "BRG21"
+      ],
+      "tier": "integration",
+      "implementation_sha": "c63950858f6ac9b13f9c8a68dc19e9e7a209c46c",
+      "test_id": "github.com/electrikmilk/cherri:TestP15IM04ActualWorkspaceResourceBoundaries",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls",
+        "required_go_events": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries\nTestBackendRecovery21PublicAndServiceEffects/observer_controls\nTestBackendRecovery21PublicAndServiceEffects/service_valid\nTestBackendRecovery21PublicAndServiceEffects/check_valid\nTestBackendRecovery21PublicAndServiceEffects/service_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/check_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/compile_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/file_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/service_remote_import\nTestBackendRecovery21PublicAndServiceEffects/check_remote_import\nTestBackendRecovery21PublicAndServiceEffects/compile_remote_import\nTestBackendRecovery21PublicAndServiceEffects/file_remote_import\nTestBackendRecovery21PublicAndServiceEffects/service_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/check_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/file_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/missing_module",
+        "required_production_tests": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries",
+        "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-process.json",
+          "sha256": "fb4646d32a34605707aa138f3246997f76ddc73f92b9a94f0ad90d38259d9568"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-go.jsonl",
+          "sha256": "5214675d2391373766de8252caeeacb6ab07386b288db65c6bae6f610dc98db9"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls"
+    },
+    {
+      "evidence_id": "ev-local-BRG21-service",
+      "requirements": [
+        "BRG21"
+      ],
+      "tier": "service",
+      "implementation_sha": "c63950858f6ac9b13f9c8a68dc19e9e7a209c46c",
+      "test_id": "github.com/electrikmilk/cherri:TestBackendRecovery21PublicAndServiceEffects",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestBackendRecovery21PublicAndServiceEffects|TestP15RP29AssetAuthorizationAcrossServiceAndCompile|TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement|TestP15IM04ActualWorkspaceResourceBoundaries)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls",
+        "required_go_events": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries\nTestBackendRecovery21PublicAndServiceEffects/observer_controls\nTestBackendRecovery21PublicAndServiceEffects/service_valid\nTestBackendRecovery21PublicAndServiceEffects/check_valid\nTestBackendRecovery21PublicAndServiceEffects/service_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/check_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/compile_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/file_invalid_action\nTestBackendRecovery21PublicAndServiceEffects/service_remote_import\nTestBackendRecovery21PublicAndServiceEffects/check_remote_import\nTestBackendRecovery21PublicAndServiceEffects/compile_remote_import\nTestBackendRecovery21PublicAndServiceEffects/file_remote_import\nTestBackendRecovery21PublicAndServiceEffects/service_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/check_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/compile_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/file_missing_local_import\nTestBackendRecovery21PublicAndServiceEffects/valid_recovery_and_requested_signer_control\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._local_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/allowed_._..safe_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_._escape_helper\nTestP15IM04ActualWorkspaceResourceBoundaries/reject_.._workspace-other_helper.cherri\nTestP15IM04ActualWorkspaceResourceBoundaries/missing_module",
+        "required_production_tests": "TestBackendRecovery21PublicAndServiceEffects\nTestP15RP29AssetAuthorizationAcrossServiceAndCompile\nTestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement\nTestP15IM04ActualWorkspaceResourceBoundaries",
+        "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-process.json",
+          "sha256": "fb4646d32a34605707aa138f3246997f76ddc73f92b9a94f0ad90d38259d9568"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-go.jsonl",
+          "sha256": "5214675d2391373766de8252caeeacb6ab07386b288db65c6bae6f610dc98db9"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-r3-results-20261120\\dist\\p15-local-gates\\brg21-clean-retained\\producer\\brg21-3094312282\\brg21-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "detail": "Executed complete authorized module/resource loaders and pure public service/library/check/compile/file scenarios with live effect-observer controls"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T09:58:45Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG21",
+        "group": "gate",
+        "requirement": "Authorized resource access and pure services",
+        "test_level": "security+integration+service",
+        "executed_levels": [
+          "security",
+          "integration",
+          "service"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "BRG21",
+  "scope": "Independent BRG21 execution of actual module loader and resource authorization through current service and canonical compile, including real outside bytes, traversal, file/directory symlink escapes and cached-path replacement. Complete public service/library/check/compile/file scenarios reject unresolved remote/local imports and invalid actions without network requests, signing/open/install process invocations or workspace artifacts; valid analysis and recovery remain pure. Actual loopback HTTP and executable observer controls prove the monitored production boundaries are live, and explicitly requested signing reaches the same observer after the pure-path checks. Every required symlink case must execute. This proves the named current public entrypoints and production effect paths only; it does not execute Apple actions, claim arbitrary external sandboxing or inherit IM04/IM05/CL02/RP29 or other IDs.",
+  "source_sha": "c63950858f6ac9b13f9c8a68dc19e9e7a209c46c"
+}
