@@ -1,0 +1,47 @@
+{
+  "source": "53f2b02f475016214569200f9771418efc549c58",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E02",
+    "./internal/language/service"
+  ],
+  "status_before": "",
+  "free_before": 40325636096,
+  "started_at": "2026-11-20T13:22:44.576466+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 8.01600000000326,
+  "completed_at": "2026-11-20T13:22:52.597750+00:00",
+  "status_after": "",
+  "head_after": "53f2b02f475016214569200f9771418efc549c58",
+  "free_after": 40280018944,
+  "named_counts": {
+    "pass": 19,
+    "fail": 2
+  },
+  "failed_names": [
+    "TestP15E02IncompleteIndependentDiagnostics/nested_incomplete_calls",
+    "TestP15E02IncompleteIndependentDiagnostics"
+  ],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 24001,
+      "sha256": "fb4fdad65e48b1d604dedbd10ae05f2ed35cd18eaa82946f00b215ba15037bf2"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
