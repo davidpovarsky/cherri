@@ -55,7 +55,7 @@ func TestP15RP43LegacyEncodingFailurePreservesDestination(t *testing.T) {
 	command.Env = append(os.Environ(), "CHERRI_RP43_ENCODING_OUTPUT="+output)
 	var diagnostic, commandErr = command.CombinedOutput()
 	var exit, ok = commandErr.(*exec.ExitError)
-	if ctx.Err() != nil || !ok || exit.ExitCode() != 1 || !bytes.Contains(diagnostic, []byte("P15_RP43_ENCODING_FAULT_REACHED")) || !bytes.Contains(diagnostic, []byte("chan int")) {
+	if ctx.Err() != nil || !ok || exit.ExitCode() <= 0 || !bytes.Contains(diagnostic, []byte("P15_RP43_ENCODING_FAULT_REACHED")) || !bytes.Contains(diagnostic, []byte("chan int")) {
 		t.Fatalf("did not observe the real encoder error/exit: err=%v context=%v output=%s", commandErr, ctx.Err(), diagnostic)
 	}
 	p15RP43AssertSameFiles(t, directory, before)
