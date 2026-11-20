@@ -34,11 +34,11 @@ func p15OptionalForwardingCases() []p15OptionalForwardingCase {
 func TestP15OptionalForwardingRequiresOwnedPresence(t *testing.T) {
 	const opaque = `native.action("is.workflow.actions.nothing",{})`
 	for _, tc := range []p15OptionalForwardingCase{
-		{"opaque_argument", "function echo(value:Text?)->Text?{return value}\ngetVariable(echo(" + opaque + "))"},
-		{"opaque_return", "function absent(seed:Text)->Text?{return " + opaque + "}\ngetVariable(absent(\"SEED\"))"},
-		{"opaque_binding", "let candidate:Text?=" + opaque + "\ngetVariable(candidate)"},
-		{"opaque_assignment", "var candidate:Text?=none\ncandidate=" + opaque + "\ngetVariable(candidate)"},
-		{"opaque_default", "function echo(value:Text?=" + opaque + ")->Text?{return value}\ngetVariable(echo())"},
+		{"opaque_argument", "function echo(value:AnyContent?)->AnyContent?{return value}\ngetVariable(echo(" + opaque + "))"},
+		{"opaque_return", "function absent(seed:Text)->AnyContent?{return " + opaque + "}\ngetVariable(absent(\"SEED\"))"},
+		{"opaque_binding", "let candidate:AnyContent?=" + opaque + "\ngetVariable(candidate)"},
+		{"opaque_assignment", "var candidate:AnyContent?=none\ncandidate=" + opaque + "\ngetVariable(candidate)"},
+		{"opaque_default", "function echo(value:AnyContent?=" + opaque + ")->AnyContent?{return value}\ngetVariable(echo())"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			check := func(diagnostics []analysis.Diagnostic) {
