@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"testing"
 )
@@ -27,13 +28,17 @@ func p15FunctionOptionalCases() []p15FunctionOptionalCase {
 		{name: "none_skips_default", typ: "Text", argument: "none", fallback: "DEFAULT", supplied: true},
 		{name: "empty_skips_default", typ: "Text", argument: "\"\"", fallback: "DEFAULT", supplied: true, valuePresent: true, value: p15FunctionString("")},
 		{name: "omitted_selects_default", typ: "Text", fallback: "DEFAULT"},
+		{name: "omitted_none_default", typ: "Text", fallback: "none"},
+		{name: "explicit_none_with_none_default", typ: "Text", argument: "none", fallback: "none", supplied: true},
 		{name: "named_none_skips_default", typ: "Text", argument: "none", fallback: "DEFAULT", supplied: true, named: true},
 	}
 }
 
 func p15FunctionOptionalSource(tc p15FunctionOptionalCase) string {
 	parameters := "value:" + tc.typ + "?"
-	if tc.fallback != "" {
+	if tc.fallback == "none" {
+		parameters += "=none"
+	} else if tc.fallback != "" {
 		parameters += "=\"" + tc.fallback + "\""
 	}
 	argument := tc.argument
@@ -85,6 +90,38 @@ func p15FunctionOptionalPayload(g *p15FunctionGraph, tc p15FunctionOptionalCase)
 	return g.value("dictionary", map[string]any{"WFItems": map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": rows}}})
 }
 
+func p15OptionalCarrierGraph(g *p15FunctionGraph, presenceKey, valueKey, marker string, present bool, value p15FunctionArgument) string {
+	fields := map[string]p15FunctionArgument{presenceKey: p15FunctionString("0")}
+	if marker != "" {
+		fields[marker] = p15FunctionString("1")
+	}
+	if present {
+		fields[presenceKey] = p15FunctionString("1")
+		fields[valueKey] = value
+	}
+	keys := []string{}
+	for key := range fields {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	rows := []any{}
+	for _, key := range keys {
+		field := fields[key]
+		rows = append(rows, map[string]any{"WFKey": p15FunctionText(key), "WFItemType": field.kind, "WFValue": field.value})
+	}
+	return g.value("dictionary", map[string]any{"WFItems": map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": map[string]any{"WFDictionaryFieldValueItems": rows}}})
+}
+
+func p15DecodeOptionalGraph(g *p15FunctionGraph, envelope, presenceKey, valueKey string) (value, presence string) {
+	presence = g.get(presenceKey, envelope)
+	group := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
+	g.get(valueKey, envelope)
+	g.boundary(group, 1, false)
+	g.emit("nothing", nil)
+	value = g.boundary(group, 2, true)
+	return value, presence
+}
+
 func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCase) error {
 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
 	envelope := g.header("echo")
@@ -93,26 +130,26 @@ func p15FunctionOptionalError(actions []map[string]any, tc p15FunctionOptionalCa
 		g.get("arg_0", envelope)
 		slot++
 	}
-	defaultGroup := ""
+	valueKey, presenceKey := fmt.Sprintf("arg_%d", slot), fmt.Sprintf("has_value_%d", slot)
 	if tc.fallback != "" {
 		supplied := g.get(fmt.Sprintf("has_arg_%d", slot), envelope)
-		defaultGroup = g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
-	}
-	presence := g.get(fmt.Sprintf("has_value_%d", slot), envelope)
-	valueGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
-	g.get(fmt.Sprintf("arg_%d", slot), envelope)
-	g.boundary(valueGroup, 1, false)
-	g.emit("nothing", nil)
-	value := g.boundary(valueGroup, 2, true)
-	if tc.fallback != "" {
+		defaultGroup := g.conditional(4, p15FunctionEdge(supplied), "WFConditionalActionString", "1")
+		g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(envelope)})
 		g.boundary(defaultGroup, 1, false)
-		g.value("gettext", map[string]any{"WFTextActionText": tc.fallback})
-		value = g.boundary(defaultGroup, 2, true)
+		p15OptionalCarrierGraph(g, presenceKey, valueKey, "", tc.fallback != "none", p15FunctionString(tc.fallback))
+		envelope = g.boundary(defaultGroup, 2, true)
 	}
-	g.output(value)
+	value, presence := p15DecodeOptionalGraph(g, envelope, presenceKey, valueKey)
+	resultGroup := g.conditional(4, p15FunctionEdge(presence), "WFConditionalActionString", "1")
+	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15FunctionEdge(value)})
+	g.boundary(resultGroup, 1, false)
+	p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", false, p15FunctionArgument{})
+	carrier := g.boundary(resultGroup, 2, true)
+	g.output(carrier)
 	g.caller()
 	result := g.call(p15FunctionOptionalPayload(g, tc))
-	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
+	unboxed, _ := p15DecodeOptionalGraph(g, result, "has_value", "value")
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(unboxed)})
 	return g.finish()
 }
 
@@ -162,9 +199,11 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 						case "is.workflow.actions.nothing":
 							nothing = index
 							join = index + 1
-						case "is.workflow.actions.gettext":
-							if p["WFTextActionText"] == "DEFAULT" {
-								fallback = index
+						case "is.workflow.actions.dictionary":
+							if fields, err := p15ContainerFields(p["WFItems"]); err == nil {
+								if row := fields["arg_0"]; row != nil && reflect.DeepEqual(row["WFValue"], p15FunctionText("DEFAULT")) {
+									fallback = index
+								}
 							}
 						case "is.workflow.actions.runworkflow":
 							call = index
