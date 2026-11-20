@@ -52,6 +52,29 @@ func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string) string
 	if p15ExtractedRevision(t, root) != sourceSHA || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 		t.Fatal("real component build requires the exact clean source")
 	}
+	buildRoot := root
+	gitEntry, err := os.Stat(filepath.Join(root, ".git"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !gitEntry.IsDir() {
+		// Go 1.25's VCS root discovery recognizes only a .git directory. A
+		// linked worktree therefore silently omits build identity, even with
+		// -buildvcs=true. Preserve the identity gate by building the exact clean
+		// commit in a short-lived shared clone, never by relabeling a binary.
+		buildRoot = filepath.Join(t.TempDir(), "source")
+		p15ExtractedGit(t, root, "clone", "--quiet", "--shared", "--no-checkout", root, buildRoot)
+		defer func() {
+			if err := os.RemoveAll(buildRoot); err != nil {
+				t.Error(err)
+			}
+		}()
+		p15ExtractedGit(t, buildRoot, "config", "core.autocrlf", "false")
+		p15ExtractedGit(t, buildRoot, "checkout", "--quiet", "--detach", sourceSHA)
+		if p15ExtractedRevision(t, buildRoot) != sourceSHA || strings.TrimSpace(string(p15ExtractedGit(t, buildRoot, "status", "--porcelain"))) != "" {
+			t.Fatal("build clone does not preserve clean source identity")
+		}
+	}
 	path := filepath.Join(t.TempDir(), "tool")
 	if isWindowsRuntime() {
 		path += ".exe"
@@ -59,7 +82,7 @@ func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string) string
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "go", "build", "-buildvcs=true", "-trimpath", "-o", path, packagePath)
-	cmd.Dir = root
+	cmd.Dir = buildRoot
 	cmd.Env = append(p15InstallEnv(nil), "GOWORK=off", "GIT_NO_REPLACE_OBJECTS=1")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("actual clean %s build: %v (context %v)\n%s", packagePath, err, ctx.Err(), out)
