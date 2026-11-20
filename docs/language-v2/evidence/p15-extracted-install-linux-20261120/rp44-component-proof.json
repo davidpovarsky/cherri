@@ -1,0 +1,121 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP44-integration",
+      "requirements": [
+        "RP44"
+      ],
+      "tier": "integration",
+      "implementation_sha": "9654056e2191b4867a314f1154a9e767ef0e851f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP44ExtractedCacheAndBundleSelection",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "12m0s",
+        ".",
+        "-run",
+        "^(TestP15RP44ExtractedCapabilitiesRejection|TestP15RP44InstalledDocsIdentity|TestP15RP44ExtractedCacheAndBundleSelection|TestP15RP44GitIndexDocsIntegrity|TestP15RP44ExtractedCompatibilityConsumer)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer\nTestP15RP44ExtractedCapabilitiesRejection/missing_comma\nTestP15RP44ExtractedCapabilitiesRejection/trailing_comma\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_schema\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_escaped_schema\nTestP15RP44ExtractedCapabilitiesRejection/invalid_escape\nTestP15RP44ExtractedCapabilitiesRejection/invalid_number\nTestP15RP44ExtractedCapabilitiesRejection/unpaired_surrogate\nTestP15RP44ExtractedCapabilitiesRejection/invalid_utf8\nTestP15RP44ExtractedCapabilitiesRejection/raw_nul\nTestP15RP44ExtractedCapabilitiesRejection/multiple_objects\nTestP15RP44ExtractedCapabilitiesRejection/nested_fields_only\nTestP15RP44ExtractedCapabilitiesRejection/missing_protocol\nTestP15RP44ExtractedCapabilitiesRejection/wrong_protocol\nTestP15RP44ExtractedCapabilitiesRejection/missing_catalog\nTestP15RP44ExtractedCapabilitiesRejection/wrong_catalog\nTestP15RP44ExtractedCapabilitiesRejection/missing_codec\nTestP15RP44ExtractedCapabilitiesRejection/wrong_codec\nTestP15RP44ExtractedCapabilitiesRejection/missing_macro\nTestP15RP44ExtractedCapabilitiesRejection/wrong_schema_same_language\nTestP15RP44ExtractedCapabilitiesRejection/not_json\nTestP15RP44InstalledDocsIdentity/changed_docs_preserve_fingerprints\nTestP15RP44InstalledDocsIdentity/missing_git_provenance\nTestP15RP44InstalledDocsIdentity/wrong_commit\nTestP15RP44InstalledDocsIdentity/wrong_schema\nTestP15RP44InstalledDocsIdentity/wrong_macros\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_bundle_prefers_cache\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/unselected_bundle_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/checksum_invalid_cache_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/incomplete_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/both_outdated_rejected\nTestP15RP44ExtractedCacheAndBundleSelection/explicit_outdated_never_falls_back\nTestP15RP44GitIndexDocsIntegrity/assume-unchanged\nTestP15RP44GitIndexDocsIntegrity/skip-worktree",
+        "required_production_tests": "TestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer",
+        "scope": "Independent RP44 extracted installation with actual current and outdated compiler files, complete same-source companion, cache/bundle/explicit selection, original-byte malformed JSON and protocol/catalog/schema/codec/macro controls, and exact clean documentation provenance. Synthetic response controls must be actually observed before precise rejection; they never count as native output. The shipped offline consumer runs against actual tools and generated docs. No K02,K04 or published release credit is inherited."
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP44/actual-artifacts/rp44-1757690586/rp44-process.json",
+          "sha256": "2d5f038dbb6871686d07a8e38a3ea4cc5581fe6e2a24ee024ea20c9d456baeed"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP44/actual-artifacts/rp44-1757690586/rp44-go.jsonl",
+          "sha256": "6a2ef21a429f674af0fdf225c65fd5e2f137870d648b4b61a263e3e586a6e2ac"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP44/actual-artifacts/rp44-1757690586/rp44-stderr.log",
+          "sha256": "9795f826d0c2aef18b95b0f6ee2c659e16c0e44712ae0ccddb872a834155b322"
+        }
+      ],
+      "detail": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls"
+    },
+    {
+      "evidence_id": "ev-local-RP44-skill-package",
+      "requirements": [
+        "RP44"
+      ],
+      "tier": "skill-package",
+      "implementation_sha": "9654056e2191b4867a314f1154a9e767ef0e851f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP44ExtractedCapabilitiesRejection",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "12m0s",
+        ".",
+        "-run",
+        "^(TestP15RP44ExtractedCapabilitiesRejection|TestP15RP44InstalledDocsIdentity|TestP15RP44ExtractedCacheAndBundleSelection|TestP15RP44GitIndexDocsIntegrity|TestP15RP44ExtractedCompatibilityConsumer)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls",
+        "component_tuple_only": "true",
+        "required_go_events": "TestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer\nTestP15RP44ExtractedCapabilitiesRejection/missing_comma\nTestP15RP44ExtractedCapabilitiesRejection/trailing_comma\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_schema\nTestP15RP44ExtractedCapabilitiesRejection/duplicate_escaped_schema\nTestP15RP44ExtractedCapabilitiesRejection/invalid_escape\nTestP15RP44ExtractedCapabilitiesRejection/invalid_number\nTestP15RP44ExtractedCapabilitiesRejection/unpaired_surrogate\nTestP15RP44ExtractedCapabilitiesRejection/invalid_utf8\nTestP15RP44ExtractedCapabilitiesRejection/raw_nul\nTestP15RP44ExtractedCapabilitiesRejection/multiple_objects\nTestP15RP44ExtractedCapabilitiesRejection/nested_fields_only\nTestP15RP44ExtractedCapabilitiesRejection/missing_protocol\nTestP15RP44ExtractedCapabilitiesRejection/wrong_protocol\nTestP15RP44ExtractedCapabilitiesRejection/missing_catalog\nTestP15RP44ExtractedCapabilitiesRejection/wrong_catalog\nTestP15RP44ExtractedCapabilitiesRejection/missing_codec\nTestP15RP44ExtractedCapabilitiesRejection/wrong_codec\nTestP15RP44ExtractedCapabilitiesRejection/missing_macro\nTestP15RP44ExtractedCapabilitiesRejection/wrong_schema_same_language\nTestP15RP44ExtractedCapabilitiesRejection/not_json\nTestP15RP44InstalledDocsIdentity/changed_docs_preserve_fingerprints\nTestP15RP44InstalledDocsIdentity/missing_git_provenance\nTestP15RP44InstalledDocsIdentity/wrong_commit\nTestP15RP44InstalledDocsIdentity/wrong_schema\nTestP15RP44InstalledDocsIdentity/wrong_macros\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_bundle_prefers_cache\nTestP15RP44ExtractedCacheAndBundleSelection/outdated_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/unselected_bundle_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/checksum_invalid_cache_not_executed\nTestP15RP44ExtractedCacheAndBundleSelection/incomplete_cache_uses_bundle\nTestP15RP44ExtractedCacheAndBundleSelection/both_outdated_rejected\nTestP15RP44ExtractedCacheAndBundleSelection/explicit_outdated_never_falls_back\nTestP15RP44GitIndexDocsIntegrity/assume-unchanged\nTestP15RP44GitIndexDocsIntegrity/skip-worktree",
+        "required_production_tests": "TestP15RP44ExtractedCapabilitiesRejection\nTestP15RP44InstalledDocsIdentity\nTestP15RP44ExtractedCacheAndBundleSelection\nTestP15RP44GitIndexDocsIntegrity\nTestP15RP44ExtractedCompatibilityConsumer",
+        "scope": "Independent RP44 extracted installation with actual current and outdated compiler files, complete same-source companion, cache/bundle/explicit selection, original-byte malformed JSON and protocol/catalog/schema/codec/macro controls, and exact clean documentation provenance. Synthetic response controls must be actually observed before precise rejection; they never count as native output. The shipped offline consumer runs against actual tools and generated docs. No K02,K04 or published release credit is inherited."
+      },
+      "artifacts": [
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP44/actual-artifacts/rp44-1757690586/rp44-process.json",
+          "sha256": "2d5f038dbb6871686d07a8e38a3ea4cc5581fe6e2a24ee024ea20c9d456baeed"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP44/actual-artifacts/rp44-1757690586/rp44-go.jsonl",
+          "sha256": "6a2ef21a429f674af0fdf225c65fd5e2f137870d648b4b61a263e3e586a6e2ac"
+        },
+        {
+          "path": "/home/runner/work/_temp/cherri-packaging-RP44/actual-artifacts/rp44-1757690586/rp44-stderr.log",
+          "sha256": "9795f826d0c2aef18b95b0f6ee2c659e16c0e44712ae0ccddb872a834155b322"
+        }
+      ],
+      "detail": "Executed the complete independent extracted-install scenario with actual tools, exact source/bytes and causal controls"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-20T07:48:42Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "RP44",
+        "group": "repair",
+        "requirement": "Skill compatibility rejection",
+        "test_level": "skill-package+integration",
+        "executed_levels": [
+          "skill-package",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "requirement": "RP44",
+  "scope": "Independent RP44 extracted installation with actual current and outdated compiler files, complete same-source companion, cache/bundle/explicit selection, original-byte malformed JSON and protocol/catalog/schema/codec/macro controls, and exact clean documentation provenance. Synthetic response controls must be actually observed before precise rejection; they never count as native output. The shipped offline consumer runs against actual tools and generated docs. No K02,K04 or published release credit is inherited.",
+  "source_sha": "9654056e2191b4867a314f1154a9e767ef0e851f"
+}
