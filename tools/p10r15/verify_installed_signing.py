@@ -179,7 +179,8 @@ def main():
                 elif surface == "skill_copy":
                     skill = work / "skill"
                     (skill / "scripts").mkdir(parents=True)
-                    for path in [opts.skill / "compatibility-manifest.json", opts.skill / "scripts/common.sh"]:
+                    for path in [opts.skill / "compatibility-manifest.json",
+                                 opts.skill / "scripts/common.sh", opts.skill / "scripts/json-object.awk"]:
                         shutil.copy2(path, skill / path.relative_to(opts.skill))
                     wrapper = (opts.skill / "scripts/build.sh").read_text()
                     assert wrapper.count("--hubsign") == 1, "unexpected Skill signing invocation"
