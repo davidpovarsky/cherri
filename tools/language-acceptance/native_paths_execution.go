@@ -91,6 +91,15 @@ var nativePathsProductionPaths = []string{
 	"tools/language-acceptance/parser_execution.go",
 	"tools/language-acceptance/evidence_map.go",
 	"tools/language-acceptance/execution_audit.go",
+	"internal/language/analysis/diagnostics.go",
+	"internal/language/lower/main_output.go",
+	"internal/language/lower/module_scope.go",
+	"internal/language/migrate/main_output.go",
+	"internal/language/migrate/migrate.go",
+	"internal/language/service/module_analysis.go",
+	"internal/language/syntax/main_output.go",
+	"tools/language-acceptance/local_gate_source_binding.go",
+	"tools/language-acceptance/local_gate_source_binding_test.go",
 }
 
 func nativePathsRequiredEvents() []string {
@@ -200,7 +209,7 @@ func validateNativePathsRecord(id string, record EvidenceRecord) error {
 	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(nativePathsTests) + time.Minute).Seconds()); err != nil {
 		return err
 	}
-	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, nativePathsProductionPaths); err != nil {
+	if err = localGateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, nativePathsProductionPaths); err != nil {
 		return err
 	}
 	if err = parseNativePathsOutput(raw); err != nil {
@@ -222,7 +231,7 @@ func (r *Runner) executeNativePathsProduction() ([]EvidenceArtifact, string, boo
 		return nil, "", false, err
 	}
 	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "BRG18", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(nativePathsTests), RequiredTests: nativePathsRequiredEvents()}
-	receipt.SourceFiles, err = editorGitSourceFiles(root, before, nativePathsProductionPaths)
+	receipt.SourceFiles, err = localGateSourceFiles(root, before, nativePathsProductionPaths)
 	if err != nil {
 		return nil, "", false, err
 	}

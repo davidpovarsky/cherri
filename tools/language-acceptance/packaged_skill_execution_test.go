@@ -35,7 +35,7 @@ func TestPackagedSkillProducerInventory(t *testing.T) {
 		t.Fatal("immutable full BRG30 contract changed", row)
 	}
 	names := packagedSkillRequiredEvents()
-	if len(names) != 94 || len(packagedSkillProductionPaths) != 66 {
+	if len(names) != 94 || len(packagedSkillProductionPaths) != 74 {
 		t.Fatal("unreviewed BRG30 event/source inventory", len(names), len(packagedSkillProductionPaths))
 	}
 	seen := map[string]bool{}

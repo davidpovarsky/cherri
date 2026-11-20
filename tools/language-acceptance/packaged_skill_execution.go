@@ -115,6 +115,14 @@ var packagedSkillProductionPaths = []string{
 	"tools/language-acceptance/execution_audit.go",
 	"go.mod",
 	"go.sum",
+	"internal/language/analysis/analyzer.go",
+	"internal/language/analysis/diagnostics.go",
+	"internal/language/lower/lower.go",
+	"internal/language/lower/main_output.go",
+	"internal/language/lower/module_scope.go",
+	"internal/language/migrate/main_output.go",
+	"internal/language/service/module_analysis.go",
+	"internal/language/syntax/main_output.go",
 }
 
 func packagedSkillRequiredEvents() []string {

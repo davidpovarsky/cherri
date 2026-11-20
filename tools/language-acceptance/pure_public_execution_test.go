@@ -34,7 +34,7 @@ func TestPurePublicProducerInventory(t *testing.T) {
 		t.Fatal("immutable full BRG21 contract changed", row)
 	}
 	names := purePublicRequiredEvents()
-	if len(names) != 33 || len(purePublicProductionPaths) != 56 {
+	if len(names) != 33 || len(purePublicProductionPaths) != 64 {
 		t.Fatal("unreviewed BRG21 event/source inventory", len(names), len(purePublicProductionPaths))
 	}
 	seen := map[string]bool{}

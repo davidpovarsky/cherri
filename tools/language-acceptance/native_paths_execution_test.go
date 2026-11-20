@@ -34,7 +34,7 @@ func TestNativePathsProducerInventory(t *testing.T) {
 		t.Fatal("immutable full BRG18 contract changed", row)
 	}
 	names := nativePathsRequiredEvents()
-	if len(names) != 54 || len(nativePathsProductionPaths) != 61 {
+	if len(names) != 54 || len(nativePathsProductionPaths) != 70 {
 		t.Fatal("unreviewed BRG18 event/source inventory", len(names), len(nativePathsProductionPaths))
 	}
 	seen := map[string]bool{}

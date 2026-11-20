@@ -101,6 +101,15 @@ var publicFrontendProductionPaths = []string{
 	"tools/language-acceptance/parser_execution.go",
 	"tools/language-acceptance/evidence_map.go",
 	"tools/language-acceptance/execution_audit.go",
+	"internal/language/analysis/diagnostics.go",
+	"internal/language/lower/main_output.go",
+	"internal/language/lower/module_scope.go",
+	"internal/language/migrate/main_output.go",
+	"internal/language/service/module_analysis.go",
+	"internal/language/syntax/main_output.go",
+	"tools/language-acceptance/local_gate_source_binding.go",
+	"tools/language-acceptance/local_gate_source_binding_test.go",
+	"p15_main_void_return_test.go",
 }
 
 func publicFrontendRequiredEvents() []string {
@@ -217,7 +226,7 @@ func validatePublicFrontendRecord(id string, record EvidenceRecord) error {
 	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(publicFrontendTests) + time.Minute).Seconds()); err != nil {
 		return err
 	}
-	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, publicFrontendProductionPaths); err != nil {
+	if err = localGateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, publicFrontendProductionPaths); err != nil {
 		return err
 	}
 	if err = parsePublicFrontendOutput(raw); err != nil {
@@ -239,7 +248,7 @@ func (r *Runner) executePublicFrontendProduction() ([]EvidenceArtifact, string, 
 		return nil, "", false, err
 	}
 	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: "RP52", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(publicFrontendTests), RequiredTests: publicFrontendRequiredEvents()}
-	receipt.SourceFiles, err = editorGitSourceFiles(root, before, publicFrontendProductionPaths)
+	receipt.SourceFiles, err = localGateSourceFiles(root, before, publicFrontendProductionPaths)
 	if err != nil {
 		return nil, "", false, err
 	}
