@@ -38,8 +38,8 @@ validate_cherri_migration_bin() (
   trap 'exit 129' HUP
   trap 'exit 130' INT
   trap 'exit 143' TERM
-  if ! "$_migration" --capabilities-json > "$_identity_file" 2>/dev/null || ! json_file_is_valid_object "$_identity_file"; then
-    echo "[CHERRI_TOOL_IDENTITY_INVALID] Cannot read migration tool role and build identity" >&2
+  if ! "$_migration" --inspect-build-json "$_migration" > "$_identity_file" 2>/dev/null || ! json_file_is_valid_object "$_identity_file"; then
+    echo "[CHERRI_TOOL_IDENTITY_INVALID] Cannot inspect migration tool role and embedded build identity" >&2
     return 1
   fi
   if [ "$(json_parse_object tool < "$_identity_file")" != "cherri-migrate" ] ||
@@ -52,20 +52,29 @@ validate_cherri_migration_bin() (
     echo "[CHERRI_TOOL_SOURCE_MISMATCH] Installed migration tool source revision is not the exact clean $CHERRI_REF" >&2
     return 1
   fi
+  _identity_sha=$(json_parse_object sha256 < "$_identity_file")
+  _receipt_sha=$(tr -d '\r\n ' < "$_migration.sha256" | tr 'A-F' 'a-f')
+  if [ "$_identity_sha" != "$_receipt_sha" ]; then
+    echo "[CHERRI_TOOL_IDENTITY_INVALID] Inspected migration bytes differ from their SHA-256 receipt" >&2
+    return 1
+  fi
+  if [ "$#" -gt 1 ]; then cat "$_identity_file" > "$2"; fi
 )
 
 validate_cherri_installation() (
   _compiler=$1
   _migration=$2
-  # Preserve the precise capability diagnostics before inspecting source/role.
-  validate_cherri_bin "$_compiler" || return 1
+  # Authenticate the mandatory byte receipt before any installed code runs.
   require_install_tool_receipts "$_compiler" compiler || return 1
-  validate_cherri_migration_bin "$_migration" || return 1
+  validate_cherri_bin "$_compiler" || return 1
+  _migration_identity_file=""
   _identity_file=$(umask 077; mktemp "${TMPDIR:-/tmp}/cherri-compiler-identity.XXXXXX") || return 1
-  trap 'rm -f "$_identity_file"' 0
+  trap 'rm -f "$_identity_file"; if [ -n "$_migration_identity_file" ]; then rm -f "$_migration_identity_file"; fi' 0
   trap 'exit 129' HUP
   trap 'exit 130' INT
   trap 'exit 143' TERM
+  _migration_identity_file=$(umask 077; mktemp "${TMPDIR:-/tmp}/cherri-pair-migration-identity.XXXXXX") || return 1
+  validate_cherri_migration_bin "$_migration" "$_migration_identity_file" || return 1
   if ! "$_migration" --inspect-build-json "$_compiler" > "$_identity_file" 2>/dev/null || ! json_file_is_valid_object "$_identity_file"; then
     echo "[CHERRI_TOOL_IDENTITY_INVALID] Cannot inspect compiler tool role and embedded clean source revision" >&2
     return 1
@@ -84,6 +93,31 @@ validate_cherri_installation() (
   _receipt_sha=$(tr -d '\r\n ' < "$_compiler.sha256" | tr 'A-F' 'a-f')
   if [ "$_identity_sha" != "$_receipt_sha" ]; then
     echo "[CHERRI_TOOL_IDENTITY_INVALID] Inspected compiler bytes differ from their SHA-256 receipt" >&2
+    return 1
+  fi
+  for _platform_key in goos goarch; do
+    _compiler_platform=$(json_parse_object "$_platform_key" < "$_identity_file")
+    _migration_platform=$(json_parse_object "$_platform_key" < "$_migration_identity_file")
+    if [ -z "$_compiler_platform" ] || [ "$_compiler_platform" != "$_migration_platform" ]; then
+      echo "[CHERRI_TOOL_PLATFORM_MISMATCH] Compiler and migration tool $_platform_key identities differ" >&2
+      return 1
+    fi
+  done
+)
+
+validate_cherri_installed_docs() (
+  _installed_docs=$1
+  if [ ! -e "$_installed_docs/.git" ]; then
+    echo "[CHERRI_DOCS_GIT_MISSING] Installed documentation lacks immutable Git provenance: $_installed_docs" >&2
+    return 1
+  fi
+  validate_docs_dir "$_installed_docs" || return 1
+  if ! _installed_docs_state=$(git --no-replace-objects -C "$_installed_docs" status --porcelain); then
+    echo "[CHERRI_DOCS_GIT_INVALID] Cannot verify installed documentation bytes" >&2
+    return 1
+  fi
+  if [ -n "$_installed_docs_state" ]; then
+    echo "[CHERRI_DOCS_DIRTY] Installed documentation differs from its pinned commit" >&2
     return 1
   fi
 )
