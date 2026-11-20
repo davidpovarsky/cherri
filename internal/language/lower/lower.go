@@ -4416,31 +4416,39 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	return nil, fmt.Errorf("unhandled expression %T: expressions must not be silently dropped", expr)
 }
 
+// lowerFStringValues retains the existing source order of authored expression
+// actions. Pure literal carriers are emitted only after these values are lowered,
+// so they cannot become an interpolated action's implicit Previous input.
+func (l *Lowerer) lowerFStringValues(f *syntax.FStringExpr) ([]interface{}, error) {
+	values := make([]interface{}, 0, len(f.Parts))
+	for _, part := range f.Parts {
+		if !part.IsExpr {
+			values = append(values, part.Text)
+			continue
+		}
+		value, err := l.lowerExpression(part.Expr)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
+}
+
 func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
+	values, err := l.lowerFStringValues(f)
+	if err != nil {
+		return nil, err
+	}
 	var fullText strings.Builder
 	attachmentsByRange := make(map[string]interface{})
-
-	for _, part := range f.Parts {
-		var val interface{}
-		if !part.IsExpr {
-			if !strings.ContainsRune(part.Text, '\uFFFC') {
-				fullText.WriteString(part.Text)
-				continue
-			}
-			// WorkflowKit treats every U+FFFC inside a token string as a
-			// placeholder. Preserve authored literal bytes in an ordinary Text
-			// producer and reuse its native attachment at this evaluation point.
-			val = l.materializeToAttachment(part.Text)
-		} else {
-			var err error
-			val, err = l.lowerExpression(part.Expr)
-			if err != nil {
-				return nil, err
-			}
-			if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
-				val = l.materializeToAttachment(literal)
-			}
+	for _, val := range values {
+		if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
+			// WorkflowKit consumes U+FFFC in token templates as a placeholder.
+			// The ordinary Text producer preserves these exact literal bytes.
+			val = l.materializeToAttachment(literal)
 		}
+
 		if tok, ok := val.(*ir.AttachmentToken); ok {
 			startUTF16 := len(utf16.Encode([]rune(fullText.String())))
 			fullText.WriteString("\uFFFC") // Object replacement char
@@ -4520,26 +4528,17 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		}, nil
 	}
 	if f, ok := expr.(*syntax.FStringExpr); ok {
+		values, err := l.lowerFStringValues(f)
+		if err != nil {
+			return backend.SemanticValue{}, err
+		}
 		var segments []backend.TextSegment
 		hasRef := false
-		for _, part := range f.Parts {
-			var val interface{}
-			if !part.IsExpr {
-				if !strings.ContainsRune(part.Text, '\uFFFC') {
-					segments = append(segments, backend.TextSegment{Text: part.Text})
-					continue
-				}
-				val = l.materializeToAttachment(part.Text)
-			} else {
-				var err error
-				val, err = l.lowerExpression(part.Expr)
-				if err != nil {
-					return backend.SemanticValue{}, err
-				}
-				if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
-					val = l.materializeToAttachment(literal)
-				}
+		for _, val := range values {
+			if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
+				val = l.materializeToAttachment(literal)
 			}
+
 			semVal := l.toSemanticValue(val)
 			if semVal.Kind == backend.ValReference {
 				hasRef = true
