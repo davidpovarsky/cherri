@@ -1,0 +1,423 @@
+{
+  "schema_version": "1",
+  "status": "FAIL_RUNTIME_PRESERVED",
+  "source_commit": "7f044196d042dcdbbcc7401dcc96177f059b0db3",
+  "run_id": 44680412319,
+  "run_attempt": 1,
+  "run_url": "https://github.com/davidpovarsky/cherri/actions/runs/44680412319",
+  "workflow_conclusion": "failure",
+  "job": {
+    "id": 136102177469,
+    "started_at": "2026-11-20T06:35:03Z",
+    "completed_at": "2026-11-20T07:02:26Z",
+    "conclusion": "failure"
+  },
+  "original_evidence": {
+    "artifact_id": 14608034750,
+    "zip_sha256": "fe639f4db6051344e24d12ae083459ec9c26ff369377dcd156aab47253c1b729",
+    "zip_bytes": 54976,
+    "run_metadata_sha256": "d0d6a243f978b5519c5e5398284f66227cd168e6d5f5717ded011241a15f2b73",
+    "job_metadata_sha256": "eee68ec3870bde05e111f0e453d8f7e1b0004d2b1e772396a714d502d22fa4a6",
+    "job_log_sha256": "307e07d591c17154301226d2595bb676bc6986d8b9748d8379382b595c83d640",
+    "publication_manifest_sha256": "ea81b42a362a42b8efc3145be4a70c23856108e494e7a9bf0925ac03e5f8b825",
+    "callback_events_sha256": "38960af891c105fdbd0d6df68a642e29e2854f90db9dc37e8094ad8bb7726ffe",
+    "output_assertions_sha256": "54f7c2a9ddc51629b13d7c3be81e39cc0cc1a44cb2d1180b8a0bfa24a62ca891",
+    "xcresult_summary_sha256": "1a064ca26879d99812d33e1125803b14e44afdb174bc41dc5b543937ee157ff4"
+  },
+  "fixture": {
+    "id": "qa-date-difference-diagnostic-v2",
+    "source_path": "tools/shortcuts-simulator-qa/fixtures/qa-date-difference-diagnostic-v2.cherri",
+    "source_sha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+    "expected_contract_sha256": "5f96a34fef09a25a3a6261bbbd2556703a61dc41a25992202c80b88dee7e17d2",
+    "native_unsigned_plist_sha256": "57500e4ff5b49e7c107bca87f6081b497bf65a20ac3bdb642fec44ffa0c969c9",
+    "build_profile": "debug",
+    "debug_log_used": false,
+    "original_source_and_expected_output_changed": false
+  },
+  "observed_callback": {
+    "identity": "one exact fresh source-bound non-self-test Shortcuts callback",
+    "run_nonce": "qa-date-difference-diagnostic-v2-44680412319-759a6cc265bbca2ea9ca20e47ebc26b5",
+    "status": "SUCCESS",
+    "timestamp_utc": "2026-11-20T06:58:35.440Z",
+    "summary": "CHERRI_QA_DATE_DIFFERENCE_DIAG:START_TYPE64=RGF0ZQ==:START_COUNT=1:START_FORMAT64=MjAwMS0wMi0wM1QwNDowNTowNlo=:SAME_TYPE64=RGF0ZQ==:SAME_COUNT=1:SAME_FORMAT64=MjAwMS0wMi0wM1QwNDowNTowNlo=:LATER_TYPE64=RGF0ZQ==:LATER_COUNT=1:LATER_FORMAT64=MjAwMS0wMi0wM1QwNDowNjowNlo=:ZERO_SECONDS_TYPE64=:ZERO_SECONDS_COUNT=0:ZERO_SECONDS_TEXT64=:POSITIVE_SECONDS_TYPE64=:POSITIVE_SECONDS_COUNT=0:POSITIVE_SECONDS_TEXT64=:ZERO_MINUTES_TYPE64=:ZERO_MINUTES_COUNT=0:ZERO_MINUTES_TEXT64=:POSITIVE_MINUTES_TYPE64=:POSITIVE_MINUTES_COUNT=0:POSITIVE_MINUTES_TEXT64=:SAME_PRODUCER_SECONDS_TYPE64=:SAME_PRODUCER_SECONDS_COUNT=0:SAME_PRODUCER_SECONDS_TEXT64=:NUMERIC_ZERO_TYPE64=TnVtYmVy:NUMERIC_ZERO_COUNT=1:NUMERIC_ZERO_TEXT64=MA==",
+    "summary_sha256": "36ffbde3e5c260729680f8aa0e99e668e80bdcb21c61fe963864ab1bd666adf0",
+    "raw_inline_trace_stages": [
+      "before",
+      "after"
+    ],
+    "trace_payload_sha256": "64ba7458801e3188378b4a8f4834c60196fa97027325d02e39da6c13b76d8186"
+  },
+  "field_count": 27,
+  "matching_fields": 12,
+  "mismatching_fields": 15,
+  "fields": [
+    {
+      "field": "START_TYPE64",
+      "expected": "RGF0ZQ==",
+      "observed": "RGF0ZQ==",
+      "matches": true,
+      "observed_utf8": "Date",
+      "expected_utf8": "Date"
+    },
+    {
+      "field": "START_COUNT",
+      "expected": "1",
+      "observed": "1",
+      "matches": true
+    },
+    {
+      "field": "START_FORMAT64",
+      "expected": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+      "observed": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+      "matches": true,
+      "observed_utf8": "2001-02-03T04:05:06Z",
+      "expected_utf8": "2001-02-03T04:05:06Z"
+    },
+    {
+      "field": "SAME_TYPE64",
+      "expected": "RGF0ZQ==",
+      "observed": "RGF0ZQ==",
+      "matches": true,
+      "observed_utf8": "Date",
+      "expected_utf8": "Date"
+    },
+    {
+      "field": "SAME_COUNT",
+      "expected": "1",
+      "observed": "1",
+      "matches": true
+    },
+    {
+      "field": "SAME_FORMAT64",
+      "expected": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+      "observed": "MjAwMS0wMi0wM1QwNDowNTowNlo=",
+      "matches": true,
+      "observed_utf8": "2001-02-03T04:05:06Z",
+      "expected_utf8": "2001-02-03T04:05:06Z"
+    },
+    {
+      "field": "LATER_TYPE64",
+      "expected": "RGF0ZQ==",
+      "observed": "RGF0ZQ==",
+      "matches": true,
+      "observed_utf8": "Date",
+      "expected_utf8": "Date"
+    },
+    {
+      "field": "LATER_COUNT",
+      "expected": "1",
+      "observed": "1",
+      "matches": true
+    },
+    {
+      "field": "LATER_FORMAT64",
+      "expected": "MjAwMS0wMi0wM1QwNDowNjowNlo=",
+      "observed": "MjAwMS0wMi0wM1QwNDowNjowNlo=",
+      "matches": true,
+      "observed_utf8": "2001-02-03T04:06:06Z",
+      "expected_utf8": "2001-02-03T04:06:06Z"
+    },
+    {
+      "field": "ZERO_SECONDS_TYPE64",
+      "expected": "TnVtYmVy",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "Number"
+    },
+    {
+      "field": "ZERO_SECONDS_COUNT",
+      "expected": "1",
+      "observed": "0",
+      "matches": false
+    },
+    {
+      "field": "ZERO_SECONDS_TEXT64",
+      "expected": "MA==",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "0"
+    },
+    {
+      "field": "POSITIVE_SECONDS_TYPE64",
+      "expected": "TnVtYmVy",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "Number"
+    },
+    {
+      "field": "POSITIVE_SECONDS_COUNT",
+      "expected": "1",
+      "observed": "0",
+      "matches": false
+    },
+    {
+      "field": "POSITIVE_SECONDS_TEXT64",
+      "expected": "NjA=",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "60"
+    },
+    {
+      "field": "ZERO_MINUTES_TYPE64",
+      "expected": "TnVtYmVy",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "Number"
+    },
+    {
+      "field": "ZERO_MINUTES_COUNT",
+      "expected": "1",
+      "observed": "0",
+      "matches": false
+    },
+    {
+      "field": "ZERO_MINUTES_TEXT64",
+      "expected": "MA==",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "0"
+    },
+    {
+      "field": "POSITIVE_MINUTES_TYPE64",
+      "expected": "TnVtYmVy",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "Number"
+    },
+    {
+      "field": "POSITIVE_MINUTES_COUNT",
+      "expected": "1",
+      "observed": "0",
+      "matches": false
+    },
+    {
+      "field": "POSITIVE_MINUTES_TEXT64",
+      "expected": "MQ==",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "1"
+    },
+    {
+      "field": "SAME_PRODUCER_SECONDS_TYPE64",
+      "expected": "TnVtYmVy",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "Number"
+    },
+    {
+      "field": "SAME_PRODUCER_SECONDS_COUNT",
+      "expected": "1",
+      "observed": "0",
+      "matches": false
+    },
+    {
+      "field": "SAME_PRODUCER_SECONDS_TEXT64",
+      "expected": "MA==",
+      "observed": "",
+      "matches": false,
+      "observed_utf8": "",
+      "expected_utf8": "0"
+    },
+    {
+      "field": "NUMERIC_ZERO_TYPE64",
+      "expected": "TnVtYmVy",
+      "observed": "TnVtYmVy",
+      "matches": true,
+      "observed_utf8": "Number",
+      "expected_utf8": "Number"
+    },
+    {
+      "field": "NUMERIC_ZERO_COUNT",
+      "expected": "1",
+      "observed": "1",
+      "matches": true
+    },
+    {
+      "field": "NUMERIC_ZERO_TEXT64",
+      "expected": "MA==",
+      "observed": "MA==",
+      "matches": true,
+      "observed_utf8": "0",
+      "expected_utf8": "0"
+    }
+  ],
+  "real_source_bound_intake": {
+    "status": "FAIL_RUNTIME_PRESERVED",
+    "exit_code": 2,
+    "report_sha256": "cbc5b7fe7ad2841ca74b11727b9c1cf5e7201ac4fa9eac356efe419490e5922a",
+    "receipt_sha256": "b9011c07eda1cd11d61dab383e7fdb903cdc9913420f2059ed0b6d6d5b09ba13",
+    "audit_source_sha256": "ca9e24a91921d5b69c4bcb709276285b8387abd96e329e127e64b2d7c6545e17",
+    "imported_helper_sha256": "0d174ba3ca44811a14cebf9f90290760e00d73c5087c5aad6b7d9d6b229111e8",
+    "imported_helper_exact_source_bytes": true,
+    "execution_method": "Unchanged audit Git blob from claimed source, with unchanged imported helper and actual repository object reads.",
+    "published_file_hashes_verified": 21,
+    "canonical_oracle_replay": {
+      "runGate": "FAIL_RUNTIME",
+      "traceGate": "FAIL_RUNTIME",
+      "reason": "callback result does not exactly match expected output",
+      "targetFixtureId": "qa-date-difference-diagnostic-v2",
+      "compilerCommitSha": "7f044196d042dcdbbcc7401dcc96177f059b0db3",
+      "buildProfile": "debug",
+      "traceExpectation": "REQUIRED_NDJSON",
+      "releaseBuildVerified": false,
+      "sourceSha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+      "unsignedPlistSha256": "57500e4ff5b49e7c107bca87f6081b497bf65a20ac3bdb642fec44ffa0c969c9"
+    },
+    "causal_controls": {
+      "status": "NOT_RUN_BASELINE_NOT_PASS",
+      "rejected": []
+    }
+  },
+  "receiver_import_tests": {
+    "passed": 4,
+    "failed": 0,
+    "scope": "Receiver/import helper tests only; no Date output contract credit."
+  },
+  "local_compiled_wire_observation": {
+    "source_commit": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+    "native_run_source_is_docs_only_descendant": true,
+    "local_unsigned_sha256": "2c7b10160a569845c47327e5daee68388c4a26041ba1759ca78f497b2dad4c0a",
+    "local_receipt_sha256": "1390864671e1dc67b06e0022f641e1757e29e9efafbdec994e4e6f5ec72be870",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.gettimebetweendates",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "zeroSeconds",
+          "UUID": "C07DEF53-7FB8-4529-A652-E8235AC49945",
+          "WFInput": {
+            "Value": {
+              "OutputName": "sameDate",
+              "OutputUUID": "AFE38682-03B4-482F-A388-9F42DF5D9000",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilFromDate": {
+            "Value": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilUnit": "Seconds"
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.gettimebetweendates",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "positiveSeconds",
+          "UUID": "9A16988F-F205-4684-89B0-4AEC9AFFB135",
+          "WFInput": {
+            "Value": {
+              "OutputName": "laterDate",
+              "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilFromDate": {
+            "Value": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilUnit": "Seconds"
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.gettimebetweendates",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "zeroMinutes",
+          "UUID": "545D77BA-03BC-4E87-BD7F-F57EEB24DABC",
+          "WFInput": {
+            "Value": {
+              "OutputName": "sameDate",
+              "OutputUUID": "AFE38682-03B4-482F-A388-9F42DF5D9000",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilFromDate": {
+            "Value": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilUnit": "Minutes"
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.gettimebetweendates",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "positiveMinutes",
+          "UUID": "72FF6114-5B7E-4F52-8005-5C1BFD22D172",
+          "WFInput": {
+            "Value": {
+              "OutputName": "laterDate",
+              "OutputUUID": "398146E2-E028-48B1-93CD-890BD97B33B0",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilFromDate": {
+            "Value": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilUnit": "Minutes"
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.gettimebetweendates",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "sameProducerSeconds",
+          "UUID": "3FE2C1B4-6E24-49BC-B443-950CC3E40328",
+          "WFInput": {
+            "Value": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilFromDate": {
+            "Value": {
+              "OutputName": "startDate",
+              "OutputUUID": "8AAF20D3-5E2D-415B-8D95-E5A05C4029CA",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFTimeUntilUnit": "Seconds"
+        }
+      }
+    ],
+    "scope": "Retained clean local compilation of the same production/fixture source, not downloaded native unsigned bytes."
+  },
+  "conclusions": {
+    "direct_dates": "Three Date type/count/formatted-value controls match.",
+    "direct_numeric_zero": "Independent Number/count1/text0 control matches.",
+    "date_intervals": "All five zero/positive/same-producer interval outputs have count0 and empty type/text.",
+    "failure_cause": "UNCONFIRMED; action parameter state codec under inspection.",
+    "debug_label_date_retention": "NOT_ESTABLISHED_BY_THIS_DIAGNOSTIC",
+    "formal_requirements_proved": [],
+    "physical_device": "NOT_RUN"
+  }
+}
