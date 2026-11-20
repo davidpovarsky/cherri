@@ -1,0 +1,72 @@
+{
+  "label": "packages",
+  "implementation_sha": "54cf4350d79630f1572246bc027270189264202f",
+  "provenance": "DIRTY_PRECOMMIT",
+  "source_files": {
+    "internal/language/analysis/analyzer.go": "501a71156175d7c26dfbada6c9782caefb88ae3241f037bc9ab9b92b50362ff6",
+    "internal/language/analysis/optional_presence.go": "0a108eec0572494ab7122ff7a548215c14749724cef3a41c034ec49f0fd96736",
+    "internal/language/analysis/dictionary_presence.go": "bd6f47d395354b6c45b6a7142b8030f77ba8c0e1ad370cd363050f3103535e8d",
+    "internal/language/analysis/dictionary_presence_test.go": "343a894184dec0d8c30d1d76ebe1e6ddf2af88ed0fc492ade6fb10f41ce1a1ac",
+    "internal/language/syntax/dictionary_presence.go": "30127a79c919fef5f4f6d731634c7d1225a91628ce034c1271ebe5a8cef0c27d",
+    "internal/language/syntax/dictionary_presence_test.go": "78b85f544d6fd2c6a54ec2022bfefc236d6573b8e8658f017f942f02865e3d86",
+    "internal/language/lower/lower.go": "c68745de6aa9b9e2feaeeb16b08e2db742f0f816606b248ceec250e968a600bc",
+    "internal/language/lower/function_optional_presence.go": "e01b1ec3570d5b9cf6b0cfdfc4cdf1da4e253f52debe1d86dba698875b45a0e5",
+    "internal/language/lower/scoped_blocks.go": "e94c67380c7f4602ca0ad1b815bd8b5def0c42162ec35551c31ada6c0400b63d",
+    "internal/language/lower/dictionary_presence_test.go": "e67f21303bcf5001ce2d33104bb1bc9175b3a8f70d784842195a4bc6c66805fb",
+    "language_emit_adapter.go": "619b704a1faafaa83d67a02a8ed3772c251ef75e4b60ef3a411d4e7987e5d95f",
+    "p15_optional_dictionary_presence_test.go": "503f006467f560755c5082c3a11fbead2894733c3259e6415c9e12ea9c879702",
+    "p15_optional_index_presence_test.go": "da54ee55e9971a53d4abb5cdbd0b35af89a30759ecddcd7f2f537ef1e4306949",
+    "p15_optional_dictionary_oracle_test.go": "c831f8d76e2f0dc7bcb4f57c7019675fd011c7bf270b8047da9f751ec93790dd"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^(TestStaticDictionaryElement|TestDictionaryPresence|TestScopedBlockDictionaryPresence)",
+    "./internal/language/syntax",
+    "./internal/language/analysis",
+    "./internal/language/lower"
+  ],
+  "started_utc": "2026-11-20T07:06:45.476784+00:00",
+  "finished_utc": "2026-11-20T07:06:50.546417+00:00",
+  "elapsed_seconds": 5.079000000027008,
+  "exit_code": 0,
+  "named": {
+    "pass": [
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/literal",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/raw_key",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/raw_index",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/unicode",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/none_is_only_slot_proof",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/empty",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/missing",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/duplicate",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/duplicate_sibling",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/computed_key",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/computed_sibling",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/number_index",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/computed_index",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/empty_index",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys/empty_sibling",
+      "TestStaticDictionaryElementRequiresCompleteLiteralKeys",
+      "TestDictionaryPresenceFactsAreExactAndIsolated",
+      "TestDictionaryPresenceHonorsLexicalShadowing",
+      "TestScopedBlockDictionaryPresenceSurvivesRenaming"
+    ],
+    "fail": [],
+    "skip": []
+  },
+  "artifacts": {
+    "precommit-v1-packages.jsonl": {
+      "sha256": "dc2c03efa1eed6b1bb4e9fcd157df1e4c079ce759a34003ec72541145b19c72f",
+      "bytes": 20973
+    },
+    "precommit-v1-packages.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

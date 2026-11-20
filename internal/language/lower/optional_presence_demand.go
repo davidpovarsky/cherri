@@ -1,0 +1,164 @@
+package lower
+
+import (
+	"reflect"
+	"strings"
+
+	"github.com/electrikmilk/cherri/internal/language/syntax"
+)
+
+// The paired flag is compiler metadata. Emit it only for source bindings whose
+// presence has a consumer. Dependencies deliberately overapproximate lexical
+// names: collisions may retain a flag, but must never remove a needed one.
+// The result is keyed by the original AST binding, so generated/renamed nodes
+// conservatively retain their existing behavior.
+func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
+	roots := []any{program}
+	for _, function := range l.functions {
+		roots = append(roots, function)
+	}
+	functions := map[string]bool{}
+	optionalDemandWalk(roots, func(node syntax.Node) {
+		if function, ok := node.(*syntax.FunctionDecl); ok {
+			functions[function.Name] = true
+			if separator := strings.LastIndex(function.Name, "."); separator >= 0 {
+				functions[function.Name[separator+1:]] = true
+			}
+		}
+	})
+	bindings := map[*syntax.BindingStmt]string{}
+	dependencies := map[string]map[string]bool{}
+	needed := map[string]bool{}
+	addNames := func(target map[string]bool, expression syntax.Expression) {
+		optionalDemandWalk(expression, func(node syntax.Node) {
+			if identifier, ok := node.(*syntax.IdentExpr); ok {
+				target[identifier.Name] = true
+			}
+		})
+	}
+	depend := func(name string, expression syntax.Expression) {
+		if dependencies[name] == nil {
+			dependencies[name] = map[string]bool{}
+		}
+		addNames(dependencies[name], expression)
+	}
+	isNone := func(expression syntax.Expression) bool {
+		literal, ok := expression.(*syntax.LiteralExpr)
+		return ok && literal != nil && literal.Type == syntax.TokenNone
+	}
+	optionalDemandWalk(roots, func(node syntax.Node) {
+		switch value := node.(type) {
+		case *syntax.BindingStmt:
+			bindings[value] = value.Name
+			depend(value.Name, value.Value)
+		case *syntax.AssignStmt:
+			depend(value.Name, value.Value)
+		case *syntax.ReturnStmt:
+			// All authored returns are retained conservatively; only Optional
+			// bindings actually emit paired flags during lowering.
+			addNames(needed, value.Value)
+		case *syntax.FunctionDecl:
+			for _, parameter := range value.Parameters {
+				addNames(needed, parameter.DefaultExpr)
+			}
+		case *syntax.CallExpr:
+			name := ""
+			switch callee := value.Callee.(type) {
+			case *syntax.IdentExpr:
+				name = callee.Name
+			case *syntax.MemberExpr:
+				name = callee.Property
+			case *syntax.EnumMemberExpr:
+				name = callee.Member
+			}
+			if functions[name] {
+				// Include every written argument of a user-function call.
+				// Ordinary canonical action inputs do not consume this flag.
+				addNames(needed, value.PrimaryArg)
+				for _, argument := range value.NamedArgs {
+					addNames(needed, argument.Value)
+				}
+			}
+		case *syntax.BinaryExpr:
+			if value.Op == syntax.TokenEqual || value.Op == syntax.TokenNotEqual {
+				if isNone(value.Right) {
+					addNames(needed, value.Left)
+				}
+				if isNone(value.Left) {
+					addNames(needed, value.Right)
+				}
+			}
+		}
+	})
+	queue := []string{}
+	for name := range needed {
+		queue = append(queue, name)
+	}
+	for len(queue) > 0 {
+		name := queue[0]
+		queue = queue[1:]
+		for dependency := range dependencies[name] {
+			if !needed[dependency] {
+				needed[dependency] = true
+				queue = append(queue, dependency)
+			}
+		}
+	}
+	l.optionalPresenceDemand = map[*syntax.BindingStmt]bool{}
+	for binding, name := range bindings {
+		l.optionalPresenceDemand[binding] = needed[name]
+	}
+}
+
+func (l *Lowerer) optionalPresenceNeeded(binding *syntax.BindingStmt) bool {
+	needed, analyzed := l.optionalPresenceDemand[binding]
+	return !analyzed || needed
+}
+
+// Walk only syntax-owned structures, including argument/Map/FString records.
+// Source spans, comments and inactive FString text cannot create a demand.
+// This is conservative dependency discovery, not an AST validity validator.
+func optionalDemandWalk(root any, visit func(syntax.Node)) {
+	seen := map[uintptr]bool{}
+	var walk func(reflect.Value)
+	walk = func(value reflect.Value) {
+		if !value.IsValid() {
+			return
+		}
+		switch value.Kind() {
+		case reflect.Interface:
+			if !value.IsNil() {
+				walk(value.Elem())
+			}
+		case reflect.Pointer:
+			if value.IsNil() || seen[value.Pointer()] {
+				return
+			}
+			seen[value.Pointer()] = true
+			if node, ok := value.Interface().(syntax.Node); ok {
+				visit(node)
+			}
+			walk(value.Elem())
+		case reflect.Struct:
+			if value.Type().PkgPath() != reflect.TypeOf(syntax.Program{}).PkgPath() {
+				return
+			}
+			if part, ok := value.Interface().(syntax.FStringPart); ok && !part.IsExpr {
+				return
+			}
+			for i := 0; i < value.NumField(); i++ {
+				walk(value.Field(i))
+			}
+		case reflect.Slice, reflect.Array:
+			for i := 0; i < value.Len(); i++ {
+				walk(value.Index(i))
+			}
+		case reflect.Map:
+			iterator := value.MapRange()
+			for iterator.Next() {
+				walk(iterator.Value())
+			}
+		}
+	}
+	walk(reflect.ValueOf(root))
+}

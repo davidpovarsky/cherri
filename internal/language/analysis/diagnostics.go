@@ -45,6 +45,7 @@ const (
 	CodeMissingArgument         = "E_MISSING_ARGUMENT"
 	CodePositionalArg           = "E_POSITIONAL_ARGUMENT"
 	CodeArgumentType            = "E_ARGUMENT_TYPE"
+	CodeTypeAlias               = "E_TYPE_ALIAS"
 	CodeNativeJSONNull          = "E_NATIVE_JSON_NULL"
 	CodeLiteralRequired         = "E_LITERAL_REQUIRED"
 	CodeEnumMember              = "E_ENUM_MEMBER"

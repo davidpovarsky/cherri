@@ -970,6 +970,12 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateExhaustiveNodeRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+			if err := validateSafeImportEditRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 
 			if err := validateBindingCaptureRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
@@ -1923,6 +1929,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		if r.runNumberWireRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
+		if r.runStructuralMigrationRequirement(c) {
+			continue
+		}
 		if r.runExhaustiveNodeRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1949,6 +1958,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runSafeImportEditRequirement(g) {
+			continue
+		}
 		if r.runLoopRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
 			continue
 		}

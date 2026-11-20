@@ -82,8 +82,8 @@ func TestMigrateRefPreservation(t *testing.T) {
 		t.Fatalf("unexpected error: %v (diags: %v)", err, diags)
 	}
 
-	if !strings.Contains(migrated, "let myDoc = native.plist(") {
-		t.Errorf("expected native.plist reference declaration, got:\n%s", migrated)
+	if strings.Contains(migrated, "let myDoc") || !strings.Contains(migrated, "show(native.plist(") {
+		t.Errorf("expected inline native.plist reference without a materialized Text binding, got:\n%s", migrated)
 	}
 	if !strings.Contains(migrated, "fileProviderDomainID") {
 		t.Errorf("expected decoded JSON payload in native.plist, got:\n%s", migrated)

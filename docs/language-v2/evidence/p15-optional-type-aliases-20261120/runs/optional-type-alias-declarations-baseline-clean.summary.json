@@ -1,0 +1,31 @@
+{
+  "source_commit": "0b2657205b0925f086a4b1cdcddb5f7fad1cad5f",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues$",
+    "."
+  ],
+  "started_at": "2026-11-20T04:45:22.666850+00:00",
+  "finished_at": "2026-11-20T04:45:45.787032+00:00",
+  "elapsed_seconds": 23.125,
+  "exit_code": 1,
+  "timed_out": false,
+  "passed": [],
+  "failed": [
+    "TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues/self_cycle",
+    "TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues/mutual_cycle",
+    "TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues/duplicate",
+    "TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues/wrong_value",
+    "TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues/none_for_present_alias",
+    "TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues"
+  ],
+  "skipped": [],
+  "raw_sha256": "71922221282032ea7ce77244a109a84bcc1efdb288318889cd69c56a450af7e4",
+  "clean_after": true
+}

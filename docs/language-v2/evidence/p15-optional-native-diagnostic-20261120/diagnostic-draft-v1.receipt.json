@@ -1,0 +1,24 @@
+{
+  "source_head": "f16dd992cc02113faefad8d3005c5c44afea1630",
+  "classification": "DIRTY_DRAFT_CONTROL_ONLY",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalNativeDiagnosticSourceAndGraph$",
+    "."
+  ],
+  "started_at": "2026-11-20T05:45:28.298879+00:00",
+  "elapsed_seconds": 15.577999999979511,
+  "exit_code": 1,
+  "raw_sha256": "3bf96334a73d83358ab219973286acf4390688f0d79ccdd04ce42577d37e281f",
+  "passed_tests": [],
+  "failed_tests": [
+    "TestP15OptionalNativeDiagnosticSourceAndGraph"
+  ],
+  "skipped_tests": [],
+  "status": " M p15_function_native_oracle_test.go\n?? p15_optional_native_diagnostic_test.go\n?? tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.cherri\n?? tools/shortcuts-simulator-qa/fixtures/qa-optional-forwarding-diagnostic-v2.expected.json\n"
+}

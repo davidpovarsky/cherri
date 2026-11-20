@@ -914,6 +914,12 @@
           "change": "Added decomp handler for editEvent and setterArgValue variable token serialization without spurious WFCalendarEventContentItemStartDate emission.",
           "reason": "Full compile -> decompile -> recompile round-trip parity for all 11 event detail properties.",
           "evidence": "TestP10_IPadAcceptanceKit_CompileAndStructure/08_edit_reminder_and_event, R12, R13, A12"
+        },
+        {
+          "commit": "542e265468f8b70bd46da3af9912bf463379ec04",
+          "change": "Preserve three-position Legacy Remove shorthand through lexically shielded migration, keep canonical newValue Text Remove distinct from an omitted mode, and retain explicit RemoveSpecifiedValue even when its text is Remove.",
+          "reason": "Actual iPad acceptance fixture 08 changed an event URL Remove action into Set on compile/import/recompile; named Reminder values and explicit four-position Legacy Remove values also lost their meaning.",
+          "evidence": "TestP15Setter complete native graphs and causal mutations; unchanged TestP10_IPadAcceptanceKit_CompileAndStructure fixture 08, P10R R11/R12/R13 and P10R2 A11/A12/A13/A14. Compile/import and schema verification only; no Reminder or Calendar runtime execution claimed."
         }
       ]
     },
@@ -951,6 +957,12 @@
           "change": "Added decomp handler for editReminder and setterArgValue variable token serialization without spurious WFReminderContentItemTitle emission.",
           "reason": "Full compile -> decompile -> recompile round-trip parity for all 13 reminder detail properties.",
           "evidence": "TestP10_IPadAcceptanceKit_CompileAndStructure/08_edit_reminder_and_event, R11, R13, A11, A14"
+        },
+        {
+          "commit": "542e265468f8b70bd46da3af9912bf463379ec04",
+          "change": "Preserve three-position Legacy Remove shorthand through lexically shielded migration, keep canonical newValue Text Remove distinct from an omitted mode, and retain explicit RemoveSpecifiedValue even when its text is Remove.",
+          "reason": "Actual iPad acceptance fixture 08 changed an event URL Remove action into Set on compile/import/recompile; named Reminder values and explicit four-position Legacy Remove values also lost their meaning.",
+          "evidence": "TestP15Setter complete native graphs and causal mutations; unchanged TestP10_IPadAcceptanceKit_CompileAndStructure fixture 08, P10R R11/R12/R13 and P10R2 A11/A12/A13/A14. Compile/import and schema verification only; no Reminder or Calendar runtime execution claimed."
         }
       ]
     },
@@ -3199,6 +3211,70 @@
       "reason": "Clean actual tests reproduced silent canonical finalization in three unused/metadata contexts and eleven annotation positions despite the earlier active-expression fallback guard.",
       "evidence": "docs/language-v2/p15-exhaustive-node-acceptance-20261120.md; clean d07bbf7f component114+38 pass; clean db4a8ca6 actual producer/intake280 pass,114 required inner events,45 immutable source hashes,two RP16-only records. Original failed/incomplete and successful receipts retained.",
       "note": "No action definitions or native wire schemas are added. P03/F03/FN01/M03, Apple runtime,179-row closure and global release gates are not inherited. Historical receipts preserve their original source commits. Integrated implementation ancestor is a320593e9d7900596cfc9e285aec75a46d546349; original component observations remain bound to their original commits."
+    },
+    {
+      "name": "P10R15 RP33 structural migration and source-bound native differential proof",
+      "locations": [
+        "internal/language/migrate/migrate.go",
+        "internal/language/migrate/lexical_source.go",
+        "internal/language/migrate/references.go",
+        "language_value_adapter.go",
+        "language_cli_adapter.go",
+        "cmd/cherri-migrate/main.go",
+        "tools/language-migrate/main.go",
+        "tools/legacy-parity/main.go",
+        "tools/language-acceptance/structural_migration_execution.go",
+        "tools/language-acceptance/structural_migration_execution_test.go"
+      ],
+      "firstForkCommit": "4213e0f38b952bf2916f8750e4938c17b3f81df8",
+      "change": "Protect Legacy lexical regions before compatibility rewrites; inline native references structurally with lexical/callable scope; detach raw plist carriers; resolve public migration includes from the source directory and reject ambiguous multiline includes before writing; execute strict RP33-only production evidence.",
+      "reason": "Clean actual Legacy/V2 baselines reproduced seven lexical/raw-reference differences, native parameter/callee identity loss, wrong cwd include selection and unsafe ambiguous conversion.",
+      "evidence": "docs/language-v2/p15-structural-migration-rp33-20261120.md; clean434fda67 migration19/comparator81/runner16 and fresh47/47+17/17 differential gate; clean d233d9f3 outer251/inner59 pass,64 immutable source hashes,two RP33-only records.",
+      "note": "No action definitions or native wire schemas change. Canonical native grammar, existing null guards and original fixtures remain independent. Ambiguous Legacy include-inside-multiline-literal remains unsupported and fail-closed. No linked requirement,BRG19,Apple or179-closure inheritance; original receipt SHAs are retained. Integrated implementation ancestor is 4213e0f38b952bf2916f8750e4938c17b3f81df8. Original component receipts preserve their original source SHAs."
+    },
+    {
+      "name": "P10R15 import-question target origin through structural comparison",
+      "locations": [
+        "internal/shortcutcompare/normalize.go",
+        "internal/shortcutcompare/question_targets.go",
+        "internal/shortcutcompare/question_targets_test.go"
+      ],
+      "firstForkCommit": "a45740f73806ddc64fb1e5f0c8e913e33947c936",
+      "change": "Track original import-question target action identity through normalization, remap only a unique surviving top-level origin, remove private markers and fall back to original raw comparison for invalid,removed orambiguous targets.",
+      "reason": "Actual42-action Legacy and41-action migrated documents pointed at the same alert with raw indices24/25; prior normalized comparison retained those raw indices after both arrays became18 actions.",
+      "evidence": "docs/language-v2/p15-structural-migration-rp33-20261120.md; original native pair retained,12 actual wrong-target/question-field corruptions reject and complete81-test comparator suite passes.",
+      "note": "No emitted ActionIndex or golden changes. Index0 and duplicate identical actions keep distinct identity. Every other question field stays exact; historical raw artifacts remain unchanged. Integrated implementation ancestor is a45740f73806ddc64fb1e5f0c8e913e33947c936. Original component receipts preserve their original source SHAs."
+    },
+    {
+      "name": "P10R15 S01 literal object character carriers with authored call ordering",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "internal/language/backend/contracts.go",
+        "p15_s01_literal_placeholder_test.go",
+        "p15_unicode_text_acceptance_test.go",
+        "p15_runtime_s01_f01_coverage_test.go"
+      ],
+      "firstForkCommit": "feaa5e119116a1e469084e0181148c525d75d2b6",
+      "change": "Reuse the existing plain Text materializer for FString literal U+FFFC chunks and bind every native template placeholder to a real reference; defer pure helper emission until authored interpolated calls have lowered.",
+      "reason": "Real K runtime lost an authored literal and later tokens; real WorkflowKit reproduces unmapped-placeholder loss. Six-route actual graph controls also exposed helper interference with interpolated calls using implicit input.",
+      "evidence": "docs/language-v2/p15-s01-literal-object-carrier-20261120.md; clean da0ba0e5 root194 and lower/analysis/backend88 pass, original runtime fixture and expected bytes unchanged; original native observation and both causal counterexamples retained.",
+      "note": "No new action definition, native wire key, second codec, or expected-runtime change. Shared pure codec remains unchanged. Ordinary literal container fields and enclosing native-action implicit input are distinct follow-up boundaries. Original source/receipt identities remain unchanged; no Apple execution, other-ID or final179 inheritance."
+    },
+    {
+      "name": "P10R15 BRG19 safe migration import and authorized native edit acceptance",
+      "locations": [
+        "p15_brg19_safe_import_edit_test.go",
+        "tools/language-acceptance/safe_import_edit_execution.go",
+        "tools/language-acceptance/safe_import_edit_execution_test.go",
+        "tools/language-acceptance/main.go",
+        "tools/language-acceptance/evidence_map.go",
+        "tools/language-acceptance/execution_audit.go"
+      ],
+      "firstForkCommit": "8fea63a2dd02e36345b319730af4fca213fc8819",
+      "change": "Independently execute the complete BRG19 migration/failure/import/edit scenario through public V2 CLI, exact native verification and original-byte preservation; bind all53 observed events and68 immutable sources with strict per-tier intake and aggregate-bounded Git reads.",
+      "reason": "Related RP33/K/semantic-import results did not independently establish the immutable BRG19 scenario or authorize inherited evidence.",
+      "evidence": "docs/language-v2/p15-safe-import-edit-brg19-20261120.md; clean2f5424b4 component53 passes, clean af9ad2eb strict producer258 outer/53 inner passes with two BRG19-only records; original NOT_RUN68-versus64 acquisition and aggregate controls retained.",
+      "note": "No compiler, native codec, fixture golden or action definition changes in this component. Exact scalar edit authorization uses original digest and complete typed tree. Existing4MiB/object,64-object/read and16MiB aggregate limits remain enforced. Related requirements, Apple and release closure remain independent. Integrated implementation ancestor is 8fea63a2dd02e36345b319730af4fca213fc8819. Original component receipts preserve their original source SHAs."
     }
   ]
 }

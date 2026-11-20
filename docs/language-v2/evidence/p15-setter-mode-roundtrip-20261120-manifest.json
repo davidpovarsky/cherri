@@ -1,0 +1,332 @@
+{
+  "format_version": 1,
+  "implementation_commit": "542e265468f8b70bd46da3af9912bf463379ec04",
+  "clean_source_commit": "1b92d596ec3539fd0caef2657903a5e6226c3738",
+  "original_reproduction_source": "54f76e9f21d8b5904f99206e73455667e9f98c8d",
+  "recorded_at": "2026-11-20T07:00:33.517865+00:00",
+  "git_blob_sha256": {
+    "actions_std.go": "408f9ad4006916f796cf3208f43db542feafb878f44eac24e20a225ea0e5fccc",
+    "internal/language/migrate/migrate.go": "773028ea07e20ffcd660d55e34ca7b56d0ee332c20e1f756aaffe66fe5b8286c",
+    "internal/language/migrate/setter_mode.go": "ba31aa7c67bb262e5dc0a5b7a316849d66d0e0fe232e2aca6fb28f1c60979fbc",
+    "language_backend_adapter.go": "9791afbe5129914661f4564a449d47d335ca21d4e573131e8e42c3bc47142da1",
+    "p15_setter_mode_roundtrip_test.go": "0cd6df1ff27105401eedae3cbeaf98dc596b8468d678e8663e4f22193d6ec576",
+    "docs/fork-action-provenance.json": "0e93f0acc44f52207e330c1c1a5a33b3975db2831a834f9293dfcbaf95439506"
+  },
+  "files": {
+    "r4-setter-decompile/baseline-process.json": {
+      "bytes": 7080,
+      "sha256": "f7f0f7906a5afa7a76461bcb8cdafbaa8c196d7d3a7fd3e40ed4467bdc3aef64"
+    },
+    "r4-setter-decompile/baseline.jsonl": {
+      "bytes": 45439,
+      "sha256": "73df1c084c23ee6feea76321d313a4122913a2122ba72cef214abf787563c739"
+    },
+    "r4-setter-decompile/baseline.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/branch-intent.json": {
+      "bytes": 295,
+      "sha256": "788cc40f574e9a24ab5fe728d209ae12de76ce373d61fefdaa057f90739862ac"
+    },
+    "r4-setter-decompile/branch-result.json": {
+      "bytes": 8188,
+      "sha256": "a7d003b5f962908923f09689ab90103532a1f91d4d6f4aab2194eefee2f7aca4"
+    },
+    "r4-setter-decompile/branch.stderr": {
+      "bytes": 73,
+      "sha256": "425f9022bb6b3914c762419135d17f553ff1bc8a1fe1480ac170421fc66522a5"
+    },
+    "r4-setter-decompile/branch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/canonical-mode-precommit-migrate-process.json": {
+      "bytes": 1409,
+      "sha256": "19ab22bc9e145b4e6171983c72f79cbe34e7b81f041813e7601f477faab1a95f"
+    },
+    "r4-setter-decompile/canonical-mode-precommit-migrate.jsonl": {
+      "bytes": 17690,
+      "sha256": "a54a0e9ae51a74e322a659f4b70cd5b2c962c65e7041250dd27c0deac7dba337"
+    },
+    "r4-setter-decompile/canonical-mode-precommit-migrate.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/canonical-mode-precommit-root-process.json": {
+      "bytes": 5651,
+      "sha256": "131c8b92dc62b8fcc60b091fa8d52e633c83e4ad0647107385952c024d08d9f6"
+    },
+    "r4-setter-decompile/canonical-mode-precommit-root.jsonl": {
+      "bytes": 67988,
+      "sha256": "bd99ed694f64292763c675f5c0f3a77bef436fec6271ffa8337aab9114953f9f"
+    },
+    "r4-setter-decompile/canonical-mode-precommit-root.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/corrected-baseline-process.json": {
+      "bytes": 6139,
+      "sha256": "572675dc9b65830b056b753c150df0f76c15d7a068f4fa5af03f5f2f74d1baf4"
+    },
+    "r4-setter-decompile/corrected-baseline.jsonl": {
+      "bytes": 53732,
+      "sha256": "9bd27173268ca4006edd527e7b2607dbadb84c826fc64a0426f57dc1770f29a8"
+    },
+    "r4-setter-decompile/corrected-baseline.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/corrected-test-commit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/corrected-test-commit.stdout": {
+      "bytes": 181,
+      "sha256": "232082035e8b0c8767ca1463a1712a2b977f3892462a6ed8c60917fae368dcfb"
+    },
+    "r4-setter-decompile/named-value-baseline-process.json": {
+      "bytes": 3451,
+      "sha256": "8f2f8e3b12eb39cce29a9561d6300a061ee3a5a38f364f2f77efc413d1b2e504"
+    },
+    "r4-setter-decompile/named-value-baseline-source.zip": {
+      "bytes": 3691,
+      "sha256": "c0c4e9e25d554cbb98a5890baa3ef7386046100b2986ab507149c0d548cdb317"
+    },
+    "r4-setter-decompile/named-value-baseline.jsonl": {
+      "bytes": 23964,
+      "sha256": "78eef5c0d5c5691d5ce13953dca732e8add6114cda9ed20ab6f8bc2dbf80c78b"
+    },
+    "r4-setter-decompile/named-value-baseline.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/precommit-migrate-process.json": {
+      "bytes": 1408,
+      "sha256": "4b2cea3584a1773ba3372db211be2b59960eb010fb8fecaf969b57a7971cb0ab"
+    },
+    "r4-setter-decompile/precommit-migrate.jsonl": {
+      "bytes": 17711,
+      "sha256": "04b953901903f48362b80805474c2281bfb8928690e5bd984b396244481dfe9e"
+    },
+    "r4-setter-decompile/precommit-migrate.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/precommit-root-process.json": {
+      "bytes": 6884,
+      "sha256": "b13dc38f6bbc67579775361b60488ffc2d717a9ff96565bfcf70474c63f8560a"
+    },
+    "r4-setter-decompile/precommit-root.jsonl": {
+      "bytes": 67742,
+      "sha256": "c849429da29f1f354ae5d6fe2895ebcd17f02327154adc5e0435145808f4e62d"
+    },
+    "r4-setter-decompile/precommit-root.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/production-canonical-mode-precommit-source.zip": {
+      "bytes": 38164,
+      "sha256": "b35b22106e4b87033a8be19c1f807143d38a983b0f826815c27b53a547eea990"
+    },
+    "r4-setter-decompile/production-precommit-source.zip": {
+      "bytes": 37814,
+      "sha256": "06c91616ed39ba7dcd94e43fe5d1012557ffa90d84e725bc02788e83285914d5"
+    },
+    "r4-setter-decompile/setter-clean-migrate.receipt.json": {
+      "bytes": 1689,
+      "sha256": "8a50ad9695d1a1351acdccfaff2eb91ab5dadaf77f1282f4a13e9bbc5fc9c3bc"
+    },
+    "r4-setter-decompile/setter-clean-migrate.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/setter-clean-migrate.stdout": {
+      "bytes": 17724,
+      "sha256": "52a331c116f9379bdb90b369b2fe8e79670114ebaace638cde23843c34331cb7"
+    },
+    "r4-setter-decompile/setter-clean-provenance.receipt.json": {
+      "bytes": 844,
+      "sha256": "168809b1e8c0a7ba70864a67e644333fb8a110a977e9499362a87e906c736686"
+    },
+    "r4-setter-decompile/setter-clean-provenance.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/setter-clean-provenance.stdout": {
+      "bytes": 2783,
+      "sha256": "01c65e4170acdb57d67d1f9c7087c193dedce4898213f745d02ffcc611dc1574"
+    },
+    "r4-setter-decompile/setter-clean-replay.json": {
+      "bytes": 10126,
+      "sha256": "ebfdd949258d2a3b3f38505a2063176df542996a5977ce684d0b441528a27f2b"
+    },
+    "r4-setter-decompile/setter-clean-root.receipt.json": {
+      "bytes": 6047,
+      "sha256": "36cbb578dd7d46df8492e88a59f14573e99856df5b317bed4beb21aa3bd926b6"
+    },
+    "r4-setter-decompile/setter-clean-root.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/setter-clean-root.stdout": {
+      "bytes": 68010,
+      "sha256": "985444abcec0405d6329882ae2eea947a683de28bf49ebd6be7bdf39c47580b9"
+    },
+    "r4-setter-decompile/setter-clean-schema.receipt.json": {
+      "bytes": 597,
+      "sha256": "4ac2637761a647ef481e49705a31621ea70c13c5eae84e5aee3463fd8e149e67"
+    },
+    "r4-setter-decompile/setter-clean-schema.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/setter-clean-schema.stdout": {
+      "bytes": 115,
+      "sha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913"
+    },
+    "r4-setter-decompile/setter-implementation-commits.json": {
+      "bytes": 313,
+      "sha256": "6b1cfc7da44a402b147fac203f9814b3fc6735915aef9e4ee278578b6a9e7cca"
+    },
+    "r4-setter-decompile/setter-schema-verify-precommit.json": {
+      "bytes": 378,
+      "sha256": "48da37956aa3449a99dfdb0477d846174400643be82e99e178409be0d9fe26e2"
+    },
+    "r4-setter-decompile/setter-schema-verify-precommit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/setter-schema-verify-precommit.stdout": {
+      "bytes": 115,
+      "sha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913"
+    },
+    "r4-setter-decompile/test-commit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-setter-decompile/test-commit.stdout": {
+      "bytes": 218,
+      "sha256": "9cf75148744c743b33d22ff658acbefce18420a615af953b449a531a4abb9da6"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/build-compiler.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/build-compiler.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/build-migrator.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/build-migrator.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/compile-decompiled.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/compile-decompiled.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/compile-original.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/compile-original.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/decompile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/decompile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/decompiled.cherri": {
+      "bytes": 1335,
+      "sha256": "68ed0d3478ed5e98dd4da817f5d519de264bd5af4f743cccae9cf4c5a6df6530"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/fixture-original.cherri": {
+      "bytes": 987,
+      "sha256": "218ff2686126c18e7c6b6713413dcd4e8337f71ba474c4e0820ec3f76c1d4096"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/migrate-decompiled.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/migrate-decompiled.stdout": {
+      "bytes": 1335,
+      "sha256": "68ed0d3478ed5e98dd4da817f5d519de264bd5af4f743cccae9cf4c5a6df6530"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/migrate-original.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/migrate-original.stdout": {
+      "bytes": 882,
+      "sha256": "9881639c4125ce64cf895b512d935e4bae23183c27a07373fad8c9e62b3daa3c"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/original-plist-decoded.json": {
+      "bytes": 6695,
+      "sha256": "95747e304ac7ff3cbedd1e7d5ef554f2760440b596f56e4fbe3834707e3a8385"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/original.cherri": {
+      "bytes": 882,
+      "sha256": "9881639c4125ce64cf895b512d935e4bae23183c27a07373fad8c9e62b3daa3c"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/original.shortcut": {
+      "bytes": 9749,
+      "sha256": "925b3139a44963079a168a1f408caf13aee135dcf9c67ffa9b6d215271bb8e5c"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/original_unsigned.shortcut": {
+      "bytes": 9749,
+      "sha256": "925b3139a44963079a168a1f408caf13aee135dcf9c67ffa9b6d215271bb8e5c"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/process-receipts.json": {
+      "bytes": 4866,
+      "sha256": "4cf235235e30514aefe77dbbcc1c71908424fe994977fe558aef15132392cb0c"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/recompiled-plist-decoded.json": {
+      "bytes": 7272,
+      "sha256": "147247e24343d53638d4f9230d46351fb58cb0e2f096056ee2dab572c175be49"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/recompiled.cherri": {
+      "bytes": 1335,
+      "sha256": "68ed0d3478ed5e98dd4da817f5d519de264bd5af4f743cccae9cf4c5a6df6530"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/recompiled.shortcut": {
+      "bytes": 10576,
+      "sha256": "bc4b11c8ee3423413ea5097ee70fa8443f822e7557a11b4619832533fb518bca"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/recompiled_unsigned.shortcut": {
+      "bytes": 10576,
+      "sha256": "bc4b11c8ee3423413ea5097ee70fa8443f822e7557a11b4619832533fb518bca"
+    },
+    "r4-ipad08-roundtrip-54f76e9f/summary.json": {
+      "bytes": 15692,
+      "sha256": "41d8d1556825808f78143f3bfa6f194a57ef1d8db6221ac474032d8f97028853"
+    }
+  },
+  "excluded_rebuildable_binaries": {
+    "r4-ipad08-roundtrip-54f76e9f/cherri-migrate.exe": {
+      "bytes": 6868992,
+      "sha256": "05b9bca8130a05b6ee6add03aea9f66315f2f40277586bab54fd356fe25e9157",
+      "reason": "Rebuildable compiler binary; actual build/commands and binary digest retained."
+    },
+    "r4-ipad08-roundtrip-54f76e9f/cherri.exe": {
+      "bytes": 25378304,
+      "sha256": "c18331705fa1c0bef05bcb93433e61823c84f2d85a16d89d3e85b6b756a8cd7b",
+      "reason": "Rebuildable compiler binary; actual build/commands and binary digest retained."
+    }
+  },
+  "shortcut_actions_executed": false,
+  "apple_runtime": "NOT_RUN",
+  "formal_requirements_rescored": false
+}

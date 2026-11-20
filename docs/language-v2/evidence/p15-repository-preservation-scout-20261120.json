@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "status": "READ_ONLY_SCOUT_NO_ACCEPTANCE_CREDIT",
+  "observedDate": "2026-11-20",
+  "requirements": {
+    "B01": "OPEN",
+    "BRG01": "OPEN"
+  },
+  "formalEvidenceRecordsProduced": 0,
+  "ownedReportBranch": "audit/cherri-p10r15-preservation-scout-20261120",
+  "reportBaseCommit": "6ff6c6ff62361ae155f277af52f7d3b41595457a",
+  "immutableCriteria": {
+    "B01": {
+      "contract": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "tier": "repository",
+      "requires": "Recorded full isolated base/remote HEAD, owned worktree, unrelated work unchanged"
+    },
+    "BRG01": {
+      "contract": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "tier": "repository",
+      "requires": "Both code/docs worktrees and unpublished changes inventoried, private backup hashes, isolated recovery branches, original work preserved"
+    }
+  },
+  "originalIntegration": {
+    "publicHandoffRef": "4a35b56a193b1f688a6b53d047a60b8b4867b5da",
+    "publicHandoffPath": "docs/ai-team/handoffs/cherri-p10r15-final-handoff-20261119.md",
+    "publicHandoffSha256": "c1f9bdd80f4736d211db762987bce22705b353583ea226ba107aa1e070b72e01",
+    "remoteBranch": "staging/cherri-p10r15-integration-20261119",
+    "originalLocalBranch": "agent/cherri-p10r15-project-closure-20261118",
+    "freshRemoteAndLocalHead": "d7052f4568db26dba169bdefc72623e48c04968a",
+    "ancestorOfExactNativeComponentVerified": "da0ba0e5e49a1be56f97b725f33ff56e3a2c91af",
+    "cleanWorktreeTimeRecordedByHandoff": "2026-11-19T19:12:14Z",
+    "twoRepositoryUnpublishedBackupManifestInHandoff": false
+  },
+  "currentSnapshot": {
+    "observationWindowUTC": [
+      "2026-11-20T04:45:56Z",
+      "2026-11-20T04:46:45Z"
+    ],
+    "code": 120,
+    "docs": 12,
+    "clean_observed": 115,
+    "nonclean_observed": 13,
+    "unqueried_missing_prunable_locked": 4,
+    "headMovementDuringIndividualStatusQueries": false,
+    "isInitialStateReconstruction": false,
+    "freshRemoteMain": {
+      "davidpovarsky/cherri": "a35312a7435e5648989234c45ed6f478e3ded6e6",
+      "davidpovarsky/cherrilang.org": "2bc5f6992cd252f287530b039ee393b1b50ee39e"
+    },
+    "cachedTrackingRefsUsedAsCurrentRemoteProof": false
+  },
+  "historicalCommittedMainPreservation": {
+    "publicReceiptPath": "docs/ai-team/handoffs/p15-main-integration.json",
+    "publicReceiptSha256": "95e8714287341557d9cb15c205e57396ba3fd7d7385ddbafbbb083bbff89e243",
+    "mergeCommit": "48828b7ba7eada5237396ef5461e91d13cf286d4",
+    "actualParents": [
+      "69913a285a13ecbf29281232d178ac75e448774b",
+      "a35312a7435e5648989234c45ed6f478e3ded6e6"
+    ],
+    "mainUniqueCommits": 15,
+    "recordedFileHashesReplayed": 11,
+    "allOriginalAndMergedHashesMatch": true,
+    "compilerActionsIOSChanges": [],
+    "scope": "HISTORICAL_COMMITTED_MAIN_MERGE_ONLY_NOT_UNPUBLISHED_BACKUP"
+  },
+  "historicalTakeover": {
+    "publicRecordCommit": "46f98a1ebb6cce8c7bfbd097d64a0b2b990f4f6c",
+    "publicRecordPath": "docs/language-v2/backend-recovery/takeover.md",
+    "publicRecordSha256": "bfab70385471c4039892a6a8fa828f1a285f2615381704ef53bb2161234458f7",
+    "originalCodeHead": "fde7f982fa709b570dbd21f4623a392f58af49d2",
+    "originalDocsHead": "d38369e78a2f9e472f584bb2d946af2a31e42d4a",
+    "currentOriginalCodeBranchHead": "e16a95fca9ec65fce05fe5a9732e9fea7c33dcb4",
+    "currentOriginalDocsBranchHead": "2acffa54360e5cfdf0507f96fccaf3624840d564",
+    "codeOriginalAncestorVerified": true,
+    "docsOriginalAncestorVerifiedByGitHubCompare": {
+      "aheadBy": 1,
+      "behindBy": 0,
+      "mergeBase": "d38369e78a2f9e472f584bb2d946af2a31e42d4a"
+    },
+    "currentAncestryIsHistoricalRefEquality": false
+  },
+  "privateBackupMetadata": {
+    "fileCount": 4,
+    "totalBytes": 27,
+    "nonemptyFiles": 1,
+    "emptyFiles": 3,
+    "nonemptyMetadataSha256": "395ed9c78ad09f837ee8a540bb56fe32e17f4aa018ee070d8b282560ddf70e02",
+    "emptyFileSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "nonemptyFileMatchesDocumentedUntrackedStatus": true,
+    "payloadArchivePresentInReferencedBackup": false,
+    "contemporaneousPayloadHashManifestFound": false,
+    "privateNamesOrContentsPublished": false
+  },
+  "boundedFinalRecoverySearch": {
+    "scope": "Authorized Cherri Code roots only; no broader personal-directory search",
+    "rootCount": 140,
+    "command": "rg --files --hidden --no-ignore, excluding .git and node_modules; filename filter for public run ID or backup/archive manifest identities",
+    "timeoutSeconds": 90,
+    "observedElapsedSeconds": 19.969,
+    "producerExit": 0,
+    "filterExit": 0,
+    "candidateFilenames": 957,
+    "filenamesContainingOriginalPublicRunId": 0,
+    "uniqueCandidateContentDigests": 21,
+    "unreadCandidateFiles": 0,
+    "candidateManifestMatchesForOriginalPublicIdentities": 0,
+    "originalPublicRunId": 37624625658,
+    "currentGitHubArtifactCountForOriginalRun": 0,
+    "additionalPayloadRecoverySourceFound": false,
+    "scopeLimitation": "Absence in these bounded current sources is not proof of unauthorized deletion or a reconstruction of the original payload."
+  },
+  "hostOnlyReceiptSha256": {
+    "currentWorktreeStatusInventory": "31f80e8d794c5b8142a4232c3e366599bceb88d2e37a332e3a2a4fd469dd6be7",
+    "historicalMainPreservationReplay": "047e7dd6946da9b366c4aa4a0d98821613cf3bcb446a65acf2d9ef9429d3f54b",
+    "privateBackupMetadata": "4622cbefd816766eb92037e474af5d21538047dde302c454397565c45042a796",
+    "originalRunArtifactAPI": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+    "boundedRecoverySearch": "999862c8cffd96114a62cb113e2dca023f3841fbddcf6b7e3dc4c4942e2f964e",
+    "boundedRecoveryClassification": "361e5cfa35399308a87beeb2bd1a631fc86ac51b0fcc7ea462176dc819e8f024",
+    "initialScoutSummary": "1395f28597cf0d02af0ea5c5e90b79d07c0285dbbe48a8e95ade23a553b74eba"
+  },
+  "remainingGaps": [
+    "The referenced private backup retains status/diff metadata only; the original untracked artifact payload and its contemporaneous cryptographic file manifest were not recovered.",
+    "The current worktree inventory cannot establish all unrelated unpublished bytes at the original takeover boundary.",
+    "The historical main merge replay proves committed history and the eleven recorded file hashes only.",
+    "Original October task branches advanced; preserved ancestry does not establish unchanged historical branch heads.",
+    "No complete B01 or BRG01 producer/intake claim is made."
+  ],
+  "privacy": {
+    "rawPrivateFilenamesPublished": false,
+    "backupPayloadPublished": false,
+    "personalDirectoriesSearchedBeyondDocumentedBackup": false
+  },
+  "mutationsDuringScout": false,
+  "mutationsForThisCommit": "Two report files on the owned isolated audit branch only; no source, tests, validators, original branches or remote refs changed."
+}

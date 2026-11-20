@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -91,6 +91,78 @@ TARGET_SOURCE_RELATIVE=""
 HTTP_PROBE_ENABLED="false"
 STORAGE_CROSS_RUN_ENABLED="false"
 case "$SAMPLE_ID" in
+  qa-debug-label-plain-v2)
+    TARGET_FIXTURE_ID="qa-debug-label-plain-v2"
+    LEGACY_COUNTERPART_ID="qa-debug-label-plain-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-plain-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=plain:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-plain-legacy)
+    TARGET_FIXTURE_ID="qa-debug-label-plain-legacy"
+    LEGACY_COUNTERPART_ID="qa-debug-label-plain-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-plain-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=plain:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-dated-v2)
+    TARGET_FIXTURE_ID="qa-debug-label-dated-v2"
+    LEGACY_COUNTERPART_ID="qa-debug-label-dated-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-dated-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=dated:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-dated-legacy)
+    TARGET_FIXTURE_ID="qa-debug-label-dated-legacy"
+    LEGACY_COUNTERPART_ID="qa-debug-label-dated-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-dated-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=dated:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-typed-v2)
+    TARGET_FIXTURE_ID="qa-debug-label-typed-v2"
+    LEGACY_COUNTERPART_ID="qa-debug-label-typed-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-typed-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=typed:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-typed-legacy)
+    TARGET_FIXTURE_ID="qa-debug-label-typed-legacy"
+    LEGACY_COUNTERPART_ID="qa-debug-label-typed-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-typed-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=typed:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-dated-typed-v2)
+    TARGET_FIXTURE_ID="qa-debug-label-dated-typed-v2"
+    LEGACY_COUNTERPART_ID="qa-debug-label-dated-typed-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-dated-typed-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=dated-typed:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-dated-typed-legacy)
+    TARGET_FIXTURE_ID="qa-debug-label-dated-typed-legacy"
+    LEGACY_COUNTERPART_ID="qa-debug-label-dated-typed-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-dated-typed-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=dated-typed:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-text-v2)
+    TARGET_FIXTURE_ID="qa-debug-label-text-v2"
+    LEGACY_COUNTERPART_ID="qa-debug-label-text-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-text-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=text:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-text-legacy)
+    TARGET_FIXTURE_ID="qa-debug-label-text-legacy"
+    LEGACY_COUNTERPART_ID="qa-debug-label-text-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-text-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=text:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-dated-text-v2)
+    TARGET_FIXTURE_ID="qa-debug-label-dated-text-v2"
+    LEGACY_COUNTERPART_ID="qa-debug-label-dated-text-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-dated-text-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=dated-text:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
+  qa-debug-label-dated-text-legacy)
+    TARGET_FIXTURE_ID="qa-debug-label-dated-text-legacy"
+    LEGACY_COUNTERPART_ID="qa-debug-label-dated-text-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-debug-label-dated-text-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_DEBUG_LABEL:MODE=dated-text:BUFFER_COUNT=7:TEXT_TYPE64=VGV4dA==:TEXT64=16LXqNeaIPCfjZI=:NUMBER_TYPE64=TnVtYmVy:NUMBER=7.25:MAP_TYPE64=RGljdGlvbmFyeQ==:MAP_KEYS=2:MAP_KIND64=TEFCRUxfTUFQ:MAP_VALUE=7.25:LIST_COUNT=2:LIST_FIRST64=bGVmdA==:LIST_LAST64=cmlnaHQ=:DATE_TYPE64=RGF0ZQ==:DATE_COUNT=1:DATE_DELTA_SECONDS=0:DATE_SOURCE_DELTA_SECONDS=0:FILE_TYPE64=RmlsZQ==:FILE_COUNT=1:FILE_BYTES64=AQIDBA==:FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:SOURCE_FILE_TYPE64=RmlsZQ==:SOURCE_FILE_BYTES64=AQIDBA==:SOURCE_FILE_NAME64=bGFiZWwtc291cmNlLmJpbg==:METADATA_COUNT=6:M1_KEYS=3:M1_FIRST=1:M1_LAST=1:M1_LABEL64=VEVYVF/Xqda414HXnNeV1rnXnV/wn42S:M2_KEYS=3:M2_FIRST=2:M2_LAST=2:M2_LABEL64=:M3_KEYS=3:M3_FIRST=3:M3_LAST=3:M3_LABEL64=TUFQX0xBQkVM:M4_KEYS=3:M4_FIRST=4:M4_LAST=5:M4_LABEL64=TElTVF9MQUJFTA==:M5_KEYS=3:M5_FIRST=6:M5_LAST=6:M5_LABEL64=REFURV9MQUJFTA==:M6_KEYS=3:M6_FIRST=7:M6_LAST=7:M6_LABEL64=RklMRV9MQUJFTA==:RAW_CLEAR=0:METADATA_CLEAR=0"
+    ;;
   qa-collect-counts-v2)
     TARGET_FIXTURE_ID="qa-collect-counts-v2"
     LEGACY_COUNTERPART_ID="qa-collect-counts-legacy"
@@ -546,11 +618,24 @@ from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from native_boundary_diagnostic import verify_source as verify_boundary_source, verify_graph as verify_boundary_graph
 from fixture_compile_contract import EXPECTED_REJECTIONS, verify_expected_rejection
+from debug_label_acceptance import verify_source as verify_label_source, verify_graph as verify_label_graph, verify_causal_mutations as verify_label_mutations
 cherri_bin = os.path.join(artifact_dir, "builds", "cherri")
 fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtures")
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-debug-label-plain-v2", "qa-debug-label-plain-v2.cherri", "v2"),
+    ("qa-debug-label-plain-legacy", "qa-debug-label-plain-legacy.cherri", "legacy"),
+    ("qa-debug-label-dated-v2", "qa-debug-label-dated-v2.cherri", "v2"),
+    ("qa-debug-label-dated-legacy", "qa-debug-label-dated-legacy.cherri", "legacy"),
+    ("qa-debug-label-typed-v2", "qa-debug-label-typed-v2.cherri", "v2"),
+    ("qa-debug-label-typed-legacy", "qa-debug-label-typed-legacy.cherri", "legacy"),
+    ("qa-debug-label-dated-typed-v2", "qa-debug-label-dated-typed-v2.cherri", "v2"),
+    ("qa-debug-label-dated-typed-legacy", "qa-debug-label-dated-typed-legacy.cherri", "legacy"),
+    ("qa-debug-label-text-v2", "qa-debug-label-text-v2.cherri", "v2"),
+    ("qa-debug-label-text-legacy", "qa-debug-label-text-legacy.cherri", "legacy"),
+    ("qa-debug-label-dated-text-v2", "qa-debug-label-dated-text-v2.cherri", "v2"),
+    ("qa-debug-label-dated-text-legacy", "qa-debug-label-dated-text-legacy.cherri", "legacy"),
     ("CherriBindingCapturePOC", "p15-binding-defaults/CherriBindingCapturePOC.cherri", "v2"),
     ("CherriTypedDefaultsPOC", "p15-binding-defaults/CherriTypedDefaultsPOC.cherri", "v2"),
     ("qa-storage-text-same-run-v2", "qa-storage-text-same-run-v2.cherri", "v2"),
@@ -707,6 +792,9 @@ for fid, fname, dialect in fixture_specs:
         "recordEmptyFeasibilityGraph": verify_record_empty_graph(fid, actions),
         "nativeBoundarySource": verify_boundary_source(root_dir, fid, src_bytes),
         "nativeBoundaryGraph": verify_boundary_graph(fid, actions),
+        "debugLabelSource": verify_label_source(root_dir, fid, src_bytes),
+        "debugLabelGraph": verify_label_graph(fid, actions),
+        "debugLabelCausalMutations": verify_label_mutations(fid, actions) if verify_label_source(root_dir, fid, src_bytes) else None,
         "releaseDiagnosticActionsAbsent": release_diagnostics_absent,
         "releaseBodyShapeVerified": release_body_verified,
         "sourceSha256": src_sha256,
@@ -1522,6 +1610,13 @@ PY
       exit 2
     fi
     EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}-${EXEC_RANDOM_NONCE}"
+    case "$TARGET_FIXTURE_ID" in
+      qa-debug-label-*)
+        python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/debug_label_preview.py" prepare \
+          --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --commit "$SOURCE_SHA" \
+          --run-id "$RUN_ID" --attempt "${GITHUB_RUN_ATTEMPT:-1}" --nonce "$EXEC_RUN_NONCE" || exit 2
+        ;;
+    esac
     SHORTCUT_INPUT_VALUE="CHERRI_QA_INPUT"
     if [ "$HTTP_PROBE_ENABLED" = "true" ]; then
       # Static source bytes are never rewritten: only reviewed loopback port/nonce
@@ -1582,6 +1677,9 @@ PY
     export TEST_RUNNER_CHERRI_QA_EXPECT_RUNTIME_RUN="$SIGNED_ARTIFACT_VALID_AEA1"
     export TEST_RUNNER_CHERRI_QA_DEFER_RUNTIME_TO_PHASE4B="true"
     export TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE="$EXEC_RUN_NONCE"
+    export TEST_RUNNER_CHERRI_QA_SOURCE_SHA="$SOURCE_SHA"
+    export TEST_RUNNER_CHERRI_QA_WORKFLOW_RUN_ID="$RUN_ID"
+    export TEST_RUNNER_CHERRI_QA_WORKFLOW_RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-1}"
     export TEST_RUNNER_CHERRI_QA_RUN_URL="$RUN_URL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_MINIMAL="$RUN_URL_MINIMAL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_PLAIN="$RUN_URL_PLAIN"
@@ -2649,6 +2747,16 @@ if not os.path.exists(trace_jsonl_path) and fid != "qa-storage-text-cross-run-v2
             "omittedReason": reason if trace_status != "PASS" else None,
         }) + "\n")
 PY
+
+# A successful exact callback does not substitute for requested visible labels.
+# This fresh-run receipt is additive; original values, trace and callback remain required.
+case "$TARGET_FIXTURE_ID" in
+  qa-debug-label-*)
+    python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/debug_label_preview.py" finalize \
+      --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --commit "$SOURCE_SHA" \
+      --run-id "$RUN_ID" --attempt "${GITHUB_RUN_ATTEMPT:-1}" || exit 2
+    ;;
+esac
 
 if [ "$HTTP_PROBE_STARTED" = "true" ]; then
   stop_http_probe

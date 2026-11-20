@@ -1,0 +1,9 @@
+# K formal native runtime failure retained
+
+The original iOS 27 PoC run 44653155762 on K 8e66254d56ea3e4ac70f6cda6ef9d31217e0937c completed with a genuine exact-output failure after 55m58s. It was not a job timeout. The original ZIP and terminal metadata were retained; the exact publication gate replayed all 31 published files without changing any byte. The original exporter function reproduced all six formal records byte-for-byte. Its CLI correctly refused to overwrite the existing evidence file.
+
+All 17 historical raw diagnostic rows reported their expected observations, including the repaired zero-based LOOPS trace. Those raw rows contain historical memberships and do not establish current formal acceptance. The source-bound coverage fixture observed 302 bytes instead of 313. Byte 92 is the first difference: the expected literal U+FFFC before the smiley is absent. The rest of the second Unicode segment also differs. Both F01 fields match their expected values, but the full fixture oracle failed, so both coupled coverage records remain failed exactly as emitted. The source, golden, and original observations were not edited.
+
+Fresh clipboard reset was proven, and the run-owned iOS 27.2 simulator was deleted successfully. A separate wrapper used the six original records and the real failed GitHub conclusion for actual Go production intake. The validator rejected the non-success run and its records (exit 1). No local producers were executed and no official 179 result was replaced; passing diagnostic rows cannot be promoted from this failed workflow.
+
+The JSON companion retains artifact digests, exact public field differences, and the production intake receipt. The compiler repair and another successful exact-source native run remain required. Physical-device and unrelated UI acceptance are not proven.

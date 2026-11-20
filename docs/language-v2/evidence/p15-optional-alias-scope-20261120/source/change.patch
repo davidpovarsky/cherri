@@ -1,0 +1,26 @@
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index 98462517..5339cbe7 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -1862,9 +1862,6 @@ func (a *Analyzer) resolveType(t syntax.TypeAnnotation) (resolved types.Type) {
+ 
+ 	switch ta := t.(type) {
+ 	case *syntax.NamedTypeAnnotation:
+-		if nt, ok := types.ParseNamedType(ta.Name); ok {
+-			return nt
+-		}
+ 		aliasName := ta.Name
+ 		if ta.Namespace != "" {
+ 			aliasName = ta.Namespace + "." + aliasName
+@@ -1872,6 +1869,11 @@ func (a *Analyzer) resolveType(t syntax.TypeAnnotation) (resolved types.Type) {
+ 		if alias, found := a.typeAliases[aliasName]; found {
+ 			return alias.owner.resolveTypeAlias(alias.declaration)
+ 		}
++		if ta.Namespace == "" {
++			if primitive, found := types.ParseNamedType(ta.Name); found {
++				return primitive
++			}
++		}
+ 		if ta.Namespace != "" {
+ 			return types.NewEntity(ta.Namespace, ta.Name)
+ 		}

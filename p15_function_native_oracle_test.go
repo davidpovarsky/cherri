@@ -14,6 +14,8 @@ type p15FunctionGraph struct {
 	actual, expected []map[string]any
 	groups           map[string]bool
 	outer, body      string
+	functionName     string
+	workflowName     string
 	err              error
 }
 
@@ -157,9 +159,15 @@ func (g *p15FunctionGraph) header(name string) string {
 	g.outer = g.conditional(4, p15FunctionVariable("_cherri_is_fn"), "WFConditionalActionString", "1")
 	envelope := g.value("detect.dictionary", map[string]any{"WFInput": input})
 	function := g.get("function", envelope)
+	g.functionName = function
 	g.get("arguments", envelope)
 	g.body = g.conditional(4, p15FunctionEdge(function), "WFConditionalActionString", name)
 	return envelope
+}
+
+func (g *p15FunctionGraph) nextFunction(name string) {
+	g.boundary(g.body, 2, false)
+	g.body = g.conditional(4, p15FunctionEdge(g.functionName), "WFConditionalActionString", name)
 }
 
 func (g *p15FunctionGraph) caller() {
@@ -200,7 +208,13 @@ func (g *p15FunctionGraph) payload(name string, args ...p15FunctionArgument) str
 		fields[fmt.Sprintf("has_arg_%d", i)] = p15FunctionString(presence)
 		values = append(values, map[string]any{"WFItemType": arg.kind, "WFValue": arg.value})
 	}
-	fields["arguments"] = p15FunctionArgument{true, 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": values}}
+	array := map[string]any{"WFSerializationType": "WFArrayParameterState"}
+	if len(args) != 0 {
+		array["Value"] = values
+	}
+	// The legacy positional mirror for a function with zero parameters has no
+	// rows. This is not the representation of a supplied empty List argument.
+	fields["arguments"] = p15FunctionArgument{true, 2, array}
 	keys := []string{}
 	for key := range fields {
 		keys = append(keys, key)
@@ -215,8 +229,12 @@ func (g *p15FunctionGraph) payload(name string, args ...p15FunctionArgument) str
 }
 
 func (g *p15FunctionGraph) call(payload string) string {
-	return g.value("runworkflow", map[string]any{"WFInput": p15FunctionEdge(payload), "WFWorkflowName": "p15-short-circuit",
-		"WFWorkflow": map[string]any{"isSelf": true, "workflowName": "p15-short-circuit"}})
+	name := g.workflowName
+	if name == "" {
+		name = "p15-short-circuit"
+	}
+	return g.value("runworkflow", map[string]any{"WFInput": p15FunctionEdge(payload), "WFWorkflowName": name,
+		"WFWorkflow": map[string]any{"isSelf": true, "workflowName": name}})
 }
 
 func (g *p15FunctionGraph) finish() error {

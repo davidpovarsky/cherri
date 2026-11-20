@@ -28,8 +28,10 @@ func narrowAssignedValue(symbol *Symbol, value types.Type) {
 }
 
 type bindingFlowState struct {
-	initialized bool
-	readType    types.Type
+	initialized      bool
+	readType         types.Type
+	optionalPresence bool
+	knownAbsent      bool
 }
 type bindingFlow map[*Symbol]bindingFlowState
 
@@ -37,7 +39,7 @@ func captureBindingFlow(scope *Scope) bindingFlow {
 	result := bindingFlow{}
 	for current := scope; current != nil; current = current.parent {
 		for _, symbol := range current.symbols {
-			result[symbol] = bindingFlowState{symbol.Initialized, symbol.readType()}
+			result[symbol] = bindingFlowState{symbol.Initialized, symbol.readType(), symbol.optionalPresence, symbol.knownAbsent}
 		}
 	}
 	return result
@@ -46,6 +48,8 @@ func captureBindingFlow(scope *Scope) bindingFlow {
 func (state bindingFlow) restore() {
 	for symbol, value := range state {
 		symbol.Initialized = value.initialized
+		symbol.optionalPresence = value.optionalPresence
+		symbol.knownAbsent = value.knownAbsent
 		symbol.flowType = nil
 		if value.readType != nil && symbol.Type != nil && !value.readType.Equals(symbol.Type) {
 			symbol.flowType = value.readType
@@ -66,13 +70,17 @@ func mergeBindingFlow(entry bindingFlow, paths ...bindingFlow) {
 		if !ok {
 			continue
 		}
-		initialized, sameType := first.initialized, true
+		initialized, sameType, presence, absent := first.initialized, true, first.optionalPresence, first.knownAbsent
 		for _, path := range paths[1:] {
 			value, found := path[symbol]
 			initialized = initialized && found && value.initialized
+			presence = presence && found && value.optionalPresence
+			absent = absent && found && value.knownAbsent
 			sameType = sameType && found && first.readType != nil && value.readType != nil && first.readType.Equals(value.readType)
 		}
 		symbol.Initialized = initialized
+		symbol.optionalPresence = initialized && presence
+		symbol.knownAbsent = initialized && absent
 		symbol.flowType = nil
 		if initialized && sameType && first.readType != nil && symbol.Type != nil && !first.readType.Equals(symbol.Type) {
 			symbol.flowType = first.readType
@@ -284,5 +292,6 @@ func invalidateLoopRefinements(body *syntax.BlockStmt, scope *Scope) {
 	// inside the body can establish a fresh fact for the current iteration.
 	for symbol := range writtenBindings(body, scope) {
 		symbol.flowType = nil
+		symbol.knownAbsent = false
 	}
 }

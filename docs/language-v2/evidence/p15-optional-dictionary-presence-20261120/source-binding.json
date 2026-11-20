@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "implementation_sha": "d695fa421c551511777290f92b2926dd1c6c6b8b",
+  "base_sha": "cf89a1bfd826acc674ec06d6a996556f6c0bcee4",
+  "source_files": [
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "3bba2eb5f64c1abbeac000cb9de32ec76be1ad89bd28bf581bd9253193994471",
+      "bytes": 69578
+    },
+    {
+      "path": "internal/language/analysis/dictionary_presence.go",
+      "sha256": "cb9374eda20b8e499a2ca7367fe97f5bc02ea6bda9b75020d5f9d6937ceb558f",
+      "bytes": 2380
+    },
+    {
+      "path": "internal/language/analysis/dictionary_presence_test.go",
+      "sha256": "343a894184dec0d8c30d1d76ebe1e6ddf2af88ed0fc492ade6fb10f41ce1a1ac",
+      "bytes": 2383
+    },
+    {
+      "path": "internal/language/analysis/optional_presence.go",
+      "sha256": "53ccd71d9100ae508cb8bff6ecb32b5d082a62a9a3b2cff369d370dd557a27ef",
+      "bytes": 1835
+    },
+    {
+      "path": "internal/language/lower/dictionary_presence_test.go",
+      "sha256": "aa74d34055e12fcab8f1f9159d656f129bd617ead69a61b7c5ce34a2819abfa1",
+      "bytes": 1709
+    },
+    {
+      "path": "internal/language/lower/function_optional_presence.go",
+      "sha256": "66ae65145fb80a705d3e0e841665bc589f95a6eb6d09ea672b246f5522fcbd13",
+      "bytes": 11154
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "52cd02050c0a9b3f97817b19af0dba9fb34fe5d51135a69a5deb2ed041ae7910",
+      "bytes": 184861
+    },
+    {
+      "path": "internal/language/lower/scoped_blocks.go",
+      "sha256": "2ac33ed7d8da923df5d5446b1896fc2d4950552893b22961237945f108d36b3a",
+      "bytes": 12898
+    },
+    {
+      "path": "internal/language/syntax/dictionary_presence.go",
+      "sha256": "30127a79c919fef5f4f6d731634c7d1225a91628ce034c1271ebe5a8cef0c27d",
+      "bytes": 1083
+    },
+    {
+      "path": "internal/language/syntax/dictionary_presence_test.go",
+      "sha256": "78b85f544d6fd2c6a54ec2022bfefc236d6573b8e8658f017f942f02865e3d86",
+      "bytes": 1833
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "619b704a1faafaa83d67a02a8ed3772c251ef75e4b60ef3a411d4e7987e5d95f",
+      "bytes": 16609
+    },
+    {
+      "path": "p15_optional_dictionary_index_boundary_test.go",
+      "sha256": "2a4e0acb03a2ee2f2e8e383892f075c7c2f5756d60fc59d524256b5a2193d339",
+      "bytes": 4065
+    },
+    {
+      "path": "p15_optional_dictionary_oracle_test.go",
+      "sha256": "c831f8d76e2f0dc7bcb4f57c7019675fd011c7bf270b8047da9f751ec93790dd",
+      "bytes": 9527
+    },
+    {
+      "path": "p15_optional_dictionary_presence_test.go",
+      "sha256": "503f006467f560755c5082c3a11fbead2894733c3259e6415c9e12ea9c879702",
+      "bytes": 6473
+    },
+    {
+      "path": "p15_optional_index_presence_test.go",
+      "sha256": "da54ee55e9971a53d4abb5cdbd0b35af89a30759ecddcd7f2f537ef1e4306949",
+      "bytes": 9244
+    }
+  ],
+  "unchanged_originals_and_contracts": [
+    {
+      "path": "require_macro_test.go",
+      "sha256": "147b3a25ad9cd83b1030228dc5bca7ecf5f2ed227aa246a7c6407cf7671b8c39",
+      "bytes": 17038,
+      "equal_to_base": true
+    },
+    {
+      "path": "p15_nil_clear_probe_test.go",
+      "sha256": "893448b97e9210c0ff581a65e51ebc95661e1ed7787bebf466e6157efb389205",
+      "bytes": 9690,
+      "equal_to_base": true
+    },
+    {
+      "path": "p15_nil_migration_test.go",
+      "sha256": "8a84e03e3fa2ebc5e091a3dd647f312e787d00127cc953fb1ddef55ec91f1f51",
+      "bytes": 10518,
+      "equal_to_base": true
+    },
+    {
+      "path": "tests/nil.cherri",
+      "sha256": "40c258b02c635dfbb35d44c52734371a4eae01e6d8491736450593074bc3014f",
+      "bytes": 244,
+      "equal_to_base": true
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-nil-clear-v2.cherri",
+      "sha256": "5acf0db40267630c067d21a61c297b653e5c58e31387fdc96ad60f721263f8d5",
+      "bytes": 1418,
+      "equal_to_base": true
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "equal_to_base": true
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "equal_to_base": true
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "equal_to_base": true
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "caa0ca6fd0619d48ffc7cebb8010207d545129c9d88aa9ea72e9e05f912a7e32",
+      "bytes": 5912,
+      "equal_to_base": true
+    }
+  ],
+  "source_clean_before_and_after": true,
+  "codec_descriptor_changed": false,
+  "formal_requirements_proved": [],
+  "native_runtime_executed": false
+}

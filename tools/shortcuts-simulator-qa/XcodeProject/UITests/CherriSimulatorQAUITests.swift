@@ -156,6 +156,18 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-native-boundary-diagnostic-v2",
         "qa-file-materialization-diagnostic-v2",
         "qa-n03-text-equality-diagnostic-v2",
+        "qa-debug-label-plain-v2",
+        "qa-debug-label-dated-v2",
+        "qa-debug-label-typed-v2",
+        "qa-debug-label-dated-typed-v2",
+        "qa-debug-label-text-v2",
+        "qa-debug-label-dated-text-v2",
+        "qa-debug-label-dated-text-legacy",
+        "qa-debug-label-dated-typed-legacy",
+        "qa-debug-label-dated-legacy",
+        "qa-debug-label-plain-legacy",
+        "qa-debug-label-text-legacy",
+        "qa-debug-label-typed-legacy",
         "qa-f04-record-empty-v2",
         "qa-collect-counts-v2",
         "qa-collect-counts-legacy",
@@ -1332,9 +1344,14 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let confirmPredicate = NSPredicate(format: "label IN {'Always Allow', 'Allow', 'Open', 'Allow Once', 'Run', 'Continue', 'OK'}")
         let beforeShot = XCUIScreen.main.screenshot()
         try? beforeShot.pngRepresentation.write(to: outDir.appendingPathComponent("phase4-before-confirm.png"), options: .atomic)
+        let confirmStartedUptime = ProcessInfo.processInfo.systemUptime
         let deadline = Date().addingTimeInterval(22.0)
+        let labelPreview = QADebugLabelPreviewObserver(outputDirectory: outDir, startedUptime: confirmStartedUptime)
+        defer { labelPreview?.finish() }
 
         while Date() < deadline {
+            labelPreview?.step(in: shortcuts)
+            if Date() >= deadline { break }
             var candidates: [(String, XCUIApplication)] = [("springboard", springboard)]
             if shortcuts.state == .runningForeground {
                 candidates.append(("shortcuts", shortcuts))

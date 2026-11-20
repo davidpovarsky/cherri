@@ -1,0 +1,31 @@
+{
+  "source_commit": "ccf635426fc98885a8cbe0002a67399ec36785b6",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalForwardingRequiresOwnedPresence$",
+    "."
+  ],
+  "started_at": "2026-11-20T05:12:35.109882+00:00",
+  "finished_at": "2026-11-20T05:13:01.401683+00:00",
+  "elapsed_seconds": 26.297,
+  "exit_code": 1,
+  "timed_out": false,
+  "passed": [],
+  "failed": [
+    "TestP15OptionalForwardingRequiresOwnedPresence/opaque_argument",
+    "TestP15OptionalForwardingRequiresOwnedPresence/opaque_return",
+    "TestP15OptionalForwardingRequiresOwnedPresence/opaque_binding",
+    "TestP15OptionalForwardingRequiresOwnedPresence/opaque_assignment",
+    "TestP15OptionalForwardingRequiresOwnedPresence/opaque_default",
+    "TestP15OptionalForwardingRequiresOwnedPresence"
+  ],
+  "skipped": [],
+  "raw_sha256": "263861d638374f82f15c1e027f2dd87ba655393e1fedc247c3d3887ae4455777",
+  "clean_after": true
+}

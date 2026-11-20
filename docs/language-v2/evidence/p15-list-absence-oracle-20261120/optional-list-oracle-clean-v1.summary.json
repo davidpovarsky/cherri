@@ -1,0 +1,41 @@
+{
+  "source_commit": "b880f27697cb09b94d73e8e68bf2804c4f5c6c1a",
+  "source_modified": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15L01InferredNestedNativeListFailsClosed$",
+    "."
+  ],
+  "started_at": "2026-11-20T04:38:54.382140+00:00",
+  "finished_at": "2026-11-20T04:39:19.559509+00:00",
+  "elapsed_seconds": 25.171,
+  "exit_code": 0,
+  "timed_out": false,
+  "passed": [
+    "TestP15L01InferredNestedNativeListFailsClosed/immutable_nonempty",
+    "TestP15L01InferredNestedNativeListFailsClosed/immutable_empty",
+    "TestP15L01InferredNestedNativeListFailsClosed/mutable",
+    "TestP15L01InferredNestedNativeListFailsClosed/alias",
+    "TestP15L01InferredNestedNativeListFailsClosed/typed_binding",
+    "TestP15L01InferredNestedNativeListFailsClosed/optional_present",
+    "TestP15L01InferredNestedNativeListFailsClosed/optional_absent",
+    "TestP15L01InferredNestedNativeListFailsClosed/function_result",
+    "TestP15L01InferredNestedNativeListFailsClosed/function_parameter",
+    "TestP15L01InferredNestedNativeListFailsClosed/conditional_result",
+    "TestP15L01InferredNestedNativeListFailsClosed/loop_result",
+    "TestP15L01InferredNestedNativeListFailsClosed/widened_known_list",
+    "TestP15L01InferredNestedNativeListFailsClosed/union_list",
+    "TestP15L01InferredNestedNativeListFailsClosed/type_alias",
+    "TestP15L01InferredNestedNativeListFailsClosed/scalar_and_dictionary_reference_controls",
+    "TestP15L01InferredNestedNativeListFailsClosed"
+  ],
+  "failed": [],
+  "skipped": [],
+  "raw_sha256": "aa904363c36ddfcd12c93a6a62b10d58804ea9a9ef9556bbbcda61c73aa5e596",
+  "clean_after": true
+}

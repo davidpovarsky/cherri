@@ -1,0 +1,75 @@
+// Public synthetic Optional transport diagnostic; no formal acceptance credit.
+// None is observed through compiler-owned presence, never value truthiness.
+function optionalText(value: Text? = text("DEFAULT")) -> Text? { return value }
+function optionalBool(value: Bool?) -> Bool? { return value }
+function optionalNumber(value: Number?) -> Number? { return value }
+function optionalList(value: List<Text>?) -> List<Text>? { return value }
+function optionalMap(value: Map<Text, Text>?) -> Map<Text, Text>? { return value }
+function optionalPick(value: Text?, later: Text) -> Text? { return value }
+
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "optional-forwarding")
+
+let noneResult = optionalText(optionalText(none))
+var noneObserved = "NONE"
+if noneResult != none { noneObserved = text(f"TEXT[{noneResult}]") }
+let emptyTextResult = optionalText(optionalText(""))
+var emptyTextObserved = "NONE"
+if emptyTextResult != none { emptyTextObserved = text(f"TEXT[{emptyTextResult}]") }
+let falseResult = optionalBool(optionalBool(false))
+var falseObserved = "NONE"
+if falseResult != none {
+    if falseResult { falseObserved = "BOOL[true]" } else { falseObserved = "BOOL[false]" }
+}
+let zeroResult = optionalNumber(optionalNumber(0))
+var zeroObserved = "NONE"
+if zeroResult != none { zeroObserved = text(f"NUMBER[{zeroResult}]") }
+let emptyListResult = optionalList(optionalList([]))
+var emptyListObserved = "NONE"
+if emptyListResult != none {
+    let itemCount = count(emptyListResult)
+    emptyListObserved = text(f"LIST[{itemCount}]")
+}
+let emptyMapResult = optionalMap(optionalMap({}))
+var emptyMapObserved = "NONE"
+if emptyMapResult != none {
+    let keys = getKeys(emptyMapResult)
+    let keyCount = count(keys)
+    emptyMapObserved = text(f"MAP[{keyCount}]")
+}
+
+let listResult = optionalList(["A", "B"])
+var listObserved = "NONE"
+if listResult != none {
+    let itemCount = count(listResult)
+    let first = getFirstItem(listResult)
+    let second = getLastItem(listResult)
+    listObserved = text(f"LIST[{itemCount}|{first}|{second}]")
+}
+let mapResult = optionalMap({"key": "VALUE"})
+var mapObserved = "NONE"
+if mapResult != none {
+    let keys = getKeys(mapResult)
+    let keyCount = count(keys)
+    let item = getValue(mapResult, "key", get: "Value")
+    let nativeType = typeOf(mapResult)
+    mapObserved = text(f"MAP[{keyCount}|{item}|{nativeType}]")
+}
+
+var candidate: Text? = none
+let snapshotResult = optionalPick(candidate, if true { candidate = ""; yield "WRITTEN" } else { yield "UNUSED" })
+var snapshotObserved = "NONE"
+if snapshotResult != none { snapshotObserved = text(f"TEXT[{snapshotResult}]") }
+var writtenObserved = "NONE"
+if candidate != none { writtenObserved = text(f"TEXT[{candidate}]") }
+let defaultResult = optionalText()
+var defaultObserved = "NONE"
+if defaultResult != none { defaultObserved = text(f"TEXT[{defaultResult}]") }
+
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "optional-forwarding")
+let optionalTrace = debugExportTrace(runId: "qa-optional-forwarding-diagnostic-v2")
+let optionalSummary = text(f"CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:NONE={noneObserved}:EMPTY_TEXT={emptyTextObserved}:FALSE={falseObserved}:ZERO={zeroObserved}:EMPTY_LIST={emptyListObserved}:EMPTY_MAP={emptyMapObserved}:LIST={listObserved}:MAP={mapObserved}:SNAPSHOT={snapshotObserved}:WRITTEN={writtenObserved}:DEFAULT={defaultObserved}\n{optionalTrace}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(optionalSummary)

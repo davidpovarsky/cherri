@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -70,7 +71,11 @@ func p15SchemaCommand(t *testing.T, dir string, extraEnv []string, command ...st
 		}
 	}
 	cmd.Env = append(cmd.Env, extraEnv...)
-	return cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return out, fmt.Errorf("actual schema subprocess %q (context=%v): %w", command, ctx.Err(), err)
+	}
+	return out, nil
 }
 
 func p15SchemaRun(t *testing.T, dir string, command ...string) []byte {

@@ -35,7 +35,7 @@ func TestUpstreamBoundaryProducerInventory(t *testing.T) {
 		row.Expected != "No mechanical mass rewrite of actions/*.cherri; diff boundary manifest" || row.NegativeCase {
 		t.Fatal("U01 producer drifted from immutable contract", row)
 	}
-	if len(upstreamBoundaryControls) != 12 || len(upstreamBoundaryRequiredEvents()) != 14 {
+	if len(upstreamBoundaryControls) != 12 || len(upstreamBoundaryReplacementControls) != 4 || len(upstreamBoundaryRequiredEvents()) != 19 {
 		t.Fatal("complete repository boundary/control inventory changed")
 	}
 	seen := map[string]bool{}

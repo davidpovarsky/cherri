@@ -67,6 +67,11 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 		return cloned
 	}
 
+	questionOrigins, canNormalize := bindParityQuestionTargets(cloned, actionsRaw)
+	if !canNormalize {
+		return cloned
+	}
+
 	// 0. Witness and normalize function envelope (Contract B2 vs Legacy)
 	actionsRaw = normalizeFunctionEnvelope(actionsRaw)
 	cloned["WFWorkflowActions"] = actionsRaw
@@ -331,6 +336,12 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 				}
 			}
 		}
+	}
+
+	if !rebindParityQuestionTargets(cloned, filteredActions, questionOrigins) {
+		// Removing or duplicating a question target has no justified normalized
+		// index. Compare the original native graph instead.
+		return deepCloneMap(doc)
 	}
 
 	// 8. Normalize import questions order by ActionIndex

@@ -382,6 +382,8 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 		lowerer.SetVirtualModules(options.VirtualModules)
 	}
 	lowerer.SetExprTypes(analyzer.ExprTypes())
+	lowerer.SetTypeAnnotations(analyzer.TypeAnnotations())
+	lowerer.SetKnownPresentDictionaryIndexes(analyzer.KnownPresentDictionaryIndexes())
 	lowerer.SetEnumValues(analyzer.EnumValues())
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)

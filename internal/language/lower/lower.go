@@ -28,15 +28,17 @@ type provenanceOutputNameSpec struct {
 
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
-	IsVariable        bool   // true = setvariable/getvariable, false = direct action output token
-	TokenType         string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
-	OutputUUID        string // for action output
-	OutputName        string
-	VariableName      string // for setvariable
-	Aggrandizements   []map[string]interface{}
-	Type              types.Type
-	PolymorphicLookup bool
-	AppendVariable    bool
+	IsVariable             bool   // true = setvariable/getvariable, false = direct action output token
+	TokenType              string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
+	OutputUUID             string // for action output
+	OutputName             string
+	VariableName           string // for setvariable
+	Aggrandizements        []map[string]interface{}
+	Type                   types.Type
+	PolymorphicLookup      bool
+	AppendVariable         bool
+	OptionalPresence       interface{} // compiler-owned value presence, independent of argument omission
+	OptionalPresenceUnused bool        // exact source binding has no semantic presence consumer
 }
 
 func lookupContentItemClass(prop string) (string, bool) {
@@ -58,46 +60,51 @@ func lookupContentItemClass(prop string) (string, bool) {
 
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
-	registry                *schema.Registry
-	session                 backend.Session
-	workflow                *ir.NativeWorkflow
-	bindings                map[string]BindingRef
-	functions               map[string]*syntax.FunctionDecl
-	setupQuestions          map[string]*syntax.SetupDecl
-	setupBindings           map[string]*setupQuestionLoweringBinding
-	setupDeclarationOrder   []*setupQuestionLoweringBinding
-	enums                   map[string]*syntax.EnumDecl
-	types                   map[string]*syntax.TypeDecl
-	actions                 map[string]*syntax.ActionDecl
-	copyBlocks              map[string]*syntax.CopyBlockStmt
-	importStack             []string
-	modules                 map[string]string
-	virtualModules          map[string]string
-	baseFilePath            string
-	importedFunctions       []*syntax.FunctionDecl
-	moduleGraph             *modules.Graph
-	moduleRegistries        map[*modules.Module]*schema.Registry
-	moduleScopes            map[*modules.Module]*moduleScope
-	functionModules         map[*syntax.FunctionDecl]*modules.Module
-	functionDispatchNames   map[*syntax.FunctionDecl]string
-	WorkflowName            string
-	uuidCounter             int
-	autoNumberProducerCount int
-	repeatDepth             int
-	currentBindingName      string
-	emitErr                 error
-	isMac                   *bool
-	exprTypes               map[syntax.Expression]types.Type
-	enumValues              map[syntax.Expression]string
-	inExprStmt              bool
-	hasImportProvenance     bool
-	provenanceUUIDs         map[string]string
-	provenanceSymbols       map[string]bool
-	provenanceOutputNames   map[string]provenanceOutputNameSpec
-	lexical                 lexicalLoweringState
-	provenanceVarNames      map[string]string
-	literalTextCarriers     map[*ir.NativeActionNode]bool
-	nativeResultReferences  map[*ir.NativeActionNode]*ir.AttachmentToken
+	registry                   *schema.Registry
+	session                    backend.Session
+	workflow                   *ir.NativeWorkflow
+	bindings                   map[string]BindingRef
+	functions                  map[string]*syntax.FunctionDecl
+	setupQuestions             map[string]*syntax.SetupDecl
+	setupBindings              map[string]*setupQuestionLoweringBinding
+	setupDeclarationOrder      []*setupQuestionLoweringBinding
+	enums                      map[string]*syntax.EnumDecl
+	types                      map[string]*syntax.TypeDecl
+	actions                    map[string]*syntax.ActionDecl
+	copyBlocks                 map[string]*syntax.CopyBlockStmt
+	importStack                []string
+	modules                    map[string]string
+	virtualModules             map[string]string
+	baseFilePath               string
+	importedFunctions          []*syntax.FunctionDecl
+	moduleGraph                *modules.Graph
+	moduleRegistries           map[*modules.Module]*schema.Registry
+	moduleScopes               map[*modules.Module]*moduleScope
+	functionModules            map[*syntax.FunctionDecl]*modules.Module
+	functionDispatchNames      map[*syntax.FunctionDecl]string
+	WorkflowName               string
+	uuidCounter                int
+	autoNumberProducerCount    int
+	repeatDepth                int
+	currentBindingName         string
+	emitErr                    error
+	isMac                      *bool
+	exprTypes                  map[syntax.Expression]types.Type
+	typeAnnotations            map[syntax.TypeAnnotation]types.Type
+	enumValues                 map[syntax.Expression]string
+	inExprStmt                 bool
+	hasImportProvenance        bool
+	provenanceUUIDs            map[string]string
+	provenanceSymbols          map[string]bool
+	provenanceOutputNames      map[string]provenanceOutputNameSpec
+	lexical                    lexicalLoweringState
+	provenanceVarNames         map[string]string
+	optionalFunctionReturn     bool
+	optionalExpressionPresence map[syntax.Expression]interface{}
+	optionalPresenceDemand     map[*syntax.BindingStmt]bool
+	knownDictionaryIndexes     map[syntax.Expression]bool
+	literalTextCarriers        map[*ir.NativeActionNode]bool
+	nativeResultReferences     map[*ir.NativeActionNode]*ir.AttachmentToken
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -150,6 +157,16 @@ func (l *Lowerer) SetBaseFilePath(path string) {
 // SetExprTypes sets the map of analyzed expression types.
 func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
 	l.exprTypes = exprTypes
+}
+
+// SetTypeAnnotations preserves the defining module's analyzed alias meaning.
+func (l *Lowerer) SetTypeAnnotations(annotations map[syntax.TypeAnnotation]types.Type) {
+	l.typeAnnotations = annotations
+}
+
+// SetKnownPresentDictionaryIndexes supplies exact source-owned slot facts.
+func (l *Lowerer) SetKnownPresentDictionaryIndexes(indexes map[syntax.Expression]bool) {
+	l.knownDictionaryIndexes = indexes
 }
 
 // SetEnumValues supplies exact enum literals resolved without AST mutation.
@@ -420,14 +437,14 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 	}
 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
-	if l.exprTypes == nil || l.enumValues == nil {
+	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil || l.knownDictionaryIndexes == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
 		analyzer.SetModuleGraph(l.moduleGraph)
 		analyzer.Analyze(prog)
 		l.registry = analyzer.Registry()
 		l.SetModuleRegistries(analyzer.ModuleRegistries())
 		for _, diagnostic := range analyzer.Diagnostics() {
-			if diagnostic.Code == analysis.CodeSetupBinding && diagnostic.Severity == analysis.SeverityError {
+			if (diagnostic.Code == analysis.CodeSetupBinding || diagnostic.Code == analysis.CodeTypeAlias) && diagnostic.Severity == analysis.SeverityError {
 				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
 			}
 		}
@@ -436,6 +453,12 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 		if l.enumValues == nil {
 			l.enumValues = analyzer.EnumValues()
+		}
+		if l.typeAnnotations == nil {
+			l.typeAnnotations = analyzer.TypeAnnotations()
+		}
+		if l.knownDictionaryIndexes == nil {
+			l.knownDictionaryIndexes = analyzer.KnownPresentDictionaryIndexes()
 		}
 		if l.isMac == nil {
 			l.isMac = analyzer.IsMacTarget()
@@ -505,6 +528,8 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			return fmt.Errorf("unhandled declaration %T: declarations must not be silently dropped", decl)
 		}
 	}
+
+	l.prepareOptionalPresenceDemand(prog)
 
 	// 2. If functions are declared and called, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
 	if len(l.functions) > 0 && hasFunctionCalls(prog, l.functions) {
@@ -1246,6 +1271,17 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.bindings = make(map[string]BindingRef)
 
 		for idx, param := range fn.Parameters {
+			if l.optionalFunctionParameter(param.TypeExpr) {
+				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr)
+				if err != nil {
+					return nil, fmt.Errorf("function %s optional parameter %s: %w", fn.Name, param.Name, err)
+				}
+				l.bindings[param.Name] = BindingRef{
+					Type: l.resolveTypeAnnotation(param.TypeExpr), OutputUUID: value, OutputName: param.Name,
+					OptionalPresence: &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence},
+				}
+				continue
+			}
 			argKey := fmt.Sprintf("arg_%d", idx)
 			isNumParam := false
 			if named, ok := param.TypeExpr.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Bool") {
@@ -1270,13 +1306,10 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 				suppliedUUID := l.GenerateUUID()
 				l.emitAction(&ir.NativeActionNode{
-					NodeID:          suppliedUUID,
-					AppleIdentifier: "is.workflow.actions.getvalueforkey",
-					OutputUUID:      suppliedUUID,
+					NodeID: suppliedUUID, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: suppliedUUID,
 					Parameters: map[string]interface{}{
-						"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
-						"WFDictionaryKey":          argKey,
-						"WFGetDictionaryValueType": "Value",
+						"WFInput":         &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey": argKey, "WFGetDictionaryValueType": "Value",
 					},
 				})
 
@@ -1312,14 +1345,10 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 			} else {
 				argItemUUID := l.GenerateUUID()
 				l.emitAction(&ir.NativeActionNode{
-					NodeID:          argItemUUID,
-					AppleIdentifier: "is.workflow.actions.getvalueforkey",
-					OutputUUID:      argItemUUID,
-					OutputName:      param.Name,
+					NodeID: argItemUUID, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: argItemUUID, OutputName: param.Name,
 					Parameters: map[string]interface{}{
-						"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
-						"WFDictionaryKey":          argKey,
-						"WFGetDictionaryValueType": "Value",
+						"WFInput":         &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey": argKey, "WFGetDictionaryValueType": "Value",
 					},
 				})
 				if isNumParam {
@@ -1345,26 +1374,37 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		}
 
 		hasReturn := false
+		priorOptionalReturn := l.optionalFunctionReturn
+		l.optionalFunctionReturn = l.optionalFunctionParameter(fn.ReturnType)
 		for _, stmt := range fn.Body.Statements {
 			if _, ok := stmt.(*syntax.ReturnStmt); ok {
 				hasReturn = true
 			}
 			if err := l.lowerStatement(stmt); err != nil {
+				l.optionalFunctionReturn = priorOptionalReturn
 				return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 			}
 		}
+		l.optionalFunctionReturn = priorOptionalReturn
 
 		l.bindings = savedBindings
 
 		if !hasReturn {
-			l.emitAction(&ir.NativeActionNode{
-				NodeID:          l.GenerateUUID(),
-				AppleIdentifier: "is.workflow.actions.nothing",
-			})
-			l.emitAction(&ir.NativeActionNode{
-				NodeID:          l.GenerateUUID(),
-				AppleIdentifier: "is.workflow.actions.output",
-			})
+			if l.optionalFunctionParameter(fn.ReturnType) {
+				// Preserve the existing implicit no-value return with the same
+				// explicit presence protocol as authored `return none`.
+				carrier := l.optionalCarrier(nil, "0", "has_value", "value", "_cherri_optional_result_v1")
+				l.emitAction(&ir.NativeActionNode{NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.output", Parameters: map[string]interface{}{"WFOutput": carrier}})
+			} else {
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          l.GenerateUUID(),
+					AppleIdentifier: "is.workflow.actions.nothing",
+				})
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          l.GenerateUUID(),
+					AppleIdentifier: "is.workflow.actions.output",
+				})
+			}
 		}
 
 		l.emitIfEnd(fnGroupUUID, "", "")
@@ -1481,6 +1521,13 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 			if err != nil {
 				return err
 			}
+			if l.optionalFunctionReturn {
+				presence, err := l.optionalValuePresence(s.Value, val)
+				if err != nil {
+					return err
+				}
+				val = l.optionalCarrier(val, presence, "has_value", "value", "_cherri_optional_result_v1")
+			}
 			if val == nil {
 				// An omitted output input otherwise inherits the preceding action.
 				l.materializeYieldValue(nil)
@@ -1555,6 +1602,9 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 	if t == nil {
 		return nil
 	}
+	if value, found := l.typeAnnotations[t]; found {
+		return value
+	}
 	switch ta := t.(type) {
 	case *syntax.NamedTypeAnnotation:
 		if nt, ok := types.ParseNamedType(ta.Name); ok {
@@ -1597,6 +1647,7 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 }
 
 func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
+	trackOptionalPresence := l.optionalPresenceNeeded(b)
 	if b.Value == nil {
 		// uninitialized var
 		wfVarName := l.effectiveVariableName(b.Name)
@@ -1605,9 +1656,10 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			bType = l.resolveTypeAnnotation(b.TypeExpr)
 		}
 		l.bindings[b.Name] = BindingRef{
-			IsVariable:   true,
-			VariableName: wfVarName,
-			Type:         bType,
+			IsVariable:             true,
+			VariableName:           wfVarName,
+			Type:                   bType,
+			OptionalPresenceUnused: !trackOptionalPresence,
 		}
 		if b.Mutable {
 			node := &ir.NativeActionNode{
@@ -1629,6 +1681,21 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	l.currentBindingName = ""
 	if err != nil {
 		return err
+	}
+
+	// Presence is independent of the value's native truthiness. Mutable
+	// bindings store a paired flag; immutable aliases snapshot a mutable flag.
+	var optionalPresence interface{}
+	if trackOptionalPresence && (val == nil || l.optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value)) {
+		optionalPresence, err = l.optionalValuePresence(b.Value, val)
+		if err != nil {
+			return err
+		}
+		if b.Mutable {
+			optionalPresence = l.newMutableOptionalPresence(optionalPresence)
+		} else {
+			optionalPresence = l.snapshotOptionalPresence(optionalPresence)
+		}
 	}
 
 	if b.Mutable {
@@ -1665,9 +1732,10 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			}
 		}
 		l.bindings[b.Name] = BindingRef{
-			IsVariable:   true,
-			VariableName: wfVarName,
-			Type:         bType,
+			IsVariable:             true,
+			VariableName:           wfVarName,
+			Type:                   bType,
+			OptionalPresenceUnused: !trackOptionalPresence,
 		}
 	} else {
 		effOutName := l.effectiveOutputName(b.Name)
@@ -1818,10 +1886,12 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				wfVarName := l.effectiveVariableName(b.Name)
 				l.emitClearedVariable(wfVarName)
 				l.bindings[b.Name] = BindingRef{
-					IsVariable:   true,
-					TokenType:    "Variable",
-					VariableName: wfVarName,
-					OutputName:   wfVarName,
+					IsVariable:             true,
+					TokenType:              "Variable",
+					VariableName:           wfVarName,
+					OutputName:             wfVarName,
+					OptionalPresence:       optionalPresence,
+					OptionalPresenceUnused: !trackOptionalPresence,
 				}
 				return nil
 			default:
@@ -1855,6 +1925,8 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	}
 	if ref, ok := l.bindings[b.Name]; ok {
 		ref.Type = varType
+		ref.OptionalPresence = optionalPresence
+		ref.OptionalPresenceUnused = !trackOptionalPresence
 		if l.isPolymorphicContainerLookupExpr(b.Value) {
 			ref.PolymorphicLookup = true
 		}
@@ -1871,6 +1943,14 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	}
 
 	binding, isBound := l.bindings[a.Name]
+	if isBound {
+		presence, err := l.assignOptionalPresence(binding, a, val)
+		if err != nil {
+			return err
+		}
+		binding.OptionalPresence = presence
+		l.bindings[a.Name] = binding
+	}
 	isList := false
 	isNumericBinding := isBound && binding.Type != nil &&
 		(binding.Type.Equals(types.Number) || binding.Type.Name() == "Number" || binding.Type.Name() == "Int" || binding.Type.Name() == "Float")
@@ -2591,6 +2671,12 @@ func (l *Lowerer) lowerConditionOperand(expr syntax.Expression) (val any, isNumS
 }
 
 func (l *Lowerer) lowerConditionClause(expr syntax.Expression, allowUnaryAnyValue bool) (map[string]any, error) {
+	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
+		if err != nil {
+			return nil, err
+		}
+		return map[string]any{"WFCondition": code, "WFConditionalActionString": "0", "WFInput": map[string]any{"Type": "Variable", "Variable": input}}, nil
+	}
 	if unaryExpr, ok := expr.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
 		if binExpr, okB := unaryExpr.Operand.(*syntax.BinaryExpr); okB {
 			var negOp syntax.TokenType
@@ -2950,8 +3036,14 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 	var enumVal any
 	var opType backend.ConditionOperandType = backend.OperandDefault
 
-	// Check if Condition is a comparison BinaryExpr
-	if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
+	// Compiler-owned optional presence has its own exact Text comparison.
+	presenceInput, presenceCode, presenceCondition, presenceErr := l.lowerOptionalNoneCondition(stmt.Condition)
+	if presenceErr != nil {
+		return nil, presenceErr
+	}
+	if presenceCondition {
+		input, condCode, compareVal, opType = presenceInput, presenceCode, "0", backend.OperandString
+	} else if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
 		var code int
 		isComp := true
 		switch binExpr.Op {
@@ -3548,6 +3640,12 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	if value, resolved := l.enumValues[expr]; resolved {
 		return value, nil
 	}
+	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
+		if err != nil {
+			return nil, err
+		}
+		return l.materializeOptionalPredicate(input, code), nil
+	}
 
 	switch e := expr.(type) {
 	case *syntax.IfStmt:
@@ -3776,7 +3874,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 
 	case *syntax.IndexExpr:
-		targetVal, err := l.lowerExpression(e.Target)
+		// An indexed literal is an authored runtime value. Reuse typed Dictionary
+		// materialization, including sibling captures and explicit empty fields.
+		targetVal, err := l.lowerRuntimeLiteral(e.Target)
 		if err != nil {
 			return nil, err
 		}
@@ -5375,7 +5475,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 	// Check user-defined function
 	if fn, ok := l.functions[actionName]; ok {
-		primaryValue, namedValues, err := l.lowerProvidedFunctionValues(call)
+		providedValues, err := l.lowerProvidedFunctionValues(fn, call)
 		if err != nil {
 			return nil, err
 		}
@@ -5386,35 +5486,17 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			"function":             l.functionDispatchName(fn),
 			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
 		}
-		unnamedArgIdx := 0
+		// All authored arguments have now executed in written order. Only now
+		// construct Optional carriers, so metadata cannot become implicit input
+		// to a later authored argument call.
 		for i, param := range fn.Parameters {
-			var argVal interface{}
-			supplied := false
-			if i == 0 && call.PrimaryArg != nil {
-				argVal = primaryValue
-				supplied = true
-			}
-			if !supplied {
-				for argumentIndex, nArg := range call.NamedArgs {
-					if nArg.Label != "" && (nArg.Label == param.Name || strings.TrimPrefix(param.Name, "_") == nArg.Label) {
-						argVal = namedValues[argumentIndex]
-						supplied = true
-						break
-					}
-				}
-			}
-			if !supplied {
-				for unnamedArgIdx < len(call.NamedArgs) {
-					nArg := call.NamedArgs[unnamedArgIdx]
-					unnamedArgIdx++
-					if nArg.Label == "" {
-						argVal = namedValues[unnamedArgIdx-1]
-						supplied = true
-						break
-					}
-				}
-			}
+			provided := providedValues[i]
+			argVal, supplied := provided.value, provided.supplied
+			optionalValue := l.optionalFunctionParameter(param.TypeExpr)
 			if supplied {
+				if argVal == nil && !optionalValue {
+					return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function argument transport requires an explicit Optional parameter for optional absence at %s", call.Span)
+				}
 				if b, isBool := argVal.(bool); isBool {
 					if b {
 						argVal = 1.0
@@ -5422,8 +5504,15 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						argVal = 0.0
 					}
 				}
+				if optionalValue {
+					argVal = l.optionalCarrier(argVal, provided.presence, "has_value", "value", "_cherri_optional_argument_v1")
+				} else {
+					argVal = functionEnvelopeValue(argVal)
+				}
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "1"
-				dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal
+				if argVal != nil {
+					dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal
+				}
 				argsList[i] = argVal
 			} else {
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "0"
@@ -5478,6 +5567,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		l.emitAction(runNode)
 
+		if l.optionalFunctionParameter(fn.ReturnType) {
+			value, presence := l.decodeOptionalCarrier(uuid, "has_value", "value", outName)
+			if l.optionalExpressionPresence == nil {
+				l.optionalExpressionPresence = make(map[syntax.Expression]interface{})
+			}
+			l.optionalExpressionPresence[call] = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence}
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: value, OutputName: outName}, nil
+		}
 		if named, ok := fn.ReturnType.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Int" || named.Name == "Float") {
 			detectUUID := l.GenerateUUID()
 			detectNode := &ir.NativeActionNode{

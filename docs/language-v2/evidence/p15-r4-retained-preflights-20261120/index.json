@@ -1,0 +1,583 @@
+{
+  "formatVersion": 1,
+  "generatedAt": "2026-11-20T05:13:04.689456+00:00",
+  "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+  "scope": "Intermediate exact-source retained preflight; historical failed observations remain failed; no full179/Apple/final consumer inheritance.",
+  "closureComplete": false,
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 373153,
+    "sha256": "a203e7623bcecc3e636e0a2c4413f5a2ff73ec007e4b756dfece4a72f5652fe8",
+    "originalEntries": 34,
+    "uncompressedBytes": 5839837
+  },
+  "independentAudit": {
+    "formatVersion": 1,
+    "auditedAt": "2026-11-20T05:10:35.541119+00:00",
+    "scope": "Exact intermediate R4 source only; no full179, Apple, final consumer or other-ID inheritance",
+    "closureComplete": false,
+    "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+    "sourceCleanBeforeAndAfterAudit": true,
+    "stages": [
+      {
+        "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+        "name": "optional-and-list-root",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=8m",
+          "-run",
+          "^Test(P15(Optional|FunctionOptional|None|TaggedNone|L01InferredNestedNativeListFailsClosed)|ForkActionProvenanceRegistry|P10R_R26_ProvenanceRegistryIntegrity)",
+          "."
+        ],
+        "startedAt": "2026-11-20T04:48:07.092901+00:00",
+        "finishedAt": "2026-11-20T04:49:28.219842+00:00",
+        "elapsedSeconds": 81.125,
+        "exitCode": 0,
+        "outerTimedOut": false,
+        "cleanBefore": true,
+        "cleanAfter": true,
+        "rawBytes": 380160,
+        "rawSha256": "d55b7f37854bdc6d9e833b235616a14010777b300322b4d9680827e79ca57805",
+        "counts": {
+          "pass": 414,
+          "fail": 0,
+          "skip": 0
+        }
+      },
+      {
+        "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+        "name": "optional-packages",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=5m",
+          "./internal/language/lower",
+          "./internal/language/analysis",
+          "./internal/language/types"
+        ],
+        "startedAt": "2026-11-20T04:49:28.849224+00:00",
+        "finishedAt": "2026-11-20T04:49:41.604890+00:00",
+        "elapsedSeconds": 12.75,
+        "exitCode": 0,
+        "outerTimedOut": false,
+        "cleanBefore": true,
+        "cleanAfter": true,
+        "rawBytes": 68251,
+        "rawSha256": "d34f0b0a0c893a1619f2fe3238ba71c9ee2d050085de255e9c3d999878bda6c4",
+        "counts": {
+          "pass": 76,
+          "fail": 0,
+          "skip": 0
+        }
+      },
+      {
+        "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+        "name": "retained-strict-producers",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=12m",
+          "-run",
+          "^Test(NumberWire|ExhaustiveNode|UpstreamBoundary|StructuralMigration|SafeImportEdit)",
+          "./tools/language-acceptance"
+        ],
+        "startedAt": "2026-11-20T04:49:42.112561+00:00",
+        "finishedAt": "2026-11-20T04:51:36.147778+00:00",
+        "elapsedSeconds": 114.031,
+        "exitCode": 0,
+        "outerTimedOut": false,
+        "cleanBefore": true,
+        "cleanAfter": true,
+        "rawBytes": 1442979,
+        "rawSha256": "7dce60e6cfde892571413793ae633b1a5cf9389177083aa2dfbe80be6c144626",
+        "counts": {
+          "pass": 1189,
+          "fail": 0,
+          "skip": 0
+        }
+      }
+    ],
+    "completedProducerChildren": [
+      {
+        "requirement": "RP11",
+        "namedPasses": 95,
+        "rawBytes": 86647,
+        "rawSha256": "c49525d513722b959523145034c35503b25770dd7c5dc6ad2054b9fde09efbd7",
+        "sourceFiles": 45,
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15RP11SemanticNumberAndContext|TestP15RP11NativeParameterDifferential|TestP15RP11NativeOracleRejectsFaults)$"
+        ],
+        "elapsedSeconds": 4.886098
+      },
+      {
+        "requirement": "RP16",
+        "namedPasses": 114,
+        "rawBytes": 99168,
+        "rawSha256": "6180b71f6548cc37b921bd9ee3c93be008ece2b964130fd49a1b24d1d86b02ff",
+        "sourceFiles": 45,
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15RP16ApprovedNodeInventory|TestP15RP16InventoryControls|TestP15RP16UnknownNodesCanonicalBoundary|TestP15RP16UnknownTypeAnnotationsCanonicalBoundary)$"
+        ],
+        "elapsedSeconds": 5.434931
+      },
+      {
+        "requirement": "U01",
+        "namedPasses": 19,
+        "rawBytes": 36377,
+        "rawSha256": "9719c22117c176975871742109d3ff48eeae12b2dbf3cbd4d067983074f1ef89",
+        "sourceFiles": 50,
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15U01ActualDeclarationBoundary|TestP15U01DeclarationBoundaryControls|TestP15U01GitReplacementIsolation)$"
+        ],
+        "elapsedSeconds": 5.705288
+      },
+      {
+        "requirement": "RP33",
+        "namedPasses": 59,
+        "rawBytes": 154858,
+        "rawSha256": "4e35b8512aac4f543e86c88fdb1706da67774d0fba1018ad20bcb6ae5d293387",
+        "sourceFiles": 64,
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15RP33StructuralMigrationProgram|TestP15RP33ReferenceLexicalScope|TestP15RP33SyntaxAwareMigrationDifferential|TestP15RP33ReferenceRawParameter|TestP15RP33RawCarrierDetachment|TestP15RP33CanonicalNativePayload|TestP15RP33AmbiguousLegacyIncludeFailsClosed|TestP15RP33SourceRelativeInclude)$"
+        ],
+        "elapsedSeconds": 16.639536
+      },
+      {
+        "requirement": "BRG19",
+        "namedPasses": 53,
+        "rawBytes": 169485,
+        "rawSha256": "77c7e98d3a65a9cf99eb45fa6b6b2e8f395d235342b7e22759bc820be2cf433e",
+        "sourceFiles": 68,
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestBackendRecovery19StructuralMigrationIntegration|TestBackendRecovery19AuthorizedNativeRoundTrip)$"
+        ],
+        "elapsedSeconds": 22.446385
+      }
+    ],
+    "verifiedRecords": [
+      {
+        "requirement": "RP11",
+        "tier": "unit",
+        "testId": "github.com/electrikmilk/cherri:TestP15RP11SemanticNumberAndContext",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "RP11",
+        "tier": "native-differential",
+        "testId": "github.com/electrikmilk/cherri:TestP15RP11NativeParameterDifferential",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "RP16",
+        "tier": "unit",
+        "testId": "github.com/electrikmilk/cherri:TestP15RP16ApprovedNodeInventory",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "RP16",
+        "tier": "native-negative",
+        "testId": "github.com/electrikmilk/cherri:TestP15RP16UnknownNodesCanonicalBoundary",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "U01",
+        "tier": "repository",
+        "testId": "github.com/electrikmilk/cherri:TestP15U01ActualDeclarationBoundary",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "RP33",
+        "tier": "migration",
+        "testId": "github.com/electrikmilk/cherri:TestP15RP33StructuralMigrationProgram",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "RP33",
+        "tier": "native-differential",
+        "testId": "github.com/electrikmilk/cherri:TestP15RP33SyntaxAwareMigrationDifferential",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "BRG19",
+        "tier": "integration",
+        "testId": "github.com/electrikmilk/cherri:TestBackendRecovery19StructuralMigrationIntegration",
+        "artifactReferences": 3
+      },
+      {
+        "requirement": "BRG19",
+        "tier": "native-roundtrip",
+        "testId": "github.com/electrikmilk/cherri:TestBackendRecovery19AuthorizedNativeRoundTrip",
+        "artifactReferences": 3
+      }
+    ],
+    "uniqueSourceBlobsVerified": 136,
+    "immutableContracts": {
+      "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    "prior059RetentionLimit": "059 strict outer tests passed; child receipts were not explicitly retained and that run is not used as retained child evidence."
+  },
+  "prior059Audit": {
+    "auditedAt": "2026-11-20T05:13:04.424951+00:00",
+    "status": "FAILED",
+    "sourceCommit": "059d6bf45ebc27bf58a695c1f5cc016b511b069b",
+    "stages": [
+      {
+        "sourceCommit": "059d6bf45ebc27bf58a695c1f5cc016b511b069b",
+        "name": "affected-root",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=12m",
+          "-run",
+          "^Test(P15(S01|F03|RP11|RP16|RP33|Optional|FunctionOptional|None|TaggedNone|Computed|Dictionary|L01|Raw|Nil)|DebugLabels|BackendRecovery19|ForkActionProvenanceRegistry|P10R_R26_ProvenanceRegistryIntegrity)",
+          "."
+        ],
+        "startedAt": "2026-11-20T04:34:33.538475+00:00",
+        "finishedAt": "2026-11-20T04:36:19.571886+00:00",
+        "elapsedSeconds": 106.031,
+        "exitCode": 1,
+        "outerTimedOut": false,
+        "cleanBefore": true,
+        "cleanAfter": true,
+        "rawBytes": 1285753,
+        "rawSha256": "76cfd833e9bd226258ce201a1f5f0531bf3aaecfd9d7eef2e4b7064302ed7e6a",
+        "counts": {
+          "pass": 1117,
+          "fail": 2,
+          "skip": 0
+        },
+        "failedNamedTests": [
+          "TestP15L01InferredNestedNativeListFailsClosed/optional_absent",
+          "TestP15L01InferredNestedNativeListFailsClosed"
+        ],
+        "retainedChildArtifacts": null
+      },
+      {
+        "sourceCommit": "059d6bf45ebc27bf58a695c1f5cc016b511b069b",
+        "name": "affected-packages",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=5m",
+          "./internal/language/lower",
+          "./internal/language/analysis",
+          "./internal/language/types",
+          "./internal/language/backend",
+          "./internal/language/migrate",
+          "./internal/shortcutcompare",
+          "./tools/legacy-parity"
+        ],
+        "startedAt": "2026-11-20T04:36:19.999502+00:00",
+        "finishedAt": "2026-11-20T04:36:33.894278+00:00",
+        "elapsedSeconds": 13.89,
+        "exitCode": 0,
+        "outerTimedOut": false,
+        "cleanBefore": true,
+        "cleanAfter": true,
+        "rawBytes": 194270,
+        "rawSha256": "7b01cdcc9cef93ed163c3373d266bb6a95be11a486bcde1a19a725ca6f7c8e70",
+        "counts": {
+          "pass": 205,
+          "fail": 0,
+          "skip": 0
+        },
+        "failedNamedTests": [],
+        "retainedChildArtifacts": null
+      },
+      {
+        "sourceCommit": "059d6bf45ebc27bf58a695c1f5cc016b511b069b",
+        "name": "strict-producers",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=12m",
+          "-run",
+          "^Test(NumberWire|ExhaustiveNode|UpstreamBoundary|StructuralMigration|SafeImportEdit)",
+          "./tools/language-acceptance"
+        ],
+        "startedAt": "2026-11-20T04:36:34.242287+00:00",
+        "finishedAt": "2026-11-20T04:38:39.622927+00:00",
+        "elapsedSeconds": 125.375,
+        "exitCode": 0,
+        "outerTimedOut": false,
+        "cleanBefore": true,
+        "cleanAfter": true,
+        "rawBytes": 1442554,
+        "rawSha256": "e8a73776dba8338ecf4a932d7ca5c82413b89becdf823e300b4c715198281e95",
+        "counts": {
+          "pass": 1189,
+          "fail": 0,
+          "skip": 0
+        },
+        "failedNamedTests": [],
+        "retainedChildArtifacts": false
+      }
+    ],
+    "retentionLimit": "Only actual outer logs are retained for the 059 strict producer run; no retained child record credit is claimed."
+  },
+  "entries": [
+    {
+      "path": "r4-preflight-059d6bf4/affected-packages-original.jsonl",
+      "bytes": 194270,
+      "sha256": "7b01cdcc9cef93ed163c3373d266bb6a95be11a486bcde1a19a725ca6f7c8e70"
+    },
+    {
+      "path": "r4-preflight-059d6bf4/affected-packages-process-original.json",
+      "bytes": 12998,
+      "sha256": "16105472ecf784f7c3883b682f998d70aaf26b4e21f6c02958f62fafef68ab8e"
+    },
+    {
+      "path": "r4-preflight-059d6bf4/affected-root-original.jsonl",
+      "bytes": 1285753,
+      "sha256": "76cfd833e9bd226258ce201a1f5f0531bf3aaecfd9d7eef2e4b7064302ed7e6a"
+    },
+    {
+      "path": "r4-preflight-059d6bf4/affected-root-process-original.json",
+      "bytes": 83052,
+      "sha256": "5b254bea203c10024215b04fcc36923e1c077f3f45b7be36b7378d15eb3048ca"
+    },
+    {
+      "path": "r4-preflight-059d6bf4/strict-producers-original.jsonl",
+      "bytes": 1442554,
+      "sha256": "e8a73776dba8338ecf4a932d7ca5c82413b89becdf823e300b4c715198281e95"
+    },
+    {
+      "path": "r4-preflight-059d6bf4/strict-producers-process-original.json",
+      "bytes": 113713,
+      "sha256": "09b8dc24425f0d4a72e6aaa7b8b50a1a4f9cfb5671248353db7a237e3db8061d"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/alignment-proof-map.json",
+      "bytes": 173,
+      "sha256": "755eb5d8f13daa398f52b55ef5e2c62aed7bbeba19c9ed9d36173442fab91bbb"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/brg19-child/brg19-4221794959/brg19-go.jsonl",
+      "bytes": 169485,
+      "sha256": "77c7e98d3a65a9cf99eb45fa6b6b2e8f395d235342b7e22759bc820be2cf433e"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/brg19-child/brg19-4221794959/brg19-process.json",
+      "bytes": 19549,
+      "sha256": "a05e1d4bbff4cb8e32f45de24dd8cb079ae3b880c581b26e72d9939db9f0864b"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/brg19-child/brg19-4221794959/brg19-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/optional-and-list-root-original.jsonl",
+      "bytes": 380160,
+      "sha256": "d55b7f37854bdc6d9e833b235616a14010777b300322b4d9680827e79ca57805"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/optional-and-list-root-process-original.json",
+      "bytes": 31770,
+      "sha256": "7442bd8c86232c611bb6a6aaa7970e5445d030694e79d3a9bad75bee7e4ee683"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/optional-packages-original.jsonl",
+      "bytes": 68251,
+      "sha256": "d34f0b0a0c893a1619f2fe3238ba71c9ee2d050085de255e9c3d999878bda6c4"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/optional-packages-process-original.json",
+      "bytes": 4564,
+      "sha256": "b07b906c59896cc1ab49838f89f975309b9b8d9f58d91863fb7db0b1f683c0f2"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/retained-strict-producers-original.jsonl",
+      "bytes": 1442979,
+      "sha256": "7dce60e6cfde892571413793ae633b1a5cf9389177083aa2dfbe80be6c144626"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/retained-strict-producers-process-original.json",
+      "bytes": 113722,
+      "sha256": "9eeb061d2f7eb870903439dedf2450313870610e121f3aba8b1749ca4f17adb4"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp11-child/rp11-4106578529/rp11-go.jsonl",
+      "bytes": 86647,
+      "sha256": "c49525d513722b959523145034c35503b25770dd7c5dc6ad2054b9fde09efbd7"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp11-child/rp11-4106578529/rp11-process.json",
+      "bytes": 21301,
+      "sha256": "1c6b90a18d4848abe45f9d7fb2e4d3a17fa677ab168556683f255c8e71491d0b"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp11-child/rp11-4106578529/rp11-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp16-child/rp16-3749256895/rp16-go.jsonl",
+      "bytes": 99168,
+      "sha256": "6180b71f6548cc37b921bd9ee3c93be008ece2b964130fd49a1b24d1d86b02ff"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp16-child/rp16-3749256895/rp16-process.json",
+      "bytes": 22519,
+      "sha256": "d5112d301252a35bc1d02210a933c05dc6360a2bfcb2cd749b120bbbaa35ce25"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp16-child/rp16-3749256895/rp16-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp33-child/rp33-3526195823/rp33-go.jsonl",
+      "bytes": 154858,
+      "sha256": "4e35b8512aac4f543e86c88fdb1706da67774d0fba1018ad20bcb6ae5d293387"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp33-child/rp33-3526195823/rp33-process.json",
+      "bytes": 18815,
+      "sha256": "c4fc2ad8057391a36dd9cf0f7c7aa17da9b9ee47174e4af0f068ba99a27e7dfc"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/rp33-child/rp33-3526195823/rp33-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/u01-child/u01-3826657584/u01-go.jsonl",
+      "bytes": 36377,
+      "sha256": "9719c22117c176975871742109d3ff48eeae12b2dbf3cbd4d067983074f1ef89"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/u01-child/u01-3826657584/u01-process.json",
+      "bytes": 10475,
+      "sha256": "af3929c070c47397dd56b3ec61b8446687b118997725f4bdedc31bafd7db5361"
+    },
+    {
+      "path": "r4-retained-preflight-bd5d82e8/u01-child/u01-3826657584/u01-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r4-retained-independent-audit-bd5d82e8/audit.json",
+      "bytes": 8044,
+      "sha256": "1e3fe360dddf741e2553b38b655385dc41e59f05ffa6cc387e487f1292d5bd93"
+    },
+    {
+      "path": "r4-retained-independent-audit-bd5d82e8/auditor.py",
+      "bytes": 6747,
+      "sha256": "103e2e76e799474d6e43805c36c404f3ae02c1b585025e787e25dd766553150a"
+    },
+    {
+      "path": "r4-retained-independent-audit-bd5d82e8/prior-059-audit.json",
+      "bytes": 3319,
+      "sha256": "c92a6b6cde9f09e36fd7bef40acbbc38a93ff421419760f2dae90f2b85660a62"
+    },
+    {
+      "path": "r4-rp33-component-map.json",
+      "bytes": 3077,
+      "sha256": "7a0ab216b65d28e6343db426b706d5985f1b005d89265eecb0f87bf1d7315ef2"
+    },
+    {
+      "path": "r4-followups-component-map.json",
+      "bytes": 4176,
+      "sha256": "5308af2d3141b6a53de798d5bb1280a79aa389f03c0c2672a759f8453d963ee0"
+    },
+    {
+      "path": "r4-mutable-and-native-proof-component-map.json",
+      "bytes": 1321,
+      "sha256": "44b522de8ac5b760e2874fc6b1949fe4262f54e5bed92877550640ed1f5758ef"
+    }
+  ],
+  "followups": [
+    {
+      "requirement": "RP03",
+      "sourceCommit": "bd5d82e82828ca1cd0c27981705969c245e85306",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "-run",
+        "^TestP15RP03FreshCloneContractIntake$",
+        "./tools/language-acceptance"
+      ],
+      "namedPasses": 3,
+      "exitCode": 0,
+      "elapsedSeconds": 50.172,
+      "originalRawSha256": "6d86200f64cf954068ce33194b872ecdbf80b49cdbfd987be8344294371c49a1",
+      "files": [
+        {
+          "path": "rp03/go-test-original.jsonl",
+          "bytes": 3406,
+          "sha256": "6d86200f64cf954068ce33194b872ecdbf80b49cdbfd987be8344294371c49a1"
+        },
+        {
+          "path": "rp03/stderr-original.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "rp03/process-original.json",
+          "bytes": 1296,
+          "sha256": "60275d3397de1131039ab557ecddac0d021d6d8210487bddfe16880a0d512463"
+        }
+      ],
+      "scope": "Isolated exact-source test completion, not replacement of earlier failed supplemental parent."
+    }
+  ]
+}

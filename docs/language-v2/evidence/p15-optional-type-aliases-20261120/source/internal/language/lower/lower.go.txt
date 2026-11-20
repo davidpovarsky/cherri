@@ -1,0 +1,6131 @@
+package lower
+
+import (
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"math"
+	"regexp"
+	"strconv"
+	"strings"
+	"unicode/utf16"
+
+	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/backend"
+	"github.com/electrikmilk/cherri/internal/language/ir"
+	"github.com/electrikmilk/cherri/internal/language/modules"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
+	"howett.net/plist"
+)
+
+type provenanceOutputNameSpec struct {
+	name    string
+	hasName bool
+}
+
+// BindingRef represents how a variable is stored and referenced in Shortcuts.
+type BindingRef struct {
+	IsVariable        bool   // true = setvariable/getvariable, false = direct action output token
+	TokenType         string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
+	OutputUUID        string // for action output
+	OutputName        string
+	VariableName      string // for setvariable
+	Aggrandizements   []map[string]interface{}
+	Type              types.Type
+	PolymorphicLookup bool
+	AppendVariable    bool
+	OptionalPresence  interface{} // compiler-owned value presence, independent of argument omission
+}
+
+func lookupContentItemClass(prop string) (string, bool) {
+	key := strings.ToLower(prop)
+	if cls, ok := schema.ContentItemClasses[key]; ok {
+		return cls, true
+	}
+	switch key {
+	case "boolean":
+		return "WFBooleanContentItem", true
+	case "string":
+		return "WFStringContentItem", true
+	case "vcard":
+		return "WFVCardContentItem", true
+	default:
+		return "", false
+	}
+}
+
+// Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
+type Lowerer struct {
+	registry                   *schema.Registry
+	session                    backend.Session
+	workflow                   *ir.NativeWorkflow
+	bindings                   map[string]BindingRef
+	functions                  map[string]*syntax.FunctionDecl
+	setupQuestions             map[string]*syntax.SetupDecl
+	setupBindings              map[string]*setupQuestionLoweringBinding
+	setupDeclarationOrder      []*setupQuestionLoweringBinding
+	enums                      map[string]*syntax.EnumDecl
+	types                      map[string]*syntax.TypeDecl
+	actions                    map[string]*syntax.ActionDecl
+	copyBlocks                 map[string]*syntax.CopyBlockStmt
+	importStack                []string
+	modules                    map[string]string
+	virtualModules             map[string]string
+	baseFilePath               string
+	importedFunctions          []*syntax.FunctionDecl
+	moduleGraph                *modules.Graph
+	moduleRegistries           map[*modules.Module]*schema.Registry
+	moduleScopes               map[*modules.Module]*moduleScope
+	functionModules            map[*syntax.FunctionDecl]*modules.Module
+	functionDispatchNames      map[*syntax.FunctionDecl]string
+	WorkflowName               string
+	uuidCounter                int
+	autoNumberProducerCount    int
+	repeatDepth                int
+	currentBindingName         string
+	emitErr                    error
+	isMac                      *bool
+	exprTypes                  map[syntax.Expression]types.Type
+	typeAnnotations            map[syntax.TypeAnnotation]types.Type
+	enumValues                 map[syntax.Expression]string
+	inExprStmt                 bool
+	hasImportProvenance        bool
+	provenanceUUIDs            map[string]string
+	provenanceSymbols          map[string]bool
+	provenanceOutputNames      map[string]provenanceOutputNameSpec
+	lexical                    lexicalLoweringState
+	provenanceVarNames         map[string]string
+	optionalFunctionReturn     bool
+	optionalExpressionPresence map[syntax.Expression]interface{}
+}
+
+// NewLowerer creates a new AST lowerer.
+func NewLowerer(registry *schema.Registry) *Lowerer {
+	if registry == nil {
+		registry = schema.DefaultRegistry()
+	}
+	return &Lowerer{
+		registry:              registry,
+		workflow:              ir.NewNativeWorkflow(),
+		bindings:              make(map[string]BindingRef),
+		functions:             make(map[string]*syntax.FunctionDecl),
+		setupQuestions:        make(map[string]*syntax.SetupDecl),
+		enums:                 make(map[string]*syntax.EnumDecl),
+		types:                 make(map[string]*syntax.TypeDecl),
+		actions:               make(map[string]*syntax.ActionDecl),
+		copyBlocks:            make(map[string]*syntax.CopyBlockStmt),
+		modules:               make(map[string]string),
+		virtualModules:        make(map[string]string),
+		provenanceUUIDs:       make(map[string]string),
+		provenanceSymbols:     make(map[string]bool),
+		provenanceOutputNames: make(map[string]provenanceOutputNameSpec),
+		provenanceVarNames:    make(map[string]string),
+	}
+}
+
+// SetVirtualModule configures an in-memory virtual module for testing or embedded compilation.
+func (l *Lowerer) SetVirtualModule(path, content string) {
+	if l.virtualModules == nil {
+		l.virtualModules = make(map[string]string)
+	}
+	l.virtualModules[path] = content
+}
+
+// SetVirtualModules sets multiple virtual modules.
+func (l *Lowerer) SetVirtualModules(vm map[string]string) {
+	if l.virtualModules == nil {
+		l.virtualModules = make(map[string]string)
+	}
+	for k, v := range vm {
+		l.virtualModules[k] = v
+	}
+}
+
+// SetBaseFilePath sets the base file path used to resolve relative disk imports.
+func (l *Lowerer) SetBaseFilePath(path string) {
+	l.baseFilePath = path
+}
+
+// SetExprTypes sets the map of analyzed expression types.
+func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
+	l.exprTypes = exprTypes
+}
+
+// SetTypeAnnotations preserves the defining module's analyzed alias meaning.
+func (l *Lowerer) SetTypeAnnotations(annotations map[syntax.TypeAnnotation]types.Type) {
+	l.typeAnnotations = annotations
+}
+
+// SetEnumValues supplies exact enum literals resolved without AST mutation.
+func (l *Lowerer) SetEnumValues(values map[syntax.Expression]string) { l.enumValues = values }
+
+// SetIsMac sets the target platform constraint (macOS if true, non-Mac if false, unconstrained if nil).
+func (l *Lowerer) SetIsMac(isMac *bool) {
+	l.isMac = isMac
+}
+
+// IsMac returns whether the active lowering target is Mac-only, non-Mac, or unconstrained (nil).
+func (l *Lowerer) IsMac() *bool {
+	return l.isMac
+}
+
+// NewLowererWithSession creates a new AST lowerer connected to a backend session.
+func NewLowererWithSession(registry *schema.Registry, session backend.Session) *Lowerer {
+	l := NewLowerer(registry)
+	l.session = session
+	return l
+}
+
+// GenerateUUID returns a formatted UUID.
+func (l *Lowerer) GenerateUUID() string {
+	if l.currentBindingName != "" && l.provenanceUUIDs != nil {
+		if u, ok := l.provenanceUUIDs[l.currentBindingName]; ok && u != "" {
+			delete(l.provenanceUUIDs, l.currentBindingName)
+			return u
+		}
+	}
+	l.uuidCounter++
+	b := make([]byte, 16)
+	_, _ = rand.Read(b)
+	b[6] = (b[6] & 0x0f) | 0x40 // version 4
+	b[8] = (b[8] & 0x3f) | 0x80 // variant 10
+	return fmt.Sprintf("%08X-%04X-%04X-%04X-%012X", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+}
+
+func (l *Lowerer) detachBindingName() string {
+	name := l.currentBindingName
+	l.currentBindingName = ""
+	return name
+}
+
+func (l *Lowerer) generateControlEndOutputUUID(withOutput bool, bindingName string) string {
+	if !withOutput {
+		return ""
+	}
+	prev := l.currentBindingName
+	l.currentBindingName = bindingName
+	defer func() { l.currentBindingName = prev }()
+	return l.GenerateUUID()
+}
+
+func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
+	if node.ExactRawEnvelope != nil {
+		exactSession, ok := l.session.(interface {
+			EmitExactRawActionEnvelope(string, map[string]any) error
+		})
+		if !ok {
+			l.emitErr = fmt.Errorf("NATIVE_ACTION_ENVELOPE_BACKEND: exact envelopes require the canonical backend")
+		} else if l.emitErr == nil {
+			l.emitErr = exactSession.EmitExactRawActionEnvelope(node.AppleIdentifier, node.ExactRawEnvelope)
+		}
+		l.workflow.AddAction(node)
+		return
+	}
+	if l.session != nil && l.emitErr == nil {
+		if node.ExactRawParameters {
+			if exactSession, ok := l.session.(interface {
+				EmitExactRawAction(appleIdentifier string, params map[string]any, hasParams bool) error
+			}); ok {
+				if err := exactSession.EmitExactRawAction(node.AppleIdentifier, node.Parameters, node.HasExactRawParameters); err != nil {
+					l.emitErr = err
+				}
+				l.workflow.AddAction(node)
+				return
+			}
+		}
+		if err := l.session.EmitRawAction(node.AppleIdentifier, node.Parameters, node.OutputUUID, node.OutputName, node.GroupingIdentifier); err != nil {
+			l.emitErr = err
+		}
+	}
+	l.workflow.AddAction(node)
+}
+
+func (l *Lowerer) emitIfStart(groupUUID string, input any, condCode int, compareVal any, isLegacy bool) *ir.NativeActionNode {
+	return l.emitIfStartTyped(groupUUID, input, condCode, compareVal, nil, backend.OperandDefault, isLegacy)
+}
+
+func (l *Lowerer) emitIfStartTyped(groupUUID string, input any, condCode int, compareVal any, compareVal2 any, opType backend.ConditionOperandType, isLegacy bool) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    0,
+		Parameters:         backend.BuildIfStartTyped(groupUUID, input, condCode, compareVal, compareVal2, opType, isLegacy),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitIfElse(groupUUID string) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    1,
+		Parameters:         backend.BuildIfElse(groupUUID),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitIfEnd(groupUUID string, outputUUID string, outputName string) *ir.NativeActionNode {
+	nodeID := outputUUID
+	if nodeID == "" {
+		nodeID = l.GenerateUUID()
+	}
+	node := &ir.NativeActionNode{
+		NodeID:             nodeID,
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    2,
+		OutputUUID:         outputUUID,
+		OutputName:         outputName,
+		Parameters:         backend.BuildIfEnd(groupUUID, outputUUID),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitRepeatCountStart(groupUUID string, count any) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.repeat.count",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    0,
+		Parameters:         backend.BuildRepeatCountStart(groupUUID, count),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitRepeatEachStart(groupUUID string, iterable any) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.repeat.each",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    0,
+		Parameters:         backend.BuildRepeatEachStart(groupUUID, iterable),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitLoopEnd(groupUUID string, outputUUID string, isRepeatEach bool) *ir.NativeActionNode {
+	appleID := "is.workflow.actions.repeat.count"
+	if isRepeatEach {
+		appleID = "is.workflow.actions.repeat.each"
+	}
+	nodeID := outputUUID
+	if nodeID == "" {
+		nodeID = l.GenerateUUID()
+	}
+	node := &ir.NativeActionNode{
+		NodeID:             nodeID,
+		AppleIdentifier:    appleID,
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    2,
+		OutputUUID:         outputUUID,
+		Parameters:         backend.BuildLoopEnd(groupUUID, outputUUID),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitConditionalStartSpec(spec backend.ConditionSpec) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: spec.GroupingIdentifier,
+		ControlFlowMode:    backend.ControlFlowStart,
+		Parameters:         backend.BuildConditionalStart(spec),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitMenuStart(groupUUID string, prompt any, itemTitles []string) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.choosefrommenu",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    0,
+		Parameters:         backend.BuildMenuStart(groupUUID, prompt, itemTitles),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitMenuStartFull(opts backend.MenuStartOptions) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.choosefrommenu",
+		GroupingIdentifier: opts.GroupingID,
+		ControlFlowMode:    backend.ControlFlowStart,
+		Parameters:         backend.BuildMenuStartFull(opts),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitMenuCase(groupUUID string, title string) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.choosefrommenu",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    1,
+		Parameters:         backend.BuildMenuCase(groupUUID, title),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitMenuCaseFull(groupUUID string, title string, attrTitle any, includeAttrTitle bool) *ir.NativeActionNode {
+	node := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.choosefrommenu",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    backend.ControlFlowElse,
+		Parameters:         backend.BuildMenuCaseFull(groupUUID, title, attrTitle, includeAttrTitle),
+	}
+	l.emitAction(node)
+	return node
+}
+
+func (l *Lowerer) emitMenuEnd(groupUUID string, outputUUID string) *ir.NativeActionNode {
+	nodeID := outputUUID
+	if nodeID == "" {
+		nodeID = l.GenerateUUID()
+	}
+	node := &ir.NativeActionNode{
+		NodeID:             nodeID,
+		AppleIdentifier:    "is.workflow.actions.choosefrommenu",
+		GroupingIdentifier: groupUUID,
+		ControlFlowMode:    2,
+		OutputUUID:         outputUUID,
+		Parameters:         backend.BuildMenuEnd(groupUUID, outputUUID),
+	}
+	l.emitAction(node)
+	return node
+}
+
+// LowerProgramToSession compiles an AST Program into the configured backend.Session.
+func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+	if err := l.ensureModuleGraph(prog); err != nil {
+		return err
+	}
+	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
+	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil {
+		analyzer := analysis.NewAnalyzer(l.registry)
+		analyzer.SetModuleGraph(l.moduleGraph)
+		analyzer.Analyze(prog)
+		l.registry = analyzer.Registry()
+		l.SetModuleRegistries(analyzer.ModuleRegistries())
+		for _, diagnostic := range analyzer.Diagnostics() {
+			if (diagnostic.Code == analysis.CodeSetupBinding || diagnostic.Code == analysis.CodeTypeAlias) && diagnostic.Severity == analysis.SeverityError {
+				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
+			}
+		}
+		if l.exprTypes == nil {
+			l.exprTypes = analyzer.ExprTypes()
+		}
+		if l.enumValues == nil {
+			l.enumValues = analyzer.EnumValues()
+		}
+		if l.typeAnnotations == nil {
+			l.typeAnnotations = analyzer.TypeAnnotations()
+		}
+		if l.isMac == nil {
+			l.isMac = analyzer.IsMacTarget()
+		}
+	}
+
+	l.prepareModuleScopes()
+
+	// 1. Process declarations (metadata, shortcut header, functions, setup, custom actions, enums, types)
+	for _, decl := range prog.Declarations {
+		switch d := decl.(type) {
+		case *syntax.ShortcutDecl:
+			if err := l.lowerShortcutHeader(d); err != nil {
+				return err
+			}
+		case *syntax.FunctionDecl:
+			l.functions[d.Name] = d
+		case *syntax.SetupDecl:
+			l.setupQuestions[d.Name] = d
+			prompt := d.Prompt
+			if prompt == "" {
+				prompt = "Enter " + d.Name
+			}
+			q := map[string]interface{}{
+				"Category":     "Parameter",
+				"ParameterKey": d.Name,
+				"Text":         prompt,
+			}
+			if d.DefaultValue != "" {
+				q["DefaultValue"] = d.DefaultValue
+			}
+			if l.setupBindings == nil {
+				l.setupBindings = map[string]*setupQuestionLoweringBinding{}
+			}
+			l.setupBindings[d.Name] = &setupQuestionLoweringBinding{question: q}
+			l.setupDeclarationOrder = append(l.setupDeclarationOrder, l.setupBindings[d.Name])
+			l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, q)
+			if l.session != nil {
+				l.session.AddImportQuestion(q)
+			}
+		case *syntax.ActionDecl:
+			if d.Name == "" || d.AppleIdentifier == "" {
+				return fmt.Errorf("action declaration must specify name and identifier")
+			}
+			l.actions[d.Name] = d
+		case *syntax.EnumDecl:
+			if d.Name == "" {
+				return fmt.Errorf("enum declaration must specify name")
+			}
+			l.enums[d.Name] = d
+		case *syntax.TypeDecl:
+			if d.Name == "" {
+				return fmt.Errorf("type alias declaration must specify name")
+			}
+			l.types[d.Name] = d
+		case *syntax.ImportDecl:
+			if err := l.lowerImport(d); err != nil {
+				return err
+			}
+		case *syntax.CopyBlockStmt:
+			l.copyBlocks[d.Name] = d
+		case *syntax.TriggerDecl:
+			if err := l.lowerTrigger(d); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unhandled declaration %T: declarations must not be silently dropped", decl)
+		}
+	}
+
+	// 2. If functions are declared and called, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
+	if len(l.functions) > 0 && hasFunctionCalls(prog, l.functions) {
+		_, err := l.lowerProgramWithFunctions(prog)
+		if err != nil {
+			return err
+		}
+		if l.emitErr != nil {
+			return l.emitErr
+		}
+		return l.finalizeSetupQuestionBindings()
+	}
+
+	// 3. Process statements in source order
+	for _, stmt := range prog.Statements {
+		if err := l.lowerStatement(stmt); err != nil {
+			return err
+		}
+		if l.emitErr != nil {
+			return l.emitErr
+		}
+	}
+
+	if len(l.workflow.WorkflowTypes) == 0 {
+		l.workflow.WorkflowTypes = schema.DefaultWorkflowTypes()
+	}
+	if len(l.workflow.InputContentItemClasses) == 0 {
+		l.workflow.InputContentItemClasses = schema.DefaultInputContentItemClasses()
+	}
+	if l.session != nil {
+		l.session.SetMetadata("workflowTypes", l.workflow.WorkflowTypes)
+		l.session.SetMetadata("inputContentItemClasses", l.workflow.InputContentItemClasses)
+	}
+
+	if l.emitErr != nil {
+		return l.emitErr
+	}
+	return l.finalizeSetupQuestionBindings()
+}
+
+// LowerProgram compiles an AST Program into NativeWorkflow IR.
+func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error) {
+	if err := l.LowerProgramToSession(prog); err != nil {
+		return nil, err
+	}
+	return l.workflow, nil
+}
+
+func hasFunctionCalls(prog *syntax.Program, fns map[string]*syntax.FunctionDecl) bool {
+	if len(fns) == 0 {
+		return false
+	}
+	var checkExpr func(e syntax.Expression) bool
+	var checkStmt func(s syntax.Statement) bool
+
+	checkExpr = func(e syntax.Expression) bool {
+		if e == nil {
+			return false
+		}
+		switch ex := e.(type) {
+		case *syntax.CallExpr:
+			if id, ok := ex.Callee.(*syntax.IdentExpr); ok {
+				if _, exists := fns[id.Name]; exists {
+					return true
+				}
+			} else if mem, ok := ex.Callee.(*syntax.MemberExpr); ok {
+				if targetIdent, ok := mem.Target.(*syntax.IdentExpr); ok {
+					fullName := targetIdent.Name + "." + mem.Property
+					if _, exists := fns[fullName]; exists {
+						return true
+					}
+					if _, exists := fns[mem.Property]; exists {
+						return true
+					}
+				}
+			} else if member, ok := ex.Callee.(*syntax.EnumMemberExpr); ok {
+				if _, exists := fns[member.TypeName+"."+member.Member]; exists {
+					return true
+				}
+			}
+			if checkExpr(ex.Callee) {
+				return true
+			}
+			if ex.PrimaryArg != nil && checkExpr(ex.PrimaryArg) {
+				return true
+			}
+			for _, na := range ex.NamedArgs {
+				if checkExpr(na.Value) {
+					return true
+				}
+			}
+		case *syntax.BinaryExpr:
+			return checkExpr(ex.Left) || checkExpr(ex.Right)
+		case *syntax.UnaryExpr:
+			return checkExpr(ex.Operand)
+		case *syntax.IndexExpr:
+			return checkExpr(ex.Target) || checkExpr(ex.Index)
+		case *syntax.MemberExpr:
+			return checkExpr(ex.Target)
+		case *syntax.ListExpr:
+			for _, el := range ex.Elements {
+				if checkExpr(el) {
+					return true
+				}
+			}
+		case *syntax.MapExpr:
+			for _, ent := range ex.Entries {
+				if checkExpr(ent.Key) || checkExpr(ent.Value) {
+					return true
+				}
+			}
+		case *syntax.FStringExpr:
+			for _, p := range ex.Parts {
+				if p.IsExpr && checkExpr(p.Expr) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	checkStmt = func(s syntax.Statement) bool {
+		if s == nil {
+			return false
+		}
+		switch st := s.(type) {
+		case *syntax.ExprStmt:
+			return checkExpr(st.Expr)
+		case *syntax.BindingStmt:
+			return checkExpr(st.Value)
+		case *syntax.AssignStmt:
+			return checkExpr(st.Value)
+		case *syntax.ReturnStmt:
+			return checkExpr(st.Value)
+		case *syntax.YieldStmt:
+			return checkExpr(st.Value)
+		case *syntax.BlockStmt:
+			for _, sub := range st.Statements {
+				if checkStmt(sub) {
+					return true
+				}
+			}
+		case *syntax.IfStmt:
+			if checkExpr(st.Condition) {
+				return true
+			}
+			if checkStmt(st.ThenBlock) {
+				return true
+			}
+			if st.ElseBlock != nil && checkStmt(st.ElseBlock) {
+				return true
+			}
+		case *syntax.ForStmt:
+			if checkExpr(st.Iterable) || checkStmt(st.BodyBlock) {
+				return true
+			}
+		case *syntax.RepeatStmt:
+			if checkExpr(st.Count) || checkStmt(st.BodyBlock) {
+				return true
+			}
+		case *syntax.MenuStmt:
+			if checkExpr(st.Prompt) {
+				return true
+			}
+			for _, c := range st.Cases {
+				if checkStmt(c.BodyBlock) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	for _, stmt := range prog.Statements {
+		if checkStmt(stmt) {
+			return true
+		}
+	}
+	return false
+}
+
+func (l *Lowerer) lowerTrigger(trig *syntax.TriggerDecl) error {
+	appleID := schema.LookupTriggerFamilyValue(trig.Family)
+	if appleID == "" {
+		return fmt.Errorf("unsupported trigger family %q; supported triggers are: bluetooth, wifi, stageManager, display, screenshot, battery, charging", trig.Family)
+	}
+	params := make(map[string]any)
+	switch trig.Family {
+	case "bluetooth":
+		connType := trig.Event
+		if connType == "" {
+			connType = "connect"
+		}
+		params["WFBluetoothConnectionType"] = connType
+	case "wifi":
+		connType := trig.Event
+		if connType == "" {
+			connType = "joined"
+		}
+		params["WFConnectionType"] = connType
+	case "charging", "display":
+		connType := trig.Event
+		if connType == "" {
+			connType = "connect"
+		}
+		params["WFConnectionType"] = connType
+	case "stageManager":
+		smType := trig.Event
+		if smType == "" {
+			smType = "on"
+		}
+		params["WFStageManagerType"] = smType
+	case "screenshot":
+		if len(trig.Locations) > 0 {
+			params["ScreenshotLocations"] = trig.Locations
+		} else {
+			params["ScreenshotLocations"] = []string{"photos"}
+		}
+	case "battery":
+		if trig.HasLevel {
+			params["WFBatteryLevel"] = trig.Level - 0.01
+		} else {
+			params["WFBatteryLevel"] = 0.5
+		}
+	}
+	for k, v := range trig.Parameters {
+		if k == "event" || k == "level" || k == "locations" {
+			continue
+		}
+		if _, exists := params[k]; !exists {
+			params[k] = v
+		}
+	}
+	triggerUUID := l.GenerateUUID()
+	triggerData := map[string]any{
+		"Identifier": appleID,
+		"Parameters": params,
+		"UUID":       triggerUUID,
+	}
+	l.workflow.Triggers = append(l.workflow.Triggers, triggerData)
+	if l.session != nil {
+		l.session.SetMetadata("trigger", triggerData)
+	}
+	return nil
+}
+
+func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
+	if d.Name != "" {
+		l.WorkflowName = d.Name
+		l.workflow.Name = d.Name
+	}
+	// Defaults
+	l.workflow.IconGlyph = 61440
+	l.workflow.IconColor = 3031607807
+
+	if d.Metadata != nil {
+		for _, f := range d.Metadata.Fields {
+			switch f.Name {
+			case "icon":
+				if rec, ok := f.Value.(*syntax.RecordExpr); ok {
+					for _, rf := range rec.Fields {
+						if rf.Name == "color" {
+							if lit, ok := rf.Value.(*syntax.LiteralExpr); ok {
+								var c int
+								fmt.Sscanf(lit.Value, "%d", &c)
+								if c == 0 {
+									c = schema.LookupColorValue(lit.Value)
+								}
+								l.workflow.IconColor = c
+							} else if ident, ok := rf.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconColor = schema.LookupColorValue(ident.Name)
+							}
+						} else if rf.Name == "glyph" {
+							if lit, ok := rf.Value.(*syntax.LiteralExpr); ok {
+								var g int
+								fmt.Sscanf(lit.Value, "%d", &g)
+								if g == 0 {
+									g = schema.LookupGlyphValue(lit.Value)
+								}
+								l.workflow.IconGlyph = g
+							} else if ident, ok := rf.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
+							}
+						}
+					}
+				} else if m, ok := f.Value.(*syntax.MapExpr); ok {
+					for _, ent := range m.Entries {
+						keyName := ""
+						if kIdent, ok := ent.Key.(*syntax.IdentExpr); ok {
+							keyName = kIdent.Name
+						} else if kLit, ok := ent.Key.(*syntax.LiteralExpr); ok {
+							keyName = kLit.Value
+						}
+						if keyName == "color" {
+							if lit, ok := ent.Value.(*syntax.LiteralExpr); ok {
+								var c int
+								fmt.Sscanf(lit.Value, "%d", &c)
+								if c == 0 {
+									c = schema.LookupColorValue(lit.Value)
+								}
+								l.workflow.IconColor = c
+							} else if ident, ok := ent.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconColor = schema.LookupColorValue(ident.Name)
+							}
+						} else if keyName == "glyph" {
+							if lit, ok := ent.Value.(*syntax.LiteralExpr); ok {
+								var g int
+								fmt.Sscanf(lit.Value, "%d", &g)
+								if g == 0 {
+									g = schema.LookupGlyphValue(lit.Value)
+								}
+								l.workflow.IconGlyph = g
+							} else if ident, ok := ent.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
+							}
+						}
+					}
+				} else if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					var g int
+					fmt.Sscanf(lit.Value, "%d", &g)
+					if g == 0 {
+						g = schema.LookupGlyphValue(lit.Value)
+					}
+					l.workflow.IconGlyph = g
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
+				}
+			case "color":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					var c int
+					fmt.Sscanf(lit.Value, "%d", &c)
+					if c == 0 {
+						c = schema.LookupColorValue(lit.Value)
+					}
+					l.workflow.IconColor = c
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.IconColor = schema.LookupColorValue(ident.Name)
+				}
+			case "glyph":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					var g int
+					fmt.Sscanf(lit.Value, "%d", &g)
+					if g == 0 {
+						g = schema.LookupGlyphValue(lit.Value)
+					}
+					l.workflow.IconGlyph = g
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
+				}
+			case "mac":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					val := lit.Value == "true"
+					l.isMac = &val
+				}
+			case "target":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					val := strings.ToLower(lit.Value) == "macos" || strings.ToLower(lit.Value) == "mac"
+					l.isMac = &val
+				}
+			case "targets":
+				if list, ok := f.Value.(*syntax.ListExpr); ok {
+					hasMac := false
+					hasNonMac := false
+					for _, el := range list.Elements {
+						if lit, ok := el.(*syntax.LiteralExpr); ok {
+							v := strings.ToLower(lit.Value)
+							if v == "mac" || v == "macos" {
+								hasMac = true
+							} else if v == "ios" || v == "ipados" || v == "watchos" {
+								hasNonMac = true
+							}
+						}
+					}
+					// OS targets constrain availability; only from controls native workflow surfaces.
+					if hasMac && !hasNonMac {
+						val := true
+						l.isMac = &val
+					} else if hasNonMac && !hasMac {
+						val := false
+						l.isMac = &val
+					}
+				}
+			case "from":
+				var fromList []string
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					fromList = append(fromList, lit.Value)
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					fromList = append(fromList, ident.Name)
+				} else if list, ok := f.Value.(*syntax.ListExpr); ok {
+					for _, el := range list.Elements {
+						if lit, ok := el.(*syntax.LiteralExpr); ok {
+							fromList = append(fromList, lit.Value)
+						} else if ident, ok := el.(*syntax.IdentExpr); ok {
+							fromList = append(fromList, ident.Name)
+						}
+					}
+				}
+				l.workflow.WorkflowTypes = nil
+				for _, surface := range fromList {
+					switch surface {
+					case "sharesheet":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "ActionExtension")
+					case "menubar":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "MenuBar")
+					case "quickactions":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "QuickActions")
+						l.workflow.QuickActionSurfaces = []string{"Finder", "Services"}
+					case "notifications":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "NCWidget")
+					case "watch":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "Watch")
+					case "search":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "WFWorkflowTypeShowInSearch")
+					case "spotlight":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "WFWorkflowTypeReceivesInputFromSearch")
+					case "sleepmode":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "Sleep")
+					case "onscreen":
+						l.workflow.WorkflowTypes = append(l.workflow.WorkflowTypes, "ReceivesOnScreenContent")
+					}
+				}
+			case "inputs":
+				var inputList []string
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					inputList = append(inputList, lit.Value)
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					inputList = append(inputList, ident.Name)
+				} else if list, ok := f.Value.(*syntax.ListExpr); ok {
+					for _, el := range list.Elements {
+						if lit, ok := el.(*syntax.LiteralExpr); ok {
+							inputList = append(inputList, lit.Value)
+						} else if ident, ok := el.(*syntax.IdentExpr); ok {
+							inputList = append(inputList, ident.Name)
+						}
+					}
+				}
+				l.workflow.InputContentItemClasses = nil
+				for _, item := range inputList {
+					class := schema.LookupContentItemClassValue(item)
+					if class != "" {
+						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, class)
+					} else {
+						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, item)
+					}
+				}
+			case "outputs":
+				var outputList []string
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					outputList = append(outputList, lit.Value)
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					outputList = append(outputList, ident.Name)
+				} else if list, ok := f.Value.(*syntax.ListExpr); ok {
+					for _, el := range list.Elements {
+						if lit, ok := el.(*syntax.LiteralExpr); ok {
+							outputList = append(outputList, lit.Value)
+						} else if ident, ok := el.(*syntax.IdentExpr); ok {
+							outputList = append(outputList, ident.Name)
+						}
+					}
+				}
+				l.workflow.OutputContentItemClasses = nil
+				for _, item := range outputList {
+					class := schema.LookupContentItemClassValue(item)
+					if class != "" {
+						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, class)
+					} else {
+						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, item)
+					}
+				}
+			case "noInput", "noinput":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					l.workflow.NoInputBehavior = lit.Value
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.NoInputBehavior = ident.Name
+				}
+			case "version", "minVersion", "iosVersion", "clientVersion":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					v := schema.LookupVersionValue(lit.Value)
+					if v != "" {
+						l.workflow.ClientVersion = v
+					} else {
+						l.workflow.ClientVersion = lit.Value
+					}
+					if l.session != nil {
+						l.session.SetMetadata("iosVersion", lit.Value)
+					}
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					v := schema.LookupVersionValue(ident.Name)
+					if v != "" {
+						l.workflow.ClientVersion = v
+					} else {
+						l.workflow.ClientVersion = ident.Name
+					}
+					if l.session != nil {
+						l.session.SetMetadata("iosVersion", ident.Name)
+					}
+				}
+			case "maxVersion":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok && l.session != nil {
+					l.session.SetMetadata("iosVersion", lit.Value)
+				}
+			case "quickActions", "quickactions":
+				l.workflow.QuickActionSurfaces = []string{"Finder", "Services"}
+			default:
+				return fmt.Errorf("unknown shortcut metadata field %q", f.Name)
+			}
+		}
+	}
+
+	for _, trig := range d.Triggers {
+		if err := l.lowerTrigger(&trig); err != nil {
+			return err
+		}
+	}
+
+	if l.session != nil {
+		if l.isMac != nil {
+			l.session.SetMetadata("mac", *l.isMac)
+		}
+		if len(l.workflow.WorkflowTypes) > 0 {
+			l.session.SetMetadata("workflowTypes", l.workflow.WorkflowTypes)
+		}
+		if len(l.workflow.InputContentItemClasses) > 0 {
+			l.session.SetMetadata("inputContentItemClasses", l.workflow.InputContentItemClasses)
+		}
+		if len(l.workflow.OutputContentItemClasses) > 0 {
+			l.session.SetMetadata("outputContentItemClasses", l.workflow.OutputContentItemClasses)
+		}
+		if l.workflow.IconGlyph != 0 {
+			l.session.SetMetadata("iconGlyph", l.workflow.IconGlyph)
+		}
+		if l.workflow.IconColor != 0 {
+			l.session.SetMetadata("iconColor", l.workflow.IconColor)
+		}
+		if l.workflow.NoInputBehavior != "" {
+			l.session.SetMetadata("noInputBehavior", l.workflow.NoInputBehavior)
+		}
+		if len(l.workflow.QuickActionSurfaces) > 0 {
+			l.session.SetMetadata("quickActionSurfaces", l.workflow.QuickActionSurfaces)
+		}
+		if l.workflow.ClientVersion != "" {
+			l.session.SetMetadata("clientVersion", l.workflow.ClientVersion)
+		}
+	}
+	return nil
+}
+
+func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWorkflow, error) {
+	l.workflow.HasShortcutInputVariables = true
+	if l.session != nil {
+		l.session.SetMetadata("hasShortcutInputVariables", true)
+	}
+
+	// 1. Initialize _cherri_is_fn = "0"
+	initNumUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          initNumUUID,
+		AppleIdentifier: "is.workflow.actions.gettext",
+		OutputUUID:      initNumUUID,
+		Parameters: map[string]interface{}{
+			"WFTextActionText": "0",
+		},
+	})
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{
+			"WFVariableName": "_cherri_is_fn",
+			"WFInput":        &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: initNumUUID},
+		},
+	})
+
+	inputToken := &ir.AttachmentToken{
+		Type:       "ExtensionInput",
+		OutputName: "ShortcutInput",
+	}
+
+	// Save initial caller ShortcutInput into _cherri_caller_input before function dispatch
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{
+			"WFVariableName": "_cherri_caller_input",
+			"WFInput":        inputToken,
+		},
+	})
+
+	// 2. Guard: Only check function payload if ShortcutInput has a value
+	hasInputGroupUUID := l.GenerateUUID()
+	l.emitIfStart(hasInputGroupUUID, inputToken, 100, nil, true)
+
+	dictUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          dictUUID,
+		AppleIdentifier: "is.workflow.actions.detect.dictionary",
+		OutputUUID:      dictUUID,
+		Parameters: map[string]interface{}{
+			"WFInput": inputToken,
+		},
+	})
+
+	chkUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          chkUUID,
+		AppleIdentifier: "is.workflow.actions.getvalueforkey",
+		OutputUUID:      chkUUID,
+		Parameters: map[string]interface{}{
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictUUID},
+			"WFDictionaryKey":          "cherri_functions",
+			"WFGetDictionaryValueType": "Value",
+		},
+	})
+
+	magicUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          magicUUID,
+		AppleIdentifier: "is.workflow.actions.getvalueforkey",
+		OutputUUID:      magicUUID,
+		Parameters: map[string]interface{}{
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictUUID},
+			"WFDictionaryKey":          "_cherri_magic",
+			"WFGetDictionaryValueType": "Value",
+		},
+	})
+
+	chkGroupUUID := l.GenerateUUID()
+	l.emitIfStart(chkGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: magicUUID}, 4, "__cherri_fn_envelope_v2__", true)
+
+	setOneNumUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          setOneNumUUID,
+		AppleIdentifier: "is.workflow.actions.gettext",
+		OutputUUID:      setOneNumUUID,
+		Parameters: map[string]interface{}{
+			"WFTextActionText": "1",
+		},
+	})
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{
+			"WFVariableName": "_cherri_is_fn",
+			"WFInput":        &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: setOneNumUUID},
+		},
+	})
+
+	callerInUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          callerInUUID,
+		AppleIdentifier: "is.workflow.actions.getvalueforkey",
+		OutputUUID:      callerInUUID,
+		Parameters: map[string]interface{}{
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictUUID},
+			"WFDictionaryKey":          "_cherri_caller_input",
+			"WFGetDictionaryValueType": "Value",
+		},
+	})
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{
+			"WFVariableName": "_cherri_caller_input",
+			"WFInput":        &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: callerInUUID},
+		},
+	})
+
+	l.emitIfEnd(chkGroupUUID, "", "")
+	l.emitIfEnd(hasInputGroupUUID, "", "")
+
+	// 3. Main branching conditional:
+	// Mode 0: If _cherri_is_fn == "1" -> Function dispatcher
+	// Mode 1: Otherwise -> Main program statements
+	// Mode 2: End If
+	mainGroupUUID := l.GenerateUUID()
+	l.emitIfStart(mainGroupUUID, &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_is_fn"}, 4, "1", true)
+
+	// Mode 0: Function Dispatcher
+	fnDictUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          fnDictUUID,
+		AppleIdentifier: "is.workflow.actions.detect.dictionary",
+		OutputUUID:      fnDictUUID,
+		Parameters: map[string]interface{}{
+			"WFInput": inputToken,
+		},
+	})
+
+	fnNameUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          fnNameUUID,
+		AppleIdentifier: "is.workflow.actions.getvalueforkey",
+		OutputUUID:      fnNameUUID,
+		Parameters: map[string]interface{}{
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+			"WFDictionaryKey":          "function",
+			"WFGetDictionaryValueType": "Value",
+		},
+	})
+
+	argsUUID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          argsUUID,
+		AppleIdentifier: "is.workflow.actions.getvalueforkey",
+		OutputUUID:      argsUUID,
+		Parameters: map[string]interface{}{
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+			"WFDictionaryKey":          "arguments",
+			"WFGetDictionaryValueType": "Value",
+		},
+	})
+
+	allFuncs := make([]*syntax.FunctionDecl, 0, len(l.functions))
+	seenFuncs := make(map[*syntax.FunctionDecl]bool)
+	for _, decl := range prog.Declarations {
+		if fn, ok := decl.(*syntax.FunctionDecl); ok {
+			if !seenFuncs[fn] {
+				allFuncs = append(allFuncs, fn)
+				seenFuncs[fn] = true
+			}
+		}
+	}
+	for _, fn := range l.importedFunctions {
+		if !seenFuncs[fn] {
+			allFuncs = append(allFuncs, fn)
+			seenFuncs[fn] = true
+		}
+	}
+
+	defer l.useModuleScope(l.moduleGraph.Root)
+	for _, fn := range allFuncs {
+		l.useModuleScope(l.functionModules[fn])
+		fnGroupUUID := l.GenerateUUID()
+		l.emitIfStart(fnGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnNameUUID}, 4, l.functionDispatchName(fn), true)
+
+		savedBindings := make(map[string]BindingRef)
+		for k, v := range l.bindings {
+			savedBindings[k] = v
+		}
+		l.bindings = make(map[string]BindingRef)
+
+		for idx, param := range fn.Parameters {
+			if l.optionalFunctionParameter(param.TypeExpr) {
+				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr)
+				if err != nil {
+					return nil, fmt.Errorf("function %s optional parameter %s: %w", fn.Name, param.Name, err)
+				}
+				l.bindings[param.Name] = BindingRef{
+					Type: l.resolveTypeAnnotation(param.TypeExpr), OutputUUID: value, OutputName: param.Name,
+					OptionalPresence: &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence},
+				}
+				continue
+			}
+			argKey := fmt.Sprintf("arg_%d", idx)
+			isNumParam := false
+			if named, ok := param.TypeExpr.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Bool") {
+				isNumParam = true
+			}
+			if param.DefaultExpr != nil {
+				hasKey := fmt.Sprintf("has_arg_%d", idx)
+				hasUUID := l.GenerateUUID()
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          hasUUID,
+					AppleIdentifier: "is.workflow.actions.getvalueforkey",
+					OutputUUID:      hasUUID,
+					Parameters: map[string]interface{}{
+						"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey":          hasKey,
+						"WFGetDictionaryValueType": "Value",
+					},
+				})
+
+				defGroupUUID := l.GenerateUUID()
+				l.emitIfStart(defGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: hasUUID}, 4, "1", true)
+
+				suppliedUUID := l.GenerateUUID()
+				l.emitAction(&ir.NativeActionNode{
+					NodeID: suppliedUUID, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: suppliedUUID,
+					Parameters: map[string]interface{}{
+						"WFInput":         &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey": argKey, "WFGetDictionaryValueType": "Value",
+					},
+				})
+
+				l.emitIfElse(defGroupUUID)
+
+				defVal, err := l.lowerCallValue(param.DefaultExpr)
+				if err != nil {
+					return nil, fmt.Errorf("function %s default param %s: %w", fn.Name, param.Name, err)
+				}
+				l.materializeYieldValue(defVal)
+
+				argItemUUID := l.GenerateUUID()
+				l.emitIfEnd(defGroupUUID, argItemUUID, param.Name)
+				if isNumParam {
+					numUUID := l.GenerateUUID()
+					l.emitAction(&ir.NativeActionNode{
+						NodeID:          numUUID,
+						AppleIdentifier: "is.workflow.actions.detect.number",
+						OutputUUID:      numUUID,
+						OutputName:      param.Name,
+						Parameters: map[string]interface{}{
+							"WFInput": &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: argItemUUID},
+						},
+					})
+					argItemUUID = numUUID
+				}
+				l.bindings[param.Name] = BindingRef{
+					Type:       l.resolveTypeAnnotation(param.TypeExpr),
+					IsVariable: false,
+					OutputUUID: argItemUUID,
+					OutputName: param.Name,
+				}
+			} else {
+				argItemUUID := l.GenerateUUID()
+				l.emitAction(&ir.NativeActionNode{
+					NodeID: argItemUUID, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: argItemUUID, OutputName: param.Name,
+					Parameters: map[string]interface{}{
+						"WFInput":         &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
+						"WFDictionaryKey": argKey, "WFGetDictionaryValueType": "Value",
+					},
+				})
+				if isNumParam {
+					numUUID := l.GenerateUUID()
+					l.emitAction(&ir.NativeActionNode{
+						NodeID:          numUUID,
+						AppleIdentifier: "is.workflow.actions.detect.number",
+						OutputUUID:      numUUID,
+						OutputName:      param.Name,
+						Parameters: map[string]interface{}{
+							"WFInput": &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: argItemUUID},
+						},
+					})
+					argItemUUID = numUUID
+				}
+				l.bindings[param.Name] = BindingRef{
+					Type:       l.resolveTypeAnnotation(param.TypeExpr),
+					IsVariable: false,
+					OutputUUID: argItemUUID,
+					OutputName: param.Name,
+				}
+			}
+		}
+
+		hasReturn := false
+		priorOptionalReturn := l.optionalFunctionReturn
+		l.optionalFunctionReturn = l.optionalFunctionParameter(fn.ReturnType)
+		for _, stmt := range fn.Body.Statements {
+			if _, ok := stmt.(*syntax.ReturnStmt); ok {
+				hasReturn = true
+			}
+			if err := l.lowerStatement(stmt); err != nil {
+				l.optionalFunctionReturn = priorOptionalReturn
+				return nil, fmt.Errorf("function %s: %w", fn.Name, err)
+			}
+		}
+		l.optionalFunctionReturn = priorOptionalReturn
+
+		l.bindings = savedBindings
+
+		if !hasReturn {
+			if l.optionalFunctionParameter(fn.ReturnType) {
+				// Preserve the existing implicit no-value return with the same
+				// explicit presence protocol as authored `return none`.
+				carrier := l.optionalCarrier(nil, "0", "has_value", "value", "_cherri_optional_result_v1")
+				l.emitAction(&ir.NativeActionNode{NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.output", Parameters: map[string]interface{}{"WFOutput": carrier}})
+			} else {
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          l.GenerateUUID(),
+					AppleIdentifier: "is.workflow.actions.nothing",
+				})
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          l.GenerateUUID(),
+					AppleIdentifier: "is.workflow.actions.output",
+				})
+			}
+		}
+
+		l.emitIfEnd(fnGroupUUID, "", "")
+	}
+	l.useModuleScope(l.moduleGraph.Root)
+
+	// Exit the child execution immediately so it never falls through
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.exit",
+	})
+
+	// Mode 1: Otherwise -> Main Statements
+	l.emitIfElse(mainGroupUUID)
+
+	for _, stmt := range prog.Statements {
+		if err := l.lowerStatement(stmt); err != nil {
+			return nil, err
+		}
+	}
+
+	// Mode 2: End If
+	l.emitIfEnd(mainGroupUUID, "", "")
+
+	return l.workflow, nil
+}
+
+func (l *Lowerer) materializeYieldValue(val interface{}) {
+	if val == nil {
+		// A missing action would leave the previous branch output in place.
+		// Native Nothing explicitly supplies no output at this result boundary.
+		l.emitAction(&ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.nothing",
+		})
+		return
+	}
+	if tok, ok := val.(*ir.AttachmentToken); ok {
+		if tok.Type == "Variable" {
+			uuid := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getvariable",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFVariable": tok,
+				},
+			})
+			return
+		}
+		if len(l.workflow.Actions) == 0 || l.workflow.Actions[len(l.workflow.Actions)-1].OutputUUID != tok.OutputUUID {
+			uuid := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getvariable",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFVariable": tok,
+				},
+			})
+		}
+		return
+	}
+	if b, ok := val.(bool); ok {
+		bNum := 0.0
+		if b {
+			bNum = 1.0
+		}
+		uuid := l.GenerateUUID()
+		l.emitAction(&ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.number",
+			OutputUUID:      uuid,
+			Parameters: map[string]interface{}{
+				"WFNumberActionNumber": bNum,
+			},
+		})
+		return
+	}
+	_ = l.materializeToAttachment(val)
+}
+
+func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
+	switch s := stmt.(type) {
+	case *syntax.BindingStmt:
+		return l.lowerLexicalBinding(s)
+	case *syntax.AssignStmt:
+		return l.lowerAssign(s)
+	case *syntax.ExprStmt:
+		prev := l.inExprStmt
+		l.inExprStmt = true
+		_, err := l.lowerExpression(s.Expr)
+		l.inExprStmt = prev
+		return err
+	case *syntax.IfStmt:
+		return l.lowerIf(s)
+	case *syntax.RepeatStmt:
+		return l.lowerRepeat(s)
+	case *syntax.ForStmt:
+		return l.lowerFor(s)
+	case *syntax.MenuStmt:
+		return l.lowerMenu(s)
+	case *syntax.YieldStmt:
+		val, err := l.lowerRuntimeLiteral(s.Value)
+		if err != nil {
+			return err
+		}
+		l.materializeYieldValue(val)
+		return nil
+	case *syntax.ReturnStmt:
+		l.workflow.HasExplicitReturn = true
+		if s.Value != nil {
+			val, err := l.lowerRuntimeLiteral(s.Value)
+			if err != nil {
+				return err
+			}
+			if l.optionalFunctionReturn {
+				presence, err := l.optionalValuePresence(s.Value, val)
+				if err != nil {
+					return err
+				}
+				val = l.optionalCarrier(val, presence, "has_value", "value", "_cherri_optional_result_v1")
+			}
+			if val == nil {
+				// An omitted output input otherwise inherits the preceding action.
+				l.materializeYieldValue(nil)
+			}
+			val = l.materializeToAttachment(val)
+			// Emit output action: is.workflow.actions.output
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.output",
+				Parameters: map[string]interface{}{
+					"WFOutput": val,
+				},
+			}
+			l.emitAction(node)
+		} else {
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.nothing",
+			})
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.output",
+			}
+			l.emitAction(node)
+		}
+		return nil
+	case *syntax.BlockStmt:
+		return l.lowerLexicalBlock(s)
+	case *syntax.CopyBlockStmt:
+		l.copyBlocks[s.Name] = s
+		return nil
+	case *syntax.PasteStmt:
+		cb, ok := l.copyBlocks[s.Name]
+		if !ok {
+			return fmt.Errorf("unable to paste undefined copy %q", s.Name)
+		}
+		for _, bs := range cb.Body.Statements {
+			if err := l.lowerStatement(bs); err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return fmt.Errorf("unhandled statement %T: statements must not be silently dropped", stmt)
+	}
+}
+
+func (l *Lowerer) effectiveOutputName(sym string) string {
+	if l.provenanceOutputNames != nil {
+		if spec, ok := l.provenanceOutputNames[sym]; ok {
+			if !spec.hasName {
+				return ""
+			}
+			if spec.name != "" {
+				return spec.name
+			}
+		}
+	}
+	return sym
+}
+
+func (l *Lowerer) effectiveVariableName(sym string) string {
+	if l.provenanceVarNames != nil {
+		if v, ok := l.provenanceVarNames[sym]; ok && v != "" {
+			return v
+		}
+	}
+	return sym
+}
+
+func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
+	if t == nil {
+		return nil
+	}
+	if value, found := l.typeAnnotations[t]; found {
+		return value
+	}
+	switch ta := t.(type) {
+	case *syntax.NamedTypeAnnotation:
+		if nt, ok := types.ParseNamedType(ta.Name); ok {
+			return nt
+		}
+		if ta.Namespace != "" {
+			return types.NewEntity(ta.Namespace, ta.Name)
+		}
+		if _, found := l.enums[ta.Name]; found {
+			return types.Text
+		}
+		if _, found := l.registry.LookupEnum(ta.Name); found {
+			return types.Text
+		}
+	case *syntax.OptionalTypeAnnotation:
+		if inner := l.resolveTypeAnnotation(ta.Inner); inner != nil {
+			return types.NewOptional(inner)
+		}
+	case *syntax.GenericTypeAnnotation:
+		if ta.Name == "List" && len(ta.TypeArgs) == 1 {
+			elem := l.resolveTypeAnnotation(ta.TypeArgs[0])
+			if elem == nil {
+				elem = types.AnyContent
+			}
+			return types.NewList(elem)
+		}
+		if ta.Name == "Map" && len(ta.TypeArgs) == 2 {
+			kt := l.resolveTypeAnnotation(ta.TypeArgs[0])
+			vt := l.resolveTypeAnnotation(ta.TypeArgs[1])
+			if kt == nil {
+				kt = types.Text
+			}
+			if vt == nil {
+				vt = types.AnyContent
+			}
+			return types.NewMap(kt, vt)
+		}
+	}
+	return nil
+}
+
+func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
+	if b.Value == nil {
+		// uninitialized var
+		wfVarName := l.effectiveVariableName(b.Name)
+		var bType types.Type
+		if b.TypeExpr != nil {
+			bType = l.resolveTypeAnnotation(b.TypeExpr)
+		}
+		l.bindings[b.Name] = BindingRef{
+			IsVariable:   true,
+			VariableName: wfVarName,
+			Type:         bType,
+		}
+		if b.Mutable {
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.setvariable",
+				Parameters: map[string]interface{}{
+					"WFVariableName": wfVarName,
+				},
+			}
+			l.emitAction(node)
+		}
+		return nil
+	}
+
+	if !b.Mutable {
+		l.currentBindingName = b.Name
+	}
+	val, err := l.lowerRuntimeLiteral(b.Value)
+	l.currentBindingName = ""
+	if err != nil {
+		return err
+	}
+
+	// Presence is independent of the value's native truthiness. Mutable
+	// bindings store a paired flag; immutable aliases snapshot a mutable flag.
+	var optionalPresence interface{}
+	if val == nil || l.optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
+		optionalPresence, err = l.optionalValuePresence(b.Value, val)
+		if err != nil {
+			return err
+		}
+		if b.Mutable {
+			optionalPresence = l.newMutableOptionalPresence(optionalPresence)
+		} else {
+			optionalPresence = l.snapshotOptionalPresence(optionalPresence)
+		}
+	}
+
+	if b.Mutable {
+		wfVarName := l.effectiveVariableName(b.Name)
+		if val == nil || isEmptyRuntimeList(val) {
+			l.emitClearedVariable(wfVarName)
+		} else {
+			// Emit is.workflow.actions.setvariable
+			params := map[string]interface{}{
+				"WFVariableName": wfVarName,
+			}
+			if att := l.materializeToAttachment(val); att != nil {
+				params["WFInput"] = att
+			}
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.setvariable",
+				Parameters:      params,
+			}
+			l.emitAction(node)
+		}
+		var bType types.Type
+		if b.TypeExpr != nil {
+			bType = l.resolveTypeAnnotation(b.TypeExpr)
+		}
+		if bType == nil && l.exprTypes != nil && b.Value != nil {
+			bType = l.exprTypes[b.Value]
+		}
+		if bType == nil {
+			if _, ok := val.([]interface{}); ok {
+				bType = types.NewList(types.Unknown)
+			} else if _, ok := b.Value.(*syntax.ListExpr); ok {
+				bType = types.NewList(types.Unknown)
+			}
+		}
+		l.bindings[b.Name] = BindingRef{
+			IsVariable:   true,
+			VariableName: wfVarName,
+			Type:         bType,
+		}
+	} else {
+		effOutName := l.effectiveOutputName(b.Name)
+		// let captures the value at this source point.
+		// If val is already an action output reference from the last action
+		if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "ActionOutput" {
+			l.bindings[b.Name] = BindingRef{
+				IsVariable:      false,
+				OutputUUID:      ref.OutputUUID,
+				OutputName:      effOutName,
+				Aggrandizements: ref.Aggrandizements,
+			}
+			if len(ref.Aggrandizements) == 0 {
+				if _, hasProvName := l.provenanceOutputNames[b.Name]; !hasProvName {
+					for _, act := range l.workflow.Actions {
+						if act.NodeID == ref.OutputUUID || act.OutputUUID == ref.OutputUUID {
+							act.OutputName = b.Name
+							break
+						}
+					}
+					if l.session != nil {
+						l.session.RenameOutput(ref.OutputUUID, b.Name)
+					}
+				}
+			}
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Variable" {
+			// Materialize mutable variable read with getvariable so later mutations don't affect this let binding!
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getvariable",
+				OutputUUID:      uuid,
+				OutputName:      b.Name,
+				Parameters: map[string]interface{}{
+					"WFVariable": map[string]interface{}{
+						"Value": map[string]interface{}{
+							"Type":         "Variable",
+							"VariableName": ref.OutputName,
+						},
+						"WFSerializationType": "WFTextTokenAttachment",
+					},
+				},
+			}
+			l.emitAction(node)
+			l.bindings[b.Name] = BindingRef{
+				IsVariable:      false,
+				OutputUUID:      uuid,
+				OutputName:      effOutName,
+				Aggrandizements: ref.Aggrandizements,
+			}
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Clipboard" {
+			l.bindings[b.Name] = l.captureClipboardBinding(b.Name, ref)
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && (ref.Type == "DeviceDetails" || ref.Type == "CurrentDate" || ref.Type == "ExtensionInput" || ref.Type == "Ask") {
+			l.bindings[b.Name] = BindingRef{
+				IsVariable:      false,
+				TokenType:       ref.Type,
+				OutputUUID:      ref.OutputUUID,
+				OutputName:      ref.OutputName,
+				Aggrandizements: ref.Aggrandizements,
+			}
+		} else {
+			// Materialize literal or computed value based on its semantic type
+			uuid := l.GenerateUUID()
+			if l.provenanceUUIDs != nil {
+				if u, ok := l.provenanceUUIDs[b.Name]; ok && u != "" {
+					uuid = u
+					delete(l.provenanceUUIDs, b.Name)
+				}
+			}
+			switch v := val.(type) {
+			case float64:
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.number",
+					OutputUUID:      uuid,
+					OutputName:      b.Name,
+					Parameters: map[string]interface{}{
+						"WFNumberActionNumber": v,
+					},
+				}
+				l.emitAction(node)
+			case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.number",
+					OutputUUID:      uuid,
+					OutputName:      b.Name,
+					Parameters: map[string]interface{}{
+						"WFNumberActionNumber": v,
+					},
+				}
+				l.emitAction(node)
+			case map[string]interface{}:
+				if serType, ok := v["WFSerializationType"].(string); ok && serType == "WFTextTokenString" {
+					node := &ir.NativeActionNode{
+						NodeID:          uuid,
+						AppleIdentifier: "is.workflow.actions.gettext",
+						OutputUUID:      uuid,
+						OutputName:      b.Name,
+						Parameters: map[string]interface{}{
+							"WFTextActionText": v,
+						},
+					}
+					l.emitAction(node)
+				} else {
+					node := &ir.NativeActionNode{
+						NodeID:          uuid,
+						AppleIdentifier: "is.workflow.actions.dictionary",
+						OutputUUID:      uuid,
+						OutputName:      b.Name,
+						Parameters: map[string]interface{}{
+							"WFItems": v,
+						},
+					}
+					l.emitAction(node)
+				}
+			case []interface{}:
+				if len(v) == 0 {
+					l.materializeEmptyList(uuid, b.Name)
+					break
+				}
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.list",
+					OutputUUID:      uuid,
+					OutputName:      b.Name,
+					Parameters: map[string]interface{}{
+						"WFItems": l.formatWFListItems(v),
+					},
+				}
+				l.emitAction(node)
+			case bool:
+				bNum := 0.0
+				if v {
+					bNum = 1.0
+				}
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.number",
+					OutputUUID:      uuid,
+					OutputName:      b.Name,
+					Parameters: map[string]interface{}{
+						"WFNumberActionNumber": bNum,
+					},
+				}
+				l.emitAction(node)
+			case nil:
+				wfVarName := l.effectiveVariableName(b.Name)
+				l.emitClearedVariable(wfVarName)
+				l.bindings[b.Name] = BindingRef{
+					IsVariable:       true,
+					TokenType:        "Variable",
+					VariableName:     wfVarName,
+					OutputName:       wfVarName,
+					OptionalPresence: optionalPresence,
+				}
+				return nil
+			default:
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.gettext",
+					OutputUUID:      uuid,
+					OutputName:      b.Name,
+					Parameters: map[string]interface{}{
+						"WFTextActionText": val,
+					},
+				}
+				l.emitAction(node)
+			}
+			l.bindings[b.Name] = BindingRef{
+				IsVariable: false,
+				OutputUUID: uuid,
+				OutputName: effOutName,
+			}
+		}
+	}
+
+	var varType types.Type
+	if b.Value != nil && l.exprTypes != nil {
+		varType = l.exprTypes[b.Value]
+	}
+	if varType == nil {
+		if _, ok := b.Value.(*syntax.ListExpr); ok {
+			varType = types.NewList(types.Unknown)
+		}
+	}
+	if ref, ok := l.bindings[b.Name]; ok {
+		ref.Type = varType
+		ref.OptionalPresence = optionalPresence
+		if l.isPolymorphicContainerLookupExpr(b.Value) {
+			ref.PolymorphicLookup = true
+		}
+		l.bindings[b.Name] = ref
+	}
+
+	return nil
+}
+
+func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
+	val, err := l.lowerRuntimeLiteral(a.Value)
+	if err != nil {
+		return err
+	}
+
+	binding, isBound := l.bindings[a.Name]
+	if isBound {
+		presence, err := l.assignOptionalPresence(binding, a, val)
+		if err != nil {
+			return err
+		}
+		binding.OptionalPresence = presence
+		l.bindings[a.Name] = binding
+	}
+	isList := false
+	isNumericBinding := isBound && binding.Type != nil &&
+		(binding.Type.Equals(types.Number) || binding.Type.Name() == "Number" || binding.Type.Name() == "Int" || binding.Type.Name() == "Float")
+	if isBound && binding.Type != nil && binding.Type.Kind() == types.KindList {
+		isList = true
+	} else if a.Op == syntax.TokenPlusAssign &&
+		((isBound && binding.AppendVariable) ||
+			(!isNumericBinding && !l.hasNumberExprType(a.Value, true))) {
+		isList = true
+	} else if a.Value != nil {
+		if _, ok := a.Value.(*syntax.ListExpr); ok && a.Op == syntax.TokenAssign {
+			isList = true
+		}
+	}
+
+	wfVarName := l.effectiveVariableName(a.Name)
+	if isBound && binding.VariableName != "" {
+		wfVarName = binding.VariableName
+	}
+
+	if a.Op == syntax.TokenPlusAssign && isList {
+		node := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.appendvariable",
+			Parameters: map[string]interface{}{
+				"WFVariableName": wfVarName,
+				"WFInput":        l.materializeToAttachment(val),
+			},
+		}
+		l.emitAction(node)
+		return nil
+	}
+
+	if a.Op == syntax.TokenAssign {
+		var newType types.Type
+		if l.exprTypes != nil && a.Value != nil {
+			newType = l.exprTypes[a.Value]
+		}
+		if newType == nil {
+			if _, ok := a.Value.(*syntax.ListExpr); ok {
+				newType = types.NewList(types.Unknown)
+			}
+		}
+		if isBound {
+			if newType != nil {
+				binding.Type = newType
+			}
+			binding.PolymorphicLookup = l.isPolymorphicContainerLookupExpr(a.Value)
+			l.bindings[a.Name] = binding
+		}
+	}
+
+	finalVal := val
+	if a.Op != syntax.TokenAssign {
+		// Compound assignment: +=, -=, *=, /=
+		var mathOp string
+		switch a.Op {
+		case syntax.TokenPlusAssign:
+			mathOp = "+"
+		case syntax.TokenMinusAssign:
+			mathOp = "-"
+		case syntax.TokenStarAssign:
+			mathOp = "×"
+		case syntax.TokenSlashAssign:
+			mathOp = "÷"
+		}
+		mathUUID := l.GenerateUUID()
+		leftToken := &ir.AttachmentToken{
+			Type:       "Variable",
+			OutputName: wfVarName,
+		}
+		mathNode := &ir.NativeActionNode{
+			NodeID:          mathUUID,
+			AppleIdentifier: "is.workflow.actions.math",
+			OutputUUID:      mathUUID,
+			Parameters: map[string]interface{}{
+				"WFMathOperation": mathOp,
+				"WFInput":         leftToken,
+				"WFMathOperand":   val,
+			},
+		}
+		l.emitAction(mathNode)
+		finalVal = &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: mathUUID,
+		}
+	}
+
+	if a.Op == syntax.TokenAssign && (finalVal == nil || isEmptyRuntimeList(finalVal)) {
+		l.emitClearedVariable(wfVarName)
+		return nil
+	}
+
+	params := map[string]interface{}{
+		"WFVariableName": wfVarName,
+	}
+	if att := l.materializeToAttachment(finalVal); att != nil {
+		params["WFInput"] = att
+	}
+	node := &ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters:      params,
+	}
+	l.emitAction(node)
+	return nil
+}
+
+// nextAutoNumberOutputName keeps synthesized, un-authored Number outputs
+// deterministic and uniquely addressable. Decompilation must allocate unique
+// source symbols for each producer; using the same output name for every
+// producer loses exact native output-name fidelity on recompilation.
+func (l *Lowerer) nextAutoNumberOutputName() string {
+	name := "Number"
+	if l.autoNumberProducerCount > 0 {
+		name = fmt.Sprintf("Number%d", l.autoNumberProducerCount)
+	}
+	l.autoNumberProducerCount++
+	return name
+}
+
+func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
+	if val == nil {
+		return nil
+	}
+	if tok, ok := val.(*ir.AttachmentToken); ok {
+		return tok
+	}
+	uuid := l.GenerateUUID()
+	switch v := val.(type) {
+	case bool:
+		outputName := l.nextAutoNumberOutputName()
+		bNum := 0.0
+		if v {
+			bNum = 1.0
+		}
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.number",
+			OutputUUID:      uuid,
+			OutputName:      outputName,
+			Parameters: map[string]interface{}{
+				"WFNumberActionNumber": bNum,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: outputName,
+		}
+	case float64:
+		outputName := l.nextAutoNumberOutputName()
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.number",
+			OutputUUID:      uuid,
+			OutputName:      outputName,
+			Parameters: map[string]interface{}{
+				"WFNumberActionNumber": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: outputName,
+		}
+	case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+		outputName := l.nextAutoNumberOutputName()
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.number",
+			OutputUUID:      uuid,
+			OutputName:      outputName,
+			Parameters: map[string]interface{}{
+				"WFNumberActionNumber": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: outputName,
+		}
+	case string:
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.gettext",
+			OutputUUID:      uuid,
+			OutputName:      "Text",
+			Parameters: map[string]interface{}{
+				"WFTextActionText": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Text",
+		}
+	case map[string]interface{}:
+		if serType, ok := v["WFSerializationType"].(string); ok && serType == "WFTextTokenString" {
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.gettext",
+				OutputUUID:      uuid,
+				OutputName:      "Text",
+				Parameters: map[string]interface{}{
+					"WFTextActionText": v,
+				},
+			}
+			l.emitAction(node)
+			return &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: uuid,
+				OutputName: "Text",
+			}
+		}
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.dictionary",
+			OutputUUID:      uuid,
+			OutputName:      "Dictionary",
+			Parameters: map[string]interface{}{
+				"WFItems": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Dictionary",
+		}
+	case []interface{}:
+		if len(v) == 0 {
+			return l.materializeEmptyList(uuid, "List")
+		}
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.list",
+			OutputUUID:      uuid,
+			OutputName:      "List",
+			Parameters: map[string]interface{}{
+				"WFItems": l.formatWFListItems(v),
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "List",
+		}
+	default:
+
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.gettext",
+			OutputUUID:      uuid,
+			OutputName:      "Text",
+			Parameters: map[string]interface{}{
+				"WFTextActionText": fmt.Sprintf("%v", v),
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Text",
+		}
+	}
+}
+
+func (l *Lowerer) formatWFListItems(items []interface{}) []interface{} {
+	formatted := make([]interface{}, len(items))
+	for i, it := range items {
+		// WFContentArrayParameter text rows accept text or native references.
+		// Raw numeric plist scalars in those rows become empty native values.
+		// Reuse the ordinary Number producer, retaining type, order and precision.
+		switch it.(type) {
+		case float64, int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+			it = l.materializeToAttachment(it)
+		}
+		if m, ok := it.(map[string]interface{}); ok {
+			if m["WFItemType"] != nil {
+				// Preserve explicitly serialized native/import content rows.
+				formatted[i] = it
+				continue
+			}
+			if m["WFSerializationType"] != "WFTextTokenString" && m["WFSerializationType"] != "WFTextTokenAttachment" {
+				// List uses WFContentArrayParameter, not Dictionary field values.
+				// A raw map in its text row is not a native Dictionary value. Reuse
+				// the canonical Dictionary producer and the existing [dictBinding]
+				// reference path, preserving nested values and explicit false.
+				it = l.materializeToAttachment(it)
+			}
+		}
+		formatted[i] = map[string]interface{}{
+			"WFItemType": 0,
+			"WFValue":    it,
+		}
+	}
+	return formatted
+}
+
+func (l *Lowerer) isDateExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	if l.exprTypes != nil {
+		if t, ok := l.exprTypes[expr]; ok && t != nil {
+			if t.Equals(types.Date) || t.Name() == "Date" {
+				return true
+			}
+		}
+	}
+	switch e := expr.(type) {
+	case *syntax.IdentExpr:
+		if e.Name == "CurrentDate" {
+			return true
+		}
+		if ref, ok := l.bindings[e.Name]; ok {
+			if ref.TokenType == "CurrentDate" {
+				return true
+			}
+			if ref.Type != nil && (ref.Type.Equals(types.Date) || ref.Type.Name() == "Date") {
+				return true
+			}
+		}
+	case *syntax.CallExpr:
+		if id, ok := e.Callee.(*syntax.IdentExpr); ok {
+			switch id.Name {
+			case "date", "currentDate", "adjustDate", "formatDate", "getHolidayDate":
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isDateComparison treats date expressions paired with string literals (e.g. `Status == "Ready"`)
+// or string operators as string comparisons rather than WFDate comparisons.
+func (l *Lowerer) isDateComparison(op syntax.TokenType, left, right syntax.Expression) bool {
+	if op == syntax.TokenContains || op == syntax.TokenBeginsWith || op == syntax.TokenEndsWith {
+		return false
+	}
+	if l.isDateExpr(right) {
+		return true
+	}
+	if l.isDateExpr(left) {
+		return !l.isStringLikeExpr(right) && !isLiteralStringExpr(right)
+	}
+	return false
+}
+
+func (l *Lowerer) isNumberExpr(expr syntax.Expression) bool {
+	return l.hasNumberExprType(expr, true)
+}
+
+func (l *Lowerer) hasNumberExprType(expr syntax.Expression, includeBool bool) bool {
+	if expr == nil {
+		return false
+	}
+	matchesType := func(t types.Type) bool {
+		if t == nil {
+			return false
+		}
+		if t.Equals(types.Number) || t.Name() == "Number" || t.Name() == "Int" || t.Name() == "Float" {
+			return true
+		}
+		if includeBool && (t.Equals(types.Bool) || t.Name() == "Bool" || t.Name() == "Boolean") {
+			return true
+		}
+		return false
+	}
+	if l.exprTypes != nil && matchesType(l.exprTypes[expr]) {
+		return true
+	}
+	switch e := expr.(type) {
+	case *syntax.LiteralExpr:
+		if e.Type == syntax.TokenNumber {
+			return true
+		}
+		return includeBool && (e.Type == syntax.TokenTrue || e.Type == syntax.TokenFalse)
+	case *syntax.CallExpr:
+		if _, ok := conditionHelperStringArg(e, "numeric"); ok {
+			return true
+		}
+	case *syntax.IdentExpr:
+		if ref, ok := l.bindings[e.Name]; ok && matchesType(ref.Type) {
+			return true
+		}
+	}
+	return false
+}
+
+func (l *Lowerer) isStringLikeExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	if l.exprTypes != nil {
+		if t, ok := l.exprTypes[expr]; ok && t != nil {
+			if t.Equals(types.Text) {
+				return true
+			}
+		}
+	}
+	if lit, ok := expr.(*syntax.LiteralExpr); ok {
+		return lit.Type == syntax.TokenString || lit.Type == syntax.TokenRawString
+	}
+	return false
+}
+
+// isNumericPropertyAccessExpr matches numeric property accesses (such as image/media Width and Height)
+// when their target is not a dictionary/map.
+func (l *Lowerer) isNumericPropertyAccessExpr(expr syntax.Expression) bool {
+	isMapName := func(name string) bool {
+		if ref, has := l.bindings[name]; has && ref.Type != nil {
+			if ref.Type.Kind() == types.KindMap || ref.Type.Kind() == types.KindRecord {
+				return true
+			}
+		}
+		return false
+	}
+	isMapExpr := func(target syntax.Expression) bool {
+		if l.exprTypes != nil {
+			if t, ok := l.exprTypes[target]; ok && t != nil {
+				if t.Kind() == types.KindMap || t.Kind() == types.KindRecord {
+					return true
+				}
+			}
+		}
+		if id, ok := target.(*syntax.IdentExpr); ok {
+			return isMapName(id.Name)
+		}
+		return false
+	}
+	switch e := expr.(type) {
+	case *syntax.MemberExpr:
+		if (e.Property == "Height" || e.Property == "Width") && !isMapExpr(e.Target) {
+			return true
+		}
+	case *syntax.EnumMemberExpr:
+		if _, isEnum := l.enums[e.TypeName]; !isEnum && (e.Member == "Height" || e.Member == "Width") && !isMapName(e.TypeName) {
+			return true
+		}
+	case *syntax.IndexExpr:
+		if lit, ok := e.Index.(*syntax.LiteralExpr); ok && (lit.Type == syntax.TokenString || lit.Type == syntax.TokenRawString) {
+			if (lit.Value == "Height" || lit.Value == "Width") && !isMapExpr(e.Target) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isLiteralStringExpr(expr syntax.Expression) bool {
+	switch e := expr.(type) {
+	case *syntax.LiteralExpr:
+		return e.Type == syntax.TokenString || e.Type == syntax.TokenRawString
+	case *syntax.FStringExpr:
+		return true
+	}
+	return false
+}
+
+func isNumericOrderingOp(op syntax.TokenType) bool {
+	switch op {
+	case syntax.TokenGreater, syntax.TokenGreaterEqual, syntax.TokenLess, syntax.TokenLessEqual:
+		return true
+	}
+	return false
+}
+
+// isNumericComparison distinguishes `flag.bool == "Yes"` (string RHS -> WFConditionalActionString)
+// from numeric/boolean conditional comparisons (WFNumberValue).
+func (l *Lowerer) isNumericComparison(op syntax.TokenType, left, right syntax.Expression, isNumStr bool) bool {
+	if isNumStr || l.hasNumberExprType(left, false) || l.hasNumberExprType(right, false) {
+		return true
+	}
+	if l.isNumericPropertyAccessExpr(left) && !isLiteralStringExpr(right) {
+		return true
+	}
+	if l.isNumericPropertyAccessExpr(right) && !isLiteralStringExpr(left) {
+		return true
+	}
+	if l.isNumberExpr(right) {
+		return true
+	}
+	if l.isNumberExpr(left) {
+		return !l.isStringLikeExpr(right)
+	}
+	if isNumericOrderingOp(op) && !isLiteralStringExpr(left) && !isLiteralStringExpr(right) {
+		return true
+	}
+	return false
+}
+
+func (l *Lowerer) isArrayExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	// Imported provenance symbols mirror real Shortcuts dynamic values, where WFInput
+	// comparisons (e.g. == / != against empty text or scalars) may be authored on List-tagged bindings.
+	if ident, ok := expr.(*syntax.IdentExpr); ok && l.provenanceSymbols[ident.Name] {
+		return false
+	}
+	if l.exprTypes != nil {
+		if t, ok := l.exprTypes[expr]; ok && t != nil {
+			if t.Kind() == types.KindList || t.Name() == "Array" || t.Name() == "List" {
+				return true
+			}
+		}
+	}
+	switch e := expr.(type) {
+	case *syntax.ListExpr:
+		return true
+	case *syntax.IdentExpr:
+		if ref, ok := l.bindings[e.Name]; ok && ref.Type != nil {
+			if ref.Type.Kind() == types.KindList || ref.Type.Name() == "Array" || ref.Type.Name() == "List" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func flattenCompoundCondition(expr syntax.Expression, op syntax.TokenType) []syntax.Expression {
+	if bin, ok := expr.(*syntax.BinaryExpr); ok && bin.Op == op {
+		return append(flattenCompoundCondition(bin.Left, op), flattenCompoundCondition(bin.Right, op)...)
+	}
+	return []syntax.Expression{expr}
+}
+
+func (l *Lowerer) isPolymorphicContainerLookupExpr(expr syntax.Expression) bool {
+	if _, resolved := l.enumValues[expr]; resolved {
+		return false
+	}
+	if expr == nil {
+		return false
+	}
+	switch e := expr.(type) {
+	case *syntax.CallExpr:
+		if id, ok := e.Callee.(*syntax.IdentExpr); ok {
+			switch id.Name {
+			case "getValue", "getFirstItem", "getLastItem", "getListItem", "getRandomItem", "base64Decode", "downloadURL", "getStoredValue":
+				return true
+			}
+		}
+	case *syntax.IndexExpr:
+		return true
+	case *syntax.MemberExpr:
+		if _, isCoercion := lookupContentItemClass(e.Property); isCoercion {
+			return false
+		}
+		return true
+	case *syntax.EnumMemberExpr:
+		if _, isEnum := l.enums[e.TypeName]; isEnum {
+			return false
+		}
+		if _, isCoercion := lookupContentItemClass(e.Member); isCoercion {
+			return false
+		}
+		return true
+	case *syntax.IdentExpr:
+		if ref, ok := l.bindings[e.Name]; ok {
+			if ref.PolymorphicLookup {
+				return true
+			}
+			if len(ref.Aggrandizements) > 0 {
+				for _, ag := range ref.Aggrandizements {
+					if ag["Type"] == "WFDictionaryValueVariableAggrandizement" {
+						return true
+					}
+				}
+			}
+			if ref.OutputUUID != "" && l.isPolymorphicProducerUUID(ref.OutputUUID) {
+				return true
+			}
+			for _, act := range l.workflow.Actions {
+				if act.AppleIdentifier != "is.workflow.actions.setvariable" || act.Parameters["WFVariableName"] != e.Name {
+					continue
+				}
+				if inTok := attachmentFromParam(act.Parameters["WFInput"]); inTok != nil {
+					for _, ag := range inTok.Aggrandizements {
+						if ag["Type"] == "WFDictionaryValueVariableAggrandizement" {
+							return true
+						}
+					}
+					if inTok.OutputUUID != "" && l.isPolymorphicProducerUUID(inTok.OutputUUID) {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isPolymorphicOutputActionID(id string) bool {
+	switch id {
+	case "is.workflow.actions.getvalueforkey", "is.workflow.actions.getitemfromlist", "is.workflow.actions.base64encode", "is.workflow.actions.downloadurl", "com.Scripting.Lumen.GetStoredValueIntent":
+		return true
+	}
+	return false
+}
+
+func (l *Lowerer) isPolymorphicProducerUUID(uuid string) bool {
+	for _, act := range l.workflow.Actions {
+		if act.NodeID == uuid || act.OutputUUID == uuid {
+			if isPolymorphicOutputActionID(act.AppleIdentifier) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func attachmentFromParam(v any) *ir.AttachmentToken {
+	switch t := v.(type) {
+	case *ir.AttachmentToken:
+		return t
+	case ir.AttachmentToken:
+		return &t
+	case map[string]any:
+		if inner, ok := t["Value"]; ok {
+			return attachmentFromParam(inner)
+		}
+	}
+	return nil
+}
+
+// ensureConditionalInputCoercion ensures that when a conditional comparison's LHS is an
+// untyped/polymorphic lookup (such as getValue(dict, "key") or dict["key"]), the attachment
+// carries an explicit WFCoercionVariableAggrandizement matching the comparison operand type
+// (e.g., WFStringContentItem for string equality) so Apple Shortcuts' iPadOS UI and runtime
+// do not default WFCondition=4/5 to a numeric comparison.
+func (l *Lowerer) ensureConditionalInputCoercion(expr syntax.Expression, inputTok *ir.AttachmentToken, opType backend.ConditionOperandType) *ir.AttachmentToken {
+	if inputTok == nil || inputTok.Type == "DeviceDetails" {
+		return inputTok
+	}
+	if call, ok := expr.(*syntax.CallExpr); ok {
+		if mem, ok := call.Callee.(*syntax.MemberExpr); ok {
+			if id, ok := mem.Target.(*syntax.IdentExpr); ok && id.Name == "native" && mem.Property == "ref" {
+				return inputTok
+			}
+		}
+	}
+	for _, ag := range inputTok.Aggrandizements {
+		if ag["Type"] == "WFCoercionVariableAggrandizement" || ag["Type"] == "WFPropertyVariableAggrandizement" {
+			return inputTok
+		}
+	}
+	hasDictAggr := false
+	for _, ag := range inputTok.Aggrandizements {
+		if ag["Type"] == "WFDictionaryValueVariableAggrandizement" {
+			hasDictAggr = true
+			break
+		}
+	}
+	if !hasDictAggr && !l.isPolymorphicContainerLookupExpr(expr) {
+		return inputTok
+	}
+	var itemClass string
+	switch opType {
+	case backend.OperandString:
+		itemClass = "WFStringContentItem"
+	case backend.OperandNumber:
+		itemClass = "WFNumberContentItem"
+	case backend.OperandDate:
+		itemClass = "WFDateContentItem"
+	default:
+		return inputTok
+	}
+	cloned := &ir.AttachmentToken{
+		Type:            inputTok.Type,
+		OutputUUID:      inputTok.OutputUUID,
+		OutputName:      inputTok.OutputName,
+		Aggrandizements: make([]map[string]interface{}, len(inputTok.Aggrandizements), len(inputTok.Aggrandizements)+1),
+	}
+	copy(cloned.Aggrandizements, inputTok.Aggrandizements)
+	cloned.Aggrandizements = append(cloned.Aggrandizements, map[string]interface{}{
+		"Type":              "WFCoercionVariableAggrandizement",
+		"CoercionItemClass": itemClass,
+	})
+	return cloned
+}
+
+func conditionHelperStringArg(expr syntax.Expression, fnName string) (string, bool) {
+	call, ok := expr.(*syntax.CallExpr)
+	if !ok {
+		return "", false
+	}
+	id, ok := call.Callee.(*syntax.IdentExpr)
+	if !ok || id.Name != fnName {
+		return "", false
+	}
+	argExpr := call.PrimaryArg
+	if argExpr == nil && len(call.NamedArgs) == 1 {
+		argExpr = call.NamedArgs[0].Value
+	}
+	lit, ok := argExpr.(*syntax.LiteralExpr)
+	if !ok || (lit.Type != syntax.TokenString && lit.Type != syntax.TokenRawString && lit.Type != syntax.TokenNumber) {
+		return "", false
+	}
+	return lit.Value, true
+}
+
+func (l *Lowerer) lowerConditionOperand(expr syntax.Expression) (val any, isNumStr bool, enumVal string, hasEnum bool, err error) {
+	if ns, ok := conditionHelperStringArg(expr, "numeric"); ok {
+		return ns, true, "", false, nil
+	}
+	if es, ok := conditionHelperStringArg(expr, "condEnum"); ok {
+		return nil, false, es, true, nil
+	}
+	v, e := l.lowerExpression(expr)
+	return v, false, "", false, e
+}
+
+func (l *Lowerer) lowerConditionClause(expr syntax.Expression, allowUnaryAnyValue bool) (map[string]any, error) {
+	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
+		if err != nil {
+			return nil, err
+		}
+		return map[string]any{"WFCondition": code, "WFConditionalActionString": "0", "WFInput": map[string]any{"Type": "Variable", "Variable": input}}, nil
+	}
+	if unaryExpr, ok := expr.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
+		if binExpr, okB := unaryExpr.Operand.(*syntax.BinaryExpr); okB {
+			var negOp syntax.TokenType
+			var negCode int
+			isNegComp := true
+			switch binExpr.Op {
+			case syntax.TokenContains:
+				negCode = 999
+			case syntax.TokenEqual:
+				negCode = 5
+			case syntax.TokenNotEqual:
+				negCode = 4
+			case syntax.TokenGreater:
+				negCode = 1
+			case syntax.TokenGreaterEqual:
+				negCode = 0
+			case syntax.TokenLess:
+				negCode = 3
+			case syntax.TokenLessEqual:
+				negCode = 2
+			default:
+				isNegComp = false
+			}
+			_ = negOp
+			if isNegComp {
+				leftVal, err := l.lowerExpression(binExpr.Left)
+				if err != nil {
+					return nil, err
+				}
+				rightVal, isNumStr, enumVal, hasEnum, err := l.lowerConditionOperand(binExpr.Right)
+				if err != nil {
+					return nil, err
+				}
+				inputTok := l.materializeToAttachment(leftVal)
+				isDate := l.isDateComparison(binExpr.Op, binExpr.Left, binExpr.Right)
+				isNum := !isDate && l.isNumericComparison(binExpr.Op, binExpr.Left, binExpr.Right, isNumStr)
+				clauseOpType := backend.OperandString
+				if isDate {
+					clauseOpType = backend.OperandDate
+				} else if isNum {
+					clauseOpType = backend.OperandNumber
+				}
+				inputTok = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, clauseOpType)
+				tmpl := map[string]any{
+					"WFCondition": negCode,
+					"WFInput": map[string]any{
+						"Type":     "Variable",
+						"Variable": inputTok,
+					},
+				}
+				if hasEnum {
+					tmpl["WFEnumeration"] = enumVal
+				} else if isNumStr {
+					tmpl["WFNumberValue"] = rightVal
+				} else {
+					l.populateTemplateRHS(tmpl, rightVal, isDate, isNum, &negCode)
+					tmpl["WFCondition"] = negCode
+				}
+				return tmpl, nil
+			}
+		}
+		if !allowUnaryAnyValue {
+			return nil, fmt.Errorf("unsupported non-comparison unary clause in compound condition: %T", expr)
+		}
+		operandVal, err := l.lowerExpression(unaryExpr.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return map[string]any{
+			"WFCondition": 101,
+			"WFInput": map[string]any{
+				"Type":     "Variable",
+				"Variable": l.materializeToAttachment(operandVal),
+			},
+		}, nil
+	}
+
+	if call, ok := expr.(*syntax.CallExpr); ok {
+		if id, okID := call.Callee.(*syntax.IdentExpr); okID {
+			switch id.Name {
+			case "isToday", "isTrue", "isFalse":
+				argVal, err := l.lowerExpression(call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				cCode := 1002
+				if id.Name == "isTrue" {
+					cCode = 4
+				} else if id.Name == "isFalse" {
+					cCode = 5
+				}
+				return map[string]any{
+					"WFCondition": cCode,
+					"WFInput": map[string]any{
+						"Type":     "Variable",
+						"Variable": l.materializeToAttachment(argVal),
+					},
+				}, nil
+			case "isBetween", "between":
+				targetVal, err := l.lowerExpression(call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				if len(call.NamedArgs) >= 2 {
+					v1, _, _, _, err1 := l.lowerConditionOperand(call.NamedArgs[0].Value)
+					v2, _, _, _, err2 := l.lowerConditionOperand(call.NamedArgs[1].Value)
+					if err1 != nil {
+						return nil, err1
+					}
+					if err2 != nil {
+						return nil, err2
+					}
+					tmpl := map[string]any{
+						"WFCondition": 1003,
+						"WFInput": map[string]any{
+							"Type":     "Variable",
+							"Variable": l.materializeToAttachment(targetVal),
+						},
+					}
+					if l.isDateExpr(call.PrimaryArg) {
+						tmpl["WFDate"] = v1
+						tmpl["WFAnotherDate"] = v2
+					} else {
+						tmpl["WFNumberValue"] = v1
+						tmpl["WFAnotherNumber"] = v2
+					}
+					return tmpl, nil
+				}
+			}
+		}
+	}
+
+	if binExpr, ok := expr.(*syntax.BinaryExpr); ok {
+		var code int
+		switch binExpr.Op {
+		case syntax.TokenEqual:
+			code = 4
+		case syntax.TokenNotEqual:
+			code = 5
+		case syntax.TokenGreater:
+			code = 2
+		case syntax.TokenGreaterEqual:
+			code = 3
+		case syntax.TokenLess:
+			code = 0
+		case syntax.TokenLessEqual:
+			code = 1
+		case syntax.TokenContains:
+			code = 99
+		case syntax.TokenBeginsWith:
+			code = 8
+		case syntax.TokenEndsWith:
+			code = 9
+		default:
+			return nil, fmt.Errorf("unsupported operator in compound condition: %v", binExpr.Op)
+		}
+
+		if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
+			(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+			opStr := "=="
+			if binExpr.Op == syntax.TokenNotEqual {
+				opStr = "!="
+			}
+			return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+		}
+
+		leftVal, err := l.lowerExpression(binExpr.Left)
+		if err != nil {
+			return nil, err
+		}
+		rightVal, isNumStr, enumVal, hasEnum, err := l.lowerConditionOperand(binExpr.Right)
+		if err != nil {
+			return nil, err
+		}
+
+		inputTok := l.materializeToAttachment(leftVal)
+		isDate := l.isDateComparison(binExpr.Op, binExpr.Left, binExpr.Right)
+		isNum := !isDate && l.isNumericComparison(binExpr.Op, binExpr.Left, binExpr.Right, isNumStr)
+		clauseOpType := backend.OperandString
+		if isDate {
+			clauseOpType = backend.OperandDate
+		} else if isNum {
+			clauseOpType = backend.OperandNumber
+		}
+		inputTok = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, clauseOpType)
+		tmpl := map[string]any{
+			"WFCondition": code,
+			"WFInput": map[string]any{
+				"Type":     "Variable",
+				"Variable": inputTok,
+			},
+		}
+		if hasEnum {
+			tmpl["WFEnumeration"] = enumVal
+			return tmpl, nil
+		}
+		if isNumStr {
+			tmpl["WFNumberValue"] = rightVal
+			return tmpl, nil
+		}
+		l.populateTemplateRHS(tmpl, rightVal, isDate, isNum, &code)
+		tmpl["WFCondition"] = code
+		return tmpl, nil
+	}
+
+	if !allowUnaryAnyValue {
+		return nil, fmt.Errorf("unsupported expression in compound condition: %T", expr)
+	}
+	if bin, ok := expr.(*syntax.BinaryExpr); ok && (bin.Op == syntax.TokenAnd || bin.Op == syntax.TokenOr) {
+		return nil, fmt.Errorf("unsupported nested logical operator in compound condition: %v", bin.Op)
+	}
+	condVal, err := l.lowerExpression(expr)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{
+		"WFCondition": 100,
+		"WFInput": map[string]any{
+			"Type":     "Variable",
+			"Variable": l.materializeToAttachment(condVal),
+		},
+	}, nil
+}
+
+func (l *Lowerer) populateTemplateRHS(tmpl map[string]any, rightVal any, isDate, isNum bool, code *int) {
+	if isDate {
+		if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+			tmpl["WFDuration"] = rightVal
+			if *code == 2 {
+				*code = 1000
+			} else if *code == 0 {
+				*code = 1001
+			}
+		} else {
+			tmpl["WFDate"] = rightVal
+		}
+		return
+	}
+	switch v := rightVal.(type) {
+	case float64:
+		tmpl["WFNumberValue"] = v
+	case int, int64, int32:
+		tmpl["WFNumberValue"] = v
+	case bool:
+		bNum := 0
+		if v {
+			bNum = 1
+		}
+		tmpl["WFNumberValue"] = bNum
+	case string:
+		tmpl["WFConditionalActionString"] = v
+	case *ir.AttachmentToken:
+		if isNum {
+			tmpl["WFNumberValue"] = v
+		} else {
+			tmpl["WFConditionalActionString"] = map[string]any{
+				"Value": map[string]any{
+					"string": "\uFFFC",
+					"attachmentsByRange": map[string]any{
+						"{0, 1}": v,
+					},
+				},
+				"WFSerializationType": "WFTextTokenString",
+			}
+		}
+	case map[string]interface{}:
+		if v["WFSerializationType"] == "WFTextTokenString" {
+			tmpl["WFConditionalActionString"] = v
+		} else {
+			tmpl["WFNumberValue"] = v
+		}
+	default:
+		tmpl["WFNumberValue"] = v
+	}
+}
+
+func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
+	_, err := l.lowerIfWithOutput(stmt, false)
+	return err
+}
+
+func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.AttachmentToken, error) {
+	bindingName := l.detachBindingName()
+	groupUUID := l.GenerateUUID()
+
+	// Check if Condition is a compound BinaryExpr (&& or ||)
+	if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok && (binExpr.Op == syntax.TokenAnd || binExpr.Op == syntax.TokenOr) {
+		op := binExpr.Op
+		clauses := flattenCompoundCondition(stmt.Condition, op)
+		var templates []any
+		canUseWFConditions := l.nativePredicateClauses(clauses, stmt.Modern || l.hasImportProvenance)
+		for _, c := range clauses {
+			if !canUseWFConditions {
+				break
+			}
+			tmpl, err := l.lowerConditionClause(c, stmt.Modern || l.hasImportProvenance)
+			if err != nil {
+				canUseWFConditions = false
+				break
+			}
+			templates = append(templates, tmpl)
+		}
+		if canUseWFConditions && len(templates) > 0 {
+			prefix := 0
+			if op == syntax.TokenAnd {
+				prefix = 1
+			}
+			conditionsMap := map[string]any{
+				"Value": map[string]any{
+					"WFActionParameterFilterPrefix":    prefix,
+					"WFActionParameterFilterTemplates": templates,
+					"WFContentPredicateBoundedDate":    false,
+				},
+				"WFSerializationType": "WFContentPredicateTableTemplate",
+			}
+			spec := backend.ConditionSpec{
+				GroupingIdentifier: groupUUID,
+				IsLegacy:           !stmt.Modern,
+				Conditions:         conditionsMap,
+			}
+			node := &ir.NativeActionNode{
+				NodeID:             l.GenerateUUID(),
+				AppleIdentifier:    "is.workflow.actions.conditional",
+				GroupingIdentifier: groupUUID,
+				ControlFlowMode:    0,
+				Parameters:         backend.BuildConditionalStart(spec),
+			}
+			l.emitAction(node)
+
+			// Then block statements
+			if err := l.lowerLexicalBlock(stmt.ThenBlock); err != nil {
+				return nil, err
+			}
+
+			// Else block
+			if stmt.ElseBlock != nil {
+				l.emitIfElse(groupUUID)
+				if err := l.lowerStatement(stmt.ElseBlock); err != nil {
+					return nil, err
+				}
+			}
+
+			// End block
+			endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+			endNode := l.emitIfEnd(groupUUID, endUUID, "")
+			if withOutput {
+				return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endNode.OutputUUID}, nil
+			}
+			return nil, nil
+		}
+	}
+
+	var input any
+	var condCode int = 4
+	var compareVal any = 1.0
+	var compareVal2 any
+	var enumVal any
+	var opType backend.ConditionOperandType = backend.OperandDefault
+
+	// Compiler-owned optional presence has its own exact Text comparison.
+	presenceInput, presenceCode, presenceCondition, presenceErr := l.lowerOptionalNoneCondition(stmt.Condition)
+	if presenceErr != nil {
+		return nil, presenceErr
+	}
+	if presenceCondition {
+		input, condCode, compareVal, opType = presenceInput, presenceCode, "0", backend.OperandString
+	} else if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
+		var code int
+		isComp := true
+		switch binExpr.Op {
+		case syntax.TokenEqual:
+			code = 4 // Is
+		case syntax.TokenNotEqual:
+			code = 5 // Not
+		case syntax.TokenGreater:
+			code = 2 // Greater Than
+		case syntax.TokenGreaterEqual:
+			code = 3 // Greater Than Or Equal
+		case syntax.TokenLess:
+			code = 0 // Less Than
+		case syntax.TokenLessEqual:
+			code = 1 // Less Than Or Equal
+		case syntax.TokenContains:
+			code = 99 // Contains
+		case syntax.TokenBeginsWith:
+			code = 8 // Begins With
+		case syntax.TokenEndsWith:
+			code = 9 // Ends With
+		default:
+			isComp = false
+		}
+
+		if isComp {
+			if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
+				(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+				opStr := "=="
+				if binExpr.Op == syntax.TokenNotEqual {
+					opStr = "!="
+				}
+				return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+			}
+
+			leftVal, err := l.lowerExpression(binExpr.Left)
+			if err != nil {
+				return nil, err
+			}
+			rightVal, isNumStr, ev, hasEv, err := l.lowerConditionOperand(binExpr.Right)
+			if err != nil {
+				return nil, err
+			}
+
+			inputTok := l.materializeToAttachment(leftVal)
+			condCode = code
+			if hasEv {
+				compareVal = nil
+				enumVal = ev
+			} else {
+				compareVal = rightVal
+			}
+
+			if l.isDateComparison(binExpr.Op, binExpr.Left, binExpr.Right) {
+				if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+					opType = backend.OperandQuantity
+					if condCode == 2 { // GreaterThan
+						condCode = 1000
+					} else if condCode == 0 { // LessThan
+						condCode = 1001
+					}
+				} else {
+					opType = backend.OperandDate
+				}
+			} else if l.isNumericComparison(binExpr.Op, binExpr.Left, binExpr.Right, isNumStr) {
+				opType = backend.OperandNumber
+			} else {
+				opType = backend.OperandString
+			}
+			input = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, opType)
+		} else {
+			condVal, err := l.lowerExpression(stmt.Condition)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(condVal)
+			condCode = 100
+			compareVal = nil
+		}
+	} else if call, ok := stmt.Condition.(*syntax.CallExpr); ok {
+		if id, ok := call.Callee.(*syntax.IdentExpr); ok && id.Name == "isToday" {
+			argVal, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(argVal)
+			condCode = 1002
+			compareVal = nil
+		} else if id, ok := call.Callee.(*syntax.IdentExpr); ok && (id.Name == "isTrue" || id.Name == "isFalse") {
+			argVal, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(argVal)
+			if id.Name == "isTrue" {
+				condCode = 4
+			} else {
+				condCode = 5
+			}
+			compareVal = nil
+			opType = backend.OperandDefault
+		} else if id, ok := call.Callee.(*syntax.IdentExpr); ok && (id.Name == "isBetween" || id.Name == "between") {
+			targetVal, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(targetVal)
+			condCode = 1003
+			if len(call.NamedArgs) >= 2 {
+				val1, _, _, _, err1 := l.lowerConditionOperand(call.NamedArgs[0].Value)
+				val2, _, _, _, err2 := l.lowerConditionOperand(call.NamedArgs[1].Value)
+				if err1 == nil && err2 == nil {
+					compareVal = val1
+					compareVal2 = val2
+				}
+			}
+			if l.isDateExpr(call.PrimaryArg) {
+				opType = backend.OperandDate
+			} else {
+				opType = backend.OperandNumber
+			}
+		} else {
+			condVal, err := l.lowerExpression(stmt.Condition)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(condVal)
+			condCode = 100 // Has any value
+			compareVal = nil
+		}
+	} else if unaryExpr, ok := stmt.Condition.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
+		if binExpr, ok := unaryExpr.Operand.(*syntax.BinaryExpr); ok {
+			var code int
+			isComp := true
+			switch binExpr.Op {
+			case syntax.TokenContains:
+				code = 999 // Does Not Contain
+			case syntax.TokenEqual:
+				code = 5 // Not
+			case syntax.TokenNotEqual:
+				code = 4 // Is
+			case syntax.TokenGreater:
+				code = 1 // Less Than Or Equal
+			case syntax.TokenGreaterEqual:
+				code = 0 // Less Than
+			case syntax.TokenLess:
+				code = 3 // Greater Than Or Equal
+			case syntax.TokenLessEqual:
+				code = 2 // Greater Than
+			default:
+				isComp = false
+			}
+			if isComp {
+				if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
+					(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+					opStr := "=="
+					if binExpr.Op == syntax.TokenNotEqual {
+						opStr = "!="
+					}
+					return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+				}
+
+				leftVal, err := l.lowerExpression(binExpr.Left)
+				if err != nil {
+					return nil, err
+				}
+				rightVal, isNumStr, ev, hasEv, err := l.lowerConditionOperand(binExpr.Right)
+				if err != nil {
+					return nil, err
+				}
+				inputTok := l.materializeToAttachment(leftVal)
+				condCode = code
+				if hasEv {
+					compareVal = nil
+					enumVal = ev
+				} else {
+					compareVal = rightVal
+				}
+				if l.isDateComparison(binExpr.Op, binExpr.Left, binExpr.Right) {
+					opType = backend.OperandDate
+				} else if l.isNumericComparison(binExpr.Op, binExpr.Left, binExpr.Right, isNumStr) {
+					opType = backend.OperandNumber
+				} else {
+					opType = backend.OperandString
+				}
+				input = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, opType)
+			} else {
+				operandVal, err := l.lowerExpression(unaryExpr.Operand)
+				if err != nil {
+					return nil, err
+				}
+				input = l.materializeToAttachment(operandVal)
+				condCode = 101 // Does not have any value (Empty)
+				compareVal = nil
+			}
+		} else {
+			operandVal, err := l.lowerExpression(unaryExpr.Operand)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(operandVal)
+			condCode = 101 // Does not have any value (Empty)
+			compareVal = nil
+		}
+	} else {
+		condVal, err := l.lowerExpression(stmt.Condition)
+		if err != nil {
+			return nil, err
+		}
+		input = l.materializeToAttachment(condVal)
+		condCode = 100 // Has any value
+		compareVal = nil
+	}
+
+	// False is still a present native value. Authored Bool conditions must
+	// compare its value; imported presence predicates keep their exact wire.
+	if !l.importedPresenceOperand(stmt.Condition) && l.isBooleanCondition(stmt.Condition) {
+		if condCode == 100 || condCode == 101 {
+			if condCode == 100 {
+				condCode = 4
+			} else {
+				condCode = 5
+			}
+			compareVal = 1.0
+			opType = backend.OperandNumber
+		}
+	}
+
+	// 1. Begin block (Mode 0)
+	if enumVal != nil {
+		l.emitConditionalStartSpec(backend.ConditionSpec{
+			GroupingIdentifier: groupUUID,
+			IsLegacy:           !stmt.Modern,
+			Input:              input,
+			ConditionCode:      condCode,
+			Enumeration:        enumVal,
+		})
+	} else {
+		l.emitIfStartTyped(groupUUID, input, condCode, compareVal, compareVal2, opType, !stmt.Modern)
+	}
+
+	// 2. Then block statements
+	if err := l.lowerLexicalBlock(stmt.ThenBlock); err != nil {
+		return nil, err
+	}
+
+	// 3. Else block (Mode 1) if present
+	if stmt.ElseBlock != nil {
+		l.emitIfElse(groupUUID)
+
+		if err := l.lowerStatement(stmt.ElseBlock); err != nil {
+			return nil, err
+		}
+	}
+
+	// 4. End block (Mode 2)
+	endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+	endNode := l.emitIfEnd(groupUUID, endUUID, "")
+	if withOutput {
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endNode.OutputUUID}, nil
+	}
+	return nil, nil
+}
+
+func (l *Lowerer) lowerRepeat(stmt *syntax.RepeatStmt) error {
+	_, err := l.lowerRepeatWithOutput(stmt, false)
+	return err
+}
+
+func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool) (*ir.AttachmentToken, error) {
+	bindingName := l.detachBindingName()
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
+
+	groupUUID := l.GenerateUUID()
+	var countVal any
+	if stmt.Count != nil {
+		if lit, ok := stmt.Count.(*syntax.LiteralExpr); !ok || lit.Type != syntax.TokenNone {
+			var err error
+			countVal, err = l.lowerExpression(stmt.Count)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	l.emitRepeatCountStart(groupUUID, countVal)
+	restoreScope := l.beginLexicalScope()
+	defer restoreScope()
+
+	repeatIndexName := "Repeat Index"
+	if l.repeatDepth > 1 {
+		repeatIndexName = fmt.Sprintf("Repeat Index %d", l.repeatDepth)
+	}
+
+	var prevBinding BindingRef
+	var hadBinding bool
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
+		prevBinding, hadBinding = l.bindings[stmt.IndexVar]
+		nativeName := l.lexicalLoopVariableName(stmt.IndexVar)
+		setVarNode := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
+			Parameters: map[string]interface{}{
+				"WFVariableName": nativeName,
+				"WFInput": &ir.AttachmentToken{
+					Type:       "Variable",
+					OutputName: repeatIndexName,
+				},
+			},
+		}
+		l.emitAction(setVarNode)
+		l.bindings[stmt.IndexVar] = BindingRef{
+			IsVariable:   true,
+			VariableName: nativeName,
+		}
+	}
+
+	if err := l.lowerLexicalBlock(stmt.BodyBlock); err != nil {
+		return nil, err
+	}
+
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
+		if hadBinding {
+			l.bindings[stmt.IndexVar] = prevBinding
+		} else {
+			delete(l.bindings, stmt.IndexVar)
+		}
+	}
+
+	endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+	l.emitLoopEnd(groupUUID, endUUID, false)
+	if withOutput {
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
+	}
+	return nil, nil
+}
+
+func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
+	_, err := l.lowerForWithOutput(stmt, false)
+	return err
+}
+
+func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir.AttachmentToken, error) {
+	bindingName := l.detachBindingName()
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
+
+	groupUUID := l.GenerateUUID()
+	iterVal, err := l.lowerExpression(stmt.Iterable)
+	if err != nil {
+		return nil, err
+	}
+
+	iterToken := l.materializeToAttachment(iterVal)
+
+	l.emitRepeatEachStart(groupUUID, iterToken)
+	restoreScope := l.beginLexicalScope()
+	defer restoreScope()
+
+	repeatItemName := "Repeat Item"
+	repeatIndexName := "Repeat Index"
+	if l.repeatDepth > 1 {
+		repeatItemName = fmt.Sprintf("Repeat Item %d", l.repeatDepth)
+		repeatIndexName = fmt.Sprintf("Repeat Index %d", l.repeatDepth)
+	}
+
+	var prevItemBinding BindingRef
+	var hadItemBinding bool
+	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
+		prevItemBinding, hadItemBinding = l.bindings[stmt.ItemVar]
+		nativeName := l.lexicalLoopVariableName(stmt.ItemVar)
+		setVarNode := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
+			Parameters: map[string]interface{}{
+				"WFVariableName": nativeName,
+				"WFInput": &ir.AttachmentToken{
+					Type:       "Variable",
+					OutputName: repeatItemName,
+				},
+			},
+		}
+		l.emitAction(setVarNode)
+		l.bindings[stmt.ItemVar] = BindingRef{
+			IsVariable:   true,
+			VariableName: nativeName,
+		}
+	}
+
+	var prevIndexBinding BindingRef
+	var hadIndexBinding bool
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
+		prevIndexBinding, hadIndexBinding = l.bindings[stmt.IndexVar]
+		nativeName := l.lexicalLoopVariableName(stmt.IndexVar)
+		setVarNode := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
+			Parameters: map[string]interface{}{
+				"WFVariableName": nativeName,
+				"WFInput": &ir.AttachmentToken{
+					Type:       "Variable",
+					OutputName: repeatIndexName,
+				},
+			},
+		}
+		l.emitAction(setVarNode)
+		l.bindings[stmt.IndexVar] = BindingRef{
+			IsVariable:   true,
+			VariableName: nativeName,
+		}
+	}
+
+	if err := l.lowerLexicalBlock(stmt.BodyBlock); err != nil {
+		return nil, err
+	}
+
+	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
+		if hadItemBinding {
+			l.bindings[stmt.ItemVar] = prevItemBinding
+		} else {
+			delete(l.bindings, stmt.ItemVar)
+		}
+	}
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
+		if hadIndexBinding {
+			l.bindings[stmt.IndexVar] = prevIndexBinding
+		} else {
+			delete(l.bindings, stmt.IndexVar)
+		}
+	}
+
+	endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+	l.emitLoopEnd(groupUUID, endUUID, true)
+	if withOutput {
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
+	}
+	return nil, nil
+}
+
+func (l *Lowerer) lowerMenu(stmt *syntax.MenuStmt) error {
+	_, err := l.lowerMenuWithOutput(stmt, false)
+	return err
+}
+
+func (l *Lowerer) lowerMenuWithOutput(stmt *syntax.MenuStmt, withOutput bool) (*ir.AttachmentToken, error) {
+	bindingName := l.detachBindingName()
+	groupUUID := l.GenerateUUID()
+	var promptVal any
+	if stmt.Prompt != nil {
+		var err error
+		promptVal, err = l.lowerExpression(stmt.Prompt)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if stmt.HasEmptyPrompt {
+		promptVal = ""
+	}
+
+	useFull := stmt.HasEmptyPrompt || stmt.LegacyCancel || stmt.Prompt == nil
+	preservePlain := false
+	for _, c := range stmt.Cases {
+		if c.Plain || c.Value != nil || c.HasTitle {
+			useFull = true
+		}
+		if c.Plain {
+			preservePlain = true
+		}
+	}
+
+	if !useFull {
+		menuItems := make([]string, len(stmt.Cases))
+		for i, c := range stmt.Cases {
+			menuItems[i] = c.Label
+		}
+		l.emitMenuStart(groupUUID, promptVal, menuItems)
+		for _, c := range stmt.Cases {
+			l.emitMenuCase(groupUUID, c.Label)
+			if err := l.lowerLexicalBlock(c.BodyBlock); err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		items := make([]any, len(stmt.Cases))
+		type loweredMenuCase struct {
+			title       string
+			attrTitle   any
+			includeAttr bool
+			body        *syntax.BlockStmt
+		}
+		caseSpecs := make([]loweredMenuCase, len(stmt.Cases))
+		for i, c := range stmt.Cases {
+			if c.Value != nil {
+				val, err := l.lowerExpression(c.Value)
+				if err != nil {
+					return nil, err
+				}
+				var menuVal any = val
+				var attrTitle any = val
+				switch v := val.(type) {
+				case *ir.AttachmentToken:
+					tok := map[string]any{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]any{
+							"{0, 1}": v,
+						},
+					}
+					menuVal = map[string]any{
+						"WFSerializationType": "WFTextTokenString",
+						"Value":               tok,
+					}
+					attrTitle = tok
+				case map[string]any:
+					if v["WFSerializationType"] == "WFTextTokenString" {
+						menuVal = v
+						attrTitle = v["Value"]
+					}
+				}
+				title := c.Label
+				if c.HasTitle {
+					title = c.Title
+				} else if title == "" {
+					switch a := attrTitle.(type) {
+					case string:
+						title = a
+					case map[string]any:
+						if s, ok := a["string"].(string); ok {
+							title = s
+						}
+					}
+				}
+				items[i] = menuVal
+				caseSpecs[i] = loweredMenuCase{
+					title:       title,
+					attrTitle:   attrTitle,
+					includeAttr: !c.Plain,
+					body:        c.BodyBlock,
+				}
+			} else if c.Plain {
+				title := c.Label
+				if c.HasTitle {
+					title = c.Title
+				}
+				items[i] = title
+				caseSpecs[i] = loweredMenuCase{
+					title:       title,
+					attrTitle:   nil,
+					includeAttr: false,
+					body:        c.BodyBlock,
+				}
+			} else {
+				title := c.Label
+				if c.HasTitle {
+					title = c.Title
+				}
+				items[i] = c.Label
+				caseSpecs[i] = loweredMenuCase{
+					title:       title,
+					attrTitle:   c.Label,
+					includeAttr: true,
+					body:        c.BodyBlock,
+				}
+			}
+		}
+
+		l.emitMenuStartFull(backend.MenuStartOptions{
+			GroupingID:               groupUUID,
+			Prompt:                   promptVal,
+			IncludeEmptyPrompt:       stmt.HasEmptyPrompt,
+			Items:                    items,
+			PreservePlainStringItems: preservePlain,
+			LegacyCancelBehavior:     stmt.LegacyCancel,
+		})
+		for _, cs := range caseSpecs {
+			l.emitMenuCaseFull(groupUUID, cs.title, cs.attrTitle, cs.includeAttr)
+			if err := l.lowerLexicalBlock(cs.body); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+	l.emitMenuEnd(groupUUID, endUUID)
+	if withOutput {
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
+	}
+	return nil, nil
+}
+
+func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
+	if expr == nil {
+		return nil, nil
+	}
+	if value, resolved := l.enumValues[expr]; resolved {
+		return value, nil
+	}
+	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
+		if err != nil {
+			return nil, err
+		}
+		return l.materializeOptionalPredicate(input, code), nil
+	}
+
+	switch e := expr.(type) {
+	case *syntax.IfStmt:
+		return l.lowerIfWithOutput(e, true)
+	case *syntax.RepeatStmt:
+		return l.lowerRepeatWithOutput(e, true)
+	case *syntax.ForStmt:
+		return l.lowerForWithOutput(e, true)
+	case *syntax.MenuStmt:
+		return l.lowerMenuWithOutput(e, true)
+
+	case *syntax.LiteralExpr:
+		switch e.Type {
+		case syntax.TokenString, syntax.TokenRawString:
+			return e.Value, nil
+		case syntax.TokenNumber:
+			if !strings.ContainsAny(e.Value, ".eE") {
+				if i, err := strconv.ParseInt(e.Value, 10, 64); err == nil {
+					return i, nil
+				}
+				if u, err := strconv.ParseUint(e.Value, 10, 64); err == nil {
+					return u, nil
+				}
+			}
+			if f, err := strconv.ParseFloat(e.Value, 64); err == nil {
+				return f, nil
+			}
+			var n float64
+			fmt.Sscanf(e.Value, "%f", &n)
+			return n, nil
+		case syntax.TokenTrue:
+			return true, nil
+		case syntax.TokenFalse:
+			return false, nil
+		case syntax.TokenNone:
+			return nil, nil
+		case syntax.TokenNull:
+			return nil, fmt.Errorf("%s at %s: authored JSON null has no supported native value encoding", analysis.CodeNativeJSONNull, e.Span)
+		default:
+			return e.Value, nil
+		}
+
+	case *syntax.IdentExpr:
+		if ref, found := l.bindings[e.Name]; found {
+			if ref.IsVariable {
+				tok := &ir.AttachmentToken{
+					Type:       "Variable",
+					OutputName: ref.VariableName,
+				}
+				if len(ref.Aggrandizements) > 0 {
+					tok.Aggrandizements = make([]map[string]interface{}, len(ref.Aggrandizements))
+					copy(tok.Aggrandizements, ref.Aggrandizements)
+				}
+				return tok, nil
+			}
+			tokType := ref.TokenType
+			if tokType == "" {
+				tokType = "ActionOutput"
+			}
+			tok := &ir.AttachmentToken{
+				Type:       tokType,
+				OutputUUID: ref.OutputUUID,
+				OutputName: ref.OutputName,
+			}
+			if len(ref.Aggrandizements) > 0 {
+				tok.Aggrandizements = make([]map[string]interface{}, len(ref.Aggrandizements))
+				copy(tok.Aggrandizements, ref.Aggrandizements)
+			}
+			return tok, nil
+		}
+		if q, isQ := l.setupQuestions[e.Name]; isQ {
+			return q.DefaultValue, nil
+		}
+		// Built-in / system checks
+		if e.Name == "clipboard" || e.Name == "Clipboard" {
+			return &ir.AttachmentToken{Type: "Clipboard"}, nil
+		}
+		if e.Name == "CurrentDate" {
+			return &ir.AttachmentToken{Type: "CurrentDate"}, nil
+		}
+		if e.Name == "Device" {
+			return &ir.AttachmentToken{Type: "DeviceDetails"}, nil
+		}
+		if e.Name == "RepeatIndex" {
+			return &ir.AttachmentToken{Type: "Variable", OutputName: "Repeat Index"}, nil
+		}
+		if e.Name == "RepeatItem" {
+			return &ir.AttachmentToken{Type: "Variable", OutputName: "Repeat Item"}, nil
+		}
+		if strings.HasPrefix(e.Name, "RepeatIndex") {
+			if n, err := strconv.Atoi(strings.TrimPrefix(e.Name, "RepeatIndex")); err == nil && n >= 2 && n <= 10 {
+				return &ir.AttachmentToken{Type: "Variable", OutputName: fmt.Sprintf("Repeat Index %d", n)}, nil
+			}
+		}
+		if strings.HasPrefix(e.Name, "RepeatItem") {
+			if n, err := strconv.Atoi(strings.TrimPrefix(e.Name, "RepeatItem")); err == nil && n >= 2 && n <= 10 {
+				return &ir.AttachmentToken{Type: "Variable", OutputName: fmt.Sprintf("Repeat Item %d", n)}, nil
+			}
+		}
+		if e.Name == "ShortcutInput" {
+			l.workflow.HasShortcutInputVariables = true
+			if l.session != nil {
+				l.session.SetMetadata("hasShortcutInputVariables", true)
+			}
+			if len(l.functions) > 0 {
+				return &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"}, nil
+			}
+			return &ir.AttachmentToken{Type: "ExtensionInput", OutputName: "ShortcutInput"}, nil
+		}
+		if e.Name == "Ask" {
+			return &ir.AttachmentToken{Type: "Ask"}, nil
+		}
+		return e.Name, nil
+
+	case *syntax.FStringExpr:
+		return l.lowerFString(e)
+
+	case *syntax.CallExpr:
+		if isNativeConditionPredicate(e) {
+			return l.lowerNativePredicateValue(e)
+		}
+		return l.lowerCall(e)
+
+	case *syntax.ListExpr:
+		return l.lowerListExpression(e, true)
+
+	case *syntax.MapExpr:
+		dict := make(map[string]interface{})
+		for _, entry := range e.Entries {
+			kVal, err := l.lowerExpression(entry.Key)
+			if err != nil {
+				return nil, err
+			}
+			var vVal interface{}
+			if list, ok := entry.Value.(*syntax.ListExpr); ok {
+				// A Dictionary array field uses inline data, not native List rows.
+				vVal, err = l.lowerListExpression(list, false)
+			} else {
+				vVal, err = l.lowerExpression(entry.Value)
+			}
+			if err != nil {
+				return nil, err
+			}
+			dict[fmt.Sprint(kVal)] = vVal
+		}
+		return dict, nil
+
+	case *syntax.UnaryExpr:
+		operand, err := l.lowerExpression(e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		switch e.Op {
+		case syntax.TokenBang:
+			if b, ok := operand.(bool); ok {
+				return !b, nil
+			}
+			groupUUID := l.GenerateUUID()
+			uuid := l.GenerateUUID()
+			l.emitIfStart(groupUUID, operand, 4, 1.0, true)
+			fNode := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.number",
+				Parameters:      map[string]interface{}{"WFNumberActionNumber": 0.0},
+			}
+			l.emitAction(fNode)
+			l.emitIfElse(groupUUID)
+			tNode := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.number",
+				Parameters:      map[string]interface{}{"WFNumberActionNumber": 1.0},
+			}
+			l.emitAction(tNode)
+			l.emitIfEnd(groupUUID, uuid, "")
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+
+		case syntax.TokenMinus:
+			// Integer literals now retain their exact signed/unsigned width.
+			// Fold scalar negation before the existing runtime Math fallback.
+			integerOperand := e.Operand
+			for {
+				positive, ok := integerOperand.(*syntax.UnaryExpr)
+				if !ok || positive.Op != syntax.TokenPlus {
+					break
+				}
+				integerOperand = positive.Operand
+			}
+			if literal, ok := integerOperand.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNumber && !strings.ContainsAny(literal.Value, ".eE") {
+				if _, err := strconv.ParseUint(literal.Value, 10, 64); err != nil {
+					return nil, fmt.Errorf("negative integer literal exceeds signed 64-bit range")
+				}
+			}
+			switch n := operand.(type) {
+			case int64:
+				if n == -1<<63 {
+					return uint64(1) << 63, nil
+				}
+				return -n, nil
+			case uint64:
+				if n > uint64(1)<<63 {
+					return nil, fmt.Errorf("negative integer literal exceeds signed 64-bit range")
+				}
+				if n == uint64(1)<<63 {
+					return int64(-1 << 63), nil
+				}
+				return -int64(n), nil
+			case float64:
+				return -n, nil
+			}
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.math",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFMathOperation": "-",
+					"WFInput":         0.0,
+					"WFMathOperand":   operand,
+				},
+			}
+			l.emitAction(node)
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+
+		case syntax.TokenPlus:
+			return operand, nil
+		}
+
+	case *syntax.IndexExpr:
+		targetVal, err := l.lowerExpression(e.Target)
+		if err != nil {
+			return nil, err
+		}
+		indexVal, err := l.lowerExpression(e.Index)
+		if err != nil {
+			return nil, err
+		}
+		var targetType types.Type
+		if l.exprTypes != nil {
+			targetType = l.exprTypes[e.Target]
+		}
+		var idxType types.Type
+		if l.exprTypes != nil {
+			idxType = l.exprTypes[e.Index]
+		}
+
+		isList := false
+		if targetType != nil && targetType.Kind() == types.KindList {
+			isList = true
+		}
+		if _, ok := e.Target.(*syntax.ListExpr); ok {
+			isList = true
+		}
+
+		isMap := false
+		if !isList {
+			if targetType != nil && (targetType.Kind() == types.KindMap || targetType.Kind() == types.KindRecord) {
+				isMap = true
+			} else if _, ok := e.Target.(*syntax.MapExpr); ok {
+				isMap = true
+			} else if idxType != nil && idxType.AssignableTo(types.Text) && !idxType.AssignableTo(types.Number) {
+				isMap = true
+			} else if _, ok := indexVal.(string); ok {
+				isMap = true
+			}
+		}
+
+		if isMap {
+			if strKey, ok := indexVal.(string); ok {
+				if strKey == "" {
+					return nil, fmt.Errorf("empty dictionary key is not allowed")
+				}
+				if tok, ok := targetVal.(*ir.AttachmentToken); ok {
+					newTok := &ir.AttachmentToken{
+						Type:            tok.Type,
+						OutputUUID:      tok.OutputUUID,
+						OutputName:      tok.OutputName,
+						Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+					}
+					copy(newTok.Aggrandizements, tok.Aggrandizements)
+					isCoercedPropertyTarget := false
+					if len(newTok.Aggrandizements) > 0 {
+						last := newTok.Aggrandizements[len(newTok.Aggrandizements)-1]
+						if last["Type"] == "WFCoercionVariableAggrandizement" && last["CoercionItemClass"] != "WFDictionaryContentItem" {
+							isCoercedPropertyTarget = true
+						}
+					} else if targetType != nil &&
+						targetType.Kind() != types.KindMap &&
+						targetType.Kind() != types.KindRecord &&
+						targetType.Kind() != types.KindUnknown &&
+						targetType.Kind() != types.KindAnyContent &&
+						targetType.Kind() != types.KindList {
+						isCoercedPropertyTarget = true
+					}
+					if tok.Type == "DeviceDetails" {
+						propName := strKey
+						switch strings.ToLower(strKey) {
+						case "os":
+							propName = "OS"
+						case "system version":
+							propName = "System Version"
+						case "name", "device name":
+							propName = "Device Name"
+						case "model", "device model":
+							propName = "Device Model"
+						case "screen width":
+							propName = "Screen Width"
+						case "screen height":
+							propName = "Screen Height"
+						case "volume", "current volume":
+							propName = "Current Volume"
+						case "brightness", "current brightness":
+							propName = "Current Brightness"
+						case "appearance", "current appearance":
+							propName = "Current Appearance"
+						}
+						newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+							"Type":         "WFPropertyVariableAggrandizement",
+							"PropertyName": propName,
+						})
+					} else if isCoercedPropertyTarget {
+						newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+							"Type":         "WFPropertyVariableAggrandizement",
+							"PropertyName": strKey,
+						})
+					} else {
+						newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+							"Type":          "WFDictionaryValueVariableAggrandizement",
+							"DictionaryKey": strKey,
+						})
+					}
+					return newTok, nil
+				}
+				targetInput := l.materializeToAttachment(targetVal)
+				uuid := l.GenerateUUID()
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.getvalueforkey",
+					OutputUUID:      uuid,
+					Parameters: map[string]interface{}{
+						"WFInput":                  targetInput,
+						"WFDictionaryKey":          strKey,
+						"WFGetDictionaryValueType": "Value",
+					},
+				}
+				l.emitAction(node)
+				return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+			}
+
+			// Dynamic map key: wrap in WFTextTokenString
+			var keyParam interface{}
+			if tok, ok := indexVal.(*ir.AttachmentToken); ok {
+				keyParam = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]interface{}{
+							"{0, 1}": tok,
+						},
+					},
+				}
+			} else if m, ok := indexVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFTextTokenString" {
+				keyParam = m
+			} else {
+				tok := l.materializeToAttachment(indexVal)
+				keyParam = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]interface{}{
+							"{0, 1}": tok,
+						},
+					},
+				}
+			}
+
+			targetInput := l.materializeToAttachment(targetVal)
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getvalueforkey",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFInput":                  targetInput,
+					"WFDictionaryKey":          keyParam,
+					"WFGetDictionaryValueType": "Value",
+				},
+			}
+			l.emitAction(node)
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+		}
+
+		if n, ok := indexVal.(float64); ok {
+			// Safe 0-based indexing: negative or non-integer index produces nothing without unsafe native lookup
+			if n < 0 || n != math.Trunc(n) {
+				uuid := l.GenerateUUID()
+				l.emitAction(&ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.nothing",
+					OutputUUID:      uuid,
+					Parameters:      map[string]interface{}{},
+				})
+				return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+			}
+			targetTok := l.materializeToAttachment(targetVal)
+			oneBased := n + 1.0
+			countUUID := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          countUUID,
+				AppleIdentifier: "is.workflow.actions.count",
+				OutputUUID:      countUUID,
+				Parameters: map[string]interface{}{
+					"Input":       targetTok,
+					"WFCountType": "Items",
+				},
+			})
+
+			groupUUID := l.GenerateUUID()
+			endUUID := l.GenerateUUID()
+			l.emitIfStart(groupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: countUUID}, 3, oneBased, true)
+
+			getUUID := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          getUUID,
+				AppleIdentifier: "is.workflow.actions.getitemfromlist",
+				OutputUUID:      getUUID,
+				Parameters: map[string]interface{}{
+					"WFInput":         targetTok,
+					"WFItemSpecifier": "Item At Index",
+					"WFItemIndex":     oneBased,
+				},
+			})
+
+			l.emitIfElse(groupUUID)
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.nothing",
+				Parameters:      map[string]interface{}{},
+			})
+
+			l.emitIfEnd(groupUUID, endUUID, "")
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
+		} else {
+			// Dynamic index for List: require an integer, then guard 1 <= idx+1 <= count(list).
+			targetTok := l.materializeToAttachment(targetVal)
+			integralGroup, integralEnd := l.beginIntegralIndexGuard(indexVal)
+			mathUUID := l.GenerateUUID()
+			mathNode := &ir.NativeActionNode{
+				NodeID:          mathUUID,
+				AppleIdentifier: "is.workflow.actions.math",
+				OutputUUID:      mathUUID,
+				Parameters: map[string]interface{}{
+					"WFMathOperation": "+",
+					"WFInput":         indexVal,
+					"WFMathOperand":   1.0,
+				},
+			}
+			l.emitAction(mathNode)
+			oneBasedTok := &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: mathUUID}
+
+			countUUID := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          countUUID,
+				AppleIdentifier: "is.workflow.actions.count",
+				OutputUUID:      countUUID,
+				Parameters: map[string]interface{}{
+					"Input":       targetTok,
+					"WFCountType": "Items",
+				},
+			})
+			countTok := &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: countUUID}
+
+			diffUUID := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          diffUUID,
+				AppleIdentifier: "is.workflow.actions.math",
+				OutputUUID:      diffUUID,
+				Parameters: map[string]interface{}{
+					"WFMathOperation": "-",
+					"WFInput":         countTok,
+					"WFMathOperand":   oneBasedTok,
+				},
+			})
+			diffTok := &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: diffUUID}
+
+			outerGroup := l.GenerateUUID()
+			outerEndUUID := l.GenerateUUID()
+			l.emitIfStart(outerGroup, oneBasedTok, 3, 1.0, true)
+
+			innerGroup := l.GenerateUUID()
+			innerEndUUID := l.GenerateUUID()
+			l.emitIfStart(innerGroup, diffTok, 3, 0.0, true)
+
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getitemfromlist",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFInput":         targetTok,
+					"WFItemSpecifier": "Item At Index",
+					"WFItemIndex":     oneBasedTok,
+				},
+			}
+			l.emitAction(node)
+
+			l.emitIfElse(innerGroup)
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.nothing",
+				Parameters:      map[string]interface{}{},
+			})
+			l.emitIfEnd(innerGroup, innerEndUUID, "")
+
+			l.emitIfElse(outerGroup)
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.nothing",
+				Parameters:      map[string]interface{}{},
+			})
+			l.emitIfEnd(outerGroup, outerEndUUID, "")
+			resultUUID := l.endIntegralIndexGuard(integralGroup, integralEnd, outerEndUUID)
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: resultUUID}, nil
+		}
+
+	case *syntax.EnumMemberExpr:
+		if value, found, err := l.qualifiedEnumValue(e.TypeName, e.Member); found {
+			return value, err
+		}
+		if e.TypeName != "" {
+			return l.lowerExpression(&syntax.MemberExpr{
+				Span:     e.Span,
+				Target:   &syntax.IdentExpr{Span: e.Span, Name: e.TypeName},
+				Property: e.Member,
+			})
+		}
+		return nil, fmt.Errorf("unknown enum %q", e.TypeName)
+
+	case *syntax.MemberExpr:
+		if targetIdent, ok := e.Target.(*syntax.IdentExpr); ok {
+			if value, found, err := l.qualifiedEnumValue(targetIdent.Name, e.Property); found {
+				return value, err
+			}
+			if targetIdent.Name == "system" {
+				switch e.Property {
+				case "input":
+					if len(l.functions) > 0 {
+						return &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"}, nil
+					}
+					return &ir.AttachmentToken{Type: "ExtensionInput", OutputName: "ShortcutInput"}, nil
+				case "clipboard":
+					return &ir.AttachmentToken{Type: "Clipboard"}, nil
+				}
+			}
+		}
+		targetVal, err := l.lowerExpression(e.Target)
+		if err != nil {
+			return nil, err
+		}
+		if tok, ok := targetVal.(*ir.AttachmentToken); ok {
+			newTok := &ir.AttachmentToken{
+				Type:            tok.Type,
+				OutputUUID:      tok.OutputUUID,
+				OutputName:      tok.OutputName,
+				Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+			}
+			copy(newTok.Aggrandizements, tok.Aggrandizements)
+			if itemClass, ok := lookupContentItemClass(e.Property); ok {
+				newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+					"Type":              "WFCoercionVariableAggrandizement",
+					"CoercionItemClass": itemClass,
+				})
+			} else {
+				isDictTarget := false
+				if l.exprTypes != nil {
+					if targetType, hasType := l.exprTypes[e.Target]; hasType && targetType != nil {
+						if targetType.Kind() == types.KindMap || targetType.Kind() == types.KindRecord {
+							isDictTarget = true
+						}
+					}
+				}
+				if !isDictTarget {
+					if targetIdent, ok := e.Target.(*syntax.IdentExpr); ok {
+						if ref, hasRef := l.bindings[targetIdent.Name]; hasRef && ref.Type != nil {
+							if ref.Type.Kind() == types.KindMap || ref.Type.Kind() == types.KindRecord {
+								isDictTarget = true
+							}
+						}
+					}
+				}
+				if isDictTarget && tok.Type != "DeviceDetails" {
+					newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+						"Type":          "WFDictionaryValueVariableAggrandizement",
+						"DictionaryKey": e.Property,
+					})
+				} else {
+					newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+						"Type":         "WFPropertyVariableAggrandizement",
+						"PropertyName": e.Property,
+					})
+				}
+			}
+			return newTok, nil
+		}
+		uuid := l.GenerateUUID()
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.getvalueforkey",
+			OutputUUID:      uuid,
+			Parameters: map[string]interface{}{
+				"WFInput":                  targetVal,
+				"WFDictionaryKey":          e.Property,
+				"WFGetDictionaryValueType": "Value",
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+
+	case *syntax.BinaryExpr:
+		left, err := l.lowerExpression(e.Left)
+		if err != nil {
+			return nil, err
+		}
+
+		// Logical short-circuiting (compile-time and dynamic):
+		// Generated single-predicate guards use the same compatibility mode as
+		// ordinary authored If. Explicit modern/imported conditions are handled
+		// separately by lowerIf and retain their original wire representation.
+		if e.Op == syntax.TokenAnd {
+			if b, ok := left.(bool); ok {
+				if !b {
+					return false, nil
+				}
+				return l.lowerExpression(e.Right)
+			}
+			// Dynamic short-circuiting for &&: evaluate e.Right only inside Then branch (when left == 1.0)
+			groupUUID := l.GenerateUUID()
+			endUUID := l.GenerateUUID()
+			l.emitIfStart(groupUUID, l.materializeToAttachment(left), 4, 1.0, true)
+			rightVal, err := l.lowerExpression(e.Right)
+			if err != nil {
+				return nil, err
+			}
+			l.materializeYieldValue(rightVal)
+
+			l.emitIfElse(groupUUID)
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.number",
+				Parameters:      map[string]interface{}{"WFNumberActionNumber": 0.0},
+			})
+			l.emitIfEnd(groupUUID, endUUID, "")
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
+		} else if e.Op == syntax.TokenOr {
+			if b, ok := left.(bool); ok {
+				if b {
+					return true, nil
+				}
+				return l.lowerExpression(e.Right)
+			}
+			// Dynamic short-circuiting for ||: evaluate e.Right only inside Else branch (when left != 1.0)
+			groupUUID := l.GenerateUUID()
+			endUUID := l.GenerateUUID()
+			l.emitIfStart(groupUUID, l.materializeToAttachment(left), 4, 1.0, true)
+			l.emitAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.number",
+				Parameters:      map[string]interface{}{"WFNumberActionNumber": 1.0},
+			})
+			l.emitIfElse(groupUUID)
+			rightVal, err := l.lowerExpression(e.Right)
+			if err != nil {
+				return nil, err
+			}
+			l.materializeYieldValue(rightVal)
+
+			l.emitIfEnd(groupUUID, endUUID, "")
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
+		}
+
+		right, err := l.lowerExpression(e.Right)
+		if err != nil {
+			return nil, err
+		}
+
+		// Constant folding for numeric operations
+		if lNum, ok1 := left.(float64); ok1 {
+			if rNum, ok2 := right.(float64); ok2 {
+				switch e.Op {
+				case syntax.TokenPlus:
+					return lNum + rNum, nil
+				case syntax.TokenMinus:
+					return lNum - rNum, nil
+				case syntax.TokenStar:
+					return lNum * rNum, nil
+				case syntax.TokenSlash:
+					if rNum != 0 {
+						return lNum / rNum, nil
+					}
+				case syntax.TokenPercent:
+					if int64(rNum) != 0 {
+						return float64(int64(lNum) % int64(rNum)), nil
+					}
+				case syntax.TokenEqual:
+					return lNum == rNum, nil
+				case syntax.TokenNotEqual:
+					return lNum != rNum, nil
+				case syntax.TokenLess:
+					return lNum < rNum, nil
+				case syntax.TokenLessEqual:
+					return lNum <= rNum, nil
+				case syntax.TokenGreater:
+					return lNum > rNum, nil
+				case syntax.TokenGreaterEqual:
+					return lNum >= rNum, nil
+				}
+			}
+		}
+
+		// Constant folding for boolean equality
+		if lBool, ok1 := left.(bool); ok1 {
+			if rBool, ok2 := right.(bool); ok2 {
+				switch e.Op {
+				case syntax.TokenEqual:
+					return lBool == rBool, nil
+				case syntax.TokenNotEqual:
+					return lBool != rBool, nil
+				case syntax.TokenAnd:
+					return lBool && rBool, nil
+				case syntax.TokenOr:
+					return lBool || rBool, nil
+				}
+			}
+		}
+
+		// Constant folding for string equality/concatenation
+		if lStr, ok1 := left.(string); ok1 {
+			if rStr, ok2 := right.(string); ok2 {
+				switch e.Op {
+				case syntax.TokenPlus:
+					return lStr + rStr, nil
+				case syntax.TokenEqual:
+					return lStr == rStr, nil
+				case syntax.TokenNotEqual:
+					return lStr != rStr, nil
+				}
+			}
+		}
+
+		// Dynamic comparison operations
+		var condCode int
+		isComp := true
+		switch e.Op {
+		case syntax.TokenEqual:
+			condCode = 4
+		case syntax.TokenNotEqual:
+			condCode = 5
+		case syntax.TokenGreater:
+			condCode = 2
+		case syntax.TokenGreaterEqual:
+			condCode = 3
+		case syntax.TokenLess:
+			condCode = 0
+		case syntax.TokenLessEqual:
+			condCode = 1
+		default:
+			isComp = false
+		}
+
+		if isComp {
+			if (e.Op == syntax.TokenEqual || e.Op == syntax.TokenNotEqual) &&
+				(l.isArrayExpr(e.Left) || l.isArrayExpr(e.Right)) {
+				opStr := "=="
+				if e.Op == syntax.TokenNotEqual {
+					opStr = "!="
+				}
+				return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+			}
+			groupUUID := l.GenerateUUID()
+			uuid := l.GenerateUUID()
+			inputTok := l.materializeToAttachment(left)
+			var opType backend.ConditionOperandType
+			if l.isDateComparison(e.Op, e.Left, e.Right) {
+				if m, ok := right.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+					opType = backend.OperandQuantity
+					if condCode == 2 {
+						condCode = 1000
+					} else if condCode == 0 {
+						condCode = 1001
+					}
+				} else {
+					opType = backend.OperandDate
+				}
+			} else if l.isNumericComparison(e.Op, e.Left, e.Right, false) {
+				opType = backend.OperandNumber
+			} else {
+				opType = backend.OperandString
+			}
+			inputTok = l.ensureConditionalInputCoercion(e.Left, inputTok, opType)
+			l.emitIfStartTyped(groupUUID, inputTok, condCode, right, nil, opType, true)
+
+			// Then branch: 1.0 (true)
+			tNode := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.number",
+				Parameters:      map[string]interface{}{"WFNumberActionNumber": 1.0},
+			}
+			l.emitAction(tNode)
+
+			// Else branch: 0.0 (false)
+			l.emitIfElse(groupUUID)
+
+			fNode := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.number",
+				Parameters:      map[string]interface{}{"WFNumberActionNumber": 0.0},
+			}
+			l.emitAction(fNode)
+
+			l.emitIfEnd(groupUUID, uuid, "")
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+		}
+
+		// Modulus
+		if e.Op == syntax.TokenPercent {
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.math",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFMathOperation":           "…",
+					"WFScientificMathOperation": "Modulus",
+					"WFInput":                   left,
+					"WFScientificMathOperand":   right,
+				},
+			}
+			l.emitAction(node)
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+		}
+
+		// Arithmetic: +, -, *, /
+		opStr := "+"
+		switch e.Op {
+		case syntax.TokenPlus:
+			opStr = "+"
+		case syntax.TokenMinus:
+			opStr = "-"
+		case syntax.TokenStar:
+			opStr = "×"
+		case syntax.TokenSlash:
+			opStr = "÷"
+		}
+		uuid := l.GenerateUUID()
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.math",
+			OutputUUID:      uuid,
+			Parameters: map[string]interface{}{
+				"WFMathOperation": opStr,
+				"WFInput":         left,
+				"WFMathOperand":   right,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+	}
+
+	return nil, nil
+}
+
+func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
+	var fullText strings.Builder
+	attachmentsByRange := make(map[string]interface{})
+
+	for _, part := range f.Parts {
+		if !part.IsExpr {
+			fullText.WriteString(part.Text)
+		} else {
+			val, err := l.lowerExpression(part.Expr)
+			if err != nil {
+				return nil, err
+			}
+
+			if tok, ok := val.(*ir.AttachmentToken); ok {
+				startUTF16 := len(utf16.Encode([]rune(fullText.String())))
+				fullText.WriteString("\uFFFC") // Object replacement char
+
+				rangeKey := fmt.Sprintf("{%d, 1}", startUTF16)
+				att := map[string]interface{}{
+					"Type": tok.Type,
+				}
+				if tok.OutputUUID != "" {
+					att["OutputUUID"] = tok.OutputUUID
+				}
+				if tok.Type == "Variable" {
+					att["VariableName"] = tok.OutputName
+				} else if tok.Type == "Ask" && tok.OutputName != "" {
+					att["Prompt"] = tok.OutputName
+				} else if tok.OutputName != "" && tok.Type != "ExtensionInput" && tok.Type != "CurrentDate" && tok.Type != "Clipboard" && tok.Type != "DeviceDetails" {
+					att["OutputName"] = tok.OutputName
+				}
+				if len(tok.Aggrandizements) > 0 {
+					att["Aggrandizements"] = tok.Aggrandizements
+				}
+				attachmentsByRange[rangeKey] = att
+			} else {
+				// Literal value: format directly into text!
+				switch v := val.(type) {
+				case float64:
+					if v == float64(int64(v)) {
+						fullText.WriteString(fmt.Sprintf("%d", int64(v)))
+					} else {
+						fullText.WriteString(fmt.Sprintf("%g", v))
+					}
+				case bool:
+					fullText.WriteString(fmt.Sprintf("%t", v))
+				case string:
+					fullText.WriteString(v)
+				case nil:
+					fullText.WriteString("")
+				default:
+					fullText.WriteString(fmt.Sprint(v))
+				}
+			}
+		}
+	}
+
+	if len(attachmentsByRange) == 0 {
+		return fullText.String(), nil
+	}
+
+	return map[string]interface{}{
+		"WFSerializationType": "WFTextTokenString",
+		"Value": map[string]interface{}{
+			"string":             fullText.String(),
+			"attachmentsByRange": attachmentsByRange,
+		},
+	}, nil
+}
+
+func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticValue, error) {
+	if m, ok := expr.(*syntax.MapExpr); ok {
+		return l.lowerSemanticMap(m)
+	}
+	if list, ok := expr.(*syntax.ListExpr); ok {
+		laterWrites := l.semanticSiblingWrites(list.Elements)
+		items := make([]backend.SemanticValue, 0, len(list.Elements))
+		for index, el := range list.Elements {
+			if err := l.requirePresentTransport(el, "List element"); err != nil {
+				return backend.SemanticValue{}, err
+			}
+			itemVal, err := l.lowerSemanticValue(el)
+			if err != nil {
+				return backend.SemanticValue{}, err
+			}
+			items = append(items, l.captureCallSemanticValue(itemVal, laterWrites[index]))
+		}
+		return backend.SemanticValue{
+			Kind:    backend.ValList,
+			ListVal: items,
+		}, nil
+	}
+	if f, ok := expr.(*syntax.FStringExpr); ok {
+		var segments []backend.TextSegment
+		hasRef := false
+		for _, part := range f.Parts {
+			if !part.IsExpr {
+				segments = append(segments, backend.TextSegment{
+					IsExpr: false,
+					Text:   part.Text,
+				})
+			} else {
+				val, err := l.lowerExpression(part.Expr)
+				if err != nil {
+					return backend.SemanticValue{}, err
+				}
+				semVal := l.toSemanticValue(val)
+				if semVal.Kind == backend.ValReference {
+					hasRef = true
+					segments = append(segments, backend.TextSegment{
+						IsExpr:    true,
+						Reference: semVal.Ref,
+					})
+				} else {
+					segments = append(segments, backend.TextSegment{
+						IsExpr: false,
+						Text:   formatSemanticLiteral(semVal),
+					})
+				}
+			}
+		}
+		if hasRef {
+			return backend.SemanticValue{
+				Kind:     backend.ValTextSegments,
+				Segments: segments,
+			}, nil
+		}
+		var full strings.Builder
+		for _, seg := range segments {
+			full.WriteString(seg.Text)
+		}
+		return backend.SemanticValue{
+			Kind:   backend.ValString,
+			StrVal: full.String(),
+		}, nil
+	}
+
+	val, err := l.lowerExpression(expr)
+	if err != nil {
+		return backend.SemanticValue{}, err
+	}
+	return l.toSemanticValue(val), nil
+}
+
+func formatSemanticLiteral(val backend.SemanticValue) string {
+	switch val.Kind {
+	case backend.ValBool:
+		return fmt.Sprintf("%t", val.BoolVal)
+	case backend.ValInt:
+		return fmt.Sprintf("%d", val.IntVal)
+	case backend.ValFloat:
+		if val.FloatVal == float64(int64(val.FloatVal)) {
+			return fmt.Sprintf("%d", int64(val.FloatVal))
+		}
+		return fmt.Sprintf("%g", val.FloatVal)
+	case backend.ValString:
+		return val.StrVal
+	default:
+		return ""
+	}
+}
+
+func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
+	if val == nil {
+		return backend.SemanticValue{Kind: backend.ValNil}
+	}
+	switch v := val.(type) {
+	case bool:
+		return backend.SemanticValue{Kind: backend.ValBool, BoolVal: v}
+	case int:
+		return backend.SemanticValue{Kind: backend.ValInt, IntVal: int64(v)}
+	case int64:
+		return backend.SemanticValue{Kind: backend.ValInt, IntVal: v}
+	case float64:
+		return backend.SemanticValue{Kind: backend.ValFloat, FloatVal: v}
+	case string:
+		return backend.SemanticValue{Kind: backend.ValString, StrVal: v}
+	case *ir.AttachmentToken:
+		var kind backend.ReferenceKind
+		switch v.Type {
+		case "ActionOutput":
+			kind = backend.RefActionResult
+		case "Variable":
+			kind = backend.RefMutableBinding
+		case "ExtensionInput":
+			kind = backend.RefExtensionInput
+			v.OutputName = ""
+		case "Clipboard", "CurrentDate", "DeviceDetails":
+			kind = backend.RefSystemValue
+			v.OutputName = v.Type
+		case "Ask":
+			kind = backend.RefAskEachTime
+		default:
+			kind = backend.RefActionResult
+		}
+		var transforms []backend.Transformation
+		if len(v.Aggrandizements) > 0 {
+			for _, m := range v.Aggrandizements {
+				t := backend.Transformation{
+					RawNativeFields: cloneLowerPlistValue(m).(map[string]any),
+					Type:            fmt.Sprintf("%v", m["Type"]),
+				}
+				if prop, ok := m["PropertyName"].(string); ok {
+					t.PropertyName = prop
+				}
+				if cClass, ok := m["CoercionItemClass"].(string); ok {
+					t.CoercionItemClass = cClass
+				}
+				if dKey, ok := m["DictionaryKey"].(string); ok {
+					t.DictionaryKey = dKey
+				}
+				if pInfo, exists := m["PropertyUserInfo"]; exists && pInfo != nil {
+					t.PropertyUserInfo = pInfo
+				}
+				if dfFmt, ok := m["WFDateFormat"].(string); ok {
+					t.WFDateFormat = dfFmt
+				}
+				if dfStyle, ok := m["WFDateFormatStyle"].(string); ok {
+					t.WFDateFormatStyle = dfStyle
+				}
+				if tfStyle, ok := m["WFTimeFormatStyle"].(string); ok {
+					t.WFTimeFormatStyle = tfStyle
+				}
+				if isoPtr, ok := m["WFISO8601IncludeTime"].(*bool); ok && isoPtr != nil {
+					b := *isoPtr
+					t.WFISO8601IncludeTime = &b
+				} else if isoVal, ok := m["WFISO8601IncludeTime"].(bool); ok {
+					t.WFISO8601IncludeTime = &isoVal
+				}
+				transforms = append(transforms, t)
+			}
+		}
+		return backend.SemanticValue{
+			Kind: backend.ValReference,
+			Ref: &backend.Reference{
+				Kind:            kind,
+				ProducerID:      v.OutputUUID,
+				ProducerName:    v.OutputName,
+				OmitOutputName:  v.Type == "ActionOutput" && v.OutputName == "",
+				Transformations: transforms,
+			},
+		}
+	case *backend.Reference:
+		return backend.SemanticValue{
+			Kind: backend.ValReference,
+			Ref:  v,
+		}
+	case []interface{}:
+		items := make([]backend.SemanticValue, len(v))
+		for i, el := range v {
+			items[i] = l.toSemanticValue(el)
+		}
+		return backend.SemanticValue{Kind: backend.ValList, ListVal: items}
+	case map[string]interface{}:
+		if _, hasSer := v["WFSerializationType"]; hasSer {
+			return backend.SemanticValue{Kind: backend.ValRawNative, RawNativeVal: v}
+		}
+		if _, hasColor := v["WFColorRepresentationType"]; hasColor {
+			return backend.SemanticValue{Kind: backend.ValRawNative, RawNativeVal: v}
+		}
+		entries := make([]backend.DictEntry, 0, len(v))
+		for k, el := range v {
+			entries = append(entries, backend.DictEntry{Key: k, Value: l.toSemanticValue(el)})
+		}
+		return backend.SemanticValue{Kind: backend.ValDict, DictVal: entries}
+	default:
+		return backend.SemanticValue{Kind: backend.ValRawNative, RawNativeVal: v}
+	}
+}
+
+func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+	if call.Block != nil {
+		return l.lowerScopedBlockCall(call)
+	}
+	if name, ok := call.Callee.(*syntax.IdentExpr); ok {
+		if action, found := l.registry.LookupAction(name.Name); found && action.ScopedBlock && l.functions[name.Name] == nil {
+			return nil, fmt.Errorf("E_BLOCK_REQUIRED at %s: %s requires a trailing scoped block", call.Span, name.Name)
+		}
+	}
+	var actionName string
+	switch c := call.Callee.(type) {
+	case *syntax.IdentExpr:
+		actionName = c.Name
+	case *syntax.MemberExpr:
+		if targetIdent, ok := c.Target.(*syntax.IdentExpr); ok && targetIdent.Name == "native" {
+			actionName = "native." + c.Property
+		} else if targetIdent, ok := c.Target.(*syntax.IdentExpr); ok {
+			fullName := targetIdent.Name + "." + c.Property
+			if _, ok := l.functions[fullName]; ok {
+				actionName = fullName
+			} else if _, ok := l.modules[targetIdent.Name]; ok {
+				actionName = fullName
+			} else {
+				actionName = c.Property
+			}
+		} else {
+			actionName = c.Property
+		}
+	case *syntax.EnumMemberExpr:
+		if _, imported := l.modules[c.TypeName]; !imported {
+			return nil, fmt.Errorf("enum member is not a module callable")
+		}
+		actionName = c.TypeName + "." + c.Member
+	default:
+		return nil, fmt.Errorf("complex callee not supported in lowering")
+	}
+
+	// Built-in value constructors (qty, color)
+	if actionName == "qty" {
+		var args []interface{}
+		if call.PrimaryArg != nil {
+			v, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		for _, a := range call.NamedArgs {
+			v, err := l.lowerExpression(a.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		mag := ""
+		unit := ""
+		if len(args) > 0 {
+			mag = fmt.Sprintf("%v", args[0])
+		}
+		if len(args) > 1 {
+			unit = fmt.Sprintf("%v", args[1])
+		}
+		return map[string]interface{}{
+			"WFSerializationType": "WFQuantityFieldValue",
+			"Value": map[string]interface{}{
+				"Magnitude": mag,
+				"Unit":      unit,
+			},
+		}, nil
+	}
+
+	if actionName == "color" {
+		var args []interface{}
+		if call.PrimaryArg != nil {
+			v, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		for _, a := range call.NamedArgs {
+			v, err := l.lowerExpression(a.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		r := 0.0
+		g := 0.0
+		b := 0.0
+		alpha := 1.0
+		toFloat := func(val interface{}) float64 {
+			switch v := val.(type) {
+			case float64:
+				return v
+			case float32:
+				return float64(v)
+			case int:
+				return float64(v)
+			case int64:
+				return float64(v)
+			default:
+				var f float64
+				fmt.Sscanf(fmt.Sprintf("%v", val), "%f", &f)
+				return f
+			}
+		}
+		if len(args) > 0 {
+			r = toFloat(args[0])
+		}
+		if len(args) > 1 {
+			g = toFloat(args[1])
+		}
+		if len(args) > 2 {
+			b = toFloat(args[2])
+		}
+		if len(args) > 3 {
+			alpha = toFloat(args[3])
+		}
+		return map[string]interface{}{
+			"WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
+			"redComponent":              r,
+			"greenComponent":            g,
+			"blueComponent":             b,
+			"alphaComponent":            alpha,
+		}, nil
+	}
+
+	// Check native escape: native.action, action, rawAction
+	if actionName == "native.action" || actionName == "action" || actionName == "rawAction" {
+		uuid := l.GenerateUUID()
+		explicitOutputUUID := false
+		outputUUID := ""
+		if l.currentBindingName != "" {
+			outputUUID = uuid
+		}
+		node := &ir.NativeActionNode{
+			NodeID:     uuid,
+			OutputUUID: outputUUID,
+			OutputName: l.currentBindingName,
+			Parameters: make(map[string]interface{}),
+		}
+		var exactEnvelope map[string]any
+		hasParameterArgument := false
+		if call.PrimaryArg != nil {
+			val, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, fmt.Errorf("failed to lower action identifier: %w", err)
+			}
+			if s, ok := val.(string); ok {
+				node.AppleIdentifier = s
+			} else {
+				node.AppleIdentifier = fmt.Sprintf("%v", val)
+			}
+		}
+		for _, arg := range call.NamedArgs {
+			if arg.Label == "identifier" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower action identifier: %w", err)
+				}
+				if s, ok := val.(string); ok {
+					node.AppleIdentifier = s
+				} else {
+					node.AppleIdentifier = fmt.Sprintf("%v", val)
+				}
+			} else if arg.Label == "envelope" {
+				if exactEnvelope != nil {
+					return nil, fmt.Errorf("NATIVE_ACTION_ENVELOPE_ARGUMENTS: duplicate envelope")
+				}
+				value, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				exactEnvelope, err = nativeActionEnvelopeValue(value)
+				if err != nil {
+					return nil, err
+				}
+			} else if arg.Label == "parameters" || arg.Label == "" {
+				hasParameterArgument = true
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower action parameters: %w", err)
+				}
+				switch typed := val.(type) {
+				case *ir.RawPlistValue:
+					m, ok := typed.Data.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, typed.Data)
+					}
+					node.ExactRawParameters = true
+					node.HasExactRawParameters = true
+					for k, v := range m {
+						node.Parameters[k] = cloneLowerPlistValue(v)
+					}
+				case ir.RawPlistValue:
+					m, ok := typed.Data.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, typed.Data)
+					}
+					node.ExactRawParameters = true
+					node.HasExactRawParameters = true
+					for k, v := range m {
+						node.Parameters[k] = cloneLowerPlistValue(v)
+					}
+				case map[string]any:
+					for k, v := range typed {
+						node.Parameters[k] = l.normalizeRawActionParamValue(v)
+					}
+				default:
+					return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, val)
+				}
+			} else if arg.Label == "uuid" || arg.Label == "outputUUID" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				node.OutputUUID = fmt.Sprint(val)
+				explicitOutputUUID = true
+			} else if arg.Label == "outputName" || arg.Label == "customOutputName" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				node.OutputName = fmt.Sprint(val)
+			} else if arg.Label == "groupingIdentifier" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				node.GroupingIdentifier = fmt.Sprint(val)
+			} else {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower parameter %s: %w", arg.Label, err)
+				}
+				node.Parameters[arg.Label] = l.normalizeRawActionParamValue(val)
+			}
+		}
+		if strings.TrimSpace(node.AppleIdentifier) == "" {
+			return nil, fmt.Errorf("%s requires a non-empty action identifier", actionName)
+		}
+		if exactEnvelope != nil {
+			if hasParameterArgument || len(node.Parameters) != 0 {
+				return nil, fmt.Errorf("NATIVE_ACTION_ENVELOPE_CONFLICT: parameters and an exact envelope cannot both be supplied")
+			}
+			if err := setNativeActionEnvelope(node, exactEnvelope); err != nil {
+				return nil, err
+			}
+		}
+		if !node.HasExactRawParameters && len(call.NamedArgs) == 0 && l.workflow.ExactRawWorkflow {
+			node.ExactRawParameters = true
+		}
+		l.emitAction(node)
+		if l.emitErr != nil {
+			return nil, l.emitErr
+		}
+		return l.captureNativeActionResult(node, uuid, explicitOutputUUID)
+	}
+	if actionName == "native.plist" {
+		var targetExpr syntax.Expression
+		if call.PrimaryArg != nil {
+			targetExpr = call.PrimaryArg
+		} else {
+			for _, arg := range call.NamedArgs {
+				if arg.Label == "data" || arg.Label == "plist" || arg.Label == "value" || arg.Label == "" {
+					targetExpr = arg.Value
+					break
+				}
+			}
+		}
+		if targetExpr == nil {
+			return nil, fmt.Errorf("native.plist requires a plist expression or dictionary")
+		}
+		val, err := l.lowerInlineNativeData(targetExpr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to lower native.plist data: %w", err)
+		}
+		if str, ok := val.(string); ok {
+			if strings.HasPrefix(str, "b64:") {
+				rawBytes, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(str, "b64:"))
+				if err != nil {
+					return nil, fmt.Errorf("native.plist failed to decode base64 plist: %w", err)
+				}
+				var parsed any
+				if _, err := plist.Unmarshal(rawBytes, &parsed); err != nil {
+					return nil, fmt.Errorf("native.plist failed to parse binary plist: %w", err)
+				}
+				return validatedNativePlistValue(parsed)
+			}
+			trimmed := strings.TrimSpace(str)
+			if strings.HasPrefix(trimmed, "<?xml") || strings.HasPrefix(trimmed, "<plist") {
+				var parsed any
+				if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
+					return nil, fmt.Errorf("native.plist failed to parse XML plist: %w", err)
+				}
+				return validatedNativePlistValue(parsed)
+			} else if strings.HasPrefix(trimmed, "{") || strings.HasPrefix(trimmed, "[") {
+				var parsed any
+				if err := json.Unmarshal([]byte(str), &parsed); err == nil {
+					return validatedNativePlistValue(parsed)
+				}
+			}
+		}
+		return validatedNativePlistValue(val)
+	}
+	if actionName == "native.ref" {
+		var kind string
+		var outputUUID string
+		var outputName string
+		hasExplicitOutputName := false
+		var baseTok *ir.AttachmentToken
+		var aggrs []map[string]interface{}
+
+		if call.PrimaryArg != nil {
+			val, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, fmt.Errorf("failed to lower native.ref target: %w", err)
+			}
+			if tok, ok := val.(*ir.AttachmentToken); ok {
+				baseTok = tok
+			} else {
+				kind = fmt.Sprint(val)
+			}
+		}
+
+		for _, arg := range call.NamedArgs {
+			var val interface{}
+			var err error
+			if arg.Label == "aggrandizements" || arg.Label == "propertyUserInfo" {
+				val, err = l.lowerInlineNativeData(arg.Value)
+			} else {
+				val, err = l.lowerExpression(arg.Value)
+			}
+			if err != nil {
+				return nil, fmt.Errorf("failed to lower native.ref argument %s: %w", arg.Label, err)
+			}
+			switch arg.Label {
+			case "target", "ref", "symbol":
+				if tok, ok := val.(*ir.AttachmentToken); ok {
+					baseTok = tok
+				}
+			case "kind", "type":
+				kind = fmt.Sprint(val)
+			case "uuid", "outputUUID":
+				outputUUID = fmt.Sprint(val)
+			case "name", "variable", "outputName", "prompt":
+				outputName = fmt.Sprint(val)
+				if arg.Label == "outputName" {
+					hasExplicitOutputName = true
+				}
+			case "aggrandizements":
+				validated, err := ir.NativeReferenceAggrandizements(cloneLowerPlistValue(val))
+				if err != nil {
+					return nil, err
+				}
+				aggrs = append(aggrs, validated...)
+			case "coerce", "coercion":
+				aggrs = append(aggrs, map[string]interface{}{
+					"Type":              "WFCoercionVariableAggrandizement",
+					"CoercionItemClass": fmt.Sprint(val),
+				})
+			case "property":
+				aggrs = append(aggrs, map[string]interface{}{
+					"Type":         "WFPropertyVariableAggrandizement",
+					"PropertyName": fmt.Sprint(val),
+				})
+			case "propertyUserInfo":
+				unwrappedInfo := cloneLowerPlistValue(val)
+				for i := len(aggrs) - 1; i >= 0; i-- {
+					if aggrs[i]["Type"] == "WFPropertyVariableAggrandizement" {
+						aggrs[i]["PropertyUserInfo"] = unwrappedInfo
+						break
+					}
+				}
+			case "key", "dictionaryKey":
+				aggrs = append(aggrs, map[string]interface{}{
+					"Type":          "WFDictionaryValueVariableAggrandizement",
+					"DictionaryKey": fmt.Sprint(val),
+				})
+			}
+		}
+
+		if baseTok != nil && kind == "" {
+			combinedAggrs := make([]map[string]interface{}, 0, len(baseTok.Aggrandizements)+len(aggrs))
+			combinedAggrs = append(combinedAggrs, baseTok.Aggrandizements...)
+			combinedAggrs = append(combinedAggrs, aggrs...)
+			outUUID := baseTok.OutputUUID
+			if strings.TrimSpace(outputUUID) != "" {
+				outUUID = outputUUID
+			}
+			outName := baseTok.OutputName
+			if hasExplicitOutputName {
+				outName = outputName
+			} else if strings.TrimSpace(outputName) != "" && baseTok.Type == "Ask" {
+				outName = outputName
+			}
+			return &ir.AttachmentToken{
+				Type:            baseTok.Type,
+				OutputUUID:      outUUID,
+				OutputName:      outName,
+				Aggrandizements: combinedAggrs,
+			}, nil
+		}
+
+		validatedKind, err := ir.NormalizeNativeReferenceKind(kind, outputUUID, outputName)
+		if err != nil {
+			return nil, err
+		}
+		kind = validatedKind
+
+		tok := &ir.AttachmentToken{
+			Type:            kind,
+			OutputUUID:      outputUUID,
+			OutputName:      outputName,
+			Aggrandizements: aggrs,
+		}
+		return tok, nil
+	}
+	if actionName == "native.workflow" {
+		var targetExpr syntax.Expression
+		exactWorkflow := false
+		if call.PrimaryArg != nil {
+			targetExpr = call.PrimaryArg
+		}
+		for _, arg := range call.NamedArgs {
+			if arg.Label == "exact" {
+				exVal, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower native.workflow exact flag: %w", err)
+				}
+				b, ok := exVal.(bool)
+				if !ok {
+					return nil, fmt.Errorf("native.workflow exact argument must be bool, got %T", exVal)
+				}
+				exactWorkflow = b
+				continue
+			}
+			if targetExpr == nil && (arg.Label == "workflow" || arg.Label == "data" || arg.Label == "plist" || arg.Label == "") {
+				targetExpr = arg.Value
+			}
+		}
+		if targetExpr == nil {
+			return nil, fmt.Errorf("native.workflow requires a workflow dictionary or plist data")
+		}
+		val, err := l.lowerExpression(targetExpr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to lower native.workflow: %w", err)
+		}
+		var rawMap map[string]interface{}
+		switch typed := val.(type) {
+		case *ir.RawPlistValue:
+			m, ok := typed.Data.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("native.workflow plist payload must decode to a dictionary, got %T", typed.Data)
+			}
+			rawMap = cloneLowerPlistValue(m).(map[string]any)
+		case ir.RawPlistValue:
+			m, ok := typed.Data.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("native.workflow plist payload must decode to a dictionary, got %T", typed.Data)
+			}
+			rawMap = cloneLowerPlistValue(m).(map[string]any)
+		case string:
+			if strings.HasPrefix(typed, "b64:") {
+				rawBytes, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(typed, "b64:"))
+				if err != nil {
+					return nil, fmt.Errorf("native.workflow failed to decode base64 plist: %w", err)
+				}
+				var parsed any
+				if _, err := plist.Unmarshal(rawBytes, &parsed); err != nil {
+					return nil, fmt.Errorf("native.workflow failed to parse binary plist: %w", err)
+				}
+				m, ok := parsed.(map[string]any)
+				if !ok {
+					return nil, fmt.Errorf("native.workflow binary plist must be a dictionary, got %T", parsed)
+				}
+				rawMap = m
+			} else if strings.HasPrefix(strings.TrimSpace(typed), "<?xml") || strings.HasPrefix(strings.TrimSpace(typed), "<plist") {
+				var parsed any
+				if _, err := plist.Unmarshal([]byte(typed), &parsed); err != nil {
+					return nil, fmt.Errorf("native.workflow failed to parse XML plist: %w", err)
+				}
+				m, ok := parsed.(map[string]any)
+				if !ok {
+					return nil, fmt.Errorf("native.workflow XML plist must be a dictionary, got %T", parsed)
+				}
+				rawMap = m
+			} else {
+				return nil, fmt.Errorf("native.workflow string argument must be XML or b64 plist data")
+			}
+		case map[string]any:
+			rawMap = typed
+		default:
+			return nil, fmt.Errorf("native.workflow argument must be a workflow dictionary or XML plist string, got %T", val)
+		}
+
+		l.workflow.IsFullNativePass = true
+		l.workflow.ExactRawWorkflow = exactWorkflow
+		l.workflow.NativeWorkflowRaw = rawMap
+		if l.session != nil {
+			l.session.SetMetadata("rawWorkflowExact", exactWorkflow)
+			l.session.SetMetadata("rawWorkflow", rawMap)
+		}
+		l.applyImportProvenanceFromRawWorkflow(rawMap)
+
+		if v, ok := rawMap["WFWorkflowClientVersion"].(string); ok {
+			l.workflow.ClientVersion = v
+			if l.session != nil {
+				l.session.SetMetadata("clientVersion", v)
+			}
+		}
+		if types, ok := rawMap["WFWorkflowTypes"].([]string); ok {
+			l.workflow.WorkflowTypes = types
+			if l.session != nil {
+				l.session.SetMetadata("workflowTypes", types)
+			}
+		}
+		if classes, ok := rawMap["WFWorkflowInputContentItemClasses"].([]string); ok {
+			l.workflow.InputContentItemClasses = classes
+			if l.session != nil {
+				l.session.SetMetadata("inputContentItemClasses", classes)
+			}
+		}
+
+		if acts, ok := rawMap["WFWorkflowActions"].([]interface{}); ok {
+			for _, act := range acts {
+				if actMap, ok := act.(map[string]interface{}); ok {
+					ident, _ := actMap["WFWorkflowActionIdentifier"].(string)
+					params, _ := actMap["WFWorkflowActionParameters"].(map[string]interface{})
+					if params == nil {
+						params = make(map[string]interface{})
+					}
+					node := &ir.NativeActionNode{
+						NodeID:          l.GenerateUUID(),
+						AppleIdentifier: ident,
+						Parameters:      params,
+					}
+					if err := setNativeActionEnvelope(node, cloneLowerPlistValue(actMap).(map[string]any)); err != nil {
+						return nil, err
+					}
+					if u, ok := params["UUID"].(string); ok {
+						node.OutputUUID = u
+					}
+					if n, ok := params["CustomOutputName"].(string); ok {
+						node.OutputName = n
+					}
+					if g, ok := params["GroupingIdentifier"].(string); ok {
+						node.GroupingIdentifier = g
+					}
+					l.emitAction(node)
+					if l.emitErr != nil {
+						return nil, l.emitErr
+					}
+				}
+			}
+		}
+		return nil, nil
+	}
+
+	// Check user-declared action
+	if actDecl, ok := l.actions[actionName]; ok {
+		uuid := l.GenerateUUID()
+		outputUUID := ""
+		resultType := l.exprTypes[call]
+		if resultType == nil {
+			resultType = l.resolveTypeAnnotation(actDecl.ReturnType)
+		}
+		hasValue := resultType == nil || resultType.Kind() != types.KindVoid
+		if l.currentBindingName != "" || (!l.inExprStmt && hasValue) {
+			outputUUID = uuid
+		}
+		params := make(map[string]interface{})
+
+		getWireKey := func(param syntax.ParameterDecl) string {
+			if b, hasB := actDecl.Bindings[param.Name]; hasB && b.WireKey != "" {
+				return b.WireKey
+			}
+			return param.Name
+		}
+
+		providedParams := make(map[string]bool)
+		posIdx := 0
+
+		// Positional primary arg
+		if call.PrimaryArg != nil {
+			if actDecl.PrimaryParam != "" {
+				val, err := l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				wireKey := actDecl.PrimaryParam
+				if b, hasB := actDecl.Bindings[actDecl.PrimaryParam]; hasB && b.WireKey != "" {
+					wireKey = b.WireKey
+				}
+				params[wireKey] = l.lowerCustomCodecValue(actDecl, actDecl.PrimaryParam, val)
+				providedParams[actDecl.PrimaryParam] = true
+			} else if len(actDecl.Parameters) > 0 {
+				param := actDecl.Parameters[0]
+				val, err := l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				params[getWireKey(param)] = l.lowerCustomCodecValue(actDecl, param.Name, val)
+				providedParams[param.Name] = true
+				posIdx = 1
+			}
+		}
+
+		// Named or subsequent positional args
+		for argumentIndex, arg := range call.NamedArgs {
+			if arg.Label != "" {
+				val, err := l.lowerCallArgumentValue(call, argumentIndex, arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				wireKey := arg.Label
+				if b, hasB := actDecl.Bindings[arg.Label]; hasB && b.WireKey != "" {
+					wireKey = b.WireKey
+				}
+				params[wireKey] = l.lowerCustomCodecValue(actDecl, arg.Label, val)
+				providedParams[arg.Label] = true
+			} else {
+				// Positional arg
+				if posIdx < len(actDecl.Parameters) {
+					param := actDecl.Parameters[posIdx]
+					posIdx++
+					val, err := l.lowerCallArgumentValue(call, argumentIndex, arg.Value)
+					if err != nil {
+						return nil, err
+					}
+					params[getWireKey(param)] = l.lowerCustomCodecValue(actDecl, param.Name, val)
+					providedParams[param.Name] = true
+				} else {
+					return nil, fmt.Errorf("action %q takes at most %d arguments, but more were provided", actionName, len(actDecl.Parameters))
+				}
+			}
+		}
+
+		// Apply default values for unprovided parameters
+		for _, param := range actDecl.Parameters {
+			if !providedParams[param.Name] {
+				if param.DefaultExpr != nil {
+					val, err := l.lowerCallValue(param.DefaultExpr)
+					if err != nil {
+						return nil, err
+					}
+					params[getWireKey(param)] = l.lowerCustomCodecValue(actDecl, param.Name, val)
+				}
+			}
+		}
+
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: actDecl.AppleIdentifier,
+			OutputUUID:      outputUUID,
+			OutputName:      l.currentBindingName,
+			Parameters:      params,
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+	}
+
+	// Check user-defined function
+	if fn, ok := l.functions[actionName]; ok {
+		primaryValue, namedValues, err := l.lowerProvidedFunctionValues(call)
+		if err != nil {
+			return nil, err
+		}
+		argsList := make([]interface{}, len(fn.Parameters))
+		dispatchDict := map[string]interface{}{
+			"_cherri_magic":        "__cherri_fn_envelope_v2__",
+			"cherri_functions":     "1",
+			"function":             l.functionDispatchName(fn),
+			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
+		}
+		unnamedArgIdx := 0
+		for i, param := range fn.Parameters {
+			var argVal interface{}
+			supplied := false
+			if i == 0 && call.PrimaryArg != nil {
+				argVal = primaryValue
+				supplied = true
+			}
+			if !supplied {
+				for argumentIndex, nArg := range call.NamedArgs {
+					if nArg.Label != "" && (nArg.Label == param.Name || strings.TrimPrefix(param.Name, "_") == nArg.Label) {
+						argVal = namedValues[argumentIndex]
+						supplied = true
+						break
+					}
+				}
+			}
+			if !supplied {
+				for unnamedArgIdx < len(call.NamedArgs) {
+					nArg := call.NamedArgs[unnamedArgIdx]
+					unnamedArgIdx++
+					if nArg.Label == "" {
+						argVal = namedValues[unnamedArgIdx-1]
+						supplied = true
+						break
+					}
+				}
+			}
+			optionalValue := l.optionalFunctionParameter(param.TypeExpr)
+			if optionalValue {
+				presence := "0"
+				if supplied && argVal != nil {
+					presence = "1"
+				}
+				dispatchDict[fmt.Sprintf("has_value_%d", i)] = presence
+			}
+			if supplied {
+				if argVal == nil && !optionalValue {
+					return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: current function argument transport requires an explicit Optional parameter for optional absence at %s", call.Span)
+				}
+				if b, isBool := argVal.(bool); isBool {
+					if b {
+						argVal = 1.0
+					} else {
+						argVal = 0.0
+					}
+				}
+				argVal = functionEnvelopeValue(argVal)
+				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "1"
+				if argVal != nil {
+					dispatchDict[fmt.Sprintf("arg_%d", i)] = argVal
+				}
+				argsList[i] = argVal
+			} else {
+				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "0"
+				// The dispatcher evaluates an omitted default exactly once,
+				// under has_arg_i == 0 and after preceding parameters exist.
+			}
+		}
+		dispatchDict["arguments"] = argsList
+
+		dispatchUUID := l.GenerateUUID()
+		dispatchNode := &ir.NativeActionNode{
+			NodeID:          dispatchUUID,
+			AppleIdentifier: "is.workflow.actions.dictionary",
+			OutputUUID:      dispatchUUID,
+			OutputName:      "FunctionPayload",
+			Parameters: map[string]interface{}{
+				"WFItems": dispatchDict,
+			},
+		}
+		l.emitAction(dispatchNode)
+
+		wfTarget := map[string]interface{}{
+			"isSelf": true,
+		}
+		if l.WorkflowName != "" {
+			wfTarget["workflowName"] = l.WorkflowName
+		}
+
+		runParams := map[string]interface{}{
+			"WFWorkflow": wfTarget,
+			"WFInput": &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: dispatchUUID,
+				OutputName: "FunctionPayload",
+			},
+		}
+		if l.WorkflowName != "" {
+			runParams["WFWorkflowName"] = l.WorkflowName
+		}
+
+		uuid := l.GenerateUUID()
+		outName := actionName + "Result"
+		if l.currentBindingName != "" {
+			outName = l.currentBindingName
+		}
+		runNode := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.runworkflow",
+			OutputUUID:      uuid,
+			OutputName:      outName,
+			Parameters:      runParams,
+		}
+		l.emitAction(runNode)
+
+		if l.optionalFunctionParameter(fn.ReturnType) {
+			value, presence := l.decodeOptionalCarrier(uuid, "has_value", "value", outName)
+			if l.optionalExpressionPresence == nil {
+				l.optionalExpressionPresence = make(map[syntax.Expression]interface{})
+			}
+			l.optionalExpressionPresence[call] = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence}
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: value, OutputName: outName}, nil
+		}
+		if named, ok := fn.ReturnType.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Int" || named.Name == "Float") {
+			detectUUID := l.GenerateUUID()
+			detectNode := &ir.NativeActionNode{
+				NodeID:          detectUUID,
+				AppleIdentifier: "is.workflow.actions.detect.number",
+				OutputUUID:      detectUUID,
+				OutputName:      outName,
+				Parameters: map[string]interface{}{
+					"WFInput": &ir.AttachmentToken{
+						Type:       "ActionOutput",
+						OutputUUID: uuid,
+					},
+				},
+			}
+			l.emitAction(detectNode)
+			return &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: detectUUID,
+				OutputName: outName,
+			}, nil
+		}
+
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: outName,
+		}, nil
+	}
+
+	actionSchema, ok := l.registry.LookupAction(actionName)
+	if !ok {
+		return nil, fmt.Errorf("unknown action in lowering: %s", actionName)
+	}
+
+	if l.isMac != nil {
+		if actionSchema.MacOnly && !*l.isMac {
+			return nil, fmt.Errorf("action %q is only available on macOS", actionName)
+		}
+		if actionSchema.NonMacOnly && *l.isMac {
+			return nil, fmt.Errorf("action %q is not available on macOS", actionName)
+		}
+	}
+
+	// Expand only the explicit outer argument pack. The same canonical binder
+	// validates it during analysis; existing source-order snapshots now apply
+	// separately to each original element, without changing nested values.
+	if expanded, _, packError := schema.ExpandNamedVariadicLists(call, actionSchema); packError != nil {
+		return nil, packError
+	} else {
+		call = expanded
+	}
+
+	uuid := l.GenerateUUID()
+	prevInExprStmt := l.inExprStmt
+	l.inExprStmt = false
+	var setupArguments []setupQuestionArgument
+
+	if l.session != nil {
+		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
+		if call.PrimaryArg != nil {
+			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
+				primVal, err := l.lowerCodecSemanticValue(call.PrimaryArg, primParam.Codec, primParam.WireKey, primParam.AcceptedForms)
+				if err != nil {
+					return nil, err
+				}
+				primVal = l.captureCallSemanticValue(primVal, l.callWritesAfter(call, -1))
+				wireKey := primParam.WireKey
+				if wireKey == "" || wireKey == "url" {
+					if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+						wireKey = "WFURLActionURL"
+					} else {
+						wireKey = primParam.Label
+					}
+				}
+				if name, isSetup := l.directSetupQuestion(call.PrimaryArg); isSetup {
+					setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
+				}
+				callArgs = append(callArgs, backend.CallArgument{
+					ParameterID: wireKey,
+					Position:    0,
+					StaticType:  l.argumentStaticType(call.PrimaryArg),
+					Value:       primVal,
+				})
+			}
+		}
+
+		seenIndices := make(map[int]bool)
+		if call.PrimaryArg != nil {
+			if _, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
+				seenIndices[0] = true
+			}
+		}
+
+		paramIndex := 1
+		if call.PrimaryArg == nil {
+			paramIndex = 0
+		}
+		for argumentIndex, nArg := range call.NamedArgs {
+			var param *schema.ParameterSchema
+			var matchedIdx = -1
+			var exists bool
+			if nArg.Label != "" {
+				for pIdx := range actionSchema.Parameters {
+					p := &actionSchema.Parameters[pIdx]
+					if p.Label == nArg.Label || p.ID == nArg.Label {
+						if matchedIdx == -1 {
+							matchedIdx = pIdx
+							param = p
+							exists = true
+						}
+						if !seenIndices[pIdx] {
+							matchedIdx = pIdx
+							param = p
+							exists = true
+							break
+						}
+					}
+				}
+			} else {
+				for paramIndex < len(actionSchema.Parameters) && seenIndices[paramIndex] {
+					paramIndex++
+				}
+				if paramIndex < len(actionSchema.Parameters) {
+					matchedIdx = paramIndex
+					param = &actionSchema.Parameters[paramIndex]
+					exists = true
+					paramIndex++
+				} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
+					matchedIdx = len(actionSchema.Parameters) - 1
+					param = &actionSchema.Parameters[matchedIdx]
+					exists = true
+				}
+			}
+			if exists && param != nil {
+				if seenIndices[matchedIdx] && !param.Variadic {
+					return nil, fmt.Errorf("duplicate parameter %q for action %q", param.Label, actionName)
+				}
+				seenIndices[matchedIdx] = true
+
+				val, err := l.lowerCodecSemanticValue(nArg.Value, param.Codec, param.WireKey, param.AcceptedForms)
+				if err != nil {
+					return nil, err
+				}
+				val = l.captureCallSemanticValue(val, l.callWritesAfter(call, argumentIndex))
+				wireKey := param.WireKey
+				if wireKey == "" || wireKey == "url" {
+					if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+						wireKey = "WFURLActionURL"
+					} else {
+						wireKey = param.Label
+					}
+				}
+				if name, isSetup := l.directSetupQuestion(nArg.Value); isSetup {
+					setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
+				}
+				pos := matchedIdx
+				if pos < 0 {
+					pos = paramIndex
+				}
+				callArgs = append(callArgs, backend.CallArgument{
+					ParameterID: wireKey,
+					Position:    pos,
+					StaticType:  l.argumentStaticType(nArg.Value),
+					Value:       val,
+				})
+			} else if nArg.Label != "" {
+				return nil, fmt.Errorf("unknown parameter label %q for action %q", nArg.Label, actionName)
+			} else {
+				return nil, fmt.Errorf("too many positional arguments for action %q", actionName)
+			}
+		}
+
+		outputName := l.currentBindingName
+		var outputUUID string
+		if outputName != "" || (!prevInExprStmt && actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void") {
+			outputUUID = uuid
+		}
+
+		resolvedCall := backend.ResolvedCall{
+			SourceDocument:  string(call.NodeSpan().Document),
+			DefinitionID:    actionSchema.ID,
+			AppleIdentifier: actionSchema.AppleIdentifier,
+			OutputUUID:      outputUUID,
+			OutputName:      outputName,
+			Arguments:       callArgs,
+			NodeID:          uuid,
+		}
+
+		outUUID, err := l.session.EmitResolvedCall(resolvedCall)
+		if err != nil {
+			return nil, err
+		}
+		for _, argument := range setupArguments {
+			if err := l.bindSetupQuestion(argument.name, argument.wireKey, uuid); err != nil {
+				return nil, err
+			}
+		}
+
+		if outUUID != "" {
+			outRefName := outputName
+			if outRefName == "" {
+				outRefName = actionSchema.Docs.Title
+				if outRefName == "" {
+					outRefName = actionSchema.OutputTypeName
+				}
+			}
+			return &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: outUUID,
+				OutputName: outRefName,
+			}, nil
+		}
+		return nil, nil
+	}
+
+	node := &ir.NativeActionNode{
+		NodeID:          uuid,
+		AppleIdentifier: actionSchema.AppleIdentifier,
+		Parameters:      make(map[string]interface{}),
+	}
+	for k, v := range actionSchema.StaticParameters {
+		node.Parameters[k] = v
+	}
+	if actionSchema.AppIntent != nil {
+		node.Parameters["AppIntentDescriptor"] = map[string]interface{}{
+			"AppIntentIdentifier": actionSchema.AppIntent.AppIntentIdentifier,
+			"BundleIdentifier":    actionSchema.AppIntent.BundleIdentifier,
+			"Name":                actionSchema.AppIntent.Name,
+			"TeamIdentifier":      actionSchema.AppIntent.TeamIdentifier,
+		}
+	}
+	if l.currentBindingName != "" || (!prevInExprStmt && actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void") {
+		node.OutputUUID = uuid
+	}
+
+	// 1. Primary argument
+	if call.PrimaryArg != nil {
+		if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
+			primVal, err := l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			wireKey := primParam.WireKey
+			if wireKey == "" || wireKey == "url" {
+				if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+					wireKey = "WFURLActionURL"
+					node.Parameters["Show-WFURLActionURL"] = true
+				} else {
+					wireKey = "WFInput"
+				}
+			}
+			if primParam.TypeName == "Text" || primParam.TypeName == "String" || (primParam.Type != nil && (primParam.Type.Name() == "Text" || primParam.Type.Name() == "String")) {
+				if tok, isTok := primVal.(*ir.AttachmentToken); isTok {
+					primVal = map[string]interface{}{
+						"WFSerializationType": "WFTextTokenString",
+						"Value": map[string]interface{}{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]interface{}{
+								"{0, 1}": tok,
+							},
+						},
+					}
+				}
+			}
+			if primParam.Variadic {
+				node.Parameters[wireKey] = []interface{}{primVal}
+			} else {
+				node.Parameters[wireKey] = primVal
+			}
+
+			if name, isSetup := l.directSetupQuestion(call.PrimaryArg); isSetup {
+				setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
+			}
+		}
+	}
+
+	// 2. Named and positional arguments
+	paramIndex := 1
+	if call.PrimaryArg == nil {
+		paramIndex = 0
+	}
+	for argumentIndex, nArg := range call.NamedArgs {
+		var param *schema.ParameterSchema
+		var exists bool
+		if nArg.Label != "" {
+			param, exists = actionSchema.ParameterByLabel(nArg.Label)
+		} else {
+			if paramIndex < len(actionSchema.Parameters) {
+				param = &actionSchema.Parameters[paramIndex]
+				exists = true
+				paramIndex++
+			} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
+				param = &actionSchema.Parameters[len(actionSchema.Parameters)-1]
+				exists = true
+			}
+		}
+		if exists && param != nil {
+			val, err := l.lowerCallArgumentValue(call, argumentIndex, nArg.Value)
+			if err != nil {
+				return nil, err
+			}
+			wireKey := param.WireKey
+			if wireKey == "" || wireKey == "url" {
+				if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+					wireKey = "WFURLActionURL"
+					node.Parameters["Show-WFURLActionURL"] = true
+				} else {
+					wireKey = param.Label
+				}
+			}
+			if param.TypeName == "Text" || param.TypeName == "String" || (param.Type != nil && (param.Type.Name() == "Text" || param.Type.Name() == "String")) {
+				if tok, isTok := val.(*ir.AttachmentToken); isTok {
+					val = map[string]interface{}{
+						"WFSerializationType": "WFTextTokenString",
+						"Value": map[string]interface{}{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]interface{}{
+								"{0, 1}": tok,
+							},
+						},
+					}
+				}
+			}
+			if param.Variadic {
+				if existing, has := node.Parameters[wireKey]; has {
+					if slice, isSlice := existing.([]interface{}); isSlice {
+						node.Parameters[wireKey] = append(slice, val)
+					} else {
+						node.Parameters[wireKey] = []interface{}{existing, val}
+					}
+				} else {
+					node.Parameters[wireKey] = []interface{}{val}
+				}
+			} else {
+				node.Parameters[wireKey] = val
+			}
+
+			if name, isSetup := l.directSetupQuestion(nArg.Value); isSetup {
+				setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
+			}
+		}
+	}
+
+	l.emitAction(node)
+	for _, argument := range setupArguments {
+		if err := l.bindSetupQuestion(argument.name, argument.wireKey, uuid); err != nil {
+			return nil, err
+		}
+	}
+
+	if node.OutputUUID != "" {
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: node.OutputUUID,
+		}, nil
+	}
+	return nil, nil
+}
+
+var rawActionVarRegex = regexp.MustCompile(`^\$\{@?([a-zA-Z_][a-zA-Z0-9_]*)\}$|^\{@?([a-zA-Z_][a-zA-Z0-9_]*)\}$`)
+var rawActionInterpolationRegex = regexp.MustCompile(`\{@?([a-zA-Z_][a-zA-Z0-9_]*)\}`)
+
+func (l *Lowerer) normalizeRawActionParamValue(v any) any {
+	if v == nil {
+		return nil
+	}
+	switch typed := v.(type) {
+	case string:
+		if !strings.ContainsAny(typed, "{}") {
+			return typed
+		}
+		resolveVar := func(varName string) *ir.AttachmentToken {
+			if ref, found := l.bindings[varName]; found {
+				if ref.IsVariable {
+					return &ir.AttachmentToken{
+						Type:       "Variable",
+						OutputName: ref.VariableName,
+					}
+				}
+				return &ir.AttachmentToken{
+					Type:       "ActionOutput",
+					OutputUUID: ref.OutputUUID,
+					OutputName: ref.OutputName,
+				}
+			}
+			return &ir.AttachmentToken{
+				Type:       "Variable",
+				OutputName: varName,
+			}
+		}
+
+		if m := rawActionVarRegex.FindStringSubmatch(typed); len(m) > 0 {
+			varName := m[1]
+			if varName == "" {
+				varName = m[2]
+			}
+			return resolveVar(varName)
+		}
+		if strings.Contains(typed, "{") && strings.Contains(typed, "}") {
+			var fullText strings.Builder
+			attachmentsByRange := make(map[string]interface{})
+			lastIdx := 0
+			matches := rawActionInterpolationRegex.FindAllStringSubmatchIndex(typed, -1)
+			if len(matches) > 0 {
+				for _, loc := range matches {
+					prefixText := typed[lastIdx:loc[0]]
+					fullText.WriteString(prefixText)
+					varName := typed[loc[2]:loc[3]]
+					tok := resolveVar(varName)
+					startUTF16 := len(utf16.Encode([]rune(fullText.String())))
+					fullText.WriteString("\uFFFC")
+					rangeKey := fmt.Sprintf("{%d, 1}", startUTF16)
+					att := map[string]interface{}{
+						"Type": tok.Type,
+					}
+					if tok.OutputUUID != "" {
+						att["OutputUUID"] = tok.OutputUUID
+					}
+					if tok.Type == "Variable" {
+						att["VariableName"] = tok.OutputName
+					} else if tok.OutputName != "" {
+						att["OutputName"] = tok.OutputName
+					}
+					attachmentsByRange[rangeKey] = att
+					lastIdx = loc[1]
+				}
+				fullText.WriteString(typed[lastIdx:])
+				return map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string":             fullText.String(),
+						"attachmentsByRange": attachmentsByRange,
+					},
+				}
+			}
+		}
+		return typed
+	case map[string]interface{}:
+		if _, hasType := typed["WFSerializationType"]; hasType {
+			return typed
+		}
+		res := make(map[string]interface{}, len(typed))
+		for k, val := range typed {
+			res[k] = l.normalizeRawActionParamValue(val)
+		}
+		return res
+	case []interface{}:
+		res := make([]interface{}, len(typed))
+		for i, val := range typed {
+			res[i] = l.normalizeRawActionParamValue(val)
+		}
+		return res
+	default:
+		return v
+	}
+}
+
+func cloneLowerPlistValue(v any) any {
+	switch typed := v.(type) {
+	case nil:
+		return nil
+	case *ir.RawPlistValue:
+		if typed == nil {
+			return nil
+		}
+		return cloneLowerPlistValue(typed.Data)
+	case ir.RawPlistValue:
+		return cloneLowerPlistValue(typed.Data)
+	case map[string]any:
+		res := make(map[string]any, len(typed))
+		for k, val := range typed {
+			res[k] = cloneLowerPlistValue(val)
+		}
+		return res
+	case []any:
+		res := make([]any, len(typed))
+		for i, val := range typed {
+			res[i] = cloneLowerPlistValue(val)
+		}
+		return res
+	case []byte:
+		res := make([]byte, len(typed))
+		copy(res, typed)
+		return res
+	default:
+		return v
+	}
+}
+
+func provenanceBindingTypeFromValueType(vt string) types.Type {
+	switch vt {
+	case "Text", "String":
+		return types.Text
+	case "Number", "Integer", "Float":
+		return types.Number
+	case "Bool", "Boolean":
+		return types.Bool
+	case "Date":
+		return types.Date
+	case "Dict", "Dictionary":
+		return types.NewMap(types.Text, types.AnyContent)
+	case "Arr", "List":
+		return types.NewList(types.AnyContent)
+	default:
+		return nil
+	}
+}
+
+func (l *Lowerer) applyImportProvenanceFromRawWorkflow(rawMap map[string]any) {
+	if len(rawMap) == 0 {
+		return
+	}
+	l.hasImportProvenance = true
+	prov, ok := rawMap["__CherriImportProvenance"].(map[string]any)
+	if !ok {
+		return
+	}
+	syms, ok := prov["Symbols"].(map[string]any)
+	if !ok {
+		return
+	}
+	for symName, rawEntry := range syms {
+		entry, ok := rawEntry.(map[string]any)
+		if !ok || symName == "" {
+			continue
+		}
+		kind, _ := entry["Kind"].(string)
+		uuid, _ := entry["UUID"].(string)
+		outputName, _ := entry["OutputName"].(string)
+		hasOutputName := true
+		if b, exists := entry["HasOutputName"].(bool); exists {
+			hasOutputName = b
+		}
+		varName, _ := entry["VariableName"].(string)
+		if kind != "Variable" && hasOutputName && outputName == "" {
+			outputName = symName
+		}
+		if kind == "Variable" && varName == "" {
+			if outputName != "" {
+				varName = outputName
+			} else {
+				varName = symName
+			}
+		}
+		if uuid != "" {
+			l.provenanceUUIDs[symName] = uuid
+		}
+		if kind == "Variable" {
+			if l.provenanceVarNames == nil {
+				l.provenanceVarNames = make(map[string]string)
+			}
+			l.provenanceVarNames[symName] = varName
+		} else {
+			if l.provenanceOutputNames == nil {
+				l.provenanceOutputNames = make(map[string]provenanceOutputNameSpec)
+			}
+			l.provenanceOutputNames[symName] = provenanceOutputNameSpec{
+				name:    outputName,
+				hasName: hasOutputName,
+			}
+		}
+		if _, exists := l.bindings[symName]; exists {
+			continue
+		}
+		if l.provenanceSymbols == nil {
+			l.provenanceSymbols = make(map[string]bool)
+		}
+		l.provenanceSymbols[symName] = true
+		vtStr, _ := entry["ValueType"].(string)
+		bType := provenanceBindingTypeFromValueType(vtStr)
+		appendVar, _ := entry["AppendVariable"].(bool)
+		if kind == "Variable" {
+			l.bindings[symName] = BindingRef{IsVariable: true, VariableName: varName, Type: bType, AppendVariable: appendVar}
+		} else if uuid != "" {
+			effOut := outputName
+			if !hasOutputName {
+				effOut = ""
+			}
+			l.bindings[symName] = BindingRef{OutputUUID: uuid, OutputName: effOut, Type: bType}
+		}
+	}
+}

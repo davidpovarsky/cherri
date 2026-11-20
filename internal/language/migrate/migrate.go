@@ -20,8 +20,6 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
-var interpolationRegex = regexp.MustCompile(`(^|[^a-zA-Z0-9_])"([^"\\]*\{@?[a-zA-Z_][^"\\]*\}[^"\\]*)"`)
-
 // MigrationDiagnostic represents an error or warning encountered during migration.
 type MigrationDiagnostic struct {
 	Line    int
@@ -43,50 +41,100 @@ func MigrateSource(input string) string {
 	return result
 }
 
-func expandLocalIncludes(src string, seen map[string]bool) string {
+func expandLocalIncludes(src string, includeRoot string, seen map[string]bool) (string, []MigrationDiagnostic) {
 	if seen == nil {
 		seen = make(map[string]bool)
 	}
-	var out strings.Builder
-	lines := strings.Split(src, "\n")
-	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "#include ") || strings.HasPrefix(trimmed, "#include\t") {
-			mod := strings.TrimSpace(trimmed[len("#include"):])
-			mod = strings.Trim(mod, "\"' ")
-			if !strings.HasPrefix(mod, "actions/") && mod != "stdfunc" && mod != "stdlib" && mod != "" {
-				candidates := []string{mod, filepath.Clean(mod), filepath.Join("tests", mod)}
-				var content []byte
-				var foundPath string
-				for _, cand := range candidates {
-					if data, err := os.ReadFile(cand); err == nil {
-						content = data
-						foundPath = cand
-						break
-					}
-				}
-				if foundPath != "" && !seen[foundPath] {
-					seen[foundPath] = true
-					expanded := expandLocalIncludes(string(content), seen)
-					out.WriteString(expanded)
-					out.WriteString("\n")
-					continue
-				}
-			}
-		}
-		out.WriteString(line)
-		out.WriteString("\n")
+	lexemes, diags := scanMigrationLexemes(src)
+	if len(diags) != 0 {
+		return "", diags
 	}
-	return strings.TrimRight(out.String(), "\n")
+	var out strings.Builder
+	last := 0
+	for _, item := range lexemes {
+		if item.kind != "directive" {
+			continue
+		}
+		trimmed := strings.TrimSpace(item.text)
+		if !strings.HasPrefix(trimmed, "#include ") && !strings.HasPrefix(trimmed, "#include\t") {
+			continue
+		}
+		mod := strings.Trim(strings.TrimSpace(trimmed[len("#include"):]), "\"' ")
+		if strings.HasPrefix(mod, "actions/") || mod == "stdfunc" || mod == "stdlib" || mod == "" {
+			continue
+		}
+		candidates := []string{mod, filepath.Clean(mod), filepath.Join("tests", mod)}
+		if includeRoot != "" {
+			candidate := mod
+			if !filepath.IsAbs(candidate) {
+				candidate = filepath.Join(includeRoot, candidate)
+			}
+			candidates = []string{candidate}
+		}
+		for _, candidate := range candidates {
+			content, err := os.ReadFile(candidate)
+			if err != nil {
+				continue
+			}
+			found, err := filepath.Abs(candidate)
+			if err != nil {
+				continue
+			}
+			out.WriteString(src[last:item.start])
+			if !seen[found] {
+				seen[found] = true
+				expanded, nestedDiags := expandLocalIncludes(string(content), includeRoot, seen)
+				if len(nestedDiags) != 0 {
+					return "", nestedDiags
+				}
+				out.WriteString(expanded)
+			}
+			last = item.end
+			break
+		}
+	}
+	out.WriteString(src[last:])
+	return out.String(), nil
 }
 
 // MigrateSourceWithDiagnostics converts legacy Cherri syntax into canonical Cherri v2.0 syntax.
 // It fails closed if unrecognized preprocessor directives, corrupted reference hashes,
 // or invalid trigger definitions are encountered.
 func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, error) {
-	input = expandLocalIncludes(input, nil)
+	return migrateSourceWithDiagnostics(input, "")
+}
+
+// MigrateSourceWithDiagnosticsAtPath resolves local includes from the entry
+// source directory, matching Legacy file compilation. It never changes the
+// process working directory or falls back to an unrelated cwd dependency.
+func MigrateSourceWithDiagnosticsAtPath(input, sourcePath string) (string, []MigrationDiagnostic, error) {
+	if strings.TrimSpace(sourcePath) == "" {
+		return "", []MigrationDiagnostic{{Line: 1, Column: 1, Message: "missing migration source path"}}, fmt.Errorf("missing migration source path")
+	}
+	path, err := filepath.Abs(sourcePath)
+	if err != nil {
+		return "", []MigrationDiagnostic{{Line: 1, Column: 1, Message: "cannot resolve migration source path"}}, err
+	}
+	return migrateSourceWithDiagnostics(input, filepath.Dir(path))
+}
+
+func migrateSourceWithDiagnostics(input, includeRoot string) (string, []MigrationDiagnostic, error) {
+	input, lexicalDiags := expandLocalIncludes(input, includeRoot, nil)
+	if len(lexicalDiags) != 0 {
+		for index := range lexicalDiags {
+			lexicalDiags[index].Message = "generated V2 source is not representable: " + lexicalDiags[index].Message
+		}
+		return "", lexicalDiags, fmt.Errorf("migration produced invalid V2 syntax (Legacy lexical input)")
+	}
+	lexical, lexicalDiags := prepareMigrationSource(input)
+	if len(lexicalDiags) != 0 {
+		for index := range lexicalDiags {
+			lexicalDiags[index].Message = "generated V2 source is not representable: " + lexicalDiags[index].Message
+		}
+		return "", lexicalDiags, fmt.Errorf("migration produced invalid V2 syntax (Legacy lexical input)")
+	}
 	reg := schema.DefaultRegistry()
-	lines := strings.Split(input, "\n")
+	lines := strings.Split(lexical.text, "\n")
 	var diags []MigrationDiagnostic
 
 	addDiag := func(lineNum, col int, msg string) {
@@ -132,9 +180,9 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	validConnectionEvents := map[string]bool{"connect": true, "disconnect": true, "both": true}
 	validStageManagerEvents := map[string]bool{"on": true, "off": true, "both": true}
 
-	for lineIdx, l := range lines {
-		lineNum := lineIdx + 1
-		trimmed := strings.TrimSpace(l)
+	for _, directive := range lexical.directives {
+		lineNum := directive.line
+		trimmed := strings.TrimSpace(directive.text)
 		if !strings.HasPrefix(trimmed, "#") {
 			continue
 		}
@@ -350,11 +398,6 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
-		// 1. Skip legacy preprocessor directives (emitted into header/refs/imports)
-		if strings.HasPrefix(trimmed, "#") {
-			continue
-		}
-
 		// 2. Convert typed var declarations: @var: type -> var var: Type [= default]
 		if m := typedVarRegex.FindStringSubmatch(line); m != nil {
 			indent := m[1]
@@ -461,65 +504,12 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			}
 		}
 
-		// 9. Strip remaining @ symbols from variables in expressions: {@foo} -> {foo}, @foo -> foo
-		line = strings.ReplaceAll(line, "{@", "{")
-
-		var sb strings.Builder
-		inStr := false
-		escaped := false
-		inComment := false
-		runes := []rune(line)
-		for i := 0; i < len(runes); i++ {
-			if !inStr && i+1 < len(runes) && runes[i] == '/' && runes[i+1] == '/' {
-				inComment = true
-			}
-			r := runes[i]
-			if inStr {
-				sb.WriteRune(r)
-				if escaped {
-					escaped = false
-				} else if r == '\\' {
-					escaped = true
-				} else if r == '"' {
-					inStr = false
-				}
-				continue
-			}
-			if r == '"' && !inComment {
-				inStr = true
-				sb.WriteRune(r)
-				continue
-			}
-			if !inComment && r == '@' {
-				continue
-			}
-			sb.WriteRune(r)
-		}
-		line = sb.String()
-
-		// 10. Upgrade legacy string interpolation "Hello {var}" -> f"Hello {var}"
-		if !strings.Contains(line, "rawAction(") {
-			var sb strings.Builder
-			lastIdx := 0
-			for _, loc := range interpolationRegex.FindAllStringSubmatchIndex(line, -1) {
-				prefix := line[loc[2]:loc[3]]
-				matchedStr := line[loc[3]:loc[1]]
-				sb.WriteString(line[lastIdx:loc[2]])
-				if prefix == "f" || prefix == "$" || strings.HasPrefix(matchedStr, `"${`) {
-					sb.WriteString(prefix)
-					sb.WriteString(matchedStr)
-				} else {
-					sb.WriteString(prefix)
-					sb.WriteString("f" + matchedStr)
-				}
-				lastIdx = loc[1]
-			}
-			sb.WriteString(line[lastIdx:])
-			line = sb.String()
-		}
+		// Literal/comment contents are protected; only actual Legacy variable
+		// token prefixes are removed from executable syntax.
+		line = stripMigrationAtVariables(line)
 
 		// 11. Label positional arguments for known action schemas
-		line = labelCallArguments(line, reg)
+		line = labelCallArguments(line, reg, lexical)
 
 		outLines = append(outLines, line)
 	}
@@ -617,7 +607,17 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 		outHeader.WriteString("\n")
 	}
 
-	result := outHeader.String() + strings.Join(outLines, "\n")
+	body := strings.Join(outLines, "\n")
+	origins := make(map[int]string, len(legacyBindingLines))
+	for line, name := range legacyBindingLines {
+		prefix := strings.Join(outLines[:line-1], "\n")
+		if line > 1 {
+			prefix += "\n"
+		}
+		origins[1+strings.Count(lexical.restore(prefix), "\n")] = name
+	}
+	legacyBindingLines = origins
+	result := outHeader.String() + lexical.restore(body)
 
 	// Try formatting canonically
 	file := source.NewFile("migration", "migration.cherri", 1, result)
@@ -625,6 +625,14 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	prog := p.ParseProgram()
 	if len(p.Errors()) == 0 {
 		preserveLegacyOptionalBindings(prog, result, legacyBindingLines, strings.Count(outHeader.String(), "\n"), reg)
+		referenceValues := make(map[string]string, len(refs))
+		for _, ref := range refs {
+			referenceValues[ref.name] = ref.jsonVal
+		}
+		if err := inlineMigrationReferences(prog, referenceValues, len(refs)); err != nil {
+			addDiag(1, 1, "generated V2 source is not representable: "+err.Error())
+			return "", diags, fmt.Errorf("migration produced invalid V2 syntax (reference identity)")
+		}
 		migrateVariadicCalls(prog, reg)
 		return syntax.Format(prog), diags, nil
 	}
@@ -715,7 +723,7 @@ func migrateMenus(lines []string) []string {
 	return out
 }
 
-func labelCallArguments(line string, reg *schema.Registry) string {
+func labelCallArguments(line string, reg *schema.Registry, lexical migrationLexicalSource) string {
 	if !strings.Contains(line, "(") || !strings.Contains(line, ")") {
 		return line
 	}
@@ -766,8 +774,9 @@ func labelCallArguments(line string, reg *schema.Registry) string {
 
 		if i > 0 && !isLabeled && i < len(actionSchema.Parameters) && actionSchema.Parameters[i].Label != "" && !strings.HasPrefix(trimmed, "{") {
 			paramIdx := i
-			if (callee == "editReminder" || callee == "editEvent") && len(rawArgs) == 3 && (trimmed == `"Remove"` || trimmed == `"Set"`) {
+			if canonical, shorthand := migrationSetterRemovalArgument(callee, i, len(rawArgs), trimmed, lexical); shorthand {
 				paramIdx = 3
+				trimmed = canonical
 			}
 			param := actionSchema.Parameters[paramIdx]
 			newArgs = append(newArgs, param.Label+": "+trimmed)

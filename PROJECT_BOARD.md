@@ -39,6 +39,10 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Verify BRG19 safe migration/import/edit (2026-11-20). Independent actual public CLI scenario preserves originals on unsupported conversion, emits V2, roundtrips XML/binary exactly and permits only one digest-bound scalar edit. All15 collateral and8 policy faults per format reject. Clean component53 and final strict258 events pass with68 immutable source blobs; initial source-count NOT_RUN is retained. Related rows, Apple and release closure remain separate. [Proof and original receipts](docs/language-v2/p15-safe-import-edit-brg19-20261120.md).
+
+- [x] Verify RP33 structural migration with actual native differential evidence (2026-11-20). Lexical regions, native reference/callee identity and entry-source include resolution preserve the supported original programs; ambiguous Legacy includes inside multiline literals fail before writing. Import-question comparison follows a unique original target through normalization and still rejects wrong targets. Clean434 full47/47 programs+17/17 actions; clean d233 actual producer251 outer/59 required inner passes with64 source blobs and two RP33-only tiers. Related IDs, BRG19, Apple and release closure remain independent. [Proof and original receipts](docs/language-v2/p15-structural-migration-rp33-20261120.md).
+
 - [x] Verify RP16 exhaustive checked AST and native rejection (2026-11-20). Reproduced three unused/metadata and eleven annotation silent-success gaps before repair. Actual clean compiler114+lower38 and strict producer/intake280 events pass; two RP16-only local records, all114 required children,45 immutable source hashes. Related requirements, Apple runtime and global release closure remain independent. [Proof and original receipts](docs/language-v2/p15-exhaustive-node-acceptance-20261120.md).
 
 - [x] Close statically inferred List-row guard bypasses (2026-11-19). Fourteen parser-valid reference/function/Optional/Union cases now fail explicitly before an artifact is returned; scalar/Dictionary controls and native import round trips pass. Dynamic AnyContent hierarchy is still unverified, so L01/F04/FN05 remain incomplete. See [boundary and executed controls](docs/language-v2/p15-inferred-list-shape-boundary-20261119.md).
@@ -153,3 +157,15 @@ RP11 follow-up: independent review found unbound mutable initializer/store input
 ## 2026-11-20 — U01 repository declaration boundary component
 
 Actual clean-source production passed 135 outer / 14 child named tests on 6bdddd6d5ea3012b806ae82239cd7a7fe49e2138. All 26 declaration inputs were reconciled with four immutable baselines: 24 unchanged since the continuation and two reviewed one-token label corrections. Fifty producer source blobs and the three original child artifacts were independently verified. U01 receives one local repository record only; final 179-row closure remains open. See [the original evidence audit](docs/language-v2/p15-u01-upstream-boundary-20261120.md).
+
+## 2026-11-20 U01 original-object hardening
+
+Clean 06c5c2fa completed 140 outer and 19 actual root events after a real four-operation isolated replacement-ref counterexample. Fifty source blobs and three original artifact references independently audited. Repository U01 component only; all final/native/other-ID gates remain unchanged. See docs/language-v2/p15-u01-original-object-hardening-20261120.md.
+
+## 2026-11-20 R4 intermediate preflight audit
+
+Three original failed combined invocations retained without recategorization. At0dc, five completed RP11/RP16/U01 records independently verified against92 distinct source blobs. F03 and schema focused clean replays pass; RP03 child completion and full final suite remain open. See docs/language-v2/p15-r4-intermediate-preflights-20261120.md.
+
+## 2026-11-20 S01 scoped compiler repair and native replay
+
+Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 passed194 root and88 package events after original six-route failure and a separately reproduced six-route implicit-input regression. Original source/313-byte semantic oracle unchanged; full native replay44671266567 is separate. Further container/enclosing-input boundaries remain open. See docs/language-v2/p15-s01-literal-object-carrier-20261120.md.

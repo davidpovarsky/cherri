@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // Bind by parameter identity first, then analyze each supplied expression once
@@ -66,10 +67,16 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 		}
 		if param.TypeExpr != nil {
 			expected := a.resolveType(param.TypeExpr)
-			if actual != nil && !assignmentHasEvidence(actual, expected, argument) {
+			if actual != nil && !a.optionalAssignmentHasEvidence(actual, expected, argument) {
 				a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
 				return
 			}
+		}
+		// Optional parameters transport a compiler-owned value-presence carrier.
+		// Omission/default presence remains a separate outer-envelope decision.
+		if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
+			a.requireCompilerPresence(argument, "Optional argument")
+			return
 		}
 		a.requirePresentTransport(argument, actual, "function argument")
 	}

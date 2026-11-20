@@ -12,13 +12,13 @@ import (
 
 // CodecFingerprint returns the deterministic SHA256 fingerprint of the canonical backend codec contract.
 func CodecFingerprint() string {
-	const codecDescriptor = "cherri-canonical-codec:v2.0\n" +
+	const codecDescriptor = "cherri-canonical-codec:v2.2\n" +
 		"refs:ActionResult,MutableBinding,SystemValue,LoopItem,LoopIndex,LoopResult,ExtensionInput,AskEachTime\n" +
 		"values:Nil,Bool,Int,Float,String,Reference,TextSegments,List,Dict,RawNative\n" +
 		"controls:If,Repeat,For,Menu:modes=0,1,2\n" +
 		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
 		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
-		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n\n" +
+		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n:optional_arg_n=_cherri_optional_argument_v1,has_value=0-absent-1-present,value-present-only:result=_cherri_optional_result_v1,has_value,value\n" +
 		"text_literal_object_character:plain_text_producer:deferred_after_interpolated_calls:exact_output_reference:complete_utf16_placeholder_coverage:pure_string_without_references:enclosing_native_input=existing_result_handle:checked_native_declaration_output_contract\n"
 	sum := sha256.Sum256([]byte(codecDescriptor))
 	return hex.EncodeToString(sum[:])

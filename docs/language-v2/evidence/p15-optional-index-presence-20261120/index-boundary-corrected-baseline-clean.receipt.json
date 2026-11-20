@@ -1,0 +1,37 @@
+{
+  "source_head": "03389e7a63acde1aef8feacc3d825ea62488206a",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalStaticIndex(RejectsUnprovenPresence|KnownPresentElement)$",
+    "."
+  ],
+  "started_at": "2026-11-20T06:09:04.815959+00:00",
+  "elapsed_seconds": 15.35899999999674,
+  "exit_code": 1,
+  "raw_sha256": "0a467d97fd4d0236a359da705b7b46274be896dcb3c1d7de0b1e08bff6fd7ac5",
+  "passed_tests": [
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/negative",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/out_of_range",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/fraction",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/dynamic_call",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/dynamic_binding",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/target_alias",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/map_lookup",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/optional_element",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/optional_result_element",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence/opaque_element",
+    "TestP15OptionalStaticIndexRejectsUnprovenPresence"
+  ],
+  "failed_tests": [
+    "TestP15OptionalStaticIndexKnownPresentElement"
+  ],
+  "skipped_tests": [],
+  "clean_before": true,
+  "clean_after": true,
+  "status": ""
+}

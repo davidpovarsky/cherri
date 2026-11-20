@@ -479,6 +479,9 @@ func deriveRepairTestIDs(id, title string) []string {
 	if id == "RP11" {
 		return numberWireTestIDs()
 	}
+	if id == "RP33" {
+		return structuralMigrationTestIDs()
+	}
 	if id == "RP16" {
 		return exhaustiveNodeTestIDs()
 	}
@@ -540,6 +543,9 @@ func deriveRepairFixtures(id string) []string {
 	if id == "RP11" {
 		return append([]string{}, numberWireProductionPaths...)
 	}
+	if id == "RP33" {
+		return append([]string{}, structuralMigrationProductionPaths...)
+	}
 	if id == "RP16" {
 		return append([]string{}, exhaustiveNodeProductionPaths...)
 	}
@@ -553,6 +559,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if id == "BRG19" {
+		return safeImportEditTestIDs()
+	}
 	if scenario, found := loopAcceptanceScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -633,6 +642,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if id == "BRG19" {
+		return append([]string{}, safeImportEditProductionPaths...)
+	}
 	return []string{"tests/language-v2/backend-recovery-gates.json#" + id}
 }
 

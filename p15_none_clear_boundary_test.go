@@ -39,7 +39,7 @@ func p15NoneBindingError(actions []map[string]any) error {
 	_, err := p15EmptyOrigin(actions, len(actions)-1, p15Param(actions[len(actions)-1])["WFVariable"])
 	return err
 }
-func p15NoneReturnError(actions []map[string]any) error {
+func p15NoneReturnError(actions []map[string]any, tagged ...bool) error {
 	marker := -1
 	for i, a := range actions {
 		if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" && p15Param(a)["WFTextActionText"] == "MUST_NOT_LEAK" {
@@ -51,6 +51,27 @@ func p15NoneReturnError(actions []map[string]any) error {
 	}
 	if marker < 0 || marker+2 >= len(actions) {
 		return fmt.Errorf("missing return observation")
+	}
+	if len(tagged) > 0 && tagged[0] {
+		if actions[marker+1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.dictionary" {
+			return fmt.Errorf("optional function return lost its tagged None carrier")
+		}
+		fields, err := p15ContainerFields(p15Param(actions[marker+1])["WFItems"])
+		if err != nil || len(fields) != 2 {
+			return fmt.Errorf("None carrier has an invented value or malformed fields: %v", err)
+		}
+		for key, want := range map[string]string{"_cherri_optional_result_v1": "1", "has_value": "0"} {
+			row := fields[key]
+			if row == nil || row["WFItemType"] != uint64(0) || !reflect.DeepEqual(row["WFValue"], p15ContainerText(want)) {
+				return fmt.Errorf("None carrier marker/value-presence changed")
+			}
+		}
+		uuid, _ := p15Param(actions[marker+1])["UUID"].(string)
+		if uuid == "" || actions[marker+2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.output" ||
+			!reflect.DeepEqual(p15FunctionComparable(p15Param(actions[marker+2])["WFOutput"], false), p15FunctionText("\ufffc", uuid)) {
+			return fmt.Errorf("None carrier was not the explicit stopped result")
+		}
+		return nil
 	}
 	if actions[marker+1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" || len(p15Param(actions[marker+1])) != 0 {
 		return fmt.Errorf("none return does not explicitly clear the preceding output")
@@ -83,9 +104,56 @@ func TestP15NoneReturnClearsPreviousOutput(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actions, raw := p15NoneActions(t, tc.source)
-			if err := p15NoneReturnError(actions); err != nil {
+			if err := p15NoneReturnError(actions, tc.name != "top_level"); err != nil {
 				t.Log("P15_NONE_NATIVE_BASE64:" + base64.StdEncoding.EncodeToString(raw))
 				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestP15TaggedNoneResultRejectsStaleAndInventedValues(t *testing.T) {
+	source := "function absent()->Text?{text(\"MUST_NOT_LEAK\");return none}\nlet value=absent()\ngetVariable(value)"
+	actions, _ := p15NoneActions(t, source)
+	if err := p15NoneReturnError(actions, true); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"present_flag", "flag_type", "marker", "invented_value", "stale_output", "continued_instead"} {
+		t.Run(fault, func(t *testing.T) {
+			bad := p15ContainerCloneNative(t, actions)
+			if err := p15NoneReturnError(bad, true); err != nil {
+				t.Fatal("unchanged carrier clone must pass", err)
+			}
+			index := -1
+			for i, action := range bad {
+				if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" && p15Param(action)["WFTextActionText"] == "MUST_NOT_LEAK" {
+					index = i + 1
+				}
+			}
+			if index < 0 {
+				t.Fatal("carrier mutation target absent")
+			}
+			fields, err := p15ContainerFields(p15Param(bad[index])["WFItems"])
+			if err != nil {
+				t.Fatal(err)
+			}
+			switch fault {
+			case "present_flag":
+				fields["has_value"]["WFValue"] = p15ContainerText("1")
+			case "flag_type":
+				fields["has_value"]["WFItemType"] = uint64(4)
+			case "marker":
+				fields["_cherri_optional_result_v1"]["WFValue"] = p15ContainerText("wrong")
+			case "invented_value":
+				inner := p15Param(bad[index])["WFItems"].(map[string]any)["Value"].(map[string]any)
+				inner["WFDictionaryFieldValueItems"] = append(inner["WFDictionaryFieldValueItems"].([]any), map[string]any{"WFKey": p15ContainerText("value"), "WFItemType": uint64(0), "WFValue": p15ContainerText("")})
+			case "stale_output":
+				p15Param(bad[index+1])["WFOutput"] = p15FunctionText("MUST_NOT_LEAK")
+			case "continued_instead":
+				bad[index+1]["WFWorkflowActionIdentifier"] = "is.workflow.actions.comment"
+			}
+			if p15NoneReturnError(bad, true) == nil {
+				t.Fatal("corrupted tagged None result accepted")
 			}
 		})
 	}
