@@ -287,7 +287,7 @@ func TestExhaustiveNodeActualProductionEvidence(t *testing.T) {
 	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	for _, phase := range []string{"local", "final"} {
 		report, err := ValidateEvidenceManifest(manifest, selected, phase)
-		if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || !report.ClosureComplete {
+		if err != nil || report == nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete != (phase == "final") {
 			t.Fatal("complete RP16-only source-bound production rejected", phase, report, err)
 		}
 	}
