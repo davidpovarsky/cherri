@@ -129,35 +129,7 @@ func CherriAnalyze(source *C.char) *C.char {
 //
 //export CherriAnalyzeVersioned
 func CherriAnalyzeVersioned(uri *C.char, version C.int, source *C.char) *C.char {
-	docURI := C.GoString(uri)
-	if docURI == "" {
-		docURI = "file:///mobile.cherri"
-	}
-	ver := int(version)
-	src := C.GoString(source)
-	svc := sharedMobileService()
-	svc.ChangeDocument(docURI, ver, src)
-	diags, fp := svc.Analyze(docURI)
-	activeVer := svc.DocumentVersion(docURI)
-
-	wireDiags := make([]protocol.DiagnosticItem, 0)
-	hasErrors := false
-	for _, d := range diags {
-		wireDiags = append(wireDiags, protocol.ToDiagnosticItem(d))
-		if d.Severity == analysis.SeverityError {
-			hasErrors = true
-		}
-	}
-
-	resp := protocol.AnalyzeResponse{
-		URI:               docURI,
-		Version:           activeVer,
-		LanguageVersion:   schema.LanguageVersion,
-		SchemaFingerprint: fp,
-		Diagnostics:       wireDiags,
-		Valid:             !hasErrors,
-	}
-
+	resp := analyzeVersionedForMobile(C.GoString(uri), int(version), C.GoString(source))
 	encoded, _ := json.Marshal(resp)
 	return C.CString(string(encoded))
 }

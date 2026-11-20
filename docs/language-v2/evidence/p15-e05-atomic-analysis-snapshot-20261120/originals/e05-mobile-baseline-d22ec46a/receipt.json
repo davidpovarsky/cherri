@@ -1,0 +1,52 @@
+{
+  "source": "d22ec46a09fc196b4b194a0d44f79f4ed02700f3",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E05",
+    "."
+  ],
+  "status_before": "",
+  "free_before": 38279372800,
+  "started_at": "2026-11-20T13:47:51.454269+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 40.59400000004098,
+  "completed_at": "2026-11-20T13:48:32.053286+00:00",
+  "status_after": "",
+  "head_after": "d22ec46a09fc196b4b194a0d44f79f4ed02700f3",
+  "free_after": 38075723776,
+  "named_counts": {
+    "fail": 7,
+    "pass": 2
+  },
+  "failed_names": [
+    "TestP15E05MobileVersionedSnapshot",
+    "TestP15E05MobileStaleAndIndependentDocuments/old_edit_returns_latest_snapshot",
+    "TestP15E05MobileStaleAndIndependentDocuments/another_document_has_independent_version",
+    "TestP15E05MobileStaleAndIndependentDocuments/returned_diagnostics_are_owned",
+    "TestP15E05MobileStaleAndIndependentDocuments/close_reopen_resets_version",
+    "TestP15E05MobileStaleAndIndependentDocuments",
+    "TestP15E05MobileSnapshotOracleMutations"
+  ],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 69079,
+      "sha256": "10ea4a98081e80fa3de2588b6cdb918803f7a32c7147ad2702e91094afafe3e9"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

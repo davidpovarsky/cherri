@@ -101,7 +101,11 @@ func NewServiceWithAssetCache(registry *schema.Registry, cache *assets.Cache) *S
 func (s *Service) OpenDocument(uri string, version int, text string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	s.openDocumentLocked(uri, version, text)
+}
 
+// The caller owns s.mu; a response snapshot can update and analyze atomically.
+func (s *Service) openDocumentLocked(uri string, version int, text string) {
 	if existing, ok := s.documents[uri]; ok && version > 0 && existing.Version > version {
 		return
 	}
@@ -136,6 +140,21 @@ func (s *Service) CloseDocument(uri string) {
 func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	diagnostics, fingerprint, _ := s.analyzeDocumentSnapshotLocked(uri)
+	return diagnostics, fingerprint
+}
+
+// AnalyzeVersioned returns diagnostics and their active version from the same
+// locked document snapshot. A concurrent edit cannot relabel older diagnostics
+// with its newer version. Stale input retains the existing update semantics.
+func (s *Service) AnalyzeVersioned(uri string, version int, text string) ([]analysis.Diagnostic, string, int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.openDocumentLocked(uri, version, text)
+	return s.analyzeDocumentSnapshotLocked(uri)
+}
+
+func (s *Service) analyzeDocumentSnapshotLocked(uri string) ([]analysis.Diagnostic, string, int) {
 	doc, ok := s.documents[uri]
 	if ok && modules.HasImports(doc.Program) {
 		doc = s.analyzeDocumentLocked(uri, doc.Version, doc.File.Content)
@@ -146,7 +165,7 @@ func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 	}
 
 	if !ok {
-		return nil, s.registry.Fingerprint()
+		return nil, s.registry.Fingerprint(), 0
 	}
 
 	diags := append([]analysis.Diagnostic(nil), doc.ModuleDiagnostics...)
@@ -171,7 +190,7 @@ func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 		diags = append(diags, doc.Analyzer.Diagnostics()...)
 	}
 
-	return uniqueDocumentDiagnostics(diags), s.registry.Fingerprint()
+	return uniqueDocumentDiagnostics(diags), s.registry.Fingerprint(), doc.Version
 }
 
 // SchemaFingerprint returns the fingerprint of the underlying schema registry.
