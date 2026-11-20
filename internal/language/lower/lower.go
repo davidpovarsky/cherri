@@ -96,6 +96,8 @@ type Lowerer struct {
 	provenanceOutputNames   map[string]provenanceOutputNameSpec
 	lexical                 lexicalLoweringState
 	provenanceVarNames      map[string]string
+	literalTextCarriers     map[*ir.NativeActionNode]bool
+	nativeResultReferences  map[*ir.NativeActionNode]*ir.AttachmentToken
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -4440,13 +4442,14 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	hasReference := fStringValuesHaveReference(values)
 	var fullText strings.Builder
 	attachmentsByRange := make(map[string]interface{})
 	for _, val := range values {
-		if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
+		if literal, ok := val.(string); hasReference && ok && strings.ContainsRune(literal, '\uFFFC') {
 			// WorkflowKit consumes U+FFFC in token templates as a placeholder.
 			// The ordinary Text producer preserves these exact literal bytes.
-			val = l.materializeToAttachment(literal)
+			val = l.materializeLiteralTextCarrier(literal)
 		}
 
 		if tok, ok := val.(*ir.AttachmentToken); ok {
@@ -4532,11 +4535,12 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		if err != nil {
 			return backend.SemanticValue{}, err
 		}
+		hasReference := fStringValuesHaveReference(values)
 		var segments []backend.TextSegment
 		hasRef := false
 		for _, val := range values {
-			if literal, ok := val.(string); ok && strings.ContainsRune(literal, '\uFFFC') {
-				val = l.materializeToAttachment(literal)
+			if literal, ok := val.(string); hasReference && ok && strings.ContainsRune(literal, '\uFFFC') {
+				val = l.materializeLiteralTextCarrier(literal)
 			}
 
 			semVal := l.toSemanticValue(val)
@@ -4955,6 +4959,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		if !node.HasExactRawParameters && len(call.NamedArgs) == 0 && l.workflow.ExactRawWorkflow {
 			node.ExactRawParameters = true
+		}
+		if err := l.restoreNativeInputAfterLiteralCarriers(node); err != nil {
+			return nil, err
 		}
 		l.emitAction(node)
 		if l.emitErr != nil {

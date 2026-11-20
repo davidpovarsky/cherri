@@ -17,5 +17,10 @@ func (l *Lowerer) captureNativeActionResult(node *ir.NativeActionNode, generated
 		// Retain IR producer lookup for polymorphic/reference analysis.
 		node.NodeID = resultUUID
 	}
-	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: resultUUID}, nil
+	reference := &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: resultUUID}
+	if l.nativeResultReferences == nil {
+		l.nativeResultReferences = make(map[*ir.NativeActionNode]*ir.AttachmentToken)
+	}
+	l.nativeResultReferences[node] = reference
+	return reference, nil
 }
