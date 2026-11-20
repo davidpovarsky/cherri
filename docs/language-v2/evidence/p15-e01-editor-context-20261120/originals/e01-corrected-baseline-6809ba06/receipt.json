@@ -1,0 +1,55 @@
+{
+  "source": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E01",
+    "./internal/language/service"
+  ],
+  "status_before": "",
+  "free_before": 43255517184,
+  "started_at": "2026-11-20T12:49:54.512989+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 1,
+  "timed_out": false,
+  "duration_seconds": 5.797000000020489,
+  "completed_at": "2026-11-20T12:50:00.306285+00:00",
+  "status_after": "",
+  "head_after": "6809ba0645211e2cb4086eed4dc6b1593a497ba7",
+  "free_after": 43253051392,
+  "named_counts": {
+    "fail": 10,
+    "pass": 16
+  },
+  "failed_names": [
+    "TestP15E01ExpectedTypeCompletion/primary_number",
+    "TestP15E01ExpectedTypeCompletion/named_text",
+    "TestP15E01ExpectedTypeCompletion/primary_bool",
+    "TestP15E01ExpectedTypeCompletion/primary_list",
+    "TestP15E01ExpectedTypeCompletion/optional_parameter",
+    "TestP15E01ExpectedTypeCompletion/alias_parameter",
+    "TestP15E01ExpectedTypeCompletion/canonical_number",
+    "TestP15E01ExpectedTypeCompletion/lexical_shadow",
+    "TestP15E01ExpectedTypeCompletion/function_parameter",
+    "TestP15E01ExpectedTypeCompletion"
+  ],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 28047,
+      "sha256": "67538555f1764b61033ca0ffb1eecc59e2c2342278e9499621c669031736c8a5"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
