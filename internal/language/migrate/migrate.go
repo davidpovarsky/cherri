@@ -509,7 +509,7 @@ func migrateSourceWithDiagnostics(input, includeRoot string) (string, []Migratio
 		line = stripMigrationAtVariables(line)
 
 		// 11. Label positional arguments for known action schemas
-		line = labelCallArguments(line, reg)
+		line = labelCallArguments(line, reg, lexical)
 
 		outLines = append(outLines, line)
 	}
@@ -723,7 +723,7 @@ func migrateMenus(lines []string) []string {
 	return out
 }
 
-func labelCallArguments(line string, reg *schema.Registry) string {
+func labelCallArguments(line string, reg *schema.Registry, lexical migrationLexicalSource) string {
 	if !strings.Contains(line, "(") || !strings.Contains(line, ")") {
 		return line
 	}
@@ -774,8 +774,9 @@ func labelCallArguments(line string, reg *schema.Registry) string {
 
 		if i > 0 && !isLabeled && i < len(actionSchema.Parameters) && actionSchema.Parameters[i].Label != "" && !strings.HasPrefix(trimmed, "{") {
 			paramIdx := i
-			if (callee == "editReminder" || callee == "editEvent") && len(rawArgs) == 3 && (trimmed == `"Remove"` || trimmed == `"Set"`) {
+			if canonical, shorthand := migrationSetterRemovalArgument(callee, i, len(rawArgs), trimmed, lexical); shorthand {
 				paramIdx = 3
+				trimmed = canonical
 			}
 			param := actionSchema.Parameters[paramIdx]
 			newArgs = append(newArgs, param.Label+": "+trimmed)
