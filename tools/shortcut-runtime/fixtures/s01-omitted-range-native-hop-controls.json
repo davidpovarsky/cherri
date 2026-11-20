@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "81ac029bd30148252137fbae3838d88c8a3cdbba",
+  "sourcePath": "tools/shortcut-runtime/jxa/observe_literal_object_character.js",
+  "sourceSha256": "5e6a502f8c292d1e6db5d7df7cc49f48bbadb426679e4260ccce7d419f082454",
+  "scope": "Exact authored follow-up inputs only; no native observation",
+  "controls": [
+    {
+      "name": "omitted_ranges_literal_only",
+      "classes": [
+        "WFStringParameterState",
+        "WFVariableStringParameterState"
+      ],
+      "input": {
+        "WFSerializationType": "WFTextTokenString",
+        "Value": {
+          "string": "￼"
+        }
+      }
+    },
+    {
+      "name": "omitted_ranges_literal_unicode",
+      "classes": [
+        "WFStringParameterState",
+        "WFVariableStringParameterState"
+      ],
+      "input": {
+        "WFSerializationType": "WFTextTokenString",
+        "Value": {
+          "string": "L￼🙂éשָׁR"
+        }
+      }
+    },
+    {
+      "name": "dictionary_omitted_ranges_value_key",
+      "classes": [
+        "WFDictionaryParameterState",
+        "WFArrayParameterState",
+        "WFContentArrayParameterState"
+      ],
+      "input": {
+        "WFSerializationType": "WFDictionaryFieldValue",
+        "Value": {
+          "WFDictionaryFieldValueItems": [
+            {
+              "WFItemType": 0,
+              "WFKey": {
+                "WFSerializationType": "WFTextTokenString",
+                "Value": {
+                  "string": "key"
+                }
+              },
+              "WFValue": {
+                "WFSerializationType": "WFTextTokenString",
+                "Value": {
+                  "string": "L￼🙂éשָׁR"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "dictionary_omitted_ranges_literal_key",
+      "classes": [
+        "WFDictionaryParameterState",
+        "WFArrayParameterState",
+        "WFContentArrayParameterState"
+      ],
+      "input": {
+        "WFSerializationType": "WFDictionaryFieldValue",
+        "Value": {
+          "WFDictionaryFieldValueItems": [
+            {
+              "WFItemType": 0,
+              "WFKey": {
+                "WFSerializationType": "WFTextTokenString",
+                "Value": {
+                  "string": "K￼K"
+                }
+              },
+              "WFValue": {
+                "WFSerializationType": "WFTextTokenString",
+                "Value": {
+                  "string": "value"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "dictionary_nested_array_omitted_ranges",
+      "classes": [
+        "WFDictionaryParameterState",
+        "WFArrayParameterState",
+        "WFContentArrayParameterState"
+      ],
+      "input": {
+        "WFSerializationType": "WFDictionaryFieldValue",
+        "Value": {
+          "WFDictionaryFieldValueItems": [
+            {
+              "WFItemType": 2,
+              "WFKey": {
+                "WFSerializationType": "WFTextTokenString",
+                "Value": {
+                  "string": "list"
+                }
+              },
+              "WFValue": {
+                "WFSerializationType": "WFArrayParameterState",
+                "Value": [
+                  {
+                    "WFItemType": 0,
+                    "WFValue": {
+                      "WFSerializationType": "WFTextTokenString",
+                      "Value": {
+                        "string": "L￼🙂éשָׁR"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "array_omitted_ranges_value",
+      "classes": [
+        "WFDictionaryParameterState",
+        "WFArrayParameterState",
+        "WFContentArrayParameterState"
+      ],
+      "input": {
+        "WFSerializationType": "WFArrayParameterState",
+        "Value": [
+          {
+            "WFItemType": 0,
+            "WFValue": {
+              "WFSerializationType": "WFTextTokenString",
+              "Value": {
+                "string": "L￼🙂éשָׁR"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_omitted_ranges_value",
+      "classes": [
+        "WFDictionaryParameterState",
+        "WFArrayParameterState",
+        "WFContentArrayParameterState"
+      ],
+      "input": [
+        {
+          "WFItemType": 0,
+          "WFValue": {
+            "WFSerializationType": "WFTextTokenString",
+            "Value": {
+              "string": "L￼🙂éשָׁR"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
