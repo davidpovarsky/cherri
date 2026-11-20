@@ -68,7 +68,7 @@ func TestP15PaginateResultOracleRejectsDetachedGraph(t *testing.T) {
 	if err := p15PaginateResultError(actions, false); err != nil {
 		t.Fatal("healthy actual graph", err)
 	}
-	for _, fault := range []string{"detached_consumer", "missing_consumer_input", "missing_producer_uuid"} {
+	for _, fault := range []string{"detached_consumer", "missing_consumer_input", "missing_producer_uuid", "missing_aggregate_input", "foreign_aggregate_input"} {
 		t.Run(fault, func(t *testing.T) {
 			raw, err := json.Marshal(actions)
 			if err != nil {
@@ -85,6 +85,18 @@ func TestP15PaginateResultOracleRejectsDetachedGraph(t *testing.T) {
 				delete(broken[len(broken)-2].WFWorkflowActionParameters, "WFVariable")
 			case "missing_producer_uuid":
 				delete(broken[len(broken)-3].WFWorkflowActionParameters, "UUID")
+			case "missing_aggregate_input":
+				delete(broken[len(broken)-3].WFWorkflowActionParameters, "WFVariable")
+			case "foreign_aggregate_input":
+				input, okay := broken[len(broken)-3].WFWorkflowActionParameters["WFVariable"].(map[string]any)
+				if !okay {
+					t.Fatal("actual aggregate read has no native input")
+				}
+				value, okay := input["Value"].(map[string]any)
+				if !okay || value["Type"] != "Variable" {
+					t.Fatal("actual aggregate read has no variable attachment")
+				}
+				value["VariableName"] = "UNRELATED_PAGINATION_AGGREGATE"
 			}
 			if p15PaginateResultError(broken, false) == nil {
 				t.Fatal("detached actual pagination graph accepted", fault)
