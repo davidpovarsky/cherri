@@ -1,0 +1,173 @@
+[
+  {
+    "test": "TestP15RawNativeJSONNullCannotDisappear/action_field",
+    "file": "raw-null-observed-0.plist",
+    "sha256": "471780654160ae1f5ee6ee3dbb4dc5c706c908d8e1eda36a7b69c05a9f259859",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Present": false
+        }
+      }
+    ]
+  },
+  {
+    "test": "TestP15RawNativeJSONNullCannotDisappear/nested_map",
+    "file": "raw-null-observed-1.plist",
+    "sha256": "37df8f243bd30f8f557d25324bab7c661bdd14ecfcc8d5d25904b1621105aef7",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Nested": {
+            "Value": {
+              "WFDictionaryFieldValueItems": [
+                {
+                  "WFItemType": 0,
+                  "WFKey": {
+                    "Value": {
+                      "string": "Probe"
+                    },
+                    "WFSerializationType": "WFTextTokenString"
+                  },
+                  "WFValue": {
+                    "Value": {
+                      "string": ""
+                    },
+                    "WFSerializationType": "WFTextTokenString"
+                  }
+                }
+              ]
+            },
+            "WFSerializationType": "WFDictionaryFieldValue"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "test": "TestP15RawNativeJSONNullCannotDisappear/nested_array",
+    "file": "raw-null-observed-2.plist",
+    "sha256": "cffd2a84e96108720da64be55e2a2847b67a83e1d7d0d4376e4f811966be88e9",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Rows": {
+            "Value": [
+              {
+                "WFItemType": 4,
+                "WFValue": {
+                  "Value": false,
+                  "WFSerializationType": "WFNumberSubstitutableState"
+                }
+              },
+              {
+                "WFItemType": 3,
+                "WFValue": {
+                  "Value": {
+                    "string": "0"
+                  },
+                  "WFSerializationType": "WFTextTokenString"
+                }
+              },
+              {
+                "WFItemType": 0,
+                "WFValue": {
+                  "Value": {
+                    "string": ""
+                  },
+                  "WFSerializationType": "WFTextTokenString"
+                }
+              },
+              {
+                "WFItemType": 0,
+                "WFValue": {
+                  "Value": {
+                    "string": ""
+                  },
+                  "WFSerializationType": "WFTextTokenString"
+                }
+              }
+            ],
+            "WFSerializationType": "WFArrayParameterState"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "test": "TestP15RawNativeJSONNullCannotDisappear/plist_literal",
+    "file": "raw-null-observed-3.plist",
+    "sha256": "471780654160ae1f5ee6ee3dbb4dc5c706c908d8e1eda36a7b69c05a9f259859",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Present": false
+        }
+      }
+    ]
+  },
+  {
+    "test": "TestP15RawNativeJSONNullCannotDisappear/after_valid_action",
+    "file": "raw-null-observed-4.plist",
+    "sha256": "2623b55e8412198c86f941c9835c45a07bbc0c9b6ee6a1bb2ad5588dcc555931",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+        "WFWorkflowActionParameters": {
+          "WFTextActionText": "BEFORE_NULL"
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {}
+      }
+    ]
+  },
+  {
+    "test": "TestP15NativePlistEncodedNullCannotDisappear/{\"Present\":false,\"Probe\":null}",
+    "file": "raw-null-observed-5.plist",
+    "sha256": "471780654160ae1f5ee6ee3dbb4dc5c706c908d8e1eda36a7b69c05a9f259859",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Present": false
+        }
+      }
+    ]
+  },
+  {
+    "test": "TestP15NativePlistEncodedNullCannotDisappear/{\"Nested\":{\"Probe\":null}}",
+    "file": "raw-null-observed-6.plist",
+    "sha256": "2cd4ba8c71beb141f8643708bf8f0addab29aba7dbdbaf508a83342512bf6f34",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Nested": {}
+        }
+      }
+    ]
+  },
+  {
+    "test": "TestP15NativePlistEncodedNullCannotDisappear/{\"Rows\":[false,0,\"\",null]}",
+    "file": "raw-null-observed-7.plist",
+    "sha256": "6ad52974909a30568a0f742388804d05adea78b7e5de0184dc3475dea11546af",
+    "actions": [
+      {
+        "WFWorkflowActionIdentifier": "com.example.p15.null",
+        "WFWorkflowActionParameters": {
+          "Rows": [
+            false,
+            0.0,
+            ""
+          ]
+        }
+      }
+    ]
+  }
+]

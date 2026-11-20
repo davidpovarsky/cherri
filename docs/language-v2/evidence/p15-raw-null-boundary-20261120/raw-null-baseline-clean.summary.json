@@ -1,0 +1,39 @@
+{
+  "source_sha": "69804fe0e3335f6c6e466002b046b8201977f2e9",
+  "head_after": "69804fe0e3335f6c6e466002b046b8201977f2e9",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15RawNativeJSONNullCannotDisappear|TestP15NativePlistEncodedNullCannotDisappear|TestP15JSONNullTextRemainsData)$",
+    "."
+  ],
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T01:36:15.055197+00:00",
+  "finished_at_utc": "2026-11-20T01:36:35.987065+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 20.93800000002375,
+  "named_passes": 1,
+  "failed_tests": [
+    "TestP15RawNativeJSONNullCannotDisappear/action_field",
+    "TestP15RawNativeJSONNullCannotDisappear/nested_map",
+    "TestP15RawNativeJSONNullCannotDisappear/nested_array",
+    "TestP15RawNativeJSONNullCannotDisappear/plist_literal",
+    "TestP15RawNativeJSONNullCannotDisappear/after_valid_action",
+    "TestP15RawNativeJSONNullCannotDisappear",
+    "TestP15NativePlistEncodedNullCannotDisappear/{\"Present\":false,\"Probe\":null}",
+    "TestP15NativePlistEncodedNullCannotDisappear/{\"Nested\":{\"Probe\":null}}",
+    "TestP15NativePlistEncodedNullCannotDisappear/{\"Rows\":[false,0,\"\",null]}",
+    "TestP15NativePlistEncodedNullCannotDisappear",
+    null
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "5f58519be2831edd346f28cd7f80b5551c9ee0720020b7bd99eef2e8a5f04107",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

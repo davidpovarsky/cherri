@@ -1,0 +1,30 @@
+{
+  "source_sha": "3abfeee3fc15b10624839e87d8188e7a1c3d2cc6",
+  "head_after": "3abfeee3fc15b10624839e87d8188e7a1c3d2cc6",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "./internal/language/analysis",
+    "./internal/language/lower"
+  ],
+  "passed_packages": [
+    "github.com/electrikmilk/cherri/internal/language/analysis",
+    "github.com/electrikmilk/cherri/internal/language/lower"
+  ],
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T01:47:16.847530+00:00",
+  "finished_at_utc": "2026-11-20T01:47:22.051585+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.202999999979511,
+  "named_passes": 52,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "180d1237f31bec6585d807e61983a1db32f437c2dc0809c822dd8d4eab859f06",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
