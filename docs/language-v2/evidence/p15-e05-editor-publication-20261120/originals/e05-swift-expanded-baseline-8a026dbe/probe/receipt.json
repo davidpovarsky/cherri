@@ -1,0 +1,424 @@
+{
+  "schema_version": 1,
+  "scope": "portable Swift control-flow only, controlled backend adapters",
+  "uiExecuted": false,
+  "realCompilerExecuted": false,
+  "formalRequirementsProved": [],
+  "sources": [
+    {
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 20312,
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592"
+    },
+    {
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22031,
+      "sha256": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3"
+    },
+    {
+      "path": "tools/p10r15/editor_publication_probe.swift",
+      "bytes": 21837,
+      "sha256": "307062a589cb41041fc406e12535209d0c301e3b203c954917d8fafe8d9a7984"
+    }
+  ],
+  "generated": {
+    "path": "editor-publication-generated.swift",
+    "bytes": 25316,
+    "sha256": "2a329f024b4075683ab3a1cd28e3facdca8013c899e604224a52b856f0977f46"
+  },
+  "compile": {
+    "command": [
+      "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+      "-parse-as-library",
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-generated.swift",
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\ios\\CherriApp\\Editor\\CherriCompletionRequest.swift",
+      "-o",
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-probe.exe"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "timeout_seconds": 90,
+    "duration_seconds": 11.90600000001723,
+    "cleanup": null,
+    "within_budget": true,
+    "artifacts": [
+      {
+        "path": "compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "compile.stderr",
+        "bytes": 379,
+        "sha256": "c1f19573bc372176355bd41abddd94005f4831ad08c5f7dc6b7ac02ab9aa3484"
+      }
+    ]
+  },
+  "execution": {
+    "command": [
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-probe.exe"
+    ],
+    "exit_code": 1,
+    "timed_out": false,
+    "timeout_seconds": 45,
+    "duration_seconds": 0.3440000000409782,
+    "cleanup": null,
+    "within_budget": true,
+    "artifacts": [
+      {
+        "path": "execute.stdout",
+        "bytes": 6122,
+        "sha256": "24642bbbdb01a17e77ddd5ffb46d58243ee69ad1d27960f2f741957d70d4f1ce"
+      },
+      {
+        "path": "execute.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "event": "control",
+      "name": "current_success",
+      "observation": {
+        "compiled": "CURRENT",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "late_success_after_newer",
+      "observation": {
+        "compiled": "NEW",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "late_analysis_after_newer",
+      "observation": {
+        "compiled": "NEW",
+        "diagnostic": "",
+        "diagnostics": [
+          "OLD_ANALYSIS"
+        ],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "late_generic_error_after_newer",
+      "observation": {
+        "compiled": "NEW",
+        "diagnostic": "The operation could not be completed. (main.ProbeError error 1.)",
+        "diagnostics": [
+          "The operation could not be completed. (main.ProbeError error 1.)"
+        ],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "canonical_unicode_is_not_same_snapshot",
+      "observation": {
+        "compiled": "OLD_UTF16",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "cancelled_same_source_does_not_publish",
+      "observation": {
+        "compiled": "CANCELLED",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "old_completion_cannot_clear_new_busy",
+      "observation": {
+        "busyWhileNewerPending": false,
+        "compiled": "NEW",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "current_error_is_not_suppressed",
+      "observation": {
+        "compiled": "",
+        "diagnostic": "CURRENT_COMPILE",
+        "diagnostics": [
+          "CURRENT_ANALYSIS"
+        ],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "manual_stale_success",
+      "observation": {
+        "compiled": "OLD_MANUAL",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "same_source_replacement",
+      "observation": {
+        "compiled": "OLD_SAME",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "source_aba_replacement",
+      "observation": {
+        "compiled": "OLD_A",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "changed_mode_without_new_request",
+      "observation": {
+        "compiled": "OLD_CONTEXT",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "changed_name_without_new_request",
+      "observation": {
+        "compiled": "OLD_CONTEXT",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "pre_cancelled_request_does_not_compile",
+      "observation": {
+        "actualCompileCalls": 1
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "current_generic_error",
+      "observation": {
+        "compiled": "",
+        "diagnostic": "The operation could not be completed. (main.ProbeError error 1.)",
+        "diagnostics": [
+          "The operation could not be completed. (main.ProbeError error 1.)"
+        ],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "stale_after_catalog_await_cannot_write",
+      "observation": {
+        "compiled": "NEW_UNSIGNED",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 1
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "cancelled_analysis_does_not_publish",
+      "observation": {
+        "compiled": "",
+        "diagnostic": "CANCELLED_COMPILE",
+        "diagnostics": [
+          "CANCELLED_ANALYSIS"
+        ],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 0
+      },
+      "result": "FAIL",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "current_signed_adapter_publication",
+      "observation": {
+        "compiled": "CURRENT_SIGNED",
+        "diagnostic": "",
+        "diagnostics": [],
+        "isCompiling": false,
+        "isSigning": false,
+        "signedWrites": 1
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "current_completion",
+      "observation": {
+        "completed": true,
+        "items": [
+          "CONTROLLED_ITEM"
+        ]
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "different_source",
+      "observation": {
+        "completed": false,
+        "items": []
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "different_caret",
+      "observation": {
+        "completed": false,
+        "items": []
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "canonical_unicode",
+      "observation": {
+        "completed": false,
+        "items": []
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "cancelled_completion",
+      "observation": {
+        "completed": false,
+        "items": []
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    },
+    {
+      "event": "control",
+      "name": "selection_range_does_not_call_completion",
+      "observation": {
+        "completed": true
+      },
+      "result": "PASS",
+      "scope": "controlled adapter; actual production method body"
+    }
+  ],
+  "summary": {
+    "event": "summary",
+    "controls": 24,
+    "failed": 13,
+    "uiExecuted": false,
+    "realCompilerExecuted": false
+  },
+  "binary": {
+    "bytes": 242176,
+    "sha256": "aeb36a98fe150f910301873b9e0103e06db6a2bdbc99095170aea62fe32cf59f"
+  },
+  "sources_unchanged": true,
+  "passed": false
+}

@@ -1,0 +1,816 @@
+{
+  "kind": "cherri-canonical-backend-recovery-gates",
+  "schema_version": "1",
+  "prepared_date": "2026-10-07",
+  "audited_code_sha": "fde7f982fa709b570dbd21f4623a392f58af49d2",
+  "audited_docs_sha": "d38369e78a2f9e472f584bb2d946af2a31e42d4a",
+  "status": "SPECIFICATION_NOT_RESULTS",
+  "gate_count": 33,
+  "rules": [
+    "These are gate specifications, not executed tests.",
+    "Original 94 and repair 52 contracts remain immutable and mandatory as specified.",
+    "Related IDs are traceability links, never an assertion that one test proves all linked requirements.",
+    "Original minimum levels remain binding even if a grouping lists fewer general tiers.",
+    "Evidence comes from production-connected assertions; ios-build is not ios-runtime.",
+    "Live external AI evaluation can be unrun with explicit cause; its executable harness cannot be omitted."
+  ],
+  "gates": [
+    {
+      "id": "BRG01",
+      "title": "Takeover preserves interrupted work",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "B01",
+        "END01"
+      ],
+      "related_repair_ids": [
+        "RP49"
+      ],
+      "minimum_evidence_tiers": [
+        "repository"
+      ],
+      "scenario": "Inventory both worktrees and unpublished changes, create private backup hashes, start isolated recovery branches from chosen current bases.",
+      "expected_observation": "Original task and main branches unchanged; relevant unpublished repairs preserved; starting identities recorded.",
+      "proposed_test_prefix": "TestBackendRecovery01",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG02",
+      "title": "Strict comparator rejects wrong reference edges",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "R02",
+        "R03",
+        "R07"
+      ],
+      "related_repair_ids": [
+        "RP37"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "scenario": "Call production shared comparator on a valid pair then swap producer, change scoped variable, or create dangling reference.",
+      "expected_observation": "All mutations rejected in both directions; a consistent bijective renaming passes.",
+      "proposed_test_prefix": "TestBackendRecovery02",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG03",
+      "title": "Strict comparator retains tree and text meaning",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "S01",
+        "T01",
+        "R04"
+      ],
+      "related_repair_ids": [
+        "RP19",
+        "RP20",
+        "RP37"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "scenario": "Mutate nested key sets, native scalar types, optional presence, token kind, literal text, transform order and UTF-16 attachment range.",
+      "expected_observation": "No token shortcut equality or stringified scalar equality; paths and expected/actual mismatch reported.",
+      "proposed_test_prefix": "TestBackendRecovery03",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG04",
+      "title": "Evidence validator derives actual tiers",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "CI03",
+        "END01"
+      ],
+      "related_repair_ids": [
+        "RP01",
+        "RP02",
+        "RP03"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "integration"
+      ],
+      "scenario": "Inject duplicate/missing IDs, changed contracts, false result, self-declared iOS labels, missing/stale artifacts, wrong SHA and zero matched tests into actual validator.",
+      "expected_observation": "Closure rejects each; ios-build never replaces ios-runtime; each case has one status; partial local report remains incomplete.",
+      "proposed_test_prefix": "TestBackendRecovery04",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG05",
+      "title": "Canonical action builder is really invoked",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "AC01",
+        "AC02"
+      ],
+      "related_repair_ids": [
+        "RP09",
+        "RP10"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "integration"
+      ],
+      "scenario": "Compile a real v2 call through the root adapter and a controlled canonical callback spy/mutation; include custom/full/append/static/descriptor cases.",
+      "expected_observation": "Actual canonical callback called with valid evaluated arguments; no second wire implementation in lowerer.",
+      "proposed_test_prefix": "TestBackendRecovery05",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG06",
+      "title": "Backend state and error isolation",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "V02",
+        "CL02"
+      ],
+      "related_repair_ids": [
+        "RP04",
+        "RP16",
+        "RP51"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "integration",
+        "security"
+      ],
+      "scenario": "Alternate compile/decompile/catalog/analysis, inject emitter error and cancellation, repeat valid request; race-test exercised shared state.",
+      "expected_observation": "No state leaks, swallowed errors, process exit, lock deadlock or analysis side effect; required race configuration recorded.",
+      "proposed_test_prefix": "TestBackendRecovery06",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG07",
+      "title": "Direct reference transformations survive",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "R03"
+      ],
+      "related_repair_ids": [
+        "RP11",
+        "RP35"
+      ],
+      "minimum_evidence_tiers": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "scenario": "Construct action/system/variable references with ordered property, dictionary-key and coercion chains; emit/decode via real codec.",
+      "expected_observation": "Kinds, producers, all ordered transformations and native extensions preserved; removing any one fails strict comparison.",
+      "proposed_test_prefix": "TestBackendRecovery07",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG08",
+      "title": "Inline text references share canonical codec",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "S01",
+        "S02",
+        "P01"
+      ],
+      "related_repair_ids": [
+        "RP19"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "scenario": "Emit repeated references after Hebrew, non-BMP emoji and combining marks; include raw/literal braces and inline transformed values.",
+      "expected_observation": "Exact rendered text and UTF-16 ranges; transforms survive both direct and inline paths; no old-text-parser interpretation.",
+      "proposed_test_prefix": "TestBackendRecovery08",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG09",
+      "title": "Semantic containers and native templates stay distinct",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "L01",
+        "V04",
+        "T05"
+      ],
+      "related_repair_ids": [
+        "RP20",
+        "RP35"
+      ],
+      "minimum_evidence_tiers": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "scenario": "Encode nested lists/maps with numbers, bools, empties and references, then native templates with similar-looking keys.",
+      "expected_observation": "Canonical typed container shapes, wrapper depth, item order and cardinality retained; no double encoding or flattening.",
+      "proposed_test_prefix": "TestBackendRecovery09",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG10",
+      "title": "Capture and written-order evaluation",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "V01",
+        "V03",
+        "C01"
+      ],
+      "related_repair_ids": [
+        "RP12",
+        "RP14"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Run mutable and clipboard captures before later writes; use labelled arguments supplied out of schema order with observable evaluation effects.",
+      "expected_observation": "Each evaluated once in written order; saved values unchanged; no reevaluation during binding or encoding.",
+      "proposed_test_prefix": "TestBackendRecovery10",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG11",
+      "title": "Parameter forms and typed defaults",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "C02",
+        "C03",
+        "C04"
+      ],
+      "related_repair_ids": [
+        "RP08",
+        "RP11",
+        "RP13"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Test omitted and explicit false/zero/empty/default values, literal-only, reference-only, numeric-text codecs, enum, named variadic list, extra positional args.",
+      "expected_observation": "Valid representations accepted by canonical backend; wrong forms diagnosed; no default/presence collapse or implicit argument shifting.",
+      "proposed_test_prefix": "TestBackendRecovery11",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG12",
+      "title": "Nested and mixed loop identity",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "F02"
+      ],
+      "related_repair_ids": [
+        "RP22"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Nested outer A/B and inner 1/2; nested indices; mixed repeat/for; siblings; same-name scope tests; outer item used after inner loop.",
+      "expected_observation": "A:1,A:2,B:1,B:2 and independent expected zero-based index sequences; references resolve to distinct correct loop owners.",
+      "proposed_test_prefix": "TestBackendRecovery12",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG13",
+      "title": "Typed conditions and dynamic short circuit",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "F01",
+        "N03",
+        "P03"
+      ],
+      "related_repair_ids": [
+        "RP17",
+        "RP18"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Use runtime-derived bools in all AND/OR cases with counted RHS side effect, dynamic equality/order checks and typed condition inputs.",
+      "expected_observation": "Exactly-once required evaluation and zero skipped RHS effects; case-sensitive equality as contracted; no generic addition fallback.",
+      "proposed_test_prefix": "TestBackendRecovery13",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG14",
+      "title": "Value blocks, loop results and return",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "F03",
+        "F04",
+        "M02"
+      ],
+      "related_repair_ids": [
+        "RP23",
+        "RP26"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Value if/menu/loops with complete and incomplete yields, zero iterations, early return, bare return and unused final action results.",
+      "expected_observation": "One semantic value per normal iteration; proper branch/result references; return exits correct frame; main Void does not leak output.",
+      "proposed_test_prefix": "TestBackendRecovery14",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG15",
+      "title": "Function transport and recursion",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "FN01",
+        "FN02",
+        "FN03",
+        "FN04",
+        "FN05"
+      ],
+      "related_repair_ids": [
+        "RP24",
+        "RP25",
+        "RP26"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Nested and recursive calls with presence defaults, structured arguments/results, caller input and envelope-lookalike input; inject lowering failure.",
+      "expected_observation": "Shared canonical transport, correct caller continuation, preserved shapes/presence/input, complete error propagation, no accidental dispatch.",
+      "proposed_test_prefix": "TestBackendRecovery15",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG16",
+      "title": "Bounds and numeric semantics",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "L02",
+        "L03",
+        "L04",
+        "N01",
+        "N02"
+      ],
+      "related_repair_ids": [
+        "RP15",
+        "RP17",
+        "RP21"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "scenario": "Test empty/first/last/negative/out-of-range static/dynamic indices; fractional division/modulus and compound assignments.",
+      "expected_observation": "Zero-based API preserved, no unsafe dynamic lookup or int64 truncation, numeric behavior follows approved contract.",
+      "proposed_test_prefix": "TestBackendRecovery16",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG17",
+      "title": "Metadata, setup and trigger preservation",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "M01",
+        "M03",
+        "M04",
+        "M05"
+      ],
+      "related_repair_ids": [
+        "RP30",
+        "RP31",
+        "RP32"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "scenario": "Roundtrip approved header fields, output/no-input metadata, seven approved trigger families, setup defaults and indices after helper insertion.",
+      "expected_observation": "All relevant fields preserve type/presence; questions target actual final action/parameter including zero; no automation-install claims.",
+      "proposed_test_prefix": "TestBackendRecovery17",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG18",
+      "title": "Native action/block/full workflow paths",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "R01",
+        "R02",
+        "R04",
+        "R05",
+        "R06"
+      ],
+      "related_repair_ids": [
+        "RP35",
+        "RP36"
+      ],
+      "minimum_evidence_tiers": [
+        "native-roundtrip",
+        "integration"
+      ],
+      "scenario": "Import unknown nested/top-level keys, descriptors, variants, references, binary/date/large integer data across supported input formats.",
+      "expected_observation": "Exact tree and reference graph survive; full-native bypass actually works; typed readability retained for supported cases.",
+      "proposed_test_prefix": "TestBackendRecovery18",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG19",
+      "title": "Safe import editing and structural migration",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "R07",
+        "CL03"
+      ],
+      "related_repair_ids": [
+        "RP33",
+        "RP34",
+        "RP37"
+      ],
+      "minimum_evidence_tiers": [
+        "integration",
+        "native-roundtrip"
+      ],
+      "scenario": "Migrate legacy metadata/references/includes, fail an unsupported conversion, then perform one authorized parameter edit on imported data.",
+      "expected_observation": "Originals survive failed conversion; intended delta only; no regex directive deletion; public output is v2, not legacy retry.",
+      "proposed_test_prefix": "TestBackendRecovery19",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG20",
+      "title": "Modules and existing standard functions",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "IM01",
+        "IM02",
+        "IM03"
+      ],
+      "related_repair_ids": [
+        "RP27",
+        "RP28"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "service",
+        "native-structure"
+      ],
+      "scenario": "Load alias-qualified local modules, cycles and duplicate aliases; reject runtime module init; migrate includes safely; runJS and chooseFromVCard explicitly tested.",
+      "expected_observation": "Real namespace and cycle handling; preserved stdfunc source feeds tested generated equivalents; no no-op imports.",
+      "proposed_test_prefix": "TestBackendRecovery20",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG21",
+      "title": "Authorized resource access and pure services",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "IM04",
+        "IM05",
+        "CL02"
+      ],
+      "related_repair_ids": [
+        "RP29"
+      ],
+      "minimum_evidence_tiers": [
+        "security",
+        "integration",
+        "service"
+      ],
+      "scenario": "Attempt symlink/traversal/out-of-root access, unresolved remote imports, network/process calls during analysis and invalid compile.",
+      "expected_observation": "Actual loader and public APIs reject unauthorized operations and never sign/execute/install during analysis.",
+      "proposed_test_prefix": "TestBackendRecovery21",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG22",
+      "title": "Live schema and generation failure handling",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "U02",
+        "AC03"
+      ],
+      "related_repair_ids": [
+        "RP06",
+        "RP07",
+        "RP08"
+      ],
+      "minimum_evidence_tiers": [
+        "generation",
+        "integration"
+      ],
+      "scenario": "Generate from real canonical definitions twice; break live export, facet assumption, codec binding, duplicate labels/enums.",
+      "expected_observation": "Deterministic valid output; each invalid condition fails; no automatic baseline snapshot fallback or fabricated evidence state.",
+      "proposed_test_prefix": "TestBackendRecovery22",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG23",
+      "title": "Real upstream declaration propagation",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "U03",
+        "U01"
+      ],
+      "related_repair_ids": [
+        "RP06",
+        "RP07"
+      ],
+      "minimum_evidence_tiers": [
+        "repository",
+        "integration",
+        "generation"
+      ],
+      "scenario": "Temporary actual actions/*.cherri edit; run exporter/generator/compiler/completion/docs pipeline and revert temp checkout.",
+      "expected_observation": "Changed parameter and its type reach every claimed consumer with unchanged real worktree; invalid facet assumption rejected.",
+      "proposed_test_prefix": "TestBackendRecovery23",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG24",
+      "title": "Real canonical behavior propagation",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "U01",
+        "U03"
+      ],
+      "related_repair_ids": [
+        "RP09",
+        "RP10"
+      ],
+      "minimum_evidence_tiers": [
+        "repository",
+        "integration",
+        "native-structure"
+      ],
+      "scenario": "Temporary static/custom callback/shared codec behavior edit; rebuild canonical oracle and v2 without editing v2 encoding.",
+      "expected_observation": "Both see same behavior; proves backend reuse beyond copying a new metadata label.",
+      "proposed_test_prefix": "TestBackendRecovery24",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG25",
+      "title": "One checked public CLI/mobile route",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "U04",
+        "CL01",
+        "CL03"
+      ],
+      "related_repair_ids": [
+        "RP04",
+        "RP05",
+        "RP40",
+        "RP42",
+        "RP52"
+      ],
+      "minimum_evidence_tiers": [
+        "integration",
+        "ios-build",
+        "ios-ui"
+      ],
+      "scenario": "Call actual entrypoints with email/Ask/directive-looking literals, v2 type errors and malformed functions; instrument legacy parser boundary.",
+      "expected_observation": "No substring misrouting, no old-parser retry, no output/signature after semantic failure; precise diagnostics and installed commands match docs.",
+      "proposed_test_prefix": "TestBackendRecovery25",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG26",
+      "title": "Exact explicit signing payload",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "CI02",
+        "CL01"
+      ],
+      "related_repair_ids": [
+        "RP43",
+        "RP48"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "integration",
+        "ios-runtime"
+      ],
+      "scenario": "Compile A then B and sign with injected provider; stale globals/files and failed first signing; real sanitized HubSign/native flow after local tests.",
+      "expected_observation": "Request bytes equal intended artifact, correct name/path/error handling, no unsigned masquerade; real imported artifact belongs to current fixture.",
+      "proposed_test_prefix": "TestBackendRecovery26",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG27",
+      "title": "Real editor ranges, completion and stale edits",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "P02",
+        "P05",
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06"
+      ],
+      "related_repair_ids": [
+        "RP38",
+        "RP39",
+        "RP40"
+      ],
+      "minimum_evidence_tiers": [
+        "service",
+        "integration",
+        "ios-ui"
+      ],
+      "scenario": "Exercise actual Swift bridge/editor and LSP with incomplete code, UTF-16 text, multi-errors, parameter/enum replacement, rapid versioned edits, hover/rename/format.",
+      "expected_observation": "Correct contextual edits/ranges and only newest response applied; formatter preserves literals/comments; no independent Swift semantics.",
+      "proposed_test_prefix": "TestBackendRecovery27",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG28",
+      "title": "Preview bounded edit and measured performance",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "E07",
+        "E08",
+        "S03"
+      ],
+      "related_repair_ids": [
+        "RP41",
+        "RP51"
+      ],
+      "minimum_evidence_tiers": [
+        "integration",
+        "ios-ui",
+        "benchmark"
+      ],
+      "scenario": "Actual visual-to-source edit plus small/large/embedded-asset performance runs and cancellation/cache observation.",
+      "expected_observation": "Only intended source node changes; measured numbers and fixtures recorded; no claimed UI/performance from prose.",
+      "proposed_test_prefix": "TestBackendRecovery28",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG29",
+      "title": "Generated active docs and executable examples",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "D01",
+        "D02",
+        "D03"
+      ],
+      "related_repair_ids": [
+        "RP46"
+      ],
+      "minimum_evidence_tiers": [
+        "generation",
+        "docs",
+        "integration"
+      ],
+      "scenario": "Generate signatures/snippets from schema; compile runnable guide/Skill examples; verify intended-error fixtures; inspect retrieval at pinned docs SHA.",
+      "expected_observation": "No drift, no old active syntax, no weakened examples; updated architecture and limitations reflect actual implementation.",
+      "proposed_test_prefix": "TestBackendRecovery29",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG30",
+      "title": "Complete extracted Skill and immutable compatibility",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "K01",
+        "K02",
+        "K03",
+        "K04",
+        "K05"
+      ],
+      "related_repair_ids": [
+        "RP44",
+        "RP45",
+        "RP46"
+      ],
+      "minimum_evidence_tiers": [
+        "skill-package",
+        "integration"
+      ],
+      "scenario": "Fresh/extracted/offline/cache-old-bundle/docs-mismatch/schema-mismatch/corrupt-download/update-rollback workflows through actual scripts.",
+      "expected_observation": "Exact compatible manifest identities; resolver selects validated binary; failed update preserves usable installation; no branch-only lock.",
+      "proposed_test_prefix": "TestBackendRecovery30",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG31",
+      "title": "Actual encoding negative gate and exact-SHA CI",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "CI01",
+        "CI02",
+        "CI03",
+        "CI04",
+        "END01"
+      ],
+      "related_repair_ids": [
+        "RP47",
+        "RP48",
+        "RP49"
+      ],
+      "minimum_evidence_tiers": [
+        "ci",
+        "ios-runtime",
+        "repository",
+        "security"
+      ],
+      "scenario": "Intentionally violate required EXPECT in actual verifier, then run final real workflows and target computed assertions with artifact identity validation.",
+      "expected_observation": "Negative subprocess nonzero; positive final jobs successful at delivered revision; no skipped/cancelled/stale execution accepted.",
+      "proposed_test_prefix": "TestBackendRecovery31",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG32",
+      "title": "Full obligation accounting and executable AI harness",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "AI01"
+      ],
+      "related_repair_ids": [
+        "RP50"
+      ],
+      "minimum_evidence_tiers": [
+        "unit",
+        "integration",
+        "repository"
+      ],
+      "scenario": "Create complete requirement-to-test/evidence map for original 94+52, install/run fake-adapter evaluation harness and check external-provider configuration.",
+      "expected_observation": "No original requirement removed or relabelled; harness executable. Live external evaluation may be AI_EVAL_NOT_RUN only when endpoint unavailable.",
+      "proposed_test_prefix": "TestBackendRecovery32",
+      "evidence_must_reference_actual_production_path": true
+    },
+    {
+      "id": "BRG33",
+      "title": "Approved frontend semantics remain enforced",
+      "status": "PLANNED_NOT_EXECUTED",
+      "mandatory": true,
+      "related_original_ids": [
+        "B02",
+        "C05",
+        "F05",
+        "P04",
+        "T04",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "related_repair_ids": [],
+      "minimum_evidence_tiers": [
+        "unit",
+        "analysis",
+        "service",
+        "integration"
+      ],
+      "scenario": "Verify all remaining original lexical/type/schema requirements against the immutable full product contract and map their exact additional native/runtime tiers. Reuse working tests without waiving stronger original levels.",
+      "expected_observation": "No new syntax design and no lost original obligations. Each required tier in the original contract is still independently mandatory.",
+      "proposed_test_prefix": "TestBackendRecovery33",
+      "evidence_must_reference_actual_production_path": true
+    }
+  ]
+}

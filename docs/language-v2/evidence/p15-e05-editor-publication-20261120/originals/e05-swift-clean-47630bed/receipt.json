@@ -1,0 +1,69 @@
+{
+  "source": "47630bedef7dc986af78ff293cac4109703f0847",
+  "status_before": "",
+  "free_before": 36913430528,
+  "started_at": "2026-11-20T14:08:37.164642+00:00",
+  "commands": [
+    {
+      "name": "python-controls",
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/p10r15",
+        "-p",
+        "test_editor_publication_probe.py",
+        "-v"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 1.3429999999934807,
+      "artifacts": [
+        {
+          "path": "python-controls.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "python-controls.stderr",
+          "bytes": 1247,
+          "sha256": "986b990e6f5096f37dc1e7a0b5a9266e5a9e5e9b5a30a9de181ccea16cd9ef55"
+        }
+      ]
+    },
+    {
+      "name": "swift-probe",
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "tools/p10r15/editor_publication_probe.py",
+        "--repo",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+        "--output",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe"
+      ],
+      "timeout_seconds": 180,
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 16.5,
+      "artifacts": [
+        {
+          "path": "swift-probe.stdout",
+          "bytes": 340,
+          "sha256": "9f3f8ad4bf30b56056e4d34bb989dd942683d976b80b92d22c126a430a1667e2"
+        },
+        {
+          "path": "swift-probe.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "status_after": "",
+  "head_after": "47630bedef7dc986af78ff293cac4109703f0847",
+  "free_after": 36911865856,
+  "completed_at": "2026-11-20T14:08:55.412730+00:00"
+}
