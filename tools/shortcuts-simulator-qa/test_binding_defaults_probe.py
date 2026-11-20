@@ -1,5 +1,6 @@
 """Execute source selection and callback rejection for the two public bodies."""
 import base64
+import copy
 import hashlib
 import json
 import os
@@ -99,6 +100,59 @@ class BindingDefaultsProbeTests(unittest.TestCase):
                 self.assertEqual(self.oracle.verify([{**event,"resultSummary":probe.CASES[fid]["prefix"]+wrong}],fid,summary)["runGate"],"FAIL_RUNTIME")
             self.assertEqual(self.oracle.verify([{**event,"tracePayload":""}],fid,summary)["traceGate"],"FAIL_RUNTIME")
             self.assertEqual(self.oracle.verify([{**event,"runId":"stale"}],fid,summary)["runGate"],"FAIL_RUNTIME")
+
+
+    def test_retained_actual_compiled_adapters_require_exact_dispatcher_completion(self):
+        document = json.loads((self.root / "tools/shortcuts-simulator-qa/testdata/binding_defaults_compiled_graphs.json").read_text(encoding="utf-8"))
+        self.assertEqual(document["kind"], "RETAINED_ACTUAL_LOCAL_COMPILE_FOR_ORACLE_MUTATION_TESTS")
+        self.assertEqual(document["appleRuntime"], "NOT_RUN")
+        self.assertIs(document["formalAcceptanceGranted"], False)
+        self.assertEqual({row["fixtureId"] for row in document["fixtures"]}, set(EXPECTED))
+        for row in document["fixtures"]:
+            fid, actions = row["fixtureId"], row["actions"]
+            with self.subTest(fixture=fid):
+                source = (self.root / row["sourcePath"]).read_bytes()
+                self.assertEqual(hashlib.sha256(source).hexdigest(), row["sourceSHA256"])
+                self.assertEqual(len(actions), row["nativeActionCount"])
+                self.assertEqual(probe.verify_adapter_graph(fid, actions)["status"], "PASS_LOCAL_GRAPH_ONLY")
+                if fid == "CherriBindingCapturePOC":
+                    with self.assertRaisesRegex(ValueError, "BINDING_DEFAULTS_GRAPH_CONTRACT"):
+                        probe.verify_adapter_graph(fid, actions + [{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"}])
+                    continue
+                self.assertEqual(actions[-1], {"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+                self.assertEqual(actions[-2]["WFWorkflowActionIdentifier"], "is.workflow.actions.conditional")
+                self.assertEqual(actions[-3]["WFWorkflowActionIdentifier"], "is.workflow.actions.output")
+                equivalent = copy.deepcopy(actions)
+                equivalent[-1]["WFWorkflowActionParameters"] = {}
+                self.assertEqual(probe.verify_adapter_graph(fid, equivalent)["status"], "PASS_LOCAL_GRAPH_ONLY")
+                for fault in ("drop_completion", "duplicate_completion", "borrowed_input", "named_completion",
+                              "wrong_completion_kind", "extra_completion_field", "wrong_closure_mode",
+                              "wrong_closure_group", "borrowed_output", "extra_action"):
+                    with self.subTest(fixture=fid, fault=fault):
+                        changed = copy.deepcopy(actions)
+                        if fault == "drop_completion":
+                            changed.pop()
+                        elif fault == "duplicate_completion":
+                            changed.append(copy.deepcopy(changed[-1]))
+                        elif fault == "borrowed_input":
+                            changed[-1]["WFWorkflowActionParameters"] = {"WFInput": "FORGED"}
+                        elif fault == "named_completion":
+                            changed[-1]["WFWorkflowActionParameters"] = {"UUID": "00000000-0000-0000-0000-000000000001"}
+                        elif fault == "wrong_completion_kind":
+                            changed[-1]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext"
+                        elif fault == "extra_completion_field":
+                            changed[-1]["UnreviewedOutput"] = "FORGED"
+                        elif fault == "wrong_closure_mode":
+                            changed[-2]["WFWorkflowActionParameters"]["WFControlFlowMode"] = 1
+                        elif fault == "wrong_closure_group":
+                            changed[-2]["WFWorkflowActionParameters"]["GroupingIdentifier"] = "unrelated"
+                        elif fault == "borrowed_output":
+                            changed[-3]["WFWorkflowActionParameters"]["WFOutput"]["Value"]["attachmentsByRange"]["{0, 1}"]["OutputUUID"] = "unrelated"
+                        elif fault == "extra_action":
+                            changed.insert(-1, {"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+                        with self.assertRaisesRegex(ValueError, "BINDING_DEFAULTS_GRAPH_CONTRACT"):
+                            probe.verify_adapter_graph(fid, changed)
+
 
 
 if __name__=="__main__":
