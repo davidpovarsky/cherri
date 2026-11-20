@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "readerImplementation": "b6b7256062880e9ab9a5b03071687662698e9765",
+  "sourceCommit": "b29d071e44a9a8be5f3c22e7b09d5fe3965f8716",
+  "runId": 44644166680,
+  "nativeRequirementClosed": false,
+  "controls": [
+    {
+      "fixtureId": "qa-file-carrier-text-data-v2",
+      "artifactId": 14588652459,
+      "originalZipSha256": "03071652fc5ce0995247e142bbd9d881b6a3f083eb17c5c32ab6f34aafacaf60",
+      "originalArtifactDigest": "sha256:03071652fc5ce0995247e142bbd9d881b6a3f083eb17c5c32ab6f34aafacaf60",
+      "expectedExit": 3,
+      "observedExit": 3,
+      "status": "FAIL_EVIDENCE_VALIDATION",
+      "detail": "signed target provenance missing or malformed; native execution cannot be verified",
+      "publishedHashesVerified": null,
+      "resultSha256": "bb8811c6994ad2bad2861d08c28c4463443597cccf3d4fb5cd0c724e86a04482",
+      "runtimeContractVerified": false
+    },
+    {
+      "fixtureId": "qa-file-carrier-file-coercion-v2",
+      "artifactId": 14594230858,
+      "originalZipSha256": "37982ce67bb7f7e62f3b3b94926c77a2448cb620a6defa788411971028d369d7",
+      "originalArtifactDigest": "sha256:37982ce67bb7f7e62f3b3b94926c77a2448cb620a6defa788411971028d369d7",
+      "expectedExit": 2,
+      "observedExit": 2,
+      "status": "FAIL_RUNTIME_PRESERVED",
+      "detail": null,
+      "publishedHashesVerified": 21,
+      "resultSha256": "47960a5f80a465801d5247cc1b5bc9e64c2364bb669676b89c80bb5338285507",
+      "runtimeContractVerified": false
+    }
+  ],
+  "retainedDictionaryCancellation": {
+    "jobId": 135982425602,
+    "conclusion": "cancelled",
+    "cause": "UNVERIFIED",
+    "logSha256": "5e5d225635c465432be4bf54b629b13baf0608ccbb64c6a5751a292aeb15249d",
+    "artifactPublished": false
+  },
+  "retainedFileCoercionImport": {
+    "jobId": 135982425144,
+    "signedArtifactSha256": "fa51eb3168093a960d20af806fc45ea0df1013f190cdebb82a9620406d1e2d66",
+    "importGate": "BLOCKED_IMPORT",
+    "matchingTargetCallbacks": 0,
+    "foregroundAtEditorEntry": true,
+    "libraryLostBeforeQuery": false,
+    "originalJobLogSha256": "72d53e4ef750008201ad7bea0769e12a104935fd228f8fb466957fcf9fc21ae2"
+  }
+}
