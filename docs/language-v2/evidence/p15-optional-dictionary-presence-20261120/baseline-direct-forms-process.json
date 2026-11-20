@@ -1,0 +1,44 @@
+{
+  "implementation_sha": "54cf4350d79630f1572246bc027270189264202f",
+  "branch": "agent/cherri-p10r15-optional-dictionary-presence-20261120",
+  "source_clean_before": true,
+  "source_status_after": "",
+  "head_after": "54cf4350d79630f1572246bc027270189264202f",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder$",
+    "."
+  ],
+  "started_utc": "2026-11-20T07:04:48.463959+00:00",
+  "completed_utc": "2026-11-20T07:05:01.076858+00:00",
+  "elapsed_seconds": 12.48399999999674,
+  "exit_code": 1,
+  "named": {
+    "pass": [],
+    "fail": [
+      "TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder/capture",
+      "TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder/reserved_keys",
+      "TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder/empty_list",
+      "TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder/empty_map",
+      "TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder"
+    ],
+    "skip": []
+  },
+  "host": "Windows-11-10.0.26300-SP0",
+  "go_version": "go version go1.25.6 windows/amd64",
+  "artifacts": {
+    "baseline-direct-forms-go.jsonl": {
+      "sha256": "f5e56b20faf233676c89a9cf4cc3595e66601e486ed11c0107e96083fc48ff95",
+      "bytes": 11512
+    },
+    "baseline-direct-forms-go.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

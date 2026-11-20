@@ -1,0 +1,945 @@
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index d7e9d51d9e5d7a460f145b79799c1680b3e0f553..b67a7a36de5a203c2c3e0be8090eaaa6a7d397b1 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -32,6 +32,7 @@ type Symbol struct {
+ 	flowType              types.Type
+ 	optionalPresence      bool
+ 	knownAbsent           bool
++	dictionaryOrigin      *syntax.MapExpr
+ 	nativeReferenceTarget bool
+ }
+ 
+@@ -92,6 +93,8 @@ type Analyzer struct {
+ 	exprTypes              map[syntax.Expression]types.Type
+ 	exprPresence           map[syntax.Expression]bool
+ 	exprAbsent             map[syntax.Expression]bool
++	dictionaryOrigins      map[syntax.Expression]*syntax.MapExpr
++	dictionaryIndexes      map[syntax.Expression]bool
+ 	targets                []string
+ 	hasExplicitTarget      bool
+ 	minTargetVersion       float64
+@@ -352,6 +355,8 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
+ 	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
+ 	a.exprPresence = make(map[syntax.Expression]bool)
+ 	a.exprAbsent = make(map[syntax.Expression]bool)
++	a.dictionaryOrigins = make(map[syntax.Expression]*syntax.MapExpr)
++	a.dictionaryIndexes = make(map[syntax.Expression]bool)
+ 	defer func() { a.analyzing = false }()
+ 	a.analyzeModuleDependencies()
+ 	a.expandCopyPaste(prog)
+@@ -816,6 +821,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
+ 			Initialized:           s.Value != nil,
+ 			Span:                  s.Span,
+ 		}
++		if !s.Mutable {
++			symbol.dictionaryOrigin = a.dictionaryOrigins[s.Value]
++		}
+ 		narrowAssignedValue(symbol, valType)
+ 		scope.Define(symbol)
+ 
+@@ -1112,6 +1120,7 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
+ 	}
+ 	delete(a.exprPresence, expr)
+ 	t := a.analyzeExpressionInternal(expr, scope)
++	a.recordDictionaryProvenance(expr, scope)
+ 	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
+ 	a.exprAbsent[expr] = false
+ 	switch node := expr.(type) {
+diff --git a/internal/language/analysis/dictionary_presence.go b/internal/language/analysis/dictionary_presence.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..f6f460000760fa831c6dac989b47abd710436593
+--- /dev/null
++++ b/internal/language/analysis/dictionary_presence.go
+@@ -0,0 +1,68 @@
++package analysis
++
++import (
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++// KnownPresentDictionaryIndexes carries checked source facts for exact AST
++// nodes. It does not infer key existence from native content or its truthiness.
++// Imported function bodies retain their defining module's analysis.
++func (a *Analyzer) KnownPresentDictionaryIndexes() map[syntax.Expression]bool {
++	result := make(map[syntax.Expression]bool)
++	for expression, present := range a.dictionaryIndexes {
++		if present {
++			result[expression] = true
++		}
++	}
++	if a.moduleGraph != nil {
++		for _, child := range a.moduleAnalyses {
++			for expression, present := range child.dictionaryIndexes {
++				if present {
++					result[expression] = true
++				}
++			}
++		}
++	}
++	return result
++}
++
++// A Dictionary origin survives immutable aliases and the checked canonical
++// require passthrough. Mutable bindings and arbitrary calls cannot supply it.
++// Facts are recorded after all children have been analyzed, without evaluating
++// source a second time or rewriting any expression.
++func (a *Analyzer) recordDictionaryProvenance(expression syntax.Expression, scope *Scope) {
++	if a.dictionaryOrigins == nil {
++		a.dictionaryOrigins = make(map[syntax.Expression]*syntax.MapExpr)
++	}
++	if a.dictionaryIndexes == nil {
++		a.dictionaryIndexes = make(map[syntax.Expression]bool)
++	}
++	delete(a.dictionaryOrigins, expression)
++	delete(a.dictionaryIndexes, expression)
++	switch node := expression.(type) {
++	case *syntax.MapExpr:
++		a.dictionaryOrigins[expression] = node
++	case *syntax.IdentExpr:
++		if symbol, found := scope.Lookup(node.Name); found && symbol.Initialized && !symbol.Mutable {
++			a.dictionaryOrigins[expression] = symbol.dictionaryOrigin
++		}
++	case *syntax.CallExpr:
++		action := a.resolvedActions[node]
++		if action == nil || !action.CompilerConstruct || action.CallableName != "require" {
++			return
++		}
++		input := node.PrimaryArg
++		for _, argument := range node.NamedArgs {
++			if argument.Label == "value" && input == nil {
++				input = argument.Value
++			}
++		}
++		a.dictionaryOrigins[expression] = a.dictionaryOrigins[input]
++	case *syntax.IndexExpr:
++		element, found := syntax.StaticDictionaryElement(a.dictionaryOrigins[node.Target], node.Index)
++		if found && types.DefinitelyPresent(a.exprTypes[element]) {
++			a.dictionaryIndexes[expression] = true
++		}
++	}
++}
+diff --git a/internal/language/analysis/dictionary_presence_test.go b/internal/language/analysis/dictionary_presence_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..49364b3402e81d838d9299b6636ae1695ee920f3
+--- /dev/null
++++ b/internal/language/analysis/dictionary_presence_test.go
+@@ -0,0 +1,68 @@
++package analysis
++
++import (
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/schema"
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++)
++
++func TestDictionaryPresenceFactsAreExactAndIsolated(t *testing.T) {
++	analyzer := NewAnalyzer(schema.DefaultRegistry())
++	for _, mutable := range []bool{false, true, false} {
++		binding := "let"
++		if mutable {
++			binding = "var"
++		}
++		program := registryProgram(t, binding+` source={"key":""};let checked=require(source,type:"dictionary");let selected:Text?=checked["key"]`)
++		before := syntax.Format(program)
++		analyzer.Analyze(program)
++		if syntax.Format(program) != before {
++			t.Fatal("presence analysis mutated source")
++		}
++		selected := program.Statements[2].(*syntax.BindingStmt).Value
++		facts := analyzer.KnownPresentDictionaryIndexes()
++		if mutable {
++			if len(facts) != 0 || len(analyzer.Diagnostics()) != 1 || analyzer.Diagnostics()[0].Code != CodeTargetValueShape {
++				t.Fatal("mutable source borrowed immutable proof", facts, analyzer.Diagnostics())
++			}
++		} else {
++			if len(analyzer.Diagnostics()) != 0 || len(facts) != 1 || !facts[selected] {
++				t.Fatal("literal identity lost or unrelated node promoted", facts, analyzer.Diagnostics())
++			}
++			delete(facts, selected)
++			facts[program.Statements[0].(*syntax.BindingStmt).Value] = true
++			fresh := analyzer.KnownPresentDictionaryIndexes()
++			if len(fresh) != 1 || !fresh[selected] {
++				t.Fatal("caller mutation changed analyzer-owned facts")
++			}
++		}
++	}
++}
++
++func TestDictionaryPresenceHonorsLexicalShadowing(t *testing.T) {
++	program := registryProgram(t, `let dictionary={"key":""}
++let outer:Text?=dictionary["key"]
++if true { var dictionary={"other":"changed"};let inner:Text?=dictionary["key"] }
++let after:Text?=dictionary["key"]`)
++	a := NewAnalyzer(schema.DefaultRegistry())
++	a.Analyze(program)
++	facts := a.KnownPresentDictionaryIndexes()
++	outer := program.Statements[1].(*syntax.BindingStmt).Value
++	after := program.Statements[3].(*syntax.BindingStmt).Value
++	if len(facts) != 2 || !facts[outer] || !facts[after] {
++		t.Fatal("shadowed binding borrowed or removed outer origin", facts)
++	}
++	errors := 0
++	for _, d := range a.Diagnostics() {
++		if d.Severity == SeverityError {
++			errors++
++			if d.Code != CodeTargetValueShape {
++				t.Fatal(d)
++			}
++		}
++	}
++	if errors != 1 {
++		t.Fatal("inner mutable lookup was not independently rejected", a.Diagnostics())
++	}
++}
+diff --git a/internal/language/analysis/optional_presence.go b/internal/language/analysis/optional_presence.go
+index 1c339eb55b16dc25b9f2fca9bb2084862af4c8fd..c3cbca0b2145a767420e9e5f47f4bbabe1beba05 100644
+--- a/internal/language/analysis/optional_presence.go
++++ b/internal/language/analysis/optional_presence.go
+@@ -23,6 +23,9 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
+ 	case *syntax.CallExpr:
+ 		return a.exprPresence[expr]
+ 	case *syntax.IndexExpr:
++		if a.dictionaryIndexes[expr] {
++			return true
++		}
+ 		element, known := syntax.StaticListElement(node)
+ 		return known && types.DefinitelyPresent(a.exprTypes[element])
+ 	}
+diff --git a/internal/language/lower/dictionary_presence_test.go b/internal/language/lower/dictionary_presence_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..287f56d6c6b8fc437d4b577831b6d5e72edd7069
+--- /dev/null
++++ b/internal/language/lower/dictionary_presence_test.go
+@@ -0,0 +1,42 @@
++package lower
++
++import (
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/schema"
++	"github.com/electrikmilk/cherri/internal/language/source"
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++)
++
++func TestScopedBlockDictionaryPresenceSurvivesRenaming(t *testing.T) {
++	code := `let result=measure("lookup"){let checked=require({"key":""},type:"dictionary");let selected:Text?=checked["key"];selected!=none}`
++	parser := syntax.NewParser(source.NewFile("dictionary.cherri", "dictionary.cherri", 1, code))
++	program := parser.ParseProgram()
++	if len(parser.Errors()) != 0 {
++		t.Fatal(parser.Errors())
++	}
++	before := syntax.Format(program)
++	a := analysis.NewAnalyzer(schema.DefaultRegistry())
++	a.Analyze(program)
++	if len(a.Diagnostics()) != 0 {
++		t.Fatal(a.Diagnostics())
++	}
++	l := NewLowerer(a.Registry())
++	l.SetExprTypes(a.ExprTypes())
++	l.SetKnownPresentDictionaryIndexes(a.KnownPresentDictionaryIndexes())
++	call := program.Statements[0].(*syntax.BindingStmt).Value.(*syntax.CallExpr)
++	original := call.Block.Body.Statements[1].(*syntax.BindingStmt).Value
++	renamer := scopedBlockRenamer{lowerer: l, prefix: "__cherri_dictionary_scope"}
++	body, err := renamer.block(call.Block.Body, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	cloned := body.Statements[1].(*syntax.BindingStmt).Value
++	if original == cloned || !l.knownDictionaryIndexes[original] || !l.knownDictionaryIndexes[cloned] {
++		t.Fatal("exact source index fact was lost or source node reused")
++	}
++	if l.exprTypes[cloned] == nil || !l.exprTypes[cloned].Equals(l.exprTypes[original]) || syntax.Format(program) != before {
++		t.Fatal("clone lost type evidence or mutated source")
++	}
++}
+diff --git a/internal/language/lower/function_optional_presence.go b/internal/language/lower/function_optional_presence.go
+index cf5e9c9b6748efe4040502c98fce87cca9ea67fb..a89683bc49b19cc4e1bf84575e26557180e32bc5 100644
+--- a/internal/language/lower/function_optional_presence.go
++++ b/internal/language/lower/function_optional_presence.go
+@@ -87,6 +87,9 @@ func (l *Lowerer) assignOptionalPresence(binding BindingRef, assignment *syntax.
+ // element type proves a value. The existing List/index lowering still runs
+ // exactly once, including every authored sibling effect and bounds guard.
+ func (l *Lowerer) staticIndexHasPresentValue(expr syntax.Expression) bool {
++	if l.knownDictionaryIndexes[expr] {
++		return true
++	}
+ 	element, known := syntax.StaticListElement(expr)
+ 	return known && types.DefinitelyPresent(l.exprTypes[element])
+ }
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 8b369d81d6495904b9a5254c8a7bca4bb59afbaa..90991919ef3cd4283dc0713480c30805204e63cf 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -102,6 +102,7 @@ type Lowerer struct {
+ 	optionalFunctionReturn     bool
+ 	optionalExpressionPresence map[syntax.Expression]interface{}
+ 	optionalPresenceDemand     map[*syntax.BindingStmt]bool
++	knownDictionaryIndexes     map[syntax.Expression]bool
+ }
+ 
+ // NewLowerer creates a new AST lowerer.
+@@ -161,6 +162,11 @@ func (l *Lowerer) SetTypeAnnotations(annotations map[syntax.TypeAnnotation]types
+ 	l.typeAnnotations = annotations
+ }
+ 
++// SetKnownPresentDictionaryIndexes supplies exact source-owned slot facts.
++func (l *Lowerer) SetKnownPresentDictionaryIndexes(indexes map[syntax.Expression]bool) {
++	l.knownDictionaryIndexes = indexes
++}
++
+ // SetEnumValues supplies exact enum literals resolved without AST mutation.
+ func (l *Lowerer) SetEnumValues(values map[syntax.Expression]string) { l.enumValues = values }
+ 
+@@ -419,7 +425,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+ 		return err
+ 	}
+ 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
+-	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil {
++	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil || l.knownDictionaryIndexes == nil {
+ 		analyzer := analysis.NewAnalyzer(l.registry)
+ 		analyzer.SetModuleGraph(l.moduleGraph)
+ 		analyzer.Analyze(prog)
+@@ -439,6 +445,9 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+ 		if l.typeAnnotations == nil {
+ 			l.typeAnnotations = analyzer.TypeAnnotations()
+ 		}
++		if l.knownDictionaryIndexes == nil {
++			l.knownDictionaryIndexes = analyzer.KnownPresentDictionaryIndexes()
++		}
+ 		if l.isMac == nil {
+ 			l.isMac = analyzer.IsMacTarget()
+ 		}
+@@ -3854,7 +3863,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
+ 		}
+ 
+ 	case *syntax.IndexExpr:
+-		targetVal, err := l.lowerExpression(e.Target)
++		// An indexed literal is an authored runtime value. Reuse typed Dictionary
++		// materialization, including sibling captures and explicit empty fields.
++		targetVal, err := l.lowerRuntimeLiteral(e.Target)
+ 		if err != nil {
+ 			return nil, err
+ 		}
+diff --git a/internal/language/lower/scoped_blocks.go b/internal/language/lower/scoped_blocks.go
+index 90c4045346939470340aaa0d463c78bb9be3ba74..51815566923b621edb2994eb23e9b468ec6661e5 100644
+--- a/internal/language/lower/scoped_blocks.go
++++ b/internal/language/lower/scoped_blocks.go
+@@ -261,6 +261,9 @@ func (r *scopedBlockRenamer) expression(expression syntax.Expression, names map[
+ 				r.lowerer.enumValues[result] = value
+ 			}
+ 		}
++		if result != nil && r.lowerer.knownDictionaryIndexes[expression] {
++			r.lowerer.knownDictionaryIndexes[result] = true
++		}
+ 		if result != nil && r.lowerer.exprTypes != nil {
+ 			if inferred, found := r.lowerer.exprTypes[expression]; found {
+ 				r.lowerer.exprTypes[result] = inferred
+diff --git a/internal/language/syntax/dictionary_presence.go b/internal/language/syntax/dictionary_presence.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..032b7c1e8bea9ddeb954971b1989c0d0a5693e3e
+--- /dev/null
++++ b/internal/language/syntax/dictionary_presence.go
+@@ -0,0 +1,33 @@
++package syntax
++
++// StaticDictionaryElement requires an exact, nonempty Text key and a literal
++// Dictionary with unique literal keys. A dynamic sibling key could overwrite
++// the selected entry, so the complete key set must be source-owned. Callers
++// must separately prove the selected semantic value is present.
++func StaticDictionaryElement(dictionary *MapExpr, index Expression) (Expression, bool) {
++	key, okay := dictionaryPresenceKey(index)
++	if dictionary == nil || !okay {
++		return nil, false
++	}
++	seen := make(map[string]bool)
++	var selected Expression
++	for _, entry := range dictionary.Entries {
++		name, literal := dictionaryPresenceKey(entry.Key)
++		if !literal || seen[name] {
++			return nil, false
++		}
++		seen[name] = true
++		if name == key {
++			selected = entry.Value
++		}
++	}
++	return selected, selected != nil
++}
++
++func dictionaryPresenceKey(expression Expression) (string, bool) {
++	literal, okay := expression.(*LiteralExpr)
++	if !okay || (literal.Type != TokenString && literal.Type != TokenRawString) || literal.Value == "" {
++		return "", false
++	}
++	return literal.Value, true
++}
+diff --git a/internal/language/syntax/dictionary_presence_test.go b/internal/language/syntax/dictionary_presence_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..44dc23085efb855e4f566df6e2ba7b9a35172d31
+--- /dev/null
++++ b/internal/language/syntax/dictionary_presence_test.go
+@@ -0,0 +1,50 @@
++package syntax
++
++import (
++	"github.com/electrikmilk/cherri/internal/language/source"
++	"testing"
++)
++
++func TestStaticDictionaryElementRequiresCompleteLiteralKeys(t *testing.T) {
++	for _, tc := range []struct {
++		name, code string
++		found      bool
++	}{
++		{"literal", `{"key":""}["key"]`, true},
++		{"raw_key", `{'key':false}["key"]`, true},
++		{"raw_index", `{"key":0}['key']`, true},
++		{"unicode", `{"מפתח🔑":""}["מפתח🔑"]`, true},
++		{"none_is_only_slot_proof", `{"key":none}["key"]`, true},
++		{"empty", `{}["key"]`, false},
++		{"missing", `{"other":1}["key"]`, false},
++		{"duplicate", `{"key":1,"key":2}["key"]`, false},
++		{"duplicate_sibling", `{"key":1,"other":2,"other":3}["key"]`, false},
++		{"computed_key", `{text("key"):1}["key"]`, false},
++		{"computed_sibling", `{"key":1,text("other"):2}["key"]`, false},
++		{"number_index", `{"key":1}[0]`, false},
++		{"computed_index", `{"key":1}[text("key")]`, false},
++		{"empty_index", `{"key":1}[""]`, false},
++		{"empty_sibling", `{"key":1,"":2}["key"]`, false},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			p := NewParser(source.NewFile("dictionary.cherri", "dictionary.cherri", 1, "let value="+tc.code))
++			program := p.ParseProgram()
++			if len(p.Errors()) != 0 {
++				t.Fatal(p.Errors())
++			}
++			before := Format(program)
++			index := program.Statements[0].(*BindingStmt).Value.(*IndexExpr)
++			dictionary := index.Target.(*MapExpr)
++			element, found := StaticDictionaryElement(dictionary, index.Index)
++			if found != tc.found || (!found && element != nil) || (found && element != dictionary.Entries[0].Value) {
++				t.Fatal("incorrect authored slot", element, found)
++			}
++			if Format(program) != before {
++				t.Fatal("selection mutated source AST")
++			}
++		})
++	}
++	if value, found := StaticDictionaryElement(nil, nil); found || value != nil {
++		t.Fatal("nil source minted slot")
++	}
++}
+diff --git a/language_emit_adapter.go b/language_emit_adapter.go
+index 494e68c7e8ea54c3cba9dda88e267414521bfc9a..49d0d7daccd20b7a68c54dca0418b33dbe76ea3c 100644
+--- a/language_emit_adapter.go
++++ b/language_emit_adapter.go
+@@ -383,6 +383,7 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
+ 	}
+ 	lowerer.SetExprTypes(analyzer.ExprTypes())
+ 	lowerer.SetTypeAnnotations(analyzer.TypeAnnotations())
++	lowerer.SetKnownPresentDictionaryIndexes(analyzer.KnownPresentDictionaryIndexes())
+ 	lowerer.SetEnumValues(analyzer.EnumValues())
+ 	if err := lowerer.LowerProgramToSession(prog); err != nil {
+ 		return nil, fmt.Errorf("lowering error: %w", err)
+diff --git a/p15_optional_dictionary_index_boundary_test.go b/p15_optional_dictionary_index_boundary_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..b44c791c2bfbc43eb2846582782055aa7420407f
+--- /dev/null
++++ b/p15_optional_dictionary_index_boundary_test.go
+@@ -0,0 +1,90 @@
++package main
++
++import (
++	"encoding/json"
++	"fmt"
++	"os"
++	"testing"
++)
++
++func p15DictionaryIndexBoundarySource(name string) string {
++	body := ""
++	switch name {
++	case "capture":
++		body = `var state="BEFORE";getVariable({"key":state,"later":if true{state="AFTER";yield "SECOND"}else{yield "UNUSED"}}["key"])`
++	case "reserved_keys":
++		body = `getVariable({"WFSerializationType":"WFTextTokenString","Value":{"string":"WRONG"},"key":""}["key"])`
++	case "empty_list":
++		body = `getVariable({"key":[]}["key"])`
++	case "empty_map":
++		body = `getVariable({"key":{}}["key"])`
++	default:
++		panic("unknown direct Dictionary boundary")
++	}
++	return "function probe()->Text{" + body + `;return "DONE"}` + "\ngetVariable(probe())"
++}
++
++func p15DictionaryKeyEdge(dictionary, key string) map[string]any {
++	return p15FunctionAttachment(map[string]any{"Type": "ActionOutput", "OutputUUID": dictionary,
++		"Aggrandizements": []any{map[string]any{"Type": "WFDictionaryValueVariableAggrandizement", "DictionaryKey": key}}})
++}
++
++func p15DictionaryIndexBoundaryGraphError(actions []map[string]any, name string) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	g.header("probe")
++	values := map[string]any{}
++	switch name {
++	case "capture":
++		before := g.value("gettext", map[string]any{"WFTextActionText": "BEFORE"})
++		g.emit("setvariable", map[string]any{"WFVariableName": "state", "WFInput": p15FunctionEdge(before)})
++		early := g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable("state")})
++		condition := g.value("number", map[string]any{"WFNumberActionNumber": 1})
++		group := g.conditional(4, p15FunctionEdge(condition), "WFNumberValue", 1)
++		after := g.value("gettext", map[string]any{"WFTextActionText": "AFTER"})
++		g.emit("setvariable", map[string]any{"WFVariableName": "state", "WFInput": p15FunctionEdge(after)})
++		g.value("gettext", map[string]any{"WFTextActionText": "SECOND"})
++		g.boundary(group, 1, false)
++		g.value("gettext", map[string]any{"WFTextActionText": "UNUSED"})
++		later := g.boundary(group, 2, true)
++		values = map[string]any{"key": p15ContainerReference{"Type": "ActionOutput", "OutputUUID": early}, "later": p15ContainerReference{"Type": "ActionOutput", "OutputUUID": later}}
++	case "reserved_keys":
++		values = map[string]any{"WFSerializationType": "WFTextTokenString", "Value": map[string]any{"string": "WRONG"}, "key": ""}
++	case "empty_list":
++		values["key"] = []any{}
++	case "empty_map":
++		values["key"] = map[string]any{}
++	default:
++		return fmt.Errorf("unmodeled direct Dictionary boundary %q", name)
++	}
++	_, wire := p15ContainerFieldValue(values)
++	dictionary := g.value("dictionary", map[string]any{"WFItems": wire})
++	// Both established static-key transports are valid: a native lookup action
++	// or the exact Dictionary-key aggrandizement. Model every parameter and
++	// action of the selected form; neither permits losing Dictionary identity.
++	var selected any = p15DictionaryKeyEdge(dictionary, "key")
++	if next := len(g.expected); next < len(actions) && actions[next]["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvalueforkey" {
++		selected = p15FunctionEdge(g.get("key", dictionary))
++	}
++	g.emit("getvariable", map[string]any{"WFVariable": selected})
++	g.output(g.value("gettext", map[string]any{"WFTextActionText": "DONE"}))
++	g.caller()
++	result := g.call(g.payload("probe"))
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
++	return g.finish()
++}
++
++func TestP15OptionalDictionaryDirectIndexKeepsTypedValuesAndOrder(t *testing.T) {
++	for _, name := range []string{"capture", "reserved_keys", "empty_list", "empty_map"} {
++		t.Run(name, func(t *testing.T) {
++			actions := p15CompiledActions(t, p15DictionaryIndexBoundarySource(name))
++			if err := p15DictionaryIndexBoundaryGraphError(actions, name); err != nil {
++				if os.MkdirAll("dist/p15-optional-dictionary", 0700) == nil {
++					if raw, e := json.MarshalIndent(actions, "", "  "); e == nil {
++						_ = os.WriteFile("dist/p15-optional-dictionary/direct-index-baseline-"+name+".json", raw, 0600)
++					}
++				}
++				t.Fatal(err)
++			}
++		})
++	}
++}
+diff --git a/p15_optional_dictionary_oracle_test.go b/p15_optional_dictionary_oracle_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..4998377465a04eefd9b150404737483e64c41544
+--- /dev/null
++++ b/p15_optional_dictionary_oracle_test.go
+@@ -0,0 +1,233 @@
++package main
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++)
++
++func p15OptionalDictionaryLiteralValue(name string) any {
++	switch name {
++	case "text":
++		return "ready"
++	case "empty_text":
++		return ""
++	case "false":
++		return false
++	case "zero":
++		return p15ContainerNumber("0")
++	case "empty_list":
++		return []any{}
++	case "list":
++		return []any{"one", "two"}
++	case "empty_map":
++		return map[string]any{}
++	case "map":
++		return map[string]any{"nested": "VALUE"}
++	default:
++		panic("unknown Dictionary literal")
++	}
++}
++
++// Require retains its actual count/type rejection path and returns the exact
++// original Dictionary edge. These checks do not infer the indexed key exists;
++// that separate fact originates in the authored literal, not native truthiness.
++func p15OptionalDictionaryRequireGraph(g *p15FunctionGraph, dictionary string) string {
++	count := g.value("count", map[string]any{"Input": p15FunctionEdge(dictionary), "WFCountType": "Items"})
++	reject := func(input string, field string, operand any) {
++		group := g.conditional(5, p15FunctionEdge(input), field, operand)
++		g.emit("alert", map[string]any{"WFAlertActionMessage": "Requirement failed", "WFAlertActionCancelButtonShown": false})
++		g.emit("exit", nil)
++		g.boundary(group, 2, false)
++	}
++	reject(count, "WFNumberValue", 1)
++	actual := g.value("getitemtype", map[string]any{"WFInput": p15FunctionEdge(dictionary)})
++	_, sample := p15ContainerFieldValue(map[string]any{"cherri_type_witness": true})
++	witness := g.value("dictionary", map[string]any{"WFItems": sample})
++	expected := g.value("getitemtype", map[string]any{"WFInput": p15FunctionEdge(witness)})
++	reject(actual, "WFConditionalActionString", p15FunctionText("\ufffc", expected))
++	return g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(dictionary)})
++}
++
++func p15OptionalDictionaryGraphError(actions []map[string]any, tc p15OptionalDictionaryCase, route string) error {
++	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++	envelope := g.header("echo")
++	value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
++	p15ForwardResultGraph(g, value, presence)
++	g.caller()
++	_, wire := p15ContainerFieldValue(map[string]any{"key": p15OptionalDictionaryLiteralValue(tc.name)})
++	dictionary := g.value("dictionary", map[string]any{"WFItems": wire})
++	if route == "require" || route == "named_require_alias" {
++		dictionary = p15OptionalDictionaryRequireGraph(g, dictionary)
++	}
++	output, _ := p15ForwardCallGraph(g, "echo", p15FunctionArgument{true, 0, p15DictionaryKeyEdge(dictionary, "key")}, "1", nil, nil)
++	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(output)})
++	return g.finish()
++}
++
++func TestP15OptionalDictionaryCompleteNativeGraph(t *testing.T) {
++	for _, tc := range p15OptionalDictionaryCases() {
++		for _, route := range []string{"literal", "alias", "require", "named_require_alias"} {
++			t.Run(tc.name+"/"+route, func(t *testing.T) {
++				if err := p15OptionalDictionaryGraphError(p15CompiledActions(t, p15OptionalDictionarySource(tc, route, "argument")), tc, route); err != nil {
++					t.Fatal(err)
++				}
++			})
++		}
++	}
++}
++
++func TestP15OptionalDictionaryImportedBodyAndDemand(t *testing.T) {
++	// An imported function consumes a mutable caller binding. The unchanged
++	// complete forwarding oracle requires the private flag assignment/edges.
++	entry := "import \"./dependency.cherri\" as dep\nvar candidate:Text?=none\ngetVariable(dep.echo(candidate))"
++	dependency := "function echo(value:Text?)->Text?{return value}\n"
++	path, source := p15ModuleProject(t, map[string]string{"main.cherri": entry, "dependency.cherri": dependency})
++	actions := p15OptionalAliasModuleActions(t, path, source, "module:dependency.cherri::echo")
++	if err := p15OptionalForwardingGraphError(actions, "mutable_none"); err != nil {
++		t.Fatal(err)
++	}
++	// The indexed proof belongs to the dependency's exact AST, not the caller.
++	for _, tc := range p15OptionalDictionaryCases() {
++		t.Run(tc.name, func(t *testing.T) {
++			prefix, selected := p15OptionalDictionarySelection(tc, "require")
++			dependency = "function echo()->" + tc.typ + "?{" + prefix + "return " + selected + "}\n"
++			entry = "import \"./dependency.cherri\" as dep\ngetVariable(dep.echo())"
++			path, source = p15ModuleProject(t, map[string]string{"main.cherri": entry, "dependency.cherri": dependency})
++			actions = p15OptionalAliasModuleActions(t, path, source, "module:dependency.cherri::echo")
++			g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
++			g.header("echo")
++			_, wire := p15ContainerFieldValue(map[string]any{"key": p15OptionalDictionaryLiteralValue(tc.name)})
++			dictionary := g.value("dictionary", map[string]any{"WFItems": wire})
++			dictionary = p15OptionalDictionaryRequireGraph(g, dictionary)
++			carrier := p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionArgument{true, 0, p15DictionaryKeyEdge(dictionary, "key")})
++			g.output(carrier)
++			g.caller()
++			result := g.call(g.payload("echo"))
++			value, _ := p15DecodeOptionalGraph(g, result, "has_value", "value")
++			g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(value)})
++			if err := g.finish(); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
++
++func p15MutateDictionaryLookupGraph(actions []map[string]any, fault string) bool {
++	for _, a := range actions {
++		p := p15Param(a)
++		kind, _ := a["WFWorkflowActionIdentifier"].(string)
++		if kind == "is.workflow.actions.dictionary" {
++			fields, err := p15ContainerFields(p["WFItems"])
++			if err != nil {
++				continue
++			}
++			if row := fields["key"]; row != nil {
++				switch fault {
++				case "wrong_key":
++					row["WFKey"] = p15FunctionText("other")
++					return true
++				case "wrong_kind":
++					row["WFItemType"] = 3
++					return true
++				case "omitted_empty_array":
++					delete(row["WFValue"].(map[string]any), "Value")
++					return true
++				case "empty_as_none":
++					row["WFValue"] = p15FunctionText("")
++					return true
++				}
++			}
++			if fields["cherri_type_witness"] != nil && fault == "wrong_type_witness" {
++				fields["cherri_type_witness"]["WFValue"] = p15FunctionText("true")
++				return true
++			}
++			if fields["_cherri_optional_argument_v1"] != nil {
++				switch fault {
++				case "wrong_presence":
++					fields["has_value"]["WFValue"] = p15FunctionText("0")
++					return true
++				case "value_as_presence":
++					fields["has_value"]["WFValue"] = fields["value"]["WFValue"]
++					return true
++				case "wrong_lookup":
++					descriptor := fields["value"]["WFValue"].(map[string]any)["Value"].(map[string]any)
++					descriptor["Aggrandizements"].([]any)[0].(map[string]any)["DictionaryKey"] = "other"
++					return true
++				}
++			}
++		}
++		if kind == "is.workflow.actions.count" && fault == "wrong_count_input" {
++			p["Input"] = p15FunctionVariable("unrelated")
++			return true
++		}
++		if kind == "is.workflow.actions.conditional" && p15Int(p["WFCondition"]) == 5 && p["WFNumberValue"] != nil && fault == "wrong_count_guard" {
++			p["WFNumberValue"] = 0
++			return true
++		}
++		if kind == "is.workflow.actions.alert" && fault == "ignored_rejection" {
++			p["WFAlertActionCancelButtonShown"] = true
++			return true
++		}
++		if kind == "is.workflow.actions.getvariable" && p["UUID"] != nil && fault == "wrong_passthrough" {
++			p["WFVariable"] = p15FunctionVariable("unrelated")
++			return true
++		}
++	}
++	return false
++}
++
++func TestP15OptionalDictionaryNativeOracleRejectsCorruption(t *testing.T) {
++	tc := p15OptionalDictionaryCases()[4]
++	original := p15CompiledActions(t, p15OptionalDictionarySource(tc, "require", "argument"))
++	if err := p15OptionalDictionaryGraphError(original, tc, "require"); err != nil {
++		t.Fatal(err)
++	}
++	for _, fault := range []string{"wrong_key", "wrong_kind", "omitted_empty_array", "empty_as_none", "wrong_type_witness", "wrong_presence", "value_as_presence", "wrong_lookup", "wrong_count_input", "wrong_count_guard", "ignored_rejection", "wrong_passthrough"} {
++		t.Run(fault, func(t *testing.T) {
++			changed := p15ContainerCloneNative(t, original)
++			if err := p15OptionalDictionaryGraphError(changed, tc, "require"); err != nil {
++				t.Fatal("unchanged clone rejected", err)
++			}
++			if !p15MutateDictionaryLookupGraph(changed, fault) {
++				t.Fatal("mutation not applied", fault)
++			}
++			if err := p15OptionalDictionaryGraphError(changed, tc, "require"); err == nil {
++				t.Fatal("wrong Dictionary/presence edge accepted", fault)
++			}
++		})
++	}
++	for _, name := range []string{"capture", "reserved_keys", "empty_list", "empty_map"} {
++		t.Run("direct/"+name, func(t *testing.T) {
++			actual := p15CompiledActions(t, p15DictionaryIndexBoundarySource(name))
++			if err := p15DictionaryIndexBoundaryGraphError(actual, name); err != nil {
++				t.Fatal(err)
++			}
++			changed := p15ContainerCloneNative(t, actual)
++			applied := false
++			for i, a := range changed {
++				p := p15Param(a)
++				if name == "capture" && a["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && strings.Contains(fmt.Sprint(p["WFVariable"]), "state") {
++					changed = append(changed[:i], changed[i+1:]...)
++					applied = true
++					break
++				}
++				if name != "capture" && a["WFWorkflowActionIdentifier"] == "is.workflow.actions.dictionary" {
++					fields, err := p15ContainerFields(p["WFItems"])
++					if err != nil || fields["key"] == nil {
++						continue
++					}
++					fields["key"]["WFValue"] = p15FunctionText("LOST")
++					applied = true
++					break
++				}
++			}
++			if !applied {
++				t.Fatal("direct boundary mutation not applied")
++			}
++			if err := p15DictionaryIndexBoundaryGraphError(changed, name); err == nil {
++				t.Fatal("direct value loss accepted")
++			}
++		})
++	}
++}
+diff --git a/p15_optional_dictionary_presence_test.go b/p15_optional_dictionary_presence_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..72a6098e81b8ae3b1f0e314c4df1440866d28ac4
+--- /dev/null
++++ b/p15_optional_dictionary_presence_test.go
+@@ -0,0 +1,144 @@
++package main
++
++import (
++	"fmt"
++	"strings"
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/service"
++)
++
++type p15OptionalDictionaryCase struct{ name, typ, value string }
++
++func p15OptionalDictionaryCases() []p15OptionalDictionaryCase {
++	return []p15OptionalDictionaryCase{
++		{"text", "Text", `"ready"`}, {"empty_text", "Text", `""`},
++		{"false", "Bool", `false`}, {"zero", "Number", `0`},
++		{"empty_list", "List<Unknown>", `[]`}, {"list", "List<Text>", `["one","two"]`},
++		{"empty_map", "Map<Text,AnyContent>", `{}`}, {"map", "Map<Text,Text>", `{"nested":"VALUE"}`},
++	}
++}
++
++func p15OptionalDictionarySelection(tc p15OptionalDictionaryCase, route string) (prefix, selected string) {
++	dictionary := `{"key":` + tc.value + `}`
++	switch route {
++	case "literal":
++		return "", dictionary + `["key"]`
++	case "alias":
++		return "let source=" + dictionary + ";let alias=source;", `alias["key"]`
++	case "require":
++		return "let checked=require(" + dictionary + `,type:"dictionary");`, `checked["key"]`
++	case "named_require_alias":
++		return "let source=" + dictionary + `;let checked=require(type:"dictionary",value:source);let alias=checked;`, `alias["key"]`
++	default:
++		panic("unknown Dictionary provenance route")
++	}
++}
++
++func p15OptionalDictionarySource(tc p15OptionalDictionaryCase, route, consumer string) string {
++	prefix, selected := p15OptionalDictionarySelection(tc, route)
++	switch consumer {
++	case "binding":
++		return prefix + "let value:" + tc.typ + "?=" + selected + ";getVariable(value!=none)"
++	case "argument":
++		return "function echo(value:" + tc.typ + "?)->" + tc.typ + "?{return value}\n" + prefix + "getVariable(echo(" + selected + "))"
++	case "return":
++		return "function pick()->" + tc.typ + "?{" + prefix + "return " + selected + "}\ngetVariable(pick())"
++	default:
++		panic("unknown Dictionary Optional consumer")
++	}
++}
++
++func TestP15OptionalDictionaryPublicRoutes(t *testing.T) {
++	for _, tc := range p15OptionalDictionaryCases() {
++		for _, route := range []string{"literal", "alias", "require", "named_require_alias"} {
++			for _, consumer := range []string{"binding", "argument", "return"} {
++				t.Run(tc.name+"/"+route+"/"+consumer, func(t *testing.T) {
++					source := p15OptionalDictionarySource(tc, route, consumer)
++					for _, d := range p15TypeDiagnostics(t, source) {
++						if d.Severity == analysis.SeverityError {
++							t.Fatal(d)
++						}
++					}
++					if raw, err := CompileSourceToPlist("p15-owned-dictionary.cherri", source); err != nil || len(raw) == 0 {
++						t.Fatalf("source-owned Dictionary slot failed: bytes=%d error=%v", len(raw), err)
++					}
++					svc := service.NewService(nil)
++					uri := "file:///p15-owned-dictionary.cherri"
++					svc.OpenDocument(uri, 1, source)
++					diagnostics, _ := svc.Analyze(uri)
++					for _, d := range diagnostics {
++						if d.Severity == analysis.SeverityError {
++							t.Fatal("editor disagrees", d)
++						}
++					}
++				})
++			}
++		}
++	}
++}
++
++func p15OptionalDictionaryNegatives() []p15OptionalIndexNegative {
++	return []p15OptionalIndexNegative{
++		{"missing_key", `let selected:Text?={"other":"ready"}["key"]`, `{"other":"ready"}["key"]`, nil},
++		{"duplicate_key", `let selected:Text?={"key":"first","key":"last"}["key"]`, `{"key":"first","key":"last"}["key"]`, nil},
++		{"dynamic_key", `let key="key";let selected:Text?={"key":"ready"}[key]`, `{"key":"ready"}[key]`, nil},
++		{"computed_key", `let selected:Text?={text("key"):"ready"}["key"]`, `{text("key"):"ready"}["key"]`, nil},
++		{"mutable_target", `var values={"key":"ready"};let selected:Text?=values["key"]`, `values["key"]`, nil},
++		{"mutable_alias", `var values={"key":"ready"};let alias=values;values={"other":"changed"};let selected:Text?=alias["key"]`, `alias["key"]`, nil},
++		{"require_mutable_alias", `var values={"key":"ready"};let alias=values;let checked=require(alias,type:"dictionary");let selected:Text?=checked["key"]`, `checked["key"]`, nil},
++		{"require_missing_key", `let checked=require({"other":"ready"},type:"dictionary");let selected:Text?=checked["key"]`, `checked["key"]`, nil},
++		{"user_require", `function require(value:Map<Text,Text>)->Map<Text,Text>{return {"other":"different"}};let checked=require({"key":"ready"});let selected:Text?=checked["key"]`, `checked["key"]`, nil},
++		{"opaque_target", `let checked=require(native.action("is.workflow.actions.nothing",{}),type:"dictionary");let selected:AnyContent?=checked["key"]`, `checked["key"]`, nil},
++		{"optional_entry", `let maybe:Text?=none;let selected:Text?={"key":maybe}["key"]`, `{"key":maybe}["key"]`, []string{"maybe"}},
++		{"opaque_entry", `let selected:AnyContent?={"key":native.action("is.workflow.actions.nothing",{})}["key"]`, `{"key":native.action("is.workflow.actions.nothing",{})}["key"]`, nil},
++	}
++}
++
++func p15OptionalDictionaryBoundaryError(diagnostics []analysis.Diagnostic, tc p15OptionalIndexNegative) error {
++	if tc.name != "duplicate_key" {
++		return p15OptionalIndexBoundaryError(diagnostics, tc)
++	}
++	kept := []analysis.Diagnostic{}
++	duplicates := 0
++	start := strings.Index(tc.source, `,"key"`) + 1
++	for _, d := range diagnostics {
++		if d.Code == "E_DUPLICATE_KEY" && d.Severity == analysis.SeverityError {
++			if d.Span.Start.ByteOffset != start || d.Span.End.ByteOffset != start+len(`"key"`) {
++				return fmt.Errorf("duplicate key diagnostic lost its exact second-key span: %+v", d)
++			}
++			duplicates++
++		} else {
++			kept = append(kept, d)
++		}
++	}
++	if duplicates != 1 {
++		return fmt.Errorf("want one actual duplicate-key rejection, got %+v", diagnostics)
++	}
++	return p15OptionalIndexBoundaryError(kept, tc)
++}
++
++func TestP15OptionalDictionaryRejectsUnprovenOrigins(t *testing.T) {
++	for _, tc := range p15OptionalDictionaryNegatives() {
++		t.Run(tc.name, func(t *testing.T) {
++			if err := p15OptionalDictionaryBoundaryError(p15TypeDiagnostics(t, tc.source), tc); err != nil {
++				t.Fatal(err)
++			}
++			code := analysis.CodeTargetValueShape
++			if tc.name == "duplicate_key" {
++				code = "E_DUPLICATE_KEY"
++			}
++			if raw, err := CompileSourceToPlist("p15-unproved-dictionary.cherri", tc.source); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), code) {
++				t.Fatalf("unproved Dictionary value emitted bytes=%d error=%v", len(raw), err)
++			}
++			svc := service.NewService(nil)
++			uri := "file:///p15-unproved-dictionary.cherri"
++			svc.OpenDocument(uri, 1, tc.source)
++			got, _ := svc.Analyze(uri)
++			if err := p15OptionalDictionaryBoundaryError(got, tc); err != nil {
++				t.Fatal(err)
++			}
++		})
++	}
++}
+diff --git a/p15_optional_index_presence_test.go b/p15_optional_index_presence_test.go
+index 6615fe5a7ad580546d83189f9e81f7b05d44aacb..ec07baf3e0d1c19b6582003c26a598026b9f7771 100644
+--- a/p15_optional_index_presence_test.go
++++ b/p15_optional_index_presence_test.go
+@@ -127,7 +127,7 @@ func p15OptionalIndexNegatives() []p15OptionalIndexNegative {
+ 		{"dynamic_call", `let selected:Text?=["ready"][number(0)]`, `["ready"][number(0)]`, nil},
+ 		{"dynamic_binding", `let index=0;let selected:Text?=["ready"][index]`, `["ready"][index]`, nil},
+ 		{"target_alias", `let values=["ready"];let selected:Text?=values[0]`, `values[0]`, nil},
+-		{"map_lookup", `let selected:Text?={"key":"ready"}["key"]`, `{"key":"ready"}["key"]`, nil},
++		{"map_lookup", `var values={"key":"ready"};let selected:Text?=values["key"]`, `values["key"]`, nil},
+ 		{"optional_element", `let maybe:Text?=none;let selected:Text?=[maybe][0]`, `[maybe][0]`, []string{"maybe"}},
+ 		{"optional_result_element", `function maybe()->Text?{return none};let selected:Text?=[maybe()][0]`, `[maybe()][0]`, []string{"maybe()"}},
+ 		{"opaque_element", `let selected:AnyContent?=[native.action("is.workflow.actions.nothing",{})][0]`, `[native.action("is.workflow.actions.nothing",{})][0]`, nil},
