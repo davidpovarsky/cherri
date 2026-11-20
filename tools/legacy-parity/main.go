@@ -469,7 +469,11 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 		// Test V2
 		v2File := filepath.Join(tmpDir, "act_v2_"+spec.Name+".cherri")
 		v2Out := filepath.Join(tmpDir, "act_v2_"+spec.Name+".shortcut")
-		_ = os.WriteFile(v2File, []byte(spec.V2Code), 0644)
+		// The parity contract compares the original Legacy implicit result.
+		// Author that entry mode explicitly; keep every native action, field,
+		// fixture and the strict comparator unchanged.
+		v2Source := "shortcut \"\" { outputMode: \"legacy\" }\n" + spec.V2Code
+		_ = os.WriteFile(v2File, []byte(v2Source), 0644)
 
 		cmdV2 := exec.Command(binPath, "compile", v2File, "--skip-sign", "-o", v2Out)
 		cmdV2.Dir = repoRoot

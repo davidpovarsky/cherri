@@ -190,7 +190,7 @@ func p15RP16CompileApproved(t *testing.T, fixture p15RP16ApprovedCase) map[strin
 	}
 	var virtual = map[string]string{"rp16-module.cherri": p15RP16VirtualModule}
 	var registry = schema.DefaultRegistry()
-	var graph, issue = modules.Resolve(program, filename, virtual, registry, migrate.MigrateSource)
+	var graph, issue = modules.Resolve(program, filename, virtual, registry, migrate.MigrateModuleSource)
 	if issue != nil {
 		t.Fatal(issue)
 	}
@@ -249,6 +249,24 @@ func TestP15RP16ApprovedNodeInventory(t *testing.T) {
 			}
 			if p15RP16NativeWitness(fixture, corrupted) == nil {
 				t.Fatal("native witness accepted its causal corruption")
+			}
+			for _, fault := range []string{"delete_main_boundary", "replace_main_boundary", "invent_main_output"} {
+				var changed map[string]any
+				if _, err := plist.Unmarshal(encoded, &changed); err != nil {
+					t.Fatal(err)
+				}
+				rows := changed["WFWorkflowActions"].([]any)
+				switch fault {
+				case "delete_main_boundary":
+					changed["WFWorkflowActions"] = rows[:len(rows)-1]
+				case "replace_main_boundary":
+					rows[len(rows)-1].(map[string]any)["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext"
+				case "invent_main_output":
+					rows[len(rows)-1].(map[string]any)["WFWorkflowActionParameters"] = map[string]any{"WFOutput": "RP16_STALE"}
+				}
+				if p15RP16NativeWitness(fixture, changed) == nil {
+					t.Fatal("native witness accepted main-boundary corruption", fault)
+				}
 			}
 		})
 	}

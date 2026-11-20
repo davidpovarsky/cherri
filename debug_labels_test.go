@@ -194,9 +194,7 @@ func TestDebugLabelsPublicLiteralOmissionContract(t *testing.T) {
 		for _, name := range []string{"debugLog", "debugLogPrevious"} {
 			t.Run(fmt.Sprintf("%s/legacy=%t", name, legacy), func(t *testing.T) {
 				plain := compileDebugFixture(t, "text(\"value\")\n"+name+"()\n", legacy)
-				if !reflect.DeepEqual(actionSuffixes(plain), []string{"gettext", "appendvariable"}) {
-					t.Fatal("unlabeled one-action contract changed")
-				}
+				checkDebugFallthroughSequence(t, plain, legacy, "gettext", "appendvariable")
 				for _, label := range []string{"", "API Response", "שָׁלוֹם 🍒 {not_a_variable} \uFFFC"} {
 					src := fmt.Sprintf("text(\"value\")\n%s(false,false,false,%q)\n", name, label)
 					acts := compileDebugFixture(t, src, legacy)
@@ -233,7 +231,12 @@ func TestDebugLabelsTypedProducersAndLaterConsumers(t *testing.T) {
 				if err := validateLabelTestGraph(acts, producerID, "API Response"); err != nil {
 					t.Fatal(err)
 				}
-				if !labelTestHasRef(acts[len(acts)-1].WFWorkflowActionParameters, producerID) {
+				consumerIndex := len(acts) - 1
+				if !legacy {
+					checkDebugMainVoidBoundary(t, acts)
+					consumerIndex--
+				}
+				if acts[consumerIndex].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || !labelTestHasRef(acts[consumerIndex].WFWorkflowActionParameters, producerID) {
 					t.Fatal("later source consumer lost original producer")
 				}
 				for i, a := range acts {
@@ -251,6 +254,27 @@ func TestDebugLabelsTypedProducersAndLaterConsumers(t *testing.T) {
 func TestDebugLabelsCausalGraphRejectsCorruption(t *testing.T) {
 	acts := compileDebugFixture(t, "text(\"raw\")\ndebugLog(false,false,false,\"label\")\n", false)
 	producer, _ := acts[0].WFWorkflowActionParameters["UUID"].(string)
+	checkDebugMainVoidBoundary(t, acts)
+	if err := validateLabelTestGraph(acts, producer, "label"); err != nil {
+		t.Fatal(err)
+	}
+	// Bind the mutation to the actual metadata restore, independently of the
+	// main's terminal Nothing. This fixture has no authored later consumer.
+	metadataIndex, restoreIndex := -1, -1
+	for i, action := range acts {
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.appendvariable" && action.WFWorkflowActionParameters["WFVariableName"] == debugLabelVariableName {
+			metadataIndex = i
+		}
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.getvariable" && reflect.DeepEqual(action.WFWorkflowActionParameters["WFVariable"], acts[1].WFWorkflowActionParameters["WFInput"]) {
+			if restoreIndex >= 0 {
+				t.Fatal("restore mutation target is ambiguous")
+			}
+			restoreIndex = i
+		}
+	}
+	if metadataIndex < 0 || restoreIndex <= metadataIndex {
+		t.Fatal("restore mutation target is missing or precedes metadata")
+	}
 	mutations := map[string]func([]ShortcutAction){
 		"raw-input-boxed": func(a []ShortcutAction) { a[1].WFWorkflowActionParameters["WFInput"] = debugOutputRef("OTHER") },
 		"count-text-not-items": func(a []ShortcutAction) {
@@ -293,7 +317,7 @@ func TestDebugLabelsCausalGraphRejectsCorruption(t *testing.T) {
 				}
 			}
 		},
-		"restore-coerces-text": func(a []ShortcutAction) { a[len(a)-1].WFWorkflowActionIdentifier = "is.workflow.actions.gettext" },
+		"restore-coerces-text": func(a []ShortcutAction) { a[restoreIndex].WFWorkflowActionIdentifier = "is.workflow.actions.gettext" },
 	}
 	for name, mutate := range mutations {
 		t.Run(name, func(t *testing.T) {
@@ -476,7 +500,7 @@ func compileLabelSourceWithProvenance(t *testing.T, content string) ([]ShortcutA
 		t.Fatal(parser.Errors())
 	}
 	registry := schema.DefaultRegistry()
-	graph, issue := modules.Resolve(program, "label-provenance.cherri", nil, registry, migrate.MigrateSource)
+	graph, issue := modules.Resolve(program, "label-provenance.cherri", nil, registry, migrate.MigrateModuleSource)
 	if issue != nil {
 		t.Fatal(issue)
 	}
@@ -555,16 +579,16 @@ func TestDebugLabelsNamedDisplayModesAndProvenance(t *testing.T) {
 			if !reflect.DeepEqual(projections, expected) {
 				t.Fatalf("compiler helper lost provenance/source was consumed: got%v expected%v", projections, expected)
 			}
-			if !labelTestHasRef(acts[len(acts)-1].WFWorkflowActionParameters, producer) {
+			checkDebugMainVoidBoundary(t, acts)
+			consumer := acts[len(acts)-2]
+			if consumer.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || !labelTestHasRef(consumer.WFWorkflowActionParameters, producer) {
 				t.Fatal("later source consumer is no longer original File reference")
 			}
 		})
 	}
 	// Fresh invocation has no metadata state from the previous compilation.
 	fresh := compileDebugFixture(t, "text(\"plain\")\ndebugLog()\ndebugShowLogs()\n", false)
-	if !reflect.DeepEqual(actionSuffixes(fresh), []string{"gettext", "appendvariable", "previewdocument"}) {
-		t.Fatal("label mode leaked between compilations")
-	}
+	checkDebugFallthroughSequence(t, fresh, false, "gettext", "appendvariable", "previewdocument")
 }
 
 func TestDebugLabelsActualLoopBranchesKeepSourceProjection(t *testing.T) {
@@ -731,8 +755,14 @@ func TestDebugLabelsMultipleEntriesAndUnlabeledAppend(t *testing.T) {
 			if rawIndices[2] != third+2 {
 				t.Fatal("omitted label added operations beyond required Date plus one raw append")
 			}
+			firstConsumer := len(acts) - 2
+			if !legacy {
+				checkDebugMainVoidBoundary(t, acts)
+				firstConsumer--
+			}
 			for i, id := range rawIDs[:2] {
-				if !labelTestHasRef(acts[len(acts)-2+i].WFWorkflowActionParameters, id) {
+				consumer := acts[firstConsumer+i]
+				if consumer.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || !labelTestHasRef(consumer.WFWorkflowActionParameters, id) {
 					t.Fatal("later typed source consumer changed")
 				}
 			}

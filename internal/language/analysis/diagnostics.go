@@ -50,6 +50,7 @@ const (
 	CodeLiteralRequired         = "E_LITERAL_REQUIRED"
 	CodeEnumMember              = "E_ENUM_MEMBER"
 	CodeReturnType              = "E_RETURN_TYPE"
+	CodeMainOutputMode          = "E_MAIN_OUTPUT_MODE"
 	CodeMissingReturn           = "E_MISSING_RETURN"
 	CodeYieldContext            = "E_YIELD_CONTEXT"
 	CodeTargetValueShape        = "E_TARGET_VALUE_SHAPE"

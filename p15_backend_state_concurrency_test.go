@@ -35,14 +35,23 @@ type p15StateExercise struct {
 
 // Decode real output and check the independently authored payload and action.
 // Successful status or nonempty bytes are insufficient for state isolation.
-func p15StateAssertText(data []byte, payload string, canonical bool) error {
+func p15StateAssertText(data []byte, payload string, canonical, mainFallthrough bool) error {
 	var workflow map[string]any
 	if _, err := plist.Unmarshal(data, &workflow); err != nil {
 		return err
 	}
 	var actions, ok = workflow["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 1 {
-		return fmt.Errorf("expected one native Text action, got %#v", workflow["WFWorkflowActions"])
+	wantCount := 1
+	if mainFallthrough {
+		wantCount = 2
+	}
+	if !ok || len(actions) != wantCount {
+		return fmt.Errorf("expected Text graph with fallthrough=%t, got %#v", mainFallthrough, workflow["WFWorkflowActions"])
+	}
+	if mainFallthrough {
+		if err := p15M02MainVoidRowsError(actions); err != nil {
+			return err
+		}
 	}
 	var action, valid = actions[0].(map[string]any)
 	var params, _ = action["WFWorkflowActionParameters"].(map[string]any)
@@ -62,7 +71,7 @@ func p15StateCompile(payload, mode string) error {
 		if err != nil {
 			return err
 		}
-		return p15StateAssertText(data, payload, true)
+		return p15StateAssertText(data, payload, true, true)
 	}
 	if mode == "legacy" {
 		src = "#define version 18\n#define color red\n" + src
@@ -75,7 +84,7 @@ func p15StateCompile(payload, mode string) error {
 	if err != nil {
 		return err
 	}
-	return p15StateAssertText(data, payload, mode == "v2")
+	return p15StateAssertText(data, payload, mode == "v2", mode == "v2")
 }
 
 func p15StateCatalog() (string, error) {
@@ -166,7 +175,7 @@ func p15StateMixedExercise() (p15StateExercise, error) {
 	if err != nil {
 		return result, err
 	}
-	if err = p15StateAssertText(reference, "P15_DECOMPILE_REFERENCE", true); err != nil {
+	if err = p15StateAssertText(reference, "P15_DECOMPILE_REFERENCE", true, true); err != nil {
 		return result, err
 	}
 	var decompiled = decompileForMobile(reference, "P15_State_Reference")

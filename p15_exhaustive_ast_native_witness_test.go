@@ -143,7 +143,12 @@ func p15RP16NativeWitness(fixture p15RP16ApprovedCase, document map[string]any) 
 		}
 		return p15RP16String(actions[index]["WFWorkflowActionIdentifier"])
 	}
+	last := actions[len(actions)-1]
+	if last["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" || len(params[len(params)-1]) != 0 {
+		return fmt.Errorf("approved-node main is missing its explicit Void boundary")
+	}
 	var sequence = func(shortNames ...string) bool {
+		shortNames = append(append([]string(nil), shortNames...), "nothing")
 		if len(shortNames) != len(actions) {
 			return false
 		}

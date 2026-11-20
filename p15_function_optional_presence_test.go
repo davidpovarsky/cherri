@@ -304,8 +304,12 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 								condition = index + 1
 							}
 						case "is.workflow.actions.nothing":
-							nothing = index
-							join = index + 1
+							// Select the argument decoder paired with the first presence
+							// condition, never the later caller decoder or main boundary.
+							if decoder >= 0 && nothing < 0 {
+								nothing = index
+								join = index + 1
+							}
 						case "is.workflow.actions.dictionary":
 							if fields, err := p15ContainerFields(p["WFItems"]); err == nil {
 								if row := fields["value"]; row != nil && reflect.DeepEqual(row["WFValue"], p15FunctionText("DEFAULT")) {
@@ -318,8 +322,11 @@ func TestP15FunctionOptionalPresenceOracleRejectsCorruption(t *testing.T) {
 							consumer = index
 						}
 					}
-					if decoder < 0 || condition < 0 || nothing < 0 || fallback < 0 || join < 0 || call < 0 || consumer < 0 {
+					if decoder < 0 || condition < 0 || nothing < 0 || fallback < 0 || join < 0 || join >= len(bad) || call < 0 || consumer < 0 {
 						t.Fatal("corruption target missing")
+					}
+					if bad[join]["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" || p15Param(bad[join])["GroupingIdentifier"] != p15Param(bad[condition])["GroupingIdentifier"] {
+						t.Fatal("corruption target is not the matching argument presence join")
 					}
 					switch fault {
 					case "value_flag":

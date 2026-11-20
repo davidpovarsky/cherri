@@ -64,9 +64,9 @@ func p15BRG09Producer(action map[string]any, kind, field string, value any) (p15
 }
 
 func p15BRG09SemanticError(root map[string]any, route string) error {
-	count := 3
+	count := 4
 	if route == "list" {
-		count = 5
+		count = 6
 	}
 	actions, err := p15BRG09Actions(root, count)
 	if err != nil {
@@ -99,7 +99,10 @@ func p15BRG09SemanticError(root map[string]any, route string) error {
 		}
 	}
 	_, expected := p15ContainerFieldValue(result)
-	consumer := actions[len(actions)-1]
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	consumer := actions[len(actions)-2]
 	if consumer["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" || !reflect.DeepEqual(p15Param(consumer)["WFVariable"], expected) {
 		return fmt.Errorf("final consumer is detached from the actual typed container")
 	}
@@ -127,8 +130,11 @@ func p15BRG09ExpectedNativeTemplate() map[string]any {
 }
 
 func p15BRG09NativeTemplateError(root map[string]any) error {
-	actions, err := p15BRG09Actions(root, 2)
+	actions, err := p15BRG09Actions(root, 3)
 	if err != nil {
+		return err
+	}
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
 		return err
 	}
 	if actions[0]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || !reflect.DeepEqual(p15Param(actions[0]), map[string]any{
@@ -190,7 +196,10 @@ func TestBackendRecovery09OracleRejectsCorruption(t *testing.T) {
 	for _, fault := range []string{"omitted_rows", "extra_wrapper", "flattened_array", "missing_empty_list", "missing_empty_map", "false_to_zero", "zero_to_text", "large_number_precision", "array_order", "array_cardinality", "reference_uuid", "reference_coercion", "producer_type"} {
 		t.Run("semantic/"+fault, func(t *testing.T) {
 			root := deepClonePlistMap(original)
-			actions, _ := p15BRG09Actions(root, 3)
+			actions, actionErr := p15BRG09Actions(root, 4)
+			if actionErr != nil {
+				t.Fatal(actionErr)
+			}
 			params := p15Param(actions[1])
 			body := params["WFItems"].(map[string]any)
 			fields, err := p15ContainerFields(body)
@@ -239,7 +248,10 @@ func TestBackendRecovery09OracleRejectsCorruption(t *testing.T) {
 	for _, fault := range []string{"semantic_encoding", "missing_false", "missing_empty", "array_order", "large_number_precision", "reference_name"} {
 		t.Run("native/"+fault, func(t *testing.T) {
 			root := deepClonePlistMap(classic)
-			actions, _ := p15BRG09Actions(root, 2)
+			actions, actionErr := p15BRG09Actions(root, 3)
+			if actionErr != nil {
+				t.Fatal(actionErr)
+			}
 			p := p15Param(actions[1])
 			switch fault {
 			case "semantic_encoding":

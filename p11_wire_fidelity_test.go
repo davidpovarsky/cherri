@@ -1718,8 +1718,11 @@ func TestP11_WIRE_42_NoProvenanceNormalStandaloneV2Action(t *testing.T) {
 		t.Fatalf("decode plist failed: %v", err)
 	}
 	acts, ok := raw["WFWorkflowActions"].([]any)
-	if !ok || len(acts) != 1 {
-		t.Fatalf("expected 1 action, got %v", raw)
+	if !ok || len(acts) != 2 {
+		t.Fatalf("expected standalone comment and main Nothing, got %v", raw)
+	}
+	if err := p15M02MainVoidRowsError(acts); err != nil {
+		t.Fatal(err)
 	}
 	act := acts[0].(map[string]any)
 	if act["WFWorkflowActionIdentifier"] != "is.workflow.actions.comment" {

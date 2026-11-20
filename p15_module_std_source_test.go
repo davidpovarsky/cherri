@@ -30,7 +30,7 @@ func TestP15IM03PreservedStandardFunctionSource(t *testing.T) {
 	if len(parser.Errors()) != 0 {
 		t.Fatal(parser.Errors())
 	}
-	graph, issue := modules.Resolve(program, path, nil, schema.DefaultRegistry(), migrate.MigrateSource)
+	graph, issue := modules.Resolve(program, path, nil, schema.DefaultRegistry(), migrate.MigrateModuleSource)
 	if issue != nil {
 		t.Fatal(issue)
 	}

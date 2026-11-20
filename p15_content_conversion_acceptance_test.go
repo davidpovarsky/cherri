@@ -86,10 +86,13 @@ func p15T09Conversions() []p15T09ConversionCase {
 }
 
 func p15T09ConversionWire(actions []ShortcutAction, tc p15T09ConversionCase) error {
-	if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != tc.sourceID ||
+	if len(actions) != 4 || actions[0].WFWorkflowActionIdentifier != tc.sourceID ||
 		actions[1].WFWorkflowActionIdentifier != tc.actionID ||
 		actions[2].WFWorkflowActionIdentifier != "is.workflow.actions.showresult" {
 		return fmt.Errorf("explicit conversion producer/order changed: %#v", actions)
+	}
+	if err := debugMainVoidBoundaryError(actions); err != nil {
+		return err
 	}
 	original, _ := actions[0].WFWorkflowActionParameters["UUID"].(string)
 	converted, _ := actions[1].WFWorkflowActionParameters["UUID"].(string)

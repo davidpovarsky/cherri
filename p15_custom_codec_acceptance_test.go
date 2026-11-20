@@ -29,16 +29,33 @@ func p15CodecNative(t *testing.T, source string) map[string]any {
 	return root
 }
 
+func p15CodecMainVoidBoundaryError(rows []any) error {
+	actions := make([]map[string]any, len(rows))
+	for i, raw := range rows {
+		var ok bool
+		actions[i], ok = raw.(map[string]any)
+		if !ok {
+			return fmt.Errorf("native action %d is not a dictionary", i)
+		}
+	}
+	return p15M02MainVoidBoundaryError(actions)
+}
+
 func p15TokenCodecGraphError(root map[string]any, producer string) error {
 	rows, ok := root["WFWorkflowActions"].([]any)
-	wantCount := 1
+	// Authored V2 fallthrough retains the codec action and explicitly clears
+	// its unused main result. Compare the complete emitted action inventory.
+	wantCount := 2
 	if producer != "" {
-		wantCount = 2
+		wantCount = 3
 	}
 	if !ok || len(rows) != wantCount {
 		return fmt.Errorf("expected %d native actions, got %d", wantCount, len(rows))
 	}
-	target := rows[len(rows)-1].(map[string]any)
+	if err := p15CodecMainVoidBoundaryError(rows); err != nil {
+		return err
+	}
+	target := rows[len(rows)-2].(map[string]any)
 	if target["WFWorkflowActionIdentifier"] != "is.workflow.actions.detect.text" {
 		return fmt.Errorf("wrong target identity")
 	}
@@ -114,10 +131,10 @@ func TestP15CustomTokenCodecCanonicalParity(t *testing.T) {
 			if result := shortcutcompare.CompareDocumentsStrict(canonical, custom); !result.Equal {
 				t.Fatalf("public custom codec differs from canonical codec: %+v", result.Differences)
 			}
-			for _, fault := range []string{"bare_literal", "missing_input", "wrong_token_type", "wrong_target"} {
+			for _, fault := range []string{"bare_literal", "missing_input", "wrong_token_type", "wrong_target", "missing_main_clear", "main_clear_input", "main_clear_replaced"} {
 				changed := deepClonePlistMap(custom)
 				rows := changed["WFWorkflowActions"].([]any)
-				target := rows[len(rows)-1].(map[string]any)
+				target := rows[len(rows)-2].(map[string]any)
 				params := target["WFWorkflowActionParameters"].(map[string]any)
 				switch fault {
 				case "bare_literal":
@@ -128,6 +145,12 @@ func TestP15CustomTokenCodecCanonicalParity(t *testing.T) {
 					params["WFInput"].(map[string]any)["Value"].(map[string]any)["Type"] = "Clipboard"
 				case "wrong_target":
 					target["WFWorkflowActionIdentifier"] = "com.example.p15.wrong"
+				case "missing_main_clear":
+					changed["WFWorkflowActions"] = rows[:len(rows)-1]
+				case "main_clear_input":
+					rows[len(rows)-1].(map[string]any)["WFWorkflowActionParameters"] = map[string]any{"WFInput": "UNUSED-SOURCE"}
+				case "main_clear_replaced":
+					rows[len(rows)-1].(map[string]any)["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext"
 				}
 				if p15TokenCodecGraphError(changed, tc.producer) == nil || shortcutcompare.CompareDocumentsStrict(canonical, changed).Equal {
 					t.Fatal("corrupted codec output passed", fault)
@@ -144,8 +167,11 @@ func TestP15CustomTokenCodecSecondaryAndImplicitBindings(t *testing.T) {
 	} {
 		root := p15CodecNative(t, source)
 		rows := root["WFWorkflowActions"].([]any)
-		if len(rows) != 2 {
-			t.Fatalf("secondary token literal was not materialized: %#v", rows)
+		if len(rows) != 3 {
+			t.Fatalf("secondary token literal or main boundary changed: %#v", rows)
+		}
+		if err := p15CodecMainVoidBoundaryError(rows); err != nil {
+			t.Fatal(err)
 		}
 		producer := rows[0].(map[string]any)
 		if producer["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {

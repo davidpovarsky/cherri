@@ -291,8 +291,11 @@ func TestP15C01SnapshotBoundaries(t *testing.T) {
 		}
 	}
 	standalone := p15CompiledActions(t, "text(\"unused\")")
-	if len(standalone) != 1 || p15C01Params(standalone[0])["UUID"] != nil {
+	if len(standalone) != 2 || standalone[0]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || p15C01Params(standalone[0])["UUID"] != nil {
 		t.Fatal("unused standalone output identity changed")
+	}
+	if err := p15M02MainVoidBoundaryError(standalone); err != nil {
+		t.Fatal(err)
 	}
 }
 

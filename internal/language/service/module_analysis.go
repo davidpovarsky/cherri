@@ -24,7 +24,7 @@ func (s *Service) analyzeDocumentLocked(uri string, version int, text string) *D
 			}
 		}
 		overlays[uri] = text
-		graph, issue := modules.Resolve(program, uri, overlays, s.registry, migrate.MigrateSource)
+		graph, issue := modules.Resolve(program, uri, overlays, s.registry, migrate.MigrateModuleSource)
 		if issue != nil {
 			dependencyDiagnostics = append(dependencyDiagnostics, analysis.Diagnostic{
 				Code: issue.Code, Severity: analysis.SeverityError, Span: issue.Span, Message: issue.Message,

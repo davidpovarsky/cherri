@@ -28,7 +28,7 @@ func (l *Lowerer) ensureModuleGraph(program *syntax.Program) error {
 	if l.moduleGraph != nil {
 		return nil
 	}
-	graph, issue := modules.Resolve(program, l.baseFilePath, l.virtualModules, l.registry, migrate.MigrateSource)
+	graph, issue := modules.Resolve(program, l.baseFilePath, l.virtualModules, l.registry, migrate.MigrateModuleSource)
 	if issue != nil {
 		return issue
 	}

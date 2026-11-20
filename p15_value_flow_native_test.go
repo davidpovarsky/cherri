@@ -7,15 +7,15 @@ import (
 )
 
 func p15F03LiteralProducer(actions []ShortcutAction) (ShortcutAction, error) {
-	if len(actions) == 0 {
-		return ShortcutAction{}, fmt.Errorf("missing reference producer")
+	if err := p15F03MainVoidError(actions); err != nil {
+		return ShortcutAction{}, err
 	}
-	last := actions[len(actions)-1]
+	last := actions[len(actions)-2]
 	ref := p15OutputReference(last.WFWorkflowActionParameters["WFVariable"])
 	if last.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || ref["Type"] != "ActionOutput" {
 		return ShortcutAction{}, fmt.Errorf("literal control did not retain its native producer")
 	}
-	for _, action := range actions[:len(actions)-1] {
+	for _, action := range actions[:len(actions)-2] {
 		if action.WFWorkflowActionParameters["UUID"] == ref["OutputUUID"] {
 			return action, nil
 		}
@@ -37,13 +37,16 @@ func p15F03ExactLiteralFields(action ShortcutAction) map[string]any {
 // materializer. Every non-identity native field, including false/zero/empty
 // presence and container row types, must agree at each chosen branch boundary.
 func p15F03LiteralBranchOracle(actions []ShortcutAction, want []ShortcutAction) error {
+	if err := p15F03MainVoidError(actions); err != nil {
+		return err
+	}
 	if err := p15LegacyInlineReferenceOracle(actions); err != nil {
 		return err
 	}
-	last := actions[len(actions)-1]
+	last := actions[len(actions)-2]
 	ref := p15OutputReference(last.WFWorkflowActionParameters["WFVariable"])
 	end := -1
-	for index, action := range actions[:len(actions)-1] {
+	for index, action := range actions[:len(actions)-2] {
 		if action.WFWorkflowActionParameters["UUID"] == ref["OutputUUID"] {
 			end = index
 		}

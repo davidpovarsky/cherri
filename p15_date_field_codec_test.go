@@ -56,8 +56,15 @@ func TestP15DateFieldCanonicalProductionReferences(t *testing.T) {
 				source = strings.NewReplacer("dateFormat: ", "", "timeFormat: ", "", "customDateFormat: ", "", "locale: ", "false, ").Replace(source)
 			}
 			var actions = p15DateFieldActions(t, source, legacy)
-			if len(actions) != 5 {
-				t.Fatalf("unexpected producer/effect count: %d", len(actions))
+			wantCount := 5
+			if !legacy {
+				wantCount++
+				if err := p15M02MainVoidBoundaryError(actions); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if len(actions) != wantCount {
+				t.Fatalf("unexpected producer/effect/main-boundary count: %d", len(actions))
 			}
 			var refs = make([]map[string]any, 2)
 			for i, wantDate := range []string{"2001-02-03T04:05:06Z", "2001-02-03T04:06:06Z"} {
@@ -98,7 +105,14 @@ func TestP15DateFieldCanonicalMutableAndOmitted(t *testing.T) {
 				source = "#include 'actions/calendar'\n@selected = date(\"2001-02-03T04:05:06Z\")\ngetTimeBetweenDates(@selected, @selected, \"Seconds\")\ngetTimeBetweenDates()\n"
 			}
 			var actions = p15DateFieldActions(t, source, legacy)
-			if len(actions) != 4 || actions[1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.setvariable" || p15Param(actions[1])["WFVariableName"] != "selected" {
+			wantCount := 4
+			if !legacy {
+				wantCount++
+				if err := p15M02MainVoidBoundaryError(actions); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if len(actions) != wantCount || actions[1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.setvariable" || p15Param(actions[1])["WFVariableName"] != "selected" {
 				t.Fatalf("mutable Date producer/store changed: %#v", actions)
 			}
 			var want = map[string]any{"Type": "Variable", "VariableName": "selected"}
@@ -185,7 +199,14 @@ func TestP15DateFieldLiteralAndOmittedSlots(t *testing.T) {
 					source = fmt.Sprintf("let literalFirst = date(%q)\n", first) + strings.Replace(source, fmt.Sprintf("%q", first), "literalFirst", 1)
 				}
 				var actions = p15DateFieldActions(t, source, legacy)
-				var interval = actions[len(actions)-1]
+				intervalIndex := len(actions) - 1
+				if !legacy {
+					if err := p15M02MainVoidBoundaryError(actions); err != nil {
+						t.Fatal(err)
+					}
+					intervalIndex--
+				}
+				var interval = actions[intervalIndex]
 				var p = p15Param(interval)
 				if interval["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettimebetweendates" || p["WFTimeUntilUnit"] != "Seconds" {
 					t.Fatalf("interval or units changed: %#v", interval)
@@ -205,7 +226,7 @@ func TestP15DateFieldLiteralAndOmittedSlots(t *testing.T) {
 					// Verify the real Date/Text producer rather than inventing an
 					// expected UUID or permitting a borrowed field value.
 					var matched bool
-					for _, producer := range actions[:len(actions)-1] {
+					for _, producer := range actions[:intervalIndex] {
 						var parameters = p15Param(producer)
 						var literal, ok = p15DateFieldLiteral(parameters["WFTextActionText"])
 						var producerOK = producer["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" && ok && literal == want
@@ -236,8 +257,11 @@ func TestP15DateFieldPreservesV2FirstSlotReferenceRequirement(t *testing.T) {
 
 func TestP15DateFieldDoesNotWrapUnrelatedInputs(t *testing.T) {
 	var actions = p15DateFieldActions(t, "let d = date(\"2001-02-03T04:05:06Z\")\ntypeOf(d)\ncount(d, \"Items\")\n", false)
-	if len(actions) != 3 {
-		t.Fatalf("unrelated observation graph changed: %#v", actions)
+	if len(actions) != 4 {
+		t.Fatalf("unrelated observation/main-boundary graph changed: %#v", actions)
+	}
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		t.Fatal(err)
 	}
 	for i, key := range []string{"WFInput", "Input"} {
 		var value, ok = p15Param(actions[i+1])[key].(map[string]any)

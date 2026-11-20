@@ -70,7 +70,7 @@ func TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity(t *testing.T) {
 		t.Fatal(parser.Errors())
 	}
 	registry := schema.DefaultRegistry()
-	graph, issue := modules.Resolve(program, path, nil, registry, migrate.MigrateSource)
+	graph, issue := modules.Resolve(program, path, nil, registry, migrate.MigrateModuleSource)
 	if issue != nil {
 		t.Fatal(issue)
 	}

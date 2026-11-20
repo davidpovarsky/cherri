@@ -56,7 +56,7 @@ func p15StateImportExercise() (map[string]any, error) {
 						failure = marshalErr
 						break
 					}
-					failure = p15StateAssertText(data, payload, false)
+					failure = p15StateAssertText(data, payload, false, false)
 				case 2:
 					var response = decompileForMobileWithOptions(reference, "P15_Import_Reference", "v2", "hybrid")
 					if !response.OK || response.Error != "" || response.Source == "" {
@@ -68,7 +68,7 @@ func p15StateImportExercise() (map[string]any, error) {
 						failure = compileErr
 						break
 					}
-					failure = p15StateAssertText(data, "P15_IMPORT_REFERENCE", true)
+					failure = p15StateAssertText(data, "P15_IMPORT_REFERENCE", true, false)
 				case 3:
 					var definitions = EnsureCanonicalStandardActions()
 					var definition = definitions["text"]

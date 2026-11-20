@@ -40,15 +40,15 @@ func TestP15BindingCaptureTerminalCausality(t *testing.T) {
 							resultIndex, references = index, refs
 						}
 					}
-					if resultIndex < 0 || len(references) != 4 || broken[len(broken)-1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.setclipboard" {
+					if resultIndex < 0 || len(references) != 4 || len(broken) < 3 || broken[len(broken)-2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.setclipboard" || p15M02MainVoidBoundaryError(broken) != nil {
 						t.Fatal("actual capture fixture has no exact observed terminal graph")
 					}
 					ranges := p15BindingResultRanges()
 					switch mutation {
 					case "missing_terminal":
-						broken = broken[:len(broken)-1]
+						broken = append(broken[:len(broken)-2], broken[len(broken)-1])
 					case "wrong_terminal_producer":
-						terminal := p15BindingDescriptors(p15C01Params(broken[len(broken)-1])["WFInput"], "ActionOutput")
+						terminal := p15BindingDescriptors(p15C01Params(broken[len(broken)-2])["WFInput"], "ActionOutput")
 						if len(terminal) != 1 {
 							t.Fatal("missing actual final clipboard input")
 						}
@@ -125,10 +125,13 @@ func p15BindingTerminalError(actions []map[string]any, kind, captureID string, l
 			}
 		}
 	}
-	if resultIndex < 0 || resultIndex != len(actions)-2 {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	if resultIndex < 0 || resultIndex != len(actions)-3 {
 		return fmt.Errorf("capture result is not immediately followed by its terminal clipboard write")
 	}
-	terminal := actions[len(actions)-1]
+	terminal := actions[len(actions)-2]
 	if terminal["WFWorkflowActionIdentifier"] != "is.workflow.actions.setclipboard" {
 		return fmt.Errorf("capture result has no terminal clipboard write")
 	}

@@ -64,6 +64,64 @@ func actionSuffixes(acts []ShortcutAction) []string {
 	return names
 }
 
+// These helpers apply only to authored fixtures with main fallthrough. They
+// keep every emitted action in the sequence and validate V2's empty result.
+func debugMainVoidBoundaryError(acts []ShortcutAction) error {
+	if len(acts) == 0 {
+		return fmt.Errorf("main fallthrough has no explicit empty result")
+	}
+	last := acts[len(acts)-1]
+	if last.WFWorkflowActionIdentifier != "is.workflow.actions.nothing" || len(last.WFWorkflowActionParameters) != 0 {
+		return fmt.Errorf("main fallthrough must end with parameter-free Nothing: %#v", last)
+	}
+	return nil
+}
+
+func checkDebugMainVoidBoundary(t *testing.T, acts []ShortcutAction) {
+	t.Helper()
+	if err := debugMainVoidBoundaryError(acts); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func checkDebugFallthroughSequence(t *testing.T, acts []ShortcutAction, legacy bool, authored ...string) {
+	t.Helper()
+	want := append([]string(nil), authored...)
+	if !legacy {
+		checkDebugMainVoidBoundary(t, acts)
+		want = append(want, "nothing")
+	}
+	if got := actionSuffixes(acts); !reflect.DeepEqual(got, want) {
+		t.Fatalf("legacy=%t: complete emitted action sequence got %v; want %v", legacy, got, want)
+	}
+}
+
+func TestDebugStdlibMainVoidBoundaryCausalControls(t *testing.T) {
+	acts := compileDebugFixture(t, "text(\"source\")\ndebugLog()\n", false)
+	checkDebugFallthroughSequence(t, acts, false, "gettext", "appendvariable")
+	for _, tc := range []struct {
+		name   string
+		mutate func([]ShortcutAction) []ShortcutAction
+	}{
+		{"missing_terminal", func(a []ShortcutAction) []ShortcutAction { return a[:len(a)-1] }},
+		{"value_terminal", func(a []ShortcutAction) []ShortcutAction {
+			a[len(a)-1].WFWorkflowActionIdentifier = "is.workflow.actions.gettext"
+			return a
+		}},
+		{"terminal_input", func(a []ShortcutAction) []ShortcutAction {
+			a[len(a)-1].WFWorkflowActionParameters = map[string]any{"WFInput": debugOutputRef("UNUSED-SOURCE")}
+			return a
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			mutated := tc.mutate(append([]ShortcutAction(nil), acts...))
+			if err := debugMainVoidBoundaryError(mutated); err == nil {
+				t.Fatal("corrupted main fallthrough boundary accepted")
+			}
+		})
+	}
+}
+
 func TestDebugStdlibCanonicalCompilerSharedSequence(t *testing.T) {
 	legacy := `debugClearLogs()
 text("alpha")
@@ -94,10 +152,7 @@ debugShowLogs()
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			acts := compileDebugFixture(t, tc.src, tc.legacy)
-			got := actionSuffixes(acts)
-			if !reflect.DeepEqual(got, want) {
-				t.Fatalf("wrong emitted action sequence: got %v; want %v", got, want)
-			}
+			checkDebugFallthroughSequence(t, acts, tc.legacy, want...)
 			if acts[1].WFWorkflowActionParameters["WFVariableName"] != debugLogVariableName {
 				t.Fatalf("clear did not target debug var: %v", acts[1].WFWorkflowActionParameters)
 			}
@@ -148,9 +203,7 @@ func TestDebugStdlibNoArgumentRequiresBoundSource(t *testing.T) {
 // plist token consumed by Add to Variable. This would have caught the iPad bug.
 func checkDebugInputReference(t *testing.T, acts []ShortcutAction, legacy bool) {
 	t.Helper()
-	if len(acts) != 2 {
-		t.Fatalf("legacy=%v: expected two native actions, got %d", legacy, len(acts))
-	}
+	checkDebugFallthroughSequence(t, acts, legacy, "gettext", "appendvariable")
 	if acts[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
 		acts[1].WFWorkflowActionIdentifier != "is.workflow.actions.appendvariable" {
 		t.Fatalf("legacy=%v: unexpected action IDs: %v", legacy, actionSuffixes(acts))
@@ -199,9 +252,7 @@ func TestDebugStdlibNoCrossShortcutPersistentState(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		src := fmt.Sprintf("text(%q)\ndebugLog()\ndebugShowLogs()\n", fmt.Sprintf("run-%d", i))
 		acts := compileDebugFixture(t, src, false)
-		if len(acts) != 3 {
-			t.Fatalf("run %d had %d actions", i, len(acts))
-		}
+		checkDebugFallthroughSequence(t, acts, false, "gettext", "appendvariable", "previewdocument")
 		if acts[0].WFWorkflowActionParameters["WFTextActionText"] != fmt.Sprintf("run-%d", i) {
 			t.Fatal("state leaked across compilation")
 		}
@@ -514,9 +565,7 @@ func TestDebugStdlibExplicitDisplayHelpers(t *testing.T) {
 				src := "text(\"A\")\ndebugLog()\n" + name + "(" + args + ")\n"
 				acts := compileDebugFixture(t, src, legacy)
 				ids := actionSuffixes(acts)
-				if !reflect.DeepEqual(ids, tc.want) {
-					t.Fatalf("%s(%s) legacy=%v: got %v want %v", name, args, legacy, ids, tc.want)
-				}
+				checkDebugFallthroughSequence(t, acts, legacy, tc.want...)
 				if len(ids) > 4 && ids[4] == "setitemname" {
 					verifyNativeNamedItem(t, acts[4])
 				}
@@ -655,9 +704,7 @@ func TestDebugStdlibLoggingDoesNotBreakLaterConsumer(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			acts := compileDebugFixture(t, tc.source, tc.legacy)
-			if len(acts) != 3 {
-				t.Fatalf("expected Text, one Add to Variable, Show Result; got %v", actionSuffixes(acts))
-			}
+			checkDebugFallthroughSequence(t, acts, tc.legacy, "gettext", "appendvariable", "showresult")
 			originalID, _ := acts[0].WFWorkflowActionParameters["UUID"].(string)
 			if originalID == "" {
 				t.Fatal("producer UUID missing")
@@ -720,9 +767,7 @@ func TestDebugStdlibTimerNativeDateFieldSerialization(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			acts := compileDebugFixture(t, "debugStartTimer(\"phase\")\ndebugStopTimer(\"phase\")\n", tc.legacy)
 			want := []string{"setvariable", "gettimebetweendates", "appendvariable", "getvariable"}
-			if !reflect.DeepEqual(actionSuffixes(acts), want) {
-				t.Fatalf("wrong optimized timer sequence: got %v want %v", actionSuffixes(acts), want)
-			}
+			checkDebugFallthroughSequence(t, acts, tc.legacy, want...)
 			timerKey, err := debugTimerVariableName("phase")
 			if err != nil {
 				t.Fatal(err)
@@ -788,6 +833,8 @@ let traceSnapshot = debugExportTrace(runId: "qa-run-20261115")
 `
 	unActs := compileDebugFixture(t, uninstrumentedV2, false)
 	inActs := compileDebugFixture(t, instrumentedV2, false)
+	checkDebugMainVoidBoundary(t, unActs)
+	checkDebugMainVoidBoundary(t, inActs)
 
 	mappings := ClassifyShortcutTraceActions(inActs)
 	var sourceActions []string
@@ -802,7 +849,7 @@ let traceSnapshot = debugExportTrace(runId: "qa-run-20261115")
 			collectorCount++
 		}
 	}
-	wantSource := []string{"gettext", "showresult"}
+	wantSource := []string{"gettext", "showresult", "nothing"}
 	if !reflect.DeepEqual(sourceActions, wantSource) {
 		t.Fatalf("source actions perturbed by QA tracing: got %v want %v", sourceActions, wantSource)
 	}

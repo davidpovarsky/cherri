@@ -758,7 +758,14 @@ func TestForkActionRoundTrips(t *testing.T) {
 		if err := os.WriteFile(plistPath, plistBytes, 0644); err != nil {
 			t.Fatalf("write test plist: %v", err)
 		}
-		decompiled := r.decompileShortcut("setvar-no-input", plistPath)
+		// Exercise the same explicitly selected Legacy mode in both directions.
+		legacySourcePath := filepath.Join(r.dir, "setvar-no-input_b.cherri")
+		r.runCherri("setvar-no-input/import-legacy", "--import="+plistPath, "--legacy", "-o="+legacySourcePath, "--no-ansi")
+		decompiledBytes, readErr := os.ReadFile(legacySourcePath)
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		decompiled := string(decompiledBytes)
 		if !strings.Contains(decompiled, "rawAction(\"is.workflow.actions.setvariable\"") {
 			t.Fatalf("expected rawAction fallback for setvariable without WFInput, got:\n%s", decompiled)
 		}

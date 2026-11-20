@@ -302,8 +302,11 @@ func lang002CompileNormalizedGraph(t *testing.T, filename, source string) []Shor
 }
 
 func lang002QuickLookStringGraph(actions []ShortcutAction, expected string) error {
-	if len(actions) != 2 {
-		return fmt.Errorf("expected one Text producer and one Quick Look consumer, got %d actions", len(actions))
+	if len(actions) != 3 {
+		return fmt.Errorf("expected Text, Quick Look and main Nothing, got %d actions", len(actions))
+	}
+	if err := debugMainVoidBoundaryError(actions); err != nil {
+		return err
 	}
 	producer, consumer := actions[0], actions[1]
 	if producer.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
@@ -390,12 +393,17 @@ func TestLANG002ScalarReferenceOracleRejectsCorruption(t *testing.T) {
 			a[1].WFWorkflowActionParameters["WFInput"] = input
 			return a
 		}},
+		{"missing_main_clear", func(a []ShortcutAction) []ShortcutAction { return a[:2] }},
+		{"main_clear_replaced", func(a []ShortcutAction) []ShortcutAction {
+			a[2].WFWorkflowActionIdentifier = "is.workflow.actions.gettext"
+			return a
+		}},
 		{"missing_producer", func(a []ShortcutAction) []ShortcutAction { return a[1:] }},
 		{"duplicated_producer", func(a []ShortcutAction) []ShortcutAction {
-			return []ShortcutAction{a[0], a[0], a[1]}
+			return []ShortcutAction{a[0], a[0], a[1], a[2]}
 		}},
 		{"consumer_before_producer", func(a []ShortcutAction) []ShortcutAction {
-			return []ShortcutAction{a[1], a[0]}
+			return []ShortcutAction{a[1], a[0], a[2]}
 		}},
 		{"wrong_native_consumer", func(a []ShortcutAction) []ShortcutAction {
 			a[1].WFWorkflowActionIdentifier = "is.workflow.actions.showresult"

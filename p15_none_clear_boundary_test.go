@@ -33,10 +33,13 @@ func p15NoneActions(t *testing.T, source string) ([]map[string]any, []byte) {
 	return actions, raw
 }
 func p15NoneBindingError(actions []map[string]any) error {
-	if len(actions) == 0 || actions[len(actions)-1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	if len(actions) < 2 || actions[len(actions)-2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" {
 		return fmt.Errorf("missing final observed value consumer")
 	}
-	_, err := p15EmptyOrigin(actions, len(actions)-1, p15Param(actions[len(actions)-1])["WFVariable"])
+	_, err := p15EmptyOrigin(actions, len(actions)-2, p15Param(actions[len(actions)-2])["WFVariable"])
 	return err
 }
 func p15NoneReturnError(actions []map[string]any, tagged ...bool) error {
@@ -159,15 +162,22 @@ func TestP15TaggedNoneResultRejectsStaleAndInventedValues(t *testing.T) {
 	}
 }
 func p15PresentBoundaryError(actions []map[string]any, actionID, key string, want any) error {
-	for _, a := range actions {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	// Present values reach their authored consumer before main clears its own unused result.
+	for _, a := range actions[:len(actions)-1] {
 		if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" {
 			return fmt.Errorf("present false/zero/empty was cleared")
 		}
 	}
-	if len(actions) < 2 {
-		return fmt.Errorf("missing explicit value and consumer")
+	if len(actions) < 3 {
+		return fmt.Errorf("missing explicit value, consumer and main boundary")
 	}
-	consumer := p15Param(actions[len(actions)-1])["WFVariable"]
+	if actions[len(actions)-2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" {
+		return fmt.Errorf("present value lost authored consumer")
+	}
+	consumer := p15Param(actions[len(actions)-2])["WFVariable"]
 	wrapper, ok := consumer.(map[string]any)
 	if !ok {
 		return fmt.Errorf("missing consumer attachment")
@@ -180,7 +190,7 @@ func p15PresentBoundaryError(actions []map[string]any, actionID, key string, wan
 	if token["Type"] == "Variable" {
 		name, _ := token["VariableName"].(string)
 		found := false
-		for i := len(actions) - 2; i >= 0; i-- {
+		for i := len(actions) - 3; i >= 0; i-- {
 			if actions[i]["WFWorkflowActionIdentifier"] != "is.workflow.actions.setvariable" || p15Param(actions[i])["WFVariableName"] != name {
 				continue
 			}
@@ -267,7 +277,7 @@ func TestP15NoneClearOracleRejectsCorruption(t *testing.T) {
 			case "missing_write":
 				bad = append(bad[:set], bad[set+1:]...)
 			case "wrong_consumer":
-				p15Param(bad[len(bad)-1])["WFVariable"] = p15FunctionVariable("unwritten")
+				p15Param(bad[len(bad)-2])["WFVariable"] = p15FunctionVariable("unwritten")
 			}
 			if p15NoneBindingError(bad) == nil {
 				t.Fatal("corrupted none boundary accepted")

@@ -36,7 +36,13 @@ func p15V02NativeReferences(value any) (outputs, variables []string) {
 }
 
 func p15V02OuterReference(actions []map[string]any, outer string, mutable bool) error {
-	outputs, variables := p15V02NativeReferences(actions[len(actions)-1])
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	if len(actions) < 2 {
+		return fmt.Errorf("missing final authored scope consumer")
+	}
+	outputs, variables := p15V02NativeReferences(actions[len(actions)-2])
 	refs := outputs
 	if mutable {
 		refs = variables
@@ -47,7 +53,7 @@ func p15V02OuterReference(actions []map[string]any, outer string, mutable bool) 
 	return nil
 }
 
-func p15V02CorruptLastReference(t *testing.T, actions []map[string]any, mutable bool) []map[string]any {
+func p15V02CorruptLastReference(t *testing.T, actions []map[string]any, mutable, mainFallthrough bool) []map[string]any {
 	t.Helper()
 	data, err := json.Marshal(actions)
 	if err != nil {
@@ -81,7 +87,17 @@ func p15V02CorruptLastReference(t *testing.T, actions []map[string]any, mutable 
 			}
 		}
 	}
-	walk(mutated[len(mutated)-1])
+	consumerIndex := len(mutated) - 1
+	if mainFallthrough {
+		if err := p15M02MainVoidBoundaryError(mutated); err != nil {
+			t.Fatal(err)
+		}
+		consumerIndex--
+	}
+	if consumerIndex < 0 {
+		t.Fatal("missing final authored scope consumer")
+	}
+	walk(mutated[consumerIndex])
 	if changes != 1 {
 		t.Fatalf("causal control changed %d actual native references, want one", changes)
 	}
@@ -139,14 +155,14 @@ func TestP15V02LexicalWire(t *testing.T) {
 			}
 			// Corrupt the observed serialized reference, keeping the independent
 			// original-identity expectation unchanged.
-			mutated := p15V02CorruptLastReference(t, actions, tc.mutable)
+			mutated := p15V02CorruptLastReference(t, actions, tc.mutable, true)
 			if p15V02OuterReference(mutated, outer, tc.mutable) == nil {
 				t.Fatal("wrong native reference mutation passed")
 			}
 			if !strings.Contains(tc.name, "for_item") && tc.name != "repeat_index" {
 				// Some inner paths must still consume their distinct local value.
 				localRead := false
-				for _, action := range actions[:len(actions)-1] {
+				for _, action := range actions[:len(actions)-2] {
 					outputs, variables := p15V02NativeReferences(action)
 					if tc.mutable {
 						for _, name := range variables {

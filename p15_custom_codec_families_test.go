@@ -40,8 +40,11 @@ var p15CodecFamilyFields = []struct{ label, key, codec string }{
 
 func p15CodecFamiliesParameters(root map[string]any) (map[string]any, error) {
 	rows, ok := root["WFWorkflowActions"].([]any)
-	if !ok || len(rows) != 1 {
-		return nil, fmt.Errorf("expected exactly one custom native action")
+	if !ok || len(rows) != 2 {
+		return nil, fmt.Errorf("expected one custom native action followed by main Nothing")
+	}
+	if err := p15CodecMainVoidBoundaryError(rows); err != nil {
+		return nil, err
 	}
 	row, ok := rows[0].(map[string]any)
 	if !ok || row["WFWorkflowActionIdentifier"] != "com.example.p15.codec-families" {

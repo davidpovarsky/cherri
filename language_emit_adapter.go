@@ -307,7 +307,7 @@ func collectV2CompileErrorLines(filePath string, content string) ([]int, error) 
 		return linesOut, fmt.Errorf("syntax error: %s", errs[0])
 	}
 	reg := schema.DefaultRegistry()
-	graph, issue := modules.Resolve(prog, filePath, nil, reg, migrate.MigrateSource)
+	graph, issue := modules.Resolve(prog, filePath, nil, reg, migrate.MigrateModuleSource)
 	if issue != nil {
 		return []int{issue.Span.Start.Line}, issue
 	}
@@ -354,7 +354,7 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 	}
 
 	reg := schema.DefaultRegistry()
-	graph, issue := modules.Resolve(prog, filePath, options.VirtualModules, reg, migrate.MigrateSource)
+	graph, issue := modules.Resolve(prog, filePath, options.VirtualModules, reg, migrate.MigrateModuleSource)
 	if issue != nil {
 		return nil, issue
 	}

@@ -27,8 +27,12 @@ show(f"Hello {name}")
 		t.Fatalf("unexpected lowering error: %v", err)
 	}
 
-	if len(wf.Actions) != 2 {
-		t.Fatalf("expected 2 actions (gettext, show), got %d", len(wf.Actions))
+	if len(wf.Actions) != 3 {
+		t.Fatalf("expected 3 actions (gettext, show, main Nothing), got %d", len(wf.Actions))
+	}
+
+	if wf.Actions[2].AppleIdentifier != "is.workflow.actions.nothing" || len(wf.Actions[2].Parameters) != 0 {
+		t.Fatal("main fallthrough did not clear output", wf.Actions[2])
 	}
 
 	// Action 0: gettext for "World"
@@ -69,9 +73,12 @@ func TestLowerConditionalWorkflow(t *testing.T) {
 		t.Fatalf("unexpected lowering error: %v", err)
 	}
 
-	// 6 actions: materialized condition number, conditional begin, show, conditional else, show, conditional end
-	if len(wf.Actions) != 6 {
-		t.Fatalf("expected 6 actions, got %d", len(wf.Actions))
+	// Materialized condition, conditional begin, show, else, show, end, main Nothing.
+	if len(wf.Actions) != 7 {
+		t.Fatalf("expected 7 actions including main Nothing, got %d", len(wf.Actions))
+	}
+	if wf.Actions[6].AppleIdentifier != "is.workflow.actions.nothing" || len(wf.Actions[6].Parameters) != 0 {
+		t.Fatal("conditional main fallthrough did not clear output", wf.Actions[6])
 	}
 	if wf.Actions[1].ControlFlowMode != 0 {
 		t.Errorf("expected mode 0 on first conditional, got %d", wf.Actions[1].ControlFlowMode)

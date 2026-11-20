@@ -352,6 +352,9 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.beginProgram()
+	if _, modeError := syntax.ResolveMainOutputMode(prog); modeError != nil {
+		a.error(CodeMainOutputMode, modeError.Span, modeError.Message)
+	}
 	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
 	a.exprPresence = make(map[syntax.Expression]bool)
 	a.exprAbsent = make(map[syntax.Expression]bool)

@@ -32,9 +32,10 @@ func p15AssetText(t *testing.T, output []byte) string {
 	if _, err := plist.Unmarshal(output, &workflow); err != nil {
 		t.Fatal(err)
 	}
-	if len(workflow.WFWorkflowActions) != 1 {
-		t.Fatalf("expected one canonical text producer, got %d", len(workflow.WFWorkflowActions))
+	if len(workflow.WFWorkflowActions) != 2 {
+		t.Fatalf("expected canonical asset Text and main Nothing, got %d", len(workflow.WFWorkflowActions))
 	}
+	checkDebugMainVoidBoundary(t, workflow.WFWorkflowActions)
 	action := workflow.WFWorkflowActions[0]
 	if action.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
 		t.Fatalf("wrong asset producer: %q", action.WFWorkflowActionIdentifier)

@@ -109,6 +109,7 @@ func p15OptionalJoinCompleteGraphError(actions []map[string]any, tc p15OptionalV
 	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(value)})
 	absent := p15OptionalJoinNonePredicateGraph(g, p15FunctionEdge(presence))
 	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(absent)})
+	g.emit("nothing", nil)
 	return g.compare()
 }
 
@@ -159,13 +160,18 @@ func TestP15OptionalValueJoinsGraphRejectsCorruption(t *testing.T) {
 								valueRead = index
 							}
 						case "is.workflow.actions.nothing":
-							clear = index
+							if decoder >= 0 && clear < 0 {
+								clear = index
+							}
 						}
 					}
 					if len(dicts) != 2 || presentFields == nil || decoder < 0 || valueRead < 0 || clear < 0 {
 						t.Fatal("exact mutation targets absent")
 					}
-					predicate := len(bad) - 6
+					predicate := len(bad) - 7
+					if predicate < 0 || bad[predicate]["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" || p15Int(p15C01Params(bad[predicate])["WFControlFlowMode"]) != 0 {
+						t.Fatal("exact source presence predicate target absent")
+					}
 					switch fault {
 					case "swap_branch_values":
 						left, right := p15C01Params(bad[dicts[0]]), p15C01Params(bad[dicts[1]])
@@ -202,7 +208,7 @@ func TestP15OptionalValueJoinsGraphRejectsCorruption(t *testing.T) {
 					case "extra_operation":
 						bad = append(bad, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
 					case "forward_value_edge":
-						p15C01Params(bad[valueRead])["WFInput"] = p15FunctionEdge(p15C01Params(bad[len(bad)-2])["UUID"].(string))
+						p15C01Params(bad[valueRead])["WFInput"] = p15FunctionEdge(p15C01Params(bad[len(bad)-3])["UUID"].(string))
 					case "duplicate_producer":
 						p15C01Params(bad[dicts[1]])["UUID"] = p15C01Params(bad[dicts[0]])["UUID"]
 					}

@@ -27,9 +27,10 @@ show(f"Hello {name}")
 		t.Fatalf("failed to decode generated plist: %v", err)
 	}
 
-	if len(sc.WFWorkflowActions) != 2 {
-		t.Fatalf("expected 2 actions, got %d", len(sc.WFWorkflowActions))
+	if len(sc.WFWorkflowActions) != 3 {
+		t.Fatalf("expected Text, Show Result and main Nothing, got %d", len(sc.WFWorkflowActions))
 	}
+	checkDebugMainVoidBoundary(t, sc.WFWorkflowActions)
 	if sc.WFWorkflowActions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
 		t.Errorf("action 0 should be gettext, got %s", sc.WFWorkflowActions[0].WFWorkflowActionIdentifier)
 	}

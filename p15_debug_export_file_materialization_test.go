@@ -13,10 +13,15 @@ func TestP15DebugExportUsesBase64FileMaterialization(t *testing.T) {
 					src := "debugClearLogs()\ntext(\"reviewed synthetic text\")\ndebugLog()\n" +
 						fmt.Sprintf("debugExport(%q, false, true, %t)\n", format, redact)
 					actions := compileDebugFixture(t, src, legacy)
-					if len(actions) < 4 {
+					materializationEnd := len(actions)
+					if !legacy {
+						checkDebugMainVoidBoundary(t, actions)
+						materializationEnd--
+					}
+					if materializationEnd < 4 {
 						t.Fatal("missing final File materialization")
 					}
-					tail := actions[len(actions)-4:]
+					tail := actions[materializationEnd-4 : materializationEnd]
 					expected := []string{"gettext", "base64encode", "base64encode", "setitemname"}
 					for i, suffix := range expected {
 						if tail[i].WFWorkflowActionIdentifier != "is.workflow.actions."+suffix {

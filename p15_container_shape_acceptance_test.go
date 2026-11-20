@@ -205,8 +205,11 @@ func TestP15ExplicitNativeContainerTemplateRemainsOpaque(t *testing.T) {
 	source := `native.action("com.example.p15.container-template",parameters:native.plist(` + p15OpaqueContainerTemplate + `))`
 	actions := p15CompiledActions(t, source)
 	want := map[string]any{"WFSerializationType": "WFDictionaryFieldValue", "Value": false, "WFValue": []any{uint64(0), false, "", []any{}, map[string]any{}, []any{uint64(1), uint64(2)}}, "WFDictionaryFieldValueItems": []any{map[string]any{"WFKey": "opaque", "WFValue": map[string]any{"Value": []any{}}}}}
-	if len(actions) != 1 || actions[0]["WFWorkflowActionIdentifier"] != "com.example.p15.container-template" || !reflect.DeepEqual(p15Param(actions[0]), want) {
+	if len(actions) != 2 || actions[0]["WFWorkflowActionIdentifier"] != "com.example.p15.container-template" || !reflect.DeepEqual(p15Param(actions[0]), want) {
 		t.Fatalf("exact native template was encoded as semantic containers: %#v", actions)
+	}
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		t.Fatal(err)
 	}
 }
 

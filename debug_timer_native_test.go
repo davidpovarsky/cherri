@@ -1,7 +1,6 @@
 package main
 
 import (
-	"reflect"
 	"strings"
 	"testing"
 )
@@ -25,10 +24,7 @@ func TestDebugTimerNativeDateInputsAcrossLegacyAndV2(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actions := compileDebugFixture(t, src, tc.legacy)
-			actual := actionSuffixes(actions)
-			if !reflect.DeepEqual(actual, expected) {
-				t.Fatalf("native action order: got %v; want %v", actual, expected)
-			}
+			checkDebugFallthroughSequence(t, actions, tc.legacy, expected...)
 			timerName, err := debugTimerVariableName("api")
 			if err != nil {
 				t.Fatal(err)
@@ -114,13 +110,10 @@ func TestDebugTimerTwoIndependentLabels(t *testing.T) {
 	const src = "debugStartTimer(\"first\")\ndebugStartTimer(\"second\")\ndebugStopTimer(\"first\")\ndebugStopTimer(\"second\")\n"
 	for _, legacy := range []bool{true, false} {
 		acts := compileDebugFixture(t, src, legacy)
-		got := actionSuffixes(acts)
 		want := []string{"setvariable", "setvariable",
 			"gettimebetweendates", "appendvariable", "getvariable",
 			"gettimebetweendates", "appendvariable", "getvariable"}
-		if !reflect.DeepEqual(got, want) {
-			t.Fatalf("legacy=%t: got %v want %v", legacy, got, want)
-		}
+		checkDebugFallthroughSequence(t, acts, legacy, want...)
 		nameFirst, err := debugTimerVariableName("first")
 		if err != nil {
 			t.Fatal(err)

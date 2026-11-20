@@ -51,13 +51,13 @@ func TestBuildProfileReleasePreservesSourceAndAssertions(t *testing.T) {
 			if releaseErr != nil {
 				t.Fatal(releaseErr)
 			}
-			var got = strings.Join(actionSuffixes(release), ",")
 			var want = "gettext,gettext,alert,exit,gettext"
 			if !legacy {
 				want = "gettext,gettext,number,conditional,alert,exit,conditional,gettext"
 			}
-			if got != want {
-				t.Fatalf("release deleted source/validation or retained diagnostics: %s", got)
+			checkDebugFallthroughSequence(t, release, legacy, strings.Split(want, ",")...)
+			if !legacy {
+				checkDebugMainVoidBoundary(t, debug)
 			}
 			if len(debug) <= len(release) {
 				t.Fatal("debug build did not contain instrumentation")
@@ -91,10 +91,7 @@ func TestBuildProfileReleasePreservesEffectAndTypedReference(t *testing.T) {
 		if err != nil {
 			t.Fatalf("legacy=%t: %v", legacy, err)
 		}
-		if len(actionsOut) != 2 || actionsOut[0].WFWorkflowActionIdentifier != "is.workflow.actions.runworkflow" ||
-			actionsOut[1].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
-			t.Fatalf("source effect lost/duplicated: %v", actionSuffixes(actionsOut))
-		}
+		checkDebugFallthroughSequence(t, actionsOut, legacy, "runworkflow", "getvariable")
 		var producer = actionsOut[0].WFWorkflowActionParameters["UUID"]
 		var token = debugParamMap(actionsOut[1].WFWorkflowActionParameters["WFVariable"])
 		var ref = debugParamMap(token["Value"])
@@ -129,13 +126,11 @@ func TestBuildProfileInvalidAndSequentialIsolation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			var expected = 2
+			var expected = []string{"gettext", "appendvariable"}
 			if profile == BuildProfileRelease {
-				expected = 1
+				expected = []string{"gettext"}
 			}
-			if len(actionsOut) != expected {
-				t.Fatalf("profile state leaked across compile: %s emitted %d actions", profile, len(actionsOut))
-			}
+			checkDebugFallthroughSequence(t, actionsOut, legacy, expected...)
 		}
 	}
 }
@@ -194,14 +189,27 @@ func TestBuildProfileMobileBridgeIsolation(t *testing.T) {
 			if decodeErr != nil {
 				t.Fatal(decodeErr)
 			}
-			var actionsOut = root["WFWorkflowActions"].([]any)
-			var expected = 2
+			var expectedMode = "v2"
+			if mode == "legacy" {
+				expectedMode = "legacy"
+			}
+			if response.Mode != expectedMode {
+				t.Fatalf("mode=%s selected %s instead of %s", mode, response.Mode, expectedMode)
+			}
+			var actionsOut []ShortcutAction
+			for _, raw := range root["WFWorkflowActions"].([]any) {
+				object := raw.(map[string]any)
+				params, _ := object["WFWorkflowActionParameters"].(map[string]any)
+				actionsOut = append(actionsOut, ShortcutAction{
+					WFWorkflowActionIdentifier: object["WFWorkflowActionIdentifier"].(string),
+					WFWorkflowActionParameters: params,
+				})
+			}
+			var expected = []string{"gettext", "appendvariable"}
 			if profile == BuildProfileRelease {
-				expected = 1
+				expected = []string{"gettext"}
 			}
-			if len(actionsOut) != expected {
-				t.Fatalf("mobile profile lost/isolation failed: mode=%s profile=%s actions=%d", mode, profile, len(actionsOut))
-			}
+			checkDebugFallthroughSequence(t, actionsOut, expectedMode == "legacy", expected...)
 		}
 		var bad = compileForMobileModeWithOptions(src, "Profile Bridge", mode, false, CompileOptions{BuildProfile: "invalid"})
 		if bad.OK || bad.PlistBase64 != "" || !strings.Contains(bad.Error, "BUILD_PROFILE_INVALID") {

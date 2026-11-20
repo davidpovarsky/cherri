@@ -115,8 +115,11 @@ func TestP15ActionDeclarationHealthyControl(t *testing.T) {
 			t.Fatal(err)
 		}
 		actions, ok := root["WFWorkflowActions"].([]any)
-		if !ok || len(actions) != 1 {
-			t.Fatalf("wrong healthy action graph: %#v", root)
+		if !ok || len(actions) != 2 {
+			t.Fatalf("wrong healthy action/main-boundary graph: %#v", root)
+		}
+		if err := p15M02MainVoidRowsError(actions); err != nil {
+			t.Fatal(err)
 		}
 		action := actions[0].(map[string]any)
 		if action["WFWorkflowActionIdentifier"] != "com.example.p15.declaration" {

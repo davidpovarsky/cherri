@@ -62,9 +62,10 @@ func TestNATIVE_ValidNativeActionEmission(t *testing.T) {
 		t.Fatalf("failed to unmarshal output plist: %v", err)
 	}
 
-	if len(sc.WFWorkflowActions) != 1 {
-		t.Fatalf("expected 1 action, got %d", len(sc.WFWorkflowActions))
+	if len(sc.WFWorkflowActions) != 2 {
+		t.Fatalf("expected native action and main Nothing, got %d", len(sc.WFWorkflowActions))
 	}
+	checkDebugMainVoidBoundary(t, sc.WFWorkflowActions)
 
 	act := sc.WFWorkflowActions[0]
 	if act.WFWorkflowActionIdentifier != "is.workflow.actions.alert" {
@@ -105,9 +106,10 @@ func TestNATIVE_PlistPassThrough(t *testing.T) {
 		t.Fatalf("failed to unmarshal plist: %v", err)
 	}
 
-	if len(sc.WFWorkflowActions) != 1 {
-		t.Fatalf("expected 1 action, got %d", len(sc.WFWorkflowActions))
+	if len(sc.WFWorkflowActions) != 2 {
+		t.Fatalf("expected native action and main Nothing, got %d", len(sc.WFWorkflowActions))
 	}
+	checkDebugMainVoidBoundary(t, sc.WFWorkflowActions)
 
 	act := sc.WFWorkflowActions[0]
 	if act.WFWorkflowActionIdentifier != "com.apple.custom.data" {
@@ -144,9 +146,10 @@ func TestNATIVE_RefAggrandizements(t *testing.T) {
 		t.Fatalf("failed to unmarshal plist: %v", err)
 	}
 
-	if len(sc.WFWorkflowActions) != 1 {
-		t.Fatalf("expected 1 action, got %d", len(sc.WFWorkflowActions))
+	if len(sc.WFWorkflowActions) != 2 {
+		t.Fatalf("expected native action and main Nothing, got %d", len(sc.WFWorkflowActions))
 	}
+	checkDebugMainVoidBoundary(t, sc.WFWorkflowActions)
 
 	params := sc.WFWorkflowActions[0].WFWorkflowActionParameters
 	inputDict, ok := params["InputDict"].(map[string]any)

@@ -41,6 +41,18 @@ func MigrateSource(input string) string {
 	return result
 }
 
+// MigrateModuleSource uses the same Legacy conversion for an imported module.
+// Only an entry program owns an implicit result, so imported source must not
+// acquire a synthetic shortcut declaration. Existing metadata is still retained
+// and rejected by the module validator when inappropriate.
+func MigrateModuleSource(input string) string {
+	result, _, err := migrateSourceWithDiagnostics(input, "", false)
+	if err != nil {
+		return input
+	}
+	return result
+}
+
 func expandLocalIncludes(src string, includeRoot string, seen map[string]bool) (string, []MigrationDiagnostic) {
 	if seen == nil {
 		seen = make(map[string]bool)
@@ -101,7 +113,7 @@ func expandLocalIncludes(src string, includeRoot string, seen map[string]bool) (
 // It fails closed if unrecognized preprocessor directives, corrupted reference hashes,
 // or invalid trigger definitions are encountered.
 func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, error) {
-	return migrateSourceWithDiagnostics(input, "")
+	return migrateSourceWithDiagnostics(input, "", true)
 }
 
 // MigrateSourceWithDiagnosticsAtPath resolves local includes from the entry
@@ -115,10 +127,10 @@ func MigrateSourceWithDiagnosticsAtPath(input, sourcePath string) (string, []Mig
 	if err != nil {
 		return "", []MigrationDiagnostic{{Line: 1, Column: 1, Message: "cannot resolve migration source path"}}, err
 	}
-	return migrateSourceWithDiagnostics(input, filepath.Dir(path))
+	return migrateSourceWithDiagnostics(input, filepath.Dir(path), true)
 }
 
-func migrateSourceWithDiagnostics(input, includeRoot string) (string, []MigrationDiagnostic, error) {
+func migrateSourceWithDiagnostics(input, includeRoot string, isEntry bool) (string, []MigrationDiagnostic, error) {
 	input, lexicalDiags := expandLocalIncludes(input, includeRoot, nil)
 	if len(lexicalDiags) != 0 {
 		for index := range lexicalDiags {
@@ -195,6 +207,8 @@ func migrateSourceWithDiagnostics(input, includeRoot string) (string, []Migratio
 				val := strings.TrimSpace(rest[len(key):])
 				val = strings.Trim(val, "\"")
 				switch key {
+				case "outputMode":
+					addDiag(lineNum, 1, "outputMode is reserved V2 entry metadata; Legacy output is preserved by migration")
 				case "name":
 					shortcutName = val
 				case "icon", "glyph":
@@ -223,7 +237,11 @@ func migrateSourceWithDiagnostics(input, includeRoot string) (string, []Migratio
 					otherDefines[key] = val
 				}
 			} else if len(parts) == 1 {
-				otherDefines[parts[0]] = "true"
+				if parts[0] == "outputMode" {
+					addDiag(lineNum, 1, "outputMode is reserved V2 entry metadata; Legacy output is preserved by migration")
+				} else {
+					otherDefines[parts[0]] = "true"
+				}
 			}
 		} else if strings.HasPrefix(trimmed, "#include ") || strings.HasPrefix(trimmed, "#include\t") {
 			mod := strings.TrimSpace(trimmed[len("#include"):])
@@ -624,6 +642,10 @@ func migrateSourceWithDiagnostics(input, includeRoot string) (string, []Migratio
 	p := syntax.NewParser(file)
 	prog := p.ParseProgram()
 	if len(p.Errors()) == 0 {
+		if _, modeError := syntax.ResolveMainOutputMode(prog); modeError != nil {
+			addDiag(modeError.Span.Start.Line, modeError.Span.Start.Column, modeError.Message)
+			return "", diags, fmt.Errorf("migration produced invalid V2 output mode: %s", modeError.Message)
+		}
 		preserveLegacyOptionalBindings(prog, result, legacyBindingLines, strings.Count(outHeader.String(), "\n"), reg)
 		referenceValues := make(map[string]string, len(refs))
 		for _, ref := range refs {
@@ -634,6 +656,9 @@ func migrateSourceWithDiagnostics(input, includeRoot string) (string, []Migratio
 			return "", diags, fmt.Errorf("migration produced invalid V2 syntax (reference identity)")
 		}
 		migrateVariadicCalls(prog, reg)
+		if isEntry {
+			preserveMainOutputMode(prog)
+		}
 		return syntax.Format(prog), diags, nil
 	}
 

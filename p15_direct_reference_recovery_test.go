@@ -47,11 +47,20 @@ func p15BRG07NativeRoot(nativeExtension bool) map[string]any {
 	return root
 }
 
-func p15BRG07Consumer(t *testing.T, root map[string]any) map[string]any {
+func p15BRG07Consumer(t *testing.T, root map[string]any, mainFallthrough bool) map[string]any {
 	t.Helper()
 	var actions, ok = root["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 3 {
-		t.Fatalf("reference fixture emitted %d actions; want its exact three-action graph", len(actions))
+	wantCount := 3
+	if mainFallthrough {
+		wantCount++
+	}
+	if !ok || len(actions) != wantCount {
+		t.Fatalf("reference fixture emitted %d actions; want %d with mainFallthrough=%t", len(actions), wantCount, mainFallthrough)
+	}
+	if mainFallthrough {
+		if err := p15M02MainVoidRowsError(actions); err != nil {
+			t.Fatal(err)
+		}
 	}
 	var consumer = actions[2].(map[string]any)
 	if consumer["WFWorkflowActionIdentifier"] != "com.example.cherri.brg07.references" {
@@ -82,8 +91,13 @@ func TestP15BRG07DirectReferenceKindsRoundTrip(t *testing.T) {
 	if decodeErr != nil {
 		t.Fatal(decodeErr)
 	}
-	var expected = p15BRG07Decoded(t, p15BRG07NativeRoot(false))
-	var want, got = p15BRG07Consumer(t, expected), p15BRG07Consumer(t, actual.RawRoot)
+	// The authored V2 fixture falls through; the independent expected graph
+	// therefore includes the main boundary. Imported native specimens below
+	// retain their original exact three actions.
+	authoredExpected := p15BRG07NativeRoot(false)
+	authoredExpected["WFWorkflowActions"] = append(authoredExpected["WFWorkflowActions"].([]any), map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+	var expected = p15BRG07Decoded(t, authoredExpected)
+	var want, got = p15BRG07Consumer(t, expected, true), p15BRG07Consumer(t, actual.RawRoot, true)
 	for _, name := range []string{"Action", "Variable", "System"} {
 		t.Run("direct_"+name, func(t *testing.T) {
 			if !plistValuesStrictlyEqual(want[name], got[name]) {
@@ -120,7 +134,7 @@ func TestP15BRG07ReferenceMutationControls(t *testing.T) {
 		for _, fault := range []string{"remove_coercion", "remove_key", "remove_property", "reorder_chain", "change_kind", "change_producer", "drop_transform_extension", "drop_reference_extension"} {
 			t.Run(name+"/"+fault, func(t *testing.T) {
 				var changed = p15BRG07Decoded(t, p15BRG07NativeRoot(true))
-				var reference = p15BRG07Consumer(t, changed)[name].(map[string]any)["Value"].(map[string]any)
+				var reference = p15BRG07Consumer(t, changed, false)[name].(map[string]any)["Value"].(map[string]any)
 				var chain = reference["Aggrandizements"].([]any)
 				switch fault {
 				case "remove_coercion", "remove_key", "remove_property":
@@ -195,8 +209,11 @@ func TestP15BRG07SharedReferencePaths(t *testing.T) {
 					t.Fatal(decodeErr)
 				}
 				var actions = decoded.RawRoot["WFWorkflowActions"].([]any)
-				if len(actions) != 3 {
-					t.Fatalf("shared reference path changed the three-action graph: %d", len(actions))
+				if len(actions) != 4 {
+					t.Fatalf("shared reference path changed the three authored actions plus main Nothing: %d", len(actions))
+				}
+				if err := p15M02MainVoidRowsError(actions); err != nil {
+					t.Fatal(err)
 				}
 				var params = actions[2].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
 				var got = params["WFVariable"]

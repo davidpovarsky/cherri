@@ -89,10 +89,13 @@ func TestP15FN04CallerInputWithoutFunctions(t *testing.T) {
 	want := map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.getvariable", "WFWorkflowActionParameters": map[string]any{
 		"WFVariable": p15FunctionAttachment(map[string]any{"Type": "ExtensionInput"}),
 	}}
-	if len(actions) != 2 {
-		t.Fatal("ordinary caller input unexpectedly added a function dispatcher", len(actions))
+	if len(actions) != 3 {
+		t.Fatal("ordinary caller input must be two input reads followed by main Nothing", len(actions))
 	}
-	for _, action := range actions {
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		t.Fatal(err)
+	}
+	for _, action := range actions[:2] {
 		if !reflect.DeepEqual(p15FunctionComparable(action, false), want) {
 			t.Fatalf("ordinary system.input/ShortcutInput lost ExtensionInput: %#v", action)
 		}

@@ -83,12 +83,20 @@ func TestP15DebugExportBothFrontendsPrivacyAndIdentity(t *testing.T) {
 				if appendRef["OutputUUID"] != original {
 					t.Fatal("original log reference changed")
 				}
-				tail := acts[len(acts)-2:]
+				consumerEnd := len(acts)
+				if !legacy {
+					checkDebugMainVoidBoundary(t, acts)
+					consumerEnd--
+				}
+				tail := acts[consumerEnd-2 : consumerEnd]
+				if tail[0].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || tail[1].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
+					t.Fatal("authored original/export consumers were replaced")
+				}
 				originalRef := debugParamMap(debugParamMap(tail[0].WFWorkflowActionParameters["WFVariable"])["Value"])
 				if originalRef["OutputUUID"] != original {
 					t.Fatal("export rewrote the raw producer identity")
 				}
-				exported := acts[len(acts)-3]
+				exported := acts[consumerEnd-3]
 				if exported.WFWorkflowActionIdentifier != "is.workflow.actions.setitemname" {
 					t.Fatal("export did not end in named File")
 				}
@@ -96,10 +104,10 @@ func TestP15DebugExportBothFrontendsPrivacyAndIdentity(t *testing.T) {
 				if exportRef["OutputUUID"] != exported.WFWorkflowActionParameters["UUID"] {
 					t.Fatal("returned File reference changed")
 				}
-				fileEncoderUUID := acts[len(acts)-5].WFWorkflowActionParameters["UUID"]
-				fileDecoderUUID := acts[len(acts)-4].WFWorkflowActionParameters["UUID"]
+				fileEncoderUUID := acts[consumerEnd-5].WFWorkflowActionParameters["UUID"]
+				fileDecoderUUID := acts[consumerEnd-4].WFWorkflowActionParameters["UUID"]
 				seen := map[string]map[string]any{}
-				for _, a := range acts[4 : len(acts)-2] {
+				for _, a := range acts[4 : consumerEnd-2] {
 					p := a.WFWorkflowActionParameters
 					id := strings.TrimPrefix(a.WFWorkflowActionIdentifier, "is.workflow.actions.")
 					switch id {
@@ -165,9 +173,7 @@ func TestP15DebugExportLiteralOptionsAndRelease(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(release) != 1 || release[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
-			t.Fatalf("Release retained export or removed source: %v", actionSuffixes(release))
-		}
+		checkDebugFallthroughSequence(t, release, legacy, "gettext")
 		decl := "let"
 		if legacy {
 			decl = "const"
@@ -184,7 +190,12 @@ func TestP15DebugExportZeroOneThousandCompileBudget(t *testing.T) {
 		for _, count := range []int{0, 1, 1000} {
 			src := "debugClearLogs()\n" + strings.Repeat("text(\"entry\")\ndebugLog()\n", count) + "debugExport()\n"
 			acts := compileDebugFixture(t, src, legacy)
-			if len(acts) != 2+2*count+10 {
+			wantCount := 2 + 2*count + 10
+			if !legacy {
+				checkDebugMainVoidBoundary(t, acts)
+				wantCount++
+			}
+			if len(acts) != wantCount {
 				t.Fatalf("legacy=%t count=%d: unbounded expansion %d", legacy, count, len(acts))
 			}
 		}

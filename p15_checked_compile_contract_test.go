@@ -100,6 +100,7 @@ func TestP15RP04CheckedCompileRejectsSemanticErrors(t *testing.T) {
 	var validSource = "text(\"P15_CHECKED_COMPILE_RESTORED\")\n"
 	emitted = 0
 	var raw, err = CompileSourceToPlist("corrected.cherri", validSource)
+	// Only the authored resolved call reaches this hook; the main Nothing is raw.
 	if err != nil || emitted != 1 {
 		t.Fatalf("restored compiler/hook did not run: emitted=%d error=%v", emitted, err)
 	}
@@ -108,8 +109,11 @@ func TestP15RP04CheckedCompileRejectsSemanticErrors(t *testing.T) {
 		t.Fatal(err)
 	}
 	var actions, ok = native["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 1 {
+	if !ok || len(actions) != 2 {
 		t.Fatalf("corrected source had unexpected native effects: %#v", native)
+	}
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
 	}
 	var dir = t.TempDir()
 	var input, output = filepath.Join(dir, "corrected.cherri"), filepath.Join(dir, "retained.shortcut")

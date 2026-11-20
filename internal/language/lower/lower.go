@@ -60,6 +60,8 @@ func lookupContentItemClass(prop string) (string, bool) {
 
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
+	mainOutputMode             syntax.MainOutputMode
+	lastEmittedIdentifier      string
 	registry                   *schema.Registry
 	session                    backend.Session
 	workflow                   *ir.NativeWorkflow
@@ -225,6 +227,7 @@ func (l *Lowerer) generateControlEndOutputUUID(withOutput bool, bindingName stri
 
 func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
 	l.prepareLiteralContainerParameters(node)
+	l.lastEmittedIdentifier = node.AppleIdentifier
 	if node.ExactRawEnvelope != nil {
 		exactSession, ok := l.session.(interface {
 			EmitExactRawActionEnvelope(string, map[string]any) error
@@ -429,6 +432,12 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 	if err := validateLoweringProgram(prog); err != nil {
 		return err
 	}
+	mode, modeError := syntax.ResolveMainOutputMode(prog)
+	if modeError != nil {
+		return fmt.Errorf("%s: %s", analysis.CodeMainOutputMode, modeError.Message)
+	}
+	l.mainOutputMode = mode
+	l.lastEmittedIdentifier = ""
 	if err := l.ensureModuleGraph(prog); err != nil {
 		return err
 	}
@@ -540,6 +549,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		if err != nil {
 			return err
 		}
+		l.finishMainOutput(prog)
 		if l.emitErr != nil {
 			return l.emitErr
 		}
@@ -555,6 +565,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			return l.emitErr
 		}
 	}
+	l.finishMainOutput(prog)
 
 	if len(l.workflow.WorkflowTypes) == 0 {
 		l.workflow.WorkflowTypes = schema.DefaultWorkflowTypes()
@@ -791,6 +802,10 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 	if d.Metadata != nil {
 		for _, f := range d.Metadata.Fields {
 			switch f.Name {
+			case "outputMode":
+				// Consumed once by ResolveMainOutputMode before emission. This is
+				// compiler entry metadata, never a native workflow plist key.
+				continue
 			case "icon":
 				if rec, ok := f.Value.(*syntax.RecordExpr); ok {
 					for _, rf := range rec.Fields {
@@ -1491,6 +1506,10 @@ func (l *Lowerer) materializeYieldValue(val interface{}) {
 }
 
 func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
+	// Some resolved/macro routes emit directly to the canonical session. If a
+	// statement does not identify its final native action, require the ordinary
+	// Void boundary instead of trusting an older action in the IR collection.
+	l.lastEmittedIdentifier = ""
 	switch s := stmt.(type) {
 	case *syntax.BindingStmt:
 		return l.lowerLexicalBinding(s)
@@ -5783,6 +5802,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		l.lastEmittedIdentifier = resolvedCall.AppleIdentifier
 		for _, argument := range setupArguments {
 			if err := l.bindSetupQuestion(argument.name, argument.wireKey, uuid); err != nil {
 				return nil, err

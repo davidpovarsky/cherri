@@ -239,6 +239,9 @@ func (g *p15FunctionGraph) call(payload string) string {
 
 func (g *p15FunctionGraph) finish() error {
 	g.boundary(g.outer, 2, false)
+	// These caller fixtures fall through after the dispatcher; keep the
+	// complete native graph, including the empty main result.
+	g.emit("nothing", nil)
 	return g.compare()
 }
 

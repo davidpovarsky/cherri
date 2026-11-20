@@ -78,11 +78,11 @@ func TestP15U04PublicFrontendRouteMatrix(t *testing.T) {
 					}
 					typed[index] = action
 				}
-				if err := p15U04PublicSourceWire(typed, tc.marker); err != nil {
+				if err := p15U04PublicSourceWire(typed, tc.marker, tc.source == v2); err != nil {
 					t.Fatal(err)
 				}
-				broken := p15V02CorruptLastReference(t, typed, false)
-				if err := p15U04PublicSourceWire(broken, tc.marker); err == nil {
+				broken := p15V02CorruptLastReference(t, typed, false, tc.source == v2)
+				if err := p15U04PublicSourceWire(broken, tc.marker, tc.source == v2); err == nil {
 					t.Fatal("wrong native output reference satisfied the public route oracle")
 				}
 			})
@@ -90,7 +90,19 @@ func TestP15U04PublicFrontendRouteMatrix(t *testing.T) {
 	}
 }
 
-func p15U04PublicSourceWire(actions []map[string]any, marker string) error {
+func p15U04PublicSourceWire(actions []map[string]any, marker string, mainFallthrough bool) error {
+	wantCount := 2
+	if mainFallthrough {
+		wantCount++
+	}
+	if len(actions) != wantCount || actions[0]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || actions[1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.showresult" {
+		return fmt.Errorf("public source changed its complete action sequence")
+	}
+	if mainFallthrough {
+		if err := p15M02MainVoidBoundaryError(actions); err != nil {
+			return err
+		}
+	}
 	producerCount, consumerCount := 0, 0
 	producerID := ""
 	var consumer map[string]any

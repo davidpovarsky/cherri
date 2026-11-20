@@ -1575,7 +1575,8 @@ func TestIsolatedP10R9DualSSoTPropagation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Legacy compile of mutated actions failed: %v", err)
 	}
-	v2Bytes, err := CompileSourceToPlist("probe.cherri", src)
+	// This exact Legacy differential explicitly preserves its old result mode.
+	v2Bytes, err := CompileSourceToPlist("probe.cherri", "shortcut \"\" { outputMode: \"legacy\" }\n"+src)
 	if err != nil {
 		t.Fatalf("V2 compile of mutated actions failed: %v", err)
 	}

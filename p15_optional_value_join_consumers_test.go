@@ -70,6 +70,7 @@ func p15OptionalJoinConsumerGraphError(actions []map[string]any, variant string)
 		}
 		absent := p15OptionalJoinNonePredicateGraph(g, p15FunctionEdge(presence))
 		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(absent)})
+		g.emit("nothing", nil)
 		return g.compare()
 	}
 	if variant == "return" {

@@ -66,10 +66,13 @@ func TestNATIVE_Plist_DeepStructuralTypes(t *testing.T) {
 	}
 
 	actions, ok := rawMap["WFWorkflowActions"].([]any)
-	if !ok || len(actions) == 0 {
-		t.Fatalf("expected actions, got %v", rawMap["WFWorkflowActions"])
+	if !ok || len(actions) != 2 {
+		t.Fatalf("expected native action and main Nothing, got %v", rawMap["WFWorkflowActions"])
 	}
-	act := actions[len(actions)-1].(map[string]any)
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
+	}
+	act := actions[0].(map[string]any)
 	if act["WFWorkflowActionIdentifier"] != "com.apple.custom.deep_plist" {
 		t.Fatalf("unexpected action identifier: %v", act["WFWorkflowActionIdentifier"])
 	}
@@ -575,8 +578,11 @@ func TestNATIVE_Ref_ChainedMultiLevelAggrandizements(t *testing.T) {
 	}
 
 	actions := rawMap["WFWorkflowActions"].([]any)
-	if len(actions) != 1 {
-		t.Fatalf("native reference metadata added runtime producers: got %d actions", len(actions))
+	if len(actions) != 2 {
+		t.Fatalf("expected native reference action and main Nothing: got %d actions", len(actions))
+	}
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
 	}
 	act := actions[0].(map[string]any)
 	if act["WFWorkflowActionIdentifier"] != "com.apple.custom.chained_refs" {
@@ -653,8 +659,8 @@ func TestNATIVE_Workflow_ImportDecompileBoundedEditRecompilePipeline(t *testing.
 	}
 
 	// Step 1: Decompile using production in-process decompiler
-	decompResp := decompileForMobile(initialPlistBytes, "PipelineTest")
-	if !decompResp.OK {
+	decompResp := decompileForMobileWithOptions(initialPlistBytes, "PipelineTest", "v2", "semantic")
+	if !decompResp.OK || decompResp.Mode != "v2" {
 		t.Fatalf("decompile failed: %s", decompResp.Error)
 	}
 	decompSource := decompResp.Source
@@ -699,7 +705,7 @@ func TestNATIVE_Workflow_ImportDecompileBoundedEditRecompilePipeline(t *testing.
 	}
 
 	// Step 3: Recompile the edited source
-	recompResp := compileForMobileMode(editedSource, "PipelineTest", "auto", false)
+	recompResp := compileForMobileMode(editedSource, "PipelineTest", "v2", false)
 	if !recompResp.OK {
 		t.Fatalf("recompile failed: %s (line %d col %d)", recompResp.Error, recompResp.Line, recompResp.Column)
 	}

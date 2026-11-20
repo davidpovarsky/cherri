@@ -38,7 +38,7 @@ func p15RP16CheckedProgram(t *testing.T, text string) (*syntax.Program, *analysi
 		t.Fatalf("positive source did not parse: %v", parser.Errors())
 	}
 	var registry = schema.DefaultRegistry()
-	var graph, issue = modules.Resolve(program, "rp16-boundary.cherri", nil, registry, migrate.MigrateSource)
+	var graph, issue = modules.Resolve(program, "rp16-boundary.cherri", nil, registry, migrate.MigrateModuleSource)
 	if issue != nil {
 		t.Fatalf("positive source did not resolve: %v", issue)
 	}
@@ -141,8 +141,12 @@ func TestP15RP16UnknownNodesCanonicalBoundary(t *testing.T) {
 				t.Fatal(err)
 			}
 			var actions = native["WFWorkflowActions"].([]any)
-			if len(actions) != 1 {
-				t.Fatalf("rejected session leaked actions: %v", actions)
+			if len(actions) != 2 {
+				t.Fatalf("restored program differs from Text plus explicit main Void boundary: %v", actions)
+			}
+			last, ok := actions[1].(map[string]any)
+			if !ok || last["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" || len(p15Param(last)) != 0 {
+				t.Fatalf("restored main no longer clears its incidental result: %v", actions)
 			}
 			var action = actions[0].(map[string]any)
 			var params = action["WFWorkflowActionParameters"].(map[string]any)

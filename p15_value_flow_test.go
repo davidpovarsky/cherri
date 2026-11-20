@@ -74,7 +74,10 @@ func TestP15F03YieldTypesAndNormalPaths(t *testing.T) {
 			if err = p15LegacyInlineReferenceOracle(actions); err != nil {
 				t.Fatal(err)
 			}
-			consumer := actions[len(actions)-1]
+			if err := p15F03MainVoidError(actions); err != nil {
+				t.Fatal(err)
+			}
+			consumer := actions[len(actions)-2]
 			if consumer.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
 				t.Fatal("value consumer missing")
 			}
@@ -83,7 +86,7 @@ func TestP15F03YieldTypesAndNormalPaths(t *testing.T) {
 				t.Fatal("control result lost its typed native reference", ref)
 			}
 			found := false
-			for _, action := range actions[:len(actions)-1] {
+			for _, action := range actions[:len(actions)-2] {
 				if action.WFWorkflowActionParameters["UUID"] == ref["OutputUUID"] {
 					found = (action.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" || action.WFWorkflowActionIdentifier == "is.workflow.actions.choosefrommenu") && p15Int(action.WFWorkflowActionParameters["WFControlFlowMode"]) == 2
 				}
@@ -340,15 +343,28 @@ func (g *p15F03NativeGraph) origins(index int, seen map[int]bool) ([]string, err
 	}
 }
 
+// Authored value-flow fixtures consume their result and then return Void from main.
+// Keep the real trailing action in the graph and require its complete empty payload.
+func p15F03MainVoidError(actions []ShortcutAction) error {
+	if len(actions) < 2 {
+		return fmt.Errorf("missing authored value consumer or main Nothing")
+	}
+	last := actions[len(actions)-1]
+	if last.WFWorkflowActionIdentifier != "is.workflow.actions.nothing" || len(last.WFWorkflowActionParameters) != 0 {
+		return fmt.Errorf("missing parameter-free main Nothing")
+	}
+	return nil
+}
+
 func p15F03NativeResultOracle(actions []ShortcutAction, want []string) error {
 	g, err := p15F03Graph(actions)
 	if err != nil {
 		return err
 	}
-	if len(actions) == 0 {
-		return fmt.Errorf("missing native output")
+	if err := p15F03MainVoidError(actions); err != nil {
+		return err
 	}
-	last := len(actions) - 1
+	last := len(actions) - 2
 	if actions[last].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
 		return fmt.Errorf("missing final result consumer")
 	}
@@ -410,7 +426,7 @@ func TestP15F03WireOracleMutations(t *testing.T) {
 	if err = p15F03NativeResultOracle(actions, tc.origins); err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"wrong_branch_value", "foreign_final_result", "wrong_end_group", "missing_yield_bridge", "duplicate_uuid", "removed_else"} {
+	for _, fault := range []string{"wrong_branch_value", "foreign_final_result", "wrong_end_group", "missing_yield_bridge", "duplicate_uuid", "removed_else", "missing_main_clear", "wrong_main_clear", "fabricated_main_output"} {
 		t.Run(fault, func(t *testing.T) {
 			broken := p15C03Clone(t, actions)
 			switch fault {
@@ -421,7 +437,7 @@ func TestP15F03WireOracleMutations(t *testing.T) {
 					}
 				}
 			case "foreign_final_result":
-				p15OutputReference(broken[len(broken)-1].WFWorkflowActionParameters["WFVariable"])["OutputUUID"] = "foreign"
+				p15OutputReference(broken[len(broken)-2].WFWorkflowActionParameters["WFVariable"])["OutputUUID"] = "foreign"
 			case "wrong_end_group":
 				for i := range broken {
 					if broken[i].WFWorkflowActionIdentifier == "is.workflow.actions.conditional" && p15Int(broken[i].WFWorkflowActionParameters["WFControlFlowMode"]) == 2 {
@@ -429,14 +445,20 @@ func TestP15F03WireOracleMutations(t *testing.T) {
 					}
 				}
 			case "missing_yield_bridge":
-				for i := 0; i < len(broken)-1; i++ {
+				for i := 0; i < len(broken)-2; i++ {
 					if broken[i].WFWorkflowActionIdentifier == "is.workflow.actions.getvariable" {
 						broken = append(broken[:i], broken[i+1:]...)
 						break
 					}
 				}
 			case "duplicate_uuid":
-				broken[len(broken)-1].WFWorkflowActionParameters["UUID"] = broken[0].WFWorkflowActionParameters["UUID"]
+				broken[len(broken)-2].WFWorkflowActionParameters["UUID"] = broken[0].WFWorkflowActionParameters["UUID"]
+			case "missing_main_clear":
+				broken = broken[:len(broken)-1]
+			case "wrong_main_clear":
+				broken[len(broken)-1].WFWorkflowActionIdentifier = "is.workflow.actions.gettext"
+			case "fabricated_main_output":
+				broken[len(broken)-1].WFWorkflowActionParameters = map[string]any{"UUID": "invented-main-result"}
 			case "removed_else":
 				for i := range broken {
 					if broken[i].WFWorkflowActionIdentifier == "is.workflow.actions.conditional" && p15Int(broken[i].WFWorkflowActionParameters["WFControlFlowMode"]) == 1 {
@@ -525,16 +547,16 @@ func TestP15F03CLIAndService(t *testing.T) {
 }
 
 func p15F03NoneBranchOracle(actions []ShortcutAction) error {
-	if len(actions) < 2 {
-		return fmt.Errorf("missing None branch")
+	if err := p15F03MainVoidError(actions); err != nil {
+		return err
 	}
 	if err := p15LegacyInlineReferenceOracle(actions); err != nil {
 		return err
 	}
-	final := actions[len(actions)-1]
+	final := actions[len(actions)-2]
 	ref := p15OutputReference(final.WFWorkflowActionParameters["WFVariable"])
 	end := -1
-	for index, action := range actions[:len(actions)-1] {
+	for index, action := range actions[:len(actions)-2] {
 		if action.WFWorkflowActionParameters["UUID"] == ref["OutputUUID"] {
 			end = index
 		}

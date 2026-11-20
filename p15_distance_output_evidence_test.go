@@ -44,8 +44,15 @@ func TestP15DistanceIndependentNativeOutput(t *testing.T) {
 	}
 }
 
-func p15DistanceWire(actions []ShortcutAction) error {
-	if len(actions) != 4 {
+func p15DistanceWire(actions []ShortcutAction, legacy bool) error {
+	wantCount := 4
+	if !legacy {
+		wantCount++
+		if err := debugMainVoidBoundaryError(actions); err != nil {
+			return err
+		}
+	}
+	if len(actions) != wantCount {
 		return fmt.Errorf("unexpected distance graph length %d", len(actions))
 	}
 	producer, condition := actions[0], actions[1]
@@ -85,7 +92,7 @@ func TestP15DistanceNumberProduction(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actions := compileDebugFixture(t, tc.source, tc.legacy)
-			if err := p15DistanceWire(actions); err != nil {
+			if err := p15DistanceWire(actions, tc.legacy); err != nil {
 				t.Fatal(err)
 			}
 			p, c := actions[0].WFWorkflowActionParameters, actions[1].WFWorkflowActionParameters
@@ -99,7 +106,7 @@ func TestP15DistanceNumberProduction(t *testing.T) {
 				case "rhs":
 					c["WFNumberValue"] = 8.0
 				}
-				if p15DistanceWire(actions) == nil {
+				if p15DistanceWire(actions, tc.legacy) == nil {
 					t.Fatalf("%s corruption passed", fault)
 				}
 				p["UUID"], p["WFAvoidHighways"], c["WFNumberValue"] = uuid, highway, rhs

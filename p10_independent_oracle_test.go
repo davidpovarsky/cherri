@@ -434,7 +434,7 @@ let out3 = run(targetName, input: dictPayload)
 
 		// Also verify optional input in Fork Legacy & V2 (`run("NoInputTarget")`)
 		noInLegPlist := compileWithBinary(t, forkBin, workDir, "fork_leg_run_noin", `run("NoInputTarget")`+"\n", "--legacy")
-		noInV2Plist := compileWithBinary(t, forkBin, workDir, "fork_v2_run_noin", `run("NoInputTarget")`+"\n")
+		noInV2Plist := compileWithBinary(t, forkBin, workDir, "fork_v2_run_noin", "shortcut \"\" { outputMode: \"legacy\" }\n"+`run("NoInputTarget")`+"\n")
 		assertOracleDocsEqual(t, loadRoundTripDocument(t, noInLegPlist), loadRoundTripDocument(t, noInV2Plist), "WFWorkflow")
 
 		// 2b. Shared `runSelf(@payload)` comparison (documented separately from `run("Target", payload)` since `runSelf` sets `isSelf: true`)

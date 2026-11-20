@@ -476,7 +476,7 @@ func p15OptionalDiagnosticMutate(actions []map[string]any, fault string) ([]map[
 				return actions, true
 			}
 		case "output_bypass":
-			if id == "is.workflow.actions.output" && i == len(actions)-2 {
+			if id == "is.workflow.actions.output" && i == len(actions)-3 {
 				p["WFOutput"] = p15FunctionText("FORGED")
 				return actions, true
 			}

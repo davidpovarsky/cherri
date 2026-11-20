@@ -53,7 +53,12 @@ func TestP15CollectExistingLegacyAndV2Results(t *testing.T) {
 					t.Fatal("collection body gained an accumulator")
 				}
 			}
-			last := actions[len(actions)-1]
+			consumerIndex := len(actions) - 1
+			if !legacy {
+				checkDebugMainVoidBoundary(t, actions)
+				consumerIndex--
+			}
+			last := actions[consumerIndex]
 			if last.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || p15OutputReference(last.WFWorkflowActionParameters["WFVariable"])["OutputUUID"] != loops[1].WFWorkflowActionParameters["UUID"] {
 				t.Fatal("result consumer no longer references native Repeat Results")
 			}
