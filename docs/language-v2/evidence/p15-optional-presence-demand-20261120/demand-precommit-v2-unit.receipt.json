@@ -1,0 +1,40 @@
+{
+  "source_head": "c75ac67a0f640f1ba841ec8a46c0a6b17803218e",
+  "classification": "DIRTY_PRODUCTION_DRAFT",
+  "source_files": {
+    "internal/language/lower/lower.go": "28e3fe513cdd5cefbfb8a10870c43f5a21b67a593e2d18ff61ead3170ec2495e",
+    "internal/language/lower/function_optional_presence.go": "a9fd6f612ce7945f4f70da4bf8b96e7c7255b99c7bb51eaccadfedd5104a8bb1",
+    "internal/language/lower/optional_presence_demand.go": "c2f34d201ed51c77c44170bfb70b360850673e3c7a88bb6f408f05284efe0e9e",
+    "internal/language/lower/optional_presence_demand_test.go": "d7abc15b81f8bd470a9c3b70cf230414df4bc5f8732f006084c0a86ed6fabd64"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=60s",
+    "-run",
+    "^TestOptionalPresenceDemand",
+    "./internal/language/lower"
+  ],
+  "started_at": "2026-11-20T06:40:26.652210+00:00",
+  "elapsed_seconds": 3.8119999999762513,
+  "exit_code": 0,
+  "raw_sha256": "6a982ae6f03bfc47e83feed357e2599757a02fea0d5a20e66cca26fe8532725d",
+  "passed_tests": [
+    "TestOptionalPresenceDemandFollowsActualConsumers/none_comparison",
+    "TestOptionalPresenceDemandFollowsActualConsumers/reassignment_alias",
+    "TestOptionalPresenceDemandFollowsActualConsumers/return",
+    "TestOptionalPresenceDemandFollowsActualConsumers/argument",
+    "TestOptionalPresenceDemandFollowsActualConsumers/named_argument",
+    "TestOptionalPresenceDemandFollowsActualConsumers/qualified_argument",
+    "TestOptionalPresenceDemandFollowsActualConsumers/branch_use",
+    "TestOptionalPresenceDemandFollowsActualConsumers/loop_use",
+    "TestOptionalPresenceDemandFollowsActualConsumers/shadow_retention",
+    "TestOptionalPresenceDemandFollowsActualConsumers/canonical_value_only",
+    "TestOptionalPresenceDemandFollowsActualConsumers/unused_alias",
+    "TestOptionalPresenceDemandFollowsActualConsumers"
+  ],
+  "failed_tests": [],
+  "skipped_tests": []
+}

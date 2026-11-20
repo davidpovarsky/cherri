@@ -1,0 +1,32 @@
+{
+  "source_head": "c75ac67a0f640f1ba841ec8a46c0a6b17803218e",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "-run",
+    "^TestP15OptionalUnconsumedPresenceKeepsNativeSequence$",
+    "."
+  ],
+  "status_before": "",
+  "status_after": "",
+  "started_at": "2026-11-20T06:33:21.662944+00:00",
+  "elapsed_seconds": 15.59299999999348,
+  "exit_code": 1,
+  "raw_sha256": "5eb03de012efcb4ad92ea39375c7ed24b7b34f6e45dfb758e1c48917dd22e576",
+  "passed_tests": [],
+  "failed_tests": [
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/none",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/empty",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/false",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/zero",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/assignment",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/alias",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/branch",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence/loop",
+    "TestP15OptionalUnconsumedPresenceKeepsNativeSequence"
+  ],
+  "skipped_tests": []
+}

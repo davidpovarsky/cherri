@@ -1,0 +1,7 @@
+{
+  "baseline_source": "c75ac67a0f640f1ba841ec8a46c0a6b17803218e",
+  "original_source_sha256": "4330d42d724c98d0b16a5c72fc73355b4c52e1a91482d7cd505424300977f810",
+  "preserved_original_source": "function echo(seed:Text)->Text{\ntext(\"OPTIONAL_PREVIOUS_SEED\")\nvar candidate:Text?=f\"{native.action(\"is.workflow.actions.detect.text\", {})}\"\nnative.action(\"is.workflow.actions.detect.text\", {})\ncandidate=none\nnative.action(\"is.workflow.actions.detect.text\", {})\nreturn \"DONE\"\n}\ngetVariable(echo(\"unused\"))",
+  "correction": "Only demanded test appends actual candidate!=none consumer after all old implicit-input observations; old3 metadata/order/clear mutations remain. Original no-consumer source and demand-removal variant have their own exact no-metadata graphs.",
+  "prior_failed_receipt": "demand-precommit-v2-root.receipt.json"
+}
