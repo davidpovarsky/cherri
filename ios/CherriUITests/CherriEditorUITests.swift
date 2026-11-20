@@ -99,9 +99,10 @@ final class CherriEditorUITests: XCTestCase {
         }
     }
 
-    /// Resolve only the two fixed startup controls in one immediate query. A
-    /// separate `.exists` lookup for the absent editor can block for many seconds.
-    /// Binding the actual matches avoids both that lookup and index rebinding.
+    /// Resolve only the two fixed startup controls through their typed queries.
+    /// Re-reading each result's elementType can fail during a document transition.
+    /// Keep the returned element identities; do not resolve absent controls or
+    /// rebind a creation candidate by its index in a later query.
     private func observeStartupControls(trace: CherriEditorStartupTimingTrace,
                                         phase: CherriEditorStartupTimingTrace.Phase) -> ObservedStartupControls {
         let foreground = trace.measure(phase, .foreground) { app.state == .runningForeground }
@@ -112,33 +113,27 @@ final class CherriEditorUITests: XCTestCase {
                 editorExists: false, editorHittable: false), creationControl: nil)
         }
         let windowExists = trace.measure(phase, .window) { app.windows.firstMatch.exists }
-        let query = app.descendants(matching: .any).matching(NSPredicate(
-            format: "(elementType == %@ AND identifier == %@) OR (elementType == %@ AND (identifier == %@ OR label == %@))",
-            NSNumber(value: XCUIElement.ElementType.textView.rawValue), "cherriCodeEditor",
-            NSNumber(value: XCUIElement.ElementType.button.rawValue), "Create Document", "Create Document"))
         var creationControls: [XCUIElement] = []
         var editors: [XCUIElement] = []
-        var unexpectedControls = 0
         if windowExists {
             trace.measure(phase, .knownControls) {
-                let controls = query.allElementsBoundByAccessibilityElement
-                for control in controls {
-                    switch control.elementType {
-                    case .button: creationControls.append(control)
-                    case .textView: editors.append(control)
-                    default: unexpectedControls += 1
-                    }
-                }
-                return !controls.isEmpty
+                creationControls = app.buttons.matching(NSPredicate(
+                    format: "identifier == %@ OR label == %@", "Create Document", "Create Document"))
+                    .allElementsBoundByAccessibilityElement
+                // Read the editor after creation controls so its absence is the
+                // latest observed existence state before considering a tap.
+                editors = app.textViews.matching(NSPredicate(
+                    format: "identifier == %@", "cherriCodeEditor"))
+                    .allElementsBoundByAccessibilityElement
+                return !creationControls.isEmpty || !editors.isEmpty
             }
         }
-        // Existence comes from the same filtered result, not another AX query.
+        // Existence comes from those typed results, not another AX query.
         trace.mark(phase, .createExists, value: !creationControls.isEmpty)
         trace.mark(phase, .editorExists, value: !editors.isEmpty)
         let observed = CherriEditorStartupObservation.matchedControls(
             windowExists: windowExists, appRunningForeground: foreground,
             createDocumentCount: creationControls.count, editorCount: editors.count,
-            unexpectedControlCount: unexpectedControls,
             createDocumentHittable: { trace.measure(phase, .createHittable) { creationControls[0].isHittable } },
             editorHittable: { trace.measure(phase, .editorHittable) { editors[0].isHittable } })
         let state = CherriEditorStartupObservation(
