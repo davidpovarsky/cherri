@@ -68,7 +68,9 @@ func inlineMigrationReferences(program *syntax.Program, references map[string]st
 				}
 			}
 		case *syntax.CallExpr:
-			e.Callee = expression(e.Callee, scope)
+			// Callable names and module-qualified callees occupy a separate
+			// namespace from inline parameter references. A same-named #ref may
+			// still appear as an argument without replacing this call identity.
 			e.PrimaryArg = expression(e.PrimaryArg, scope)
 			for index := range e.NamedArgs {
 				e.NamedArgs[index].Value = expression(e.NamedArgs[index].Value, scope)

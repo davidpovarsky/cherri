@@ -261,7 +261,7 @@ func testFixture(binPath, fixturePath, tmpDir, repoRoot string) FixtureResult {
 		return res
 	}
 
-	migrated, diags, errMig := migrate.MigrateSourceWithDiagnostics(string(content))
+	migrated, diags, errMig := migrate.MigrateSourceWithDiagnosticsAtPath(string(content), fixturePath)
 	if errMig != nil || len(diags) > 0 {
 		res.MigratedOk = false
 		res.Status = "MIGRATION_FAIL"

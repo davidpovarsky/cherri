@@ -41,7 +41,7 @@ func MigrateSource(input string) string {
 	return result
 }
 
-func expandLocalIncludes(src string, seen map[string]bool) (string, []MigrationDiagnostic) {
+func expandLocalIncludes(src string, includeRoot string, seen map[string]bool) (string, []MigrationDiagnostic) {
 	if seen == nil {
 		seen = make(map[string]bool)
 	}
@@ -64,6 +64,13 @@ func expandLocalIncludes(src string, seen map[string]bool) (string, []MigrationD
 			continue
 		}
 		candidates := []string{mod, filepath.Clean(mod), filepath.Join("tests", mod)}
+		if includeRoot != "" {
+			candidate := mod
+			if !filepath.IsAbs(candidate) {
+				candidate = filepath.Join(includeRoot, candidate)
+			}
+			candidates = []string{candidate}
+		}
 		for _, candidate := range candidates {
 			content, err := os.ReadFile(candidate)
 			if err != nil {
@@ -76,7 +83,7 @@ func expandLocalIncludes(src string, seen map[string]bool) (string, []MigrationD
 			out.WriteString(src[last:item.start])
 			if !seen[found] {
 				seen[found] = true
-				expanded, nestedDiags := expandLocalIncludes(string(content), seen)
+				expanded, nestedDiags := expandLocalIncludes(string(content), includeRoot, seen)
 				if len(nestedDiags) != 0 {
 					return "", nestedDiags
 				}
@@ -94,7 +101,25 @@ func expandLocalIncludes(src string, seen map[string]bool) (string, []MigrationD
 // It fails closed if unrecognized preprocessor directives, corrupted reference hashes,
 // or invalid trigger definitions are encountered.
 func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, error) {
-	input, lexicalDiags := expandLocalIncludes(input, nil)
+	return migrateSourceWithDiagnostics(input, "")
+}
+
+// MigrateSourceWithDiagnosticsAtPath resolves local includes from the entry
+// source directory, matching Legacy file compilation. It never changes the
+// process working directory or falls back to an unrelated cwd dependency.
+func MigrateSourceWithDiagnosticsAtPath(input, sourcePath string) (string, []MigrationDiagnostic, error) {
+	if strings.TrimSpace(sourcePath) == "" {
+		return "", []MigrationDiagnostic{{Line: 1, Column: 1, Message: "missing migration source path"}}, fmt.Errorf("missing migration source path")
+	}
+	path, err := filepath.Abs(sourcePath)
+	if err != nil {
+		return "", []MigrationDiagnostic{{Line: 1, Column: 1, Message: "cannot resolve migration source path"}}, err
+	}
+	return migrateSourceWithDiagnostics(input, filepath.Dir(path))
+}
+
+func migrateSourceWithDiagnostics(input, includeRoot string) (string, []MigrationDiagnostic, error) {
+	input, lexicalDiags := expandLocalIncludes(input, includeRoot, nil)
 	if len(lexicalDiags) != 0 {
 		for index := range lexicalDiags {
 			lexicalDiags[index].Message = "generated V2 source is not representable: " + lexicalDiags[index].Message

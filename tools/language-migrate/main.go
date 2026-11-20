@@ -70,7 +70,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	migrated, diags, err := migrate.MigrateSourceWithDiagnostics(string(content))
+	migrated, diags, err := migrate.MigrateSourceWithDiagnosticsAtPath(string(content), filePath)
 	if err != nil {
 		for _, d := range diags {
 			fmt.Fprintf(os.Stderr, "Migration error: %s\n", d)

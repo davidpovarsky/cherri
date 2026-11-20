@@ -299,7 +299,7 @@ func HandleLanguageV2CLI() bool {
 			fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", migPath, err)
 			os.Exit(1)
 		}
-		migrated, diags, err := migrate.MigrateSourceWithDiagnostics(string(content))
+		migrated, diags, err := migrate.MigrateSourceWithDiagnosticsAtPath(string(content), migPath)
 		if err != nil {
 			for _, d := range diags {
 				fmt.Fprintf(os.Stderr, "Migration error: %s\n", d)

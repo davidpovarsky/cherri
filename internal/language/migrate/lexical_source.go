@@ -77,7 +77,7 @@ func (source migrationLexicalSource) restore(text string) string {
 // it does not broaden V2's lexer. JSON containers use JSON string decoding.
 func scanMigrationLexemes(input string) ([]migrationLexeme, []MigrationDiagnostic) {
 	var result []migrationLexeme
-	var calls []bool
+	var calls []string
 	lineHasCode, jsonUntil := false, 0
 	fail := func(offset int, message string) ([]migrationLexeme, []MigrationDiagnostic) {
 		span := source.NewFile("migration", "migration.cherri", 1, input).SpanForOffsets(offset, offset)
@@ -167,8 +167,21 @@ func scanMigrationLexemes(input string) ([]migrationLexeme, []MigrationDiagnosti
 			if err != nil {
 				return fail(start, err.Error())
 			}
+			if migrationEmbeddedInclude(input[start:end]) {
+				return fail(start, "ambiguous Legacy include inside multiline literal; expand or remove the include explicitly before migration")
+			}
 			offset = end
-			interpolate := ch == '"' && (len(calls) == 0 || !calls[len(calls)-1])
+			context := ""
+			if len(calls) != 0 {
+				context = calls[len(calls)-1]
+			}
+			interpolate := ch == '"' && context != "native"
+			// Legacy rawAction distinguishes ${name} attachments from {name}
+			// text interpolation. Keep that distinction in the migrated source;
+			// canonical native.action already owns its own parameter grammar.
+			if context == "rawAction" && (migrationRawAttachment.MatchString(value) || migrationRawParameterKey(input, end)) {
+				interpolate = false
+			}
 			replacement := migrationLiteralSource(value, interpolate)
 			result = append(result, migrationLexeme{kind: "string", text: input[start:end], replacement: replacement, start: start, end: end})
 			lineHasCode = true
@@ -176,8 +189,16 @@ func scanMigrationLexemes(input string) ([]migrationLexeme, []MigrationDiagnosti
 		}
 		if ch == '(' {
 			callee := migrationPreviousCallee(input[:offset])
-			raw := callee == "rawAction" || callee == "native.plist" || (len(calls) != 0 && calls[len(calls)-1])
-			calls = append(calls, raw)
+			context := ""
+			if len(calls) != 0 {
+				context = calls[len(calls)-1]
+			}
+			if callee == "native.action" || callee == "native.plist" || callee == "action" {
+				context = "native"
+			} else if callee == "rawAction" && context != "native" {
+				context = "rawAction"
+			}
+			calls = append(calls, context)
 		} else if ch == ')' && len(calls) != 0 {
 			calls = calls[:len(calls)-1]
 		}
@@ -185,6 +206,24 @@ func scanMigrationLexemes(input string) ([]migrationLexeme, []MigrationDiagnosti
 		offset++
 	}
 	return result, nil
+}
+
+func migrationEmbeddedInclude(literal string) bool {
+	lines := strings.Split(literal, "\n")
+	for _, line := range lines[1:] {
+		line = strings.TrimLeft(line, " \t\r")
+		if strings.HasPrefix(line, "#include") && (len(line) == len("#include") || line[len("#include")] == ' ' || line[len("#include")] == '\t') {
+			return true
+		}
+	}
+	return false
+}
+
+func migrationRawParameterKey(input string, end int) bool {
+	for end < len(input) && strings.ContainsRune(" \t\r\n", rune(input[end])) {
+		end++
+	}
+	return end < len(input) && input[end] == ':'
 }
 
 func migrationIdentifierByte(ch byte) bool {
@@ -271,6 +310,7 @@ func migrationLegacyString(input string, start int, jsonString bool) (string, in
 // normal string. Raw strings, comments, directives and native payloads never
 // enter this path. Literal braces are escaped for the V2 interpolation parser.
 var migrationInlineVariable = regexp.MustCompile("\\{@?([a-zA-Z_][a-zA-Z0-9_]*)(?:\\['(.*?)'])?(?:\\.(.*?))?}")
+var migrationRawAttachment = regexp.MustCompile(`^\$\{@?[a-zA-Z_][a-zA-Z0-9_]*\}$`)
 
 func migrationQuote(value string) string {
 	encoded, _ := json.Marshal(value)
