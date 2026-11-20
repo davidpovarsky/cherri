@@ -17,6 +17,20 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP08": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames: []string{"TestP15RP08SchemaIdentityProduction"},
+		Tiers:     []string{"generation", "unit"},
+		ProductionPaths: []string{
+			"actions/web.cherri", "actions_catalog.go", "tools/language-schema/main.go",
+			"internal/language/schema/generated_registry.go", "internal/language/schema/schema.go",
+			"internal/language/schema/semantic_metadata.go", "internal/language/schema/registry_clone.go",
+			"internal/language/schema/macro_metadata.go", "internal/language/backend/contracts.go",
+			"internal/language/protocol/protocol.go", "internal/language/analysis/analyzer.go",
+			"p15_schema_production_test.go", "p15_schema_identity_recovery_test.go",
+		},
+	},
+
 	"BRG24": {
 		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
 		TestNames: []string{"TestP15CanonicalBehaviorSourcePropagation"},

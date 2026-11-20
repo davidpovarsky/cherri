@@ -15,7 +15,7 @@ func TestSchemaSupplementalProductionEvidence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wanted := map[string]bool{"RP06": true, "RP07": true, "BRG22": true, "BRG23": true}
+	wanted := map[string]bool{"RP06": true, "RP07": true, "RP08": true, "BRG22": true, "BRG23": true}
 	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
 	expectedRecords := 0
 	for _, scenario := range all.Repair.Cases {
@@ -40,13 +40,13 @@ func TestSchemaSupplementalProductionEvidence(t *testing.T) {
 	}
 	selected.Repair.CaseCount = len(selected.Repair.Cases)
 	selected.Gates.GateCount = len(selected.Gates.Gates)
-	if selected.Repair.CaseCount != 2 || selected.Gates.GateCount != 2 {
+	if selected.Repair.CaseCount != 3 || selected.Gates.GateCount != 2 {
 		t.Fatal("schema producer contract selection changed")
 	}
 	runner := NewRunner()
 	runner.runRepairCases(selected.Repair)
 	runner.runRecoveryGates(selected.Gates)
-	if len(runner.results) != 4 || len(runner.records) != expectedRecords || len(runner.observations) != 0 {
+	if len(runner.results) != 5 || len(runner.records) != expectedRecords || len(runner.observations) != 0 {
 		t.Fatalf("unexpected schema scope: results=%d records=%d observations=%d", len(runner.results), len(runner.records), len(runner.observations))
 	}
 	for id, result := range runner.results {
@@ -71,14 +71,14 @@ func TestSchemaSupplementalProductionEvidence(t *testing.T) {
 	}
 	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	report, err := ValidateEvidenceManifest(manifest, selected, "local")
-	if err != nil || report.PassedCases != 4 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
+	if err != nil || report.PassedCases != 5 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
 		t.Fatalf("complete schema receipts rejected or expanded to release closure: %+v %v", report, err)
 	}
 	encoded, err := json.Marshal(manifest)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, id := range []string{"RP06", "RP07", "BRG22", "BRG23"} {
+	for _, id := range []string{"RP06", "RP07", "RP08", "BRG22", "BRG23"} {
 		for _, fault := range []string{"zero_selection", "missing_assertion", "wrong_producer", "stale_source", "invented_runtime", "missing_generation_tier", "wrong_requirement"} {
 			t.Run(id+"/"+fault, func(t *testing.T) {
 				var changed EvidenceManifest
@@ -143,7 +143,7 @@ func TestSchemaSupplementalProductionEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 	if audit.ClosureComplete || len(audit.Rows) != 179 {
-		t.Fatal("bounded schema run changed the original179 accounting")
+		t.Fatal("bounded schema run changed the original 179 accounting")
 	}
 	for _, row := range audit.Rows {
 		if wanted[row.ID] {
@@ -158,7 +158,7 @@ func TestSchemaSupplementalProductionEvidence(t *testing.T) {
 	status, statusErr := exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()
 	receipt, err := json.Marshal(map[string]any{
 		"source_sha": runner.implSHA, "source_tree_clean": statusErr == nil && len(status) == 0,
-		"scope":  "RP06/RP07/BRG22/BRG23 execute complete actual detached-worktree generation, failures and consumer propagation; no linked-row, Apple runtime or release inheritance.",
+		"scope":  "RP06/RP07/RP08/BRG22/BRG23 execute complete actual detached-worktree generation, failures and consumer propagation; no linked-row, Apple runtime or release inheritance.",
 		"report": report, "records": runner.records,
 	})
 	if err != nil {
