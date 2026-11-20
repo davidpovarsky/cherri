@@ -16,7 +16,7 @@ struct VerifyEditorStartupTiming {
         let deadline = CherriEditorStartupDeadline(now: { now })
         let trace = CherriEditorStartupTimingTrace(startedAt: deadline.diagnosticStartedAt, now: { now })
         var calls = 0
-        let observed = trace.measure(.windowSnapshot, .editorExists) {
+        let observed = trace.measure(.windowSnapshot, .knownControls) {
             calls += 1
             now = 100.5
             return false
@@ -29,6 +29,7 @@ struct VerifyEditorStartupTiming {
         check(entries[0]["startedMilliseconds"] as? Int == 0, "same origin as the strict deadline")
         check(entries[0]["completedMilliseconds"] as? Int == 500, "real query duration")
         check(entries[0]["value"] as? Bool == false, "false observation is preserved")
+        check(entries[0]["operation"] as? String == "known-controls", "filtered query has its own bounded timing operation")
         check(entries[0]["mainThread"] as? Bool == Thread.isMainThread, "observed execution context")
         check(receipt["inFlightObservations"] as? Int == 0, "completed observation is no longer in flight")
 

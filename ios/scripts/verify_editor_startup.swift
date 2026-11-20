@@ -90,4 +90,57 @@ check(!fast.needsDocumentWait(pendingCreation), "expired total budget cannot sta
 check(!fast.claimDocumentCreation(creationState), "optimized path cannot issue a late tap")
 check(!fast.accepts(readyState, waitCompleted: true), "optimized path still rejects late readiness")
 check(!pending.claimDocumentCreation(editorAppeared), "editor arriving during wait remains protected")
+
+// The production observer evaluates a filtered query once, then invokes these
+// hit-test closures only for unique matches. An absent control has no AX lookup.
+var creationHitQueries = 0
+var editorHitQueries = 0
+func matched(_ creates: Int, _ editors: Int, unexpected: Int = 0,
+             window: Bool = true, foreground: Bool = true) -> CherriEditorStartupObservation {
+    CherriEditorStartupObservation.matchedControls(
+        windowExists: window, appRunningForeground: foreground,
+        createDocumentCount: creates, editorCount: editors, unexpectedControlCount: unexpected,
+        createDocumentHittable: { creationHitQueries += 1; return true },
+        editorHittable: { editorHitQueries += 1; return true })
+}
+let queryClock = StartupTestClock()
+var queryBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+let missingControls = matched(0, 0)
+check(creationHitQueries == 0 && editorHitQueries == 0, "zero matches never resolve missing controls")
+check(!queryBudget.claimDocumentCreation(missingControls), "zero results cannot authorize a tap")
+check(!queryBudget.accepts(missingControls, waitCompleted: true), "zero results cannot authorize readiness")
+check(queryBudget.needsDocumentWait(missingControls), "no known control requires a real wait")
+let soleCreation = matched(1, 0)
+check(creationHitQueries == 1 && editorHitQueries == 0, "ready creation never resolves absent editor")
+check(!queryBudget.needsDocumentWait(soleCreation), "current ready control does not require another observation wait")
+check(queryBudget.claimDocumentCreation(soleCreation), "unique ready creation can be tapped once")
+check(!queryBudget.claimDocumentCreation(soleCreation), "same current observation cannot tap twice")
+let soleEditor = matched(0, 1)
+check(creationHitQueries == 1 && editorHitQueries == 1, "ready editor never resolves absent creation")
+check(queryBudget.accepts(soleEditor, waitCompleted: true), "unique editor plus completed wait is valid")
+check(!queryBudget.accepts(soleEditor, waitCompleted: false), "query result never substitutes for completed wait")
+let coPresent = matched(1, 1)
+var coPresentBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+check(!coPresentBudget.claimDocumentCreation(coPresent), "same filtered result sees editor and forbids second document")
+check(!coPresentBudget.documentCreationIssued, "co-presence leaves creation unissued")
+check(coPresentBudget.accepts(coPresent, waitCompleted: true), "co-present unique editor may complete readiness")
+for (creates, editors, unexpected) in [(2, 0, 0), (0, 2, 0), (2, 1, 0), (1, 2, 0), (1, 0, 1), (0, 1, 1), (-1, 0, 0), (0, -1, 0)] {
+    let before = creationHitQueries + editorHitQueries
+    let ambiguous = matched(creates, editors, unexpected: unexpected)
+    var ambiguousBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+    check(creationHitQueries + editorHitQueries == before, "ambiguous query must not resolve or hit-test a candidate")
+    check(!ambiguousBudget.claimDocumentCreation(ambiguous), "ambiguous candidate never authorizes creation")
+    check(!ambiguousBudget.accepts(ambiguous, waitCompleted: true), "ambiguous candidate never authorizes readiness")
+}
+for (window, foreground) in [(false, true), (true, false)] {
+    let before = creationHitQueries + editorHitQueries
+    let unavailable = matched(1, 1, window: window, foreground: foreground)
+    check(creationHitQueries + editorHitQueries == before, "unavailable app does not query candidate hittability")
+    check(!coPresentBudget.accepts(unavailable, waitCompleted: true), "current window and foreground remain mandatory")
+}
+queryClock.value = 28.001
+var lateCreationBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+queryClock.value += 28.001
+check(!lateCreationBudget.claimDocumentCreation(soleCreation), "query completing after deadline cannot authorize tap")
+check(!coPresentBudget.accepts(soleEditor, waitCompleted: true), "late resolved editor cannot authorize readiness")
 print("PASS_LOCAL_STARTUP_DEADLINE_CONTROLS: \(checked); Apple UI NOT_RUN")

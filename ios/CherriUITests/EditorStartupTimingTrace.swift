@@ -15,6 +15,7 @@ final class CherriEditorStartupTimingTrace {
 
     enum Operation: String {
         case foreground, window, entered, returned
+        case knownControls = "known-controls"
         case createExists = "create-exists"
         case createHittable = "create-hittable"
         case editorExists = "editor-exists"

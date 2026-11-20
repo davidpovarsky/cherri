@@ -192,6 +192,20 @@ class IOSTestEvidenceTests(unittest.TestCase):
                 self.assertEqual(records, [])
                 self.assertNotIn("PRIVATE_TIMING_CANARY", "".join(outputs.values()))
 
+    def test_filtered_startup_query_timing_remains_bound_to_known_phases(self):
+        original = json.loads(self.startup_timing()[len(collector.STARTUP_TIMING_PREFIX):])
+        for phase in ("window-snapshot", "document-snapshot", "final-snapshot", "document-wait", "editor-wait"):
+            changed = json.loads(json.dumps(original))
+            changed["entries"][0].update(phase=phase, operation="known-controls")
+            line = collector.STARTUP_TIMING_PREFIX + json.dumps(changed)
+            diagnostic, records, _ = self.collect(self.block(status="failed", body=line), 65)
+            self.assertEqual(diagnostic["startupTimingTraces"], [changed])
+            self.assertEqual(records, [])
+        for phase in ("document-tap", "window-wait", "private-document"):
+            changed["entries"][0]["phase"] = phase
+            line = collector.STARTUP_TIMING_PREFIX + json.dumps(changed)
+            self.assertEqual(self.collect(self.block(status="failed", body=line), 65)[0]["startupTimingTraces"], [])
+
     def test_startup_timing_can_retain_overlap_and_an_inflight_query(self):
         original = json.loads(self.startup_timing()[len(collector.STARTUP_TIMING_PREFIX):])
         original["entries"].reverse()
@@ -450,6 +464,86 @@ class IOSTestEvidenceTests(unittest.TestCase):
                 private = self.input_receipt(**dict(data, actualSource="PRIVATE_PASTE_CONTENT"))
                 _, _, outputs = self.collect(start + private + "\n" + finish, 65)
                 self.assertNotIn("PRIVATE_PASTE_CONTENT", "".join(outputs.values()))
+
+    def stock_paste_receipt(self, **updates):
+        row = dict(schemaVersion="1.0",
+                   testName="CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+                   fixtureId="stock-ui-text-view-after-code-view", stage="after-paste-wait",
+                   ordering="AFTER_ORIGINAL_CODEVIEW_ASSERTION", scope="DIAGNOSTIC_ONLY_WARM_PROCESS",
+                   isolatedSyntheticEditor=True, budgetMilliseconds=3000, elapsedMilliseconds=3500,
+                   actualSource='text("x"))', actualUTF16Length=10, selectionLocation=9, selectionLength=0,
+                   viewIsFirstResponder=True, windowAttached=True, windowIsKey=True,
+                   syntheticClipboardVerified=True, pasteIssued=True, waitResult="TIMED_OUT", exactExpectedText=True)
+        row.update(updates)
+        return collector.STOCK_PASTE_PREFIX + json.dumps(row)
+
+    def stock_paste_log(self, body, *, original_wait=True, status="failed"):
+        method = "testSingleCharacterPasteDoesNotConsumeGeneratedText"
+        start = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' started.\n"
+        finish = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' {status} (7.03 seconds).\n"
+        prior = self.input_receipt(testName="CherriEditorInputTests/" + method,
+            fixtureId="single-character-paste", stage="after-paste-wait", actualSource='text("x"))',
+            actualUTF16Length=10, pasteElapsedMilliseconds=3592, viewIsFirstResponder=True,
+            windowAttached=True, windowIsKey=True) if original_wait else ""
+        return start + prior + "\n" + body + "\n" + finish
+
+    def test_stock_paste_is_separate_and_never_promotes_the_original_failure(self):
+        for result in ("COMPLETED", "TIMED_OUT"):
+            line = self.stock_paste_receipt(waitResult=result)
+            diagnostic, records, _ = self.collect(self.stock_paste_log(line), 65)
+            self.assertEqual(records, [])
+            self.assertEqual(diagnostic["runStatus"], "FAILED")
+            self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["waitResult"], result)
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["elapsedMilliseconds"], 3500)
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["scope"], "DIAGNOSTIC_ONLY_WARM_PROCESS")
+        self.assertEqual(self.collect(self.stock_paste_log(line, status="passed"))[1], [])
+
+    def test_stock_paste_requires_the_original_wait_and_same_active_test(self):
+        line = self.stock_paste_receipt()
+        for log in (line, self.stock_paste_log(line, original_wait=False),
+                    self.block(body=line), self.stock_paste_log(line).replace(
+                        "testSingleCharacterPasteDoesNotConsumeGeneratedText", "testOther")):
+            self.assertEqual(self.collect(log, 65)[0]["stockPasteDiagnostics"], [])
+
+    def test_stock_paste_rejects_unknown_fields_malformed_types_and_scope_changes(self):
+        mutations = [
+            {"budgetMilliseconds": 3001}, {"elapsedMilliseconds": True}, {"elapsedMilliseconds": 120001},
+            {"isolatedSyntheticEditor": False}, {"ordering": "BEFORE_ORIGINAL"}, {"scope": "ACCEPTANCE"},
+            {"fixtureId": "private-view"}, {"stage": "private-stage"}, {"waitResult": "PASS"},
+            {"pasteIssued": False}, {"syntheticClipboardVerified": False}, {"windowIsKey": 1},
+            {"actualUTF16Length": 9}, {"selectionLocation": -1}, {"selectionLength": 2},
+            {"exactExpectedText": False}, {"privateTitle": "PRIVATE_STOCK_CANARY"},
+        ]
+        for mutation in mutations:
+            with self.subTest(mutation=mutation):
+                diagnostic, records, outputs = self.collect(self.stock_paste_log(self.stock_paste_receipt(**mutation)), 65)
+                self.assertEqual(diagnostic["stockPasteDiagnostics"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_STOCK_CANARY", "".join(outputs.values()))
+        duplicate = self.stock_paste_receipt().replace('"schemaVersion": "1.0"',
+            '"schemaVersion": "private", "schemaVersion": "1.0"')
+        self.assertEqual(self.collect(self.stock_paste_log(duplicate), 65)[0]["stockPasteDiagnostics"], [])
+
+    def test_stock_paste_retains_only_fixed_values_and_bounded_events(self):
+        secret = "PRIVATE_STOCK_CANARY"
+        line = self.stock_paste_receipt(actualSource=secret, actualUTF16Length=len(secret), exactExpectedText=False)
+        diagnostic, records, outputs = self.collect(self.stock_paste_log(line), 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["actualSource"], "[REDACTED_UNEXPECTED_CONTENT]")
+        self.assertNotIn(secret, "".join(outputs.values()))
+        log = self.stock_paste_log("\n".join(self.stock_paste_receipt() for _ in range(12)))
+        self.assertEqual(len(self.collect(log, 65)[0]["stockPasteDiagnostics"]), 8)
+
+    def test_stock_paste_stages_retain_real_setup_and_native_event_boundaries(self):
+        for stage in ("setup-failed", "before-paste", "after-paste-call", "native-text-change"):
+            issued = stage not in {"setup-failed", "before-paste"}
+            row = self.stock_paste_receipt(stage=stage, waitResult="NOT_WAITED", pasteIssued=issued)
+            diagnostic, records, _ = self.collect(self.stock_paste_log(row), 65)
+            self.assertEqual(records, [])
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["stage"], stage)
+            bad = self.stock_paste_receipt(stage=stage, waitResult="COMPLETED", pasteIssued=issued)
+            self.assertEqual(self.collect(self.stock_paste_log(bad), 65)[0]["stockPasteDiagnostics"], [])
 
     def test_startup_deadline_receipt_is_bounded_and_cannot_authorize_source(self):
         method = "testE01CompletionDisplayAndInsertionUI"

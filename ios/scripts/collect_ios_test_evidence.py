@@ -86,6 +86,7 @@ STARTUP_STAGES = {"window-wait", "document-wait", "document-check", "editor-wait
 STARTUP_BOOL_FIELDS = {"waitCompleted", "windowExists", "appRunningForeground",
                        "createDocumentExists", "createDocumentHittable", "editorExists", "editorHittable"}
 INPUT_PREFIX = "[CHERRI_INPUT_RECEIPT] "
+STOCK_PASTE_PREFIX = "[CHERRI_STOCK_PASTE_DIAGNOSTIC] "
 RUNTIME_PREFIX = "[CHERRI_NATIVE_RUNTIME_EVENT] "
 INPUT_FIXTURES = {"nested-call", "list", "dictionary", "curly-block", "block-comment", "single-character-paste"}
 INPUT_TEST_NAME = re.compile(r"^CherriEditorInputTests/test[A-Za-z0-9_]+$")
@@ -184,11 +185,11 @@ def safe_startup_timing(line, active_test):
             or type(raw["inFlightObservations"]) is not int or not 0 <= raw["inFlightObservations"] <= 128
             or not isinstance(raw["entries"], list) or len(raw["entries"]) > 128):
         return None
-    snapshots = {"foreground", "window", "create-exists", "create-hittable", "editor-exists", "editor-hittable", "foreground-final"}
+    snapshots = {"foreground", "window", "known-controls", "create-exists", "create-hittable", "editor-exists", "editor-hittable", "foreground-final"}
     operations = {"window-snapshot": snapshots, "document-snapshot": snapshots, "final-snapshot": snapshots,
                   "window-wait": {"entered", "returned"}, "document-tap": {"entered", "returned"},
-                  "document-wait": {"entered", "returned", "foreground", "editor-exists", "create-exists", "create-hittable"},
-                  "editor-wait": {"entered", "returned", "foreground", "window", "editor-exists", "editor-hittable"}}
+                  "document-wait": snapshots | {"entered", "returned"},
+                  "editor-wait": snapshots | {"entered", "returned"}}
     for index, entry in enumerate(raw["entries"]):
         if (not isinstance(entry, dict) or set(entry) != {"sequence", "phase", "operation", "startedMilliseconds", "completedMilliseconds", "value", "mainThread"}
                 or type(entry["sequence"]) is not int or entry["sequence"] != index
@@ -254,6 +255,59 @@ def safe_input_receipt(line, active_test):
     return receipt
 
 
+def safe_stock_paste_diagnostic(line, active_test):
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate stock paste key")
+            value[key] = item
+        return value
+    try:
+        if len(line) > 8192:
+            return None
+        raw = json.loads(line[len(STOCK_PASTE_PREFIX):], object_pairs_hook=unique)
+    except (ValueError, TypeError):
+        return None
+    target = "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
+    fixed = {"schemaVersion": "1.0", "testName": target,
+             "fixtureId": "stock-ui-text-view-after-code-view",
+             "ordering": "AFTER_ORIGINAL_CODEVIEW_ASSERTION", "scope": "DIAGNOSTIC_ONLY_WARM_PROCESS"}
+    booleans = {"isolatedSyntheticEditor", "viewIsFirstResponder", "windowAttached", "windowIsKey",
+                "syntheticClipboardVerified", "pasteIssued", "exactExpectedText"}
+    integers = {"budgetMilliseconds", "elapsedMilliseconds", "actualUTF16Length", "selectionLocation", "selectionLength"}
+    expected_keys = set(fixed) | booleans | integers | {"stage", "actualSource", "waitResult"}
+    if (active_test != target or not isinstance(raw, dict) or set(raw) != expected_keys
+            or any(raw.get(key) != value for key, value in fixed.items())
+            or any(type(raw.get(key)) is not bool for key in booleans)
+            or raw["isolatedSyntheticEditor"] is not True
+            or any(type(raw.get(key)) is not int for key in integers)
+            or raw["budgetMilliseconds"] != 3000 or not 0 <= raw["elapsedMilliseconds"] <= 120000
+            or not 0 <= raw["actualUTF16Length"] <= 100000
+            or not 0 <= raw["selectionLocation"] <= raw["actualUTF16Length"]
+            or not 0 <= raw["selectionLength"] <= raw["actualUTF16Length"] - raw["selectionLocation"]
+            or not isinstance(raw["stage"], str)
+            or raw["stage"] not in {"before-paste", "after-paste-call", "native-text-change", "after-paste-wait", "setup-failed"}):
+        return None
+    results = {"COMPLETED", "TIMED_OUT", "INCORRECT_ORDER", "INVERTED_FULFILLMENT", "INTERRUPTED", "UNKNOWN"}
+    if (not isinstance(raw["waitResult"], str)
+            or (raw["stage"] == "after-paste-wait" and raw["waitResult"] not in results)
+            or (raw["stage"] != "after-paste-wait" and raw["waitResult"] != "NOT_WAITED")
+            or raw["pasteIssued"] != (raw["stage"] not in {"before-paste", "setup-failed"})
+            or (raw["stage"] != "setup-failed" and raw["syntheticClipboardVerified"] is not True)):
+        return None
+    source = raw["actualSource"]
+    if not isinstance(source, str) or raw["exactExpectedText"] != (source == 'text("x"))'):
+        return None
+    allowed = {"", 'text("x")', 'text("x"))', 'text("x")))', 'text("x"))))'}
+    if source in allowed:
+        if raw["actualUTF16Length"] != len(source.encode("utf-16-le")) // 2:
+            return None
+    else:
+        raw["actualSource"] = "[REDACTED_UNEXPECTED_CONTENT]"
+    return raw
+
+
 def safe_runtime_event(line, active_test):
     if not active_test:
         return None
@@ -278,6 +332,8 @@ def bounded_log(raw_text):
     lines, receipts, failures = [], [], []
     case_events = 0
     input_events = 0
+    stock_paste_events = 0
+    original_paste_wait_observed = False
     runtime_events = 0
     startup_events = 0
     startup_timed_tests = set()
@@ -288,6 +344,7 @@ def bounded_log(raw_text):
         line = raw_line.strip()
         if case := CASE_LINE.fullmatch(line):
             active_test = (case.group(1).split(".")[1] + "/" + case.group(2)) if case.group(3) == "started." else None
+            original_paste_wait_observed = False
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
@@ -322,6 +379,7 @@ def bounded_log(raw_text):
             if active_test in docs.TEST_IDS:
                 lines.append(docs.REJECTED_PREFIX + "UNSUPPORTED_TEST_BOUNDARY")
             active_test = None
+            original_paste_wait_observed = False
         elif line.startswith(STARTUP_TIMING_PREFIX) and len(startup_timed_tests) < 16:
             receipt = safe_startup_timing(line, active_test)
             if receipt and active_test not in startup_timed_tests:
@@ -337,6 +395,14 @@ def bounded_log(raw_text):
             if receipt:
                 input_events += 1
                 lines.append(INPUT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
+                if (receipt.get("fixtureId") == "single-character-paste"
+                        and receipt.get("stage") == "after-paste-wait"):
+                    original_paste_wait_observed = True
+        elif line.startswith(STOCK_PASTE_PREFIX) and stock_paste_events < 8 and original_paste_wait_observed:
+            receipt = safe_stock_paste_diagnostic(line, active_test)
+            if receipt:
+                stock_paste_events += 1
+                lines.append(STOCK_PASTE_PREFIX + json.dumps(receipt, sort_keys=True))
         elif line.startswith(RECEIPT_PREFIX) and len(receipts) < 64:
             receipt = safe_receipt(line)
             if receipt:
@@ -538,6 +604,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
         "startupTimingTraces": [json.loads(line[len(STARTUP_TIMING_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_TIMING_PREFIX)],
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
+        "stockPasteDiagnostics": [json.loads(line[len(STOCK_PASTE_PREFIX):]) for line in log_text.splitlines() if line.startswith(STOCK_PASTE_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
         "privacy": {"rawLogsPublished": False, "screenshotsPublished": False,
                     "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},

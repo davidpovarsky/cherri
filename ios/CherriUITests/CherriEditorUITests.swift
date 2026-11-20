@@ -90,31 +90,61 @@ final class CherriEditorUITests: XCTestCase {
         }
     }
 
-    /// Each fixed control is queried once. The receipt reuses these observations,
-    /// avoiding additional accessibility queries after a readiness wait expires.
+    private struct ObservedStartupControls {
+        let state: CherriEditorStartupObservation
+        let creationControl: XCUIElement?
+    }
+
+    /// Resolve only the two fixed startup controls in one immediate query. A
+    /// separate `.exists` lookup for the absent editor can block for many seconds.
+    /// Binding the actual matches avoids both that lookup and index rebinding.
     private func observeStartupControls(trace: CherriEditorStartupTimingTrace,
-                                        phase: CherriEditorStartupTimingTrace.Phase) -> CherriEditorStartupObservation {
+                                        phase: CherriEditorStartupTimingTrace.Phase) -> ObservedStartupControls {
         let foreground = trace.measure(phase, .foreground) { app.state == .runningForeground }
         guard foreground else {
-            return CherriEditorStartupObservation(
+            return ObservedStartupControls(state: CherriEditorStartupObservation(
                 windowExists: false, appRunningForeground: false,
                 createDocumentExists: false, createDocumentHittable: false,
-                editorExists: false, editorHittable: false)
+                editorExists: false, editorHittable: false), creationControl: nil)
         }
         let windowExists = trace.measure(phase, .window) { app.windows.firstMatch.exists }
-        let createDoc = app.buttons["Create Document"]
-        let createExists = trace.measure(phase, .createExists) { createDoc.exists }
-        let createHittable = createExists && trace.measure(phase, .createHittable) { createDoc.isHittable }
-        // Check the editor after the creation control: an editor that appeared
-        // meanwhile must prevent a second document from being opened.
-        let editor = app.textViews["cherriCodeEditor"]
-        let editorExists = trace.measure(phase, .editorExists) { editor.exists }
-        let editorHittable = editorExists && trace.measure(phase, .editorHittable) { editor.isHittable }
-        return CherriEditorStartupObservation(
-            windowExists: windowExists,
+        let query = app.descendants(matching: .any).matching(NSPredicate(
+            format: "(elementType == %@ AND identifier == %@) OR (elementType == %@ AND (identifier == %@ OR label == %@))",
+            NSNumber(value: XCUIElement.ElementType.textView.rawValue), "cherriCodeEditor",
+            NSNumber(value: XCUIElement.ElementType.button.rawValue), "Create Document", "Create Document"))
+        var creationControls: [XCUIElement] = []
+        var editors: [XCUIElement] = []
+        var unexpectedControls = 0
+        if windowExists {
+            trace.measure(phase, .knownControls) {
+                let controls = query.allElementsBoundByAccessibilityElement
+                for control in controls {
+                    switch control.elementType {
+                    case .button: creationControls.append(control)
+                    case .textView: editors.append(control)
+                    default: unexpectedControls += 1
+                    }
+                }
+                return !controls.isEmpty
+            }
+        }
+        // Existence comes from the same filtered result, not another AX query.
+        trace.mark(phase, .createExists, value: !creationControls.isEmpty)
+        trace.mark(phase, .editorExists, value: !editors.isEmpty)
+        let observed = CherriEditorStartupObservation.matchedControls(
+            windowExists: windowExists, appRunningForeground: foreground,
+            createDocumentCount: creationControls.count, editorCount: editors.count,
+            unexpectedControlCount: unexpectedControls,
+            createDocumentHittable: { trace.measure(phase, .createHittable) { creationControls[0].isHittable } },
+            editorHittable: { trace.measure(phase, .editorHittable) { editors[0].isHittable } })
+        let state = CherriEditorStartupObservation(
+            windowExists: observed.windowExists,
             appRunningForeground: trace.measure(phase, .foregroundFinal) { app.state == .runningForeground },
-            createDocumentExists: createExists, createDocumentHittable: createHittable,
-            editorExists: editorExists, editorHittable: editorHittable)
+            createDocumentExists: observed.createDocumentExists,
+            createDocumentHittable: observed.createDocumentHittable,
+            editorExists: observed.editorExists, editorHittable: observed.editorHittable)
+        return ObservedStartupControls(state: state,
+            creationControl: state.createDocumentHittable && !state.editorExists ? creationControls.first : nil)
     }
 
     private func recordStartupTiming(_ trace: CherriEditorStartupTimingTrace) {
@@ -159,7 +189,8 @@ final class CherriEditorUITests: XCTestCase {
         trace.mark(.windowWait, .entered, value: true)
         let windowReady = window.waitForExistence(timeout: deadline.remaining(maximum: 10))
         trace.mark(.windowWait, .returned, value: windowReady)
-        let windowState = observeStartupControls(trace: trace, phase: .windowSnapshot)
+        let windowControls = observeStartupControls(trace: trace, phase: .windowSnapshot)
+        let windowState = windowControls.state
         recordStartupReceipt(stage: "window-wait", waitCompleted: windowReady,
                              state: windowState, deadline: deadline)
         guard windowReady, windowState.windowExists, windowState.appRunningForeground,
@@ -171,52 +202,44 @@ final class CherriEditorUITests: XCTestCase {
 
         if !windowState.editorExists, deadline.remaining() > 0 {
             let createDoc = app.buttons["Create Document"]
+            var creationControls = windowControls
             if deadline.needsDocumentWait(windowState) {
                 let controlReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                    trace.measure(.documentWait, .foreground) { self.app.state == .runningForeground } &&
-                        (trace.measure(.documentWait, .editorExists) { editor.exists } ||
-                         (trace.measure(.documentWait, .createExists) { createDoc.exists } &&
-                          trace.measure(.documentWait, .createHittable) { createDoc.isHittable }))
+                    let current = self.observeStartupControls(trace: trace, phase: .documentWait).state
+                    return current.windowExists && current.appRunningForeground &&
+                        (current.editorExists || (current.createDocumentExists && current.createDocumentHittable))
                 }, object: createDoc)
                 trace.mark(.documentWait, .entered, value: true)
                 let waitCompleted = XCTWaiter.wait(for: [controlReady],
                     timeout: deadline.remaining(maximum: 6)) == .completed
                 trace.mark(.documentWait, .returned, value: waitCompleted)
-                let creationState = observeStartupControls(trace: trace, phase: .documentSnapshot)
+                // A real wait may have allowed the editor to appear. Refresh
+                // both known controls before deciding whether creation is needed.
+                creationControls = observeStartupControls(trace: trace, phase: .documentSnapshot)
                 recordStartupReceipt(stage: "document-wait", waitCompleted: waitCompleted,
-                                     state: creationState, deadline: deadline)
-                if deadline.claimDocumentCreation(creationState) {
-                    trace.mark(.documentTap, .entered, value: true)
-                    createDoc.tap()
-                    trace.mark(.documentTap, .returned, value: true)
-                }
+                                     state: creationControls.state, deadline: deadline)
             } else {
-                // The initial live observation already found a ready button.
-                // Check current state before the one allowed tap; do not spend
-                // the remaining budget waiting again for that same control.
-                let creationState = observeStartupControls(trace: trace, phase: .documentSnapshot)
+                // This current filtered observation already proves a ready
+                // control and no editor. Do not repeat the negative query.
                 recordStartupReceipt(stage: "document-check", waitCompleted: false,
-                                     state: creationState, deadline: deadline)
-                if deadline.claimDocumentCreation(creationState) {
-                    trace.mark(.documentTap, .entered, value: true)
-                    createDoc.tap()
-                    trace.mark(.documentTap, .returned, value: true)
-                }
+                                     state: creationControls.state, deadline: deadline)
+            }
+            if let create = creationControls.creationControl, deadline.claimDocumentCreation(creationControls.state) {
+                trace.mark(.documentTap, .entered, value: true)
+                create.tap()
+                trace.mark(.documentTap, .returned, value: true)
             }
         }
 
         // The original total allowance is shared across transitions. Fast earlier
         // stages leave their unused time for the actual document-to-editor transition.
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            trace.measure(.editorWait, .foreground) { self.app.state == .runningForeground } &&
-                trace.measure(.editorWait, .window) { window.exists } &&
-                trace.measure(.editorWait, .editorExists) { editor.exists } &&
-                trace.measure(.editorWait, .editorHittable) { editor.isHittable }
+            self.observeStartupControls(trace: trace, phase: .editorWait).state.interactiveEditor
         }, object: editor)
         trace.mark(.editorWait, .entered, value: true)
         let waitCompleted = XCTWaiter.wait(for: [ready], timeout: deadline.remaining()) == .completed
         trace.mark(.editorWait, .returned, value: waitCompleted)
-        let finalState = observeStartupControls(trace: trace, phase: .finalSnapshot)
+        let finalState = observeStartupControls(trace: trace, phase: .finalSnapshot).state
         let editorReady = deadline.accepts(finalState, waitCompleted: waitCompleted)
         recordStartupReceipt(stage: "editor-wait", waitCompleted: waitCompleted,
                              state: finalState, deadline: deadline)

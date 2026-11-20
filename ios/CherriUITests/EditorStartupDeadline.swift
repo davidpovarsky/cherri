@@ -13,6 +13,25 @@ struct CherriEditorStartupObservation {
     var interactiveEditor: Bool {
         windowExists && appRunningForeground && editorExists && editorHittable
     }
+
+    /// The caller has already evaluated one query restricted to the two fixed
+    /// startup controls. Never resolve a missing element to ask if it is hittable.
+    /// Ambiguous controls cannot authorize a tap or an interactive editor.
+    static func matchedControls(windowExists: Bool, appRunningForeground: Bool,
+                                createDocumentCount: Int, editorCount: Int,
+                                unexpectedControlCount: Int = 0,
+                                createDocumentHittable: () -> Bool,
+                                editorHittable: () -> Bool) -> Self {
+        let unambiguous = (0...1).contains(createDocumentCount) && (0...1).contains(editorCount) &&
+            unexpectedControlCount == 0
+        let canInspect = windowExists && appRunningForeground && unambiguous
+        return Self(
+            windowExists: windowExists, appRunningForeground: appRunningForeground,
+            createDocumentExists: createDocumentCount > 0,
+            createDocumentHittable: canInspect && createDocumentCount == 1 && createDocumentHittable(),
+            editorExists: editorCount > 0,
+            editorHittable: canInspect && editorCount == 1 && editorHittable())
+    }
 }
 
 struct CherriEditorStartupDeadline {
