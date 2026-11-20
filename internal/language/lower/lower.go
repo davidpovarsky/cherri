@@ -624,6 +624,17 @@ func hasFunctionCalls(prog *syntax.Program, fns map[string]*syntax.FunctionDecl)
 					return true
 				}
 			}
+		// Value controls implement both Expression and Statement. Reuse the
+		// statement traversal so their conditions and bodies activate the
+		// same function dispatcher as standalone control statements.
+		case *syntax.IfStmt:
+			return checkStmt(ex)
+		case *syntax.ForStmt:
+			return checkStmt(ex)
+		case *syntax.RepeatStmt:
+			return checkStmt(ex)
+		case *syntax.MenuStmt:
+			return checkStmt(ex)
 		case *syntax.BinaryExpr:
 			return checkExpr(ex.Left) || checkExpr(ex.Right)
 		case *syntax.UnaryExpr:
