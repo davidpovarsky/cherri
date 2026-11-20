@@ -757,7 +757,7 @@ var actions = map[string]*actionDefinition{
 			if mode == "Remove" {
 				params["Mode"] = "Remove"
 				delete(params, "ValueLabel")
-				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil && args[2].valueType != Nil {
+				if len(args) >= 3 && (len(args) >= 4 || !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove")) && args[2].value != nil && args[2].valueType != Nil {
 					params["RemoveSpecifiedValue"] = setterArgValue(args[2])
 				}
 				return params
@@ -917,7 +917,7 @@ var actions = map[string]*actionDefinition{
 			if mode == "Remove" {
 				params["Mode"] = "Remove"
 				delete(params, "ValueLabel")
-				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil && args[2].valueType != Nil {
+				if len(args) >= 3 && (len(args) >= 4 || !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove")) && args[2].value != nil && args[2].valueType != Nil {
 					params["RemoveSpecifiedValue"] = setterArgValue(args[2])
 				}
 				return params

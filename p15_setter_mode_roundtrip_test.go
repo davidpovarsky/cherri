@@ -135,6 +135,8 @@ func TestP15SetterShorthandMigration(t *testing.T) {
 			{"remove_single", "'Remove'", "Remove", "mode"},
 			{"remove_lower", "\"remove\"", "Remove", "mode"},
 			{"remove_upper", "\"REMOVE\"", "Remove", "mode"},
+			{"remove_comment_before", "/* KEEP_REMOVE_COMMENT */ \"Remove\"", "Remove", "mode"},
+			{"remove_comment_after", "\"Remove\" /* KEEP_REMOVE_COMMENT */", "Remove", "mode"},
 			{"set_is_data", "\"Set\"", "Set", "newValue"},
 			{"similar_text_is_data", "\"Remove, Set\"", "Set", "newValue"},
 			{"explicit_remove_data", "newValue: \"Remove\"", "Set", "newValue"},
@@ -144,6 +146,9 @@ func TestP15SetterShorthandMigration(t *testing.T) {
 				migrated, diagnostics, err := migrate.MigrateSourceWithDiagnostics(input)
 				if err != nil || len(diagnostics) != 0 {
 					t.Fatalf("migration: %v %v", err, diagnostics)
+				}
+				if strings.Contains(tc.argument, "KEEP_REMOVE_COMMENT") && !strings.Contains(migrated, "KEEP_REMOVE_COMMENT") {
+					t.Fatal("migration discarded the argument comment")
 				}
 				if !strings.Contains(migrated, tc.label+": ") {
 					t.Errorf("missing intended %s parameter:\n%s", tc.label, migrated)
@@ -201,6 +206,112 @@ func TestP15SetterModeGraphRejectsCorruption(t *testing.T) {
 				}
 				if err := p15SetterGraphError(clone, action, tc); err == nil {
 					t.Fatal("accepted corrupt native graph", fault)
+				}
+			})
+		}
+	}
+}
+
+// Resolve only the two representations this public Text specimen actually
+// permits. Unknown item/attachment kinds never become a successful empty value.
+func p15SetterLiteralText(actions []map[string]any, value any) (string, error) {
+	if text, ok := value.(string); ok {
+		return text, nil
+	}
+	attachment, ok := value.(map[string]any)
+	if !ok || attachment["WFSerializationType"] != "WFTextTokenAttachment" {
+		return "", fmt.Errorf("unexpected Text value %T", value)
+	}
+	ref, ok := attachment["Value"].(map[string]any)
+	if !ok || ref["Type"] != "ActionOutput" {
+		return "", fmt.Errorf("unexpected Text attachment")
+	}
+	for _, action := range actions {
+		if p15Param(action)["UUID"] == ref["OutputUUID"] && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" {
+			if text, ok := p15Param(action)["WFTextActionText"].(string); ok {
+				return text, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("Text attachment has no literal producer")
+}
+
+func TestP15SetterNamedModeWordsRemainData(t *testing.T) {
+	for _, action := range []string{"editEvent", "editReminder"} {
+		for index, value := range []string{"Remove", "Set", ""} {
+			for _, authoredMode := range []string{"default", "Set", "Remove"} {
+				t.Run(fmt.Sprintf("%s/value%d/%s", action, index, authoredMode), func(t *testing.T) {
+					source := "let target = \"PUBLIC_SYNTHETIC_TARGET\"\n" + action + fmt.Sprintf("(target, detail: \"URL\", newValue: %q", value)
+					mode := authoredMode
+					if mode == "default" {
+						mode = "Set"
+					} else {
+						source += fmt.Sprintf(", mode: %q", mode)
+					}
+					source += ")\n"
+					actions := p15CompiledActions(t, source)
+					if len(actions) < 2 {
+						t.Fatal("missing literal input and setter")
+					}
+					last := actions[len(actions)-1]
+					kind, property := "is.workflow.actions.setters.calendarevents", "WFCalendarEventContentItemURL"
+					if action == "editReminder" {
+						kind, property = "is.workflow.actions.setters.reminders", "WFReminderContentItemURL"
+					}
+					p := p15Param(last)
+					if last["WFWorkflowActionIdentifier"] != kind || p["Mode"] != mode || p["WFContentItemPropertyName"] != "URL" {
+						t.Fatalf("named data changed setter identity/mode/property: %v", last)
+					}
+					key, keys := property, 5
+					if mode == "Remove" {
+						key, keys = "RemoveSpecifiedValue", 4
+						if _, present := p["ValueLabel"]; present {
+							t.Fatal("Remove acquired ValueLabel")
+						}
+					} else if p["ValueLabel"] != true {
+						t.Fatal("Set lost ValueLabel")
+					}
+					if len(p) != keys {
+						t.Fatalf("setter parameter cardinality %d != %d: %v", len(p), keys, p)
+					}
+					raw, present := p[key]
+					if !present {
+						t.Fatalf("provided Text disappeared from %s", key)
+					}
+					text, err := p15SetterLiteralText(actions, raw)
+					if err != nil || text != value {
+						t.Fatalf("provided Text changed: %q %v; want %q", text, err, value)
+					}
+				})
+			}
+		}
+	}
+}
+
+func TestP15SetterLegacyExplicitRemoveValue(t *testing.T) {
+	for _, action := range []string{"editEvent", "editReminder"} {
+		for _, explicit := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/explicit_%t", action, explicit), func(t *testing.T) {
+				source := "#include 'actions/calendar'\nconst target = \"PUBLIC_SYNTHETIC_TARGET\"\n" + action + "(target, \"URL\", \"Remove\""
+				if explicit {
+					source += ", \"Remove\""
+				}
+				source += ")\n"
+				r := newRoundTripRunner(t)
+				actions := p15SetterDocumentActions(t, loadRoundTripDocument(t, r.compileSourceWithMode("legacy", source, true)))
+				p := p15Param(actions[len(actions)-1])
+				if p["Mode"] != "Remove" {
+					t.Fatal("Legacy removal changed mode", p)
+				}
+				raw, present := p["RemoveSpecifiedValue"]
+				if present != explicit {
+					t.Fatalf("explicit fourth mode must distinguish value from shorthand: present=%t want=%t: %v", present, explicit, p)
+				}
+				if explicit {
+					text, err := p15SetterLiteralText(actions, raw)
+					if err != nil || text != "Remove" {
+						t.Fatalf("Legacy explicit removal value changed: %q %v", text, err)
+					}
 				}
 			})
 		}

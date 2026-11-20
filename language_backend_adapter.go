@@ -152,6 +152,13 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		args = args[:len(args)-1]
 	}
 
+	// Canonical calls already bind newValue to its declared slot. Keep the
+	// absent fourth mode slot so a Text value "Remove" cannot be reinterpreted
+	// as the Legacy three-position shorthand by the shared setter builder.
+	if (ident == "editEvent" || ident == "editReminder") && len(args) == 3 {
+		args = append(args, actionArgument{valueType: Nil, value: nil})
+	}
+
 	// Prepare action reference
 	actRef := actionReference{
 		identifier: ident,
