@@ -106,3 +106,20 @@ func fmtQuestionTarget(value any) string {
 		return "text"
 	}
 }
+
+func TestParityImportQuestionAmbiguousTargetFailsClosed(t *testing.T) {
+	document := parityQuestionFixture(true, 3)
+	actions := document["WFWorkflowActions"].([]any)
+	origins, okay := bindParityQuestionTargets(document, actions)
+	if !okay {
+		t.Fatal("valid raw target could not be witnessed")
+	}
+	duplicated := append(append([]any{}, actions...), deepCloneValue(actions[3]))
+	if rebindParityQuestionTargets(document, duplicated, origins) {
+		t.Fatal("duplicated action origin was accepted as a unique target")
+	}
+	question := document["WFWorkflowImportQuestions"].([]any)[0].(map[string]any)
+	if question["ActionIndex"] != 3 {
+		t.Fatal("failed remap partially rewrote the question")
+	}
+}
