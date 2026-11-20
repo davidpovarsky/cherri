@@ -236,7 +236,7 @@ func p10JSONWireField(t *testing.T, wire any, key string) map[string]any {
 
 func p10AssertJSONWireMutations(t *testing.T, original any, resolved map[string]any, expected map[string]any) {
 	t.Helper()
-	for _, fault := range []string{"unknown_item_type", "missing_item_type", "missing_value", "null_value", "malformed_bool", "missing_bool", "malformed_number", "nonfinite_number", "unknown_wrapper", "duplicate_key", "wrong_reference", "missing_array", "unknown_array_item"} {
+	for _, fault := range []string{"unknown_item_type", "missing_item_type", "missing_value", "null_value", "malformed_bool", "missing_bool", "malformed_number", "nonfinite_number", "unknown_wrapper", "duplicate_key", "wrong_reference", "reference_property", "reference_coercion", "missing_array", "unknown_array_item"} {
 		t.Run("strict-wire/"+fault, func(t *testing.T) {
 			copy := p10CloneJSONWire(original)
 			if got, err := p10DecodeJSONDictionary(copy, resolved); err != nil || !reflect.DeepEqual(got, expected) {
@@ -270,6 +270,14 @@ func p10AssertJSONWireMutations(t *testing.T, original any, resolved map[string]
 				model := p10JSONWireField(t, copy, "model")["WFValue"].(map[string]any)
 				ref := model["Value"].(map[string]any)
 				ref["OutputUUID"] = "unrelated-producer"
+			case "reference_property", "reference_coercion":
+				model := p10JSONWireField(t, copy, "model")["WFValue"].(map[string]any)
+				ref := model["Value"].(map[string]any)
+				transform := map[string]any{"Type": "WFPropertyVariableAggrandizement", "PropertyName": "Name"}
+				if fault == "reference_coercion" {
+					transform = map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFNumberContentItem"}
+				}
+				ref["Aggrandizements"] = []any{transform}
 			case "missing_array", "unknown_array_item":
 				nested := p10JSONWireField(t, copy, "nested")["WFValue"]
 				array := p10JSONWireField(t, nested, "flags")["WFValue"].(map[string]any)
@@ -329,6 +337,84 @@ func TestP10JSONOriginalNilRequestFailsPrecisely(t *testing.T) {
 						t.Fatal("invalid rejection diagnostic accepted")
 					}
 				})
+			}
+		})
+	}
+}
+
+// Extracted without changing the original map-based counting behavior so the
+// actual duplicate-producer counterexample is retained before its repair.
+func p10JSONModelBindings(actions []map[string]any) (map[string]any, error) {
+	resolved := map[string]any{}
+	for _, action := range actions {
+		fields, ok := action["WFWorkflowActionParameters"].(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("invalid actual action parameter shape")
+		}
+		if fields["CustomOutputName"] != "dynamicModel" {
+			continue
+		}
+		uuid, ok := fields["UUID"].(string)
+		if !ok || uuid == "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || fields["WFTextActionText"] != "gpt-4o-mini" {
+			return nil, fmt.Errorf("actual dynamic model producer changed")
+		}
+		resolved["ActionOutput:"+uuid] = "gpt-4o-mini"
+	}
+	if len(resolved) != 1 {
+		return nil, fmt.Errorf("missing or duplicated actual dynamic model producer")
+	}
+	return resolved, nil
+}
+
+func TestP10JSONProducerBindingIntegrity(t *testing.T) {
+	source := strings.Replace(fmt.Sprintf(p10OriginalJSONLiteralSource, "http://127.0.0.1:1/unused"), "\"empty_val\": nil", "\"empty_val\": \"\"", 1)
+	original := p15CompiledActions(t, source)
+	expected, err := p10JSONModelBindings(original)
+	if err != nil || len(expected) != 1 {
+		t.Fatal("real source binding rejected", err)
+	}
+	model, consumer := -1, -1
+	for i, action := range original {
+		p := p15C01Params(action)
+		if p["CustomOutputName"] == "dynamicModel" {
+			model = i
+		}
+		if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.downloadurl" {
+			consumer = i
+		}
+	}
+	if model < 0 || consumer < 0 {
+		t.Fatal("missing actual mutation target")
+	}
+	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid"} {
+		t.Run(fault, func(t *testing.T) {
+			changed := p15ContainerCloneNative(t, original)
+			if bindings, err := p10JSONModelBindings(changed); err != nil || !reflect.DeepEqual(bindings, expected) {
+				t.Fatal("unchanged graph copy rejected", err)
+			}
+			fields := p15C01Params(changed[model])
+			switch fault {
+			case "duplicate_model_same_uuid", "duplicate_model_distinct_uuid":
+				duplicate := p10CloneJSONWire(changed[model]).(map[string]any)
+				if fault == "duplicate_model_distinct_uuid" {
+					p15C01Params(duplicate)["UUID"] = "01f2bd81-53e5-4b99-9d50-4e84ea2a8ad5"
+				}
+				changed = append(changed, duplicate)
+			case "duplicate_consumer_uuid":
+				p15C01Params(changed[consumer])["UUID"] = fields["UUID"]
+			case "remove_model":
+				changed = append(changed[:model], changed[model+1:]...)
+			case "wrong_kind":
+				changed[model]["WFWorkflowActionIdentifier"] = "is.workflow.actions.number"
+			case "changed_value":
+				fields["WFTextActionText"] = "unrelated"
+			case "wrong_name":
+				fields["CustomOutputName"] = "unrelated"
+			case "missing_uuid":
+				delete(fields, "UUID")
+			}
+			if got, err := p10JSONModelBindings(changed); err == nil {
+				t.Fatalf("corrupt producer binding accepted: %s %#v", fault, got)
 			}
 		})
 	}

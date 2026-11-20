@@ -108,21 +108,17 @@ func TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer(t *
 		}
 
 		// Reconstruct the JSON body and headers from the compiled plist and send to local echo server
-		resolved := map[string]any{}
+		actualActions := []map[string]any{}
 		for _, rawAction := range doc["WFWorkflowActions"].([]any) {
-			action := rawAction.(map[string]any)
-			fields := action["WFWorkflowActionParameters"].(map[string]any)
-			if fields["CustomOutputName"] != "dynamicModel" {
-				continue
+			action, ok := rawAction.(map[string]any)
+			if !ok {
+				t.Fatal("invalid actual action shape")
 			}
-			uuid, ok := fields["UUID"].(string)
-			if !ok || uuid == "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || fields["WFTextActionText"] != "gpt-4o-mini" {
-				t.Fatal("actual dynamic model producer changed", action)
-			}
-			resolved["ActionOutput:"+uuid] = "gpt-4o-mini"
+			actualActions = append(actualActions, action)
 		}
-		if len(resolved) != 1 {
-			t.Fatal("missing or duplicated actual dynamic model producer")
+		resolved, bindingError := p10JSONModelBindings(actualActions)
+		if bindingError != nil {
+			t.Fatal(bindingError)
 		}
 		jsonPayload := reconstructJSONFromWFDictionaryFieldValue(t, params["WFJSONValues"], resolved)
 		headerMap := reconstructJSONFromWFDictionaryFieldValue(t, params["WFHTTPHeaders"], resolved)
