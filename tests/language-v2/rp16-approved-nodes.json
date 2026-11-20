@@ -257,5 +257,40 @@
     "source": "let value = menu(\"RP16_MENU_EXPR\") { case \"A\" { yield \"RP16_MENU_EXPR_A\" } case \"B\" { yield \"RP16_MENU_EXPR_B\" } }\nshow(value)",
     "witness": "menu_expression",
     "value": "RP16_MENU_EXPR"
+  },
+  {
+    "role": "type_annotation",
+    "kind": "NamedTypeAnnotation",
+    "source": "let value: Text = \"RP16_TYPE_NAMED\"\nshow(value)",
+    "witness": "reference",
+    "value": "RP16_TYPE_NAMED"
+  },
+  {
+    "role": "type_annotation",
+    "kind": "OptionalTypeAnnotation",
+    "source": "type Maybe = Text?\ntext(\"RP16_TYPE_OPTIONAL\")",
+    "witness": "text",
+    "value": "RP16_TYPE_OPTIONAL"
+  },
+  {
+    "role": "type_annotation",
+    "kind": "GenericTypeAnnotation",
+    "source": "type Values = List<Text>\ntext(\"RP16_TYPE_GENERIC\")",
+    "witness": "text",
+    "value": "RP16_TYPE_GENERIC"
+  },
+  {
+    "role": "type_annotation",
+    "kind": "UnionTypeAnnotation",
+    "source": "type Choice = Text | Number\ntext(\"RP16_TYPE_UNION\")",
+    "witness": "text",
+    "value": "RP16_TYPE_UNION"
+  },
+  {
+    "role": "type_annotation",
+    "kind": "RecordTypeAnnotation",
+    "source": "type Payload = {name: Text}\ntext(\"RP16_TYPE_RECORD\")",
+    "witness": "text",
+    "value": "RP16_TYPE_RECORD"
   }
 ]

@@ -50,7 +50,7 @@ func p15RP16DeclaredKinds(t *testing.T) []string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var roles = map[string]string{"declarationNode": "declaration", "statementNode": "statement", "expressionNode": "expression"}
+	var roles = map[string]string{"declarationNode": "declaration", "statementNode": "statement", "expressionNode": "expression", "typeAnnotationNode": "type_annotation"}
 	var kinds []string
 	for _, declaration := range file.Decls {
 		var method, ok = declaration.(*goast.FuncDecl)
@@ -91,9 +91,10 @@ func p15RP16ValidateCaseInventory(cases []p15RP16ApprovedCase, declared []string
 func p15RP16ObservedKinds(program *syntax.Program) (map[string]int, error) {
 	var observed = map[string]int{}
 	var roleTypes = map[string]reflect.Type{
-		"declaration": reflect.TypeOf((*syntax.Declaration)(nil)).Elem(),
-		"statement":   reflect.TypeOf((*syntax.Statement)(nil)).Elem(),
-		"expression":  reflect.TypeOf((*syntax.Expression)(nil)).Elem(),
+		"declaration":     reflect.TypeOf((*syntax.Declaration)(nil)).Elem(),
+		"statement":       reflect.TypeOf((*syntax.Statement)(nil)).Elem(),
+		"expression":      reflect.TypeOf((*syntax.Expression)(nil)).Elem(),
+		"type_annotation": reflect.TypeOf((*syntax.TypeAnnotation)(nil)).Elem(),
 	}
 	var record = func(value reflect.Value, role string) error {
 		var matches []string
