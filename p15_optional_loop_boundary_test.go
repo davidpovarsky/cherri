@@ -109,7 +109,7 @@ func TestP15F04OptionalLoopBoundaryPreservesPresentResults(t *testing.T) {
 		{"map_with_list", "let values=repeat 2 {yield {\"nested\":[1,2]}}\nreturn values"},
 		{"narrowed_parameter", "function collect(candidate:Text?)->AnyContent {let values=repeat 2 {if candidate!=none {yield candidate} else {yield \"fallback\"}}\nreturn values}\nreturn collect(none)"},
 		{"definite_assignment", "var candidate:Text?=none\ncandidate=\"row\"\nlet values=repeat 2 {yield candidate}\nreturn values"},
-		{"explicit_present_conversion", "function target()->Text?{return none}\nlet values=repeat 2 {yield text(target())}\nreturn values"},
+		{"explicit_present_conversion", "function target()->Text?{return none}\nlet values=repeat 2 {yield f\"{target()}\"}\nreturn values"},
 		{"optional_join_outside_loop", "let candidate=if true {yield none} else {yield \"row\"}\nreturn candidate"},
 		{"guaranteed_return", "function finished()->Number {let values=repeat 2 {return 7; yield none}\nreturn 0}\nreturn finished()"},
 		{"overwritten_none", "let values=repeat 2 {yield none; yield \"row\"}\nreturn values"},
