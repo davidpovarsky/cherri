@@ -28,16 +28,17 @@ type provenanceOutputNameSpec struct {
 
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
-	IsVariable        bool   // true = setvariable/getvariable, false = direct action output token
-	TokenType         string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
-	OutputUUID        string // for action output
-	OutputName        string
-	VariableName      string // for setvariable
-	Aggrandizements   []map[string]interface{}
-	Type              types.Type
-	PolymorphicLookup bool
-	AppendVariable    bool
-	OptionalPresence  interface{} // compiler-owned value presence, independent of argument omission
+	IsVariable             bool   // true = setvariable/getvariable, false = direct action output token
+	TokenType              string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
+	OutputUUID             string // for action output
+	OutputName             string
+	VariableName           string // for setvariable
+	Aggrandizements        []map[string]interface{}
+	Type                   types.Type
+	PolymorphicLookup      bool
+	AppendVariable         bool
+	OptionalPresence       interface{} // compiler-owned value presence, independent of argument omission
+	OptionalPresenceUnused bool        // exact source binding has no semantic presence consumer
 }
 
 func lookupContentItemClass(prop string) (string, bool) {
@@ -100,6 +101,7 @@ type Lowerer struct {
 	provenanceVarNames         map[string]string
 	optionalFunctionReturn     bool
 	optionalExpressionPresence map[syntax.Expression]interface{}
+	optionalPresenceDemand     map[*syntax.BindingStmt]bool
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -515,6 +517,8 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			return fmt.Errorf("unhandled declaration %T: declarations must not be silently dropped", decl)
 		}
 	}
+
+	l.prepareOptionalPresenceDemand(prog)
 
 	// 2. If functions are declared and called, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
 	if len(l.functions) > 0 && hasFunctionCalls(prog, l.functions) {
@@ -1632,6 +1636,7 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 }
 
 func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
+	trackOptionalPresence := l.optionalPresenceNeeded(b)
 	if b.Value == nil {
 		// uninitialized var
 		wfVarName := l.effectiveVariableName(b.Name)
@@ -1640,9 +1645,10 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			bType = l.resolveTypeAnnotation(b.TypeExpr)
 		}
 		l.bindings[b.Name] = BindingRef{
-			IsVariable:   true,
-			VariableName: wfVarName,
-			Type:         bType,
+			IsVariable:             true,
+			VariableName:           wfVarName,
+			Type:                   bType,
+			OptionalPresenceUnused: !trackOptionalPresence,
 		}
 		if b.Mutable {
 			node := &ir.NativeActionNode{
@@ -1669,7 +1675,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	// Presence is independent of the value's native truthiness. Mutable
 	// bindings store a paired flag; immutable aliases snapshot a mutable flag.
 	var optionalPresence interface{}
-	if val == nil || l.optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
+	if trackOptionalPresence && (val == nil || l.optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value)) {
 		optionalPresence, err = l.optionalValuePresence(b.Value, val)
 		if err != nil {
 			return err
@@ -1715,9 +1721,10 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			}
 		}
 		l.bindings[b.Name] = BindingRef{
-			IsVariable:   true,
-			VariableName: wfVarName,
-			Type:         bType,
+			IsVariable:             true,
+			VariableName:           wfVarName,
+			Type:                   bType,
+			OptionalPresenceUnused: !trackOptionalPresence,
 		}
 	} else {
 		effOutName := l.effectiveOutputName(b.Name)
@@ -1868,11 +1875,12 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				wfVarName := l.effectiveVariableName(b.Name)
 				l.emitClearedVariable(wfVarName)
 				l.bindings[b.Name] = BindingRef{
-					IsVariable:       true,
-					TokenType:        "Variable",
-					VariableName:     wfVarName,
-					OutputName:       wfVarName,
-					OptionalPresence: optionalPresence,
+					IsVariable:             true,
+					TokenType:              "Variable",
+					VariableName:           wfVarName,
+					OutputName:             wfVarName,
+					OptionalPresence:       optionalPresence,
+					OptionalPresenceUnused: !trackOptionalPresence,
 				}
 				return nil
 			default:
@@ -1907,6 +1915,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	if ref, ok := l.bindings[b.Name]; ok {
 		ref.Type = varType
 		ref.OptionalPresence = optionalPresence
+		ref.OptionalPresenceUnused = !trackOptionalPresence
 		if l.isPolymorphicContainerLookupExpr(b.Value) {
 			ref.PolymorphicLookup = true
 		}

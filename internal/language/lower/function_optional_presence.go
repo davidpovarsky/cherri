@@ -62,6 +62,9 @@ func (l *Lowerer) snapshotOptionalPresence(presence interface{}) interface{} {
 }
 
 func (l *Lowerer) assignOptionalPresence(binding BindingRef, assignment *syntax.AssignStmt, value interface{}) (interface{}, error) {
+	if binding.OptionalPresenceUnused {
+		return nil, nil
+	}
 	tracked := binding.OptionalPresence != nil || types.MayBeAbsent(binding.Type) || value == nil || l.hasOptionalPresence(assignment.Value)
 	if !tracked {
 		return nil, nil

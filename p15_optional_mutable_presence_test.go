@@ -389,6 +389,12 @@ func p15MutableOptionalImplicitInputError(actions []map[string]any) error {
 	g.emit("detect.text", nil)
 	p15MutableOptionalAssignGraph(g, flag, false, p15MutableOptionalPresentValues()[0])
 	g.emit("detect.text", nil)
+	presenceGroup := g.conditional(5, p15FunctionVariable(flag), "WFConditionalActionString", "0")
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(1)})
+	g.boundary(presenceGroup, 1, false)
+	g.emit("number", map[string]any{"WFNumberActionNumber": float64(0)})
+	observedPresence := g.boundary(presenceGroup, 2, true)
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(observedPresence)})
 	g.output(g.value("gettext", map[string]any{"WFTextActionText": "DONE"}))
 	g.caller()
 	result := g.call(g.payload("echo", p15FunctionString("unused")))
@@ -397,15 +403,7 @@ func p15MutableOptionalImplicitInputError(actions []map[string]any) error {
 }
 
 func TestP15OptionalMutableMetadataPreservesImplicitInputOrder(t *testing.T) {
-	source := `function echo(seed:Text)->Text{
-text("OPTIONAL_PREVIOUS_SEED")
-var candidate:Text?=f"{native.action("is.workflow.actions.detect.text", {})}"
-native.action("is.workflow.actions.detect.text", {})
-candidate=none
-native.action("is.workflow.actions.detect.text", {})
-return "DONE"
-}
-getVariable(echo("unused"))`
+	source := p15OptionalImplicitDemandedSource()
 	if diagnostics := p15TypeDiagnostics(t, source); len(diagnostics) != 0 {
 		t.Fatal(diagnostics)
 	}
