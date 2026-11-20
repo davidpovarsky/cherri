@@ -42,7 +42,7 @@ func p15TypedDefaultCases() []p15TypedDefaultCase {
 }
 
 func p15TypedDefaultSource(tc p15TypedDefaultCase) string {
-	return fmt.Sprintf("function echo(value:%s=%s)->AnyContent{return value}\nlet supplied=echo(%s)\ngetVariable(supplied)\nlet omitted=echo()\ngetVariable(omitted)\nlet named=echo(value:%s)\ngetVariable(named)", tc.annotation, tc.fallback, tc.supplied, tc.supplied)
+	return fmt.Sprintf("function echo(value:%s = %s)->AnyContent{return value}\nlet supplied=echo(%s)\ngetVariable(supplied)\nlet omitted=echo()\ngetVariable(omitted)\nlet named=echo(value:%s)\ngetVariable(named)", tc.annotation, tc.fallback, tc.supplied, tc.supplied)
 }
 
 func p15TypedDefaultValueGraph(g *p15FunctionGraph, value any) {
@@ -191,7 +191,7 @@ func TestP15T01WrongTypedDefaultsRejected(t *testing.T) {
 		{"list", "List<Text>", "[1]"}, {"map", "Map<Text,Number>", `{"key":false}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			source := fmt.Sprintf("function bad(value:%s=%s)->AnyContent{return value}\nbad()", tc.annotation, tc.value)
+			source := fmt.Sprintf("function bad(value:%s = %s)->AnyContent{return value}\nbad()", tc.annotation, tc.value)
 			p15FunctionRejects(t, source, tc.value, analysis.CodeArgumentType, "default value of type")
 		})
 	}
