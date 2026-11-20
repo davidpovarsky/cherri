@@ -612,9 +612,12 @@ func TestP15F03NoneYieldClearsPrecedingOutput(t *testing.T) {
 			if errors := p15F03Errors(analyzer); len(errors) != 0 {
 				t.Fatal(errors)
 			}
-			want := types.NewUnion(types.NewOptional(types.Unknown), types.Text)
+			// Authored None retains absence even when its inner value is unknown.
+			// NewOptional(Unknown) deliberately normalizes to Unknown and would
+			// erase the very distinction this branch-result test must preserve.
+			want := types.NewUnion(types.OptionalType{Inner: types.Unknown}, types.Text)
 			actual := analyzer.ExprTypes()[p15BindingValue(t, program, "value")]
-			if actual == nil || !actual.Equals(want) {
+			if actual == nil || !actual.Equals(want) || !types.MayBeAbsent(actual) {
 				t.Fatalf("None became Void/present Text: got %v want %v", actual, want)
 			}
 			actions, err := p15C03Actions(src, false)
