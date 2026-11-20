@@ -261,14 +261,14 @@ def contained_file(container, nonce):
 
 def source_binding(repo, source):
     require(re.fullmatch(r"[0-9a-f]{40}", source), "SOURCE_SHA")
-    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, timeout=15).decode().strip()
+    head = subprocess.check_output(["git", "--no-replace-objects", "rev-parse", "HEAD"], cwd=repo, timeout=15).decode().strip()
     require(head == source, "SOURCE_HEAD")
     result = {}
     for name in SOURCES:
         path = repo / name
         require(path.is_file() and not path.is_symlink(), "SOURCE_FILE")
         raw = path.read_bytes()
-        original = subprocess.check_output(["git", "show", source + ":" + name], cwd=repo, timeout=15)
+        original = subprocess.check_output(["git", "--no-replace-objects", "show", source + ":" + name], cwd=repo, timeout=15)
         require(raw == original, "SOURCE_BYTES")
         result[name] = digest(raw)
     return result

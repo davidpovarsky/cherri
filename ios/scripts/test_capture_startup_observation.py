@@ -205,6 +205,20 @@ class StartupObservationControls(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "SYMLINK"):
                 capture.contained_file(root, NONCE)
 
+
+    def test_ordinary_public_log_drops_private_observation_and_session_lines(self):
+        raw = log_lines(capture.ISSUE+encode(issue()))
+        bounded, receipts, failures = collector.bounded_log(raw)
+        self.assertIn("Test Case", bounded)
+        self.assertNotIn(capture.SESSION, bounded)
+        self.assertNotIn(capture.ISSUE, bounded)
+        self.assertNotIn(NONCE, bounded)
+        self.assertNotIn("PRIVATE", bounded)
+        for field in ("compact", "detailed", "errorDescription", "errorDomain"):
+            self.assertNotIn(issue()[field]["base64"], bounded)
+        self.assertEqual(receipts, [])
+        self.assertEqual(failures, [])
+
     def test_diagnostic_scope_keeps_actual_pass_without_acceptance(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -237,6 +251,10 @@ class ActualCaptureControls(unittest.TestCase):
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT/name, destination)
         subprocess.run(["git", "init", "-q"], cwd=cls.repo, check=True, capture_output=True)
+        # The control owns this temporary repository; checkout must preserve the
+        # exact fixture bytes on Windows as well as POSIX.
+        subprocess.run(["git", "config", "core.autocrlf", "false"], cwd=cls.repo, check=True, capture_output=True)
+        subprocess.run(["git", "config", "core.eol", "lf"], cwd=cls.repo, check=True, capture_output=True)
         subprocess.run(["git", "add", "."], cwd=cls.repo, check=True, capture_output=True)
         subprocess.run(["git", "-c", "user.name=Cherri Local Control", "-c", "user.email=local-control@example.invalid",
                         "-c", "commit.gpgsign=false", "commit", "-qm", "Owned local observation control"],
@@ -259,6 +277,37 @@ class ActualCaptureControls(unittest.TestCase):
             path.write_bytes(original)
         with self.assertRaisesRegex(ValueError, "SOURCE_HEAD"):
             capture.source_binding(self.repo, "a"*40)
+
+
+    def test_real_git_replacement_cannot_rebind_claimed_source(self):
+        path = self.repo/capture.SOURCES[0]
+        original = path.read_bytes()
+        forged = original+b"\n// REPLACEMENT_OBJECT_CONTROL\n"
+        def git(*args):
+            return subprocess.check_output(["git", *args], cwd=self.repo, stderr=subprocess.PIPE)
+        try:
+            path.write_bytes(forged)
+            git("add", capture.SOURCES[0])
+            git("-c", "user.name=Cherri Local Control", "-c", "user.email=local-control@example.invalid",
+                "-c", "commit.gpgsign=false", "commit", "-qm", "Local replacement negative control")
+            replacement = git("rev-parse", "HEAD").decode().strip()
+            git("checkout", "--detach", self.source)
+            git("replace", self.source, replacement)
+            path.write_bytes(forged)
+            self.assertEqual(git("rev-parse", "HEAD").decode().strip(), self.source)
+            self.assertEqual(git("show", self.source+":"+capture.SOURCES[0]), forged)
+            with self.assertRaisesRegex(ValueError, "SOURCE_BYTES"):
+                capture.source_binding(self.repo, self.source)
+            # The same actual claimed source remains readable despite an
+            # unrelated local replacement; only its real object owns the bytes.
+            path.write_bytes(original)
+            actual = capture.source_binding(self.repo, self.source)
+            self.assertEqual(actual[capture.SOURCES[0]], capture.digest(original))
+        finally:
+            subprocess.run(["git", "replace", "-d", self.source], cwd=self.repo,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.run(["git", "--no-replace-objects", "reset", "--hard", self.source], cwd=self.repo,
+                           check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def test_full_capture_selects_one_owned_file_and_keeps_private_originals(self):
         with tempfile.TemporaryDirectory() as temporary:
