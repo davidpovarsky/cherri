@@ -1469,6 +1469,10 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 			if err != nil {
 				return err
 			}
+			if val == nil {
+				// An omitted output input otherwise inherits the preceding action.
+				l.materializeYieldValue(nil)
+			}
 			val = l.materializeToAttachment(val)
 			// Emit output action: is.workflow.actions.output
 			node := &ir.NativeActionNode{
@@ -1617,7 +1621,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 
 	if b.Mutable {
 		wfVarName := l.effectiveVariableName(b.Name)
-		if isEmptyRuntimeList(val) {
+		if val == nil || isEmptyRuntimeList(val) {
 			l.emitClearedVariable(wfVarName)
 		} else {
 			// Emit is.workflow.actions.setvariable
@@ -1800,14 +1804,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				l.emitAction(node)
 			case nil:
 				wfVarName := l.effectiveVariableName(b.Name)
-				node := &ir.NativeActionNode{
-					NodeID:          uuid,
-					AppleIdentifier: "is.workflow.actions.setvariable",
-					Parameters: map[string]interface{}{
-						"WFVariableName": wfVarName,
-					},
-				}
-				l.emitAction(node)
+				l.emitClearedVariable(wfVarName)
 				l.bindings[b.Name] = BindingRef{
 					IsVariable:   true,
 					TokenType:    "Variable",
@@ -1950,7 +1947,7 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		}
 	}
 
-	if a.Op == syntax.TokenAssign && isEmptyRuntimeList(finalVal) {
+	if a.Op == syntax.TokenAssign && (finalVal == nil || isEmptyRuntimeList(finalVal)) {
 		l.emitClearedVariable(wfVarName)
 		return nil
 	}
