@@ -335,3 +335,62 @@ func TestP15U01DeclarationBoundaryControls(t *testing.T) {
 		})
 	}
 }
+
+func TestP15U01GitReplacementIsolation(t *testing.T) {
+	repository := t.TempDir()
+	// Register automatic restoration, then remove the variable entirely: Git
+	// versions may interpret mere presence as disabling replacement objects.
+	t.Setenv("GIT_NO_REPLACE_OBJECTS", "0")
+	if err := os.Unsetenv("GIT_NO_REPLACE_OBJECTS"); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("GIT_REPLACE_REF_BASE", "refs/replace/")
+	p15U01Git(t, nil, "init", "--quiet", repository)
+	original, forged := []byte("original declaration\n"), []byte("forged declaration\n")
+	makeCommit := func(data []byte, label string) (string, string, string) {
+		blob := strings.TrimSpace(string(p15U01Git(t, data, "-C", repository, "hash-object", "-w", "--stdin")))
+		tree := strings.TrimSpace(string(p15U01Git(t, []byte("100644 blob "+blob+"\tdeclaration.cherri\n"), "-C", repository, "mktree")))
+		commit := strings.TrimSpace(string(p15U01Git(t, nil, "-C", repository,
+			"-c", "user.name=U01 isolated fixture", "-c", "user.email=u01-fixture@example.invalid",
+			"-c", "commit.gpgsign=false", "commit-tree", tree, "-m", label)))
+		return commit, tree, blob
+	}
+	before, _, originalBlob := makeCommit(original, "original synthetic declaration")
+	replacement, _, _ := makeCommit(forged, "replacement synthetic declaration")
+	p15U01Git(t, nil, "-C", repository, "replace", before, replacement)
+	// Verify that the fault is active using an intentionally unhardened read in
+	// this disposable repository. The real shared repository is never replaced.
+	raw := exec.Command("git", "-C", repository, "show", before+":declaration.cherri")
+	output, err := raw.Output()
+	if err != nil || !bytes.Equal(output, forged) {
+		t.Fatalf("isolated replacement-ref fault was not active: %v %q", err, output)
+	}
+	for _, operation := range []string{"show", "cat_file_batch", "ls_tree", "diff"} {
+		t.Run(operation, func(t *testing.T) {
+			switch operation {
+			case "show":
+				got := p15U01Git(t, nil, "-C", repository, "show", before+":declaration.cherri")
+				if !bytes.Equal(got, original) {
+					t.Fatalf("immutable show followed replacement ref: %q", got)
+				}
+			case "cat_file_batch":
+				got := p15U01Git(t, []byte(before+":declaration.cherri\n"), "-C", repository, "cat-file", "--batch")
+				want := []byte(originalBlob + " blob " + strconv.Itoa(len(original)) + "\n" + string(original) + "\n")
+				if !bytes.Equal(got, want) {
+					t.Fatalf("immutable batch object followed replacement ref: %q", got)
+				}
+			case "ls_tree":
+				got := p15U01Git(t, nil, "-C", repository, "ls-tree", before, "--", "declaration.cherri")
+				want := []byte("100644 blob " + originalBlob + "\tdeclaration.cherri\n")
+				if !bytes.Equal(got, want) {
+					t.Fatalf("immutable tree followed replacement ref: %q", got)
+				}
+			case "diff":
+				got := p15U01Git(t, nil, "-C", repository, "diff", "--numstat", before, replacement, "--", "declaration.cherri")
+				if string(got) != "1\t1\tdeclaration.cherri\n" {
+					t.Fatalf("immutable diff concealed replacement: %q", got)
+				}
+			}
+		})
+	}
+}
