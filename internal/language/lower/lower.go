@@ -1313,7 +1313,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 				l.emitIfElse(defGroupUUID)
 
-				defVal, err := l.lowerCallValue(param.DefaultExpr)
+				defVal, err := l.lowerFunctionDefaultValue(param.DefaultExpr, false)
 				if err != nil {
 					return nil, fmt.Errorf("function %s default param %s: %w", fn.Name, param.Name, err)
 				}
