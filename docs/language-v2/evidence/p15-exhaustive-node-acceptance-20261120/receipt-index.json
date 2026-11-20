@@ -1,0 +1,469 @@
+{
+  "format_version": 1,
+  "created_utc": "2026-11-20T01:52:54.257918+00:00",
+  "scope": "RP16 unit/native-negative only; no linked-ID, Apple runtime,179-row or release closure",
+  "implementation_source": "db4a8ca6e6f42bebb3ecfd059de3d323136c6782",
+  "component_source": "d07bbf7f049503a2271df28f7fd18c4db839aa06",
+  "branch": "agent/cherri-p10r15-rp16-exhaustive-20261120",
+  "base_source": "a8444464318d1e496f7581be0a9022107cd12afc",
+  "archive": {
+    "path": "rp16-original-receipts.zip",
+    "bytes": 167347,
+    "sha256": "ab86f0f3533c091615d6a6b9359f8659bbbe80005734ae8ff820b76a18a79d80"
+  },
+  "formal_evidence": {
+    "outer_pass_events": 280,
+    "outer_elapsed_seconds": 22.375,
+    "inner_pass_events": 114,
+    "inner_elapsed_seconds": 6.49183,
+    "inner_raw_sha256": "5218d0b61522ef53f1dda184a816e1b56db001ac69e066723390b760c5572a39",
+    "source_blob_count": 45,
+    "records": 2,
+    "requirement": "RP16",
+    "tiers": [
+      "unit",
+      "native-negative"
+    ],
+    "report": {
+      "timestamp": "2026-11-20T01:51:05Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "RP16",
+          "group": "repair",
+          "requirement": "Exhaustive node handling",
+          "test_level": "unit+native-negative",
+          "executed_levels": [
+            "unit",
+            "native-negative"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    }
+  },
+  "loop_regression": {
+    "source": "a7623a39a170abcfa1fc91dbd6ea2fe9f834cc18",
+    "records": 6,
+    "scope": "Three separate existing loop scenarios replayed after shared strict-parser extraction; Apple tier remains pending"
+  },
+  "asana_comments": [
+    "1220728106188582",
+    "1220728296008744",
+    "1220727992240980"
+  ],
+  "stages": [
+    {
+      "directory": "rp16-boundary-draft",
+      "observed_status": "NO_TEST_EXECUTION: draft helper used nonexistent file.Path"
+    },
+    {
+      "directory": "rp16-boundary-baseline",
+      "observed_status": "INCOMPLETE_BASELINE: one real unknown unused-function failure then test-setup CopyDecl panic"
+    },
+    {
+      "directory": "rp16-boundary-baseline-complete",
+      "observed_status": "RED: three genuine unknown-node native finalization failures, nine negative controls pass"
+    },
+    {
+      "directory": "rp16-approved-exploration",
+      "observed_status": "DIRTY_EXPLORATION: public native graph inspection; not clean formal evidence"
+    },
+    {
+      "directory": "rp16-component-precommit",
+      "observed_status": "DIRTY_PRECOMMIT: initial37-kind component controls pass"
+    },
+    {
+      "directory": "rp16-type-baseline",
+      "observed_status": "RED:11 unknown type-annotation contexts finalize;42 positive fixture children pass"
+    },
+    {
+      "directory": "rp16-type-fix-precommit",
+      "observed_status": "DIRTY_PRECOMMIT:114 component events pass"
+    },
+    {
+      "directory": "rp16-component-clean",
+      "observed_status": "PASS:clean d07bbf7f root114 and complete lower38"
+    },
+    {
+      "directory": "rp16-formal-precommit",
+      "observed_status": "DIRTY_PRECOMMIT:179 parser/inventory control events, not179 requirement rows"
+    },
+    {
+      "directory": "rp16-formal-clean",
+      "observed_status": "OUTER_TEST_FAILED: local closure expectation; actual inner RP16 and complete loop regression passed"
+    },
+    {
+      "directory": "rp16-formal-clean-final",
+      "observed_status": "OUTER_TEST_FAILED: final global CI/tuple expectation; actual inner RP16 passed"
+    },
+    {
+      "directory": "rp16-formal-clean-verified",
+      "observed_status": "PASS:clean db4a8ca6 actual RP16 producer and complete intake controls"
+    }
+  ],
+  "members": [
+    {
+      "path": "rp16-boundary-draft/go-test.jsonl",
+      "bytes": 1020,
+      "sha256": "fa5b720068bce878b6681b94d555d205f7233b729d6420faad81cd42088acc9a"
+    },
+    {
+      "path": "rp16-boundary-draft/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-boundary-draft/process.json",
+      "bytes": 519,
+      "sha256": "3b5673d962d74378bfd861145b28b2aee4c35cfd35df3de8fe5bfaf32f43156d"
+    },
+    {
+      "path": "rp16-boundary-draft/source-before-filename-correction.go.txt",
+      "bytes": 7471,
+      "sha256": "2ccde411c3d8e327eea635714764a5df452bc9d7aced1020790bcf041e52a058"
+    },
+    {
+      "path": "rp16-boundary-baseline/go-test.jsonl",
+      "bytes": 15204,
+      "sha256": "9c0403c2239e32d91c1f4bffbe39dc695e3bfdd9a283f6094ea72c52db0dafab"
+    },
+    {
+      "path": "rp16-boundary-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-boundary-baseline/process.json",
+      "bytes": 1282,
+      "sha256": "6f90149d5eb581459971f7ea3571627391425931408e21885a9447633b78c950"
+    },
+    {
+      "path": "rp16-boundary-baseline-complete/go-test.jsonl",
+      "bytes": 12543,
+      "sha256": "9854c2cf1d1c52982b2a3bf6d09874d42ff4a6de4df460a7f18e8b3a6523930c"
+    },
+    {
+      "path": "rp16-boundary-baseline-complete/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-boundary-baseline-complete/process.json",
+      "bytes": 1356,
+      "sha256": "17a07ffa6a9116e7f8cd5454b058389391148b0d7b3c97ba97a345c4ee86ce8a"
+    },
+    {
+      "path": "rp16-approved-exploration/go-test.jsonl",
+      "bytes": 153957,
+      "sha256": "1d24fa2bce3e7a5920777c88edd708c2b568a19b6d4c4655cc0f451e8366d15f"
+    },
+    {
+      "path": "rp16-approved-exploration/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-approved-exploration/graphs.json",
+      "bytes": 122380,
+      "sha256": "55ccae5fe43ef5e6a8e50b6c05bc42bad1614b991c98ca670a1a064ef149e490"
+    },
+    {
+      "path": "rp16-approved-exploration/process.json",
+      "bytes": 3771,
+      "sha256": "22fd8042d86eba9dac16ef3b763a13a11393fac95a9d6c8ac0a9ef5bf3609d69"
+    },
+    {
+      "path": "rp16-component-precommit/go-test.jsonl",
+      "bytes": 78815,
+      "sha256": "b9706752f41177010a92153d749131bf4a1bf1abc911aa23021ef6f94b407c3c"
+    },
+    {
+      "path": "rp16-component-precommit/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-component-precommit/process.json",
+      "bytes": 6296,
+      "sha256": "f30718efaaa07461cf2fe9e4e6f9df76790a6aea2bd54ba2a859de9cb4640d3d"
+    },
+    {
+      "path": "rp16-type-baseline/go-test.jsonl",
+      "bytes": 51926,
+      "sha256": "b9be0a26a0be6ab3180cf2f132cf87a47318a393c712e71ddbfdacac86f917b2"
+    },
+    {
+      "path": "rp16-type-baseline/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-type-baseline/process.json",
+      "bytes": 4265,
+      "sha256": "58b888cf79099468605736bf20d599defde1b9fd2b719b6a9421fe61f621a7d3"
+    },
+    {
+      "path": "rp16-type-fix-precommit/go-test.jsonl",
+      "bytes": 99102,
+      "sha256": "b6f513f523c186a84f275659126f677e29f608589d723dfc8b031c31afb730e5"
+    },
+    {
+      "path": "rp16-type-fix-precommit/go-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-type-fix-precommit/process.json",
+      "bytes": 7888,
+      "sha256": "2faffe20f3e73fb3b5c2da9b5a2e54e1be18304d7a808410cba086e251e1ea6f"
+    },
+    {
+      "path": "rp16-component-clean/lower.jsonl",
+      "bytes": 35288,
+      "sha256": "dff65269f9204e2122299fa1d4bb5d08444a4f45e67972b04d7ba4d895f5e925"
+    },
+    {
+      "path": "rp16-component-clean/lower.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-component-clean/process.json",
+      "bytes": 13479,
+      "sha256": "21d6e75807c0d36ebd07acb3ddc7ba404e08000bbe74cf299b16fad636038bdb"
+    },
+    {
+      "path": "rp16-component-clean/root.jsonl",
+      "bytes": 99178,
+      "sha256": "6330abeffc9ab96e5a7ee3f2bd76af1a1686c36716ae700c6063d0745706f698"
+    },
+    {
+      "path": "rp16-component-clean/root.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-precommit/go.jsonl",
+      "bytes": 201867,
+      "sha256": "fecc1ad5712305b1fbbf302a932404b7c236e8a3f4faa0e67868c0b760e613db"
+    },
+    {
+      "path": "rp16-formal-precommit/launch.json",
+      "bytes": 716,
+      "sha256": "8728fb2eed79d9a234bdb0caccace3afbaa4822b53a85d7ac95c9425cd613f1a"
+    },
+    {
+      "path": "rp16-formal-precommit/process.json",
+      "bytes": 16930,
+      "sha256": "d79ae9ab98b4429501e0d496226844d77fdecc8f934b2acc415f023740f6676b"
+    },
+    {
+      "path": "rp16-formal-precommit/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean/go.jsonl",
+      "bytes": 518065,
+      "sha256": "4b0d7f27910b84303c9a0197494f33730b30d4b7eccad39fe23a080c7bf013cf"
+    },
+    {
+      "path": "rp16-formal-clean/launch.json",
+      "bytes": 266,
+      "sha256": "24e08b66a76a3c8be0a9bf928ebad28a233253058cacc381f3870de8fca2f1a4"
+    },
+    {
+      "path": "rp16-formal-clean/loop-receipt.json",
+      "bytes": 23064,
+      "sha256": "aaf1ce819c7bb37acad18232709f08330505f3872698ccc6c69f257b246c78ed"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-brg12-832575489/loop-go.jsonl",
+      "bytes": 24510,
+      "sha256": "d8c88988067c42e2a8594ac76c1e8049e93b7b15feb3ee0bb08ed7063e493a2e"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-brg12-832575489/loop-process.json",
+      "bytes": 10200,
+      "sha256": "12619faac4c6969b1c509f5d8eb73911b679de215e4b903444d4221f1529cb00"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-brg12-832575489/loop-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-f02-2964927158/loop-go.jsonl",
+      "bytes": 20896,
+      "sha256": "31a9547beda1e94d70a77b57db2a9de727b62b31a77274f2fdec2c5b20a6ccb2"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-f02-2964927158/loop-process.json",
+      "bytes": 9286,
+      "sha256": "5a16d7f871d6eb22c293b1385e5e8f1e42d84b3e798ca4536665edb9b2177e84"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-f02-2964927158/loop-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-rp22-3091007064/loop-go.jsonl",
+      "bytes": 22844,
+      "sha256": "f2fce34d7d2550696a5b69cac266400c136cac1ac84ce5e60b1ede9fef984225"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-rp22-3091007064/loop-process.json",
+      "bytes": 9620,
+      "sha256": "81bad7cde0a9e7aefbd6e61f9006ec2634b15284ec52a97b9d46199fa5d19c75"
+    },
+    {
+      "path": "rp16-formal-clean/loops/loop-rp22-3091007064/loop-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean/process.json",
+      "bytes": 38096,
+      "sha256": "95ad65cc551e6bdadd5f365bebd7d6b8a0f8003aa3ff30c8f7fa7e80aa531816"
+    },
+    {
+      "path": "rp16-formal-clean/production/rp16-2607167501/rp16-go.jsonl",
+      "bytes": 99110,
+      "sha256": "af83ebd4e83ff225929afde20245e9212d29ff3b8dbeacbb0801a3e2a7919dbc"
+    },
+    {
+      "path": "rp16-formal-clean/production/rp16-2607167501/rp16-process.json",
+      "bytes": 22519,
+      "sha256": "71bbbd882257417bd9d5812c7900a122a347553ca4b654515353425add5302da"
+    },
+    {
+      "path": "rp16-formal-clean/production/rp16-2607167501/rp16-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean-final/go.jsonl",
+      "bytes": 161316,
+      "sha256": "4a7449001f3852ce95da6f2e37a6ed6d3ccca8831091fdda90501b9cee74b0b9"
+    },
+    {
+      "path": "rp16-formal-clean-final/launch.json",
+      "bytes": 255,
+      "sha256": "c66c9214d2b7abadceb6b6eccf037030043cb799265d6c39bfa5f6395e6aedab"
+    },
+    {
+      "path": "rp16-formal-clean-final/process.json",
+      "bytes": 14425,
+      "sha256": "3f0d5f9a494ad46c4e5d6ac7b9d24cbe91627df8c0e74588e7d730a797384a4b"
+    },
+    {
+      "path": "rp16-formal-clean-final/production/rp16-219082119/rp16-go.jsonl",
+      "bytes": 99167,
+      "sha256": "b81a6ff3124be3f16bcffae302d22229c6dcb6b4e43d7b33dd445c6158f13639"
+    },
+    {
+      "path": "rp16-formal-clean-final/production/rp16-219082119/rp16-process.json",
+      "bytes": 22527,
+      "sha256": "c0c6ecd4825c3962229a85c738949edafeec34e63e3b82ddcd5989ddd0a7fc8b"
+    },
+    {
+      "path": "rp16-formal-clean-final/production/rp16-219082119/rp16-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean-final/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean-verified/go.jsonl",
+      "bytes": 344343,
+      "sha256": "dff35501b56a48a3a66ea2168f2ecadac28f52497ecab78e777b8426e6f38ae8"
+    },
+    {
+      "path": "rp16-formal-clean-verified/launch.json",
+      "bytes": 255,
+      "sha256": "c2dbe429bca2c39a1b8a37ea2e540e320f2c157c4fe9748d3e94545410e554ed"
+    },
+    {
+      "path": "rp16-formal-clean-verified/process.json",
+      "bytes": 27105,
+      "sha256": "f81b98f80464b1e0f6a5ca8e4c72d74844a6f0151b2ff540790a45e9e6552278"
+    },
+    {
+      "path": "rp16-formal-clean-verified/production/rp16-2761032633/rp16-go.jsonl",
+      "bytes": 99116,
+      "sha256": "5218d0b61522ef53f1dda184a816e1b56db001ac69e066723390b760c5572a39"
+    },
+    {
+      "path": "rp16-formal-clean-verified/production/rp16-2761032633/rp16-process.json",
+      "bytes": 22515,
+      "sha256": "1e72bd2b570e29aeb5c43a8e7aed821765af85eb758d8e8846da1f4b2c56c1bb"
+    },
+    {
+      "path": "rp16-formal-clean-verified/production/rp16-2761032633/rp16-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "rp16-formal-clean-verified/rp16-receipt.json",
+      "bytes": 19519,
+      "sha256": "d84f616cbeae682772a3c320ffafe3dee1a0e639ea46f1b24e759a367482eb23"
+    },
+    {
+      "path": "rp16-formal-clean-verified/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "byte_preservation": "Archive stores original bytes, including Windows raw newline bytes. No failed attempt or receipt is rewritten or rebound to a newer source.",
+  "metadata_check": {
+    "scope": "Only proof/provenance files pending; not a clean compiler-source replay",
+    "process": {
+      "source_head": "db4a8ca6e6f42bebb3ecfd059de3d323136c6782",
+      "metadata_changes_pending": true,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=2m",
+        "-run",
+        "^TestForkActionProvenanceRegistry$",
+        "."
+      ],
+      "exit": 0,
+      "timeout": false,
+      "elapsed_seconds": 39.53200000000652,
+      "passes": [
+        "TestForkActionProvenanceRegistry"
+      ],
+      "fails": [],
+      "skips": [],
+      "raw_sha256": "0b00bdbc4f97048c2c626bb6ee7c4903414929a1305436de1e81d776271d8520",
+      "raw_bytes": 1237
+    },
+    "archive": {
+      "path": "rp16-provenance-check.zip",
+      "bytes": 905,
+      "sha256": "6c11b174136b50f2fb0796f38f46cce901e426c69cae4d7d12e747c4c3d6e298"
+    }
+  }
+}

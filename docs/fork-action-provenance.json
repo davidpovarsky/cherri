@@ -3160,7 +3160,7 @@
       "change": "Return an explicit unhandled-expression error at the final lowering fallback instead of silent nil success.",
       "reason": "Five actual unknown-expression contexts returned a successful workflow on clean tests-only fe952222; declaration and statement controls already rejected unknown nodes.",
       "evidence": "docs/language-v2/p15-exhaustive-node-fail-closed-20261120.md; clean7d767d08 complete lower package38 named passes,0 failures/skips,44.734s.",
-      "note": "Only the demonstrated unknown-node repair is established. RP16 exhaustive positive/native-boundary producer remains open."
+      "note": "This historical entry establishes the original narrow fallback repair. The later RP16 exhaustive descendant/native-boundary producer and its separate source-bound proof are recorded in the dedicated RP16 infrastructure entry."
     },
     {
       "name": "P10R15 complete loop ownership local acceptance producers",
@@ -3179,6 +3179,26 @@
       "reason": "Existing simple loop smoke and raw runtime traces did not establish mixed loop owners, same-name shadows, siblings and restored consumers for all three immutable rows.",
       "evidence": "docs/language-v2/p15-loop-ownership-acceptance-20261120.md; clean640dd22d component85 named passes; clean269fd88c actual source-bound producer319 outer names with three independent child processes and six local tier records.",
       "note": "No compiler behavior or original fixture/golden changed. Local unit/native-structure only; all three rows remain pending complete actual Apple runtime evidence and full179 closure is rejected. Integrated producer ancestor is241b89fe; original observations remain source-bound to269fd88c."
+    },
+    {
+      "name": "P10R15 RP16 exhaustive checked AST boundary and source-bound acceptance",
+      "locations": [
+        "internal/language/lower/exhaustive_validation.go",
+        "internal/language/lower/lower.go",
+        "p15_exhaustive_ast_boundary_test.go",
+        "p15_exhaustive_ast_type_boundary_test.go",
+        "p15_exhaustive_ast_inventory_test.go",
+        "p15_exhaustive_ast_native_witness_test.go",
+        "tests/language-v2/rp16-approved-nodes.json",
+        "tools/language-acceptance/exhaustive_node_execution.go",
+        "tools/language-acceptance/exhaustive_node_execution_test.go",
+        "tools/language-acceptance/strict_go_events.go"
+      ],
+      "firstForkCommit": "a320593e9d7900596cfc9e285aec75a46d546349",
+      "change": "Validate every approved active declaration, statement, expression and type-annotation descendant before canonical emission, including unused bodies and metadata; add independent RP16-only source-bound production and strict evidence intake.",
+      "reason": "Clean actual tests reproduced silent canonical finalization in three unused/metadata contexts and eleven annotation positions despite the earlier active-expression fallback guard.",
+      "evidence": "docs/language-v2/p15-exhaustive-node-acceptance-20261120.md; clean d07bbf7f component114+38 pass; clean db4a8ca6 actual producer/intake280 pass,114 required inner events,45 immutable source hashes,two RP16-only records. Original failed/incomplete and successful receipts retained.",
+      "note": "No action definitions or native wire schemas are added. P03/F03/FN01/M03, Apple runtime,179-row closure and global release gates are not inherited. Historical receipts preserve their original source commits. Integrated implementation ancestor is a320593e9d7900596cfc9e285aec75a46d546349; original component observations remain bound to their original commits."
     }
   ]
 }

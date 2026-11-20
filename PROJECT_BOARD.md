@@ -39,6 +39,8 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Verify RP16 exhaustive checked AST and native rejection (2026-11-20). Reproduced three unused/metadata and eleven annotation silent-success gaps before repair. Actual clean compiler114+lower38 and strict producer/intake280 events pass; two RP16-only local records, all114 required children,45 immutable source hashes. Related requirements, Apple runtime and global release closure remain independent. [Proof and original receipts](docs/language-v2/p15-exhaustive-node-acceptance-20261120.md).
+
 - [x] Close statically inferred List-row guard bypasses (2026-11-19). Fourteen parser-valid reference/function/Optional/Union cases now fail explicitly before an artifact is returned; scalar/Dictionary controls and native import round trips pass. Dynamic AnyContent hierarchy is still unverified, so L01/F04/FN05 remain incomplete. See [boundary and executed controls](docs/language-v2/p15-inferred-list-shape-boundary-20261119.md).
 
 - [x] Preserve prior artifacts when P15 migration or signing fails (2026-11-19). Shared migration validation now rejects unparsable generated text before writing; public signing stages output and commits only after validation. Real failed/restored CLI and OS rename controls pass locally. Final clean-SHA acceptance and Apple gates remain separate; see [causal evidence and scope](docs/language-v2/p15-migration-signing-output-preservation-20261119.md).
@@ -136,7 +138,7 @@ Four actual schema scenarios RP06/RP07/BRG22/BRG23 passed at clean a278d9f3 with
 
 [תומר | INT] [MAIN_SESSION] Clean 04c5e847 actually executed all 23 selected production tests and ten receipt controls. One bounded BRG33 PASS; original minimum tiers and independent 179-row accounting remain unchanged. [Proof](docs/language-v2/p15-approved-frontend-20261120.md). No Apple, linked-ID or release inheritance.
 
-- 2026-11-20: Actual unknown-expression injection exposed a silent nil-success fallback in checked lowering (five contexts). The narrow fallback now rejects explicitly; do not equate an unresolved import test with exhaustive AST coverage. RP16 still needs the positive approved-kind inventory and native-boundary producer. See docs/language-v2/p15-exhaustive-node-fail-closed-20261120.md.
+- 2026-11-20: Actual unknown-expression injection exposed a silent nil-success fallback in checked lowering (five contexts). The narrow fallback now rejects explicitly; do not equate an unresolved import test with exhaustive AST coverage. RP16 was subsequently completed locally with an independently checked 42-kind inventory and 23 canonical unknown-node contexts; see docs/language-v2/p15-exhaustive-node-acceptance-20261120.md for exact source-bound scope. See docs/language-v2/p15-exhaustive-node-fail-closed-20261120.md.
 
 ## P10R15 R3 publication and evidence review — 2026-11-20
 
