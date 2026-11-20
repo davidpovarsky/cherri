@@ -40,7 +40,7 @@ type p15EditorDiagnosticRequirement struct{ code, needle string }
 
 func p15E02DiagnosticError(text, uri string, actual []analysis.Diagnostic, want []p15EditorDiagnosticRequirement, syntaxRequired bool, max int) error {
 	if len(actual) > max {
-		return fmt.Errorf("diagnostic flood: %d exceeds %d", len(actual), max)
+		return fmt.Errorf("diagnostic flood: %d exceeds %d; actual %+v", len(actual), max, actual)
 	}
 	found := make([]bool, len(want))
 	seen := map[string]bool{}
