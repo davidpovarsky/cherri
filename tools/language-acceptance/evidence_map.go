@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// The full main-output scenario needs its own actual Apple proof.
+	if _, found := mainOutputScenarios[id]; found {
+		return
+	}
 	// These complete default/caller-input scenarios need their own Apple proof.
 	// The historical short function trace does not observe their full contract.
 	if _, found := functionDefaultScenarios[id]; found {
@@ -80,7 +84,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "F02", "F04", "RP22", "BRG12", "BRG14":
 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
-	case "FN01", "FN02", "FN03", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
+	case "FN01", "FN02", "FN03", "RP24", "RP25", "RP26", "BRG11", "BRG15":
 		reqAssertions["function_result"] = "21"
 		reqAssertions["caller_continuation"] = "22"
 		reqAssertions["defaults_explicit"] = "0:0::"
@@ -266,6 +270,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if scenario, found := mainOutputScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := functionDefaultScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -462,6 +469,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if _, found := mainOutputScenarios[id]; found {
+		return append([]string{}, mainOutputProductionPaths...)
+	}
 	if _, found := functionDefaultScenarios[id]; found {
 		return append([]string{}, functionDefaultProductionPaths...)
 	}
