@@ -31,6 +31,94 @@ func functionEnvelopeValue(value interface{}) interface{} {
 	return value
 }
 
+// Only compiler-owned presence participates in these predicates. Imported raw
+// native predicates and unrelated action-content tests retain their own wire.
+func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
+	if l.optionalExpressionPresence[expr] != nil {
+		return true
+	}
+	if name, ok := expr.(*syntax.IdentExpr); ok {
+		binding, found := l.bindings[name.Name]
+		return found && binding.OptionalPresence != nil
+	}
+	call, ok := expr.(*syntax.CallExpr)
+	if !ok {
+		return false
+	}
+	name := ""
+	switch callee := call.Callee.(type) {
+	case *syntax.IdentExpr:
+		name = callee.Name
+	case *syntax.MemberExpr:
+		if target, ok := callee.Target.(*syntax.IdentExpr); ok {
+			name = target.Name + "." + callee.Property
+			_, imported := l.modules[target.Name]
+			if l.functions[name] == nil && !imported && target.Name != "native" {
+				name = callee.Property
+			}
+		}
+	case *syntax.EnumMemberExpr:
+		name = callee.TypeName + "." + callee.Member
+	}
+	fn := l.functions[name]
+	return fn != nil && optionalFunctionParameter(fn.ReturnType)
+}
+
+func (l *Lowerer) lowerOptionalNoneCondition(expr syntax.Expression) (*ir.AttachmentToken, int, bool, error) {
+	negated := false
+	for {
+		unary, ok := expr.(*syntax.UnaryExpr)
+		if !ok || unary.Op != syntax.TokenBang {
+			break
+		}
+		negated = !negated
+		expr = unary.Operand
+	}
+	binary, ok := expr.(*syntax.BinaryExpr)
+	if !ok || (binary.Op != syntax.TokenEqual && binary.Op != syntax.TokenNotEqual) {
+		return nil, 0, false, nil
+	}
+	isNone := func(value syntax.Expression) bool {
+		literal, ok := value.(*syntax.LiteralExpr)
+		return ok && literal.Type == syntax.TokenNone
+	}
+	var operand syntax.Expression
+	if isNone(binary.Right) {
+		operand = binary.Left
+	} else if isNone(binary.Left) {
+		operand = binary.Right
+	} else {
+		return nil, 0, false, nil
+	}
+	if !l.hasOptionalPresence(operand) {
+		return nil, 0, false, nil
+	}
+	// Evaluate a producing call once before reading its result-presence edge.
+	value, err := l.lowerExpression(operand)
+	if err != nil {
+		return nil, 0, true, err
+	}
+	presence, err := l.optionalValuePresence(operand, value)
+	if err != nil {
+		return nil, 0, true, err
+	}
+	code := 4
+	if (binary.Op == syntax.TokenNotEqual) != negated {
+		code = 5
+	}
+	return l.materializeToAttachment(presence), code, true, nil
+}
+
+func (l *Lowerer) materializeOptionalPredicate(input *ir.AttachmentToken, code int) *ir.AttachmentToken {
+	group, result := l.GenerateUUID(), l.GenerateUUID()
+	l.emitIfStartTyped(group, input, code, "0", nil, backend.OperandString, true)
+	l.emitAction(&ir.NativeActionNode{NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.number", Parameters: map[string]interface{}{"WFNumberActionNumber": 1.0}})
+	l.emitIfElse(group)
+	l.emitAction(&ir.NativeActionNode{NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.number", Parameters: map[string]interface{}{"WFNumberActionNumber": 0.0}})
+	l.emitIfEnd(group, result, "")
+	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: result}
+}
+
 // Argument omission selects a default in the outer dispatcher branch. A
 // supplied Optional has a separate value-presence flag, so explicit None does
 // not become empty Text and false/zero/empty values never select the default.
