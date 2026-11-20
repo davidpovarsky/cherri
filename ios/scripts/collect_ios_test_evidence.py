@@ -86,7 +86,7 @@ STARTUP_BOOL_FIELDS = {"waitCompleted", "windowExists", "appRunningForeground",
                        "createDocumentExists", "createDocumentHittable", "editorExists", "editorHittable"}
 INPUT_PREFIX = "[CHERRI_INPUT_RECEIPT] "
 RUNTIME_PREFIX = "[CHERRI_NATIVE_RUNTIME_EVENT] "
-INPUT_FIXTURES = {"nested-call", "list", "dictionary", "curly-block", "block-comment"}
+INPUT_FIXTURES = {"nested-call", "list", "dictionary", "curly-block", "block-comment", "single-character-paste"}
 INPUT_TEST_NAME = re.compile(r"^CherriEditorInputTests/test[A-Za-z0-9_]+$")
 CANDIDATE_ID = re.compile(r"^(?:completionItem|suggestionItem)_[A-Za-z_][A-Za-z0-9_]{0,95}$")
 RUNTIME_SOURCE = re.compile(r"(?P<file>CodeStorage(?:Delegate)?|CodeView|Tokeniser|LineMap|ContiguousArrayBuffer|StringUTF16View)\.swift:(?P<line>[0-9]{1,6})")
@@ -147,7 +147,15 @@ def safe_startup_receipt(line, active_test):
         return None
     # Startup has not established an empty document. Even a forged reset flag
     # cannot authorize source, document names, AX labels, or an arbitrary tree.
-    return {key: raw[key] for key in ("schemaVersion", "testName", "stage", *sorted(STARTUP_BOOL_FIELDS))}
+    receipt = {key: raw[key] for key in ("schemaVersion", "testName", "stage", *sorted(STARTUP_BOOL_FIELDS))}
+    timing = {"elapsedMilliseconds", "budgetMilliseconds", "documentCreationIssued"}
+    if timing.intersection(raw):
+        if (type(raw.get("elapsedMilliseconds")) is not int or not 0 <= raw["elapsedMilliseconds"] <= 120000
+                or type(raw.get("budgetMilliseconds")) is not int or raw["budgetMilliseconds"] != 28000
+                or type(raw.get("documentCreationIssued")) is not bool):
+            return None
+        receipt.update({key: raw[key] for key in timing})
+    return receipt
 
 
 def safe_input_receipt(line, active_test):
@@ -159,8 +167,16 @@ def safe_input_receipt(line, active_test):
             or raw.get("testName") != active_test or not isinstance(active_test, str)
             or not INPUT_TEST_NAME.fullmatch(active_test)
             or raw.get("isolatedSyntheticEditor") is not True
-            or raw.get("fixtureId") not in INPUT_FIXTURES
-            or raw.get("stage") not in {"before-key", "after-key", "fixture-complete"}):
+            or raw.get("fixtureId") not in INPUT_FIXTURES):
+        return None
+    paste = raw["fixtureId"] == "single-character-paste"
+    stages = {"before-paste", "after-paste-call", "after-paste-wait"} if paste else {"before-key", "after-key", "fixture-complete"}
+    if raw.get("stage") not in stages:
+        return None
+    if paste and (active_test != "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
+                  or type(raw.get("pasteElapsedMilliseconds")) is not int
+                  or not 0 <= raw["pasteElapsedMilliseconds"] <= 120000
+                  or any(type(raw.get(key)) is not bool for key in ("viewIsFirstResponder", "windowAttached", "windowIsKey"))):
         return None
     receipt = {key: raw[key] for key in (
         "schemaVersion", "testName", "isolatedSyntheticEditor", "fixtureId", "stage")}
@@ -176,6 +192,11 @@ def safe_input_receipt(line, active_test):
     if not isinstance(source, str):
         return None
     receipt["actualSource"] = source if len(source.encode("utf-8")) <= 16384 and not PRIVATE_TEXT.search(source) else "[REDACTED_UNEXPECTED_CONTENT]"
+    if paste:
+        allowed = {"", 'text("x")', 'text("x"))', 'text("x")))', 'text("x"))))'}
+        if source not in allowed:
+            receipt["actualSource"] = "[REDACTED_UNEXPECTED_CONTENT]"
+        receipt.update({key: raw[key] for key in ("pasteElapsedMilliseconds", "viewIsFirstResponder", "windowAttached", "windowIsKey")})
     return receipt
 
 
