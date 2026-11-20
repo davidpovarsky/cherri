@@ -53,7 +53,7 @@ func TestP15DateFieldCanonicalProductionReferences(t *testing.T) {
 				"formatTimestamp(first, dateFormat: \"Custom\", timeFormat: \"None\", customDateFormat: \"yyyy-MM-dd'T'HH:mm:ssXXXXX\", locale: \"en_US_POSIX\")\n"
 			if legacy {
 				source = "#include 'actions/calendar'\n" + strings.ReplaceAll(source, "let ", "const ")
-				source = strings.NewReplacer("dateFormat: ", "", "timeFormat: ", "", "customDateFormat: ", "", "locale: ", "").Replace(source)
+				source = strings.NewReplacer("dateFormat: ", "", "timeFormat: ", "", "customDateFormat: ", "", "locale: ", "false, ").Replace(source)
 			}
 			var actions = p15DateFieldActions(t, source, legacy)
 			if len(actions) != 5 {
