@@ -524,7 +524,10 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 	artSum := sha256.Sum256(artContent)
 	artHex := hex.EncodeToString(artSum[:])
 
-	// 3. In manifest validation: only unit and native records provided for FN01 -> rejected in final phase
+	// 3. Synthetic validator controls only: these records do not prove FN01 execution.
+	// Bind the positive model to the current producer contract so that the negative
+	// control rejects the missing iOS tier, not a stale local producer identifier.
+	var scenario = numberFunctionScenarios["FN01"]
 	manifest := &EvidenceManifest{
 		SchemaVersion:     "1",
 		ImplementationSHA: "sha1",
@@ -542,20 +545,28 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 				Requirements:      []string{"FN01"},
 				Tier:              "unit",
 				ImplementationSHA: "sha1",
-				TestID:            "tools/language-acceptance:runFunctions",
+				TestID:            scenario.producer("unit"),
 				ExitCode:          0,
 				Result:            "passed",
-				Assertions:        map[string]string{"assertion": "unit ok"},
+				Command:           productionTestCommand(scenario.tests()),
+				Assertions: map[string]string{
+					"required_production_tests": strings.Join(scenario.tests(), "\n"),
+					"scope":                     scenario.Scope,
+				},
 			},
 			{
 				EvidenceID:        "rec2",
 				Requirements:      []string{"FN01"},
 				Tier:              "native-structure",
 				ImplementationSHA: "sha1",
-				TestID:            "tools/language-acceptance:runFunctions",
+				TestID:            scenario.producer("native-structure"),
 				ExitCode:          0,
 				Result:            "passed",
-				Assertions:        map[string]string{"assertion": "native ok"},
+				Command:           productionTestCommand(scenario.tests()),
+				Assertions: map[string]string{
+					"required_production_tests": strings.Join(scenario.tests(), "\n"),
+					"scope":                     scenario.Scope,
+				},
 			},
 		},
 	}
@@ -568,6 +579,9 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 	if err == nil {
 		t.Fatalf("expected ValidateEvidenceManifest to reject FN01 missing ios tier in final phase, got nil err")
 	}
+	if err.Error() != "requirement FN01 has unsatisfied required tiers in final phase" {
+		t.Fatalf("synthetic model must reject only the missing iOS tier, got: %v", err)
+	}
 	if manifestReport.FailedCases != 1 {
 		t.Fatalf("expected 1 failed case in manifest validation, got %d", manifestReport.FailedCases)
 	}
@@ -575,7 +589,8 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 		t.Fatalf("closure_complete must be false when ios tier missing in manifest")
 	}
 
-	// 4. In manifest validation: add genuine ios-runtime record -> succeeds!
+	// 4. Add a synthetic iOS model record to exercise the all-tiers policy control.
+	// Actual Apple execution is validated separately; this fixture grants no runtime credit.
 	manifest.Records = append(manifest.Records, EvidenceRecord{
 		EvidenceID:        "rec3",
 		Requirements:      []string{"FN01"},
