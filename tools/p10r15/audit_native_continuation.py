@@ -28,6 +28,7 @@ MANIFEST = "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json"
 REVIEWED_SELECTORS = {
     "qa-file-materialization-diagnostic-v2": "qa-file-materialization-diagnostic",
     "qa-n03-text-equality-diagnostic-v2": "qa-n03-text-equality-diagnostic",
+    "qa-optional-forwarding-diagnostic-v2": "qa-optional-forwarding-diagnostic",
     "CherriBindingCapturePOC": "qa-binding-capture",
     "CherriTypedDefaultsPOC": "qa-typed-defaults",
     "qa-native-boundary-diagnostic-v2": "qa-native-boundary-diagnostic",
@@ -100,7 +101,8 @@ def reviewed_case(commit, fid):
     require(assignment("EXPECTED_SHORTCUT_NAME") in (fid, "$TARGET_FIXTURE_ID"),
             "source selector shortcut identity mismatch")
     expected = assignment("EXPECTED_SEMANTIC_OUTPUT")
-    require(expected.startswith("CHERRI_QA_") and not any(c in expected for c in ("$", chr(96), "\\", "\n")),
+    prefix = "CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:" if fid == "qa-optional-forwarding-diagnostic-v2" else "CHERRI_QA_"
+    require(expected.startswith(prefix) and not any(c in expected for c in ("$", chr(96), "\\", "\n")),
             "expected result must be an immutable source literal")
     marker = 'python3 - "$ROOT_DIR" "$ARTIFACT_DIR" "$SOURCE_SHA"'
     require(shell.count(marker) == 1, "fixture compilation entry point ambiguous")

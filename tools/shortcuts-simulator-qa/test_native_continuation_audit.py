@@ -199,6 +199,7 @@ class NativeContinuationAuditTests(unittest.TestCase):
 
     def test_reviewed_selector_contracts_bind_exact_source_and_expected_literals(self):
         expected = {
+            "qa-optional-forwarding-diagnostic-v2": "CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:NONE=NONE:EMPTY_TEXT=TEXT[]:FALSE=BOOL[false]:ZERO=NUMBER[0]:EMPTY_LIST=LIST[0]:EMPTY_MAP=MAP[0]:LIST=LIST[2|A|B]:MAP=MAP[1|VALUE|Dictionary]:SNAPSHOT=NONE:WRITTEN=TEXT[]:DEFAULT=TEXT[DEFAULT]",
             "qa-collect-empty-split-v2": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1",
             "qa-collect-counts-v2": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
             "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",

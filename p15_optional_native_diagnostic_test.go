@@ -265,6 +265,18 @@ func TestP15OptionalNativeDiagnosticSourceAndGraph(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("%d independently checked native actions; Apple runtime NOT_RUN; formal_requirements_proved=[]", len(actions))
+	path, supplied := os.LookupEnv("CHERRI_OPTIONAL_DIAGNOSTIC_UNSIGNED")
+	if supplied || os.Getenv("CHERRI_OPTIONAL_DIAGNOSTIC_SHA256") != "" {
+		receipt, failure := p15OptionalPreparedUnsignedArtifact(path, os.Getenv("CHERRI_OPTIONAL_DIAGNOSTIC_SHA256"), data)
+		if failure != nil {
+			t.Fatal(failure)
+		}
+		encoded, failure := json.Marshal(receipt)
+		if failure != nil {
+			t.Fatal(failure)
+		}
+		t.Logf("%s%s", p15OptionalUnsignedGraphMarker, encoded)
+	}
 }
 
 func TestP15OptionalNativeDiagnosticRejectsContractDrift(t *testing.T) {

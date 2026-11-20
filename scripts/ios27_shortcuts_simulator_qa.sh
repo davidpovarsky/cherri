@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-optional-forwarding-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -240,6 +240,13 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-n03-text-equality-diagnostic-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_N03_TEXT_EQ_DIAG:LEFT64=YWJj:SAME64=YWJj:CASE64=QUJD:FOLD_SAME_EQ=Y:FOLD_SAME_NE=N:FOLD_CASE_EQ=N:FOLD_CASE_NE=Y:DYN_SAME_EQ=Y:DYN_SAME_NE=N:DYN_CASE_EQ=N:DYN_CASE_NE=Y:IF_SAME_EQ=Y:IF_SAME_NE=N:IF_CASE_EQ=N:IF_CASE_NE=Y:MATCH_SAME_CS=1:MATCH_CASE_CS=0:MATCH_CASE_CI=1"
+    ;;
+  qa-optional-forwarding-diagnostic)
+    # Tagged Optional diagnostic only. Preserve every contradictory actual field.
+    TARGET_FIXTURE_ID="qa-optional-forwarding-diagnostic-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-optional-forwarding-diagnostic-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:NONE=NONE:EMPTY_TEXT=TEXT[]:FALSE=BOOL[false]:ZERO=NUMBER[0]:EMPTY_LIST=LIST[0]:EMPTY_MAP=MAP[0]:LIST=LIST[2|A|B]:MAP=MAP[1|VALUE|Dictionary]:SNAPSHOT=NONE:WRITTEN=TEXT[]:DEFAULT=TEXT[DEFAULT]"
     ;;
   qa-file-materialization-diagnostic)
     # Additive characterization: desired File contract remains independently strict.
@@ -542,6 +549,7 @@ from retry_http_probe import validate_fixture_graph
 from export_unicode_diagnostic import validate_export_unicode_graph
 from file_materialization_diagnostic import verify_source as verify_file_materialization_source, verify_graph as verify_file_materialization_graph
 from n03_text_equality_diagnostic import verify_source as verify_n03_text_equality_source
+from optional_forwarding_diagnostic import verify_source as verify_optional_forwarding_source, verify_prepared_unsigned as verify_optional_forwarding_unsigned
 from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from native_boundary_diagnostic import verify_source as verify_boundary_source, verify_graph as verify_boundary_graph
@@ -580,6 +588,7 @@ fixture_specs = [
     ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),
     ("qa-file-materialization-diagnostic-v2", "qa-file-materialization-diagnostic-v2.cherri", "v2"),
     ("qa-n03-text-equality-diagnostic-v2", "qa-n03-text-equality-diagnostic-v2.cherri", "v2"),
+    ("qa-optional-forwarding-diagnostic-v2", "qa-optional-forwarding-diagnostic-v2.cherri", "v2"),
     ("qa-native-boundary-diagnostic-v2", "qa-native-boundary-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-diagnostic-v2", "qa-export-unicode-diagnostic-v2.cherri", "v2"),
     ("qa-export-unicode-v2", "p15-export-probes/qa-export-unicode-v2.cherri", "v2"),
@@ -644,6 +653,7 @@ for fid, fname, dialect in fixture_specs:
     with open(fpath, "rb") as f:
         src_bytes = f.read()
     src_sha256 = hashlib.sha256(src_bytes).hexdigest()
+    optional_forwarding_source = verify_optional_forwarding_source(root_dir, fid, src_bytes)
 
     build_src = os.path.join(builds_dir, fname)
     os.makedirs(os.path.dirname(build_src), exist_ok=True)
@@ -700,6 +710,8 @@ for fid, fname, dialect in fixture_specs:
         "exportUnicodeDiagnosticGraph": validate_export_unicode_graph(fid, actions),
         "fileMaterializationSource": verify_file_materialization_source(root_dir, fid, src_bytes),
         "n03TextEqualitySource": verify_n03_text_equality_source(root_dir, fid, src_bytes),
+        "optionalForwardingSource": optional_forwarding_source,
+        "optionalForwardingGraph": verify_optional_forwarding_unsigned(root_dir, artifact_dir, fid, out_shortcut, plist_sha256),
         "fileMaterializationGraph": verify_file_materialization_graph(fid, actions),
         "bindingDefaultsSource": verify_adapter_source(root_dir, fid, src_bytes),
         "bindingDefaultsGraph": verify_adapter_graph(fid, actions),
@@ -2313,6 +2325,30 @@ try:
         release_build_verified = True
     else:
         assert profile == "debug" and trace_expectation == "REQUIRED_NDJSON"
+    if expected_trace_run_id == "qa-optional-forwarding-diagnostic-v2":
+        assert source_sha256 == "e6f195aadcd2d46f25c6fe1de5165798c18a40f4c1942785b9e39171b1cc2139"
+        reviewed_source = {
+            "status": "PASS_REVIEWED_PUBLIC_SOURCE_ONLY", "sourceSha256": source_sha256,
+            "expectedContractSha256": "da1335a22389cbe97e72a706192cb6b93ece8eff380080fa0541dcb5cbc50cef",
+            "observedFields": 11, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
+        }
+        observed_source = fixture.get("optionalForwardingSource")
+        assert isinstance(observed_source, dict) and set(observed_source) == set(reviewed_source)
+        assert all(type(observed_source[key]) is type(value) and observed_source[key] == value
+                   for key, value in reviewed_source.items())
+        reviewed_graph = {
+            "schemaVersion": "1.0", "fixtureId": expected_trace_run_id,
+            "status": "PASS_NATIVE_STRUCTURE_ONLY", "sourceSha256": source_sha256,
+            "expectedContractSha256": reviewed_source["expectedContractSha256"],
+            "unsignedPlistSha256": unsigned_sha256, "nativeActionCount": 399,
+            "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
+        }
+        observed_graph = fixture.get("optionalForwardingGraph")
+        assert isinstance(observed_graph, dict) and set(observed_graph) == set(reviewed_graph) | {"testStdoutSha256", "testStderrSha256"}
+        assert all(type(observed_graph[key]) is type(value) and observed_graph[key] == value
+                   for key, value in reviewed_graph.items())
+        assert all(isinstance(observed_graph[key], str) and re.fullmatch(r"[0-9a-f]{64}", observed_graph[key])
+                   for key in ("testStdoutSha256", "testStderrSha256"))
 except (OSError, ValueError, TypeError, AttributeError, AssertionError) as exc:
     result("FAIL_RUNTIME", "FAIL_RUNTIME", f"compiler manifest/runtime profile contract rejected: {type(exc).__name__}")
     sys.exit(0)

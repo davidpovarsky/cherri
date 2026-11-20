@@ -22,3 +22,5 @@ swiftc -parse-as-library \
   "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_editor_foreground.swift" \
   -o "$QA_TEST_DIR/qa-editor-foreground-contracts"
 "$QA_TEST_DIR/qa-editor-foreground-contracts"
+
+python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_optional_receiver.py"
