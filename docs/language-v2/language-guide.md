@@ -17,7 +17,7 @@ Cherri Language v2.0 is a modern, statically typed language that compiles direct
 | **Multiline Strings** | Not supported | `"""line 1\nline 2"""` |
 | **Function Declarations** | Header dispatch hack | `function name(params) -> ReturnType { ... }` (AST-first) |
 | **Call Arguments** | Unlabeled positional only | Primary argument + named labels: `resizeImage(photo, width: 800)` |
-| **List/Collection Indexing** | 1-based indexing | **0-based indexing** (`list[0]`) |
+| **List/Collection Indexing** | `getListItem(@list, 1)` uses a 1-based action index | **0-based indexing** (`list[0]`) |
 | **Block Expressions** | Incomplete | `if`, `repeat`, `for`, `menu` yield values via `yield` |
 | **Native Escapes** | Raw action syntax | `native.action`, `native.plist`, `native.ref`, `native.workflow` |
 | **Tooling** | Compiler only | `cherri check --json`, `cherri format --write`, `cherri lsp`, `--capabilities-json` |
