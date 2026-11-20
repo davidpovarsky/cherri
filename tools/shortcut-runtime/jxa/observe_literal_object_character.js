@@ -11,6 +11,25 @@ function observeTokenValue(value, methods) {
   return out;
 }
 
+function observeSerializationHops(className, initial) {
+  const hops = [];
+  let serialized = initial;
+  for (let pass = 2; pass <= 3; pass++) {
+    const row = { pass, input: serialized };
+    try {
+      const state = make(className, "initWithSerializedRepresentation:variableProvider:parameter:", $(serialized), null, null);
+      row.accepted = !isNil(state);
+      if (row.accepted) {
+        row.serializedRepresentation = plain(state.serializedRepresentation, 0);
+        serialized = row.serializedRepresentation;
+      }
+    } catch (_) { row.error = "native repeated serialization exception"; }
+    hops.push(row);
+    if (!row.accepted) break;
+  }
+  return hops;
+}
+
 function run(argv) {
   if (argv.length !== 1) throw new Error("Expected one output JSON path");
   const report = {
@@ -26,6 +45,8 @@ function run(argv) {
     const ref = { Type: "Variable", VariableName: "S01PublicVariable" };
     const forms = [
       { name: "plain_literal_only", value: "\uFFFC" },
+      { name: "omitted_ranges_literal_only", value: { WFSerializationType: "WFTextTokenString", Value: { string: "\uFFFC" } } },
+      { name: "omitted_ranges_literal_unicode", value: { WFSerializationType: "WFTextTokenString", Value: { string: "L\uFFFC🙂éשָׁR" } } },
       { name: "plain_literal_with_unicode", value: "L\uFFFC🙂éשָׁR" },
       { name: "empty_token_literal_only", value: { WFSerializationType: "WFTextTokenString", Value: { string: "\uFFFC", attachmentsByRange: {} } } },
       { name: "ordinary_token_after_astral", value: { WFSerializationType: "WFTextTokenString", Value: { string: "🙂\uFFFC", attachmentsByRange: { "{2, 1}": ref } } } },
@@ -47,6 +68,7 @@ function run(argv) {
           row.accepted = !isNil(state);
           if (row.accepted) {
             row.serializedRepresentation = plain(state.serializedRepresentation, 0);
+            row.roundTrips = observeSerializationHops(className, row.serializedRepresentation);
             for (const property of ["string", "value", "stringValue", "textTokenString"]) {
               if (!selectors.includes(property)) continue;
               try {
@@ -78,10 +100,16 @@ function run(argv) {
     const literal = "L\uFFFC🙂éשָׁR";
     const literalKey = "K\uFFFCK";
     const token = text => ({ WFSerializationType: "WFTextTokenString", Value: { string: text, attachmentsByRange: {} } });
+    const literalToken = text => ({ WFSerializationType: "WFTextTokenString", Value: { string: text } });
     const dict = rows => ({ WFSerializationType: "WFDictionaryFieldValue", Value: { WFDictionaryFieldValueItems: rows } });
     const array = rows => ({ WFSerializationType: "WFArrayParameterState", Value: rows });
     const textRow = value => ({ WFItemType: 0, WFValue: value });
     const fieldForms = [
+      { name: "dictionary_omitted_ranges_value_key", value: dict([{ WFItemType: 0, WFKey: literalToken("key"), WFValue: literalToken(literal) }]) },
+      { name: "dictionary_omitted_ranges_literal_key", value: dict([{ WFItemType: 0, WFKey: literalToken(literalKey), WFValue: literalToken("value") }]) },
+      { name: "dictionary_nested_array_omitted_ranges", value: dict([{ WFItemType: 2, WFKey: literalToken("list"), WFValue: array([textRow(literalToken(literal))]) }]) },
+      { name: "array_omitted_ranges_value", value: array([textRow(literalToken(literal))]) },
+      { name: "list_omitted_ranges_value", value: [textRow(literalToken(literal))] },
       { name: "dictionary_plain_value_plain_key", value: dict([{ WFItemType: 0, WFKey: "key", WFValue: literal }]) },
       { name: "dictionary_plain_value_token_key", value: dict([{ WFItemType: 0, WFKey: token("key"), WFValue: literal }]) },
       { name: "dictionary_token_value_token_key", value: dict([{ WFItemType: 0, WFKey: token("key"), WFValue: token(literal) }]) },
@@ -106,7 +134,10 @@ function run(argv) {
         try {
           const state = make(className, "initWithSerializedRepresentation:variableProvider:parameter:", $(form.value), null, null);
           row.accepted = !isNil(state);
-          if (row.accepted) row.serializedRepresentation = plain(state.serializedRepresentation, 0);
+          if (row.accepted) {
+            row.serializedRepresentation = plain(state.serializedRepresentation, 0);
+            row.roundTrips = observeSerializationHops(className, row.serializedRepresentation);
+          }
         } catch (_) { row.error = "native container-state exception"; }
         report.typedContainerObservations.push(row);
       }
