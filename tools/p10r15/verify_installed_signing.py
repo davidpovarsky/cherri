@@ -2,7 +2,9 @@
 """Audit actual CLI/wrapper rejection of loopback signing faults.
 
 Only synthetic source and locally served bytes are used. Wrapper copies change
-only the signer endpoint; live files, pins, and Pure upstream remain untouched.
+only the signer endpoint. An explicit Skill compiler input may select the
+manifest-pinned binary separately from the direct CLI input; no pins are rewritten.
+Live files and Pure upstream remain untouched.
 The report is protocol/exit/artifact evidence, never Apple signature evidence.
 """
 import argparse
@@ -61,22 +63,31 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--compiler", required=True, type=Path)
     parser.add_argument("--skill", type=Path)
+    parser.add_argument("--skill-compiler", type=Path,
+                        help="actual manifest-pinned binary for Skill copies; defaults to --compiler")
     parser.add_argument("--remote-home", type=Path)
     parser.add_argument("--include-timeout", action="store_true")
     parser.add_argument("--report", required=True, type=Path)
     opts = parser.parse_args()
     opts.compiler = opts.compiler.resolve()
+    if opts.skill_compiler and not opts.skill:
+        parser.error("--skill-compiler requires --skill")
     surfaces = ["cli_v2", "cli_legacy"]
     if opts.skill:
         opts.skill = opts.skill.resolve()
+        opts.skill_compiler = (opts.skill_compiler or opts.compiler).resolve()
         surfaces.append("skill_copy")
     if opts.remote_home:
         opts.remote_home = opts.remote_home.resolve()
         surfaces.extend(["remote_legacy_copy", "remote_v2_copy"])
     caps = subprocess.run([str(opts.compiler), "--capabilities-json", "--no-ansi"],
-                          capture_output=True, text=True, check=True)
+                          capture_output=True, text=True, check=True, timeout=55)
     provenance = {"compilerSha256": digest(opts.compiler), "capabilities": json.loads(caps.stdout)}
     if opts.skill:
+        skill_caps = subprocess.run([str(opts.skill_compiler), "--capabilities-json", "--no-ansi"],
+                                    capture_output=True, text=True, check=True, timeout=55)
+        provenance["skillCompilerSha256"] = digest(opts.skill_compiler)
+        provenance["skillCompilerCapabilities"] = json.loads(skill_caps.stdout)
         provenance["skillManifest"] = json.loads((opts.skill / "compatibility-manifest.json").read_text())
         provenance["skillBuildSha256"] = digest(opts.skill / "scripts/build.sh")
     if opts.remote_home:
@@ -185,7 +196,7 @@ def main():
                     wrapper = (opts.skill / "scripts/build.sh").read_text()
                     assert wrapper.count("--hubsign") == 1, "unexpected Skill signing invocation"
                     (skill / "scripts/build.sh").write_text(wrapper.replace("--hubsign", "--signing-server=" + endpoint))
-                    env["CHERRI_BIN"] = str(opts.compiler)
+                    env["CHERRI_BIN"] = str(opts.skill_compiler)
                     env["CHERRI_HOME"] = str(work / "home")
                     env["SKILL_DIR"] = str(skill)
                     cmd = ["sh", str(skill / "scripts/build.sh"), str(source), str(target), "--unsigned" if name == "unsigned_control" else "--signed"]
@@ -219,8 +230,17 @@ def main():
                        "requestEvidence": calls,
                        "artifacts": summaries, "verdict": verdict,
                        "diagnosticTail": output.replace(str(root), "<isolated-audit>")}
+                if surface.startswith("cli_"):
+                    row["compilerInput"] = "direct_cli"
+                    row["compilerSha256"] = provenance["compilerSha256"]
+                elif surface == "skill_copy":
+                    row["compilerInput"] = "skill_copy"
+                    row["compilerSha256"] = provenance["skillCompilerSha256"]
                 rows.append(row)
                 print(json.dumps({k:row[k] for k in ["surface", "case", "exitCode", "localRequests", "verdict"]}), flush=True)
+    assert digest(opts.compiler) == provenance["compilerSha256"], "direct CLI binary changed during audit"
+    if opts.skill:
+        assert digest(opts.skill_compiler) == provenance["skillCompilerSha256"], "Skill compiler changed during audit"
     report = {"formatVersion": 1, "observedAtUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
               "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
               "appleCryptographicValidation": "NOT_TESTED", "privateCorpusUsed": False,

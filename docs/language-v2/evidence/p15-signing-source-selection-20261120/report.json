@@ -1,0 +1,389 @@
+{
+  "formatVersion": 1,
+  "implementationSource": "b4e04f3c6050ca841e892cc4337546424588e6d7",
+  "parentSource": "4860437f2fca56a57891d786cb0509b15e13a2c1",
+  "sourceCleanBefore": true,
+  "sourceCleanAfterRuntime": true,
+  "changedImplementationPaths": [
+    "tools/p10r15/verify_installed_signing.py",
+    ".github/workflows/openminis-skill.yml"
+  ],
+  "directCompiler": {
+    "source": "4860437f2fca56a57891d786cb0509b15e13a2c1",
+    "sha256": "9afb8400c784456f5e1761442eddde6a83350b35e1a515f58b01b6308d3313a8"
+  },
+  "skillCompiler": {
+    "tool": "cherri",
+    "modulePath": "github.com/electrikmilk/cherri",
+    "sourceCommit": "fd691b96fb661697a1cbaddab92476d457636ba9",
+    "buildState": "clean",
+    "goos": "linux",
+    "goarch": "amd64",
+    "sha256": "cedaada3df00b89b6d8fd6d863715397088f1b3a4ebac5ade47cc054cb2ab1bb"
+  },
+  "manifestSHA256": "e0ad95b255d55f966fe6323ee476e753097a76bdbca0528e1917cacdc0cc2766",
+  "compilerPin": "fd691b96fb661697a1cbaddab92476d457636ba9",
+  "docsPin": "35543290124f00f216f6f4b638a890542c8e8783",
+  "manifestAncestor": "939775dcdf9d2582d483a5cf51107724f2f13e9d",
+  "originalFailedRemoteRun": {
+    "run": 44725798960,
+    "job": 136252761500,
+    "source": "4860437f2fca56a57891d786cb0509b15e13a2c1",
+    "conclusion": "failure",
+    "signingChecks": 34,
+    "directCLIPasses": 23,
+    "skillFailures": 11,
+    "cause": "actual current-HEAD compiler rejected by unchanged manifest source pin before signer request"
+  },
+  "genuine486LocalBaseline": {
+    "summary": {
+      "checks": 33,
+      "controlsPassed": 2,
+      "negativesRejected": 20,
+      "failures": 11
+    },
+    "timeoutCase": false,
+    "reportSHA256": "a01e0a92e4ad68113e7bdb1e4688d9cf5ebc444711dd7e5eceb01b18174de266"
+  },
+  "cleanReplay": {
+    "source": "b4e04f3c6050ca841e892cc4337546424588e6d7",
+    "cleanBefore": true,
+    "cleanAfter": true,
+    "sourcePaths": {
+      "tools/p10r15/verify_installed_signing.py": "4cda29aab91d979944b761398a72d4210fdff08fb44a6c41417864673e6d0190",
+      ".github/workflows/openminis-skill.yml": "3100fa1ab29d596af95e2d4c7d84d7bafb96235d34c8e365c1e51ce341d88222",
+      "skills/cherri-shortcuts/compatibility-manifest.json": "e0ad95b255d55f966fe6323ee476e753097a76bdbca0528e1917cacdc0cc2766",
+      "skills/cherri-shortcuts/scripts/build.sh": "7bbb35317afd8b85edd33e8ac5a6a035058f2541570d56e578f21549b009f887",
+      "skills/cherri-shortcuts/scripts/common.sh": "3204cfbd20e77f2e2d81155e5b0ba22fbd434488c1525592860e3fed286cf9cc",
+      "skills/cherri-shortcuts/scripts/json-object.awk": "de149c0f795f3d660efb99dfeec8862a9abb6f4504023d331b22dbb72ece3ef4"
+    },
+    "directCLI": {
+      "source": "4860437f2fca56a57891d786cb0509b15e13a2c1",
+      "sha256": "9afb8400c784456f5e1761442eddde6a83350b35e1a515f58b01b6308d3313a8"
+    },
+    "skillCompiler": {
+      "tool": "cherri",
+      "modulePath": "github.com/electrikmilk/cherri",
+      "sourceCommit": "fd691b96fb661697a1cbaddab92476d457636ba9",
+      "buildState": "clean",
+      "goos": "linux",
+      "goarch": "amd64",
+      "sha256": "cedaada3df00b89b6d8fd6d863715397088f1b3a4ebac5ade47cc054cb2ab1bb"
+    },
+    "run": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--exec",
+        "python3",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-20261119/tools/p10r15/verify_installed_signing.py",
+        "--compiler",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/cherri-current-linux-amd64",
+        "--skill-compiler",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/canonical-linux-amd64/cherri",
+        "--skill",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-20261119/skills/cherri-shortcuts",
+        "--include-timeout",
+        "--report",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/signing-protocol-exit-evidence.json"
+      ],
+      "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119",
+      "startedUTC": "2026-11-20T11:51:41.134818+00:00",
+      "finishedUTC": "2026-11-20T11:53:32.638965+00:00",
+      "elapsedSeconds": 111.5,
+      "timeoutSeconds": 180,
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutBytes": 4258,
+      "stderrBytes": 0,
+      "stdoutSHA256": "d2f370c2660ca7387319bacb78ee22fe90aae6260adbca0e5ccd262bd70636ac",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "summary": {
+      "checks": 34,
+      "controlsPassed": 3,
+      "negativesRejected": 31,
+      "failures": 0
+    },
+    "reportSHA256": "cc806c75c462597a6a04e66a7cee998877b9a21bc660a3242206fb040523f8b8",
+    "workflowIdentityControls": [
+      {
+        "case": "actual",
+        "changedField": null,
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:42.375076+00:00",
+          "finishedUTC": "2026-11-20T11:53:44.043488+00:00",
+          "elapsedSeconds": 1.672000000020489,
+          "timeoutSeconds": 60,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 0,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "case": "tool",
+        "changedField": "tool",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:44.050083+00:00",
+          "finishedUTC": "2026-11-20T11:53:45.413062+00:00",
+          "elapsedSeconds": 1.3600000000442378,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 362,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "94605ff48e2a658252475df848376f4dcca60bd9df2a5eec82433566369e146d"
+        }
+      },
+      {
+        "case": "modulePath",
+        "changedField": "modulePath",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:45.415300+00:00",
+          "finishedUTC": "2026-11-20T11:53:46.576018+00:00",
+          "elapsedSeconds": 1.1559999999590218,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 373,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "ad51cc750aa99aa15c22d476c0f22e7c91eb4f8b379c996d547f24c83240e94f"
+        }
+      },
+      {
+        "case": "sourceCommit",
+        "changedField": "sourceCommit",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:46.577669+00:00",
+          "finishedUTC": "2026-11-20T11:53:47.389115+00:00",
+          "elapsedSeconds": 0.8130000000237487,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 354,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "c89742717134a27be7431c092b0e4b150df8d073b1bdea6c30d8359c38fc8682"
+        }
+      },
+      {
+        "case": "buildState",
+        "changedField": "buildState",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:47.391880+00:00",
+          "finishedUTC": "2026-11-20T11:53:48.020259+00:00",
+          "elapsedSeconds": 0.6400000000139698,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 357,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "5a47fff847d87c4988b7fd7f744fdcc9eaa66db5c9c065d880e61942f61a88b1"
+        }
+      },
+      {
+        "case": "goos",
+        "changedField": "goos",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:48.021769+00:00",
+          "finishedUTC": "2026-11-20T11:53:48.637380+00:00",
+          "elapsedSeconds": 0.6099999999860302,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 356,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "c33ddc57f37bff791b6498776c61c8e12464a0aece9a64bb5255630d31098c95"
+        }
+      },
+      {
+        "case": "goarch",
+        "changedField": "goarch",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:48.639048+00:00",
+          "finishedUTC": "2026-11-20T11:53:49.345963+00:00",
+          "elapsedSeconds": 0.7029999999795109,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 354,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "3425da9583e71c97c2293eb6679dcc62771e7d3d8d0e8c3a4846485d649a7e0d"
+        }
+      },
+      {
+        "case": "sha256",
+        "changedField": "sha256",
+        "receipt": {
+          "command": [
+            "wsl.exe",
+            "-d",
+            "Ubuntu",
+            "--cd",
+            "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/actual-workflow-identity-eb_pbblu",
+            "--exec",
+            "python3",
+            "-c",
+            "import hashlib,json; expected=json.load(open(\"skills/cherri-shortcuts/compatibility-manifest.json\"))[\"compilerCommit\"]; actual=json.load(open(\"dist/signing-pinned-build-identity.json\")); assert actual == {\"tool\":\"cherri\",\"modulePath\":\"github.com/electrikmilk/cherri\",\"sourceCommit\":expected,\"buildState\":\"clean\",\"goos\":\"linux\",\"goarch\":\"amd64\",\"sha256\":hashlib.sha256(open(\"dist/cherri-pinned-linux-amd64\",\"rb\").read()).hexdigest()}, actual"
+          ],
+          "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\signing-source-selection-4860437f\\clean-b4e04f3c\\actual-workflow-identity-eb_pbblu",
+          "startedUTC": "2026-11-20T11:53:49.375553+00:00",
+          "finishedUTC": "2026-11-20T11:53:50.511109+00:00",
+          "elapsedSeconds": 1.1410000000032596,
+          "timeoutSeconds": 60,
+          "exitCode": 1,
+          "timedOut": false,
+          "stdoutBytes": 0,
+          "stderrBytes": 354,
+          "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSHA256": "dc6e899323bc56085e4f205d337182afe3ba5f6806a693966f8df9bfea610da8"
+        }
+      }
+    ],
+    "missingSkillControl": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--exec",
+        "python3",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-20261119/tools/p10r15/verify_installed_signing.py",
+        "--compiler",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/cherri-current-linux-amd64",
+        "--skill-compiler",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/canonical-linux-amd64/cherri",
+        "--report",
+        "/mnt/c/Users/DAVID/Code/cherri-p10r15-parity-evidence-20261119/r4-consumer-refresh-20261120/signing-source-selection-4860437f/clean-b4e04f3c/missing-skill-must-not-exist.json"
+      ],
+      "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119",
+      "startedUTC": "2026-11-20T11:53:51.769819+00:00",
+      "finishedUTC": "2026-11-20T11:53:52.236383+00:00",
+      "elapsedSeconds": 0.4529999999795109,
+      "timeoutSeconds": 60,
+      "exitCode": 2,
+      "timedOut": false,
+      "stdoutBytes": 0,
+      "stderrBytes": 349,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "ea9188230ebf9fb8d480d033b7a6bb5044f0896aa748c15432c004b8d2941897"
+    },
+    "workflowShellSyntax": [
+      "prepare",
+      "sign",
+      "package"
+    ],
+    "scope": "real two-input protocol/exit/artifact check; no remote workflow execution, Apple cryptographic signature, final tuple or final179 credit"
+  },
+  "artifactCount": 138,
+  "sourceWitnessCount": 30,
+  "archive": {
+    "path": "originals.zip",
+    "bytes": 198147,
+    "sha256": "acd8d38ad5af51e9c866059188c2a32f95dba4f7f56709a99abb485c82be2271"
+  },
+  "review": {
+    "independentRootDiffReviewed": true,
+    "scope": "exact two-file486..b4 diff; source separation and ordinary pinned clone; conditional single remote replay only after sealed clean proof"
+  },
+  "limitations": [
+    "Actual direct CLI binary remains genuine486; harness/workflow source is cleanb4. No binary metadata or published manifest is rewritten.",
+    "This local replay executes protocol/exit/artifact fault checks, not Apple cryptographic signature validation.",
+    "Workflow inline identity assertion and shell syntax executed locally; the repaired remote workflow has not run at proof creation.",
+    "No final coherent M02 tuple, deployment, full Go/CI, native-container cardinality or formal179 acceptance is inferred.",
+    "The initial upload SyntaxError happened before source mutation/execution and remains an orchestration error, not a product baseline."
+  ],
+  "sealedAtUTC": "2026-11-20T11:57:25.211910+00:00"
+}
