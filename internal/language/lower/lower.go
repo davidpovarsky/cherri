@@ -3573,8 +3573,10 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			return true, nil
 		case syntax.TokenFalse:
 			return false, nil
-		case syntax.TokenNone, syntax.TokenNull:
+		case syntax.TokenNone:
 			return nil, nil
+		case syntax.TokenNull:
+			return nil, fmt.Errorf("%s at %s: authored JSON null has no supported native value encoding", analysis.CodeNativeJSONNull, e.Span)
 		default:
 			return e.Value, nil
 		}
@@ -4962,7 +4964,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if _, err := plist.Unmarshal(rawBytes, &parsed); err != nil {
 					return nil, fmt.Errorf("native.plist failed to parse binary plist: %w", err)
 				}
-				return &ir.RawPlistValue{Data: parsed}, nil
+				return validatedNativePlistValue(parsed)
 			}
 			trimmed := strings.TrimSpace(str)
 			if strings.HasPrefix(trimmed, "<?xml") || strings.HasPrefix(trimmed, "<plist") {
@@ -4970,15 +4972,15 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
 					return nil, fmt.Errorf("native.plist failed to parse XML plist: %w", err)
 				}
-				return &ir.RawPlistValue{Data: parsed}, nil
+				return validatedNativePlistValue(parsed)
 			} else if strings.HasPrefix(trimmed, "{") || strings.HasPrefix(trimmed, "[") {
 				var parsed any
 				if err := json.Unmarshal([]byte(str), &parsed); err == nil {
-					return &ir.RawPlistValue{Data: parsed}, nil
+					return validatedNativePlistValue(parsed)
 				}
 			}
 		}
-		return &ir.RawPlistValue{Data: val}, nil
+		return validatedNativePlistValue(val)
 	}
 	if actionName == "native.ref" {
 		var kind string
