@@ -1,0 +1,495 @@
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index 75a932e3..98462517 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -106,6 +106,9 @@ type Analyzer struct {
+ 	rawNativeDataContext   bool
+ 	nativeNamespace        *Symbol
+ 	nativeReferenceCalls   map[syntax.Expression]bool
++	typeAnnotations        map[syntax.TypeAnnotation]types.Type
++	typeAliases            map[string]typeAliasBinding
++	resolvingTypeAliases   map[*syntax.TypeDecl]bool
+ }
+ 
+ // NewAnalyzer creates a new Analyzer with the action registry.
+@@ -342,6 +345,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
+ // Analyze performs full semantic verification of a Program.
+ func (a *Analyzer) Analyze(prog *syntax.Program) {
+ 	a.beginProgram()
++	a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
+ 	defer func() { a.analyzing = false }()
+ 	a.analyzeModuleDependencies()
+ 	a.expandCopyPaste(prog)
+@@ -353,6 +357,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
+ 	a.userFunctions = make(map[string]bool)
+ 	a.enumNames = make(map[string]bool)
+ 	a.prepareEnums(prog)
++	a.prepareTypeAliases(prog)
+ 
+ 	// Builtin namespace symbols
+ 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
+@@ -1836,16 +1841,37 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
+ 	}
+ }
+ 
+-func (a *Analyzer) resolveType(t syntax.TypeAnnotation) types.Type {
++func (a *Analyzer) resolveType(t syntax.TypeAnnotation) (resolved types.Type) {
+ 	if t == nil {
+ 		return types.Unknown
+ 	}
++	if value, found := a.typeAnnotations[t]; found {
++		return value
++	}
++	if a.moduleGraph != nil {
++		for _, child := range a.moduleAnalyses {
++			if value, found := child.typeAnnotations[t]; found {
++				return value
++			}
++		}
++	}
++	if a.typeAnnotations == nil {
++		a.typeAnnotations = make(map[syntax.TypeAnnotation]types.Type)
++	}
++	defer func() { a.typeAnnotations[t] = resolved }()
+ 
+ 	switch ta := t.(type) {
+ 	case *syntax.NamedTypeAnnotation:
+ 		if nt, ok := types.ParseNamedType(ta.Name); ok {
+ 			return nt
+ 		}
++		aliasName := ta.Name
++		if ta.Namespace != "" {
++			aliasName = ta.Namespace + "." + aliasName
++		}
++		if alias, found := a.typeAliases[aliasName]; found {
++			return alias.owner.resolveTypeAlias(alias.declaration)
++		}
+ 		if ta.Namespace != "" {
+ 			return types.NewEntity(ta.Namespace, ta.Name)
+ 		}
+diff --git a/internal/language/analysis/diagnostics.go b/internal/language/analysis/diagnostics.go
+index ded57b25..81b354d9 100644
+--- a/internal/language/analysis/diagnostics.go
++++ b/internal/language/analysis/diagnostics.go
+@@ -45,6 +45,7 @@ const (
+ 	CodeMissingArgument         = "E_MISSING_ARGUMENT"
+ 	CodePositionalArg           = "E_POSITIONAL_ARGUMENT"
+ 	CodeArgumentType            = "E_ARGUMENT_TYPE"
++	CodeTypeAlias               = "E_TYPE_ALIAS"
+ 	CodeNativeJSONNull          = "E_NATIVE_JSON_NULL"
+ 	CodeLiteralRequired         = "E_LITERAL_REQUIRED"
+ 	CodeEnumMember              = "E_ENUM_MEMBER"
+diff --git a/internal/language/analysis/function_arguments.go b/internal/language/analysis/function_arguments.go
+index 3307376a..035932a8 100644
+--- a/internal/language/analysis/function_arguments.go
++++ b/internal/language/analysis/function_arguments.go
+@@ -5,6 +5,7 @@ import (
+ 	"strings"
+ 
+ 	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
+ )
+ 
+ // Bind by parameter identity first, then analyze each supplied expression once
+@@ -74,7 +75,7 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
+ 		// A literal None is explicitly tagged by the optional function envelope.
+ 		// Other possibly absent values still require their own presence provenance.
+ 		if literal, ok := argument.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
+-			if _, optional := param.TypeExpr.(*syntax.OptionalTypeAnnotation); optional {
++			if types.MayBeAbsent(a.resolveType(param.TypeExpr)) {
+ 				return
+ 			}
+ 		}
+diff --git a/internal/language/analysis/type_aliases.go b/internal/language/analysis/type_aliases.go
+new file mode 100644
+index 00000000..56aba764
+--- /dev/null
++++ b/internal/language/analysis/type_aliases.go
+@@ -0,0 +1,80 @@
++package analysis
++
++import (
++	"fmt"
++
++	"github.com/electrikmilk/cherri/internal/language/syntax"
++	"github.com/electrikmilk/cherri/internal/language/types"
++)
++
++type typeAliasBinding struct {
++	declaration *syntax.TypeDecl
++	owner       *Analyzer
++}
++
++// TypeAnnotations returns the semantic results for these exact AST nodes.
++// Imported declarations retain the result from their defining module; callers
++// and lowering must not reinterpret an alias in a different module namespace.
++func (a *Analyzer) TypeAnnotations() map[syntax.TypeAnnotation]types.Type {
++	result := make(map[syntax.TypeAnnotation]types.Type)
++	for annotation, value := range a.typeAnnotations {
++		result[annotation] = value
++	}
++	if a.moduleGraph != nil {
++		for _, child := range a.moduleAnalyses {
++			for annotation, value := range child.typeAnnotations {
++				result[annotation] = value
++			}
++		}
++	}
++	return result
++}
++
++func (a *Analyzer) prepareTypeAliases(program *syntax.Program) {
++	a.typeAliases = make(map[string]typeAliasBinding)
++	a.resolvingTypeAliases = make(map[*syntax.TypeDecl]bool)
++	for _, declaration := range program.Declarations {
++		if declaration, ok := declaration.(*syntax.TypeDecl); ok {
++			if _, duplicate := a.typeAliases[declaration.Name]; duplicate {
++				a.error(CodeTypeAlias, declaration.Span, fmt.Sprintf("duplicate type alias %q", declaration.Name))
++				continue
++			}
++			a.typeAliases[declaration.Name] = typeAliasBinding{declaration, a}
++		}
++	}
++	if a.moduleNode != nil {
++		for _, declaration := range program.Declarations {
++			imported, ok := declaration.(*syntax.ImportDecl)
++			if !ok {
++				continue
++			}
++			module := a.moduleNode.Imports[imported]
++			child := a.moduleAnalyses[module]
++			if child == nil {
++				continue
++			}
++			for _, exported := range module.Program.Declarations {
++				if exported, ok := exported.(*syntax.TypeDecl); ok {
++					a.typeAliases[imported.Alias+"."+exported.Name] = typeAliasBinding{exported, child}
++				}
++			}
++		}
++	}
++	// Validate every declaration, including unused aliases, in source order.
++	// Collecting first makes a forward alias independent of declaration order.
++	for _, declaration := range program.Declarations {
++		if declaration, ok := declaration.(*syntax.TypeDecl); ok {
++			a.resolveTypeAlias(declaration)
++		}
++	}
++}
++
++func (a *Analyzer) resolveTypeAlias(declaration *syntax.TypeDecl) types.Type {
++	if a.resolvingTypeAliases[declaration] {
++		a.error(CodeTypeAlias, declaration.Span, fmt.Sprintf("cyclic type alias %q", declaration.Name))
++		return types.Unknown
++	}
++	a.resolvingTypeAliases[declaration] = true
++	defer delete(a.resolvingTypeAliases, declaration)
++	return a.resolveType(declaration.TypeExpr)
++}
+diff --git a/internal/language/lower/function_optional_presence.go b/internal/language/lower/function_optional_presence.go
+index 0e5eb18d..c6744a78 100644
+--- a/internal/language/lower/function_optional_presence.go
++++ b/internal/language/lower/function_optional_presence.go
+@@ -9,9 +9,8 @@ import (
+ 	"github.com/electrikmilk/cherri/internal/language/types"
+ )
+ 
+-func optionalFunctionParameter(annotation syntax.TypeAnnotation) bool {
+-	_, optional := annotation.(*syntax.OptionalTypeAnnotation)
+-	return optional
++func (l *Lowerer) optionalFunctionParameter(annotation syntax.TypeAnnotation) bool {
++	return types.MayBeAbsent(l.resolveTypeAnnotation(annotation))
+ }
+ 
+ // These are semantic values inside the compiler's private function carrier.
+@@ -111,7 +110,7 @@ func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
+ 		name = callee.TypeName + "." + callee.Member
+ 	}
+ 	fn := l.functions[name]
+-	return fn != nil && optionalFunctionParameter(fn.ReturnType)
++	return fn != nil && l.optionalFunctionParameter(fn.ReturnType)
+ }
+ 
+ func (l *Lowerer) lowerOptionalNoneCondition(expr syntax.Expression) (*ir.AttachmentToken, int, bool, error) {
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 68b621ac..5277fd6d 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -89,6 +89,7 @@ type Lowerer struct {
+ 	emitErr                    error
+ 	isMac                      *bool
+ 	exprTypes                  map[syntax.Expression]types.Type
++	typeAnnotations            map[syntax.TypeAnnotation]types.Type
+ 	enumValues                 map[syntax.Expression]string
+ 	inExprStmt                 bool
+ 	hasImportProvenance        bool
+@@ -153,6 +154,11 @@ func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
+ 	l.exprTypes = exprTypes
+ }
+ 
++// SetTypeAnnotations preserves the defining module's analyzed alias meaning.
++func (l *Lowerer) SetTypeAnnotations(annotations map[syntax.TypeAnnotation]types.Type) {
++	l.typeAnnotations = annotations
++}
++
+ // SetEnumValues supplies exact enum literals resolved without AST mutation.
+ func (l *Lowerer) SetEnumValues(values map[syntax.Expression]string) { l.enumValues = values }
+ 
+@@ -411,14 +417,14 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+ 		return err
+ 	}
+ 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
+-	if l.exprTypes == nil || l.enumValues == nil {
++	if l.exprTypes == nil || l.enumValues == nil || l.typeAnnotations == nil {
+ 		analyzer := analysis.NewAnalyzer(l.registry)
+ 		analyzer.SetModuleGraph(l.moduleGraph)
+ 		analyzer.Analyze(prog)
+ 		l.registry = analyzer.Registry()
+ 		l.SetModuleRegistries(analyzer.ModuleRegistries())
+ 		for _, diagnostic := range analyzer.Diagnostics() {
+-			if diagnostic.Code == analysis.CodeSetupBinding && diagnostic.Severity == analysis.SeverityError {
++			if (diagnostic.Code == analysis.CodeSetupBinding || diagnostic.Code == analysis.CodeTypeAlias) && diagnostic.Severity == analysis.SeverityError {
+ 				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
+ 			}
+ 		}
+@@ -428,6 +434,9 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+ 		if l.enumValues == nil {
+ 			l.enumValues = analyzer.EnumValues()
+ 		}
++		if l.typeAnnotations == nil {
++			l.typeAnnotations = analyzer.TypeAnnotations()
++		}
+ 		if l.isMac == nil {
+ 			l.isMac = analyzer.IsMacTarget()
+ 		}
+@@ -1237,7 +1246,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
+ 		l.bindings = make(map[string]BindingRef)
+ 
+ 		for idx, param := range fn.Parameters {
+-			if optionalFunctionParameter(param.TypeExpr) {
++			if l.optionalFunctionParameter(param.TypeExpr) {
+ 				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr)
+ 				if err != nil {
+ 					return nil, fmt.Errorf("function %s optional parameter %s: %w", fn.Name, param.Name, err)
+@@ -1341,7 +1350,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
+ 
+ 		hasReturn := false
+ 		priorOptionalReturn := l.optionalFunctionReturn
+-		l.optionalFunctionReturn = optionalFunctionParameter(fn.ReturnType)
++		l.optionalFunctionReturn = l.optionalFunctionParameter(fn.ReturnType)
+ 		for _, stmt := range fn.Body.Statements {
+ 			if _, ok := stmt.(*syntax.ReturnStmt); ok {
+ 				hasReturn = true
+@@ -1356,7 +1365,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
+ 		l.bindings = savedBindings
+ 
+ 		if !hasReturn {
+-			if optionalFunctionParameter(fn.ReturnType) {
++			if l.optionalFunctionParameter(fn.ReturnType) {
+ 				// Preserve the existing implicit no-value return with the same
+ 				// explicit presence protocol as authored `return none`.
+ 				carrier := l.optionalCarrier(nil, "0", "has_value", "value", "_cherri_optional_result_v1")
+@@ -1568,6 +1577,9 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
+ 	if t == nil {
+ 		return nil
+ 	}
++	if value, found := l.typeAnnotations[t]; found {
++		return value
++	}
+ 	switch ta := t.(type) {
+ 	case *syntax.NamedTypeAnnotation:
+ 		if nt, ok := types.ParseNamedType(ta.Name); ok {
+@@ -1647,7 +1659,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
+ 	// Presence is independent of the value's native truthiness. Mutable
+ 	// bindings store a paired flag; immutable aliases snapshot a mutable flag.
+ 	var optionalPresence interface{}
+-	if val == nil || optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
++	if val == nil || l.optionalFunctionParameter(b.TypeExpr) || l.hasOptionalPresence(b.Value) {
+ 		optionalPresence, err = l.optionalValuePresence(b.Value, val)
+ 		if err != nil {
+ 			return err
+@@ -5449,7 +5461,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+ 					}
+ 				}
+ 			}
+-			optionalValue := optionalFunctionParameter(param.TypeExpr)
++			optionalValue := l.optionalFunctionParameter(param.TypeExpr)
+ 			if optionalValue {
+ 				presence := "0"
+ 				if supplied && argVal != nil {
+@@ -5527,7 +5539,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+ 		}
+ 		l.emitAction(runNode)
+ 
+-		if optionalFunctionParameter(fn.ReturnType) {
++		if l.optionalFunctionParameter(fn.ReturnType) {
+ 			value, presence := l.decodeOptionalCarrier(uuid, "has_value", "value", outName)
+ 			if l.optionalExpressionPresence == nil {
+ 				l.optionalExpressionPresence = make(map[syntax.Expression]interface{})
+diff --git a/language_emit_adapter.go b/language_emit_adapter.go
+index 639a53fe..494e68c7 100644
+--- a/language_emit_adapter.go
++++ b/language_emit_adapter.go
+@@ -382,6 +382,7 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
+ 		lowerer.SetVirtualModules(options.VirtualModules)
+ 	}
+ 	lowerer.SetExprTypes(analyzer.ExprTypes())
++	lowerer.SetTypeAnnotations(analyzer.TypeAnnotations())
+ 	lowerer.SetEnumValues(analyzer.EnumValues())
+ 	if err := lowerer.LowerProgramToSession(prog); err != nil {
+ 		return nil, fmt.Errorf("lowering error: %w", err)
+diff --git a/p15_optional_type_alias_test.go b/p15_optional_type_alias_test.go
+index f689a346..8f48f2f9 100644
+--- a/p15_optional_type_alias_test.go
++++ b/p15_optional_type_alias_test.go
+@@ -6,6 +6,8 @@ import (
+ 	"testing"
+ 
+ 	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/schema"
++	"github.com/electrikmilk/cherri/internal/language/service"
+ 	"howett.net/plist"
+ )
+ 
+@@ -153,6 +155,19 @@ func TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues(t *testing.T) {
+ 			if !found {
+ 				t.Errorf("missing exact alias diagnostic %s/%s: %#v", tc.code, tc.detail, diagnostics)
+ 			}
++			svc := service.NewService(nil)
++			uri := "file:///p15-alias-" + tc.name + ".cherri"
++			svc.OpenDocument(uri, 1, tc.source)
++			editor, _ := svc.Analyze(uri)
++			found = false
++			for _, diagnostic := range editor {
++				if diagnostic.Severity == analysis.SeverityError && diagnostic.Code == tc.code && strings.Contains(diagnostic.Message, tc.detail) {
++					found = true
++				}
++			}
++			if !found {
++				t.Errorf("editor lost exact alias diagnostic %s/%s: %#v", tc.code, tc.detail, editor)
++			}
+ 			raw, err := CompileSourceToPlist("p15-optional-type-alias.cherri", tc.source)
+ 			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), tc.code) || !strings.Contains(err.Error(), tc.detail) {
+ 				t.Errorf("invalid alias emitted native bytes or wrong diagnostic: bytes=%d error=%v", len(raw), err)
+@@ -160,3 +175,121 @@ func TestP15OptionalTypeAliasRejectsInvalidDeclarationsAndValues(t *testing.T) {
+ 		})
+ 	}
+ }
++
++func TestP15OptionalTypeAliasAnalyzerReuse(t *testing.T) {
++	analyzer := analysis.NewAnalyzer(schema.DefaultRegistry())
++	previous := analyzer.TypeAnnotations()
++	for _, tc := range []struct {
++		name, target, argument string
++		invalid                bool
++	}{
++		{"first", "Text?", "none", false},
++		{"changed", "Number?", "\"\"", true},
++		{"restored", "Text?", "\"\"", false},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			source := "type Maybe=" + tc.target + "\nfunction echo(value:Maybe)->Maybe{return value}\ngetVariable(echo(" + tc.argument + "))"
++			program, errors := p15ParseProgram(source)
++			if len(errors) != 0 {
++				t.Fatal(errors)
++			}
++			analyzer.Analyze(program)
++			diagnostics := analyzer.Diagnostics()
++			if tc.invalid {
++				if len(diagnostics) != 1 || diagnostics[0].Code != analysis.CodeArgumentType || !strings.Contains(diagnostics[0].Message, "expects Number?") {
++					t.Fatal(diagnostics)
++				}
++			} else if len(diagnostics) != 0 {
++				t.Fatal(diagnostics)
++			}
++			current := analyzer.TypeAnnotations()
++			if len(current) == 0 {
++				t.Fatal("missing actual annotation results")
++			}
++			for annotation := range previous {
++				if _, retained := current[annotation]; retained {
++					t.Fatal("another program's type annotation leaked into this result")
++				}
++			}
++			previous = current
++		})
++	}
++}
++
++func TestP15OptionalTypeAliasModuleRejectsCallerType(t *testing.T) {
++	path, source := p15ModuleProject(t, map[string]string{
++		"main.cherri":       "import \"./dependency.cherri\" as dep\ntype Maybe=Number\ngetVariable(dep.echo(5))",
++		"dependency.cherri": "type Maybe=Text?\nfunction echo(value:Maybe)->Maybe{return value}\n",
++	})
++	// This is a semantic error in the caller's argument, not an import-loader
++	// path diagnostic. Require its exact caller span and defining-module type.
++	const detail = "expects Text?, got Number"
++	raw, err := CompileSourceToPlist(path, source)
++	if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) || !strings.Contains(err.Error(), detail) {
++		t.Fatalf("caller alias replaced imported function's type: bytes=%d error=%v", len(raw), err)
++	}
++	diagnostics := p15CheckModuleService(t, path, source)
++	if err := p15ExactLiteralDiagnostic(diagnostics, source, "5", analysis.CodeArgumentType); err != nil {
++		t.Fatal(err)
++	}
++	if len(diagnostics) != 1 || !strings.Contains(diagnostics[0].Message, detail) {
++		t.Fatal(diagnostics)
++	}
++}
++
++func TestP15OptionalTypeAliasOracleRejectsCorruption(t *testing.T) {
++	for _, tc := range p15FunctionOptionalCases()[:2] {
++		t.Run(tc.name, func(t *testing.T) {
++			source := "type Maybe=Text?\n" + strings.ReplaceAll(p15FunctionOptionalSource(tc), "Text?", "Maybe")
++			actions := p15CompiledActions(t, source)
++			if err := p15FunctionOptionalError(actions, tc); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"value_presence", "argument_omission", "dispatch", "presence_decoder", "call_input", "duplicate_call"} {
++				t.Run(fault, func(t *testing.T) {
++					bad := p15ContainerCloneNative(t, actions)
++					if err := p15FunctionOptionalError(bad, tc); err != nil {
++						t.Fatal("unchanged clone must pass", err)
++					}
++					fields, err := p15FunctionContainerPayload(bad)
++					if err != nil {
++						t.Fatal(err)
++					}
++					decoder, call := -1, -1
++					for i, action := range bad {
++						if p15Param(action)["WFDictionaryKey"] == "has_value_0" {
++							decoder = i
++						}
++						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
++							call = i
++						}
++					}
++					if decoder < 0 || call < 0 {
++						t.Fatal("corruption target missing")
++					}
++					switch fault {
++					case "value_presence":
++						flag := "1"
++						if tc.valuePresent {
++							flag = "0"
++						}
++						fields["has_value_0"]["WFValue"] = p15FunctionText(flag)
++					case "argument_omission":
++						fields["has_arg_0"]["WFValue"] = p15FunctionText("0")
++					case "dispatch":
++						fields["function"]["WFValue"] = p15FunctionText("other.echo")
++					case "presence_decoder":
++						p15Param(bad[decoder])["WFDictionaryKey"] = "arg_0"
++					case "call_input":
++						p15Param(bad[call])["WFInput"] = p15FunctionEdge("missing-payload")
++					case "duplicate_call":
++						bad = append(bad[:call], append([]map[string]any{bad[call]}, bad[call:]...)...)
++					}
++					if p15FunctionOptionalError(bad, tc) == nil {
++						t.Fatal("corrupted aliased Optional graph accepted")
++					}
++				})
++			}
++		})
++	}
++}
