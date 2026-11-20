@@ -106,7 +106,7 @@ func extractedInstallRequiredEvents(id string) []string {
 		add(scenario.Tests[0], "help_and_schema", "check_and_alias", "format_and_aliases", "compile_and_file_alias", "import_and_alias", "installed_migration_tool")
 		add(scenario.Tests[1], "check", "write")
 		for _, flag := range []string{"check", "write"} {
-			add(scenario.Tests[1]+"/"+flag, "before_file", "after_file")
+			add(scenario.Tests[1]+"/"+flag, "before_file", "documented_after_file")
 		}
 	case "RP44":
 		add(scenario.Tests[0], "missing_comma", "trailing_comma", "duplicate_schema", "duplicate_escaped_schema", "invalid_escape", "invalid_number", "unpaired_surrogate", "invalid_utf8", "raw_nul", "multiple_objects", "nested_fields_only", "missing_protocol", "wrong_protocol", "missing_catalog", "wrong_catalog", "missing_codec", "wrong_codec", "missing_macro", "wrong_schema_same_language", "not_json")
@@ -324,6 +324,18 @@ func (r *Runner) runExtractedInstallRequirement(spec RepairCaseSpec) bool {
 	}
 	first := len(r.records)
 	r.Record(id, "repair", title, strings.Join(levels, "+"), scenario.Tiers, err == nil, "PASSED", detail)
+	// Generic Record intentionally cannot mint package evidence. Only this
+	// completed actual extracted-install producer supplies that dedicated tier.
+	packageResult, packageExit := "failed", 1
+	if err == nil {
+		packageResult, packageExit = "passed", 0
+	}
+	r.records = append(r.records, EvidenceRecord{
+		EvidenceID: "ev-local-" + id + "-skill-package", Requirements: []string{id},
+		Tier: "skill-package", ImplementationSHA: r.implSHA,
+		ExitCode: packageExit, Result: packageResult,
+		Assertions: map[string]string{"assertion": detail}, Detail: detail,
+	})
 	for i := first; i < len(r.records); i++ {
 		record := &r.records[i]
 		record.TestID = extractedInstallProducer(id, record.Tier)
