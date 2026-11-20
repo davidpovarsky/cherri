@@ -1,0 +1,43 @@
+{
+  "source_sha": "22863b892b952a2a9b693a07e6e474d2d3f1e634",
+  "head_after": "22863b892b952a2a9b693a07e6e474d2d3f1e634",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15FunctionOptionalPresenceWire|TestP15FunctionOptionalPresenceOracleRejectsCorruption)$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T02:51:52.142337+00:00",
+  "finished_at_utc": "2026-11-20T02:52:30.274997+00:00",
+  "elapsed_seconds": 38.13999999995576,
+  "exit_code": 1,
+  "outer_budget_seconds": 210,
+  "timed_out": false,
+  "named_passes": 0,
+  "failed_tests": [
+    "TestP15FunctionOptionalPresenceWire/none",
+    "TestP15FunctionOptionalPresenceWire/empty_text",
+    "TestP15FunctionOptionalPresenceWire/false",
+    "TestP15FunctionOptionalPresenceWire/zero",
+    "TestP15FunctionOptionalPresenceWire/empty_list",
+    "TestP15FunctionOptionalPresenceWire/empty_map",
+    "TestP15FunctionOptionalPresenceWire/none_skips_default",
+    "TestP15FunctionOptionalPresenceWire/empty_skips_default",
+    "TestP15FunctionOptionalPresenceWire/omitted_selects_default",
+    "TestP15FunctionOptionalPresenceWire/named_none_skips_default",
+    "TestP15FunctionOptionalPresenceWire",
+    "TestP15FunctionOptionalPresenceOracleRejectsCorruption/none_skips_default",
+    "TestP15FunctionOptionalPresenceOracleRejectsCorruption/empty_skips_default",
+    "TestP15FunctionOptionalPresenceOracleRejectsCorruption",
+    "<package>"
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "bc85884ffbf7ff331be187f87ab4a35fd27fa7105951c894a6f9a95c009c599a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

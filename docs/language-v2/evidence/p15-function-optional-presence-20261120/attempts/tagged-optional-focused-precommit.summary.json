@@ -1,0 +1,36 @@
+{
+  "source_sha": "89aeae2caf754087bef377234feba8f3946298e4",
+  "source_modified": true,
+  "source_files": {
+    "internal\\language\\analysis\\function_arguments.go": "f8e6484e0b1c73dfad2a7ebc76d6f8cde3ac3f56c7060dde6810028ae2b99e6e",
+    "internal\\language\\backend\\contracts.go": "b4e823b9a128e26776cae3b69856c379f941ba54ff23da0a832cd0e537e6d572",
+    "internal\\language\\lower\\function_argument_containers.go": "e0aa66662e75ed9732ce7656b9de9c534a6b5f57ddf230da293ef79088494255",
+    "internal\\language\\lower\\lower.go": "adc9c9bf3ec28d1ff518b39cf732b1e534d9e415ba5fc691c98bf7ac8b256185",
+    "internal\\language\\lower\\function_optional_presence.go": "8525b0185edfe4073b79c53c3b8dfe3cadb38c8522000d44f8dcd1f999985f70",
+    "p15_function_optional_presence_test.go": "83313362d2e5a248d855b3a74a0d122c0958200ec2a2c7eae6b033dca6edbd6b",
+    "p15_optional_transport_boundary_test.go": "3bf03b1e67358f0c35903a1b49a77debade0b5e7944fa9dba73d429965bbc8be",
+    "p15_none_clear_boundary_test.go": "adee3e7065dd8504be34ee5436fdfac38e851469d1c2fcd5c67be3c65a0aa5fe",
+    "p15_value_flow_test.go": "e45ae16b66f310d50f3e172f807f5de4e9dfa79b31523b3c967585389e85a5d1"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15FunctionOptional.*|TestP15TaggedNone.*|TestP15OptionalEmptyList.*|TestP15F03NoneYieldClearsPrecedingOutput|TestP15NoneReturn.*|TestP15OptionalTransport.*)$",
+    "."
+  ],
+  "started_at_utc": "2026-11-20T03:26:28.412502+00:00",
+  "finished_at_utc": "2026-11-20T03:27:13.232152+00:00",
+  "elapsed_seconds": 44.82900000002701,
+  "exit_code": 0,
+  "timed_out": false,
+  "outer_budget_seconds": 330,
+  "named_passes": 145,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "576cd1c523ff092a53199724fc44e1a7a8bd7d1253e5d61a7ed41f6819b4d2a1",
+  "source_unchanged_after": true
+}
