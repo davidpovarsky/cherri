@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
@@ -77,15 +78,16 @@ type p15RP11WireCase struct {
 
 func p15RP11WireCases() []p15RP11WireCase {
 	return []p15RP11WireCase{
-		{name: "semantic_width", source: "let width: Number = 640\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "value:number", literal: float64(640)},
+		{name: "semantic_width", source: "resizeImage(ShortcutInput, 640)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "value:number", literal: float64(640)},
+		{name: "bound_semantic_width", source: "let width: Number = 640\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number", literal: float64(640)},
 		{name: "literal_width_text", source: "resizeImage(ShortcutInput, \"9007199254740993\")", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "value:string", literal: "9007199254740993"},
 		{name: "mutable_width", source: "var width: Number = 640\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:MyVar", reference: "variable"},
-		{name: "output_width", source: "let width = number(\"640\")\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number"},
+		{name: "output_width", source: "let width = number(\"640\")\nresizeImage(ShortcutInput, width)", action: "is.workflow.actions.image.resize", key: "WFImageResizeWidth", state: "WFNumberStringSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number", literal: "640"},
 		{name: "literal_stepper", source: "wait(5)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "number:5", literal: float64(5)},
 		{name: "mutable_stepper", source: "var width: Number = 5\nwait(width)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "variable:MyVar", reference: "variable"},
-		{name: "output_stepper", source: "let width = number(\"5\")\nwait(width)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number"},
+		{name: "output_stepper", source: "let width = number(\"5\")\nwait(width)", action: "is.workflow.actions.delay", key: "WFDelayTime", state: "WFNumberSubstitutableState", nativeSample: "variable:ActionOutput", reference: "number", literal: "5"},
 		{name: "mutable_text", source: "var value: Text = \"hello\"\ntext(value)", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variable:MyVar", reference: "variable"},
-		{name: "output_text", source: "let value = text(\"hello\")\ntext(value)", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variable:ActionOutput", reference: "gettext"},
+		{name: "output_text", source: "let value = text(\"hello\")\ntext(value)", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variable:ActionOutput", reference: "gettext", literal: "hello"},
 		{name: "contextual_text", source: "var width: Number = 640\ntext(f\"😀:{width}:é\")", action: "is.workflow.actions.gettext", key: "WFTextActionText", state: "WFVariableStringParameterState", nativeSample: "variableString:Hello <MyVar>!", reference: "variable", contextual: true},
 	}
 }
@@ -108,7 +110,7 @@ func TestP15RP11SemanticNumberAndContext(t *testing.T) {
 	// because another parameter supports a number/string native state.
 	for _, source := range []string{"wait(\"hello\")", "var value: Text = \"hello\"\nwait(value)"} {
 		raw, err := CompileSourceToPlist("rp11-number-rejection.cherri", source)
-		if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), "E_ARG_TYPE") {
+		if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) {
 			t.Fatalf("plain Text bypassed Number checking: bytes=%d error=%v", len(raw), err)
 		}
 	}
@@ -172,6 +174,13 @@ func (fixture p15RP11WireCase) expectedParameter(t *testing.T, states p15RP11App
 			return nil, fmt.Errorf("action-output producer or once-only order changed")
 		}
 		producer := actions[0].WFWorkflowActionParameters
+		producerKey := "WFNumberActionNumber"
+		if fixture.reference == "gettext" {
+			producerKey = "WFTextActionText"
+		}
+		if !reflect.DeepEqual(p15RP11Clone(t, producer[producerKey]), fixture.literal) {
+			return nil, fmt.Errorf("source producer literal changed")
+		}
 		uuid, _ := producer["UUID"].(string)
 		if uuid == "" {
 			return nil, fmt.Errorf("producer identity is empty")
@@ -231,6 +240,9 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 		if fixture.reference != "" {
 			faults = append(faults, "wrong_reference")
 		}
+		if fixture.reference == "number" || fixture.reference == "gettext" {
+			faults = append(faults, "producer_literal")
+		}
 		if fixture.contextual {
 			faults = append(faults, "utf8_range", "lost_context")
 		}
@@ -254,6 +266,12 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 					last.WFWorkflowActionParameters[fixture.key] = float64(12345)
 				case "blanket_attachment":
 					last.WFWorkflowActionParameters[fixture.key] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "Variable", "VariableName": "RP11_FOREIGN"}}
+				case "producer_literal":
+					key := "WFNumberActionNumber"
+					if fixture.reference == "gettext" {
+						key = "WFTextActionText"
+					}
+					broken[0].WFWorkflowActionParameters[key] = "RP11_WRONG_LITERAL"
 				case "wrong_reference":
 					wrapper := last.WFWorkflowActionParameters[fixture.key].(map[string]any)
 					value := wrapper["Value"].(map[string]any)
