@@ -382,7 +382,9 @@ func p10JSONModelBindings(actions []map[string]any) (map[string]any, error) {
 	var resolved = map[string]any{}
 	var identities = map[string]bool{}
 	var producers int
-	for _, action := range actions {
+	var producerPosition = -1
+	var consumerPosition = -1
+	for index, action := range actions {
 		var identifier, valid = action["WFWorkflowActionIdentifier"].(string)
 		if !valid || identifier == "" {
 			return nil, fmt.Errorf("invalid actual action identifier")
@@ -414,10 +416,17 @@ func p10JSONModelBindings(actions []map[string]any) (map[string]any, error) {
 				return nil, fmt.Errorf("invalid actual output name metadata")
 			}
 		}
+		if identifier == "is.workflow.actions.downloadurl" && fields["WFHTTPBodyType"] == "JSON" {
+			if consumerPosition >= 0 {
+				return nil, fmt.Errorf("duplicated actual JSON consumer")
+			}
+			consumerPosition = index
+		}
 		if outputName != "dynamicModel" {
 			continue
 		}
 		producers++
+		producerPosition = index
 		var text, literal = fields["WFTextActionText"].(string)
 		if producers != 1 || uuid == "" || identifier != "is.workflow.actions.gettext" || !literal || text != "gpt-4o-mini" {
 			return nil, fmt.Errorf("actual dynamic model producer changed or duplicated")
@@ -426,6 +435,11 @@ func p10JSONModelBindings(actions []map[string]any) (map[string]any, error) {
 	}
 	if producers != 1 {
 		return nil, fmt.Errorf("missing actual dynamic model producer")
+	}
+	// This fixed source has one JSON consumer. A future producer cannot supply
+	// its already executed request merely because the UUID exists somewhere.
+	if consumerPosition < 0 || producerPosition >= consumerPosition {
+		return nil, fmt.Errorf("actual model producer must precede its single JSON consumer")
 	}
 	return resolved, nil
 }
@@ -450,7 +464,7 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
 	if model < 0 || consumer < 0 {
 		t.Fatal("missing actual mutation target")
 	}
-	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid", "wrong_uuid_type", "empty_uuid", "consumer_uuid_type", "wrong_output_name_type", "missing_model_parameters", "missing_consumer_parameters", "malformed_action_identifier", "duplicate_nonmodel_uuid", "producer_after_consumer"} {
+	for _, fault := range []string{"duplicate_model_same_uuid", "duplicate_model_distinct_uuid", "duplicate_consumer_uuid", "remove_model", "wrong_kind", "changed_value", "wrong_name", "missing_uuid", "wrong_uuid_type", "empty_uuid", "consumer_uuid_type", "wrong_output_name_type", "missing_model_parameters", "missing_consumer_parameters", "malformed_action_identifier", "duplicate_nonmodel_uuid", "producer_after_consumer", "missing_json_consumer", "duplicate_json_consumer", "non_json_consumer"} {
 		t.Run(fault, func(t *testing.T) {
 			changed := p15ContainerCloneNative(t, original)
 			if bindings, err := p10JSONModelBindings(changed); err != nil || !reflect.DeepEqual(bindings, expected) {
@@ -492,6 +506,14 @@ func TestP10JSONProducerBindingIntegrity(t *testing.T) {
 				changed[consumer]["WFWorkflowActionIdentifier"] = 7
 			case "duplicate_nonmodel_uuid":
 				changed = append(changed, p10CloneJSONWire(changed[consumer]).(map[string]any))
+			case "missing_json_consumer":
+				changed = append(changed[:consumer], changed[consumer+1:]...)
+			case "duplicate_json_consumer":
+				var duplicate = p10CloneJSONWire(changed[consumer]).(map[string]any)
+				p15C01Params(duplicate)["UUID"] = "adebc120-169d-4cc9-9eab-91166f2b3275"
+				changed = append(changed, duplicate)
+			case "non_json_consumer":
+				p15C01Params(changed[consumer])["WFHTTPBodyType"] = "File"
 			case "producer_after_consumer":
 				var producer = changed[model]
 				changed = append(changed[:model], changed[model+1:]...)
