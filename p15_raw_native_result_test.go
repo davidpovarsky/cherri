@@ -565,7 +565,10 @@ func TestP15RawNativeResultReleaseRequiresAnEmittedConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 			actions := workflow["WFWorkflowActions"].([]any)
-			if len(actions) != 1 {
+			if err := p15M02MainVoidRowsError(actions); err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 2 || actions[0].(map[string]any)["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
 				t.Fatalf("Release changed raw producer side effects or retained the removed consumer: %d actions", len(actions))
 			}
 			params := actions[0].(map[string]any)["WFWorkflowActionParameters"]

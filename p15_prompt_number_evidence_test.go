@@ -105,7 +105,10 @@ func p15PromptConditionUUID(raw any) string {
 }
 
 func p15PromptNumberWire(actions []ShortcutAction) error {
-	if len(actions) != 4 {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		return err
+	}
+	if len(actions) != 5 {
 		return fmt.Errorf("unexpected action count %d", len(actions))
 	}
 	ask, conditional := actions[0], actions[1]

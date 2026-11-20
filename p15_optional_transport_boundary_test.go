@@ -202,7 +202,10 @@ func TestP15OptionalTransportKeepsNarrowedAndDefaultValues(t *testing.T) {
 	})
 }
 func p15LazyKeyError(actions []map[string]any, nested bool) error {
-	if len(actions) != 3 || actions[0]["WFWorkflowActionIdentifier"] != "com.example.p15.key" ||
+	if err := p15M02MainVoidBoundaryError(actions); err != nil {
+		return err
+	}
+	if len(actions) != 4 || actions[0]["WFWorkflowActionIdentifier"] != "com.example.p15.key" ||
 		actions[1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.dictionary" || actions[2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" {
 		return fmt.Errorf("key producer, Dictionary and final consumer order/cardinality changed")
 	}

@@ -60,7 +60,10 @@ func TestP15SchemaCorrectedLabelNativeBindings(t *testing.T) {
 				}
 			}
 			actions := compileDebugFixture(t, tc.source, false)
-			if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != tc.identifier {
+			if err := p15M02MainVoidDebugError(actions); err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != tc.identifier {
 				t.Fatalf("wrong native action identity/cardinality: %+v", actions)
 			}
 			for wire, want := range tc.text {

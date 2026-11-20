@@ -6,16 +6,46 @@ import (
 	"testing"
 )
 
-// Initial checkpoint: the previous inline consumer check, extracted without
-// changing its predicate so the actual detached-graph controls can expose it.
+// Follow the actual authored consumer and its prior native aggregate producer.
+// Keep the main empty result in the graph and require a concrete owned UUID;
+// two absent fields can never establish a producer-consumer relationship.
 func p15PaginateResultError(actions []ShortcutAction, legacy bool) error {
-	if len(actions) < 2 {
-		return fmt.Errorf("missing pagination result")
+	consumer := len(actions) - 1
+	if !legacy {
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
+		consumer--
 	}
-	returned := actions[len(actions)-2].WFWorkflowActionParameters["UUID"]
-	tail := debugParamMap(debugParamMap(actions[len(actions)-1].WFWorkflowActionParameters["WFVariable"])["Value"])
-	if tail["OutputUUID"] != returned {
-		return fmt.Errorf("consumer lost original typed aggregate result")
+	if consumer < 1 || actions[consumer].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" ||
+		actions[consumer-1].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
+		return fmt.Errorf("pagination result producer/consumer order changed")
+	}
+	uuid, okay := actions[consumer-1].WFWorkflowActionParameters["UUID"].(string)
+	if !okay || uuid == "" {
+		return fmt.Errorf("pagination aggregate producer has no concrete UUID")
+	}
+	owners := 0
+	for _, action := range actions {
+		if action.WFWorkflowActionParameters["UUID"] == uuid {
+			owners++
+		}
+	}
+	if owners != 1 {
+		return fmt.Errorf("pagination aggregate UUID has %d owners", owners)
+	}
+	input, okay := actions[consumer].WFWorkflowActionParameters["WFVariable"].(map[string]any)
+	if !okay || len(input) != 2 || input["WFSerializationType"] != "WFTextTokenAttachment" {
+		return fmt.Errorf("pagination consumer lost its exact native attachment")
+	}
+	value, okay := input["Value"].(map[string]any)
+	if !okay || value["Type"] != "ActionOutput" || value["OutputUUID"] != uuid {
+		return fmt.Errorf("pagination consumer is detached from its actual aggregate")
+	}
+	for key := range value {
+		if key != "Type" && key != "OutputUUID" && key != "OutputName" {
+			return fmt.Errorf("pagination result gained an unmodeled transformation")
+		}
 	}
 	return nil
 }
