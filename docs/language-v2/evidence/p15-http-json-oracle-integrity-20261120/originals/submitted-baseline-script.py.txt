@@ -1,0 +1,27 @@
+import pathlib,subprocess,json,datetime,os,time,hashlib,collections
+repo=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-completion-r4-20261120")
+r=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-json-oracle-r5-20261120")
+e=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-continuation-evidence-20261119")/"r5-json-oracle";e.mkdir(exist_ok=False)
+(e/"submitted-baseline-script.py.txt").write_bytes(pathlib.Path(__file__).read_bytes())
+source="89d0a327259bb97150c5dd410165e9097ff39ae9"
+p=subprocess.run(["git","--no-replace-objects","-C",str(repo),"worktree","add","-b","agent/cherri-p10r15-json-oracle-r5-20261120",str(r),source],capture_output=True)
+assert p.returncode==0,(p.stdout.decode(),p.stderr.decode())
+def state():
+ h=subprocess.check_output(["git","--no-replace-objects","-C",str(r),"rev-parse","HEAD"]).decode().strip()
+ s=subprocess.check_output(["git","--no-replace-objects","-C",str(r),"status","--porcelain"]).decode()
+ assert h==source and not s,(h,s)
+state();env=dict(os.environ,GOMAXPROCS="2");args=["go","test","-count=1","-json","-timeout=4m","-run","^TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer$","."]
+start=datetime.datetime.now(datetime.timezone.utc).isoformat();clock=time.monotonic();timeout=False
+with (e/"baseline-go.jsonl").open("wb") as out,(e/"baseline-stderr.log").open("wb") as err:
+ try:p=subprocess.run(args,cwd=r,env=env,stdin=subprocess.DEVNULL,stdout=out,stderr=err,timeout=280);code=p.returncode
+ except subprocess.TimeoutExpired:timeout=True;code=124
+state();raw=(e/"baseline-go.jsonl").read_bytes();counts=collections.Counter();failed=[]
+for line in raw.splitlines():
+ v=json.loads(line)
+ if v.get("Test"):counts[v.get("Action")]+=1
+ if v.get("Action")=="fail" and v.get("Test"):failed.append(v["Test"])
+receipt={"source":source,"clean_before_after":True,"command":args,"started_utc":start,"elapsed_seconds":round(time.monotonic()-clock,3),"exit_code":code,"timed_out":timeout,"raw_bytes":len(raw),"raw_sha256":hashlib.sha256(raw).hexdigest(),"named_event_counts":dict(counts),"failed":failed}
+(e/"baseline-receipt.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
+print(json.dumps(receipt))
+for f,a,b in [("p15_container_shape_acceptance_test.go",1,75)]:
+ lines=(r/f).read_text(encoding="utf-8").splitlines();print(json.dumps({"file":f,"text":"\n".join(lines[a-1:b])}))

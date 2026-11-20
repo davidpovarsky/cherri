@@ -1,0 +1,608 @@
+diff --git a/p10_http_json_oracle_test.go b/p10_http_json_oracle_test.go
+new file mode 100644
+index 00000000..2dcf43a9
+--- /dev/null
++++ b/p10_http_json_oracle_test.go
+@@ -0,0 +1,335 @@
++package main
++
++import (
++	"fmt"
++	"math"
++	"reflect"
++	"strconv"
++	"strings"
++	"testing"
++
++	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/service"
++)
++
++// These helpers fail instead of inventing JSON null, false or zero for an
++// unsupported or malformed field. They do not stand in for Apple execution.
++func p10DecodeJSONDictionary(raw any, resolved map[string]any) (map[string]any, error) {
++	outer, ok := raw.(map[string]any)
++	if !ok || outer["WFSerializationType"] != "WFDictionaryFieldValue" {
++		return nil, fmt.Errorf("invalid Dictionary wrapper")
++	}
++	value, ok := outer["Value"].(map[string]any)
++	if !ok {
++		return nil, fmt.Errorf("missing Dictionary value")
++	}
++	rows, ok := value["WFDictionaryFieldValueItems"].([]any)
++	if !ok {
++		return nil, fmt.Errorf("missing explicit Dictionary item list")
++	}
++	result := make(map[string]any, len(rows))
++	for i, rawRow := range rows {
++		row, ok := rawRow.(map[string]any)
++		if !ok {
++			return nil, fmt.Errorf("invalid Dictionary row %d", i)
++		}
++		key, err := p10DecodeJSONText(row["WFKey"], resolved)
++		if err != nil {
++			return nil, fmt.Errorf("Dictionary key %d: %w", i, err)
++		}
++		if _, duplicate := result[key]; duplicate {
++			return nil, fmt.Errorf("duplicate Dictionary key %q", key)
++		}
++		item, err := p10DecodeJSONItem(row, resolved)
++		if err != nil {
++			return nil, fmt.Errorf("Dictionary field %q: %w", key, err)
++		}
++		result[key] = item
++	}
++	return result, nil
++}
++
++func p10DecodeJSONReference(ref map[string]any, resolved map[string]any) (any, error) {
++	kind, _ := ref["Type"].(string)
++	key := ""
++	switch kind {
++	case "ActionOutput":
++		id, _ := ref["OutputUUID"].(string)
++		if id != "" {
++			key = kind + ":" + id
++		}
++	case "Variable":
++		name, _ := ref["VariableName"].(string)
++		if name != "" {
++			key = kind + ":" + name
++		}
++	default:
++		return nil, fmt.Errorf("unsupported reference kind %q", kind)
++	}
++	value, exists := resolved[key]
++	if key == "" || !exists || value == nil {
++		return nil, fmt.Errorf("unresolved actual reference %q", key)
++	}
++	return value, nil
++}
++
++func p10DecodeJSONText(raw any, resolved map[string]any) (string, error) {
++	if literal, ok := raw.(string); ok {
++		return literal, nil
++	}
++	outer, ok := raw.(map[string]any)
++	if !ok || outer["WFSerializationType"] != "WFTextTokenString" {
++		return "", fmt.Errorf("invalid Text wrapper")
++	}
++	value, ok := outer["Value"].(map[string]any)
++	if !ok {
++		return "", fmt.Errorf("missing Text value")
++	}
++	text, ok := value["string"].(string)
++	if !ok {
++		return "", fmt.Errorf("missing explicit Text string")
++	}
++	attachments, hasAttachments := value["attachmentsByRange"]
++	if !hasAttachments {
++		if strings.Contains(text, "\ufffc") {
++			return "", fmt.Errorf("unresolved Text marker")
++		}
++		return text, nil
++	}
++	refs, ok := attachments.(map[string]any)
++	if !ok {
++		return "", fmt.Errorf("invalid Text attachments")
++	}
++	if len(refs) == 0 && !strings.Contains(text, "\ufffc") {
++		return text, nil
++	}
++	if text != "\ufffc" || len(refs) != 1 {
++		return "", fmt.Errorf("unsupported Text interpolation shape")
++	}
++	ref, ok := refs["{0, 1}"].(map[string]any)
++	if !ok {
++		return "", fmt.Errorf("invalid Text attachment range")
++	}
++	item, err := p10DecodeJSONReference(ref, resolved)
++	if err != nil {
++		return "", err
++	}
++	return fmt.Sprint(item), nil
++}
++
++func p10DecodeJSONItem(row map[string]any, resolved map[string]any) (any, error) {
++	kind := uint64(99)
++	switch raw := row["WFItemType"].(type) {
++	case uint64:
++		kind = raw
++	case int64:
++		if raw >= 0 {
++			kind = uint64(raw)
++		}
++	case int:
++		if raw >= 0 {
++			kind = uint64(raw)
++		}
++	}
++	if kind > 4 {
++		return nil, fmt.Errorf("unsupported Dictionary item type")
++	}
++	rawValue, exists := row["WFValue"]
++	if !exists || rawValue == nil {
++		return nil, fmt.Errorf("missing present Dictionary field value")
++	}
++	value, ok := rawValue.(map[string]any)
++	if !ok {
++		return nil, fmt.Errorf("invalid Dictionary field wrapper")
++	}
++	switch kind {
++	case 0:
++		if value["WFSerializationType"] == "WFTextTokenAttachment" {
++			ref, ok := value["Value"].(map[string]any)
++			if !ok {
++				return nil, fmt.Errorf("invalid reference payload")
++			}
++			return p10DecodeJSONReference(ref, resolved)
++		}
++		return p10DecodeJSONText(value, resolved)
++	case 1:
++		return p10DecodeJSONDictionary(value, resolved)
++	case 2:
++		if value["WFSerializationType"] != "WFArrayParameterState" {
++			return nil, fmt.Errorf("invalid Array wrapper")
++		}
++		rows, ok := value["Value"].([]any)
++		if !ok {
++			return nil, fmt.Errorf("missing explicit Array values")
++		}
++		result := make([]any, len(rows))
++		for i, raw := range rows {
++			child, ok := raw.(map[string]any)
++			if !ok {
++				return nil, fmt.Errorf("invalid Array item %d", i)
++			}
++			decoded, err := p10DecodeJSONItem(child, resolved)
++			if err != nil {
++				return nil, fmt.Errorf("Array item %d: %w", i, err)
++			}
++			result[i] = decoded
++		}
++		return result, nil
++	case 3:
++		text, err := p10DecodeJSONText(value, resolved)
++		if err != nil {
++			return nil, err
++		}
++		number, err := strconv.ParseFloat(text, 64)
++		if err != nil || math.IsNaN(number) || math.IsInf(number, 0) {
++			return nil, fmt.Errorf("invalid finite Number field")
++		}
++		return number, nil
++	case 4:
++		if value["WFSerializationType"] != "WFNumberSubstitutableState" {
++			return nil, fmt.Errorf("invalid Bool wrapper")
++		}
++		boolean, ok := value["Value"].(bool)
++		if !ok {
++			return nil, fmt.Errorf("invalid explicit Bool value")
++		}
++		return boolean, nil
++	}
++	return nil, fmt.Errorf("unreachable Dictionary item")
++}
++
++func p10CloneJSONWire(raw any) any {
++	switch value := raw.(type) {
++	case map[string]any:
++		copy := make(map[string]any, len(value))
++		for k, v := range value {
++			copy[k] = p10CloneJSONWire(v)
++		}
++		return copy
++	case []any:
++		copy := make([]any, len(value))
++		for i, v := range value {
++			copy[i] = p10CloneJSONWire(v)
++		}
++		return copy
++	default:
++		return raw
++	}
++}
++
++func p10JSONWireField(t *testing.T, wire any, key string) map[string]any {
++	t.Helper()
++	rows := wire.(map[string]any)["Value"].(map[string]any)["WFDictionaryFieldValueItems"].([]any)
++	for _, raw := range rows {
++		row := raw.(map[string]any)
++		name, err := p10DecodeJSONText(row["WFKey"], nil)
++		if err != nil {
++			t.Fatal(err)
++		}
++		if name == key {
++			return row
++		}
++	}
++	t.Fatalf("missing mutation field %s", key)
++	return nil
++}
++
++func p10AssertJSONWireMutations(t *testing.T, original any, resolved map[string]any, expected map[string]any) {
++	t.Helper()
++	for _, fault := range []string{"unknown_item_type", "missing_item_type", "missing_value", "null_value", "malformed_bool", "missing_bool", "malformed_number", "nonfinite_number", "unknown_wrapper", "duplicate_key", "wrong_reference", "missing_array", "unknown_array_item"} {
++		t.Run("strict-wire/"+fault, func(t *testing.T) {
++			copy := p10CloneJSONWire(original)
++			if got, err := p10DecodeJSONDictionary(copy, resolved); err != nil || !reflect.DeepEqual(got, expected) {
++				t.Fatal("unchanged copy rejected", err)
++			}
++			stream := p10JSONWireField(t, copy, "stream")
++			zero := p10JSONWireField(t, copy, "zero")
++			switch fault {
++			case "unknown_item_type":
++				stream["WFItemType"] = uint64(5)
++			case "missing_item_type":
++				delete(stream, "WFItemType")
++			case "missing_value":
++				delete(stream, "WFValue")
++			case "null_value":
++				stream["WFValue"] = nil
++			case "malformed_bool":
++				stream["WFValue"].(map[string]any)["Value"] = "false"
++			case "missing_bool":
++				delete(stream["WFValue"].(map[string]any), "Value")
++			case "malformed_number":
++				zero["WFValue"].(map[string]any)["Value"].(map[string]any)["string"] = "not-a-number"
++			case "nonfinite_number":
++				zero["WFValue"].(map[string]any)["Value"].(map[string]any)["string"] = "NaN"
++			case "unknown_wrapper":
++				stream["WFValue"].(map[string]any)["WFSerializationType"] = "Unknown"
++			case "duplicate_key":
++				inner := copy.(map[string]any)["Value"].(map[string]any)
++				inner["WFDictionaryFieldValueItems"] = append(inner["WFDictionaryFieldValueItems"].([]any), p10CloneJSONWire(stream))
++			case "wrong_reference":
++				model := p10JSONWireField(t, copy, "model")["WFValue"].(map[string]any)
++				ref := model["Value"].(map[string]any)
++				ref["OutputUUID"] = "unrelated-producer"
++			case "missing_array", "unknown_array_item":
++				nested := p10JSONWireField(t, copy, "nested")["WFValue"]
++				array := p10JSONWireField(t, nested, "flags")["WFValue"].(map[string]any)
++				if fault == "missing_array" {
++					delete(array, "Value")
++				} else {
++					array["Value"].([]any)[0] = map[string]any{"WFItemType": uint64(5), "WFValue": map[string]any{}}
++				}
++			}
++			if got, err := p10DecodeJSONDictionary(copy, resolved); err == nil {
++				t.Fatalf("malformed native wire accepted: %s %#v", fault, got)
++			}
++		})
++	}
++}
++
++func TestP10JSONOriginalNilRequestFailsPrecisely(t *testing.T) {
++	for _, literal := range []string{"nil", "none"} {
++		t.Run(literal, func(t *testing.T) {
++			source := fmt.Sprintf(p10OriginalJSONLiteralSource, "http://127.0.0.1:1/unused")
++			if literal != "nil" {
++				source = strings.Replace(source, "\"empty_val\": nil", "\"empty_val\": "+literal, 1)
++			}
++			tc := p15OptionalTransportCase{name: "original_json_" + literal, source: source, target: literal, context: "Dictionary value"}
++			diagnostics := p15TypeDiagnostics(t, source)
++			if err := p15OptionalTransportDiagnostic(diagnostics, tc); err != nil {
++				t.Fatal(err)
++			}
++			raw, err := CompileSourceToPlist("p10-original-json-"+literal+".cherri", source)
++			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
++				t.Fatalf("original absent value was fabricated, omitted or emitted: %d %v", len(raw), err)
++			}
++			svc := service.NewService(nil)
++			uri := "file:///p10-original-json-" + literal + ".cherri"
++			svc.OpenDocument(uri, 1, source)
++			editor, _ := svc.Analyze(uri)
++			if err := p15OptionalTransportDiagnostic(editor, tc); err != nil {
++				t.Fatal(err)
++			}
++			for _, fault := range []string{"code", "span", "context"} {
++				t.Run(fault, func(t *testing.T) {
++					altered := append([]analysis.Diagnostic(nil), diagnostics...)
++					for i := range altered {
++						if altered[i].Severity != analysis.SeverityError {
++							continue
++						}
++						switch fault {
++						case "code":
++							altered[i].Code = "E_UNRELATED"
++						case "span":
++							altered[i].Span.Start.ByteOffset++
++						case "context":
++							altered[i].Message = "unrelated failure"
++						}
++					}
++					if p15OptionalTransportDiagnostic(altered, tc) == nil {
++						t.Fatal("invalid rejection diagnostic accepted")
++					}
++				})
++			}
++		})
++	}
++}
+diff --git a/p10_http_json_test.go b/p10_http_json_test.go
+index f49099ea..6d3ed05f 100644
+--- a/p10_http_json_test.go
++++ b/p10_http_json_test.go
+@@ -12,141 +12,43 @@ import (
+ 	"os"
+ 	"os/exec"
+ 	"path/filepath"
++	"reflect"
+ 	"strings"
+ 	"testing"
+ )
+ 
+-// Helper to reconstruct a JSON object from Apple Shortcuts WFDictionaryFieldValue
+-// as Apple's WFDownloadURLAction serializes WFJSONValues at runtime.
++// This strict test decoder describes only the supported Dictionary field wire
++// shapes. The HTTP request below is sent by Go, not Apple's Shortcuts runtime.
+ func reconstructJSONFromWFDictionaryFieldValue(t *testing.T, raw any, resolvedVars map[string]any) map[string]any {
+ 	t.Helper()
+-	m, ok := raw.(map[string]any)
+-	if !ok {
+-		t.Fatalf("expected WFDictionaryFieldValue map, got %T (%v)", raw, raw)
+-	}
+-	if m["WFSerializationType"] != "WFDictionaryFieldValue" {
+-		t.Fatalf("expected WFSerializationType == WFDictionaryFieldValue, got %v", m["WFSerializationType"])
+-	}
+-	valMap, ok := m["Value"].(map[string]any)
+-	if !ok {
+-		t.Fatalf("WFDictionaryFieldValue missing Value map: %v", m)
+-	}
+-	if innerVal, hasInner := valMap["Value"].(map[string]any); hasInner && valMap["WFSerializationType"] == "WFDictionaryFieldValue" {
+-		valMap = innerVal
+-	}
+-	items, ok := valMap["WFDictionaryFieldValueItems"].([]any)
+-	if !ok {
+-		t.Fatalf("missing WFDictionaryFieldValueItems slice in %v", valMap)
+-	}
+-	out := make(map[string]any, len(items))
+-	for _, rawItem := range items {
+-		item := rawItem.(map[string]any)
+-		keyStr := resolveWFTokenString(t, item["WFKey"], resolvedVars)
+-		out[keyStr] = reconstructWFDictionaryItemValue(t, item, resolvedVars)
+-	}
+-	return out
+-}
+-
+-func resolveWFTokenString(t *testing.T, raw any, resolvedVars map[string]any) string {
+-	t.Helper()
+-	if s, ok := raw.(string); ok {
+-		return s
+-	}
+-	m, ok := raw.(map[string]any)
+-	if !ok {
+-		t.Fatalf("expected WFTextTokenString map or string, got %T (%v)", raw, raw)
+-	}
+-	valMap, ok := m["Value"].(map[string]any)
+-	if !ok {
+-		return fmt.Sprint(m["Value"])
+-	}
+-	strVal, _ := valMap["string"].(string)
+-	if strVal == "\uFFFC" {
+-		if atts, ok := valMap["attachmentsByRange"].(map[string]any); ok {
+-			if att0, ok := atts["{0, 1}"].(map[string]any); ok {
+-				if name, ok := att0["OutputName"].(string); ok && resolvedVars != nil {
+-					if v, exists := resolvedVars[name]; exists {
+-						return fmt.Sprint(v)
+-					}
+-				}
+-				if name, ok := att0["VariableName"].(string); ok && resolvedVars != nil {
+-					if v, exists := resolvedVars[name]; exists {
+-						return fmt.Sprint(v)
+-					}
+-				}
+-			}
+-		}
++	result, err := p10DecodeJSONDictionary(raw, resolvedVars)
++	if err != nil {
++		t.Fatal(err)
+ 	}
+-	return strVal
++	return result
+ }
+ 
+-func reconstructWFDictionaryItemValue(t *testing.T, item map[string]any, resolvedVars map[string]any) any {
+-	t.Helper()
+-	var itemType uint64
+-	switch v := item["WFItemType"].(type) {
+-	case uint64:
+-		itemType = v
+-	case int64:
+-		itemType = uint64(v)
+-	case int:
+-		itemType = uint64(v)
+-	}
+-	wfVal, _ := item["WFValue"].(map[string]any)
+-	switch itemType {
+-	case 0: // Text
+-		if wfVal["WFSerializationType"] == "WFTextTokenAttachment" {
+-			valObj, _ := wfVal["Value"].(map[string]any)
+-			if name, ok := valObj["OutputName"].(string); ok && resolvedVars != nil {
+-				if v, exists := resolvedVars[name]; exists {
+-					return v
+-				}
+-			}
+-			if name, ok := valObj["VariableName"].(string); ok && resolvedVars != nil {
+-				if v, exists := resolvedVars[name]; exists {
+-					return v
+-				}
+-			}
+-		}
+-		return resolveWFTokenString(t, wfVal, resolvedVars)
+-	case 1: // Dictionary
+-		return reconstructJSONFromWFDictionaryFieldValue(t, wfVal, resolvedVars)
+-	case 2: // Array
+-		arrSlice, ok := wfVal["Value"].([]any)
+-		if !ok {
+-			t.Fatalf("expected array Value slice, got %T (%v)", wfVal["Value"], wfVal)
+-		}
+-		outArr := make([]any, len(arrSlice))
+-		for i, rawElem := range arrSlice {
+-			switch elem := rawElem.(type) {
+-			case map[string]any:
+-				if _, hasItemType := elem["WFItemType"]; hasItemType {
+-					outArr[i] = reconstructWFDictionaryItemValue(t, elem, resolvedVars)
+-				} else if elem["WFSerializationType"] == "WFDictionaryFieldValue" {
+-					outArr[i] = reconstructJSONFromWFDictionaryFieldValue(t, elem, resolvedVars)
+-				} else if elem["WFSerializationType"] == "WFTextTokenString" {
+-					outArr[i] = resolveWFTokenString(t, elem, resolvedVars)
+-				} else {
+-					outArr[i] = elem
+-				}
+-			default:
+-				outArr[i] = elem
+-			}
++const p10OriginalJSONLiteralSource = `let dynamicModel = "gpt-4o-mini"
++let resp = jsonRequest(
++	%q,
++	method: "POST",
++	body: {
++		"model": dynamicModel,
++		"stream": false,
++		"max_tokens": 256,
++		"empty_val": nil,
++		"nested": {
++			"env": "prod",
++			"flags": [true, false],
++			"matrix": [[1, 2], [3, 4]]
+ 		}
+-		return outArr
+-	case 3: // Number
+-		s := resolveWFTokenString(t, wfVal, resolvedVars)
+-		var num float64
+-		fmt.Sscanf(s, "%f", &num)
+-		return num
+-	case 4: // Bool
+-		if b, ok := wfVal["Value"].(bool); ok {
+-			return b
+-		}
+-		return false
+-	default:
+-		return nil
++	},
++	headers: {
++		"Authorization": "Bearer test-token-123",
++		"X-Custom-Client": "Cherri-P10"
+ 	}
+-}
++)
++`
+ 
+ // Phase B1 & B2 (Asana 1219800356179243 & 1219800511200890 & 1219800392994574):
+ // Comprehensive verification of jsonRequest, dynamic JSON bodies, nested structures,
+@@ -156,9 +58,9 @@ func TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer(t *
+ 	r := newRoundTripRunner(t)
+ 
+ 	// 1. Dictionary literal with static and dynamic field values, nested dictionaries,
+-	// arrays, nested arrays, integers, booleans, and null/empty values -> succeeds and
++	// arrays, nested arrays, integers, booleans, and present empty Text -> succeeds and
+ 	// round-trips through local HTTP echo server.
+-	t.Run("literal-dict-with-dynamic-fields-and-local-http-echo", func(t *testing.T) {
++	t.Run("present-literal-dict-with-dynamic-fields-and-local-http-echo", func(t *testing.T) {
+ 		var receivedHeaders http.Header
+ 		var receivedBody map[string]any
+ 
+@@ -179,27 +81,8 @@ func TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer(t *
+ 		}))
+ 		defer srv.Close()
+ 
+-		v2Src := fmt.Sprintf(`let dynamicModel = "gpt-4o-mini"
+-let resp = jsonRequest(
+-	%q,
+-	method: "POST",
+-	body: {
+-		"model": dynamicModel,
+-		"stream": false,
+-		"max_tokens": 256,
+-		"empty_val": nil,
+-		"nested": {
+-			"env": "prod",
+-			"flags": [true, false],
+-			"matrix": [[1, 2], [3, 4]]
+-		}
+-	},
+-	headers: {
+-		"Authorization": "Bearer test-token-123",
+-		"X-Custom-Client": "Cherri-P10"
+-	}
+-)
+-`, srv.URL)
++		v2Src := strings.Replace(fmt.Sprintf(p10OriginalJSONLiteralSource, srv.URL), "\"empty_val\": nil", "\"empty_val\": \"\"", 1)
++		v2Src = strings.Replace(v2Src, "\"max_tokens\": 256,", "\"max_tokens\": 256,\n\t\t\"zero\": 0,", 1)
+ 
+ 		plistPath := r.compileSource("b1_json_literal_dynamic_fields", v2Src)
+ 		doc := loadRoundTripDocument(t, plistPath)
+@@ -225,9 +108,32 @@ let resp = jsonRequest(
+ 		}
+ 
+ 		// Reconstruct the JSON body and headers from the compiled plist and send to local echo server
+-		resolved := map[string]any{"dynamicModel": "gpt-4o-mini"}
++		resolved := map[string]any{}
++		for _, rawAction := range doc["WFWorkflowActions"].([]any) {
++			action := rawAction.(map[string]any)
++			fields := action["WFWorkflowActionParameters"].(map[string]any)
++			if fields["CustomOutputName"] != "dynamicModel" {
++				continue
++			}
++			uuid, ok := fields["UUID"].(string)
++			if !ok || uuid == "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || fields["WFTextActionText"] != "gpt-4o-mini" {
++				t.Fatal("actual dynamic model producer changed", action)
++			}
++			resolved["ActionOutput:"+uuid] = "gpt-4o-mini"
++		}
++		if len(resolved) != 1 {
++			t.Fatal("missing or duplicated actual dynamic model producer")
++		}
+ 		jsonPayload := reconstructJSONFromWFDictionaryFieldValue(t, params["WFJSONValues"], resolved)
+ 		headerMap := reconstructJSONFromWFDictionaryFieldValue(t, params["WFHTTPHeaders"], resolved)
++		expected := map[string]any{
++			"model": "gpt-4o-mini", "stream": false, "max_tokens": float64(256), "zero": float64(0), "empty_val": "",
++			"nested": map[string]any{"env": "prod", "flags": []any{true, false}, "matrix": []any{[]any{float64(1), float64(2)}, []any{float64(3), float64(4)}}},
++		}
++		if !reflect.DeepEqual(jsonPayload, expected) {
++			t.Fatalf("complete decoded JSON changed: %#v", jsonPayload)
++		}
++		p10AssertJSONWireMutations(t, params["WFJSONValues"], resolved, expected)
+ 
+ 		payloadBytes, err := json.Marshal(jsonPayload)
+ 		if err != nil {
+@@ -257,6 +163,9 @@ let resp = jsonRequest(
+ 		if receivedHeaders.Get("Authorization") != "Bearer test-token-123" {
+ 			t.Errorf("expected Authorization header 'Bearer test-token-123', got %q", receivedHeaders.Get("Authorization"))
+ 		}
++		if !reflect.DeepEqual(receivedBody, expected) {
++			t.Fatalf("complete local echo JSON changed: %#v", receivedBody)
++		}
+ 		if receivedBody["model"] != "gpt-4o-mini" {
+ 			t.Errorf("expected echoed model 'gpt-4o-mini', got %v", receivedBody["model"])
+ 		}
+@@ -557,7 +466,7 @@ func TestP10_IPadAcceptanceKit_CompileAndStructure(t *testing.T) {
+ 	}
+ 
+ 	safeguards := map[string]string{
+-		"01_run_fixed_and_dynamic_dict": "Calls synthetic target shortcut P10EchoTarget with in-memory dictionary; zero user data mutation.",
++		"01_run_fixed_and_dynamic_dict":  "Calls synthetic target shortcut P10EchoTarget with in-memory dictionary; zero user data mutation.",
+ 		"02_conditional_getvalue_string": "Pure in-memory dictionary string coercion conditional check; zero external state mutation.",
+ 		"03_lumen_storage27_roundtrip":   "Uses synthetic key prefix p10_test_key and deletes temporary key at end of run.",
+ 		"04_jsonrequest_dynamic_fields":  "Posts synthetic JSON payload to echo endpoint https://httpbin.org/post; zero local device mutation.",

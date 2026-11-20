@@ -1,0 +1,37 @@
+{
+  "scope": "Precommit characterization repair; not a clean-source acceptance receipt",
+  "base": "89d0a327259bb97150c5dd410165e9097ff39ae9",
+  "witness": [
+    {
+      "path": "p10_http_json_test.go",
+      "bytes": 22590,
+      "sha256": "db465c33b011836af83ce929136c99ef6383b821445e8efe5917c5304bd86ff6"
+    },
+    {
+      "path": "p10_http_json_oracle_test.go",
+      "bytes": 10522,
+      "sha256": "b496a3042bc668398975d92aa92d40c5a398317deb514041b001cea55460900a"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=4m",
+    "-run",
+    "^(TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer|TestP10JSONOriginalNilRequestFailsPrecisely)$",
+    "."
+  ],
+  "started_utc": "2026-11-20T11:41:07.036050+00:00",
+  "seconds": 22.234,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "e08bdebb704d6fdc42e1905641c1d2d6370f7394a238bfa9f76604af1a026a61",
+  "events": {
+    "run": 28,
+    "output": 56,
+    "pass": 28
+  },
+  "failed": []
+}

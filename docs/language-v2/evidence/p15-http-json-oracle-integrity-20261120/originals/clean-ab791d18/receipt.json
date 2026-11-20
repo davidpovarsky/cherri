@@ -1,0 +1,38 @@
+{
+  "scope": "Clean source characterization and HTTP wire oracle only; no native runtime or JSON-null support credit",
+  "source": "ab791d1848b0c461908f4d4020ffd37f27c5e024",
+  "source_clean_before_after": true,
+  "witness": [
+    {
+      "path": "p10_http_json_test.go",
+      "bytes": 22590,
+      "sha256": "db465c33b011836af83ce929136c99ef6383b821445e8efe5917c5304bd86ff6"
+    },
+    {
+      "path": "p10_http_json_oracle_test.go",
+      "bytes": 10522,
+      "sha256": "b496a3042bc668398975d92aa92d40c5a398317deb514041b001cea55460900a"
+    }
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=4m",
+    "-run",
+    "^(TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer|TestP10JSONOriginalNilRequestFailsPrecisely)$",
+    "."
+  ],
+  "started_utc": "2026-11-20T11:54:47.772878+00:00",
+  "seconds": 133.922,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "6572b8c21990f7ff204ec9bbaef3c25bfbedca50baf5d476997f83a902af57b1",
+  "events": {
+    "run": 28,
+    "output": 56,
+    "pass": 28
+  },
+  "failed": []
+}

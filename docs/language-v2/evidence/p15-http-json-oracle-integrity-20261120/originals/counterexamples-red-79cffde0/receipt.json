@@ -1,0 +1,38 @@
+{
+  "source": "79cffde04145685710da2a9b8687e5953d7e587c",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "kind": "actual-counterexample-baseline",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=4m",
+    "-run",
+    "^(TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer|TestP10JSONOriginalNilRequestFailsPrecisely|TestP10JSONProducerBindingIntegrity)$",
+    "."
+  ],
+  "started_at": "2026-11-20T12:14:11.690664+00:00",
+  "finished_at": "2026-11-20T12:14:45.101805+00:00",
+  "elapsed_seconds": 33.40700000000652,
+  "exit_code": 1,
+  "outer_timed_out": false,
+  "named_run": 31,
+  "named_pass": 26,
+  "named_failed": [
+    "TestP10JSONProducerBindingIntegrity",
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/present-literal-dict-with-dynamic-fields-and-local-http-echo/strict-wire/reference_property",
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/present-literal-dict-with-dynamic-fields-and-local-http-echo/strict-wire/reference_coercion",
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/present-literal-dict-with-dynamic-fields-and-local-http-echo",
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer"
+  ],
+  "named_skipped": [],
+  "raw_parse_errors": [],
+  "stdout_bytes": 40078,
+  "stdout_sha256": "56fd17c11fb767db09e45fae72dea99db8f839f9dcd6ab427c4ec2b80c96b449",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "free_bytes_before": 10710020096,
+  "free_bytes_after": 10708611072
+}

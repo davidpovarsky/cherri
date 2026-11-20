@@ -1,0 +1,35 @@
+{
+  "source": "ff6a75e60f41eb4e64be55104cfb10e785b3b5cf",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "kind": "actual-counterexample-baseline",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=4m",
+    "-run",
+    "^TestP10JSONProducerBindingIntegrity$",
+    "."
+  ],
+  "started_at": "2026-11-20T12:24:37.843466+00:00",
+  "finished_at": "2026-11-20T12:24:57.148097+00:00",
+  "elapsed_seconds": 19.29700000002049,
+  "exit_code": 1,
+  "outer_timed_out": false,
+  "named_run": 18,
+  "named_pass": 16,
+  "named_failed": [
+    "TestP10JSONProducerBindingIntegrity/producer_after_consumer",
+    "TestP10JSONProducerBindingIntegrity"
+  ],
+  "named_skipped": [],
+  "raw_parse_errors": [],
+  "stdout_bytes": 16202,
+  "stdout_sha256": "f949e5c5593fe3535026ea7e78bf4564cd2aeee368ba5f04361c323a232eff7f",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "free_bytes_before": 44381347840,
+  "free_bytes_after": 44423639040
+}

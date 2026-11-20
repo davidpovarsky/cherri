@@ -1,0 +1,23 @@
+import pathlib,subprocess,json,os,datetime,time,hashlib,collections
+r=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-json-oracle-r5-20261120");e=pathlib.Path(r"C:\Users\DAVID\Code\cherri-p10r15-continuation-evidence-20261119")/"r5-json-oracle"/"draft01";e.mkdir(exist_ok=False)
+(e/"submitted-script.py.txt").write_bytes(pathlib.Path(__file__).read_bytes())
+source=subprocess.check_output(["git","--no-replace-objects","-C",str(r),"rev-parse","HEAD"]).decode().strip()
+assert source=="89d0a327259bb97150c5dd410165e9097ff39ae9"
+witness=[]
+for name in ("p10_http_json_test.go","p10_http_json_oracle_test.go"):
+ data=(r/name).read_bytes();(e/(name+".txt")).write_bytes(data);witness.append({"path":name,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()})
+cmd=["go","test","-count=1","-json","-timeout=4m","-run","^(TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer|TestP10JSONOriginalNilRequestFailsPrecisely)$","."]
+start=datetime.datetime.now(datetime.timezone.utc).isoformat();clock=time.monotonic();timed=False
+with (e/"go.jsonl").open("wb") as out,(e/"stderr.log").open("wb") as err:
+ try:p=subprocess.run(cmd,cwd=r,env=dict(os.environ,GOMAXPROCS="2"),stdin=subprocess.DEVNULL,stdout=out,stderr=err,timeout=280);code=p.returncode
+ except subprocess.TimeoutExpired:code=124;timed=True
+raw=(e/"go.jsonl").read_bytes();counts=collections.Counter();fail=[];messages=[]
+for ln in raw.splitlines():
+ o=json.loads(ln)
+ if o.get("Test"):counts[o.get("Action")]+=1
+ if o.get("Action")=="fail" and o.get("Test"):fail.append(o["Test"])
+ if o.get("Action")=="output" and not o.get("Output","").startswith(("=== ","--- ","    --- ")):messages.append(o.get("Output",""))
+for item in witness:assert hashlib.sha256((r/item["path"]).read_bytes()).hexdigest()==item["sha256"]
+receipt={"scope":"Precommit characterization repair; not a clean-source acceptance receipt","base":source,"witness":witness,"command":cmd,"started_utc":start,"seconds":round(time.monotonic()-clock,3),"exit_code":code,"timed_out":timed,"raw_sha256":hashlib.sha256(raw).hexdigest(),"events":dict(counts),"failed":fail}
+(e/"receipt.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
+print(json.dumps(receipt));print(json.dumps({"messages":messages[-15:],"stderr":(e/"stderr.log").read_text(encoding="utf-8")[-4000:]}))
