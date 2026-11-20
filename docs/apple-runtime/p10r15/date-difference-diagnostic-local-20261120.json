@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_LOCAL_DIAGNOSTIC_CONSTRUCTION_ONLY",
+  "implementationCommit": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+  "baseComponentCommit": "5b7facb44832a2bf3667d47b209e79eba9a0fc5f",
+  "fixtureId": "qa-date-difference-diagnostic-v2",
+  "sampleId": "qa-date-difference-diagnostic",
+  "sourceSha256": "91e84ce74eae0adbbbbe2c88efb560de812289190b0de44644620dee5094c2ba",
+  "expectedContractSha256": "5f96a34fef09a25a3a6261bbbd2556703a61dc41a25992202c80b88dee7e17d2",
+  "nativeActionsCompiled": 67,
+  "independentObservedFields": 27,
+  "dateProducers": 3,
+  "intervalProducers": 5,
+  "numericZeroControl": true,
+  "freshCompiler": {
+    "sha256": "b6d6fb37f84a395aed254713544b9f1dc2380f7a7a63ede128c137b3c729b681",
+    "checkoutShaBeforeAndAfter": "1f1d8293f12ce885470dd1c16c86a167fca7cc66",
+    "checkoutCleanBeforeAndAfter": true,
+    "embeddedVcsRevisionObserved": false,
+    "sourceBinding": "Actual command receipts, clean Git checkout guards and immutable-source resolver; no embedded VCS claim",
+    "additionalExplicitBuildVcsTrue": {
+      "buildExit": 0,
+      "embeddedVcsRevisionObserved": false,
+      "sameBinarySha256": "b6d6fb37f84a395aed254713544b9f1dc2380f7a7a63ede128c137b3c729b681",
+      "buildInfoSha256": "9b92c23112c3e8e75218413e9dc0babd5555e6c6f05a6f9b61b3f2c5b94bc8b8"
+    }
+  },
+  "cleanUnsignedSha256": "2c7b10160a569845c47327e5daee68388c4a26041ba1759ca78f497b2dad4c0a",
+  "cleanRuns": [
+    {
+      "name": "compiler-build",
+      "exit": 0,
+      "seconds": 1.844,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "actual-causal-graph",
+      "exit": 0,
+      "seconds": 0.406,
+      "stdoutSha256": "d48045ba33e66278e719cf76ba16c44fe999c8b2174379c0c72d6ff963ebe7d4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-controls",
+      "exit": 0,
+      "seconds": 0.219,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e147ec4933cdb679576c9679cae44d11c02fbea7c4ca2e08d90753eefc69c7e5"
+    },
+    {
+      "name": "strict-callback-dispatch-controls",
+      "exit": 0,
+      "seconds": 45.828,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "8898ae1b433325cc4eba19c4c86178563100ef92ccac8283e83b91fba45a368d"
+    }
+  ],
+  "causalGraphMutations": {
+    "status": "PASS_LOCAL_NEGATIVE_CONTROLS",
+    "rejected": [
+      "wrong-specified-date",
+      "current-date-mode",
+      "zero-borrow-positive-input",
+      "positive-borrow-zero-input",
+      "wrong-start-input",
+      "wrong-second-unit",
+      "wrong-minute-unit",
+      "same-producer-replaced",
+      "zero-type-borrowed",
+      "zero-count-borrowed",
+      "zero-count-characters",
+      "zero-text-constant",
+      "zero-text-borrowed",
+      "numeric-control-one",
+      "date-format-borrowed",
+      "date-format-loses-time",
+      "date-bytes-borrowed",
+      "base64-decode",
+      "constant-summary",
+      "constant-output",
+      "clear-with-input",
+      "extra-unowned-clear",
+      "unreviewed-network-effect"
+    ],
+    "count": 23,
+    "appleRuntime": "NOT_RUN",
+    "formalAcceptanceGranted": false
+  },
+  "actualPythonTestCount": 13,
+  "individualCallbackFieldsTestedForEmptyAndWrong": 27,
+  "immutableReviewedCaseSha256": "03c4d5f3fe578292f33a6146a33a353cc3084cab26f8b9c16008113841cd10d9",
+  "cleanReceiptSha256": "1390864671e1dc67b06e0022f641e1757e29e9efafbdec994e4e6f5ec72be870",
+  "actualGraphReceiptSha256": "4b958b036bed4b64b5d790ebb5bfde33447f683a7e05e131283c64b2e1c6e534",
+  "motivation": {
+    "labelRunId": 44672249369,
+    "labelJobId": 136075678168,
+    "labelSourceCommit": "5b7facb44832a2bf3667d47b209e79eba9a0fc5f",
+    "labelArtifactId": 14602641035,
+    "labelArtifactZipSha256": "e23e6f1ef33e96ff16b4dd7f6c426bc64fb27e24905918232f9cdfc0fd221c6e",
+    "matchingExactFields": 48,
+    "totalExactFields": 50,
+    "contradictions": [
+      {
+        "field": "DATE_DELTA_SECONDS",
+        "expected": "0",
+        "actual": ""
+      },
+      {
+        "field": "DATE_SOURCE_DELTA_SECONDS",
+        "expected": "0",
+        "actual": ""
+      }
+    ],
+    "caseComparisonSha256": "0338cefce6f47412139abf43422298b71953b540566b9a11507284e465ca7fd4",
+    "fullMatrixTerminalAtObservation": false,
+    "originalOracleStatus": "FAIL_RUNTIME",
+    "nativeFailureCauseEstablished": false
+  },
+  "nativeDispatch": {
+    "workflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+    "inputs": {
+      "verify_local_ocr": false,
+      "probe_level": "full",
+      "device_profile": "ipad-default",
+      "sample_id": "qa-date-difference-diagnostic",
+      "capture_full_editor": false,
+      "max_editor_pages": "1",
+      "require_runtime": true,
+      "upload_sanitized_artifacts": true
+    }
+  },
+  "scope": {
+    "appleRuntime": "NOT_RUN",
+    "formalAcceptanceGranted": false,
+    "originalLabelFixturesChanged": false,
+    "originalLabelOraclesChanged": false,
+    "productionCompilerChanged": false,
+    "signingPolicyChanged": false,
+    "privacyPolicyChanged": false,
+    "dateFormattingTarget": "UTC; contrary native timezone/value text is retained without normalization",
+    "localNativeGraphIsDownloadedAppleArtifact": false
+  },
+  "limitations": [
+    "Date log retention remains unproved by this diagnostic, which deliberately makes no debugLog call.",
+    "Native counts, types, interval values and formatting remain NOT_RUN until an actual source-bound callback is retained.",
+    "A matched diagnostic cannot close full six-mode label, physical-device or179 acceptance.",
+    "The earlier label case has a nonterminal overall matrix; terminal strict intake remains separately required."
+  ]
+}
