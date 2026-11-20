@@ -40,6 +40,7 @@ REVIEWED_SELECTORS = {
     "qa-debug-label-dated-text-legacy": "qa-debug-label-dated-text-legacy",
     "qa-file-materialization-diagnostic-v2": "qa-file-materialization-diagnostic",
     "qa-n03-text-equality-diagnostic-v2": "qa-n03-text-equality-diagnostic",
+    "qa-date-difference-diagnostic-v2": "qa-date-difference-diagnostic",
     "CherriBindingCapturePOC": "qa-binding-capture",
     "CherriTypedDefaultsPOC": "qa-typed-defaults",
     "qa-native-boundary-diagnostic-v2": "qa-native-boundary-diagnostic",

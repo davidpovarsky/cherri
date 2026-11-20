@@ -14,12 +14,14 @@ import test_runtime_callback_contract as callback_contract
 from fixture_compile_contract import EXPECTED_REJECTIONS
 import file_materialization_diagnostic as file_probe
 import n03_text_equality_diagnostic as n03_probe
+import date_difference_diagnostic as date_probe
 import tempfile
 
 
 CASES = {
     file_probe.FIXTURE_ID: file_probe.EXPECTED_OUTPUT,
     n03_probe.FIXTURE_ID: n03_probe.EXPECTED_OUTPUT,
+    date_probe.FIXTURE_ID: date_probe.EXPECTED_OUTPUT,
     "qa-export-unicode-diagnostic-v2": "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y:NAME=Y:COUNT=Y:STATUS=Y:PAYLOAD=Y:RESTORED_EQ=Y:RESTORED_NE=N:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:DECODED_FILE64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
     "qa-number-coercion-control-v2": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
     "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
@@ -123,6 +125,19 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
             for altered in ("WRONG", "OVERSIZE", "A" * 513):
                 with self.subTest(field=label, altered=altered[:10]):
                     wrong = expected.replace(":" + label + "=" + correct, ":" + label + "=" + altered)
+                    self.assertNotEqual(wrong, expected)
+                    self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"], "FAIL_RUNTIME")
+
+    def test_date_observations_are_independent_and_empty_is_not_zero(self):
+        fid, expected = date_probe.FIXTURE_ID, date_probe.EXPECTED_OUTPUT
+        event = self.oracle.event()
+        event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+        event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+        self.assertEqual(self.oracle.verify([event], fid, expected)["runGate"], "PASS")
+        for field, _, correct in date_probe.FIELDS:
+            for altered in ("", "WRONG"):
+                with self.subTest(field=field, altered=altered):
+                    wrong = expected.replace(":" + field + "=" + correct, ":" + field + "=" + altered)
                     self.assertNotEqual(wrong, expected)
                     self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"], "FAIL_RUNTIME")
 
