@@ -1,0 +1,35 @@
+{
+  "source_sha": "8e0f9e642539db39dab4996c61acf738896e6816",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "head_after": "8e0f9e642539db39dab4996c61acf738896e6816",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=7m",
+    "-run",
+    "^TestMainOutput",
+    "./tools/language-acceptance"
+  ],
+  "started_utc": "2026-11-20T11:06:27.219563+00:00",
+  "finished_utc": "2026-11-20T11:07:13.393630+00:00",
+  "elapsed_seconds": 46.17200000002049,
+  "exit_code": 0,
+  "timed_out": false,
+  "GOMAXPROCS": "2",
+  "go_jsonl_bytes": 405716,
+  "go_jsonl_sha256": "c9e0be179914cf6628d7f15f8398f29d5800a851cb1a41a72876867e33b99912",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "event_counts": {
+    "run": 341,
+    "output": 682,
+    "pass": 341
+  },
+  "failed_tests": [],
+  "json_decode_errors": [],
+  "free_before_bytes": 3980378112,
+  "free_after_bytes": 4203921408
+}

@@ -1,0 +1,1142 @@
+diff --git a/tools/language-acceptance/assertion_scope.go b/tools/language-acceptance/assertion_scope.go
+index 08715886..cf2655ae 100644
+--- a/tools/language-acceptance/assertion_scope.go
++++ b/tools/language-acceptance/assertion_scope.go
+@@ -24,7 +24,6 @@ var incompleteLocalAssertions = map[string]string{
+ 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
+ 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
+ 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
+-	"M02":  "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
+ 
+ 	"E01": "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
+ 	"E02": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index 26ac36bf..f529c862 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
+ }
+ 
+ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
++	// The full main-output scenario needs its own actual Apple proof.
++	if _, found := mainOutputScenarios[id]; found {
++		return
++	}
+ 	// These complete default/caller-input scenarios need their own Apple proof.
+ 	// The historical short function trace does not observe their full contract.
+ 	if _, found := functionDefaultScenarios[id]; found {
+@@ -80,7 +84,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
+ 	case "F02", "F04", "RP22", "BRG12", "BRG14":
+ 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
+ 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
+-	case "FN01", "FN02", "FN03", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
++	case "FN01", "FN02", "FN03", "RP24", "RP25", "RP26", "BRG11", "BRG15":
+ 		reqAssertions["function_result"] = "21"
+ 		reqAssertions["caller_continuation"] = "22"
+ 		reqAssertions["defaults_explicit"] = "0:0::"
+@@ -266,6 +270,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
+ }
+ 
+ func deriveAcceptanceTestIDs(id, group string) []string {
++	if scenario, found := mainOutputScenarios[id]; found {
++		return scenario.testIDs()
++	}
+ 	if scenario, found := functionDefaultScenarios[id]; found {
+ 		return scenario.testIDs()
+ 	}
+@@ -462,6 +469,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
+ }
+ 
+ func deriveAcceptanceFixtures(id, group string) []string {
++	if _, found := mainOutputScenarios[id]; found {
++		return append([]string{}, mainOutputProductionPaths...)
++	}
+ 	if _, found := functionDefaultScenarios[id]; found {
+ 		return append([]string{}, functionDefaultProductionPaths...)
+ 	}
+diff --git a/tools/language-acceptance/execution_audit.go b/tools/language-acceptance/execution_audit.go
+index 165f9284..f93a7b18 100644
+--- a/tools/language-acceptance/execution_audit.go
++++ b/tools/language-acceptance/execution_audit.go
+@@ -243,6 +243,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
+ 			row.ProductionPath = []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/service/service.go", "p15_parser_acceptance_test.go"}
+ 			row.PositiveAndNegative = res.Passed
+ 		}
++		if scenario, found := mainOutputScenarios[row.ID]; found {
++			row.TestNames = append([]string{}, scenario.Tests...)
++			row.ProductionPath = append([]string{}, mainOutputProductionPaths...)
++			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
++			row.Scope = scenario.Scope
++		}
+ 		if scenario, found := functionDefaultScenarios[row.ID]; found {
+ 			row.TestNames = append([]string{}, scenario.Tests...)
+ 			row.ProductionPath = append([]string{}, functionDefaultProductionPaths...)
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index 1c2ef5b3..5045468f 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+ 
++			if err := validateMainOutputRecord(reqID, rec); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
++
+ 			if err := validateFunctionDefaultRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1741,11 +1745,7 @@ func (r *Runner) runFunctions() {
+ func (r *Runner) runMetadata() {
+ 	r.runMetadataRequirement("M01")
+ 
+-	// M02: Main body explicit return and Void fallthrough
+-	wfM02Explicit, errM02Explicit := lowerSrc(r.reg, "return \"done\"")
+-	wfM02Void, errM02Void := lowerSrc(r.reg, "function noop() -> Void {\n    let x = 1\n}\nnoop()")
+-	m02Passed := errM02Explicit == nil && wfM02Explicit.HasExplicitReturn && errM02Void == nil && !wfM02Void.HasExplicitReturn
+-	r.Record("M02", "metadata", "Main body explicit return and Void fallthrough", "native+iOS", []string{"native"}, m02Passed, "PASSED", "Explicit return emits is.workflow.actions.output and Void fallthrough omits output")
++	r.runMainOutputRequirement("M02")
+ 
+ 	r.runMetadataRequirement("M03")
+ 	r.runMetadataRequirement("M04")
+diff --git a/tools/language-acceptance/main_output_execution.go b/tools/language-acceptance/main_output_execution.go
+new file mode 100644
+index 00000000..f09478e4
+--- /dev/null
++++ b/tools/language-acceptance/main_output_execution.go
+@@ -0,0 +1,441 @@
++package main
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"fmt"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"strconv"
++	"strings"
++	"sync"
++	"time"
++	"unicode/utf8"
++)
++
++type mainOutputScenario struct {
++	Group, Title, Level, Expected, Scope string
++	Tests, LocalTiers                    []string
++	Producers                            map[string]string
++}
++
++var mainOutputScenarios = map[string]mainOutputScenario{
++	"M02": {
++		Group: "metadata", Title: "Main body explicit return and Void fallthrough", Level: "native+iOS",
++		Expected:   "No accidental last-action result leakage",
++		Scope:      "Independent M02 actual canonical compilation of complete main-output graphs: empty/default/explicit-mode Void fallthrough clears inherited or incidental values, partial/zero-iteration paths retain the empty boundary, explicit Text/empty Text/false/zero/bare/None returns consume the exact authored value and stop, and child returns preserve parent continuation. Actual terminal raw/resolved actions, full native.workflow documents and explicit Legacy entry mode retain their defined output. Shared analyzer/service/checked-lowering mode validation rejects malformed or duplicate metadata before emission; real entry/module migration and idempotence preserve context and exact native output. Complete native graph and causal mutations are mandatory. Apple execution and BRG14/RP26/RP30 or other related scopes are not inferred.",
++		Tests:      []string{"TestP15M02MainVoidFallthrough", "TestP15M02ExplicitMainReturnBaseline", "TestP15M02CompleteMainGraphs", "TestP15M02CompleteGraphCausalControls", "TestP15M02ExactNativeWorkflowBoundary", "TestP15M02MigratedEntryOutput", "TestP15M02ValidatedModeRoutes", "TestP15M02InvalidModeFailsBeforeEmission", "TestP15M02MigrationUsesEntryContext", "TestP15M02MigrationIsIdempotent", "TestP15M02MigrationRejectsInvalidExistingMode"},
++		LocalTiers: []string{"native-structure"},
++		Producers:  map[string]string{"native-structure": "TestP15M02CompleteMainGraphs"},
++	},
++}
++
++// The whole source commit is immutable; these blobs additionally bind the
++// executed scenarios, their independent graph oracles, compiler transport and
++// the complete acquisition/intake path. No working-tree filter supplies a hash.
++var mainOutputProductionPaths = []string{
++	"go.mod",
++	"go.sum",
++	"internal/language/syntax/ast.go",
++	"internal/language/syntax/lexer.go",
++	"internal/language/syntax/parser.go",
++	"internal/language/syntax/format.go",
++	"internal/language/syntax/main_output.go",
++	"internal/language/analysis/analyzer.go",
++	"internal/language/analysis/diagnostics.go",
++	"internal/language/analysis/optional_presence.go",
++	"internal/language/analysis/optional_transport.go",
++	"internal/language/types/types.go",
++	"internal/language/types/optional_presence.go",
++	"internal/language/ir/ir.go",
++	"internal/language/lower/lower.go",
++	"internal/language/lower/main_output.go",
++	"internal/language/lower/exhaustive_validation.go",
++	"internal/language/lower/module_scope.go",
++	"internal/language/lower/function_optional_presence.go",
++	"internal/language/lower/function_defaults.go",
++	"internal/language/lower/function_argument_containers.go",
++	"internal/language/lower/optional_presence_demand.go",
++	"internal/language/lower/optional_transport.go",
++	"internal/language/lower/binding_capture.go",
++	"internal/language/lower/call_arguments.go",
++	"internal/language/lower/scoped_blocks.go",
++	"internal/language/migrate/migrate.go",
++	"internal/language/migrate/main_output.go",
++	"internal/language/migrate/lexical_source.go",
++	"internal/language/migrate/references.go",
++	"internal/language/migrate/optional_bindings.go",
++	"internal/language/modules/graph.go",
++	"internal/language/modules/standard_library.go",
++	"internal/language/modules/stdfunc_source_generated.go",
++	"internal/language/service/service.go",
++	"internal/language/service/module_analysis.go",
++	"internal/language/backend/contracts.go",
++	"internal/language/schema/generated_registry.go",
++	"language_backend_session.go",
++	"language_backend_adapter.go",
++	"language_emit_adapter.go",
++	"language_value_adapter.go",
++	"shared_codec.go",
++	"shortcutgen.go",
++	"p15_main_void_return_test.go",
++	"p15_main_output_mode_test.go",
++	"p15_main_output_graph_test.go",
++	"p15_main_output_oracle_test.go",
++	"p15_none_clear_boundary_test.go",
++	"p15_function_native_oracle_test.go",
++	"p15_function_acceptance_test.go",
++	"p15_function_optional_presence_test.go",
++	"p15_container_shape_acceptance_test.go",
++	"p15_types_acceptance_test.go",
++	"p15_short_circuit_test.go",
++	"p15_call_order_test.go",
++	"p15_literal_collections_acceptance_test.go",
++	"tests/language-v2/acceptance-contract.json",
++	"tests/language-v2/repair-regression-plan.json",
++	"tests/language-v2/backend-recovery-gates.json",
++	"tools/language-acceptance/main_output_execution.go",
++	"tools/language-acceptance/main_output_execution_test.go",
++	"tools/language-acceptance/strict_go_events.go",
++	"tools/language-acceptance/loop_execution.go",
++	"tools/language-acceptance/editor_source_binding.go",
++	"tools/language-acceptance/editor_performance_execution.go",
++	"tools/language-acceptance/editor_process_other.go",
++	"tools/language-acceptance/editor_process_windows.go",
++	"tools/language-acceptance/native_encoding_intake.go",
++	"tools/language-acceptance/state_acceptance_intake.go",
++	"tools/language-acceptance/state_acceptance_execution.go",
++	"tools/language-acceptance/main.go",
++	"tools/language-acceptance/parser_execution.go",
++	"tools/language-acceptance/evidence_map.go",
++	"tools/language-acceptance/execution_audit.go",
++	"tools/language-acceptance/assertion_scope.go",
++}
++
++var mainOutputArtifactNames = []string{"main-output-process.json", "main-output-go.jsonl", "main-output-stderr.log"}
++
++func (s mainOutputScenario) testIDs() []string {
++	var ids []string
++	for _, test := range s.Tests {
++		ids = append(ids, "github.com/electrikmilk/cherri:"+test)
++	}
++	return ids
++}
++
++func (s mainOutputScenario) producer(tier string) string {
++	if test := s.Producers[tier]; test != "" {
++		return "github.com/electrikmilk/cherri:" + test
++	}
++	return ""
++}
++
++func mainOutputRequiredEvents(id string) []string {
++	scenario, found := mainOutputScenarios[id]
++	if !found {
++		return nil
++	}
++	var names []string
++	add := func(parent string, children ...string) {
++		names = append(names, parent)
++		for _, child := range children {
++			names = append(names, parent+"/"+child)
++		}
++	}
++	add(scenario.Tests[0], "empty", "unused_text", "unused_binding", "void_action_after_value", "partial_early_return", "function_caller_fallthrough")
++	add(scenario.Tests[1], "text", "empty_text", "false", "zero", "bare", "none")
++	cases := []string{"empty_input_boundary", "unused_text", "unused_number_binding", "void_action_after_value", "partial_early_return", "both_branches_return", "zero_iteration_return", "child_return_parent_falls_through", "child_bare_return_parent_continues", "parent_explicit_return_after_child", "raw_nothing_then_resolved_text", "native_word_is_only_text", "legacy_mode_preserves_incidental_result", "authored_native_output", "authored_native_stop", "explicit_mode_clears_incidental_result", "return_text", "return_empty_text", "return_false", "return_zero", "return_empty_", "return_empty_none"}
++	add(scenario.Tests[2], cases...)
++	add(scenario.Tests[3])
++	for _, name := range cases {
++		faults := []string{"delete_terminal", "append_stale", "alter_first_parameter"}
++		if name == "return_text" || name == "return_empty_text" || name == "return_false" || name == "return_zero" {
++			faults = append(faults, "return_value", "return_stale_producer", "return_missing_output")
++		}
++		add(scenario.Tests[3]+"/"+name, faults...)
++	}
++	add(scenario.Tests[4], "actions_0", "actions_1")
++	add(scenario.Tests[5], "source_0", "source_20", "source_51")
++	add(scenario.Tests[6], "default", "explicit", "legacy")
++	add(scenario.Tests[7], "unknown", "wrong_case", "empty", "number", "boolean", "none", "dynamic", "call", "list", "duplicate_field", "duplicate_header")
++	add(scenario.Tests[8])
++	add(scenario.Tests[9], "empty", "legacy_body", "legacy_header", "existing_v2_header", "existing_legacy_mode", "existing_explicit_mode", "decoy_comment", "decoy_literal")
++	add(scenario.Tests[10])
++	return names
++}
++
++func mainOutputSourceFiles(repository, commit string) ([]editorSourceFile, error) {
++	if len(mainOutputProductionPaths) == 0 || len(mainOutputProductionPaths) > 128 {
++		return nil, fmt.Errorf("invalid bounded M02 source inventory")
++	}
++	seen := map[string]bool{}
++	for _, name := range mainOutputProductionPaths {
++		if seen[name] {
++			return nil, fmt.Errorf("duplicate M02 source path")
++		}
++		seen[name] = true
++	}
++	if err := mainOutputVerifySourceBudget(repository, commit); err != nil {
++		return nil, err
++	}
++	var files []editorSourceFile
++	for start := 0; start < len(mainOutputProductionPaths); start += 64 {
++		end := start + 64
++		if end > len(mainOutputProductionPaths) {
++			end = len(mainOutputProductionPaths)
++		}
++		batch, err := editorGitSourceFiles(repository, commit, mainOutputProductionPaths[start:end])
++		if err != nil {
++			return nil, err
++		}
++		files = append(files, batch...)
++	}
++	return files, nil
++}
++
++var mainOutputSourceBudgetCache sync.Map
++
++func mainOutputVerifySourceBudget(repository, commit string) error {
++	if !documentationHash(commit, 40) {
++		return fmt.Errorf("invalid M02 immutable source commit")
++	}
++	root, err := filepath.Abs(repository)
++	if err != nil {
++		return err
++	}
++	key := root + "\x00" + commit + "\x00" + strings.Join(mainOutputProductionPaths, "\n")
++	if _, found := mainOutputSourceBudgetCache.Load(key); found {
++		return nil
++	}
++	var requests strings.Builder
++	for _, name := range mainOutputProductionPaths {
++		requests.WriteString(commit + ":" + name + "\n")
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
++	defer cancel()
++	command := exec.CommandContext(ctx, "git", "--no-replace-objects", "-C", root, "cat-file", "--batch-check")
++	command.Stdin = strings.NewReader(requests.String())
++	command.WaitDelay = 2 * time.Second
++	var output editorGitSourceOutput
++	var errors bytes.Buffer
++	command.Stdout, command.Stderr = &output, &errors
++	if err := command.Run(); err != nil {
++		return fmt.Errorf("immutable M02 source size preflight unavailable: %w", err)
++	}
++	if err := mainOutputSourceBudget(output.Bytes(), len(mainOutputProductionPaths)); err != nil {
++		return err
++	}
++	mainOutputSourceBudgetCache.Store(key, true)
++	return nil
++}
++func mainOutputSourceBudget(raw []byte, required int) error {
++	if required < 1 || required > 128 || len(raw) == 0 || raw[len(raw)-1] != '\n' {
++		return fmt.Errorf("invalid bounded M02 source size preflight")
++	}
++	lines := bytes.Split(raw[:len(raw)-1], []byte("\n"))
++	if len(lines) != required {
++		return fmt.Errorf("incomplete M02 source size inventory")
++	}
++	var total int64
++	for _, line := range lines {
++		header := strings.Fields(string(line))
++		if len(header) != 3 || !documentationHash(header[0], 40) || header[1] != "blob" {
++			return fmt.Errorf("invalid immutable M02 source object")
++		}
++		size, err := strconv.ParseInt(header[2], 10, 64)
++		if err != nil || size < 0 || size > 4<<20 {
++			return fmt.Errorf("invalid M02 source object size")
++		}
++		total += int64(len(line)) + 1 + size + 1
++		if total > 16<<20 {
++			return fmt.Errorf("M02 source aggregate exceeds16MiB")
++		}
++	}
++	return nil
++}
++
++func parseMainOutputOutput(id string, raw []byte) error {
++	scenario, found := mainOutputScenarios[id]
++	if !found {
++		return fmt.Errorf("unknown main-output requirement %s", id)
++	}
++	names := mainOutputRequiredEvents(id)
++	if err := parseStrictNamedProductionOutput(names, productionTestTimeout(scenario.Tests)+time.Minute, raw); err != nil {
++		return err
++	}
++	// These real tests have nested corruption cases. Require every selected
++	// ancestor to be active; a parent pass cannot precede its selected children.
++	required, run, passed := map[string]bool{}, map[string]bool{}, map[string]bool{}
++	for _, name := range names {
++		required[name] = true
++	}
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event struct{ Action, Test string }
++		if err := json.Unmarshal(line, &event); err != nil {
++			return err
++		}
++		if event.Test == "" {
++			continue
++		}
++		switch event.Action {
++		case "run":
++			for parent := event.Test; strings.Contains(parent, "/"); {
++				parent = parent[:strings.LastIndexByte(parent, '/')]
++				if required[parent] && (!run[parent] || passed[parent]) {
++					return fmt.Errorf("main-output child outside selected ancestor %s", parent)
++				}
++			}
++			run[event.Test] = true
++		case "pass":
++			for _, name := range names {
++				if strings.HasPrefix(name, event.Test+"/") && !passed[name] {
++					return fmt.Errorf("main-output parent passed before required child %s", name)
++				}
++			}
++			passed[event.Test] = true
++		}
++	}
++	return nil
++}
++
++func validateMainOutputRecord(id string, record EvidenceRecord) error {
++	scenario, found := mainOutputScenarios[id]
++	if !found {
++		return nil
++	}
++	producer := scenario.producer(record.Tier)
++	if producer == "" || record.Result != "passed" || record.ExitCode != 0 || !reflect.DeepEqual(record.Requirements, []string{id}) ||
++		record.TestID != producer || !reflect.DeepEqual(record.Command, productionTestCommand(scenario.Tests)) ||
++		record.Assertions["required_production_tests"] != strings.Join(scenario.Tests, "\n") || record.Assertions["required_go_events"] != strings.Join(mainOutputRequiredEvents(id), "\n") || record.Assertions["scope"] != scenario.Scope {
++		return fmt.Errorf("%s record is detached from its complete main-output production; no Apple tier is implemented", id)
++	}
++	data, err := stateReadArtifacts(record.Artifacts, mainOutputArtifactNames)
++	if err != nil {
++		return err
++	}
++	var receipt editorProcessReceipt
++	if err := decodeEditorJSON(data["main-output-process.json"], &receipt); err != nil {
++		return err
++	}
++	raw, stderr := data["main-output-go.jsonl"], data["main-output-stderr.log"]
++	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != record.ImplementationSHA || !receipt.SourceCleanBefore || !receipt.SourceCleanAfter ||
++		!reflect.DeepEqual(receipt.Command, record.Command) || !reflect.DeepEqual(receipt.RequiredTests, mainOutputRequiredEvents(id)) || !reflect.DeepEqual(receipt.DiscoveredTests, mainOutputRequiredEvents(id)) ||
++		receipt.ExitCode == nil || *receipt.ExitCode != 0 || receipt.TimedOut == nil || *receipt.TimedOut ||
++		receipt.RawSHA256 != editorSHA(raw) || receipt.RawBytes != len(raw) || receipt.StderrSHA256 != editorSHA(stderr) || receipt.StderrBytes != len(stderr) || !utf8.Valid(stderr) || receipt.BenchmarkSHA256 != "" || receipt.BenchmarkBytes != 0 {
++		return fmt.Errorf("incomplete %s main-output process/source/byte binding", id)
++	}
++	if err := stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(scenario.Tests) + time.Minute).Seconds()); err != nil {
++		return err
++	}
++	immutable, err := mainOutputSourceFiles(resolveRepoRoot(), record.ImplementationSHA)
++	if err != nil {
++		return err
++	}
++	if !reflect.DeepEqual(receipt.SourceFiles, immutable) {
++		return fmt.Errorf("M02 immutable source manifest mismatch")
++	}
++	if err := parseMainOutputOutput(id, raw); err != nil {
++		return err
++	}
++	return loopOutputWithinProcess(raw, receipt)
++}
++
++func (r *Runner) executeMainOutputProduction(id string) ([]EvidenceArtifact, string, bool, error) {
++	scenario, found := mainOutputScenarios[id]
++	if !found {
++		return nil, "", false, fmt.Errorf("unknown main-output requirement %s", id)
++	}
++	root, err := filepath.Abs(resolveRepoRoot())
++	if err != nil {
++		return nil, "", false, err
++	}
++	before, clean, stateErr := editorSourceState(root)
++	if stateErr != nil || !clean || before != r.implSHA {
++		return nil, "", false, fmt.Errorf("%s producer requires exact clean source: %s clean=%t error=%v", id, before, clean, stateErr)
++	}
++	directory, err := stateEvidenceDirectory(r, strings.ToLower(id)+"-main-output-")
++	if err != nil {
++		return nil, "", false, err
++	}
++	receipt := editorProcessReceipt{FormatVersion: 1, Requirement: id, SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(scenario.Tests), RequiredTests: mainOutputRequiredEvents(id)}
++	receipt.SourceFiles, err = mainOutputSourceFiles(root, before)
++	if err != nil {
++		return nil, "", false, err
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(scenario.Tests)+time.Minute)
++	defer cancel()
++	command := exec.CommandContext(ctx, receipt.Command[0], receipt.Command[1:]...)
++	command.Dir = root
++	configureEditorProductionProcess(command)
++	var output, errors loopBoundedOutput
++	command.Stdout, command.Stderr = &output, &errors
++	started := time.Now()
++	receipt.StartedUTC = started.UTC().Format(time.RFC3339Nano)
++	processErr := command.Run()
++	receipt.FinishedUTC = time.Now().UTC().Format(time.RFC3339Nano)
++	receipt.ElapsedSeconds = time.Since(started).Seconds()
++	exitCode := -1
++	if command.ProcessState != nil {
++		exitCode = command.ProcessState.ExitCode()
++	}
++	timedOut := ctx.Err() != nil
++	receipt.ExitCode, receipt.TimedOut = &exitCode, &timedOut
++	after, afterClean, afterErr := editorSourceState(root)
++	receipt.SourceCleanAfter = afterErr == nil && afterClean && after == before
++	raw, stderr := output.Bytes(), errors.Bytes()
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(raw), len(raw)
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(stderr), len(stderr)
++	parseErr := parseMainOutputOutput(id, raw)
++	if parseErr == nil {
++		parseErr = loopOutputWithinProcess(raw, receipt)
++	}
++	if parseErr == nil {
++		receipt.DiscoveredTests = mainOutputRequiredEvents(id)
++	}
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		return nil, "", command.Process != nil, err
++	}
++	contents := map[string][]byte{"main-output-process.json": append(encoded, '\n'), "main-output-go.jsonl": raw, "main-output-stderr.log": stderr}
++	var artifacts []EvidenceArtifact
++	for _, name := range mainOutputArtifactNames {
++		path := filepath.Join(directory, name)
++		if err := os.WriteFile(path, contents[name], 0600); err != nil {
++			return artifacts, "", command.Process != nil, err
++		}
++		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(contents[name])})
++	}
++	if processErr != nil || parseErr != nil || timedOut || !receipt.SourceCleanAfter {
++		return artifacts, "", command.Process != nil, fmt.Errorf("actual %s process failed: process=%v parse=%v timeout=%t clean=%t", id, processErr, parseErr, timedOut, receipt.SourceCleanAfter)
++	}
++	return artifacts, "Executed complete source-bound M02 main-output scenario, native graphs, mode/migration routes and causal corruption inventory", true, nil
++}
++
++func (r *Runner) runMainOutputRequirement(id string) bool {
++	scenario, found := mainOutputScenarios[id]
++	if !found {
++		return false
++	}
++	artifacts, detail, executed, err := r.executeMainOutputProduction(id)
++	if err != nil {
++		detail = err.Error()
++	}
++	if !executed {
++		r.results[id] = CaseResult{ID: id, Group: scenario.Group, Requirement: scenario.Title, TestLevel: scenario.Level, Status: "NOT_RUN", Detail: detail}
++		return true
++	}
++	first := len(r.records)
++	r.Record(id, scenario.Group, scenario.Title, scenario.Level, scenario.LocalTiers, err == nil, "PASSED", detail+"; "+scenario.Scope)
++	for index := first; index < len(r.records); index++ {
++		record := &r.records[index]
++		record.TestID = scenario.producer(record.Tier)
++		record.Command = productionTestCommand(scenario.Tests)
++		record.Artifacts = append([]EvidenceArtifact(nil), artifacts...)
++		record.Assertions["required_production_tests"] = strings.Join(scenario.Tests, "\n")
++		record.Assertions["required_go_events"] = strings.Join(mainOutputRequiredEvents(id), "\n")
++		record.Assertions["scope"] = scenario.Scope
++	}
++	return true
++}
+diff --git a/tools/language-acceptance/main_output_execution_test.go b/tools/language-acceptance/main_output_execution_test.go
+new file mode 100644
+index 00000000..a9ab9e61
+--- /dev/null
++++ b/tools/language-acceptance/main_output_execution_test.go
+@@ -0,0 +1,588 @@
++package main
++
++import (
++	"bytes"
++	"encoding/json"
++	"fmt"
++	"os"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++)
++
++func mainOutputSelectedContracts(t *testing.T, all *ContractsSet) *ContractsSet {
++	t.Helper()
++	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++	for _, row := range all.Acceptance.Cases {
++		if _, found := mainOutputScenarios[row.ID]; found {
++			selected.Acceptance.Cases = append(selected.Acceptance.Cases, row)
++		}
++	}
++	selected.Acceptance.CaseCount = len(selected.Acceptance.Cases)
++	if selected.Acceptance.CaseCount != 1 {
++		t.Fatal("missing immutable M02 contract")
++	}
++	return selected
++}
++
++func TestMainOutputProducerInventory(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := mainOutputSelectedContracts(t, all)
++	counts := map[string]int{"M02": 172}
++	for _, row := range selected.Acceptance.Cases {
++		s := mainOutputScenarios[row.ID]
++		if row.Group != s.Group || row.Requirement != s.Title || row.Expected != s.Expected || row.MinimumTestLevel != s.Level ||
++			!reflect.DeepEqual(parseRequiredTiers(row.MinimumTestLevel), append(append([]string{}, s.LocalTiers...), "ios-runtime")) {
++			t.Fatal("main-output scenario drifted from immutable requirement", row)
++		}
++		if _, smoke := incompleteLocalAssertions[row.ID]; smoke {
++			t.Fatal("actual complete local producer remains historical smoke", row.ID)
++		}
++		if !reflect.DeepEqual(deriveAcceptanceTestIDs(row.ID, row.Group), s.testIDs()) ||
++			!reflect.DeepEqual(deriveAcceptanceFixtures(row.ID, row.Group), mainOutputProductionPaths) {
++			t.Fatal("main-output mapping lost tests or immutable sources", row.ID)
++		}
++		ids := append([]string{}, s.testIDs()...)
++		assertions, ui := map[string]string{}, map[string]string{}
++		applyRuntimeAndUIMappings(row.ID, parseRequiredTiers(row.MinimumTestLevel), &ids, assertions, ui)
++		if !reflect.DeepEqual(ids, s.testIDs()) || len(assertions) != 0 || len(ui) != 0 || s.producer("ios-runtime") != "" {
++			t.Fatal("historical short function trace inherited complete main-output credit", row.ID)
++		}
++		names, seen := mainOutputRequiredEvents(row.ID), map[string]bool{}
++		if len(names) != counts[row.ID] {
++			t.Fatal("complete scenario event count changed", row.ID, len(names))
++		}
++		for _, name := range names {
++			if seen[name] {
++				t.Fatal("duplicate required function event", name)
++			}
++			seen[name] = true
++		}
++		for _, tier := range s.LocalTiers {
++			producer := strings.TrimPrefix(s.producer(tier), "github.com/electrikmilk/cherri:")
++			if !seen[producer] {
++				t.Fatal("tier producer is not in complete actual selection", row.ID, tier)
++			}
++		}
++	}
++	if len(mainOutputScenarios) != 1 || len(mainOutputProductionPaths) != 76 {
++		t.Fatal("main-output scope or bounded source request changed")
++	}
++	seen := map[string]bool{}
++	for _, path := range mainOutputProductionPaths {
++		info, err := os.Stat(filepath.Join(resolveRepoRoot(), filepath.FromSlash(path)))
++		if seen[path] || err != nil || !info.Mode().IsRegular() {
++			t.Fatal("missing or duplicate actual function source", path, err)
++		}
++		seen[path] = true
++	}
++	runner := NewRunner()
++	for _, id := range []string{"M01", "M03", "FN04", "F03", "F04", "RP26", "RP30", "BRG14", "BRG15"} {
++		if runner.runMainOutputRequirement(id) {
++			t.Fatal("related obligation inherited an unexecuted scenario", id)
++		}
++	}
++	if len(runner.records) != 0 || len(runner.results) != 0 || len(runner.observations) != 0 {
++		t.Fatal("unexecuted requirement received evidence")
++	}
++}
++
++// Synthetic streams exercise parser control flow only. They are never used as
++// execution evidence; the positive intake below launches the actual compiler.
++func mainOutputControlEvents(id string) []byte {
++	names := mainOutputRequiredEvents(id)
++	required := map[string]bool{}
++	for _, name := range names {
++		required[name] = true
++	}
++	children := map[string][]string{}
++	for _, name := range names {
++		parent := name
++		for {
++			slash := strings.LastIndexByte(parent, '/')
++			if slash < 0 {
++				parent = ""
++				break
++			}
++			parent = parent[:slash]
++			if required[parent] {
++				break
++			}
++		}
++		children[parent] = append(children[parent], name)
++	}
++	var lines [][]byte
++	emit := func(action, name string) {
++		event := map[string]any{"Time": "2026-11-20T00:00:00Z", "Action": action, "Package": "github.com/electrikmilk/cherri"}
++		if name != "" {
++			event["Test"] = name
++		}
++		if action == "pass" {
++			event["Elapsed"] = 0.001
++		}
++		line, _ := json.Marshal(event)
++		lines = append(lines, line)
++	}
++	var walk func(string)
++	walk = func(parent string) {
++		for _, name := range children[parent] {
++			emit("run", name)
++			walk(name)
++			emit("pass", name)
++		}
++	}
++	emit("start", "")
++	walk("")
++	emit("pass", "")
++	return append(bytes.Join(lines, []byte("\n")), '\n')
++}
++
++func mainOutputCorruptRaw(t *testing.T, kind, target string, raw []byte) []byte {
++	t.Helper()
++	switch kind {
++	case "invalid_utf8":
++		return append(append([]byte{}, raw...), 0xff)
++	case "duplicate_json_key":
++		return bytes.Replace(raw, []byte("{"), []byte("{\"Action\":\"start\","), 1)
++	case "trailing_json":
++		return append(append([]byte{}, raw...), []byte("{}\n")...)
++	}
++	var result [][]byte
++	changed := false
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		var event map[string]any
++		if err := json.Unmarshal(line, &event); err != nil {
++			t.Fatal(err)
++		}
++		test, _ := event["Test"].(string)
++		action, _ := event["Action"].(string)
++		if kind == "missing_event" && test == target {
++			changed = true
++			continue
++		}
++		if kind == "outside_process_interval" {
++			observed, err := time.Parse(time.RFC3339Nano, event["Time"].(string))
++			if err != nil {
++				t.Fatal(err)
++			}
++			event["Time"] = observed.Add(-24 * time.Hour).Format(time.RFC3339Nano)
++			changed = true
++		}
++		if !changed {
++			switch kind {
++			case "orphan_pass":
++				if test == target && action == "run" {
++					changed = true
++					continue
++				}
++			case "skipped_child", "failed_child":
++				if test == target && action == "pass" {
++					if kind == "skipped_child" {
++						event["Action"] = "skip"
++					} else {
++						event["Action"] = "fail"
++					}
++					changed = true
++				}
++			case "foreign_package":
++				event["Package"] = "example.invalid/unexecuted"
++				changed = true
++			case "unknown_child":
++				if test == target {
++					event["Test"] = target + "_unselected"
++					changed = true
++				}
++			case "duplicate_run":
++				if test == target && action == "run" {
++					result = append(result, append([]byte{}, line...))
++					changed = true
++				}
++			case "parent_before_child", "nested_parent_before_child":
++				if test == target && action == "run" {
++					parent := strings.SplitN(target, "/", 2)[0]
++					if kind == "nested_parent_before_child" {
++						parent = target[:strings.LastIndexByte(target, '/')]
++					}
++					extra := map[string]any{"Time": event["Time"], "Action": "pass", "Package": event["Package"], "Test": parent, "Elapsed": 0.001}
++					encoded, _ := json.Marshal(extra)
++					result = append(result, encoded)
++					changed = true
++				}
++			case "missing_time":
++				delete(event, "Time")
++				changed = true
++			case "invalid_time":
++				event["Time"] = "not-a-time"
++				changed = true
++			case "backwards_time":
++				if action != "start" {
++					event["Time"] = "2000-01-01T00:00:00Z"
++					changed = true
++				}
++			case "missing_elapsed", "negative_elapsed", "oversized_elapsed":
++				if action == "pass" {
++					switch kind {
++					case "missing_elapsed":
++						delete(event, "Elapsed")
++					case "negative_elapsed":
++						event["Elapsed"] = -1
++					default:
++						event["Elapsed"] = 3600
++					}
++					changed = true
++				}
++			}
++		}
++		encoded, err := json.Marshal(event)
++		if err != nil {
++			t.Fatal(err)
++		}
++		result = append(result, encoded)
++	}
++	if !changed {
++		t.Fatal("raw fault did not change a targeted event", kind, target)
++	}
++	return append(bytes.Join(result, []byte("\n")), '\n')
++}
++
++func TestMainOutputEventParserControls(t *testing.T) {
++	for _, id := range []string{"M02"} {
++		t.Run(id, func(t *testing.T) {
++			raw := mainOutputControlEvents(id)
++			if err := parseMainOutputOutput(id, raw); err != nil {
++				t.Fatal(err)
++			}
++			for _, name := range mainOutputRequiredEvents(id) {
++				t.Run("omitted/"+strings.ReplaceAll(name, "/", "_"), func(t *testing.T) {
++					if parseMainOutputOutput(id, mainOutputCorruptRaw(t, "missing_event", name, raw)) == nil {
++						t.Fatal("missing required scenario or causal control accepted", name)
++					}
++				})
++			}
++			target := mainOutputScenarios[id].Tests[3] + "/return_text/return_stale_producer"
++			for _, fault := range []string{"orphan_pass", "skipped_child", "failed_child", "foreign_package", "unknown_child", "duplicate_run", "parent_before_child", "nested_parent_before_child", "missing_time", "invalid_time", "backwards_time", "missing_elapsed", "negative_elapsed", "oversized_elapsed", "invalid_utf8", "duplicate_json_key", "trailing_json"} {
++				t.Run(fault, func(t *testing.T) {
++					if parseMainOutputOutput(id, mainOutputCorruptRaw(t, fault, target, raw)) == nil {
++						t.Fatal("damaged parser control accepted", fault)
++					}
++				})
++			}
++		})
++	}
++	if parseMainOutputOutput("FN05", mainOutputControlEvents("M02")) == nil {
++		t.Fatal("unknown scenario accepted")
++	}
++}
++
++func mainOutputRewriteArtifacts(t *testing.T, record *EvidenceRecord, mutate func(map[string][]byte, *editorProcessReceipt)) {
++	t.Helper()
++	data, err := stateReadArtifacts(record.Artifacts, mainOutputArtifactNames)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var receipt editorProcessReceipt
++	if err := decodeEditorJSON(data["main-output-process.json"], &receipt); err != nil {
++		t.Fatal(err)
++	}
++	mutate(data, &receipt)
++	receipt.RawSHA256, receipt.RawBytes = editorSHA(data["main-output-go.jsonl"]), len(data["main-output-go.jsonl"])
++	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(data["main-output-stderr.log"]), len(data["main-output-stderr.log"])
++	encoded, err := json.MarshalIndent(receipt, "", "  ")
++	if err != nil {
++		t.Fatal(err)
++	}
++	data["main-output-process.json"] = append(encoded, '\n')
++	root := t.TempDir()
++	record.Artifacts = nil
++	for _, name := range mainOutputArtifactNames {
++		path := filepath.Join(root, name)
++		if err := os.WriteFile(path, data[name], 0600); err != nil {
++			t.Fatal(err)
++		}
++		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data[name])})
++	}
++}
++
++func TestMainOutputActualProductionEvidence(t *testing.T) {
++	all, err := LoadAllContracts("", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	selected := mainOutputSelectedContracts(t, all)
++	runner := NewRunner()
++	runner.artifactDir = os.Getenv("CHERRI_MAIN_OUTPUT_EVIDENCE_OUTPUT")
++	if runner.artifactDir == "" {
++		runner.artifactDir = t.TempDir()
++	}
++	for _, id := range []string{"M02"} {
++		s := mainOutputScenarios[id]
++		if !runner.runMainOutputRequirement(id) {
++			t.Fatal("missing main-output producer", id)
++		}
++		result := runner.results[id]
++		if result.Passed || result.Status != "PENDING_EXTERNAL" || result.Group != s.Group || result.Requirement != s.Title ||
++			result.TestLevel != s.Level || !reflect.DeepEqual(result.ExecutedLevels, s.LocalTiers) {
++			t.Fatal("actual main-output scope lost or expanded", result)
++		}
++	}
++	if len(runner.results) != 1 || len(runner.records) != 1 || len(runner.observations) != 0 {
++		t.Fatal("actual main-output accounting drifted", runner.results, len(runner.records))
++	}
++	for _, record := range runner.records {
++		if len(record.Requirements) != 1 || record.ImplementationSHA != runner.implSHA {
++			t.Fatal("actual main-output requirement/source binding lost", record)
++		}
++		if err := validateMainOutputRecord(record.Requirements[0], record); err != nil {
++			t.Fatal(err)
++		}
++	}
++	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
++	report, err := ValidateEvidenceManifest(manifest, selected, "local")
++	if err != nil || report == nil || report.TotalCases != 1 || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != 1 || report.ClosureComplete {
++		t.Fatal("local main-output evidence falsely closed native execution", report, err)
++	}
++	for _, row := range report.Results {
++		if row.Status != "NOT_RUN" || row.Passed || !reflect.DeepEqual(row.ExecutedLevels, mainOutputScenarios[row.ID].LocalTiers) {
++			t.Fatal("missing actual Apple tier was concealed", row)
++		}
++	}
++	if final, err := ValidateEvidenceManifest(manifest, selected, "final"); err == nil || final == nil || final.ClosureComplete || final.PassedCases != 0 {
++		t.Fatal("local function proof bypassed final Apple/release gates", final, err)
++	}
++	if err := os.MkdirAll(runner.artifactDir, 0755); err != nil {
++		t.Fatal(err)
++	}
++	for name, value := range map[string]any{"main-output-manifest.json": manifest, "main-output-report.json": report} {
++		data, err := json.MarshalIndent(value, "", "  ")
++		if err != nil {
++			t.Fatal(err)
++		}
++		if err := os.WriteFile(filepath.Join(runner.artifactDir, name), append(data, '\n'), 0600); err != nil {
++			t.Fatal(err)
++		}
++	}
++	auditPath := filepath.Join(runner.artifactDir, "main-output-execution-audit.json")
++	if err := writeExecutionAudit(runner, all, auditPath); err != nil {
++		t.Fatal(err)
++	}
++	auditData, err := os.ReadFile(auditPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var audit struct{ Rows []ExecutionAuditRow }
++	if err := json.Unmarshal(auditData, &audit); err != nil {
++		t.Fatal(err)
++	}
++	if len(audit.Rows) != 179 {
++		t.Fatal("full original 179 accounting changed", len(audit.Rows))
++	}
++	for _, row := range audit.Rows {
++		if s, found := mainOutputScenarios[row.ID]; found {
++			if row.Status != "BLOCKED_EXTERNAL" || !row.PositiveAndNegative || !reflect.DeepEqual(row.Tier, s.LocalTiers) ||
++				!reflect.DeepEqual(row.TestNames, s.Tests) || !reflect.DeepEqual(row.ProductionPath, mainOutputProductionPaths) || row.Scope != s.Scope {
++				t.Fatal("actual local function scope lost in complete audit", row)
++			}
++		} else if row.Status == "PASS" || row.Status == "BLOCKED_EXTERNAL" || row.PositiveAndNegative {
++			t.Fatal("unselected requirement inherited main-output credit", row)
++		}
++	}
++	original, err := json.Marshal(manifest)
++	if err != nil {
++		t.Fatal(err)
++	}
++	faults := []string{
++		"wrong_producer", "borrowed_id", "fake_ios", "wrong_tier", "truncated_command", "missing_child_binding", "wrong_scope", "stale_source", "failed_result", "failed_exit",
++		"missing_artifact", "duplicate_artifact", "bad_artifact_digest", "missing_tier", "process_source", "dirty_before", "dirty_after", "missing_exit", "missing_timeout", "timeout",
++		"missing_discovery", "missing_required_test", "bad_time", "forged_source_hash", "missing_source_path", "process_requirement", "process_command", "forged_benchmark",
++		"raw_missing_graph", "raw_missing_corruption", "raw_orphan_pass", "raw_skipped_child", "raw_failed_child", "raw_foreign_package", "raw_unknown_child", "raw_duplicate_run", "raw_parent_before_child", "raw_nested_parent_before_child",
++		"raw_invalid_utf8", "raw_duplicate_json_key", "raw_trailing_json", "raw_missing_time", "raw_invalid_time", "raw_backwards_time", "raw_missing_elapsed", "raw_negative_elapsed", "raw_oversized_elapsed", "raw_outside_process_interval", "stderr_invalid_utf8",
++	}
++	for _, actual := range runner.records {
++		id := actual.Requirements[0]
++		s := mainOutputScenarios[id]
++		t.Run(id+"/"+actual.Tier, func(t *testing.T) {
++			for _, fault := range faults {
++				t.Run(fault, func(t *testing.T) {
++					var broken EvidenceManifest
++					if err := json.Unmarshal(original, &broken); err != nil {
++						t.Fatal(err)
++					}
++					for index := range broken.Records {
++						changed := &broken.Records[index]
++						if changed.EvidenceID != actual.EvidenceID {
++							continue
++						}
++						switch fault {
++						case "wrong_producer":
++							changed.TestID = "tools/language-acceptance:runFunctions"
++						case "borrowed_id":
++							changed.Requirements = append(changed.Requirements, "FN05")
++						case "fake_ios":
++							changed.Tier = "ios-runtime"
++						case "wrong_tier":
++							changed.Tier = "native-roundtrip"
++						case "truncated_command":
++							changed.Command = productionTestCommand(s.Tests[:1])
++						case "missing_child_binding":
++							delete(changed.Assertions, "required_go_events")
++						case "wrong_scope":
++							changed.Assertions["scope"] = "All linked function/native requirements complete"
++						case "stale_source":
++							changed.ImplementationSHA = strings.Repeat("e", 40)
++						case "failed_result":
++							changed.Result = "failed"
++						case "failed_exit":
++							changed.ExitCode = 1
++						case "missing_artifact":
++							changed.Artifacts = changed.Artifacts[:2]
++						case "duplicate_artifact":
++							changed.Artifacts[2] = changed.Artifacts[1]
++						case "bad_artifact_digest":
++							changed.Artifacts[0].SHA256 = strings.Repeat("0", 64)
++						case "missing_tier":
++							broken.Records = append(broken.Records[:index], broken.Records[index+1:]...)
++						default:
++							mainOutputRewriteArtifacts(t, changed, func(data map[string][]byte, receipt *editorProcessReceipt) {
++								switch fault {
++								case "process_source":
++									receipt.SourceCommit = strings.Repeat("a", 40)
++								case "dirty_before":
++									receipt.SourceCleanBefore = false
++								case "dirty_after":
++									receipt.SourceCleanAfter = false
++								case "missing_exit":
++									receipt.ExitCode = nil
++								case "missing_timeout":
++									receipt.TimedOut = nil
++								case "timeout":
++									value := true
++									receipt.TimedOut = &value
++								case "missing_discovery":
++									receipt.DiscoveredTests = receipt.DiscoveredTests[:len(receipt.DiscoveredTests)-1]
++								case "missing_required_test":
++									receipt.RequiredTests = receipt.RequiredTests[:len(receipt.RequiredTests)-1]
++								case "bad_time":
++									receipt.ElapsedSeconds = 0
++								case "forged_source_hash":
++									receipt.SourceFiles[0].SHA256 = strings.Repeat("0", 64)
++								case "missing_source_path":
++									receipt.SourceFiles = receipt.SourceFiles[:len(receipt.SourceFiles)-1]
++								case "process_requirement":
++									receipt.Requirement = "FN05"
++								case "process_command":
++									receipt.Command = productionTestCommand(s.Tests[:1])
++								case "forged_benchmark":
++									receipt.BenchmarkSHA256, receipt.BenchmarkBytes = strings.Repeat("a", 64), 1
++								case "stderr_invalid_utf8":
++									data["main-output-stderr.log"] = []byte{0xff}
++								default:
++									target := s.Tests[3] + "/return_text/return_stale_producer"
++									kind := strings.TrimPrefix(fault, "raw_")
++									if fault == "raw_missing_graph" {
++										kind, target = "missing_event", s.Tests[0]
++									}
++									if fault == "raw_missing_corruption" {
++										kind = "missing_event"
++									}
++									data["main-output-go.jsonl"] = mainOutputCorruptRaw(t, kind, target, data["main-output-go.jsonl"])
++								}
++							})
++						}
++						break
++					}
++					damaged, err := ValidateEvidenceManifest(&broken, selected, "local")
++					if err == nil || damaged == nil || damaged.ClosureComplete || damaged.PassedCases != 0 {
++						t.Fatal("damaged actual function evidence accepted", fault, damaged, err)
++					}
++				})
++			}
++		})
++	}
++	for _, id := range []string{"M02"} {
++		var actual EvidenceRecord
++		for _, record := range runner.records {
++			if record.Requirements[0] == id {
++				actual = record
++				break
++			}
++		}
++		for index, path := range mainOutputProductionPaths {
++			t.Run(id+"/source_digest/"+strings.ReplaceAll(path, "/", "_"), func(t *testing.T) {
++				var changed EvidenceRecord
++				encoded, _ := json.Marshal(actual)
++				if err := json.Unmarshal(encoded, &changed); err != nil {
++					t.Fatal(err)
++				}
++				mainOutputRewriteArtifacts(t, &changed, func(_ map[string][]byte, receipt *editorProcessReceipt) {
++					receipt.SourceFiles[index].SHA256 = strings.Repeat("0", 64)
++				})
++				if validateMainOutputRecord(id, changed) == nil {
++					t.Fatal("hash-reconciled immutable source corruption accepted", path)
++				}
++			})
++		}
++	}
++	for _, id := range []string{"M01", "M03", "FN04", "F03", "F04", "RP26", "RP30", "BRG14", "BRG15"} {
++		t.Run("no_inheritance/"+id, func(t *testing.T) {
++			related := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
++			for _, row := range all.Acceptance.Cases {
++				if row.ID == id {
++					related.Acceptance.Cases = append(related.Acceptance.Cases, row)
++				}
++			}
++			for _, row := range all.Repair.Cases {
++				if row.ID == id {
++					related.Repair.Cases = append(related.Repair.Cases, row)
++				}
++			}
++			for _, row := range all.Gates.Gates {
++				if row.ID == id {
++					related.Gates.Gates = append(related.Gates.Gates, row)
++				}
++			}
++			related.Acceptance.CaseCount = len(related.Acceptance.Cases)
++			if related.Acceptance.CaseCount+len(related.Repair.Cases)+len(related.Gates.Gates) != 1 {
++				t.Fatal("missing related immutable requirement", id)
++			}
++			var rebound EvidenceManifest
++			if err := json.Unmarshal(original, &rebound); err != nil {
++				t.Fatal(err)
++			}
++			for index := range rebound.Records {
++				rebound.Records[index].Requirements = []string{id}
++			}
++			report, err := ValidateEvidenceManifest(&rebound, related, "local")
++			if err == nil || report == nil || report.PassedCases != 0 || report.ClosureComplete {
++				t.Fatal("related unexecuted requirement inherited function evidence", id, report, err)
++			}
++		})
++	}
++}
++
++func TestMainOutputSourceBudget(t *testing.T) {
++	line := func(size int64) string { return fmt.Sprintf("%s blob %d\n", strings.Repeat("a", 40), size) }
++	if err := mainOutputSourceBudget([]byte(strings.Repeat(line(10), len(mainOutputProductionPaths))), len(mainOutputProductionPaths)); err != nil {
++		t.Fatal(err)
++	}
++	for _, control := range []struct {
++		name, raw string
++		count     int
++	}{
++		{"empty", "", 1}, {"zero_count", line(1), 0}, {"excessive_count", strings.Repeat(line(0), 129), 129},
++		{"missing_object", line(1), 2}, {"extra_object", line(1) + line(1), 1}, {"truncated", strings.TrimSuffix(line(1), "\n"), 1},
++		{"wrong_hash", "bad blob 1\n", 1}, {"not_blob", strings.Repeat("a", 40) + " tree 1\n", 1},
++		{"negative", line(-1), 1}, {"object_limit", line((4 << 20) + 1), 1}, {"aggregate_limit", strings.Repeat(line(4<<20), 4), 4},
++		{"overflow", strings.Repeat("a", 40) + " blob 999999999999999999999999999\n", 1},
++	} {
++		t.Run(control.name, func(t *testing.T) {
++			if mainOutputSourceBudget([]byte(control.raw), control.count) == nil {
++				t.Fatal("invalid immutable source size budget accepted")
++			}
++		})
++	}
++}

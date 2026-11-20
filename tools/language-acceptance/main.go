@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateMainOutputRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateFunctionDefaultRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1753,11 +1757,7 @@ func (r *Runner) runFunctions() {
 func (r *Runner) runMetadata() {
 	r.runMetadataRequirement("M01")
 
-	// M02: Main body explicit return and Void fallthrough
-	wfM02Explicit, errM02Explicit := lowerSrc(r.reg, "return \"done\"")
-	wfM02Void, errM02Void := lowerSrc(r.reg, "function noop() -> Void {\n    let x = 1\n}\nnoop()")
-	m02Passed := errM02Explicit == nil && wfM02Explicit.HasExplicitReturn && errM02Void == nil && !wfM02Void.HasExplicitReturn
-	r.Record("M02", "metadata", "Main body explicit return and Void fallthrough", "native+iOS", []string{"native"}, m02Passed, "PASSED", "Explicit return emits is.workflow.actions.output and Void fallthrough omits output")
+	r.runMainOutputRequirement("M02")
 
 	r.runMetadataRequirement("M03")
 	r.runMetadataRequirement("M04")
