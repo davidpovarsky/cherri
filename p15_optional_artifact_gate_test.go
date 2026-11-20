@@ -17,6 +17,10 @@ import (
 const p15OptionalUnsignedGraphMarker = "CHERRI_OPTIONAL_UNSIGNED_GRAPH_V1="
 const p15OptionalUnsignedMaximumBytes = 4 * 1024 * 1024
 
+// The independently checked M02 graph includes the authored main fallthrough
+// Nothing after the original 399 actions; the runtime fixture/expected fields do not change.
+const p15OptionalPreparedActionCount = 400
+
 // Reuse the independent complete graph oracle for the CLI artifact that will
 // actually be signed. Errors reveal neither supplied file contents nor paths.
 func p15OptionalPreparedUnsignedArtifact(path, expectedSHA string, contract []byte) (map[string]any, error) {
@@ -57,7 +61,7 @@ func p15OptionalPreparedUnsignedArtifact(path, expectedSHA string, contract []by
 		return nil, fmt.Errorf("prepared Optional artifact actions could not be decoded")
 	}
 	var actions []map[string]any
-	if json.Unmarshal(raw, &actions) != nil || len(actions) != 399 {
+	if json.Unmarshal(raw, &actions) != nil || len(actions) != p15OptionalPreparedActionCount {
 		return nil, fmt.Errorf("prepared Optional artifact action count or representation changed")
 	}
 	if p15OptionalDiagnosticGraphError(actions) != nil {
@@ -95,7 +99,7 @@ func TestP15OptionalNativeDiagnosticPreparedArtifactControls(t *testing.T) {
 	}
 	digest := fmt.Sprintf("%x", sha256.Sum256(data))
 	receipt, err := p15OptionalPreparedUnsignedArtifact(path, digest, contract)
-	if err != nil || receipt["unsignedPlistSha256"] != digest || receipt["nativeActionCount"] != 399 || receipt["formalAcceptanceGranted"] != false {
+	if err != nil || receipt["unsignedPlistSha256"] != digest || receipt["nativeActionCount"] != p15OptionalPreparedActionCount || receipt["formalAcceptanceGranted"] != false {
 		t.Fatalf("real unsigned artifact control failed: %v", err)
 	}
 	for _, bad := range []string{"", strings.Repeat("0", 64), strings.ToUpper(digest), "not-a-digest"} {

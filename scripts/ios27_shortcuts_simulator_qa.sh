@@ -2404,7 +2404,7 @@ try:
             "schemaVersion": "1.0", "fixtureId": expected_trace_run_id,
             "status": "PASS_NATIVE_STRUCTURE_ONLY", "sourceSha256": source_sha256,
             "expectedContractSha256": reviewed_source["expectedContractSha256"],
-            "unsignedPlistSha256": unsigned_sha256, "nativeActionCount": 399,
+            "unsignedPlistSha256": unsigned_sha256, "nativeActionCount": 400,
             "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
         }
         observed_graph = fixture.get("optionalForwardingGraph")

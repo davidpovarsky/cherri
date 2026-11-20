@@ -35,7 +35,7 @@ class OptionalArtifactGateTests(unittest.TestCase):
             "schemaVersion": "1.0", "fixtureId": gate.FIXTURE_ID,
             "status": "PASS_NATIVE_STRUCTURE_ONLY", "sourceSha256": gate.SOURCE_SHA256,
             "expectedContractSha256": gate.CONTRACT_SHA256,
-            "unsignedPlistSha256": self.digest, "nativeActionCount": 399,
+            "unsignedPlistSha256": self.digest, "nativeActionCount": 400,
             "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
         }
 
@@ -83,7 +83,7 @@ class OptionalArtifactGateTests(unittest.TestCase):
 
     def test_receipt_schema_truth_and_artifact_binding_mutations_reject(self):
         changes = [(key, "wrong") for key in self.receipt]
-        changes += [("nativeActionCount", 398), ("nativeActionCount", 399.0),
+        changes += [("nativeActionCount", 399), ("nativeActionCount", 400.0),
                     ("formalAcceptanceGranted", 0), ("formalAcceptanceGranted", True),
                     ("appleRuntime", "PASS"), ("unreviewedPayload", "PRIVATE_CANARY")]
         for key, value in changes:
@@ -97,7 +97,7 @@ class OptionalArtifactGateTests(unittest.TestCase):
                 self.invoke(self.output(receipt))
 
     def test_absent_duplicate_and_duplicate_key_receipts_reject(self):
-        duplicate_key = self.output().replace(b'"nativeActionCount": 399', b'"nativeActionCount": 399, "nativeActionCount": 399')
+        duplicate_key = self.output().replace(b'"nativeActionCount": 400', b'"nativeActionCount": 400, "nativeActionCount": 400')
         for output in (b"PASS\n", self.output() * 2, duplicate_key, (gate.GRAPH_MARKER + "null\n").encode()):
             with self.subTest(output_length=len(output)), self.assertRaises(ValueError):
                 self.invoke(output)
