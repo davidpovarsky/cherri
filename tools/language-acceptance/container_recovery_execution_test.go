@@ -62,7 +62,29 @@ func TestContainerRecoveryProductionEvidence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"missing_structure", "missing_roundtrip", "wrong_producer", "partial_selection", "missing_assertion", "missing_scope", "stale_sha", "invented_runtime", "inherited_requirement", "added_requirement", "failed_result", "nonzero_exit"} {
+	t.Run("complete_roundtrip_execution_covers_structure_tier", func(t *testing.T) {
+		var covered EvidenceManifest
+		if err := json.Unmarshal(encoded, &covered); err != nil {
+			t.Fatal(err)
+		}
+		covered.Records = nil
+		for _, record := range manifest.Records {
+			if record.Tier == "native-roundtrip" {
+				covered.Records = append(covered.Records, record)
+			}
+		}
+		// The unchanged global tier policy lets native-roundtrip cover native
+		// structure. Its surviving receipt still requires all three executed
+		// tests, including the independent authored structure oracle.
+		if len(covered.Records) != 1 || !reflect.DeepEqual(covered.Records[0].Command, productionTestCommand(containerRecoveryScenario.TestNames)) {
+			t.Fatal("hierarchy control lost the actual full producer selection")
+		}
+		result, err := ValidateEvidenceManifest(&covered, selected, "local")
+		if err != nil || result.PassedCases != 1 || result.FailedCases != 0 || result.ClosureComplete {
+			t.Fatalf("unchanged native tier hierarchy rejected complete actual execution: %+v %v", result, err)
+		}
+	})
+	for _, fault := range []string{"missing_structure_execution", "missing_roundtrip", "wrong_producer", "partial_selection", "missing_assertion", "missing_scope", "stale_sha", "invented_runtime", "inherited_requirement", "added_requirement", "failed_result", "nonzero_exit"} {
 		t.Run(fault, func(t *testing.T) {
 			var changed EvidenceManifest
 			if err := json.Unmarshal(encoded, &changed); err != nil {
@@ -70,13 +92,21 @@ func TestContainerRecoveryProductionEvidence(t *testing.T) {
 			}
 			record := &changed.Records[0]
 			switch fault {
-			case "missing_structure", "missing_roundtrip":
-				tier := "native-structure"
-				if fault == "missing_roundtrip" {
-					tier = "native-roundtrip"
-				}
+			case "missing_structure_execution":
 				for index, candidate := range changed.Records {
-					if candidate.Tier == tier {
+					if candidate.Tier == "native-structure" {
+						changed.Records = append(changed.Records[:index], changed.Records[index+1:]...)
+						break
+					}
+				}
+				if len(changed.Records) != 1 || changed.Records[0].Tier != "native-roundtrip" {
+					t.Fatal("negative hierarchy control did not retain only roundtrip evidence")
+				}
+				changed.Records[0].Command = productionTestCommand(containerRecoveryScenario.TestNames[1:])
+				changed.Records[0].Assertions["required_production_tests"] = strings.Join(containerRecoveryScenario.TestNames[1:], "\n")
+			case "missing_roundtrip":
+				for index, candidate := range changed.Records {
+					if candidate.Tier == "native-roundtrip" {
 						changed.Records = append(changed.Records[:index], changed.Records[index+1:]...)
 						break
 					}
