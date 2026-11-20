@@ -99,7 +99,7 @@ func TestP15E02IncompleteIndependentDiagnostics(t *testing.T) {
 		{"trailing_initializer", "let unfinished =", 6},
 		{"unclosed_call", "show(", 6},
 		{"incomplete_named_value", "formatNumber(1, decimalPlaces: )", 7},
-		{"nested_incomplete_calls", strings.Repeat("show(", 20), 6},
+		{"nested_incomplete_calls", strings.Repeat("round(", 20), 6},
 		{"incomplete_unicode_string", "let unfinished = \"\u05e9\u05dc\u05d5\u05dd\U0001F642", 6},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -178,4 +178,40 @@ func TestP15E02RangeAndDiagnosticOracleMutations(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestP15E02ClosedNestedCallControls(t *testing.T) {
+	t.Run("closed_number_chain_is_healthy", func(t *testing.T) {
+		const uri = "file:///p15-e02-closed-number.cherri"
+		code := strings.Repeat("round(", 20) + "1" + strings.Repeat(")", 20)
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		actual, _ := svc.Analyze(uri)
+		if len(actual) != 0 {
+			t.Fatalf("number-result chain is not a valid independent control: %+v", actual)
+		}
+	})
+	t.Run("distinct_void_argument_errors_remain", func(t *testing.T) {
+		const uri = "file:///p15-e02-closed-void.cherri"
+		code := strings.Repeat("show(", 8) + "\"value\"" + strings.Repeat(")", 8)
+		svc := NewService(nil)
+		svc.OpenDocument(uri, 1, code)
+		actual, _ := svc.Analyze(uri)
+		if len(actual) != 7 {
+			t.Fatalf("all7 independent Void argument errors must remain: %+v", actual)
+		}
+		ranges := map[source.Span]bool{}
+		for _, d := range actual {
+			if d.Code != analysis.CodeArgumentType || d.Severity != analysis.SeverityError || !strings.Contains(d.Message, "Void cannot be passed") {
+				t.Fatal("wrong independent semantic error", d)
+			}
+			if err := p15EditorSpanError(code, uri, d.Span); err != nil {
+				t.Fatal(err)
+			}
+			if ranges[d.Span] {
+				t.Fatal("distinct call errors lost range identity")
+			}
+			ranges[d.Span] = true
+		}
+	})
 }
