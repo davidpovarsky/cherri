@@ -28,6 +28,16 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 	})
 	bindings := map[*syntax.BindingStmt]string{}
 	dependencies := map[string]map[string]bool{}
+	dependencyExpressions := map[string][]syntax.Expression{}
+	l.optionalJoinDemand = map[syntax.Expression]bool{}
+	optionalDemandWalk(roots, func(node syntax.Node) {
+		switch value := node.(type) {
+		case *syntax.IfStmt:
+			l.optionalJoinDemand[value] = false
+		case *syntax.MenuStmt:
+			l.optionalJoinDemand[value] = false
+		}
+	})
 	needed := map[string]bool{}
 	addNames := func(target map[string]bool, expression syntax.Expression) {
 		optionalDemandWalk(expression, func(node syntax.Node) {
@@ -36,7 +46,22 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 			}
 		})
 	}
+	markJoins := func(expression syntax.Expression) {
+		optionalDemandWalk(expression, func(node syntax.Node) {
+			switch value := node.(type) {
+			case *syntax.IfStmt:
+				l.optionalJoinDemand[value] = true
+			case *syntax.MenuStmt:
+				l.optionalJoinDemand[value] = true
+			}
+		})
+	}
+	seed := func(expression syntax.Expression) {
+		addNames(needed, expression)
+		markJoins(expression)
+	}
 	depend := func(name string, expression syntax.Expression) {
+		dependencyExpressions[name] = append(dependencyExpressions[name], expression)
 		if dependencies[name] == nil {
 			dependencies[name] = map[string]bool{}
 		}
@@ -56,10 +81,10 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 		case *syntax.ReturnStmt:
 			// All authored returns are retained conservatively; only Optional
 			// bindings actually emit paired flags during lowering.
-			addNames(needed, value.Value)
+			seed(value.Value)
 		case *syntax.FunctionDecl:
 			for _, parameter := range value.Parameters {
-				addNames(needed, parameter.DefaultExpr)
+				seed(parameter.DefaultExpr)
 			}
 		case *syntax.CallExpr:
 			name := ""
@@ -74,18 +99,18 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 			if functions[name] {
 				// Include every written argument of a user-function call.
 				// Ordinary canonical action inputs do not consume this flag.
-				addNames(needed, value.PrimaryArg)
+				seed(value.PrimaryArg)
 				for _, argument := range value.NamedArgs {
-					addNames(needed, argument.Value)
+					seed(argument.Value)
 				}
 			}
 		case *syntax.BinaryExpr:
 			if value.Op == syntax.TokenEqual || value.Op == syntax.TokenNotEqual {
 				if isNone(value.Right) {
-					addNames(needed, value.Left)
+					seed(value.Left)
 				}
 				if isNone(value.Left) {
-					addNames(needed, value.Right)
+					seed(value.Right)
 				}
 			}
 		}
@@ -102,6 +127,11 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 				needed[dependency] = true
 				queue = append(queue, dependency)
 			}
+		}
+	}
+	for name := range needed {
+		for _, expression := range dependencyExpressions[name] {
+			markJoins(expression)
 		}
 	}
 	l.optionalPresenceDemand = map[*syntax.BindingStmt]bool{}

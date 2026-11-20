@@ -9,7 +9,7 @@ import (
 
 // Provenance records whether lowering can obtain an independent presence flag,
 // not whether the value is present. It follows bindings and checked function
-// carriers; arbitrary native content and unimplemented value joins have none.
+// carriers and complete normal branch values; arbitrary native content has none.
 func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Type, scope *Scope) bool {
 	if types.DefinitelyPresent(value) {
 		return true
@@ -22,6 +22,8 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
 		return found && binding.Initialized && binding.optionalPresence
 	case *syntax.CallExpr:
 		return a.exprPresence[expr]
+	case *syntax.IfStmt, *syntax.MenuStmt:
+		return a.controlValueHasPresence(expr)
 	case *syntax.IndexExpr:
 		if a.dictionaryIndexes[expr] {
 			return true

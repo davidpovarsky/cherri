@@ -102,6 +102,8 @@ type Lowerer struct {
 	optionalFunctionReturn     bool
 	optionalExpressionPresence map[syntax.Expression]interface{}
 	optionalPresenceDemand     map[*syntax.BindingStmt]bool
+	optionalJoinDemand         map[syntax.Expression]bool
+	optionalJoinYields         map[*syntax.YieldStmt]bool
 	knownDictionaryIndexes     map[syntax.Expression]bool
 	literalTextCarriers        map[*ir.NativeActionNode]bool
 	nativeResultReferences     map[*ir.NativeActionNode]*ir.AttachmentToken
@@ -1509,6 +1511,9 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	case *syntax.MenuStmt:
 		return l.lowerMenu(s)
 	case *syntax.YieldStmt:
+		if l.optionalJoinYields[s] {
+			return l.lowerOptionalJoinYield(s)
+		}
 		val, err := l.lowerRuntimeLiteral(s.Value)
 		if err != nil {
 			return err
@@ -3650,12 +3655,18 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 
 	switch e := expr.(type) {
 	case *syntax.IfStmt:
+		if l.optionalJoinNeeded(e) {
+			return l.lowerOptionalControlValue(e)
+		}
 		return l.lowerIfWithOutput(e, true)
 	case *syntax.RepeatStmt:
 		return l.lowerRepeatWithOutput(e, true)
 	case *syntax.ForStmt:
 		return l.lowerForWithOutput(e, true)
 	case *syntax.MenuStmt:
+		if l.optionalJoinNeeded(e) {
+			return l.lowerOptionalControlValue(e)
+		}
 		return l.lowerMenuWithOutput(e, true)
 
 	case *syntax.LiteralExpr:

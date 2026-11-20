@@ -10,32 +10,13 @@ import (
 // branch's output, and an early yield can be followed by a different action.
 func (a *Analyzer) controlExpressionResultType(expr syntax.Expression) types.Type {
 	switch control := expr.(type) {
-	case *syntax.IfStmt:
-		thenType := a.normalControlBranchResultType(control.ThenBlock)
-		var elseType types.Type = types.AnyContent
-		switch alternate := control.ElseBlock.(type) {
-		case *syntax.BlockStmt:
-			elseType = a.normalControlBranchResultType(alternate)
-		case *syntax.IfStmt:
-			if statementMayContinue(alternate) {
-				elseType = a.controlExpressionResultType(alternate)
-			} else {
-				elseType = nil
-			}
-		}
-		return types.NewUnion(thenType, elseType)
+	case *syntax.IfStmt, *syntax.MenuStmt:
+		return joinControlValueEvidence(a.normalControlValueEvidence(expr))
 	case *syntax.ForStmt:
 		return types.NewList(a.controlBranchResultType(control.BodyBlock))
 	case *syntax.RepeatStmt:
 		return types.NewList(a.controlBranchResultType(control.BodyBlock))
-	case *syntax.MenuStmt:
-		branches := make([]types.Type, 0, len(control.Cases))
-		for _, item := range control.Cases {
-			branches = append(branches, a.normalControlBranchResultType(item.BodyBlock))
-		}
-		if len(branches) != 0 {
-			return types.NewUnion(branches...)
-		}
+
 	}
 	return types.AnyContent
 }

@@ -1130,6 +1130,8 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 		if binding, found := scope.Lookup(node.Name); found {
 			a.exprAbsent[expr] = binding.Initialized && binding.knownAbsent
 		}
+	case *syntax.IfStmt, *syntax.MenuStmt:
+		a.exprAbsent[expr] = a.controlValueKnownAbsent(expr)
 	}
 	if name := a.enumContexts[expr]; name != "" {
 		a.validateEnumValue(expr, name, a.enumCatalog.Values(name))
