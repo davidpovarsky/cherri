@@ -1,0 +1,33 @@
+{
+  "source_sha": "1f5fb81abe6ce2c3018e62f1d72e71a8dcfc815d",
+  "head_after": "1f5fb81abe6ce2c3018e62f1d72e71a8dcfc815d",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestContainerRecoveryProductionEvidence|TestSupplementalProductionScenarioInventory|TestSupplementalAcceptanceMissingProducerFailsClosed)$",
+    "./tools/language-acceptance"
+  ],
+  "outer_budget_seconds": 330,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T00:52:04.008883+00:00",
+  "finished_at_utc": "2026-11-20T00:53:07.165515+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 62.84400000004098,
+  "selected_parents": [
+    "TestContainerRecoveryProductionEvidence",
+    "TestSupplementalProductionScenarioInventory",
+    "TestSupplementalAcceptanceMissingProducerFailsClosed"
+  ],
+  "missing_parents": [],
+  "named_passes": 16,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "d4b895b4917f2d25884fbceaac7d14282ca4eff1a717cb59f24e6ada36ef7f1b",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

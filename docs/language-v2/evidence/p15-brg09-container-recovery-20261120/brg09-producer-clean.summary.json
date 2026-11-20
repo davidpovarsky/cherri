@@ -1,0 +1,37 @@
+{
+  "source_sha": "b059a05c1db6fb3855c3576899c431bb1deb8804",
+  "head_after": "b059a05c1db6fb3855c3576899c431bb1deb8804",
+  "clean_before": true,
+  "clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestContainerRecoveryProductionEvidence|TestSupplementalProductionScenarioInventory|TestSupplementalAcceptanceMissingProducerFailsClosed)$",
+    "./tools/language-acceptance"
+  ],
+  "outer_budget_seconds": 330,
+  "timed_out": false,
+  "started_at_utc": "2026-11-20T00:46:35.824426+00:00",
+  "finished_at_utc": "2026-11-20T00:47:00.857004+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 24.89100000000326,
+  "selected_parents": [
+    "TestContainerRecoveryProductionEvidence",
+    "TestSupplementalProductionScenarioInventory",
+    "TestSupplementalAcceptanceMissingProducerFailsClosed"
+  ],
+  "missing_parents": [],
+  "named_passes": 13,
+  "failed_tests": [
+    "TestContainerRecoveryProductionEvidence/missing_structure",
+    "TestContainerRecoveryProductionEvidence",
+    null
+  ],
+  "skipped_tests": [],
+  "raw_sha256": "491c7688d72e4c5bd4b9b93686004e44ec8fae61e758824e56e05d0c4c37e793",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
