@@ -84,6 +84,36 @@ func safeImportEditProducer(tier string) string {
 	}
 	return ""
 }
+
+// Keep the shared immutable reader's 64-object and byte bounds unchanged.
+// This producer owns a fixed 68-path inventory; both acquisition and intake
+// bind every path across at most two bounded Git batches.
+func safeImportEditSourceFiles(repository, commit string) ([]editorSourceFile, error) {
+	if len(safeImportEditProductionPaths) == 0 || len(safeImportEditProductionPaths) > 128 {
+		return nil, fmt.Errorf("invalid bounded BRG19 source inventory")
+	}
+	seen := map[string]bool{}
+	for _, path := range safeImportEditProductionPaths {
+		if seen[path] {
+			return nil, fmt.Errorf("duplicate BRG19 source path: %s", path)
+		}
+		seen[path] = true
+	}
+	var files []editorSourceFile
+	for start := 0; start < len(safeImportEditProductionPaths); start += 64 {
+		end := start + 64
+		if end > len(safeImportEditProductionPaths) {
+			end = len(safeImportEditProductionPaths)
+		}
+		batch, err := editorGitSourceFiles(repository, commit, safeImportEditProductionPaths[start:end])
+		if err != nil {
+			return nil, err
+		}
+		files = append(files, batch...)
+	}
+	return files, nil
+}
+
 func parseSafeImportEditOutput(raw []byte) error {
 	if err := parseStrictNamedProductionOutput(safeImportEditRequiredEvents(), productionTestTimeout(safeImportEditTests)+time.Minute, raw); err != nil {
 		return err
@@ -122,8 +152,12 @@ func validateSafeImportEditRecord(id string, record EvidenceRecord) error {
 	if err = stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, (productionTestTimeout(safeImportEditTests) + time.Minute).Seconds()); err != nil {
 		return err
 	}
-	if err = stateExactSourceFiles(record.ImplementationSHA, receipt.SourceFiles, safeImportEditProductionPaths); err != nil {
+	expectedSources, err := safeImportEditSourceFiles(resolveRepoRoot(), record.ImplementationSHA)
+	if err != nil {
 		return err
+	}
+	if !reflect.DeepEqual(receipt.SourceFiles, expectedSources) {
+		return fmt.Errorf("BRG19 source inventory/digests differ from exact immutable Git blobs")
 	}
 	if err = parseSafeImportEditOutput(raw); err != nil {
 		return err
@@ -144,7 +178,7 @@ func (r *Runner) executeSafeImportEditProduction() ([]EvidenceArtifact, string, 
 		return nil, "", false, dirErr
 	}
 	var receipt = editorProcessReceipt{FormatVersion: 1, Requirement: "BRG19", SourceCommit: before, SourceCleanBefore: true, Command: productionTestCommand(safeImportEditTests), RequiredTests: safeImportEditRequiredEvents()}
-	receipt.SourceFiles, err = editorGitSourceFiles(root, before, safeImportEditProductionPaths)
+	receipt.SourceFiles, err = safeImportEditSourceFiles(root, before)
 	if err != nil {
 		return nil, "", false, err
 	}
