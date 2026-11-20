@@ -36,12 +36,12 @@ func (l *Lowerer) materializeCodecScalar(value backend.SemanticValue) *ir.Attach
 	}
 }
 
-func (l *Lowerer) lowerCodecSemanticValue(expr syntax.Expression, codec, wireKey string, forms []string) (backend.SemanticValue, error) {
+func (l *Lowerer) lowerCodecSemanticValue(expr syntax.Expression, codec, wireKey string, forms []string, consumesRuntimeValue bool) (backend.SemanticValue, error) {
 	value, err := l.lowerSemanticValue(expr)
 	if err != nil {
 		return backend.SemanticValue{}, err
 	}
-	if parameterRequiresReference(codec, wireKey, forms) {
+	if consumesRuntimeValue && parameterRequiresReference(codec, wireKey, forms) {
 		if token := l.materializeCodecScalar(value); token != nil {
 			return l.toSemanticValue(token), nil
 		}

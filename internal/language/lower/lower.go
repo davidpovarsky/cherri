@@ -222,6 +222,7 @@ func (l *Lowerer) generateControlEndOutputUUID(withOutput bool, bindingName stri
 }
 
 func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
+	l.prepareLiteralContainerParameters(node)
 	if node.ExactRawEnvelope != nil {
 		exactSession, ok := l.session.(interface {
 			EmitExactRawActionEnvelope(string, map[string]any) error
@@ -4635,14 +4636,9 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		if err != nil {
 			return backend.SemanticValue{}, err
 		}
-		hasReference := fStringValuesHaveReference(values)
 		var segments []backend.TextSegment
 		hasRef := false
 		for _, val := range values {
-			if literal, ok := val.(string); hasReference && ok && strings.ContainsRune(literal, '\uFFFC') {
-				val = l.materializeLiteralTextCarrier(literal)
-			}
-
 			semVal := l.toSemanticValue(val)
 			if semVal.Kind == backend.ValReference {
 				hasRef = true
@@ -5507,7 +5503,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if optionalValue {
 					argVal = l.optionalCarrier(argVal, provided.presence, "has_value", "value", "_cherri_optional_argument_v1")
 				} else {
-					argVal = functionEnvelopeValue(argVal)
+					argVal = l.functionEnvelopeValue(argVal)
 				}
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "1"
 				if argVal != nil {
@@ -5633,10 +5629,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	var setupArguments []setupQuestionArgument
 
 	if l.session != nil {
+		consumesArguments := l.resolvedCallConsumesRuntimeArguments(backend.ResolvedCall{
+			DefinitionID: actionSchema.ID, AppleIdentifier: actionSchema.AppleIdentifier,
+		})
 		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
 		if call.PrimaryArg != nil {
 			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
-				primVal, err := l.lowerCodecSemanticValue(call.PrimaryArg, primParam.Codec, primParam.WireKey, primParam.AcceptedForms)
+				primVal, err := l.lowerCodecSemanticValue(call.PrimaryArg, primParam.Codec, primParam.WireKey, primParam.AcceptedForms, consumesArguments)
 				if err != nil {
 					return nil, err
 				}
@@ -5714,7 +5713,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				}
 				seenIndices[matchedIdx] = true
 
-				val, err := l.lowerCodecSemanticValue(nArg.Value, param.Codec, param.WireKey, param.AcceptedForms)
+				val, err := l.lowerCodecSemanticValue(nArg.Value, param.Codec, param.WireKey, param.AcceptedForms, consumesArguments)
 				if err != nil {
 					return nil, err
 				}
@@ -5763,6 +5762,12 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			NodeID:          uuid,
 		}
 
+		// All authored arguments and their required snapshots now exist. Pure
+		// literal helpers cannot become the input to a later argument expression.
+		l.prepareResolvedCallLiteralContainers(&resolvedCall, consumesArguments)
+		if l.emitErr != nil {
+			return nil, l.emitErr
+		}
 		outUUID, err := l.session.EmitResolvedCall(resolvedCall)
 		if err != nil {
 			return nil, err

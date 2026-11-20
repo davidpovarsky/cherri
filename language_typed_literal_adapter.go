@@ -42,7 +42,7 @@ func encodeTypedLiteralParam(value backend.SemanticValue) any {
 
 func dictionaryHasComputedKeys(entries []backend.DictEntry) bool {
 	for _, entry := range entries {
-		if len(entry.KeySegments) > 0 {
+		if len(entry.KeySegments) > 0 && !entry.KeyHasLiteralValue {
 			return true
 		}
 	}

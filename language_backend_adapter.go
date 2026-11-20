@@ -91,7 +91,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	// consumption boundary. Exact raw producer parameters remain untouched.
 	// Removed diagnostics have evaluated their argument effects, but emit no
 	// consumer; the existing profile path still validates their options below.
-	if s.buildProfile != BuildProfileRelease || !isRemovableDiagnosticMacro(ident) {
+	if s.resolvedActionConsumesRuntimeArguments(ident) {
 		for index := range call.Arguments {
 			value, err := s.resolveNativeActionResultValue(call.Arguments[index].Value)
 			if err != nil {

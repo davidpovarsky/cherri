@@ -16,7 +16,7 @@ func (l *Lowerer) optionalFunctionParameter(annotation syntax.TypeAnnotation) bo
 // These are semantic values inside the compiler's private function carrier.
 // Retain explicit empty array/dictionary fields instead of Legacy's omitted
 // empty parameter shape. Opaque native.plist values never enter this switch.
-func functionEnvelopeValue(value interface{}) interface{} {
+func (l *Lowerer) functionEnvelopeValue(value interface{}) interface{} {
 	switch container := value.(type) {
 	case []interface{}:
 		if len(container) == 0 {
@@ -27,7 +27,7 @@ func functionEnvelopeValue(value interface{}) interface{} {
 			return backend.SemanticValue{Kind: backend.ValDict, DictVal: []backend.DictEntry{}}
 		}
 	}
-	return value
+	return l.prepareFunctionEnvelopeLiteralText(value)
 }
 
 // Store the presence before the corresponding value write. The authored RHS
@@ -248,7 +248,7 @@ func (l *Lowerer) optionalCarrier(value, presence interface{}, presenceKey, valu
 			fields[marker] = "1"
 		}
 		if present {
-			fields[valueKey] = functionEnvelopeValue(value)
+			fields[valueKey] = l.functionEnvelopeValue(value)
 		}
 		uuid := l.GenerateUUID()
 		l.emitAction(&ir.NativeActionNode{

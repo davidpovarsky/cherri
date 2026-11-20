@@ -116,6 +116,14 @@ func p15S01ContainerSource(name string) string {
 		return "let suffix=text(\"SUFFIX\")\nlet seed=text(\"SEED\")\nlet value={f\"K\uFFFC{suffix}\":\"VALUE\",\"later\":native.action(\"is.workflow.actions.setitemname\",{\"WFName\":\"LATER\"})}\ngetVariable(value)\n"
 	case "function_scalar":
 		return "function accept(value:Text)->Text{return value}\nlet result=accept(" + literal + ")\ngetVariable(result)\n"
+	case "optional_scalar_argument":
+		return "function echo(value:Text?)->Text?{return value}\ngetVariable(echo(" + literal + "))\n"
+	case "optional_map_argument":
+		return "function echo(value:Map<Text,AnyContent>?)->Map<Text,AnyContent>?{return value}\ngetVariable(echo({\"key\":" + literal + "}))\n"
+	case "optional_scalar_return":
+		return "function accept()->Text?{return " + literal + "}\ngetVariable(accept())\n"
+	case "optional_map_return":
+		return "function accept()->Map<Text,AnyContent>?{return {\"key\":" + literal + "}}\ngetVariable(accept())\n"
 	case "function_map_later_argument":
 		return "function accept(value:Map<Text,AnyContent>,later:AnyContent)->Text{return \"DONE\"}\nlet seed=text(\"SEED\")\nlet result=accept({\"key\":" + literal + "},later:native.action(\"is.workflow.actions.setitemname\",{\"WFName\":\"LATER\"}))\ngetVariable(result)\n"
 	case "registered_map":
@@ -183,6 +191,32 @@ func p15S01ContainerGraphError(actions []map[string]any, name string) error {
 		result := g.call(g.payload("accept", p15FunctionArgument{true, 0, p15FunctionText("\uFFFC", literal)}))
 		consume(result)
 		g.boundary(g.outer, 2, false)
+	case "optional_scalar_argument", "optional_map_argument":
+		envelope := g.header("echo")
+		value, presence := p15DecodeOptionalArgumentGraph(g, envelope, 0)
+		p15ForwardResultGraph(g, value, presence)
+		g.caller()
+		literal := p15S01Carrier(g, p15S01ContainerLiteral)
+		argument := p15FunctionArgument{true, 0, p15FunctionText("\uFFFC", literal)}
+		if name == "optional_map_argument" {
+			argument = p15FunctionArgument{true, 1, p15S01ContainerRows(p15S01ContainerRow(key, 0, p15FunctionText("\uFFFC", literal)))}
+		}
+		result, _ := p15ForwardCallGraph(g, "echo", argument, "1", nil, nil)
+		consume(result)
+		g.boundary(g.outer, 2, false)
+	case "optional_scalar_return", "optional_map_return":
+		g.header("accept")
+		literal := p15S01Carrier(g, p15S01ContainerLiteral)
+		argument := p15FunctionArgument{true, 0, p15FunctionText("\uFFFC", literal)}
+		if name == "optional_map_return" {
+			dictionary := p15S01Dictionary(g, p15S01ContainerRow(key, 0, p15FunctionText("\uFFFC", literal)))
+			argument = p15FunctionArgument{true, 0, p15FunctionEdge(dictionary)}
+		}
+		g.output(p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, argument))
+		g.caller()
+		result, _ := p15DecodeOptionalGraph(g, g.call(g.payload("accept")), "has_value", "value")
+		consume(result)
+		g.boundary(g.outer, 2, false)
 	case "function_map_later_argument":
 		envelope := g.header("accept")
 		g.get("arg_0", envelope)
@@ -213,8 +247,12 @@ func p15S01ContainerGraphError(actions []map[string]any, name string) error {
 	return nil
 }
 
+func p15S01ContainerGraphCases() []string {
+	return []string{"map_immutable", "map_mutable", "literal_key_sort", "nested_array", "list_dictionary", "nested_later_call", "computed_key_later_call", "function_scalar", "function_map_later_argument", "registered_map", "optional_scalar_argument", "optional_map_argument", "optional_scalar_return", "optional_map_return", "plain_control", "raw_native_control"}
+}
+
 func TestP15S01ContainerCarriersPreserveCompleteGraphs(t *testing.T) {
-	for _, name := range []string{"map_immutable", "map_mutable", "literal_key_sort", "nested_array", "list_dictionary", "nested_later_call", "computed_key_later_call", "function_scalar", "function_map_later_argument", "registered_map", "plain_control", "raw_native_control"} {
+	for _, name := range p15S01ContainerGraphCases() {
 		t.Run(name, func(t *testing.T) {
 			actions := p15CompiledActions(t, p15S01ContainerSource(name))
 			if err := p15S01ContainerGraphError(actions, name); err != nil {
@@ -224,6 +262,141 @@ func TestP15S01ContainerCarriersPreserveCompleteGraphs(t *testing.T) {
 					}
 				}
 				t.Fatal(err)
+			}
+		})
+	}
+}
+
+// Change a single actual consumer, not an expected graph or production helper.
+func p15S01ChangeFirst(value any, change func(map[string]any) bool) bool {
+	switch item := value.(type) {
+	case map[string]any:
+		if change(item) {
+			return true
+		}
+		for _, child := range item {
+			if p15S01ChangeFirst(child, change) {
+				return true
+			}
+		}
+	case []any:
+		for _, child := range item {
+			if p15S01ChangeFirst(child, change) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func TestP15S01ContainerGraphsRejectCausalMutations(t *testing.T) {
+	for _, name := range p15S01ContainerGraphCases() {
+		if name == "plain_control" || name == "raw_native_control" {
+			continue
+		}
+		t.Run(name, func(t *testing.T) {
+			original := p15CompiledActions(t, p15S01ContainerSource(name))
+			if err := p15S01ContainerGraphError(original, name); err != nil {
+				t.Fatal("healthy actual graph", err)
+			}
+			carrierIndex := -1
+			for index, action := range original {
+				literal, _ := p15Param(action)["WFTextActionText"].(string)
+				if strings.ContainsRune(literal, '\uFFFC') && p15Param(action)["CustomOutputName"] == "Text" {
+					carrierIndex = index
+					break
+				}
+			}
+			if carrierIndex < 0 {
+				t.Fatal("actual literal producer absent")
+			}
+			for _, fault := range []string{"literal_bytes", "producer_kind", "producer_uuid", "producer_name", "consumer_uuid", "consumer_name", "missing_range", "wrong_range", "unbound_character", "helper_reordered", "extra_action", "duplicate_producer"} {
+				t.Run(fault, func(t *testing.T) {
+					var actions []map[string]any
+					raw, err := json.Marshal(original)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if err = json.Unmarshal(raw, &actions); err != nil {
+						t.Fatal(err)
+					}
+					if err := p15S01ContainerGraphError(actions, name); err != nil {
+						t.Fatal("unchanged clone", err)
+					}
+					params := p15Param(actions[carrierIndex])
+					id := params["UUID"]
+					changed := true
+					switch fault {
+					case "literal_bytes":
+						params["WFTextActionText"] = strings.ReplaceAll(params["WFTextActionText"].(string), "\uFFFC", "")
+					case "producer_kind":
+						actions[carrierIndex]["WFWorkflowActionIdentifier"] = "is.workflow.actions.number"
+					case "producer_uuid":
+						delete(params, "UUID")
+					case "producer_name":
+						params["CustomOutputName"] = "Wrong"
+					case "consumer_uuid", "consumer_name":
+						changed = false
+						for _, action := range actions {
+							if p15S01ChangeFirst(action, func(item map[string]any) bool {
+								if item["Type"] != "ActionOutput" || item["OutputUUID"] != id {
+									return false
+								}
+								if fault == "consumer_uuid" {
+									item["OutputUUID"] = "MISSING_LITERAL_PRODUCER"
+								} else {
+									item["OutputName"] = "Wrong"
+								}
+								return true
+							}) {
+								changed = true
+								break
+							}
+						}
+					case "missing_range", "wrong_range", "unbound_character":
+						changed = false
+						for _, action := range actions {
+							if p15S01ChangeFirst(action, func(item map[string]any) bool {
+								if item["WFSerializationType"] != "WFTextTokenString" {
+									return false
+								}
+								body, _ := item["Value"].(map[string]any)
+								ranges, _ := body["attachmentsByRange"].(map[string]any)
+								for key, raw := range ranges {
+									ref, _ := raw.(map[string]any)
+									if ref["OutputUUID"] != id {
+										continue
+									}
+									if fault == "unbound_character" {
+										body["string"] = "\uFFFC" + body["string"].(string)
+									} else {
+										delete(ranges, key)
+										if fault == "wrong_range" {
+											ranges["{999, 1}"] = raw
+										}
+									}
+									return true
+								}
+								return false
+							}) {
+								changed = true
+								break
+							}
+						}
+					case "helper_reordered":
+						actions[carrierIndex], actions[carrierIndex+1] = actions[carrierIndex+1], actions[carrierIndex]
+					case "extra_action":
+						actions = append(actions, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.setclipboard"})
+					case "duplicate_producer":
+						actions = append(actions, actions[carrierIndex])
+					}
+					if !changed {
+						t.Fatal("causal mutation did not change the emitted graph")
+					}
+					if err := p15S01ContainerGraphError(actions, name); err == nil {
+						t.Fatal("accepted corrupted actual graph", fault)
+					}
+				})
 			}
 		})
 	}
