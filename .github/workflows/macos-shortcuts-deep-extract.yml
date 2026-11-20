@@ -12,6 +12,14 @@ on:
         required: false
         default: false
         type: boolean
+      literal_observer_runner:
+        description: Native observer runner; platform is recorded and does not establish final target runtime
+        required: false
+        default: xcode-27
+        type: choice
+        options:
+          - xcode-27
+          - macos-latest
 
 permissions:
   actions: read
@@ -29,7 +37,7 @@ jobs:
   literal-object-character:
     name: S01 literal object character serialization observations
     if: ${{ inputs.literal_object_character_only }}
-    runs-on: xcode-27
+    runs-on: ${{ inputs.literal_observer_runner }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
