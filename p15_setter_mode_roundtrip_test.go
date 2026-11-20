@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -22,6 +23,7 @@ func p15SetterCases() []p15SetterCase {
 		{"remove_value", "Remove", value("OLD")},
 		{"set_value", "Set", value("NEW")},
 		{"set_remove_text", "Set", value("Remove")},
+		{"set_remove_text_default", "Set", value("Remove")},
 		{"set_set_text", "Set", value("Set")},
 		{"set_empty_text", "Set", value("")},
 	}
@@ -35,6 +37,9 @@ func p15SetterSource(action string, tc p15SetterCase) string {
 	source += action + "(target, detail: \"URL\""
 	if tc.value != nil {
 		source += ", newValue: value"
+	}
+	if strings.HasSuffix(tc.name, "_default") {
+		return source + ")\n"
 	}
 	return source + fmt.Sprintf(", mode: %q)\n", tc.mode)
 }
@@ -61,7 +66,28 @@ func p15SetterGraphError(actual []map[string]any, action string, tc p15SetterCas
 		params[key] = p15FunctionEdge(value)
 	}
 	g.emit(kind, params)
-	return g.finish()
+	// The shared builder's finish closes a user-function dispatcher. This
+	// source has no dispatcher: compare its complete straight-line graph here.
+	if g.err != nil {
+		return g.err
+	}
+	if len(g.actual) != len(g.expected) {
+		return fmt.Errorf("native action count %d != %d", len(g.actual), len(g.expected))
+	}
+	seen := map[string]bool{}
+	for i, actual := range g.actual {
+		if uuid, present := p15Param(actual)["UUID"]; present {
+			id, ok := uuid.(string)
+			if !ok || id == "" || seen[id] {
+				return fmt.Errorf("invalid or duplicate producer identity at %d", i)
+			}
+			seen[id] = true
+		}
+		if !reflect.DeepEqual(p15FunctionComparable(actual, false), p15FunctionComparable(g.expected[i], false)) {
+			return fmt.Errorf("native setter operation or edge mismatch at %d: got %#v want %#v", i, p15FunctionComparable(actual, false), p15FunctionComparable(g.expected[i], false))
+		}
+	}
+	return nil
 }
 
 func p15SetterDocumentActions(t *testing.T, doc map[string]any) []map[string]any {
