@@ -1,0 +1,23 @@
+{
+  "implementation_parent": "269fd88ce7a202d63e3de388fe59cec35c6851c3",
+  "scope": "implementation unchanged; pending proof/provenance files only",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^(TestForkActionProvenanceRegistry|TestP10R_R26_ProvenanceRegistryIntegrity)$",
+    "."
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 48.875,
+  "named_passes": [
+    "TestForkActionProvenanceRegistry",
+    "TestP10R_R26_ProvenanceRegistryIntegrity"
+  ],
+  "fail_or_skip_events": [],
+  "stdout_sha256": "96a85a9cd8371ead9a3eb266c34537167c5fb46b38aec45580ea734239b6c0b7",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
