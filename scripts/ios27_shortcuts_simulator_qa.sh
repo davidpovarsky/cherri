@@ -1997,17 +1997,15 @@ PY
     }
     trap 'stop_http_probe; cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
 
-    run_cmd_timeout 900 xcodebuild test-without-building \
-      -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
-      -scheme CherriSimulatorQAReceiver \
-      -derivedDataPath "$DERIVED_DATA_PATH" \
-      -destination "platform=iOS Simulator,id=$UDID" \
-      -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test02_ShortcutsImportLibraryAndActionEditorCoverage \
-      -resultBundlePath "$XCRESULT_PATH" \
-      CODE_SIGNING_ALLOWED=NO \
-      > "$ARTIFACT_DIR/builds/xcodebuild-test.log" 2>&1
+    # Xcode must currently advertise this same owned simulator as an eligible
+    # destination. One non-reboot readiness refresh and test02 share the original
+    # 900-second phase; the pre-issued import and handshake are not repeated.
+    python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/xcode_destination_readiness.py" \
+      --repo "$ROOT_DIR" --scratch "$QA_SCRATCH_DIR" --artifacts "$ARTIFACT_DIR" \
+      --udid "$UDID" --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" \
+      --fixture-id "$TARGET_FIXTURE_ID"
     XCODEBUILD_TEST_RC=$?
-    echo "xcodebuild test exit code: $XCODEBUILD_TEST_RC"
+    echo "test02 destination/test phase exit code: $XCODEBUILD_TEST_RC"
     if [ "$XCODEBUILD_TEST_RC" -ne 0 ] && [ -f "$ARTIFACT_DIR/builds/xcodebuild-test.log" ]; then
       grep -Ev "DVTAssertions|nativeArchitecture|Apple Watch|SimDevice :|Object:[[:space:]]+<DVTiPhoneSimulator|Method:[[:space:]]+-nativeArchitecture|Thread:[[:space:]]+<_NSMainThread|feedbackassistant\.apple\.com|^[[:space:]]*\)[[:space:]]*$" "$ARTIFACT_DIR/builds/xcodebuild-test.log" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | tail -n 35 || true
     fi
