@@ -1,0 +1,42 @@
+let selector = number(1)
+var accumulator = 10
+var calls = 0
+var order = 0
+accumulator += if selector == 1 {
+    calls += 1
+    order = order * 10 + 1
+    yield 3
+} else {
+    calls += 1
+    order = order * 10 + 1
+    yield 3
+}
+accumulator *= if selector == 1 {
+    calls += 1
+    order = order * 10 + 2
+    yield 2
+} else {
+    calls += 1
+    order = order * 10 + 2
+    yield 2
+}
+accumulator -= if selector == 1 {
+    calls += 1
+    order = order * 10 + 3
+    yield 4
+} else {
+    calls += 1
+    order = order * 10 + 3
+    yield 4
+}
+accumulator /= if selector == 1 {
+    calls += 1
+    order = order * 10 + 4
+    yield 2
+} else {
+    calls += 1
+    order = order * 10 + 4
+    yield 2
+}
+setClipboard(calls * 10000 + order)
+return accumulator

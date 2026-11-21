@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// Arithmetic needs its own complete actual Apple observations.
+	if _, found := combinedArithmeticScenarios[id]; found {
+		return
+	}
 	// Historical capture-only runtime traces do not observe these full combined scenarios.
 	if _, found := captureOrderScenarios[id]; found {
 		return
@@ -507,6 +511,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := combinedArithmeticScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := documentationRecoveryScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -586,6 +593,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := combinedArithmeticScenarios[id]; found {
+		return append([]string{}, combinedArithmeticEvidence.SourcePaths...)
+	}
 	if _, found := documentationRecoveryScenarios[id]; found {
 		return append([]string{}, documentationRecoveryProductionPaths...)
 	}
