@@ -1,0 +1,75 @@
+{
+  "reviewedUTC": "2026-11-21T21:37:44.797645+00:00",
+  "source": "510ecfdd9187bb0b4488d479a2292b15c193f52c",
+  "proof": "8f82f5864bf32bf00ae5234b0f57277b7cf0765d",
+  "currentIntegration": "cd0bade0801aa2832e38b3dc4d4090c8dd857301",
+  "archiveSHA256": "c47d104325cb999a425393bc753fbda5ac2273a21e9514ae666a31e4e0469829",
+  "verifiedOriginalMembers": 144,
+  "verifiedSourceBindings": 67,
+  "baselineCounts": {
+    "fail": 7,
+    "pass": 7
+  },
+  "cleanEventAudits": [
+    {
+      "stage": "focus",
+      "rawPath": "clean-source-510ecfdd/focus.stdout",
+      "rawSHA256": "c1ad2d7b5c884632b5f99b005af83625b2618eba2fea665fdfaf5c722f753fad",
+      "counts": {
+        "pass": 337
+      },
+      "allStartedCasesEndedExactlyOnce": true,
+      "failures": [],
+      "exitCode": 0,
+      "elapsedSeconds": 16.609
+    },
+    {
+      "stage": "affected-known-json-failure",
+      "rawPath": "clean-source-510ecfdd/affected-known-json-failure.stdout",
+      "rawSHA256": "67e57ec96bfe1061855769af49a03e0c70ea8c02b3f113b44adb447d104a44fa",
+      "counts": {
+        "pass": 2328,
+        "fail": 2
+      },
+      "allStartedCasesEndedExactlyOnce": true,
+      "failures": [
+        "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer/literal-dict-with-dynamic-fields-and-local-http-echo",
+        "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 165.672
+    },
+    {
+      "stage": "internal-language",
+      "rawPath": "clean-source-510ecfdd/internal-language.stdout",
+      "rawSHA256": "12bf5d8179857ed59f71b4153e95e4ceb127f3a71d4f0332b660437072558a6a",
+      "counts": {
+        "pass": 322
+      },
+      "allStartedCasesEndedExactlyOnce": true,
+      "failures": [],
+      "exitCode": 0,
+      "elapsedSeconds": 14.75
+    }
+  ],
+  "strictParity": {
+    "timestamp": "2026-11-20T11:04:30Z",
+    "total_fixtures": 47,
+    "verified_parity": 9,
+    "proven_equivalent": 38,
+    "upstream_baseline_fails": 0,
+    "migration_fails": 0,
+    "v2_compile_fails": 0,
+    "parity_differences": 0,
+    "total_actions_tested": 17,
+    "actions_passed_both": 17
+  },
+  "fullNativeGraphCases": 22,
+  "compilerEmbeddedVCS": "absent in observed linked-worktree build; not installed consumer identity proof",
+  "localScopeEvidenceVerified": true,
+  "originalM02AppleAccepted": false,
+  "BRG14Accepted": false,
+  "fullGoPassed": false,
+  "formal179Accepted": false,
+  "countsOverlapDoNotSum": true
+}
