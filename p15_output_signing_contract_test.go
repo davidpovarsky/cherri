@@ -28,15 +28,22 @@ func p15RP43CompileArgs(route, input, output string, options ...string) []string
 	return append(arguments, options...)
 }
 
-func p15RP43AssertNativeOutput(t *testing.T, data []byte) {
+func p15RP43AssertNativeOutput(t *testing.T, data []byte, legacy bool) {
 	t.Helper()
 	var document map[string]any
 	if _, err := plist.Unmarshal(data, &document); err != nil {
 		t.Fatalf("public output is not a native plist: %v", err)
 	}
 	var actions, ok = document["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 1 {
-		t.Fatalf("one source action must produce one native action: %#v", document["WFWorkflowActions"])
+	count := 1
+	if !legacy {
+		count++
+		if err := p15M02MainVoidRowsError(actions); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !ok || len(actions) != count {
+		t.Fatalf("source mode changed the complete output graph: legacy=%t actions=%#v", legacy, document["WFWorkflowActions"])
 	}
 	var action, actionOK = actions[0].(map[string]any)
 	var parameters, paramsOK = action["WFWorkflowActionParameters"].(map[string]any)
@@ -121,7 +128,7 @@ func TestP15RP43PublicOutputDestinations(t *testing.T) {
 					if readErr != nil || bytes.Equal(actual, original) {
 						t.Fatalf("requested destination was not replaced: %v", readErr)
 					}
-					p15RP43AssertNativeOutput(t, actual)
+					p15RP43AssertNativeOutput(t, actual, strings.HasSuffix(route, "_legacy"))
 					var after = p15DirectoryDigest(t, directory)
 					delete(before, filepath.Base(output))
 					delete(after, filepath.Base(output))
@@ -178,7 +185,7 @@ func TestP15RP43LinuxOutputPermissions(t *testing.T) {
 			if readErr != nil {
 				t.Fatal(readErr)
 			}
-			p15RP43AssertNativeOutput(t, data)
+			p15RP43AssertNativeOutput(t, data, strings.HasSuffix(route, "_legacy"))
 		})
 	}
 	t.Log(fmt.Sprintf("Observed real output permission denial and restored compilation on %s/%s", runtime.GOOS, runtime.GOARCH))

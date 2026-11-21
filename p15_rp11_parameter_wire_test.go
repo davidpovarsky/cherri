@@ -170,7 +170,7 @@ func (fixture p15RP11WireCase) expectedParameter(t *testing.T, states p15RP11App
 		}
 		// Bind the independently located store to its original source producer,
 		// not merely to the variable token that the consumer happens to carry.
-		if len(actions) != 3 || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
+		if len(actions) != 4 || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
 			return nil, fmt.Errorf("mutable initializer/store/consumer order changed")
 		}
 		producerAction, producerKey, defaultName := "is.workflow.actions.number", "WFNumberActionNumber", "Number"
@@ -203,7 +203,7 @@ func (fixture p15RP11WireCase) expectedParameter(t *testing.T, states p15RP11App
 		}
 		token["VariableName"] = name
 	} else {
-		if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions."+fixture.reference {
+		if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions."+fixture.reference {
 			return nil, fmt.Errorf("action-output producer or once-only order changed")
 		}
 		producer := actions[0].WFWorkflowActionParameters
@@ -233,17 +233,20 @@ func (fixture p15RP11WireCase) expectedParameter(t *testing.T, states p15RP11App
 
 func p15RP11CheckWire(t *testing.T, fixture p15RP11WireCase, states p15RP11AppleStates, actions []ShortcutAction) error {
 	t.Helper()
-	if len(actions) == 0 || actions[len(actions)-1].WFWorkflowActionIdentifier != fixture.action {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		return err
+	}
+	if len(actions) < 2 || actions[len(actions)-2].WFWorkflowActionIdentifier != fixture.action {
 		return fmt.Errorf("consumer action identity/order changed")
 	}
-	if fixture.reference == "" && len(actions) != 1 {
+	if fixture.reference == "" && len(actions) != 2 {
 		return fmt.Errorf("literal emitted unexpected producer actions")
 	}
 	want, err := fixture.expectedParameter(t, states, actions)
 	if err != nil {
 		return err
 	}
-	got := p15RP11Clone(t, actions[len(actions)-1].WFWorkflowActionParameters[fixture.key])
+	got := p15RP11Clone(t, actions[len(actions)-2].WFWorkflowActionParameters[fixture.key])
 	if !reflect.DeepEqual(got, want) {
 		return fmt.Errorf("parameter %s disagrees with captured native state: got=%#v want=%#v", fixture.key, got, want)
 	}
@@ -292,7 +295,7 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 				if err := json.Unmarshal(raw, &broken); err != nil {
 					t.Fatal(err)
 				}
-				last := &broken[len(broken)-1]
+				last := &broken[len(broken)-2]
 				switch fault {
 				case "wrong_action":
 					last.WFWorkflowActionIdentifier = "is.workflow.actions.nothing"
@@ -303,8 +306,8 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 				case "blanket_attachment":
 					last.WFWorkflowActionParameters[fixture.key] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "Variable", "VariableName": "RP11_FOREIGN"}}
 				case "mutable_initializer":
-					if len(broken) != 3 {
-						t.Fatal("mutable fixture changed its independent three-action setup")
+					if len(broken) != 4 {
+						t.Fatal("mutable fixture changed its initializer/store/consumer/empty-result setup")
 					}
 					key := "WFNumberActionNumber"
 					if fixture.name == "mutable_text" {
@@ -312,13 +315,13 @@ func TestP15RP11NativeOracleRejectsFaults(t *testing.T) {
 					}
 					broken[0].WFWorkflowActionParameters[key] = "RP11_WRONG_MUTABLE_LITERAL"
 				case "missing_store_input":
-					if len(broken) != 3 || broken[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
+					if len(broken) != 4 || broken[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
 						t.Fatal("mutable fixture lost its native store")
 					}
 					delete(broken[1].WFWorkflowActionParameters, "WFInput")
 				case "foreign_store_input":
-					if len(broken) != 3 {
-						t.Fatal("mutable fixture changed its independent three-action setup")
+					if len(broken) != 4 {
+						t.Fatal("mutable fixture changed its initializer/store/consumer/empty-result setup")
 					}
 					broken[1].WFWorkflowActionParameters["WFInput"] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "ActionOutput", "OutputUUID": "RP11_FOREIGN", "OutputName": "Number"}}
 				case "producer_literal":

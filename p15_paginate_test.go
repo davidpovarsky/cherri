@@ -141,10 +141,8 @@ func TestP15PaginateBothFrontendsProfilesAndTypedOutput(t *testing.T) {
 				if requests != 1 || pageLoops != 1 {
 					t.Fatalf("expected one statically bounded GET node, got %d/%d", requests, pageLoops)
 				}
-				returned := actions[len(actions)-2].WFWorkflowActionParameters["UUID"]
-				tail := debugParamMap(debugParamMap(actions[len(actions)-1].WFWorkflowActionParameters["WFVariable"])["Value"])
-				if tail["OutputUUID"] != returned {
-					t.Fatal("consumer lost original typed aggregate result")
+				if err := p15PaginateResultError(actions, legacy); err != nil {
+					t.Fatal(err)
 				}
 			})
 		}
@@ -159,7 +157,14 @@ func TestP15PaginateZeroBudgetsEmitNoRequest(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if got := actionSuffixes(actions); !reflect.DeepEqual(got, []string{"list", "setvariable", "getvariable"}) {
+			want := []string{"list", "setvariable", "getvariable"}
+			if !legacy {
+				want = append(want, "nothing")
+				if err := p15M02MainVoidDebugError(actions); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if got := actionSuffixes(actions); !reflect.DeepEqual(got, want) {
 				t.Fatalf("zero budget performed work: legacy=%t %v", legacy, got)
 			}
 			items, ok := actions[0].WFWorkflowActionParameters["WFItems"].([]any)

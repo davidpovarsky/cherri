@@ -34,7 +34,7 @@ func TestP15RegistryRepeatedCompileIsolation(t *testing.T) {
 					if err == nil {
 						t.Error("invalid source unexpectedly compiled")
 					}
-				} else if err != nil || len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != "com.example.registry.local" || actions[0].WFWorkflowActionParameters["Value"] != "LOCAL" {
+				} else if err != nil || p15M02MainVoidDebugError(actions) != nil || len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "com.example.registry.local" || actions[0].WFWorkflowActionParameters["Value"] != "LOCAL" {
 					t.Errorf("custom source did not retain its own action: actions=%#v err=%v", actions, err)
 				}
 			}
@@ -49,7 +49,10 @@ func TestP15RegistryRepeatedCompileIsolation(t *testing.T) {
 			if err != nil {
 				t.Fatalf("later independent compilation inherited another source's schema: %v", err)
 			}
-			if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.url" {
+			if err := p15M02MainVoidDebugError(actions); err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.url" {
 				t.Fatalf("later compilation lost canonical native identity: %#v", actions)
 			}
 		})
@@ -65,7 +68,10 @@ func TestP15RegistryCustomOutputReferenceIsolation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != id || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			t.Fatal(err)
+		}
+		if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != id || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
 			t.Fatalf("custom source graph changed: %#v", actions)
 		}
 		uuid, err := p15C03TokenUUID(actions[1].WFWorkflowActionParameters["WFTextActionText"])
