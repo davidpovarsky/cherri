@@ -235,3 +235,11 @@ Root integrated clean source 61614095633e50cbc5377d36ca01061a4a36a100 after caus
 ## 2026-11-22 — reviewed AI transport component
 
 Root integrated the source-bound e2027ee2 provider transport and its preserved offline controls after independently reconciling all 57 unittest terminals, 10 original archive members, and 4 Git source bindings. Fixed HTTPS endpoints, zero retry/redirect, original usage/source retention and 15/90/120-second limits were reviewed. This proves only the mocked transport component. Real generation, AI01, Apple and final 179 acceptance remain open. Compiler S3 remains 9c8; no consumer pin or release promotion was changed. The separate full179 negative-test candidate 36d78698 remains untested and unmerged.
+
+
+## 2026-11-22 verified local continuation: Legacy operands and full179 negative control
+
+- S3 private proof a892b0e6: all five exact-source9c8 gates PASS; public metadata only. No later-source inheritance.
+- Legacy b791ce06: same26-event baseline RED/fixed PASS, independently reconciled; ordinary-clone compiler/migrator carry exactb791 VCS stamps. Private/consumer/finalCI gates at this source remain pending.
+- full179 negative8930e497: all5 validator-only events PASS; all179 row and exact-cause assertions preserved. Original36d empty-file failure retained and its valid ingestion rejection explicitly asserted. Aggregate acceptance is still the original K1 report, not this meta-test.
+- Evidence: docs/ai-team/evidence/20261121-legacy-math-and-full179-controls. No formal requirement, Apple or release marked complete by this stage.
