@@ -2,6 +2,19 @@ import Foundation
 
 /// One budget for the existing window, document and editor readiness waits.
 /// The budget observes only fixed control state and never opens a second document.
+enum CherriEditorStartupControlScope: String {
+    case documentAndEditor = "document-and-editor"
+    case editorOnly = "editor-only"
+
+    /// Only pre-tap authorization needs a fresh creation-control query.
+    /// Keep that query before the editor query so editor absence is observed last.
+    func resolve<Control>(creation: () -> [Control], editor: () -> [Control])
+        -> (creation: [Control], editors: [Control]) {
+        let creationControls = self == .documentAndEditor ? creation() : []
+        return (creationControls, editor())
+    }
+}
+
 struct CherriEditorStartupObservation {
     let windowExists: Bool
     let appRunningForeground: Bool
@@ -9,6 +22,20 @@ struct CherriEditorStartupObservation {
     let createDocumentHittable: Bool
     let editorExists: Bool
     let editorHittable: Bool
+    let controlScope: CherriEditorStartupControlScope
+
+    init(windowExists: Bool, appRunningForeground: Bool,
+         createDocumentExists: Bool, createDocumentHittable: Bool,
+         editorExists: Bool, editorHittable: Bool,
+         controlScope: CherriEditorStartupControlScope = .documentAndEditor) {
+        self.windowExists = windowExists
+        self.appRunningForeground = appRunningForeground
+        self.createDocumentExists = createDocumentExists
+        self.createDocumentHittable = createDocumentHittable
+        self.editorExists = editorExists
+        self.editorHittable = editorHittable
+        self.controlScope = controlScope
+    }
 
     var interactiveEditor: Bool {
         windowExists && appRunningForeground && editorExists && editorHittable
@@ -21,7 +48,18 @@ struct CherriEditorStartupObservation {
              appRunningForeground: appRunningForeground && foreground,
              createDocumentExists: createDocumentExists,
              createDocumentHittable: createDocumentHittable,
-             editorExists: editorExists, editorHittable: editorHittable)
+             editorExists: editorExists, editorHittable: editorHittable, controlScope: controlScope)
+    }
+
+    /// Creation controls are deliberately unobserved after our single claimed tap.
+    /// A unique editor still requires its current window, foreground and hit test.
+    static func matchedEditor(windowExists: Bool, appRunningForeground: Bool,
+                              editorCount: Int, editorHittable: () -> Bool) -> Self {
+        let canInspect = windowExists && appRunningForeground && editorCount == 1
+        return Self(windowExists: windowExists, appRunningForeground: appRunningForeground,
+                    createDocumentExists: false, createDocumentHittable: false,
+                    editorExists: editorCount > 0, editorHittable: canInspect && editorHittable(),
+                    controlScope: .editorOnly)
     }
 
     /// The caller has already evaluated one query restricted to the two fixed
@@ -62,7 +100,7 @@ final class CherriEditorStartupWaitObservation<Value> {
         let ready: Bool
         switch phase {
         case .document:
-            ready = state.windowExists && state.appRunningForeground &&
+            ready = state.controlScope == .documentAndEditor && state.windowExists && state.appRunningForeground &&
                 (state.editorExists || (state.createDocumentExists && state.createDocumentHittable))
         case .editor:
             ready = state.interactiveEditor
@@ -117,12 +155,12 @@ struct CherriEditorStartupDeadline {
     /// An already interactive creation control needs a fresh pre-tap check,
     /// not another wait for an absent editor or the same ready button.
     func needsDocumentWait(_ state: CherriEditorStartupObservation) -> Bool {
-        !documentCreationIssued && remaining() > 0 && state.windowExists && state.appRunningForeground &&
+        state.controlScope == .documentAndEditor && !documentCreationIssued && remaining() > 0 && state.windowExists && state.appRunningForeground &&
             !state.editorExists && !(state.createDocumentExists && state.createDocumentHittable)
     }
 
     mutating func claimDocumentCreation(_ state: CherriEditorStartupObservation) -> Bool {
-        guard !documentCreationIssued, remaining() > 0,
+        guard state.controlScope == .documentAndEditor, !documentCreationIssued, remaining() > 0,
               state.windowExists, state.appRunningForeground,
               state.createDocumentExists, state.createDocumentHittable,
               !state.editorExists else { return false }

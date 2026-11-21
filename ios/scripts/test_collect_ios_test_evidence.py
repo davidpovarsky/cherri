@@ -290,6 +290,58 @@ class IOSTestEvidenceTests(unittest.TestCase):
         row["entries"].append(dict(first, sequence=128))
         self.assertEqual(self.collect(self.block(status="failed", body=collector.STARTUP_TIMING_PREFIX + json.dumps(row)), 65)[0]["startupTimingTraces"], [])
 
+
+    def test_scoped_editor_startup_receipt_retains_explicit_unobserved_creation_without_acceptance(self):
+        receipt = self.startup_receipt(schemaVersion="1.1", stage="editor-wait",
+            controlScope="editor-only", waitCompleted=True, windowExists=True,
+            appRunningForeground=True, createDocumentExists=False, createDocumentHittable=False,
+            editorExists=True, editorHittable=True, documentCreationIssued=True,
+            elapsedMilliseconds=27000, budgetMilliseconds=28000,
+            actualSource="PRIVATE_SCOPE_CANARY", documentLabel="PRIVATE_SCOPE_CANARY")
+        diagnostic, records, outputs = self.collect(self.block(status="failed", body=receipt), 65)
+        saved = diagnostic["startupReceipts"]
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0]["schemaVersion"], "1.1")
+        self.assertEqual(saved[0]["controlScope"], "editor-only")
+        self.assertFalse(saved[0]["createDocumentExists"])
+        self.assertEqual(records, [])
+        self.assertNotIn("PRIVATE_SCOPE_CANARY", "".join(outputs.values()))
+
+    def test_scoped_startup_receipt_cannot_hide_creation_or_change_stage_budget_and_scope(self):
+        raw = dict(schemaVersion="1.1", stage="editor-wait", controlScope="editor-only",
+            createDocumentExists=False, createDocumentHittable=False, documentCreationIssued=True,
+            elapsedMilliseconds=27000, budgetMilliseconds=28000)
+        controls = (
+            {"controlScope": "PRIVATE_SCOPE"}, {"controlScope": ["editor-only"]},
+            {"stage": "window-wait"}, {"stage": "document-wait"}, {"stage": "document-check"},
+            {"documentCreationIssued": False}, {"documentCreationIssued": 1},
+            {"createDocumentExists": True}, {"createDocumentHittable": True},
+            {"budgetMilliseconds": 28001}, {"elapsedMilliseconds": -1}, {"schemaVersion": "1.0"},
+        )
+        for mutation in controls:
+            with self.subTest(mutation=mutation):
+                diagnostic, records, outputs = self.collect(
+                    self.block(status="failed", body=self.startup_receipt(**{**raw, **mutation})), 65)
+                self.assertEqual(diagnostic.get("startupReceipts", []), [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_SCOPE", "".join(outputs.values()))
+        for missing in ("controlScope", "elapsedMilliseconds", "budgetMilliseconds", "documentCreationIssued"):
+            changed = dict(raw)
+            changed.pop(missing)
+            diagnostic, records, _ = self.collect(
+                self.block(status="failed", body=self.startup_receipt(**changed)), 65)
+            self.assertEqual(diagnostic.get("startupReceipts", []), [])
+            self.assertEqual(records, [])
+
+    def test_current_full_startup_scope_and_original_legacy_receipts_are_preserved(self):
+        for extra in ({}, {"schemaVersion": "1.1", "controlScope": "document-and-editor",
+                          "elapsedMilliseconds": 5000, "budgetMilliseconds": 28000,
+                          "documentCreationIssued": False}):
+            diagnostic, records, _ = self.collect(
+                self.block(status="failed", body=self.startup_receipt(**extra)), 65)
+            self.assertEqual(len(diagnostic.get("startupReceipts", [])), 1)
+            self.assertEqual(records, [])
+
     def test_startup_receipts_capture_only_known_state_without_source(self):
         secret = "PRIVATE_STARTUP_CANARY document label and restored source"
         for stage in ("window-wait", "document-wait", "editor-wait"):

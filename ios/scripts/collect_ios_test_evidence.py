@@ -141,7 +141,7 @@ def safe_startup_receipt(line, active_test):
         raw = json.loads(line[len(STARTUP_PREFIX):])
     except (ValueError, TypeError):
         return None
-    if (not isinstance(raw, dict) or raw.get("schemaVersion") != "1.0"
+    if (not isinstance(raw, dict) or raw.get("schemaVersion") not in ("1.0", "1.1")
             or not isinstance(active_test, str) or not TEST_NAME.fullmatch(active_test)
             or raw.get("testName") != active_test
             or not isinstance(raw.get("stage"), str) or raw["stage"] not in STARTUP_STAGES
@@ -151,6 +151,18 @@ def safe_startup_receipt(line, active_test):
     # cannot authorize source, document names, AX labels, or an arbitrary tree.
     receipt = {key: raw[key] for key in ("schemaVersion", "testName", "stage", *sorted(STARTUP_BOOL_FIELDS))}
     timing = {"elapsedMilliseconds", "budgetMilliseconds", "documentCreationIssued"}
+    if raw["schemaVersion"] == "1.1":
+        scope = raw.get("controlScope")
+        if (not isinstance(scope, str) or scope not in ("document-and-editor", "editor-only")
+                or not timing.issubset(raw)):
+            return None
+        if scope == "editor-only" and (
+                raw["stage"] != "editor-wait" or raw.get("documentCreationIssued") is not True
+                or raw["createDocumentExists"] is not False or raw["createDocumentHittable"] is not False):
+            return None
+        receipt["controlScope"] = scope
+    elif "controlScope" in raw:
+        return None
     if raw["stage"] == "document-check" and (
             raw["waitCompleted"] is not False or not timing.issubset(raw)):
         return None

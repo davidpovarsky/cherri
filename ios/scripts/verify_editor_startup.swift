@@ -203,4 +203,73 @@ for (creates, editors, unexpected) in [(0, 0, 0), (2, 0, 0), (0, 2, 0), (1, 0, 1
     var tapBudget = CherriEditorStartupDeadline()
     check(!tapBudget.claimDocumentCreation(rejected), "empty or ambiguous result cannot authorize a tap")
 }
+
+// The production query resolver now uses only the editor after the owned tap.
+// Query counts prove the eliminated work; these controlled timings are not iOS evidence.
+var phaseQueries: [String] = []
+let fullControls = CherriEditorStartupControlScope.documentAndEditor.resolve(
+    creation: { phaseQueries.append("creation"); return ["owned-create"] },
+    editor: { phaseQueries.append("editor"); return ["owned-editor"] })
+check(phaseQueries == ["creation", "editor"], "pre-tap queries preserve full scope and editor-last order")
+check(fullControls.creation == ["owned-create"] && fullControls.editors == ["owned-editor"],
+      "pre-tap resolver retains exact control identities")
+phaseQueries = []
+let editorControls = CherriEditorStartupControlScope.editorOnly.resolve(
+    creation: { phaseQueries.append("creation"); return ["unexpected-create"] },
+    editor: { phaseQueries.append("editor"); return ["owned-editor"] })
+check(phaseQueries == ["editor"], "post-tap editor scope never executes the creation query")
+check(editorControls.creation.isEmpty && editorControls.editors == ["owned-editor"],
+      "editor scope retains only the current editor identity")
+var scopedHitQueries = 0
+func editorScoped(_ count: Int, window: Bool = true, foreground: Bool = true) -> CherriEditorStartupObservation {
+    .matchedEditor(windowExists: window, appRunningForeground: foreground, editorCount: count,
+                   editorHittable: { scopedHitQueries += 1; return true })
+}
+let scopedReady = editorScoped(1)
+check(scopedReady.interactiveEditor && scopedHitQueries == 1, "unique editor receives its actual hit test")
+check(scopedReady.controlScope == .editorOnly && !scopedReady.createDocumentExists &&
+      !scopedReady.createDocumentHittable, "editor-only scope explicitly records unobserved creation controls")
+check(scopedReady.recheckingForeground(true).controlScope == .editorOnly, "foreground refresh preserves query scope")
+for count in [0, 2, -1] {
+    let before = scopedHitQueries
+    let unavailable = editorScoped(count)
+    check(!unavailable.interactiveEditor && scopedHitQueries == before,
+          "missing or ambiguous editor cannot be hit-tested or accepted")
+}
+for (window, foreground) in [(false, true), (true, false)] {
+    let before = scopedHitQueries
+    let unavailable = editorScoped(1, window: window, foreground: foreground)
+    check(!unavailable.interactiveEditor && scopedHitQueries == before,
+          "editor scope retains fresh window and foreground requirements")
+}
+let scopeClock = StartupTestClock()
+var scopeBudget = CherriEditorStartupDeadline(now: { scopeClock.value })
+let forgedCreationInEditorScope = CherriEditorStartupObservation(
+    windowExists: true, appRunningForeground: true, createDocumentExists: true,
+    createDocumentHittable: true, editorExists: false, editorHittable: false, controlScope: .editorOnly)
+check(!scopeBudget.claimDocumentCreation(forgedCreationInEditorScope),
+      "an editor-only snapshot cannot authorize document creation")
+check(!scopeBudget.needsDocumentWait(forgedCreationInEditorScope),
+      "an editor-only snapshot cannot start a document wait")
+let scopedDocumentWait = CherriEditorStartupWaitObservation<String>(phase: .document)
+check(!scopedDocumentWait.record("borrowed", state: scopedReady),
+      "document wait cannot borrow editor-only scope")
+check(scopedDocumentWait.takeCompleted(waitCompleted: true) == nil,
+      "completed document result without full scope cannot be consumed")
+let scopedEditorWait = CherriEditorStartupWaitObservation<CherriEditorStartupObservation>(phase: .editor)
+check(scopedEditorWait.record(scopedReady, state: scopedReady), "editor predicate accepts its full required observation")
+let scopedCompleted = scopedEditorWait.takeCompleted(waitCompleted: true)!
+scopeClock.value = 27.999
+check(scopeBudget.accepts(scopedCompleted.recheckingForeground(true), waitCompleted: true),
+      "scoped completed editor is accepted within the original 28 seconds")
+check(!scopeBudget.accepts(scopedCompleted.recheckingForeground(false), waitCompleted: true),
+      "foreground lost after the scoped predicate still rejects readiness")
+check(!scopeBudget.accepts(scopedCompleted, waitCompleted: false),
+      "scoped positive observation cannot replace a completed XCTest wait")
+scopeClock.value = 28.001
+check(!scopeBudget.accepts(scopedCompleted, waitCompleted: true),
+      "late scoped editor still fails the unchanged 28 second deadline")
+check(scopedEditorWait.takeCompleted(waitCompleted: true) == nil,
+      "scoped observation still permits only one consumption")
+
 print("PASS_LOCAL_STARTUP_DEADLINE_CONTROLS: \(checked); Apple UI NOT_RUN")
