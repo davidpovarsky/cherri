@@ -1,0 +1,72 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Experimental transfer of Dictionary array rows into the native List parameter.
+// This is an observation fixture, never an approved compiler nested-List encoding.
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "nested-list-candidate")
+let candidateRows = native.action("is.workflow.actions.list", parameters: native.plist({
+    "WFItems": [
+        {"WFItemType": 2, "WFValue": {
+            "Value": [
+                {"WFItemType": 0, "WFValue": {"Value": {"string": "INNER_A"}, "WFSerializationType": "WFTextTokenString"}},
+                {"WFItemType": 0, "WFValue": {"Value": {"string": "INNER_B"}, "WFSerializationType": "WFTextTokenString"}}
+            ],
+            "WFSerializationType": "WFArrayParameterState"
+        }},
+        {"WFItemType": 2, "WFValue": {"Value": [], "WFSerializationType": "WFArrayParameterState"}}
+    ],
+    "UUID": "24DF1735-6B49-435A-8D0A-A2FCE1D7E901",
+    "CustomOutputName": "candidateRows"
+}))
+let outerCount = count(candidateRows)
+let textWitness = text("TYPE_WITNESS")
+let dictionaryWitness = {"kind": "CONTROL"}
+let textType = typeOf(textWitness)
+let dictionaryType = typeOf(dictionaryWitness)
+let textType64 = base64Encode(textType, lineBreakMode: "None")
+let dictionaryType64 = base64Encode(dictionaryType, lineBreakMode: "None")
+var observed = "N"
+var firstCountText = "-1"
+var lastCountText = "-1"
+var firstFirst64 = "UNOBSERVED"
+var firstLast64 = "UNOBSERVED"
+var lastFirst64 = "UNOBSERVED"
+var lastLast64 = "UNOBSERVED"
+var firstType64 = "UNOBSERVED"
+var lastType64 = "UNOBSERVED"
+// Never ask Get First/Last to read an empty outer or inner result.
+if outerCount.number > 0 {
+    observed = "Y"
+    let first = getFirstItem(candidateRows)
+    let last = getLastItem(candidateRows)
+    let firstCount = count(first)
+    let lastCount = count(last)
+    firstCountText = getText(firstCount)
+    lastCountText = getText(lastCount)
+    let firstType = typeOf(first)
+    let lastType = typeOf(last)
+    firstType64 = base64Encode(firstType, lineBreakMode: "None")
+    lastType64 = base64Encode(lastType, lineBreakMode: "None")
+    if firstCount.number > 0 {
+        let firstFirst = getFirstItem(first)
+        let firstLast = getLastItem(first)
+        let firstFirstText = getText(firstFirst)
+        let firstLastText = getText(firstLast)
+        firstFirst64 = base64Encode(firstFirstText, lineBreakMode: "None")
+        firstLast64 = base64Encode(firstLastText, lineBreakMode: "None")
+    }
+    if lastCount.number > 0 {
+        let lastFirst = getFirstItem(last)
+        let lastLast = getLastItem(last)
+        let lastFirstText = getText(lastFirst)
+        let lastLastText = getText(lastLast)
+        lastFirst64 = base64Encode(lastFirstText, lineBreakMode: "None")
+        lastLast64 = base64Encode(lastLastText, lineBreakMode: "None")
+    }
+}
+let semanticResult = text(f"CHERRI_NESTED_LIST_CANDIDATE_V1:OUTER_COUNT={outerCount}:OBSERVED={observed}:FIRST_COUNT={firstCountText}:LAST_COUNT={lastCountText}:FIRST_FIRST64={firstFirst64}:FIRST_LAST64={firstLast64}:LAST_FIRST64={lastFirst64}:LAST_LAST64={lastLast64}:TEXT_TYPE64={textType64}:DICT_TYPE64={dictionaryType64}:FIRST_TYPE64={firstType64}:LAST_TYPE64={lastType64}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "nested-list-candidate")
+let traceEnvelope = debugExportTrace(runId: "qa-nested-list-candidate-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+return finalSummary
