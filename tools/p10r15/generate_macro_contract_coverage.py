@@ -147,8 +147,27 @@ def output_ref(value):
     return body.get("OutputUUID", "")
 
 
-def origin_matches(actions, producer):
-    if not actions or action_id(actions[-1]) != NATIVE_PREFIX + "getvariable":
+def final_consumer_index(actions, dialect):
+    # These fixtures end with a getVariable expression and have no explicit
+    # return. V2 emits exactly one bare Nothing for implicit void completion;
+    # Legacy keeps the final consumer as its last action. Do not discard or
+    # normalize any action: malformed/extra terminators must still fail.
+    if dialect == "v2":
+        if len(actions) < 2 or actions[-1] != {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "nothing"}:
+            return None
+        index = len(actions) - 2
+    elif dialect == "legacy":
+        index = len(actions) - 1
+    else:
+        return None
+    if index < 0 or action_id(actions[index]) != NATIVE_PREFIX + "getvariable":
+        return None
+    return index
+
+
+def origin_matches(actions, producer, dialect):
+    consumer_index = final_consumer_index(actions, dialect)
+    if consumer_index is None:
         return False
     producers = {}
     for index, action in enumerate(actions):
@@ -157,8 +176,7 @@ def origin_matches(actions, producer):
             if identity in producers:
                 return False
             producers[identity] = (index, action)
-    current = output_ref(params(actions[-1]).get("WFVariable"))
-    consumer_index = len(actions) - 1
+    current = output_ref(params(actions[consumer_index]).get("WFVariable"))
     seen = set()
     while current:
         if current in seen or current not in producers:
@@ -177,19 +195,19 @@ def origin_matches(actions, producer):
 
 
 
-def structural_checks(kind, profile, actions):
+def structural_checks(kind, profile, actions, dialect):
     checks = {}
     if kind == "require":
         originals = [a for a in named(actions, "gettext") if params(a).get("WFTextActionText") == MARKER]
         checks["oneOriginalProducer"] = len(originals) == 1
-        checks["originalUUIDPassthrough"] = len(originals) == 1 and origin_matches(actions, params(originals[0]).get("UUID"))
+        checks["originalUUIDPassthrough"] = len(originals) == 1 and origin_matches(actions, params(originals[0]).get("UUID"), dialect)
         checks["canonicalGetType"] = len(named(actions, "getitemtype")) >= 2 and not named(actions, "gettypeaction")
         checks["semanticGuardRetained"] = all(named(actions, suffix) for suffix in ("conditional", "alert", "exit", "count"))
         checks["diagnosticProfile"] = bool(named(actions, "appendvariable")) if profile == "debug" else not named(actions, "appendvariable")
     elif kind == "measure":
         producers = named(actions, "dictionary")
         checks["oneTypedBodyProducer"] = len(producers) == 1
-        checks["originalUUIDPassthrough"] = len(producers) == 1 and origin_matches(actions, params(producers[0]).get("UUID"))
+        checks["originalUUIDPassthrough"] = len(producers) == 1 and origin_matches(actions, params(producers[0]).get("UUID"), dialect)
         checks["noTextNumberCoercion"] = not named(actions, "gettext") and not named(actions, "number")
         checks["timerProfile"] = len(named(actions, "gettimebetweendates")) == (1 if profile == "debug" else 0)
         checks["releaseNoDiagnosticAppend"] = profile != "release" or not named(actions, "appendvariable")
@@ -198,7 +216,7 @@ def structural_checks(kind, profile, actions):
         checks["pairedRepeatRegion"] = (len(loops) == 2 and
             params(loops[0]).get("GroupingIdentifier") == params(loops[1]).get("GroupingIdentifier") and
             str(params(loops[0]).get("WFControlFlowMode")) == "0" and str(params(loops[1]).get("WFControlFlowMode")) == "2")
-        checks["consumerUsesRepeatResults"] = len(loops) == 2 and origin_matches(actions, params(loops[1]).get("UUID"))
+        checks["consumerUsesRepeatResults"] = len(loops) == 2 and origin_matches(actions, params(loops[1]).get("UUID"), dialect)
         checks["noAccumulator"] = not named(actions, "appendvariable")
     elif kind == "paginate":
         requests = named(actions, "downloadurl")
@@ -282,7 +300,7 @@ def compile_case(spec, binary, repo, work):
     actions = native.get("WFWorkflowActions")
     if not isinstance(actions, list):
         raise ValueError("MISSING_NATIVE_ACTIONS:" + spec["id"])
-    checks = structural_checks(spec["kind"], spec["profile"], actions)
+    checks = structural_checks(spec["kind"], spec["profile"], actions, spec["dialect"])
     row.update(unsignedSHA256=sha(target.read_bytes()), nativeActionCount=len(actions),
                nativeActionIDs=dict(sorted(collections.Counter(action_id(a) for a in actions).items())),
                structuralChecks=checks)
@@ -305,9 +323,7 @@ def compile_case(spec, binary, repo, work):
     return row, actions
 
 
-def check_mutations(outputs):
-    rows = []
-    scenarios = (
+MUTATION_SCENARIOS = (
         ("require_v2_debug", "wrong_type_action", "canonicalGetType"),
         ("require_v2_release", "lost_output_uuid", "originalUUIDPassthrough"),
         ("measure_v2_debug", "duplicate_body", "oneTypedBodyProducer"),
@@ -316,32 +332,54 @@ def check_mutations(outputs):
         ("measure_legacy_release", "scoped_result_coercion", "originalUUIDPassthrough"),
         ("collect_v2_1", "wrong_repeat_result", "consumerUsesRepeatResults"),
         ("paginate_v2", "page_budget_changed", "explicitPageBudget"),
-    )
+        ("require_v2_release", "extra_void_terminator", "originalUUIDPassthrough"),
+        ("require_v2_release", "malformed_void_terminator", "originalUUIDPassthrough"),
+        ("require_v2_release", "missing_void_terminator", "originalUUIDPassthrough"),
+        ("measure_v2_release", "wrong_final_consumer", "originalUUIDPassthrough"),
+        ("require_v2_release", "original_uuid_replaced", "originalUUIDPassthrough"),
+        ("require_legacy_release", "legacy_void_terminator", "originalUUIDPassthrough"),
+)
+
+
+def check_mutations(outputs):
+    rows = []
     specs = {s["id"]: s for s in fixture_specs()}
-    for case_id, mutation, expected in scenarios:
+    for case_id, mutation, expected in MUTATION_SCENARIOS:
         actual = outputs.get(case_id)
         if actual is None:
             rows.append({"case": case_id, "mutation": mutation, "verdict": "FAIL", "reason": "positive compile missing"})
             continue
         changed = copy.deepcopy(actual)
+        spec = specs[case_id]
+        consumer = final_consumer_index(changed, spec["dialect"])
         if mutation == "wrong_type_action":
             named(changed, "getitemtype")[0]["WFWorkflowActionIdentifier"] = NATIVE_PREFIX + "gettypeaction"
         elif mutation in ("lost_output_uuid", "wrong_repeat_result"):
-            params(changed[-1])["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": "missing-producer"}, "WFSerializationType": "WFTextTokenAttachment"}
+            params(changed[consumer])["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": "missing-producer"}, "WFSerializationType": "WFTextTokenAttachment"}
         elif mutation == "duplicate_body":
             changed.insert(0, copy.deepcopy(named(changed, "dictionary")[0]))
         elif mutation == "scoped_alias_cycle":
             alias = named(changed, "getvariable")[-2]
             params(alias)["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": params(alias)["UUID"]}, "WFSerializationType": "WFTextTokenAttachment"}
         elif mutation == "scoped_result_coercion":
-            params(changed[-1])["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
+            params(changed[consumer])["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
+        elif mutation in ("extra_void_terminator", "legacy_void_terminator"):
+            changed.append({"WFWorkflowActionIdentifier": NATIVE_PREFIX + "nothing"})
+        elif mutation == "malformed_void_terminator":
+            changed[-1]["WFWorkflowActionParameters"] = {"WFVariable": "unexpected payload"}
+        elif mutation == "missing_void_terminator":
+            changed.pop()
+        elif mutation == "wrong_final_consumer":
+            changed[consumer]["WFWorkflowActionIdentifier"] = NATIVE_PREFIX + "count"
+        elif mutation == "original_uuid_replaced":
+            original = next(a for a in named(changed, "gettext") if params(a).get("WFTextActionText") == MARKER)
+            params(original)["UUID"] = "replaced-original-producer"
         elif mutation == "page_budget_changed":
             next(a for a in named(changed, "repeat.count") if str(params(a).get("WFControlFlowMode")) == "0")["WFWorkflowActionParameters"]["WFRepeatCount"] = 4
         else:
-            changed.insert(len(changed) - 1, {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "gettimebetweendates", "WFWorkflowActionParameters": {}})
-        spec = specs[case_id]
-        original = structural_checks(spec["kind"], spec["profile"], actual)
-        altered = structural_checks(spec["kind"], spec["profile"], changed)
+            changed.insert(consumer, {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "gettimebetweendates", "WFWorkflowActionParameters": {}})
+        original = structural_checks(spec["kind"], spec["profile"], actual, spec["dialect"])
+        altered = structural_checks(spec["kind"], spec["profile"], changed, spec["dialect"])
         ok = all(original.values()) and original[expected] and not altered[expected]
         rows.append({"case": case_id, "mutation": mutation, "intendedCheck": expected,
                      "positiveControl": all(original.values()), "faultRejected": not altered[expected],
@@ -523,7 +561,8 @@ def verify(report, repo):
         raise ValueError("MACRO_EXECUTION_FAILED")
     if any(c["verdict"] != "PASS" for c in report["compiles"] + report["causalMutations"]):
         raise ValueError("MACRO_CASE_FAILED")
-    if len(report["compiles"]) != len(fixture_specs()) or len(report["causalMutations"]) != 8:
+    if (len(report["compiles"]) != len(fixture_specs()) or
+        tuple((m.get("case"), m.get("mutation"), m.get("intendedCheck")) for m in report["causalMutations"]) != MUTATION_SCENARIOS):
         raise ValueError("MACRO_EXECUTION_COUNT_MISMATCH")
     if any(not m.get("positiveControl") or not m.get("faultRejected") for m in report["causalMutations"]):
         raise ValueError("MACRO_MUTATION_NOT_CAUSAL")
@@ -550,7 +589,7 @@ def verify(report, repo):
     if report["compilerMacroCount"] != len(names) or names != sorted(set(names)):
         raise ValueError("MACRO_DESCRIPTOR_COUNT_MISMATCH")
     summary = report["summary"]
-    if summary["open"] != 11 or summary["closed"] != 0 or summary["compileChecks"] != len(report["compiles"]) or summary["compilePassed"] != len(report["compiles"]):
+    if summary["open"] != 11 or summary["closed"] != 0 or summary["compileChecks"] != len(report["compiles"]) or summary["compilePassed"] != len(report["compiles"]) or summary["causalMutationChecks"] != len(MUTATION_SCENARIOS):
         raise ValueError("MACRO_SUMMARY_MISMATCH")
 
 

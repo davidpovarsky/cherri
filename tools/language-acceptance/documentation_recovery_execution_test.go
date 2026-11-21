@@ -1,0 +1,381 @@
+package main
+
+import (
+	"archive/zip"
+	"bytes"
+	"encoding/json"
+	"io"
+	"os"
+	"path/filepath"
+	"reflect"
+	"sort"
+	"strings"
+	"testing"
+	"time"
+)
+
+func documentationRecoverySelected(t *testing.T) *ContractsSet {
+	t.Helper()
+	all, err := LoadAllContracts("", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
+	for _, row := range all.Repair.Cases {
+		if row.ID == "RP46" {
+			selected.Repair.Cases = append(selected.Repair.Cases, row)
+		}
+	}
+	for _, row := range all.Gates.Gates {
+		if row.ID == "BRG29" {
+			selected.Gates.Gates = append(selected.Gates.Gates, row)
+		}
+	}
+	if len(selected.Repair.Cases) != 1 || len(selected.Gates.Gates) != 1 {
+		t.Fatal("missing immutable documentation contracts")
+	}
+	selected.Repair.CaseCount, selected.Gates.GateCount = 1, 1
+	return selected
+}
+
+func TestDocumentationRecoveryContractAndNoInheritance(t *testing.T) {
+	selected := documentationRecoverySelected(t)
+	repair, gate := selected.Repair.Cases[0], selected.Gates.Gates[0]
+	for _, check := range []struct {
+		id, title string
+		tiers     []string
+	}{
+		{repair.ID, repair.Title, repair.RequiredTestLevels},
+		{gate.ID, gate.Title, gate.MinimumEvidenceTiers},
+	} {
+		scenario := documentationRecoveryScenarios[check.id]
+		if scenario.Title != check.title || !reflect.DeepEqual(scenario.Tiers, parseRequiredTiers(strings.Join(check.tiers, "+"))) {
+			t.Fatal("documentation producer changed immutable title/tiers", check.id)
+		}
+		if !reflect.DeepEqual(deriveRepairFixtures("RP46"), documentationRecoveryProductionPaths) ||
+			!reflect.DeepEqual(deriveGateFixtures("BRG29"), documentationRecoveryProductionPaths) {
+			t.Fatal("source mapping incomplete")
+		}
+		runner := NewRunner()
+		if !runner.runDocumentationRecoveryRequirement(check.id, "different contract", check.tiers) ||
+			runner.results[check.id].Status != "FAILED" || len(runner.records) != 0 {
+			t.Fatal("foreign scenario accepted")
+		}
+		if !runner.runDocumentationRecoveryRequirement(check.id, check.title, []string{"docs"}) ||
+			runner.results[check.id].Status != "FAILED" || len(runner.records) != 0 {
+			t.Fatal("weaker tiers accepted")
+		}
+	}
+	runner := NewRunner()
+	for _, id := range []string{"D01", "D02", "D03", "K05", "BRG30"} {
+		if runner.runDocumentationRecoveryRequirement(id, "related only", []string{"docs"}) {
+			t.Fatal("linked requirement inherited docs proof", id)
+		}
+	}
+	if len(runner.records) != 0 || len(runner.results) != 0 {
+		t.Fatal("unexecuted requirement received credit")
+	}
+	for _, path := range documentationRecoveryProductionPaths {
+		if info, err := os.Stat(filepath.Join(resolveRepoRoot(), filepath.FromSlash(path))); err != nil || !info.Mode().IsRegular() {
+			t.Fatal("missing production source", path, err)
+		}
+	}
+}
+
+func documentationRecoveryRewrite(t *testing.T, record *EvidenceRecord, mutate func(map[string][]byte, *editorProcessReceipt)) {
+	t.Helper()
+	scenario := documentationRecoveryScenarios[record.Requirements[0]]
+	names := scenario.artifacts()
+	data, err := stateReadArtifacts(record.Artifacts, names)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var receipt editorProcessReceipt
+	if err = decodeEditorJSON(data[names[0]], &receipt); err != nil {
+		t.Fatal(err)
+	}
+	mutate(data, &receipt)
+	receipt.RawSHA256, receipt.RawBytes = editorSHA(data[names[1]]), len(data[names[1]])
+	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(data[names[2]]), len(data[names[2]])
+	encoded, err := json.MarshalIndent(receipt, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data[names[0]] = append(encoded, '\n')
+	root := t.TempDir()
+	record.Artifacts = nil
+	for _, name := range names {
+		path := filepath.Join(root, name)
+		if err := os.WriteFile(path, data[name], 0600); err != nil {
+			t.Fatal(err)
+		}
+		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data[name])})
+	}
+}
+
+func documentationRecoveryMutateNested(t *testing.T, record *EvidenceRecord, fault string) {
+	t.Helper()
+	scenario := documentationRecoveryScenarios[record.Requirements[0]]
+	for index := range record.Artifacts {
+		artifact := &record.Artifacts[index]
+		if filepath.Base(artifact.Path) != scenario.artifacts()[3] {
+			continue
+		}
+		original, err := os.ReadFile(artifact.Path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		reader, err := zip.NewReader(bytes.NewReader(original), int64(len(original)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		files := map[string][]byte{}
+		for _, entry := range reader.File {
+			stream, err := entry.Open()
+			if err != nil {
+				t.Fatal(err)
+			}
+			data, err := io.ReadAll(stream)
+			stream.Close()
+			if err != nil {
+				t.Fatal(err)
+			}
+			files[entry.Name] = data
+		}
+		var manifest map[string]any
+		if err = json.Unmarshal(files["manifest.json"], &manifest); err != nil {
+			t.Fatal(err)
+		}
+		delete(files, "manifest.json")
+		oldReportSHA := ""
+		switch fault {
+		case "stale_S", "stale_D", "stale_K":
+			manifest["tuple"].(map[string]any)[strings.TrimPrefix(fault, "stale_")] = strings.Repeat("a", 40)
+		case "stale_process_interval":
+			oldReportSHA = manifest["reportSha256"].(map[string]any)["consumers"].(string)
+			var process map[string]any
+			if err := json.Unmarshal(files["consumers/examples/compiler-build-info.process.json"], &process); err != nil {
+				t.Fatal(err)
+			}
+			for _, key := range []string{"startedUTC", "endedUTC"} {
+				oldValue, ok := process[key].(string)
+				if !ok {
+					t.Fatal("missing original nested process time", key)
+				}
+				moment, err := time.Parse(time.RFC3339Nano, oldValue)
+				if err != nil {
+					t.Fatal(err)
+				}
+				originalTime, _ := json.Marshal(oldValue)
+				staleTime, _ := json.Marshal(moment.Add(-24 * time.Hour).Format(time.RFC3339Nano))
+				for name, raw := range files {
+					if strings.HasSuffix(name, ".json") {
+						files[name] = bytes.ReplaceAll(raw, originalTime, staleTime)
+					}
+				}
+			}
+			// Keep the embedded process copies and both levels of report/file
+			// hashes coherent, isolating the cross-execution interval check.
+			manifest["reportSha256"].(map[string]any)["consumers"] = editorSHA(files["consumers/report.json"])
+		case "missing_example_output":
+			delete(files, "consumers/examples/example-0000/check.stdout")
+		case "missing_wrapper_output":
+			delete(files, "consumers/wrappers/calls/docs-active-0.stdout")
+		case "missing_package":
+			delete(files, "consumers/cherri-shortcuts-source.zip")
+		case "altered_snippet":
+			files["consumers/examples/example-0000/snippet.cherri"] = []byte("show(\"foreign source\")\n")
+		case "missing_generation_raw":
+			delete(files, "generation/canonical-contract.stdout")
+		case "missing_generation_child":
+			path := "generation/canonical-contract.stdout"
+			files[path] = numberWireCorruptRaw(t, "missing_event", "TestP15D01CheckGateProducesAndRejectsFaults/optional_primary", files[path])
+			var receipt map[string]any
+			if err := json.Unmarshal(files["generation/canonical-contract.process.json"], &receipt); err != nil {
+				t.Fatal(err)
+			}
+			item := receipt["stdout"].(map[string]any)
+			item["bytes"], item["sha256"] = len(files[path]), editorSHA(files[path])
+			files["generation/canonical-contract.process.json"], _ = json.Marshal(receipt)
+		default:
+			t.Fatal("unknown nested evidence mutation", fault)
+		}
+		names := make([]string, 0, len(files))
+		for name := range files {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		rows := []map[string]any{}
+		for _, name := range names {
+			rows = append(rows, map[string]any{"path": name, "bytes": len(files[name]), "sha256": editorSHA(files[name])})
+		}
+		manifest["files"] = rows
+		manifestRaw, _ := json.Marshal(manifest)
+		var packed bytes.Buffer
+		writer := zip.NewWriter(&packed)
+		for _, name := range names {
+			entry, err := writer.Create(name)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err = entry.Write(files[name]); err != nil {
+				t.Fatal(err)
+			}
+		}
+		entry, err := writer.Create("manifest.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		entry.Write(manifestRaw)
+		if err = writer.Close(); err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(t.TempDir(), filepath.Base(artifact.Path))
+		if err = os.WriteFile(path, packed.Bytes(), 0600); err != nil {
+			t.Fatal(err)
+		}
+		artifact.Path, artifact.SHA256 = path, editorSHA(packed.Bytes())
+		record.Assertions["nested_evidence_sha256"] = artifact.SHA256
+		if fault == "stale_process_interval" {
+			newReportSHA := manifest["reportSha256"].(map[string]any)["consumers"].(string)
+			documentationRecoveryRewrite(t, record, func(data map[string][]byte, receipt *editorProcessReceipt) {
+				name := scenario.artifacts()[1]
+				before := []byte("P15_DOCUMENTATION_RECOVERY_REPORT_SHA256:consumers:" + oldReportSHA)
+				after := []byte("P15_DOCUMENTATION_RECOVERY_REPORT_SHA256:consumers:" + newReportSHA)
+				if bytes.Count(data[name], before) != 1 || oldReportSHA == newReportSHA {
+					t.Fatal("stale-time control did not preserve the report binding")
+				}
+				data[name] = bytes.ReplaceAll(data[name], before, after)
+			})
+		}
+		return
+	}
+	t.Fatal("nested original artifact missing")
+}
+
+func TestDocumentationRecoveryActualProductionEvidence(t *testing.T) {
+	if os.Getenv("CHERRI_DOCUMENTATION_SOURCE_ROOT") == "" || os.Getenv("CHERRI_D03_DOCS_REPO") == "" || os.Getenv("CHERRI_DOCUMENTATION_COMPILER") == "" {
+		t.Skip("actual external immutable tuple must be supplied; no documentation acceptance granted")
+	}
+	selected := documentationRecoverySelected(t)
+	runner := NewRunner()
+	runner.artifactDir = os.Getenv("CHERRI_DOCS_RECOVERY_ACCEPTANCE_OUTPUT")
+	if runner.artifactDir == "" {
+		runner.artifactDir = t.TempDir()
+	}
+	runner.runRepairCases(selected.Repair)
+	runner.runRecoveryGates(selected.Gates)
+	if len(runner.records) != 5 || len(runner.results) != 2 || len(runner.observations) != 0 {
+		t.Fatalf("actual documentation accounting differs: records=%d results=%+v observations=%v", len(runner.records), runner.results, runner.observations)
+	}
+	for id, scenario := range documentationRecoveryScenarios {
+		result := runner.results[id]
+		if !result.Passed || result.Status != "PASSED" || result.Group != scenario.Group || !reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
+			t.Fatalf("actual %s did not pass: %+v", id, result)
+		}
+	}
+	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
+	report, err := ValidateEvidenceManifest(manifest, selected, "local")
+	if err != nil || report == nil || report.PassedCases != 2 || report.FailedCases != 0 || report.ClosureComplete {
+		t.Fatal("actual documentation proof rejected", report, err)
+	}
+	checked := map[string]bool{}
+	for _, original := range runner.records {
+		id := original.Requirements[0]
+		if err := validateDocumentationRecoveryRecord(id, original); err != nil {
+			t.Fatal(err)
+		}
+		if checked[id] {
+			continue
+		}
+		checked[id] = true
+		encoded, _ := json.Marshal(original)
+		faults := []string{"stale_S", "stale_D", "stale_K", "missing_example_output", "missing_wrapper_output", "missing_package", "altered_snippet", "stale_process_interval"}
+		if id == "BRG29" {
+			faults = append(faults, "missing_generation_raw", "missing_generation_child")
+		}
+		for _, fault := range faults {
+			t.Run(id+"/nested/"+fault, func(t *testing.T) {
+				var changed EvidenceRecord
+				if err := json.Unmarshal(encoded, &changed); err != nil {
+					t.Fatal(err)
+				}
+				documentationRecoveryMutateNested(t, &changed, fault)
+				rejected := validateDocumentationRecoveryRecord(id, changed)
+				if rejected == nil {
+					t.Fatal("hash-reconciled corrupt nested original accepted", fault)
+				}
+				if fault == "stale_process_interval" && !strings.Contains(rejected.Error(), "nested process outside original Go execution") {
+					t.Fatal("stale-time control rejected for a different cause", rejected)
+				}
+			})
+		}
+		for _, fault := range []string{"borrowed_id", "wrong_tier", "wrong_producer", "weaker_command", "missing_artifact", "dirty_before", "dirty_after", "stale_source", "forged_source_bytes", "missing_source", "missing_child", "skipped_child", "raw_bad_utf8", "elapsed_timeout", "unbound_required_events"} {
+			t.Run(id+"/"+fault, func(t *testing.T) {
+				var changed EvidenceRecord
+				if err := json.Unmarshal(encoded, &changed); err != nil {
+					t.Fatal(err)
+				}
+				switch fault {
+				case "borrowed_id":
+					changed.Requirements = []string{"D03"}
+				case "wrong_tier":
+					changed.Tier = "ios-runtime"
+				case "wrong_producer":
+					changed.TestID = "tools/language-acceptance:runDocs"
+				case "weaker_command":
+					changed.Command = []string{"go", "test", "."}
+				case "missing_artifact":
+					changed.Artifacts = changed.Artifacts[:2]
+				default:
+					documentationRecoveryRewrite(t, &changed, func(data map[string][]byte, receipt *editorProcessReceipt) {
+						scenario := documentationRecoveryScenarios[id]
+						switch fault {
+						case "dirty_before":
+							receipt.SourceCleanBefore = false
+						case "dirty_after":
+							receipt.SourceCleanAfter = false
+						case "stale_source":
+							receipt.SourceCommit = strings.Repeat("e", 40)
+						case "forged_source_bytes":
+							receipt.SourceFiles[0].SHA256 = strings.Repeat("0", 64)
+						case "missing_source":
+							receipt.SourceFiles = receipt.SourceFiles[1:]
+						case "elapsed_timeout":
+							receipt.ElapsedSeconds = 3600
+						case "unbound_required_events":
+							receipt.RequiredTests = receipt.RequiredTests[:1]
+						default:
+							target := scenario.events()[1]
+							kind := "missing_event"
+							if fault == "skipped_child" {
+								kind = "skipped_child"
+							}
+							if fault == "raw_bad_utf8" {
+								kind = "invalid_utf8"
+							}
+							name := scenario.artifacts()[1]
+							raw := numberWireCorruptRaw(t, kind, target, data[name])
+							if bytes.Equal(raw, data[name]) {
+								t.Fatal("control did not corrupt original output")
+							}
+							data[name] = raw
+						}
+					})
+				}
+				if validateDocumentationRecoveryRecord(id, changed) == nil {
+					t.Fatal("corrupted real documentation proof accepted", fault)
+				}
+			})
+		}
+	}
+	final, finalErr := ValidateEvidenceManifest(manifest, selected, "final")
+	if finalErr == nil || final == nil || final.ClosureComplete {
+		t.Fatal("local documentation bypassed final release gates", final, finalErr)
+	}
+	raw, err := json.Marshal(map[string]any{"source_sha": runner.implSHA, "report": report, "records": runner.records})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("P15_DOCUMENTATION_RECOVERY_ACCEPTANCE:" + string(raw))
+}

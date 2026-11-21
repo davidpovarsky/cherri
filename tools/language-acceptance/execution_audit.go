@@ -276,6 +276,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = upstreamBoundaryScope
 		}
+		if scenario, found := documentationRecoveryScenarios[row.ID]; found {
+			row.TestNames = append([]string{}, scenario.Tests...)
+			row.ProductionPath = append([]string{}, documentationRecoveryProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = scenario.Scope
+		}
 		if row.ID == "RP11" {
 			row.TestNames = append([]string{}, numberWireTests...)
 			row.ProductionPath = append([]string{}, numberWireProductionPaths...)
