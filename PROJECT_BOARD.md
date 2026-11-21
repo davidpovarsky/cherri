@@ -226,3 +226,7 @@ The QA collector now anchors its three post-test02 metadata queries to the origi
 - [x] 2026-11-21: Corrected documentation recovery intake to bind/revalidate nested originals, exact S/D/K, source-derived inventories, generation JSON events and the actual outer execution interval. Clean a7d4f8eb replay accepted local RP46/BRG29 and rejected all 48 corruptions; original c61/2af formal intake claim is superseded, originals preserved. See docs/language-v2/p15-r6-documentation-nested-intake-20261121.md. Final179/Apple/deployment remain separate gates.
 
 - [x] 2026-11-21: Corrected the macro ledger's final-consumer observer for the exact V2 implicit-void Nothing terminator; clean0be0a15d passed19 compile cases,14 causal graph controls and19 ledger verifier checks. Original OpenMinis d90 failure and skipped steps remain qualified. D8 documentation published at exact56811d6b with successful main CI/Pages and7 live byte comparisons; installed consumers wait for compiler-S decision. See docs/language-v2/p15-r6-macro-oracle-publication-20261121.md.
+
+## 21 November 2026 — imported-variable presence repair
+
+Root integrated clean source 61614095633e50cbc5377d36ca01061a4a36a100 after causal RED and independent static review. Actual local replay: 6 synthetic, 20 demand and 1,686 broader Optional events PASS, 0 FAIL / 0 SKIP. See docs/language-v2/p15-imported-presence-demand-20261121.md. Private 38-input corpus replays remain in progress; full 179 / Apple / Pure closure is not claimed. The previous compiler pin remains until the next reviewed tuple is frozen.

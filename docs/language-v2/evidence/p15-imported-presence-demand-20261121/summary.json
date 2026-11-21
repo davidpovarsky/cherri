@@ -1,0 +1,257 @@
+{
+  "formatVersion": 1,
+  "sourceFix": "61614095633e50cbc5377d36ca01061a4a36a100",
+  "causalTestsOnlySource": "b5164f1ea289863dbb74e54705b54b875d3e6717",
+  "rootIntegration": "4c5f035e852d2506abe6a7160441384f348e4a3b",
+  "rootCause": "First opaque dictionary lookup gives a provenance-only variable an optional lowered Type; second lookup attempted unnecessary absence tracking even when no semantic presence consumer exists.",
+  "repair": "Keep explicit demand decisions for analyzed assignment/binding names and apply them only while creating imported variable bindings; unknown names conservatively retain tracking.",
+  "peerReview": {
+    "agent": "docs_consumers",
+    "kind": "static read-only",
+    "finding": "Read-only independent review by docs_consumers: the retained map contains explicit decisions only for dependency names; unknown or generated names retain presence tracking. Only provenance Kind=Variable uses this name map. Authored BindingStmt pointer decisions, optionalValuePresence, None comparisons, returns and user-call seeds stay unchanged. No blocker found; no duplicate execution or private payload inspection."
+  },
+  "causalRed": {
+    "source": "b5164f1ea289863dbb74e54705b54b875d3e6717",
+    "sourceCleanBefore": true,
+    "sourceCleanAfter": true,
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=2m",
+      "-run",
+      "^TestP15ImportedPresence",
+      "."
+    ],
+    "startedUTC": "2026-11-21T19:37:33.438703+00:00",
+    "durationSeconds": 38.937,
+    "exitCode": 1,
+    "outerTimeout": false,
+    "passed": [
+      "TestP15ImportedPresenceLiteralAssignmentControl",
+      "TestP15ImportedPresenceRequiredRemainsFailClosed/none_comparison",
+      "TestP15ImportedPresenceRequiredRemainsFailClosed/alias_comparison",
+      "TestP15ImportedPresenceRequiredRemainsFailClosed/user_function",
+      "TestP15ImportedPresenceRequiredRemainsFailClosed"
+    ],
+    "failed": [
+      "TestP15ImportedPresenceUnusedAssignment",
+      null
+    ],
+    "stdoutSHA256": "cf0d28e2fd1bf9facd7303faa1a096649801f1260a4c5ed15906f817a3cf8623",
+    "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "publicSyntheticOnly": true
+  },
+  "green": [
+    {
+      "source": "61614095633e50cbc5377d36ca01061a4a36a100",
+      "sourceCleanBefore": true,
+      "sourceCleanAfter": true,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=2m",
+        "-run",
+        "^TestP15ImportedPresence",
+        "."
+      ],
+      "startedUTC": "2026-11-21T19:40:36.567994+00:00",
+      "finishedUTC": "2026-11-21T19:40:58.379671+00:00",
+      "durationSeconds": 21.812,
+      "exitCode": 0,
+      "outerTimeout": false,
+      "passed": [
+        "TestP15ImportedPresenceUnusedAssignment",
+        "TestP15ImportedPresenceLiteralAssignmentControl",
+        "TestP15ImportedPresenceRequiredRemainsFailClosed/none_comparison",
+        "TestP15ImportedPresenceRequiredRemainsFailClosed/alias_comparison",
+        "TestP15ImportedPresenceRequiredRemainsFailClosed/user_function",
+        "TestP15ImportedPresenceRequiredRemainsFailClosed"
+      ],
+      "failed": [],
+      "skipped": [],
+      "stdoutSHA256": "8c049b67d562a66c7c575e2541a4d5dc4fbc8e10b0be10da2e47cbc94f2816e7",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "61614095633e50cbc5377d36ca01061a4a36a100",
+      "sourceCleanBefore": true,
+      "sourceCleanAfter": true,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=1m",
+        "-run",
+        "^Test(ImportedOptionalPresenceDemand|OptionalPresenceDemand)",
+        "./internal/language/lower"
+      ],
+      "startedUTC": "2026-11-21T19:40:58.379671+00:00",
+      "finishedUTC": "2026-11-21T19:41:02.941380+00:00",
+      "durationSeconds": 4.563,
+      "exitCode": 0,
+      "outerTimeout": false,
+      "passed": [
+        "TestOptionalPresenceDemandFollowsActualConsumers/none_comparison",
+        "TestOptionalPresenceDemandFollowsActualConsumers/reassignment_alias",
+        "TestOptionalPresenceDemandFollowsActualConsumers/return",
+        "TestOptionalPresenceDemandFollowsActualConsumers/argument",
+        "TestOptionalPresenceDemandFollowsActualConsumers/named_argument",
+        "TestOptionalPresenceDemandFollowsActualConsumers/qualified_argument",
+        "TestOptionalPresenceDemandFollowsActualConsumers/branch_use",
+        "TestOptionalPresenceDemandFollowsActualConsumers/loop_use",
+        "TestOptionalPresenceDemandFollowsActualConsumers/shadow_retention",
+        "TestOptionalPresenceDemandFollowsActualConsumers/canonical_value_only",
+        "TestOptionalPresenceDemandFollowsActualConsumers/unused_alias",
+        "TestOptionalPresenceDemandFollowsActualConsumers",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/ordinary_value",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/literal_text",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/none_comparison",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/alias",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/return",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/argument",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers/named_argument",
+        "TestImportedOptionalPresenceDemandRetainsRealConsumers"
+      ],
+      "failed": [],
+      "skipped": [],
+      "stdoutSHA256": "4a6e83260ca711e6ff3c16311fa39f1fc8a4526395ed38812524a311e72e9114",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "optionalRegression": {
+    "source": "61614095633e50cbc5377d36ca01061a4a36a100",
+    "sourceCleanBefore": true,
+    "sourceCleanAfter": true,
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=6m",
+      "-run",
+      "^Test(P15.*Optional|P15ImportedPresence|Optional|ImportedOptional)",
+      ".",
+      "./internal/language/lower"
+    ],
+    "startedUTC": "2026-11-21T19:43:54.623074+00:00",
+    "finishedUTC": "2026-11-21T19:47:15.424384+00:00",
+    "durationSeconds": 200.812,
+    "exitCode": 0,
+    "outerTimeout": false,
+    "passed": 1686,
+    "failed": [],
+    "skipped": [],
+    "stdoutSHA256": "7a0551dac648bcd0a9a956fb9556611fff90fe9891f97207215b2f25cd67f5dc",
+    "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "supersededExploratoryTrials": {
+    "tests-only": "Incorrect native action count; no causal compiler failure established.",
+    "tests-only-cleared": "A speculative prior none assignment produced an earlier semantic type error; not the private regression."
+  },
+  "privateCorpus": "Fresh five-test execution on identical private38/27652 inputs is still in progress. No private corpus PASS or closure claimed.",
+  "formal179Acceptance": false,
+  "appleRuntimeClaimed": false,
+  "contracts": {
+    "acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "archive": {
+    "file": "public-originals.zip",
+    "sha256": "63d366740ea849b95c90d88152036c4f697dac7a68c1047f808db10347a6536b",
+    "bytes": 81180,
+    "members": 17
+  },
+  "originals": [
+    {
+      "path": "tests-only/go.jsonl",
+      "bytes": 5684,
+      "sha256": "7e3f49ff0404e40e2ad26e45bdfa5dbdc010d931bd859fcc0c9e26048aab4fb0"
+    },
+    {
+      "path": "tests-only/receipt.json",
+      "bytes": 960,
+      "sha256": "c05eb1ca6cd20fa244497277b918e2a78153a462ffe812343da7e22813384dab"
+    },
+    {
+      "path": "tests-only/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests-only-cleared/go.jsonl",
+      "bytes": 5978,
+      "sha256": "e4e4fb26e5e976d719aabcfb12829dac75142066cb2c1d95c58977a821735da4"
+    },
+    {
+      "path": "tests-only-cleared/receipt.json",
+      "bytes": 960,
+      "sha256": "4f328441259e8e7a989ddbee6f04a66de8603e877bb5825c769bed4e7870b6a8"
+    },
+    {
+      "path": "tests-only-cleared/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests-only-double-lookup/go.jsonl",
+      "bytes": 6004,
+      "sha256": "cf0d28e2fd1bf9facd7303faa1a096649801f1260a4c5ed15906f817a3cf8623"
+    },
+    {
+      "path": "tests-only-double-lookup/receipt.json",
+      "bytes": 1003,
+      "sha256": "3d70a342a3ec130e48889f6052c9a1bcb4ad989117ad8cb8ec39ca59eb71a0bc"
+    },
+    {
+      "path": "tests-only-double-lookup/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source-fix/demand.jsonl",
+      "bytes": 20552,
+      "sha256": "4a6e83260ca711e6ff3c16311fa39f1fc8a4526395ed38812524a311e72e9114"
+    },
+    {
+      "path": "source-fix/demand.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source-fix/receipts.json",
+      "bytes": 3312,
+      "sha256": "936864c400fe2c8b722e5d6a8eb178b60cc97aa40e370d09b4201647e745a071"
+    },
+    {
+      "path": "source-fix/synthetic.jsonl",
+      "bytes": 5635,
+      "sha256": "8c049b67d562a66c7c575e2541a4d5dc4fbc8e10b0be10da2e47cbc94f2816e7"
+    },
+    {
+      "path": "source-fix/synthetic.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "optional-regression/receipt.json",
+      "bytes": 733,
+      "sha256": "6fe7b6da7545584fd563105fa0ad9260741b2494d44999359765208fa1e52e78"
+    },
+    {
+      "path": "optional-regression/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "optional-regression/stdout.jsonl",
+      "bytes": 1622777,
+      "sha256": "7a0551dac648bcd0a9a956fb9556611fff90fe9891f97207215b2f25cd67f5dc"
+    }
+  ]
+}
