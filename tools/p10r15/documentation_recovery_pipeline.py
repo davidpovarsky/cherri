@@ -62,9 +62,20 @@ def collect(mode, compiler_source, consumer_source, docs, compiler, implementati
             published = examples.bound_bytes(docs, pins["docsCommit"], "fork-language/actions.md")
             if generated != original or generated != wrappers.reference_body(published):
                 raise ValueError("fresh full canonical reference differs from compiler or pinned docs bytes")
+            canonical_tests = ("TestP15D01PrimaryParameterContract", "TestP15D01AllGeneratedSignaturesAndCategories",
+                               "TestP15D01CheckGateProducesAndRejectsFaults")
+            parity_tests = ("TestP10_CatalogCLIAndMobileRegistryParity",)
+            for label, package, tests in (("canonical-contract", "./tools/language-docs", canonical_tests),
+                                           ("snippet-parity", ".", parity_tests)):
+                command = ["go", "test", package, "-count=1", "-json", "-timeout=90s",
+                           "-run", "^(" + "|".join(tests) + ")$"]
+                receipt, stdout, stderr = examples.process(output, label, command, source, budget=90)
+                examples.require(examples.succeeded(receipt) and not stderr, "CANONICAL_CONTRACT_PROCESS_FAILED:" + label)
             report["generation"] = {"bytes": len(generated), "sha256": examples.digest(generated),
                                     "compilerIdentity": identity, "matchesCompilerBlob": True,
-                                    "matchesPinnedDocsBody": True}
+                                    "matchesPinnedDocsBody": True,
+                                    "canonicalContractTests": list(canonical_tests),
+                                    "snippetParityTests": list(parity_tests)}
         else:
             raise ValueError("unknown documentation producer mode")
         wrappers.repository_state(consumer, implementation_sha)

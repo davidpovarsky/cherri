@@ -1,11 +1,14 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -109,6 +112,107 @@ func documentationRecoveryRewrite(t *testing.T, record *EvidenceRecord, mutate f
 	}
 }
 
+func documentationRecoveryMutateNested(t *testing.T, record *EvidenceRecord, fault string) {
+	t.Helper()
+	scenario := documentationRecoveryScenarios[record.Requirements[0]]
+	for index := range record.Artifacts {
+		artifact := &record.Artifacts[index]
+		if filepath.Base(artifact.Path) != scenario.artifacts()[3] {
+			continue
+		}
+		original, err := os.ReadFile(artifact.Path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		reader, err := zip.NewReader(bytes.NewReader(original), int64(len(original)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		files := map[string][]byte{}
+		for _, entry := range reader.File {
+			stream, err := entry.Open()
+			if err != nil {
+				t.Fatal(err)
+			}
+			data, err := io.ReadAll(stream)
+			stream.Close()
+			if err != nil {
+				t.Fatal(err)
+			}
+			files[entry.Name] = data
+		}
+		var manifest map[string]any
+		if err = json.Unmarshal(files["manifest.json"], &manifest); err != nil {
+			t.Fatal(err)
+		}
+		delete(files, "manifest.json")
+		switch fault {
+		case "stale_S", "stale_D", "stale_K":
+			manifest["tuple"].(map[string]any)[strings.TrimPrefix(fault, "stale_")] = strings.Repeat("a", 40)
+		case "missing_example_output":
+			delete(files, "consumers/examples/example-0000/check.stdout")
+		case "missing_wrapper_output":
+			delete(files, "consumers/wrappers/calls/docs-active-0.stdout")
+		case "missing_package":
+			delete(files, "consumers/cherri-shortcuts-source.zip")
+		case "altered_snippet":
+			files["consumers/examples/example-0000/snippet.cherri"] = []byte("show(\"foreign source\")\n")
+		case "missing_generation_raw":
+			delete(files, "generation/canonical-contract.stdout")
+		case "missing_generation_child":
+			path := "generation/canonical-contract.stdout"
+			files[path] = numberWireCorruptRaw(t, "missing_event", "TestP15D01CheckGateProducesAndRejectsFaults/optional_primary", files[path])
+			var receipt map[string]any
+			if err := json.Unmarshal(files["generation/canonical-contract.process.json"], &receipt); err != nil {
+				t.Fatal(err)
+			}
+			item := receipt["stdout"].(map[string]any)
+			item["bytes"], item["sha256"] = len(files[path]), editorSHA(files[path])
+			files["generation/canonical-contract.process.json"], _ = json.Marshal(receipt)
+		default:
+			t.Fatal("unknown nested evidence mutation", fault)
+		}
+		names := make([]string, 0, len(files))
+		for name := range files {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		rows := []map[string]any{}
+		for _, name := range names {
+			rows = append(rows, map[string]any{"path": name, "bytes": len(files[name]), "sha256": editorSHA(files[name])})
+		}
+		manifest["files"] = rows
+		manifestRaw, _ := json.Marshal(manifest)
+		var packed bytes.Buffer
+		writer := zip.NewWriter(&packed)
+		for _, name := range names {
+			entry, err := writer.Create(name)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err = entry.Write(files[name]); err != nil {
+				t.Fatal(err)
+			}
+		}
+		entry, err := writer.Create("manifest.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		entry.Write(manifestRaw)
+		if err = writer.Close(); err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(t.TempDir(), filepath.Base(artifact.Path))
+		if err = os.WriteFile(path, packed.Bytes(), 0600); err != nil {
+			t.Fatal(err)
+		}
+		artifact.Path, artifact.SHA256 = path, editorSHA(packed.Bytes())
+		record.Assertions["nested_evidence_sha256"] = artifact.SHA256
+		return
+	}
+	t.Fatal("nested original artifact missing")
+}
+
 func TestDocumentationRecoveryActualProductionEvidence(t *testing.T) {
 	if os.Getenv("CHERRI_DOCUMENTATION_SOURCE_ROOT") == "" || os.Getenv("CHERRI_D03_DOCS_REPO") == "" || os.Getenv("CHERRI_DOCUMENTATION_COMPILER") == "" {
 		t.Skip("actual external immutable tuple must be supplied; no documentation acceptance granted")
@@ -146,6 +250,22 @@ func TestDocumentationRecoveryActualProductionEvidence(t *testing.T) {
 		}
 		checked[id] = true
 		encoded, _ := json.Marshal(original)
+		faults := []string{"stale_S", "stale_D", "stale_K", "missing_example_output", "missing_wrapper_output", "missing_package", "altered_snippet"}
+		if id == "BRG29" {
+			faults = append(faults, "missing_generation_raw", "missing_generation_child")
+		}
+		for _, fault := range faults {
+			t.Run(id+"/nested/"+fault, func(t *testing.T) {
+				var changed EvidenceRecord
+				if err := json.Unmarshal(encoded, &changed); err != nil {
+					t.Fatal(err)
+				}
+				documentationRecoveryMutateNested(t, &changed, fault)
+				if validateDocumentationRecoveryRecord(id, changed) == nil {
+					t.Fatal("hash-reconciled corrupt nested original accepted", fault)
+				}
+			})
+		}
 		for _, fault := range []string{"borrowed_id", "wrong_tier", "wrong_producer", "weaker_command", "missing_artifact", "dirty_before", "dirty_after", "stale_source", "forged_source_bytes", "missing_source", "missing_child", "skipped_child", "raw_bad_utf8", "elapsed_timeout", "unbound_required_events"} {
 			t.Run(id+"/"+fault, func(t *testing.T) {
 				var changed EvidenceRecord

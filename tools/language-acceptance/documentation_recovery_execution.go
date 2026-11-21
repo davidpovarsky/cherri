@@ -30,6 +30,8 @@ var documentationRecoveryScenarios = map[string]documentationRecoveryScenario{
 var documentationRecoveryProductionPaths = []string{
 	"p15_documentation_recovery_test.go", "p15_documentation_test.go", "p10_ssot_propagation_test.go",
 	"tools/p10r15/documentation_recovery_pipeline.py",
+	"tools/p10r15/documentation_recovery_intake.py",
+	"tools/language-acceptance/documentation_recovery_nested.go",
 	"tools/p10r15/documentation_recovery_examples.py", "tools/p10r15/test_documentation_recovery_examples.py",
 	"tools/p10r15/documentation_recovery_wrappers.py", "tools/p10r15/test_documentation_recovery_wrappers.py",
 	"tools/p10r15/package_skill.py",
@@ -94,7 +96,7 @@ func documentationRecoveryContainsTier(values []string, target string) bool {
 }
 func (s documentationRecoveryScenario) artifacts() []string {
 	prefix := strings.ToLower(s.ID)
-	return []string{prefix + "-process.json", prefix + "-go.jsonl", prefix + "-stderr.log"}
+	return []string{prefix + "-process.json", prefix + "-go.jsonl", prefix + "-stderr.log", prefix + "-nested.zip"}
 }
 func (s documentationRecoveryScenario) parse(raw []byte) error {
 	return parseStrictNamedProductionOutput(s.events(), productionTestTimeout(s.Tests)+time.Minute, raw)
@@ -140,7 +142,23 @@ func validateDocumentationRecoveryRecord(id string, record EvidenceRecord) error
 	if err = s.parse(raw); err != nil {
 		return err
 	}
-	return loopOutputWithinProcess(raw, receipt)
+	if err = loopOutputWithinProcess(raw, receipt); err != nil {
+		return err
+	}
+	var archive string
+	for _, artifact := range record.Artifacts {
+		if filepath.Base(artifact.Path) == names[3] {
+			archive = artifact.Path
+		}
+	}
+	nested, err := documentationRecoveryNestedOperation(record.ImplementationSHA, "verify", archive, "", id)
+	if err != nil {
+		return err
+	}
+	if nested.ArchiveSHA256 != editorSHA(data[names[3]]) || record.Assertions["nested_evidence_sha256"] != nested.ArchiveSHA256 {
+		return fmt.Errorf("nested documentation artifact detached from original record")
+	}
+	return documentationRecoveryBindNestedReports(nested, raw)
 }
 
 func (r *Runner) executeDocumentationRecovery(s documentationRecoveryScenario) ([]EvidenceArtifact, string, bool, error) {
@@ -208,12 +226,32 @@ func (r *Runner) executeDocumentationRecovery(s documentationRecoveryScenario) (
 		return nil, "", command.Process != nil, err
 	}
 	names := s.artifacts()
-	contents := [][]byte{append(encoded, '\n'), raw, stderr}
+	var nestedBytes []byte
+	if processErr == nil && parseErr == nil && !timedOut && receipt.SourceCleanAfter {
+		archive := filepath.Join(directory, names[3])
+		nested, nestedErr := documentationRecoveryNestedOperation(before, "pack", archive, directory, s.ID)
+		if nestedErr == nil {
+			nestedErr = documentationRecoveryBindNestedReports(nested, raw)
+		}
+		if nestedErr != nil {
+			parseErr = nestedErr
+		} else {
+			nestedBytes, err = os.ReadFile(archive)
+			if err != nil {
+				parseErr = err
+			}
+		}
+	}
+	contents := [][]byte{append(encoded, '\n'), raw, stderr, nestedBytes}
 	var artifacts []EvidenceArtifact
 	for index, name := range names {
 		path := filepath.Join(directory, name)
-		if err = os.WriteFile(path, contents[index], 0600); err != nil {
-			return artifacts, "", command.Process != nil, err
+		if index != 3 {
+			if err = os.WriteFile(path, contents[index], 0600); err != nil {
+				return artifacts, "", command.Process != nil, err
+			}
+		} else if len(nestedBytes) == 0 {
+			continue
 		}
 		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(contents[index])})
 	}
@@ -250,6 +288,11 @@ func (r *Runner) runDocumentationRecoveryRequirement(id, title string, levels []
 		record.Assertions["required_production_tests"] = strings.Join(s.Tests, "\n")
 		record.Assertions["required_go_events"] = strings.Join(s.events(), "\n")
 		record.Assertions["scope"] = s.Scope
+		for _, artifact := range artifacts {
+			if filepath.Base(artifact.Path) == s.artifacts()[3] {
+				record.Assertions["nested_evidence_sha256"] = artifact.SHA256
+			}
+		}
 	}
 	return true
 }

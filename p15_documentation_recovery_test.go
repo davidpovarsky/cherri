@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -70,6 +72,7 @@ func p15DocumentationRecoveryPipeline(t *testing.T, mode string) map[string]json
 		t.Fatalf("incomplete documentation producer receipt: %s", original)
 	}
 	t.Logf("P15_DOCUMENTATION_RECOVERY_ORIGINAL_REPORT:%s", filepath.Join(output, "report.json"))
+	t.Logf("P15_DOCUMENTATION_RECOVERY_REPORT_SHA256:%s:%s", mode, fmt.Sprintf("%x", sha256.Sum256(original)))
 	t.Logf("P15_DOCUMENTATION_RECOVERY_TUPLE:%s", report["tuple"])
 	return report
 }
@@ -129,6 +132,20 @@ func TestP15DocumentationRecoveryGeneration(t *testing.T) {
 			t.Fatalf("fresh canonical generator did not match both immutable sources: %s", report["generation"])
 		}
 	})
-	t.Run("canonical_generation_contract", TestP15D01CanonicalDocsProduction)
-	t.Run("schema_snippet_parity", TestP10_CatalogCLIAndMobileRegistryParity)
+	for _, stage := range []struct {
+		name, field string
+		count       int
+	}{
+		{"canonical_generation_contract", "canonicalContractTests", 3},
+		{"schema_snippet_parity", "snippetParityTests", 1},
+	} {
+		t.Run(stage.name, func(t *testing.T) {
+			var generation map[string]json.RawMessage
+			var names []string
+			if json.Unmarshal(report["generation"], &generation) != nil ||
+				json.Unmarshal(generation[stage.field], &names) != nil || len(names) != stage.count {
+				t.Fatal("missing captured canonical Go producer inventory")
+			}
+		})
+	}
 }
