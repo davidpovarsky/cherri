@@ -1,0 +1,149 @@
+{
+  "reviewedUTC": "2026-11-21T22:41:13.414963+00:00",
+  "source": "9c8daf721aa241127df8d1e3f91bbadf90110e73",
+  "allFiveAcceptedAtThisSource": true,
+  "gateCount": 5,
+  "passedGateCount": 5,
+  "privateInputCount": 38,
+  "privateInputBytes": 62980131,
+  "privateActionCount": 27652,
+  "privateInputManifestSHA256": "766ac82ef7d92f50a894e50bc84d3fed9cc2d375f81ffe2771dbe8a5a6de5f39",
+  "inputsByteUnchanged": true,
+  "sourceCleanNow": true,
+  "sourceBudget": "Each original Go15m and outer930s; sequential actual processes, no retries in this S3 batch",
+  "receipts": [
+    {
+      "label": "00-p12-par",
+      "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+      "processSeconds": 428.937,
+      "packageSeconds": 350.251,
+      "startedUTC": "2026-11-21T21:45:22.946009+00:00",
+      "finishedUTC": "2026-11-21T21:52:31.884896+00:00",
+      "exitCode": 0,
+      "passed": true,
+      "failed": 0,
+      "skipped": 0,
+      "timedOut": false,
+      "originalBytes": 1648375,
+      "originalEvents": 8096,
+      "stdoutSHA256": "4d02cc1f5e20b809b2f935bcf6b975fbb91abbdee30346a7b6a0e2560bb9ab44",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receiptSHA256": "ff3b82d0159d5f9d45b22267938ea49193eae53112f331b52bc41b9bd3c8878f",
+      "sourceCleanBeforeAfter": true,
+      "inputsUnchangedAfter": true
+    },
+    {
+      "label": "01-p13",
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "processSeconds": 272.906,
+      "packageSeconds": 259.909,
+      "startedUTC": "2026-11-21T21:52:33.224041+00:00",
+      "finishedUTC": "2026-11-21T21:57:06.125941+00:00",
+      "exitCode": 0,
+      "passed": true,
+      "failed": 0,
+      "skipped": 0,
+      "timedOut": false,
+      "originalBytes": 1040739,
+      "originalEvents": 5404,
+      "stdoutSHA256": "4fcc3fc575e9952172f0b2927dac3fc232c7336a4bab5ea0a36c5748bd03e5bd",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receiptSHA256": "597d3f5f94832ebc5d69d9ee44dc11bba6a29e03b8b0deead389887e3213211c",
+      "sourceCleanBeforeAfter": true,
+      "inputsUnchangedAfter": true
+    },
+    {
+      "label": "02-p10-measure",
+      "test": "TestP10R10CorpusMeasure",
+      "processSeconds": 477.391,
+      "packageSeconds": 226.535,
+      "startedUTC": "2026-11-21T22:19:17.171390+00:00",
+      "finishedUTC": "2026-11-21T22:27:14.572847+00:00",
+      "exitCode": 0,
+      "passed": true,
+      "failed": 0,
+      "skipped": 0,
+      "timedOut": false,
+      "originalBytes": 962554,
+      "originalEvents": 5473,
+      "stdoutSHA256": "da01184f2566fbfcfbdeb1ffa911832f5c6d502ebe7c927127c951d3a0add517",
+      "stderrSHA256": "184b237867f112311945f369a1f2ef745ec1740d621f9f9f4a6b07b1fafa3643",
+      "receiptSHA256": "54a56b3692ca731bd14f0f693e473a4725ef5666ef3a1695e33590822e485b0a",
+      "sourceCleanBeforeAfter": true,
+      "inputsUnchangedAfter": true
+    },
+    {
+      "label": "03-p11-fresh38x2",
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "processSeconds": 292.907,
+      "packageSeconds": 286.573,
+      "startedUTC": "2026-11-21T22:27:15.733646+00:00",
+      "finishedUTC": "2026-11-21T22:32:08.643471+00:00",
+      "exitCode": 0,
+      "passed": true,
+      "failed": 0,
+      "skipped": 0,
+      "timedOut": false,
+      "originalBytes": 1567101,
+      "originalEvents": 8096,
+      "stdoutSHA256": "73884fff177e17398b5a11ddc410cb1c6a5276da58b07f183a03a0461816fd61",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receiptSHA256": "efdae4298e89126f1a3136b7cd542c3430aec989cb06910dd75370614716640f",
+      "sourceCleanBeforeAfter": true,
+      "inputsUnchangedAfter": true
+    },
+    {
+      "label": "04-p12-lifecycle",
+      "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+      "processSeconds": 404.546,
+      "packageSeconds": 388.829,
+      "startedUTC": "2026-11-21T22:32:09.938804+00:00",
+      "finishedUTC": "2026-11-21T22:38:54.487256+00:00",
+      "exitCode": 0,
+      "passed": true,
+      "failed": 0,
+      "skipped": 0,
+      "timedOut": false,
+      "originalBytes": 2176965,
+      "originalEvents": 10800,
+      "stdoutSHA256": "c93fb6ecb5edd69d6b990e148ef54e8ac2a19035504c6582dcde640de10e6417",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receiptSHA256": "089df53d00a1bdc02d3709ffd3354b4600e58c63c6b7872aad75a5e1cb53ec9a",
+      "sourceCleanBeforeAfter": true,
+      "inputsUnchangedAfter": true
+    }
+  ],
+  "privateOriginalsPublished": false,
+  "originalPrivateEvidenceLocation": "r6-private-corpus-9c8daf72-20261121",
+  "scope": "Only these five private-corpus gates on exact S3. No automatic credit for later compiler sources, formal179, Apple, installed consumer tuple or release.",
+  "formalRequirementsProved": [],
+  "releaseAccepted": false,
+  "originalPublicReceiptArchiveSHA256": "6d0cdaab9a22d1afc7c9545588d52b7be11642de700515f886eaecf0d6fd17d0",
+  "originalPublicMembers": {
+    "all-five-independent-review.original.json": {
+      "sha256": "cf9df9e48ced135325549e6187006a686d145ce22a6e4ff28a6b93d4507106f6",
+      "bytes": 4893
+    },
+    "00-p12-par/receipt.original.json": {
+      "sha256": "ff3b82d0159d5f9d45b22267938ea49193eae53112f331b52bc41b9bd3c8878f",
+      "bytes": 1402
+    },
+    "01-p13/receipt.original.json": {
+      "sha256": "597d3f5f94832ebc5d69d9ee44dc11bba6a29e03b8b0deead389887e3213211c",
+      "bytes": 1380
+    },
+    "02-p10-measure/receipt.original.json": {
+      "sha256": "54a56b3692ca731bd14f0f693e473a4725ef5666ef3a1695e33590822e485b0a",
+      "bytes": 1346
+    },
+    "03-p11-fresh38x2/receipt.original.json": {
+      "sha256": "efdae4298e89126f1a3136b7cd542c3430aec989cb06910dd75370614716640f",
+      "bytes": 1382
+    },
+    "04-p12-lifecycle/receipt.original.json": {
+      "sha256": "089df53d00a1bdc02d3709ffd3354b4600e58c63c6b7872aad75a5e1cb53ec9a",
+      "bytes": 1397
+    }
+  },
+  "publicationNote": "Only reviewed metadata and receipt originals are public. Input filenames, input files, per-input reports and private stdout/stderr remain on the authorized host; their original hashes bind this proof."
+}
