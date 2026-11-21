@@ -1,4 +1,4 @@
-# P10R15 Apple recovery components â€” 21 November 2026
+# P10R15 Apple recovery components - 21 November 2026
 
 Project acceptance remains open. These are actual local component checks,
 not Apple Simulator, signing, physical-device, or formal 179 acceptance.
