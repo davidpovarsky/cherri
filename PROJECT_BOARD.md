@@ -230,3 +230,8 @@ The QA collector now anchors its three post-test02 metadata queries to the origi
 ## 21 November 2026 — imported-variable presence repair
 
 Root integrated clean source 61614095633e50cbc5377d36ca01061a4a36a100 after causal RED and independent static review. Actual local replay: 6 synthetic, 20 demand and 1,686 broader Optional events PASS, 0 FAIL / 0 SKIP. See docs/language-v2/p15-imported-presence-demand-20261121.md. Private 38-input corpus replays remain in progress; full 179 / Apple / Pure closure is not claimed. The previous compiler pin remains until the next reviewed tuple is frozen.
+
+
+## 2026-11-22 — reviewed AI transport component
+
+Root integrated the source-bound e2027ee2 provider transport and its preserved offline controls after independently reconciling all 57 unittest terminals, 10 original archive members, and 4 Git source bindings. Fixed HTTPS endpoints, zero retry/redirect, original usage/source retention and 15/90/120-second limits were reviewed. This proves only the mocked transport component. Real generation, AI01, Apple and final 179 acceptance remain open. Compiler S3 remains 9c8; no consumer pin or release promotion was changed. The separate full179 negative-test candidate 36d78698 remains untested and unmerged.
