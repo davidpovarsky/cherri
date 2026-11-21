@@ -315,10 +315,8 @@ func validateEditorContractRecord(id string, record EvidenceRecord) error {
 	if !ok {
 		return nil
 	}
-	// Actual native UI has its own independent same-source XCTest intake.
-	if record.Tier == "ios-ui" {
-		return nil
-	}
+	// No complete editor XCTest intake exists yet; external tiers cannot
+	// borrow local evidence or generic UI metadata. They remain unproved.
 	if record.Tier != spec.Tier || record.Result != "passed" || record.ExitCode != 0 ||
 		!reflect.DeepEqual(record.Requirements, []string{id}) || record.TestID != editorContractTestIDs(id)[0] ||
 		!reflect.DeepEqual(record.Command, editorContractCommand(spec.Steps[0])) ||

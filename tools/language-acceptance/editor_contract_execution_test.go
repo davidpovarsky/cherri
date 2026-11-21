@@ -427,3 +427,29 @@ func TestEditorContractActualProductionEvidence(t *testing.T) {
 	}
 	t.Logf("Actual source %s: %d editor local records; full requirements remain pending their required external UI evidence", runner.implSHA, len(runner.records))
 }
+
+func TestEditorContractRejectsUnprovedExternalAndCrossIDRecords(t *testing.T) {
+	for _, id := range editorContractSortedIDs() {
+		spec := editorContracts.Scenarios[id]
+		for _, tier := range []string{"ios-ui", "ios-runtime", "ios-build"} {
+			for _, producer := range []string{editorContractTestIDs(id)[0], "CherriUITests/test" + id + "Forged"} {
+				t.Run(id+"/"+tier+"/"+producer, func(t *testing.T) {
+					record := EvidenceRecord{Requirements: []string{id}, Tier: tier, TestID: producer, Result: "passed", ExitCode: 0}
+					if validateEditorContractRecord(id, record) == nil {
+						t.Fatal("unproved external editor execution was accepted")
+					}
+				})
+			}
+		}
+		t.Run(id+"/cross_requirement", func(t *testing.T) {
+			other := "E01"
+			if id == other {
+				other = "E02"
+			}
+			record := EvidenceRecord{Requirements: []string{other}, Tier: spec.Tier, TestID: editorContractTestIDs(id)[0], Result: "passed", ExitCode: 0, Command: editorContractCommand(spec.Steps[0]), Assertions: map[string]string{"editor_contract_scenario": editorContractBinding(spec), "scope": spec.Scope}}
+			if validateEditorContractRecord(id, record) == nil {
+				t.Fatal("different requirement borrowed editor proof")
+			}
+		})
+	}
+}
