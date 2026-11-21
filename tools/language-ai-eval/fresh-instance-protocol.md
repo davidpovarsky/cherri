@@ -92,6 +92,10 @@ incomplete run retains its partial records and the original six-per-arm
 denominator. It cannot publish a completed AI-quality score. If source integrity
 changes, remaining requests do not start. An operator must not restart the same
 bundle after a failure or select a different bundle based on outcomes.
+The sealed runner claims both a new intent and a new report before it owns report
+updates. A repeated invocation cannot replace the earlier report, even when its
+exclusive claim fails. Errors after the first successful claim retain the
+already-started outcomes and the declared denominator.
 
 ## Independent semantic adjudication
 
@@ -159,6 +163,11 @@ attempt; they cannot become a completed generation. A completed refusal or
 truncation containing thinking/tool/other unsupported response blocks is also
 unadjudicable under this no-tools profile. File reads have a byte limit and
 reconcile the opened file's identity and size before and after reading.
+Validator receipt inventories use those same bounded identity checks on a fixed
+file set. Oversized or concurrently changed originals remain on disk with an
+explicit incomplete-inventory receipt; they cannot support adjudication. Receipt
+exit codes require integer values, and elapsed time requires a finite number;
+Boolean values cannot stand in for either numeric field.
 The intake leaves `formal_acceptance_granted=false`; the
 project's existing acceptance layer must independently consume this reviewed
 measurement under the original requirement. Fresh exact-instance provenance,

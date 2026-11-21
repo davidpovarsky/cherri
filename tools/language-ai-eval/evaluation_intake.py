@@ -11,6 +11,7 @@ import argparse
 import datetime as dt
 from email.utils import parsedate_to_datetime
 import json
+import math
 from pathlib import Path
 import plistlib
 import subprocess
@@ -207,6 +208,7 @@ def verify_validator(directory, request, provider, bundle):
         require(receipt.get(key) == request[key], "VALIDATOR_IDENTITY")
     require(receipt.get("compiler") == bundle["manifest"]["compiler"], "VALIDATOR_COMPILER_IDENTITY")
     require(receipt.get("compiler_environment_profile") == "isolated-defaults/v1", "VALIDATOR_ENVIRONMENT_PROFILE")
+    require(receipt.get("originals_complete", True) is True, "VALIDATOR_ORIGINALS_INCOMPLETE")
     inventory(directory, receipt)
     validated = unique_json(original(directory / "request.json"))
     task = validation_request(validated, bundle)
@@ -219,13 +221,15 @@ def verify_validator(directory, request, provider, bundle):
                 "receipt_sha256": digest(canonical(receipt))}
     command = [str(bundle["root"] / "compiler.exe"), "compile", str(directory / "source.cherri"),
                "--mode="+request["arm"], "--output", str(directory / "output.shortcut"), "--skip-sign"]
-    require(receipt.get("command") == command and isinstance(receipt.get("compile_elapsed_seconds"), (int, float))
-            and 0 <= receipt["compile_elapsed_seconds"] <= COMPILE_TIMEOUT + 1, "VALIDATOR_COMMAND_OR_BUDGET")
+    elapsed = receipt.get("compile_elapsed_seconds")
+    require(receipt.get("command") == command and type(elapsed) in (int, float)
+            and math.isfinite(elapsed) and 0 <= elapsed <= COMPILE_TIMEOUT + 1, "VALIDATOR_COMMAND_OR_BUDGET")
     if receipt.get("status") == "COMPILE_REJECTED":
         require(type(receipt.get("compile_returncode")) is int and receipt["compile_returncode"] != 0, "COMPILE_REJECTION_RECEIPT")
         checks = [{"name": name, "passed": False} for name in validated["required_checks"]]
     else:
-        require(receipt.get("status") == "ADJUDICATED" and receipt.get("compile_returncode") == 0, "VALIDATOR_STATUS")
+        require(receipt.get("status") == "ADJUDICATED" and type(receipt.get("compile_returncode")) is int
+                and receipt["compile_returncode"] == 0, "VALIDATOR_STATUS")
         raw = original(directory / "output.shortcut", limit=MAX_PLIST)
         require(digest(raw) == receipt.get("graph_sha256"), "GRAPH_HASH")
         checks = semantic_checks(plistlib.loads(raw), task, bundle["parameters"].get(task["id"], {}))

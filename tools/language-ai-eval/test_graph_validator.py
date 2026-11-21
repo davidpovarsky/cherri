@@ -136,6 +136,60 @@ class SixTaskGraphControls(unittest.TestCase):
         task = self.suite["tasks"][index]
         return positive(task, self.parameters.get(task["id"], {}), arm)
 
+    def inventory_attempt(self, root):
+        directory = root / "attempt"
+        directory.mkdir()
+        binary = root / "compiler.exe"
+        binary.write_bytes(b"synthetic compiler bytes; never executed")
+        task = self.tasks[bundle.TASK_IDS[0]]
+        source = 'show("synthetic source")'
+        request = {"schema": bundle.SCHEMA, "request_id": "a"*64, "task_id": task["id"],
+                   "arm": "v2", "source": source, "source_sha256": bundle.digest(source.encode()),
+                   "required_checks": ["compiles"]+["oracle."+key for key in sorted(task["oracle"])]}
+        fake_bundle = {"root": root, "parameters": self.parameters,
+                       "manifest": {"compiler": {"source_sha": "b"*40,
+                       "binary_sha256": bundle.digest(binary.read_bytes())}}}
+        return directory, task, request, fake_bundle
+
+    def test_receipt_inventory_never_uses_unbounded_reads(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory, task, request, fake_bundle = self.inventory_attempt(Path(temporary))
+            graph = plistlib.dumps(self.graph(0), fmt=plistlib.FMT_BINARY)
+            def compile_control(command, **kwargs):
+                (directory / "output.shortcut").write_bytes(graph)
+                return validator.subprocess.CompletedProcess(command, 0)
+            with mock.patch.object(validator, "validation_request", return_value=task), \
+                 mock.patch.object(validator, "claim_request", return_value=directory), \
+                 mock.patch.object(validator.subprocess, "run", side_effect=compile_control), \
+                 mock.patch.object(Path, "read_bytes", side_effect=AssertionError("unbounded original read forbidden")):
+                reply = validator.evaluate_request(request, fake_bundle)
+            self.assertTrue(all(check["passed"] for check in reply["checks"]))
+            receipt = bundle.unique_json((directory / "validator-receipt.json").read_bytes())
+            self.assertIs(receipt["originals_complete"], True)
+            for name, original in receipt["originals"].items():
+                raw = bundle.read_regular(directory / name)
+                self.assertEqual(original, {"sha256": bundle.digest(raw), "bytes": len(raw), "complete": True})
+
+    def test_oversized_original_remains_unadjudicated_and_is_not_read_or_deleted(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory, task, request, fake_bundle = self.inventory_attempt(Path(temporary))
+            def compile_control(command, **kwargs):
+                with (directory / "output.shortcut").open("wb") as stream:
+                    stream.truncate(validator.MAX_PLIST + 1)
+                return validator.subprocess.CompletedProcess(command, 0)
+            with mock.patch.object(validator, "validation_request", return_value=task), \
+                 mock.patch.object(validator, "claim_request", return_value=directory), \
+                 mock.patch.object(validator.subprocess, "run", side_effect=compile_control), \
+                 mock.patch.object(Path, "read_bytes", side_effect=AssertionError("unbounded original read forbidden")):
+                with self.assertRaisesRegex(bundle.BundleError, "VALIDATOR_ORIGINALS_INCOMPLETE"):
+                    validator.evaluate_request(request, fake_bundle)
+            self.assertEqual((directory / "output.shortcut").stat().st_size, validator.MAX_PLIST + 1)
+            receipt = bundle.unique_json((directory / "validator-receipt.json").read_bytes())
+            self.assertEqual(receipt["status"], "UNADJUDICATED")
+            self.assertIs(receipt["originals_complete"], False)
+            self.assertEqual(receipt["original_errors"]["output.shortcut"]["error_code"], "INPUT_SIZE_LIMIT")
+            self.assertNotIn("output.shortcut", receipt["originals"])
+
     def test_all_six_contracts_in_both_graph_encodings(self):
         for arm in ("legacy", "v2"):
             for index, task in enumerate(self.suite["tasks"]):
@@ -299,9 +353,13 @@ class SixTaskGraphControls(unittest.TestCase):
                 request = {"request_id": "a"*64, "task_id": bundle.TASK_IDS[0], "arm": "legacy", "source": source,
                            "source_sha256": bundle.digest(source.encode())}
                 fake_bundle = {"root": root, "manifest": {"compiler": {"source_sha": "b"*40, "binary_sha256": "c"*64}}}
+                def no_compiler_read(path, limit=validator.MAX_PLIST):
+                    if Path(path) == root / "compiler.exe":
+                        raise AssertionError("compiler read forbidden")
+                    return bundle.read_regular(path, limit)
                 with mock.patch.object(validator, "validation_request", return_value=self.tasks[bundle.TASK_IDS[0]]), \
                      mock.patch.object(validator, "claim_request", return_value=root), \
-                     mock.patch.object(validator, "read_regular", side_effect=AssertionError("compiler read forbidden")), \
+                     mock.patch.object(validator, "read_regular", side_effect=no_compiler_read), \
                      mock.patch.object(validator.subprocess, "run", side_effect=AssertionError("compiler invocation forbidden")) as process:
                     with self.assertRaises(validator.Unsupported):
                         validator.evaluate_request(request, fake_bundle)
@@ -391,9 +449,24 @@ class SixTaskGraphControls(unittest.TestCase):
             self.assertFalse(self.checks(graph, task["id"])["oracle.side_effects"])
 
     def test_malformed_legacy_exponent_is_not_accepted_as_a_number(self):
-        for text in ("2.29323196e", "6.5292533e"):
+        for text in ("2.29323196e", "6.5292533e", "2.29323196e+", "2.29323196e-",
+                     "1e+-2", "1e2junk", " 1e2", "+1e2", "NaN", "Infinity"):
             with self.assertRaisesRegex(validator.Unsupported, "NUMBER_TEXT_GRAMMAR"):
                 validator.number(text)
+
+    def test_complete_legacy_scientific_operands_preserve_exact_values(self):
+        for text, expected in (("2.29323196e+08", 229323196), ("6.5292533e+07", 65292533),
+                               ("-1.25E+02", -125), ("1.25e-02", Decimal("0.0125"))):
+            with self.subTest(text=text):
+                self.assertEqual(validator.number(text), Decimal(expected))
+        for text in ("9.007199254740993e+15", "-9.007199254740993e+15"):
+            with self.assertRaisesRegex(validator.Unsupported, "NUMBER_EXACT_RANGE"):
+                validator.number(text)
+        for text in ("1e309", "1e-309", "1e999999"):
+            with self.assertRaisesRegex(validator.Unsupported, "NUMBER_EXPONENT_RANGE"):
+                validator.number(text)
+        with self.assertRaisesRegex(validator.Unsupported, "NUMBER_TEXT_LIMIT"):
+            validator.number("1"*129)
 
 
 if __name__ == "__main__":
