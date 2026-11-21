@@ -39,7 +39,10 @@ func p15NativeOperandAttachment(uuid string) map[string]any {
 }
 
 func p15NativeOperandWire(actions []ShortcutAction) error {
-	if len(actions) != 5 {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		return err
+	}
+	if len(actions) != 6 {
 		return fmt.Errorf("native operand action count %d", len(actions))
 	}
 	for i, uuid := range []string{p15NativeOperandFirst, p15NativeOperandSecond} {

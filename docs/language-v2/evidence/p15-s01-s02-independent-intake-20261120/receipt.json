@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "proofCommit": "a53c0d70a4556921a6ca19a969c8323237d8d3f5",
+  "sourceCommit": "298e8599f8b2a08a36b7bd475bffe3e555cae269",
+  "baseCommit": "08e34e294fd06097529ddaf8aa06ba7123d6b975",
+  "originalMembersVerified": 61,
+  "originalClassification": {
+    "processAndSourceFiles": 60,
+    "explicitlyNormalizedReaderNotification": 1
+  },
+  "gitWitnessesVerified": 742,
+  "rawGitBatchBytes": 8133242,
+  "fiveUnchangedPublicOrSharedPaths": [
+    "tests/runtime_poc/CherriS01F01CoveragePOC.cherri",
+    "tests/runtime_poc/CherriS01F01CoveragePOC.expected.json",
+    "p15_main_void_return_test.go",
+    "p15_main_output_oracle_test.go",
+    "p15_function_native_oracle_test.go"
+  ],
+  "runs": [
+    {
+      "path": "baseline-08e34e29",
+      "source": "08e34e294fd06097529ddaf8aa06ba7123d6b975",
+      "exitCode": 1,
+      "clean": true,
+      "counts": {
+        "run": 194,
+        "pass": 138,
+        "fail": 56,
+        "skip": 0
+      },
+      "parents": 17,
+      "stdoutSHA256": "1fccd4e210b686a372aba41969b4c2dcb3fa5e8ffa95cecaa1bdca60c24baef5"
+    },
+    {
+      "path": "candidate-v1",
+      "source": "08e34e294fd06097529ddaf8aa06ba7123d6b975",
+      "exitCode": 1,
+      "clean": false,
+      "counts": {
+        "run": 601,
+        "pass": 598,
+        "fail": 3,
+        "skip": 0
+      },
+      "parents": 21,
+      "stdoutSHA256": "59694c511e6da78f53f784d6dada29f4bea63611ba9b8504192f22b6b939c574"
+    },
+    {
+      "path": "clean-298e8599",
+      "source": "298e8599f8b2a08a36b7bd475bffe3e555cae269",
+      "exitCode": 0,
+      "clean": true,
+      "counts": {
+        "run": 601,
+        "pass": 601,
+        "fail": 0,
+        "skip": 0
+      },
+      "parents": 21,
+      "stdoutSHA256": "88c1a0bdfd3f22ff95832582b1d9ea990dd1b81a15d332883c37024d31184a94"
+    }
+  ],
+  "summarySHA256": "af2879e6adba42c69a1688b0231ab5a2ba9d9f6758199ffbf62ad0c26acfa3b6",
+  "archiveSHA256": "e50f9f13d964a8a4b747d3409247a75aa934e5ff79ee2e587c02cdf35842e876",
+  "peerReview": "Acceptance exact source diff review plus root immutable byte/event intake",
+  "formalAcceptanceGranted": false,
+  "nativeRuntimeExecuted": false
+}

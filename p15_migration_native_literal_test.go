@@ -20,7 +20,10 @@ func TestP15RP33CanonicalNativePayload(t *testing.T) {
 	}
 	for _, fixture := range cases {
 		t.Run(fixture.name, func(t *testing.T) {
-			before, err := CompileSourceToPlist("rp33-before.cherri", fixture.source)
+			// Migration preserves the original program's Legacy output policy.
+			// Give this canonical native snippet that explicit policy before
+			// comparing complete workflow bytes, including its final action.
+			before, err := CompileSourceToPlist("rp33-before.cherri", "shortcut \"\" { outputMode: \"legacy\" }\n"+fixture.source)
 			if err != nil {
 				t.Fatal("invalid original canonical native fixture", err)
 			}

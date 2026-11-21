@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "initial_seal": "905c80029759ba561a5be7cf05f018018f399581",
+  "initial_committed_witness_audit": {
+    "matched": 86,
+    "missing": [
+      "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/actions/basic.cherri",
+      "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/actions/math.cherri",
+      "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/actions/basic.cherri",
+      "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/actions/math.cherri"
+    ]
+  },
+  "cause": "Existing repository ignore rules omitted nested actions directory witnesses from ordinary directory git add.",
+  "correction": "Add only four original immutable Git witness files with exact existing provenance hashes; no source, process, original artifact or contract changes.",
+  "expected_complete_artifacts": 44,
+  "expected_complete_git_witnesses": 46
+}

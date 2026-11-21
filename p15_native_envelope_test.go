@@ -81,7 +81,11 @@ func TestP15NativeActionEnvelopePreservesExactSource(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				want := p15NormalizedNativeActions(t, []any{envelope})
+				wantRows := []any{envelope}
+				if !legacy {
+					wantRows = append(wantRows, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+				}
+				want := p15NormalizedNativeActions(t, wantRows)
 				got := actual["WFWorkflowActions"]
 				if !plistValuesStrictlyEqual(want, got) {
 					t.Fatalf("exact envelope changed at %s", firstPlistDiffPath(want, got, "actions"))
@@ -134,7 +138,11 @@ func TestP15NativeActionEnvelopeOldParametersRemainData(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			expected := p15NormalizedNativeActions(t, []any{p15AcceptanceAction("com.example.p15.old-params", params)})
+			wantRows := []any{p15AcceptanceAction("com.example.p15.old-params", params)}
+			if !legacy {
+				wantRows = append(wantRows, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+			}
+			expected := p15NormalizedNativeActions(t, wantRows)
 			if !plistValuesStrictlyEqual(expected, actual["WFWorkflowActions"]) {
 				t.Fatal("ordinary parameters were reinterpreted as an envelope")
 			}
@@ -275,7 +283,11 @@ func TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !plistValuesStrictlyEqual(p15NormalizedNativeActions(t, []any{edited}), actual["WFWorkflowActions"]) {
+		wantRows := []any{edited}
+		if !legacy {
+			wantRows = append(wantRows, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+		}
+		if !plistValuesStrictlyEqual(p15NormalizedNativeActions(t, wantRows), actual["WFWorkflowActions"]) {
 			t.Fatal("source-authored envelope edit was replaced by original import metadata")
 		}
 	}

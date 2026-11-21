@@ -11,8 +11,19 @@ func p15M02MainVoidBoundaryError(actions []map[string]any) error {
 		return fmt.Errorf("main fallthrough has no explicit empty result")
 	}
 	last := actions[len(actions)-1]
-	if last["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" || len(p15Param(last)) != 0 {
+	if last["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" {
 		return fmt.Errorf("main fallthrough does not clear unused native output: final=%#v", last)
+	}
+	for key := range last {
+		if key != "WFWorkflowActionIdentifier" && key != "WFWorkflowActionParameters" {
+			return fmt.Errorf("main empty result acquired an unexpected envelope field %s", key)
+		}
+	}
+	if raw, present := last["WFWorkflowActionParameters"]; present {
+		parameters, okay := raw.(map[string]any)
+		if !okay || len(parameters) != 0 {
+			return fmt.Errorf("main empty result has nonempty or malformed parameters: %#v", raw)
+		}
 	}
 	return nil
 }

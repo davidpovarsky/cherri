@@ -1,0 +1,92 @@
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index 2bbb48ea..bfda5c51 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -74,6 +74,9 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
+ 
+ // Analyzer performs semantic analysis on a parsed Program.
+ type Analyzer struct {
++	editorContextsEnabled  bool
++	editorCalls            map[*syntax.CallExpr]*editorCallFacts
++	editorArguments        map[syntax.Expression]editorArgumentOwner
+ 	resolvedActions        map[*syntax.CallExpr]*schema.ActionSchema
+ 	registry               *schema.Registry
+ 	baseRegistry           *schema.Registry
+@@ -352,6 +355,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
+ // Analyze performs full semantic verification of a Program.
+ func (a *Analyzer) Analyze(prog *syntax.Program) {
+ 	a.beginProgram()
++	a.resetEditorContexts()
+ 	if _, modeError := syntax.ResolveMainOutputMode(prog); modeError != nil {
+ 		a.error(CodeMainOutputMode, modeError.Span, modeError.Message)
+ 	}
+@@ -1115,6 +1119,8 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
+ 	if expr == nil {
+ 		return types.Unknown
+ 	}
++	a.recordEditorArgument(expr, scope, false)
++	defer a.recordEditorArgument(expr, scope, true)
+ 	if a.exprPresence == nil {
+ 		a.exprPresence = make(map[syntax.Expression]bool)
+ 	}
+@@ -1480,6 +1486,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
+ }
+ 
+ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
++	a.beginEditorCall(call, scope)
+ 	// Raw payload literals keep their explicit escape boundary. Nested ordinary
+ 	// calls still obey authored value rules and cannot inherit that exemption.
+ 	previousRawContext := a.rawNativeDataContext
+@@ -1578,6 +1585,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+ 		}
+ 		// Evaluate arguments
+ 		if sym.Function != nil {
++			a.setEditorFunction(call, sym.Function)
+ 			a.checkUserFunctionArguments(sym.Function, call, scope)
+ 			a.exprPresence[call] = types.MayBeAbsent(sym.Type)
+ 		} else {
+@@ -1641,6 +1649,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+ 	}
+ 
+ 	a.resolvedActions[call] = actionSchema
++	a.setEditorAction(call, actionSchema)
+ 	a.checkTargetVersion(actionSchema, callName, call.Span)
+ 	if a.hasExplicitTarget {
+ 		for _, target := range a.targets {
+diff --git a/internal/language/service/module_analysis.go b/internal/language/service/module_analysis.go
+index e75da5b9..a7a1260c 100644
+--- a/internal/language/service/module_analysis.go
++++ b/internal/language/service/module_analysis.go
+@@ -15,6 +15,7 @@ func (s *Service) analyzeDocumentLocked(uri string, version int, text string) *D
+ 	parser := syntax.NewParser(file)
+ 	program := parser.ParseProgram()
+ 	analyzer := analysis.NewAnalyzer(s.registry)
++	analyzer.EnableEditorContexts()
+ 	var dependencyDiagnostics []analysis.Diagnostic
+ 	if len(parser.Errors()) == 0 && modules.HasImports(program) {
+ 		overlays := map[string]string{}
+diff --git a/internal/language/service/service.go b/internal/language/service/service.go
+index e47833d0..24c51d99 100644
+--- a/internal/language/service/service.go
++++ b/internal/language/service/service.go
+@@ -278,6 +278,8 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
+ 	// 2. Members of only the active enum domain.
+ 	items = append(items, s.enumCompletions(doc, line, col)...)
+ 
++	compatible, typedContext := s.compatibleCompletionVariables(doc, context)
++
+ 	// 3. Use the same lexical resolution as definition and rename. A binding
+ 	// becomes visible after its initializer and never leaks beyond its block.
+ 	if doc.Program != nil {
+@@ -293,6 +295,11 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
+ 				continue
+ 			}
+ 			seen[candidate.name] = true
++			if !declaration.isFunc && typedContext {
++				if _, proven := compatible[declaration.name]; !proven {
++					continue
++				}
++			}
+ 			item := CompletionItem{Label: declaration.name, Kind: CompletionKindVariable, Detail: "variable"}
+ 			if declaration.isFunc {
+ 				item.Kind = CompletionKindFunction

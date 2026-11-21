@@ -303,16 +303,22 @@ func TestP15L02IndexBoundaryWire(t *testing.T) {
 	for _, index := range []string{"0.5", "-0.5", "2.5"} {
 		t.Run("literal_fraction_"+index, func(t *testing.T) {
 			actions := p15CompiledActions(t, p15IndexSource(`["alpha","beta","gamma"]`, "", index))
-			nothing := -1
+			if err := p15M02MainVoidBoundaryError(actions); err != nil {
+				t.Fatal(err)
+			}
+			nothing, emptyValues := -1, 0
 			for i, a := range actions {
 				if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.getitemfromlist" {
 					t.Fatal("literal fraction executes lookup")
 				}
-				if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" {
+				if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" && i != len(actions)-1 {
 					nothing = i
+					emptyValues++
 				}
 			}
-			if nothing < 0 || !p15IndexOutput(p15Param(actions[len(actions)-1])["WFVariable"], p15Param(actions[nothing])["UUID"]) {
+			if emptyValues != 1 || nothing != len(actions)-3 ||
+				actions[len(actions)-2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" ||
+				!p15IndexOutput(p15Param(actions[len(actions)-2])["WFVariable"], p15Param(actions[nothing])["UUID"]) {
 				t.Fatal("literal fraction consumer lost Nothing")
 			}
 		})

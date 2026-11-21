@@ -15,8 +15,12 @@ func (s *Service) analyzeDocumentLocked(uri string, version int, text string) *D
 	parser := syntax.NewParser(file)
 	program := parser.ParseProgram()
 	analyzer := analysis.NewAnalyzer(s.registry)
+	analyzer.EnableEditorContexts()
 	var dependencyDiagnostics []analysis.Diagnostic
-	if len(parser.Errors()) == 0 && modules.HasImports(program) {
+	// A recovered argument must not erase valid imported signatures. The
+	// resolver still validates every dependency and rooted access; parser
+	// diagnostics for the incomplete entry remain in DocumentState.
+	if modules.HasImports(program) {
 		overlays := map[string]string{}
 		for documentURI, document := range s.documents {
 			if document.File != nil {

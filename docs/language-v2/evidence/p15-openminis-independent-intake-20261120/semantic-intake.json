@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "proofCommit": "bf621464b46f51c655381b2b6c65312963cab053",
+  "source": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+  "runID": 44731965480,
+  "runAttempt": 1,
+  "jobID": 136273762871,
+  "runConclusion": "success",
+  "allPublishedStepsSucceeded": true,
+  "originalByteIntake": {
+    "scope": "Original byte and Git intake; semantic row review pending",
+    "component": "bf621464b46f51c655381b2b6c65312963cab053",
+    "originalsVerified": 68,
+    "externalArchivesVerified": 8,
+    "gitWitnessesVerified": 25,
+    "archiveSHA256": "e7cecf1edafb10a6c78c24a60898f1cc591c249808fa625dd85293ab4d458b35",
+    "reportSHA256": "31327e6bc09df13c321932ec364001f8da339e0212fbf85ac91cbd5a67ae200a",
+    "formalAcceptanceGranted": false
+  },
+  "signing": {
+    "checks": 34,
+    "controls": 3,
+    "negatives": 31,
+    "artifactSHA256": "c01388d921ef411e753b19d9c88950ce969ef2b9132b64dfa2d63f19891ffab9",
+    "exactPreflightBytesObserved": null,
+    "appleCryptographicValidation": "NOT_TESTED"
+  },
+  "macroCompatibility": {
+    "checks": 23,
+    "passed": 23,
+    "artifactSHA256": "6fe62a8630d3a81b65d1d261fe6b0b9474e88377d4371f2ba63109084af51ac6",
+    "scope": "ACTUAL_INSTALLED_PAIR_AND_EXPLICIT_CONTROLLED_CAPABILITY_FIELD_RESPONSES",
+    "livePromotion": false
+  },
+  "verifiedBinaries": [
+    {
+      "name": "current-linux-amd64",
+      "bytes": 17735864,
+      "sha256": "d4e3f75470479c35771f59429aa12537ddc0d53615f76b5d4da5b568a431c437",
+      "revision": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+      "GOOS": "linux",
+      "GOARCH": "amd64",
+      "role": "github.com/electrikmilk/cherri",
+      "modified": false,
+      "metadataSHA256": "9c7a6fef7eed0f7aa9a80b8049eabfb82a59711bf5ad93336b79f20c05b00f0e",
+      "executedByThisIntake": false
+    },
+    {
+      "name": "current-linux-arm64",
+      "bytes": 16646328,
+      "sha256": "9f4ef21f3a8f2b06bc6d444c4e80f504862f0fc87e4b1b3154014bbdfac0e0ca",
+      "revision": "2585983e9d0cb1a9097ec4f183dbf9b57036f75f",
+      "GOOS": "linux",
+      "GOARCH": "arm64",
+      "role": "github.com/electrikmilk/cherri",
+      "modified": false,
+      "metadataSHA256": "d27396998f2bff35d994846c3d9e80378691c4a86d5487b52e998aff435aea67",
+      "executedByThisIntake": false
+    },
+    {
+      "name": "pinned-linux-arm64",
+      "bytes": 16646328,
+      "sha256": "725b781d17f4478da1749266299013a26b283b530fd8f07f8abb31b5fb374e8b",
+      "revision": "fd691b96fb661697a1cbaddab92476d457636ba9",
+      "GOOS": "linux",
+      "GOARCH": "arm64",
+      "role": "github.com/electrikmilk/cherri",
+      "modified": false,
+      "metadataSHA256": "982f7b1d6d0a21be43ab8a55282fff8d2bbf23494ae1003adb5dacfc7d776fa1",
+      "executedByThisIntake": false
+    },
+    {
+      "name": "pinned-migration-linux-arm64",
+      "bytes": 5505208,
+      "sha256": "2455aa26144bc23b245a5824943f81fa753922e844b195db7773a7037f81f76a",
+      "revision": "fd691b96fb661697a1cbaddab92476d457636ba9",
+      "GOOS": "linux",
+      "GOARCH": "arm64",
+      "role": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+      "modified": false,
+      "metadataSHA256": "84fe6f1fe6b24346e2dcad95f0539a77d2fc0ad54113327ae7822ad2fd7ec26b",
+      "executedByThisIntake": false
+    }
+  ],
+  "rawJobLogSHA256": "93997219d799d290e1b5bd8e845a6c3b135e6ee72e7dfcb1345693147cdb186e",
+  "historicalTupleOnly": true,
+  "currentM02ConsumerReleaseVerified": false,
+  "formalAcceptanceGranted": false,
+  "packageAcceptanceChildRawPublished": false
+}

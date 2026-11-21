@@ -1,0 +1,43 @@
+{
+  "source": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+  "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestP15E01",
+    "./internal/language/service"
+  ],
+  "status_before": " M internal/language/analysis/analyzer.go\n M internal/language/service/module_analysis.go\n M internal/language/service/service.go\n?? internal/language/analysis/editor_context.go\n?? internal/language/service/typed_completion.go\n",
+  "free_before": 41382064128,
+  "started_at": "2026-11-20T13:04:34.807053+00:00",
+  "environment_overrides": {
+    "GOMAXPROCS": "2"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 6.452999999979511,
+  "completed_at": "2026-11-20T13:04:41.267460+00:00",
+  "status_after": " M internal/language/analysis/analyzer.go\n M internal/language/service/module_analysis.go\n M internal/language/service/service.go\n?? internal/language/analysis/editor_context.go\n?? internal/language/service/typed_completion.go\n",
+  "head_after": "3bbea9f2af3b0a1db829f43125d7bfcd91435189",
+  "free_after": 41640869888,
+  "named_counts": {
+    "pass": 56
+  },
+  "failed_names": [],
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "bytes": 52919,
+      "sha256": "706528230598ee46d71c610dc38e8db4041fb02afa0d73c24ae3e76ffefd8e88"
+    },
+    {
+      "path": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

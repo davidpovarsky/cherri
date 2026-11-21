@@ -141,8 +141,15 @@ func TestP15T03NumberStringSemanticSignature(t *testing.T) {
 	}
 }
 
-func p15T03LiteralWire(actions []ShortcutAction, nativeID, nativeKey, literal string) error {
-	if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != nativeID || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.delay" {
+func p15T03LiteralWire(actions []ShortcutAction, nativeID, nativeKey, literal string, legacy bool) error {
+	count := 2
+	if !legacy {
+		count++
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
+	}
+	if len(actions) != count || actions[0].WFWorkflowActionIdentifier != nativeID || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.delay" {
 		return fmt.Errorf("number/consumer action identity or once-only order changed")
 	}
 	parameters := actions[0].WFWorkflowActionParameters
@@ -171,7 +178,7 @@ func TestP15T03NumberStringNativeWire(t *testing.T) {
 				}
 				src := declaration + " converted = number(" + fmt.Sprintf("%q", literal) + ")\nwait(converted)"
 				actions := compileDebugFixture(t, src, legacy)
-				if err := p15T03LiteralWire(actions, nativeID, nativeKey, literal); err != nil {
+				if err := p15T03LiteralWire(actions, nativeID, nativeKey, literal, legacy); err != nil {
 					t.Fatal(err)
 				}
 				for _, fault := range []string{"numeric_instead_of_string", "changed_string", "wrong_consumer_uuid", "wrong_native_action"} {
@@ -194,7 +201,7 @@ func TestP15T03NumberStringNativeWire(t *testing.T) {
 					case "wrong_native_action":
 						broken[0].WFWorkflowActionIdentifier = "is.workflow.actions.gettext"
 					}
-					if p15T03LiteralWire(broken, nativeID, nativeKey, literal) == nil {
+					if p15T03LiteralWire(broken, nativeID, nativeKey, literal, legacy) == nil {
 						t.Fatalf("%s corruption passed exact wire oracle", fault)
 					}
 				}
@@ -206,13 +213,19 @@ func TestP15T03NumberStringNativeWire(t *testing.T) {
 		src := "round(" + fmt.Sprintf("%q", literal) + ")"
 		_, _ = p15T08Analyzer(t, src)
 		actions := compileDebugFixture(t, src, false)
-		if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.round" || actions[0].WFWorkflowActionParameters["WFInput"] != literal {
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			t.Fatal(err)
+		}
+		if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.round" || actions[0].WFWorkflowActionParameters["WFInput"] != literal {
 			t.Fatalf("public numeric parameter lost exact string wire: %#v", actions)
 		}
 	}
 	// Explicit conversion: the consumer uses Number, without bypassing it for Text.
 	actions := compileDebugFixture(t, "let raw=text(\"42\")\nlet converted:Number=number(raw)\nwait(converted)", false)
-	if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" || actions[1].WFWorkflowActionIdentifier != nativeID || actions[2].WFWorkflowActionIdentifier != "is.workflow.actions.delay" {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 4 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" || actions[1].WFWorkflowActionIdentifier != nativeID || actions[2].WFWorkflowActionIdentifier != "is.workflow.actions.delay" {
 		t.Fatalf("explicit conversion sequence changed: %v", actionSuffixes(actions))
 	}
 	textUUID, _ := actions[0].WFWorkflowActionParameters["UUID"].(string)

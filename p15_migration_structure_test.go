@@ -282,10 +282,18 @@ text('document {@document}')
 		t.Fatal(err, diagnostics)
 	}
 	program := p15RP33Parse(t, converted)
-	if len(program.Declarations) != 1 || len(program.Statements) != 2 {
+	parts := p15RP33Parts(program)
+	if len(program.Declarations) != 2 || len(program.Statements) != 2 ||
+		parts.shortcut == nil || parts.function == nil || parts.shortcut.Name != "" ||
+		parts.shortcut.Metadata == nil || len(parts.shortcut.Metadata.Fields) != 1 {
 		t.Fatal("reference source structure changed", converted)
 	}
-	function := program.Declarations[0].(*syntax.FunctionDecl)
+	policy := parts.shortcut.Metadata.Fields[0]
+	value, okay := policy.Value.(*syntax.LiteralExpr)
+	if policy.Name != "outputMode" || !okay || value.Type != syntax.TokenString || value.Value != "legacy" {
+		t.Fatal("reference migration lost its explicit original output policy", converted)
+	}
+	function := parts.function
 	if !p15RP33FString(function.Body.Statements[0].(*syntax.ReturnStmt).Value, "local:", "document") {
 		t.Fatal("global reference captured a same-named parameter", converted)
 	}

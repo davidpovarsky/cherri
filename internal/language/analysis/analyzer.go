@@ -75,6 +75,9 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
 
 // Analyzer performs semantic analysis on a parsed Program.
 type Analyzer struct {
+	editorContextsEnabled  bool
+	editorCalls            map[*syntax.CallExpr]*editorCallFacts
+	editorArguments        map[syntax.Expression]editorArgumentOwner
 	resolvedActions        map[*syntax.CallExpr]*schema.ActionSchema
 	registry               *schema.Registry
 	baseRegistry           *schema.Registry
@@ -354,6 +357,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.beginProgram()
+	a.resetEditorContexts()
 	if _, modeError := syntax.ResolveMainOutputMode(prog); modeError != nil {
 		a.error(CodeMainOutputMode, modeError.Span, modeError.Message)
 	}
@@ -1118,6 +1122,8 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	if expr == nil {
 		return types.Unknown
 	}
+	a.recordEditorArgument(expr, scope, false)
+	defer a.recordEditorArgument(expr, scope, true)
 	if a.exprPresence == nil {
 		a.exprPresence = make(map[syntax.Expression]bool)
 	}
@@ -1492,6 +1498,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 }
 
 func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+	a.beginEditorCall(call, scope)
 	// Raw payload literals keep their explicit escape boundary. Nested ordinary
 	// calls still obey authored value rules and cannot inherit that exemption.
 	previousRawContext := a.rawNativeDataContext
@@ -1590,6 +1597,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		}
 		// Evaluate arguments
 		if sym.Function != nil {
+			a.setEditorFunction(call, sym.Function)
 			a.checkUserFunctionArguments(sym.Function, call, scope)
 			a.exprPresence[call] = types.MayBeAbsent(sym.Type)
 		} else {
@@ -1653,6 +1661,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	}
 
 	a.resolvedActions[call] = actionSchema
+	a.setEditorAction(call, actionSchema)
 	a.checkTargetVersion(actionSchema, callName, call.Span)
 	if a.hasExplicitTarget {
 		for _, target := range a.targets {

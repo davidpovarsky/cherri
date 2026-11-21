@@ -1,0 +1,167 @@
+{
+  "actualCurrentM02RejectedBeforeWrapperExecution": true,
+  "actualPackageCorruptions": [
+    {
+      "calls": 0,
+      "changedSHA256": "ef170435453893f9f9345827ef4b3a38d1a5065269165252eb153862c633aeaf",
+      "error": "unpacked package bytes differ: scripts/action.sh",
+      "exit": 1,
+      "id": "wrapper-byte-corruption",
+      "mutatedPath": "scripts/action.sh",
+      "originalSHA256": "fd21b9cd937c640d89e5d0bc043e6a98c207e59ec80f04f8fdd7d2f5b672b1ee",
+      "status": "FAIL_PACKAGED_DOCUMENTATION_WRAPPERS"
+    },
+    {
+      "calls": 0,
+      "changedSHA256": "7a8eaa2c199702152710fb9e2811856184b79b3dfdb5b380dfaa157c7018fbea",
+      "error": "unpacked package bytes differ: compatibility-manifest.json",
+      "exit": 1,
+      "id": "manifest-pin-corruption",
+      "mutatedPath": "compatibility-manifest.json",
+      "originalSHA256": "e0ad95b255d55f966fe6323ee476e753097a76bdbca0528e1917cacdc0cc2766",
+      "status": "FAIL_PACKAGED_DOCUMENTATION_WRAPPERS"
+    }
+  ],
+  "actualWrapperProcessCount": 20,
+  "actualWrapperProcessIDs": [
+    "compiler-input-build-info",
+    "compiler-build-info",
+    "compiler-capabilities",
+    "compiler-catalog",
+    "direct-action-show",
+    "wrapper-action-show",
+    "direct-action-resizeimage",
+    "wrapper-action-resizeimage",
+    "direct-action-round",
+    "wrapper-action-round",
+    "wrapper-catalog",
+    "wrapper-catalog-filter",
+    "docs-active-0",
+    "docs-active-1",
+    "docs-active-2",
+    "docs-legacy-explicit",
+    "docs-no-match",
+    "docs-invalid-regex",
+    "missing-current-legacy-control",
+    "docs-missing-current"
+  ],
+  "archive": {
+    "bytes": 378136,
+    "path": "originals.zip",
+    "sha256": "46fb92e551b1125b4ca48f424c9c4e80d8c69d3c24eaa16242f998f10eb4de67"
+  },
+  "capabilities": {
+    "actionCount": 505,
+    "catalogSchemaVersion": "3.0",
+    "codecFingerprint": "71e2bc18eca1d32bdf2563d84f5c4bfce66086fd9bef7426481f8f5b8392d6de",
+    "languageVersion": "2.0",
+    "macroFingerprint": "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c",
+    "protocolVersion": "1.0",
+    "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5"
+  },
+  "checks": {
+    "action-resizeImage": true,
+    "action-round": true,
+    "action-show": true,
+    "complete-catalog": true,
+    "docs-active-0": {
+      "fullSourceMatches": 29,
+      "headLimit": 80,
+      "matches": 29,
+      "query": "let ",
+      "scope": "fork-language"
+    },
+    "docs-active-1": {
+      "fullSourceMatches": 43,
+      "headLimit": 80,
+      "matches": 43,
+      "query": "Optional",
+      "scope": "fork-language"
+    },
+    "docs-active-2": {
+      "fullSourceMatches": 2,
+      "headLimit": 80,
+      "matches": 2,
+      "query": "native.action",
+      "scope": "fork-language"
+    },
+    "explicit-legacy": {
+      "fullSourceMatches": 20,
+      "headLimit": 80,
+      "matches": 20,
+      "query": "repeat",
+      "scope": "language"
+    },
+    "filtered-catalog": true,
+    "invalid-regex-propagates": true,
+    "missing-current-does-not-use-readable-legacy": true,
+    "no-match-empty-success": true
+  },
+  "cleanAfter": true,
+  "cleanBefore": true,
+  "controlTestsPassed": 16,
+  "formalAcceptanceGranted": false,
+  "generatedReference": {
+    "bytes": 243289,
+    "comparison": "Exact full committed generated reference body at compiler S equals pinned docs D; fresh generation is a separate producer.",
+    "compilerCommit": "fd691b96fb661697a1cbaddab92476d457636ba9",
+    "compilerGitBlob": "cc6aa89af2399a8a28cc824ab63c34875c9cece9",
+    "nativeActions": 505,
+    "sha256": "8f8a953a14fd65c9bfe6024ea065524d76a8f0549bd1d2e45502cda00dd4d0be"
+  },
+  "healthyReportSHA256": "b52750a5e5680ab7c70c91c5eedc19ac1bf8bc097c05e9e37bf3bb8402ffde3a",
+  "historicalFailures": [
+    {
+      "kind": "ACTUAL_COLLECTOR_DEADLINE_RED",
+      "observation": "Real child exit zero after original deadline was accepted before the deadline repair.",
+      "path": "late-exit-red-ab80d1fb",
+      "source": "ab80d1fbaaf72b4bc37ef94fbd020de60cfe2cb3"
+    },
+    {
+      "kind": "NEW_QUERY_ORACLE_ERROR",
+      "observation": "Pretty-JSON query matched no compact catalog line; nonempty filter check failed. Corrected query and exact compact/formatted controls; compiler/package unchanged.",
+      "path": "clean-dd782fa6",
+      "source": "dd782fa6dd144ffe908cfd18a00f5b52e15f1711"
+    }
+  ],
+  "implementationCommits": [
+    "71e21f67cbe5d51e354e7154c226e3a55dbfc210",
+    "ab80d1fbaaf72b4bc37ef94fbd020de60cfe2cb3",
+    "dd782fa6dd144ffe908cfd18a00f5b52e15f1711",
+    "06b6198727911f40e68b6ebf2f1eb323b63685f8"
+  ],
+  "job": "job_cd6bb1d3a8d6",
+  "limitations": [
+    "Historical fd/D6 tuple remains unchanged; not a current M02 release tuple.",
+    "Complete committed generated reference equality; fresh generation and two-repository snippet semantics remain separate.",
+    "Windows Git Bash execution does not establish POSIX installed modes, Apple runtime or cryptographic signing.",
+    "No RP46/BRG29/full179 closure, deployment promotion or native List inference."
+  ],
+  "originalMemberCount": 160,
+  "peerReview": {
+    "executionCredit": false,
+    "reviewer": "/root/acceptance",
+    "scope": "Read-only package/source/docs/reference/wrapper/no-fallback review; deadline finding reproduced and fixed."
+  },
+  "proofSealReaderErrors": [
+    {
+      "error": "Read-only verifier called succeeded with row rather than its (row,stdout,stderr) API; stopped before writing proof.",
+      "job": "job_e94902a81012"
+    },
+    {
+      "error": "Read-only verifier expected an invented assertion phrase; actual preserved failure is ValueError not raised. Stopped before writing proof.",
+      "job": "job_01a008d3cee1"
+    }
+  ],
+  "rawProcessResultSHA256": "fff0b1580afc50dd6ee88e59156e4ce9b9968e5b7c01a7ab68ed70987e2814d0",
+  "requirementsClosed": [],
+  "schemaVersion": 1,
+  "sourceCommit": "06b6198727911f40e68b6ebf2f1eb323b63685f8",
+  "sourceWitnessCount": 82,
+  "status": "PASS_PACKAGED_DOCUMENTATION_WRAPPER_COMPONENT",
+  "tuple": {
+    "D": "35543290124f00f216f6f4b638a890542c8e8783",
+    "K": "06b6198727911f40e68b6ebf2f1eb323b63685f8",
+    "S": "fd691b96fb661697a1cbaddab92476d457636ba9"
+  }
+}

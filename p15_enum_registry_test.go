@@ -60,8 +60,12 @@ func TestP15C04ProvidedRegistryEnumDomain(t *testing.T) {
 		compiler.SetExprTypes(analyzer.ExprTypes())
 		compiler.SetEnumValues(analyzer.EnumValues())
 		workflow, err := compiler.LowerProgram(program)
-		if err != nil || workflow == nil || len(workflow.Actions) != 1 {
+		if err != nil || workflow == nil || len(workflow.Actions) != 2 {
 			t.Fatalf("%s: %v %+v", tc.source, err, workflow)
+		}
+		if workflow.Actions[1].AppleIdentifier != "is.workflow.actions.nothing" ||
+			len(workflow.Actions[1].Parameters) != 0 {
+			t.Fatal("provided-registry main does not end with an explicit empty result")
 		}
 		if got := workflow.Actions[0].Parameters["NativeMode"]; got != tc.want {
 			t.Fatalf("%s wire=%#v want %q", tc.source, got, tc.want)
