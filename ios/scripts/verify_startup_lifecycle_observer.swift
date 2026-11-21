@@ -15,6 +15,19 @@ private final class LockedClock: @unchecked Sendable {
     func set(_ next: TimeInterval) { lock.lock(); value = next; lock.unlock() }
 }
 
+private final class HeldMainQueue: @unchecked Sendable {
+    private let lock = NSLock()
+    private var blocks: [@Sendable () -> Void] = []
+    func enqueue(_ block: @escaping @Sendable () -> Void) {
+        lock.lock(); blocks.append(block); lock.unlock()
+    }
+    var count: Int { lock.lock(); defer { lock.unlock() }; return blocks.count }
+    func take() -> (@Sendable () -> Void)? {
+        lock.lock(); defer { lock.unlock() }
+        return blocks.isEmpty ? nil : blocks.removeFirst()
+    }
+}
+
 @main
 enum VerifyStartupLifecycleObserver {
     static var assertions = 0
@@ -174,6 +187,43 @@ enum VerifyStartupLifecycleObserver {
         let invalidClock = CherriStartupLifecycleObserver(context: context, output: path("nonfinite"), now: { .nan })
         invalidClock.start(); invalidClock.record(.appInitialized); invalidClock.stopAndDrainForTesting()
         expect(!FileManager.default.fileExists(atPath: path("nonfinite").path), "invalid clock never writes")
+
+        let heldMain = HeldMainQueue()
+        let probeClock = LockedClock(300)
+        let probe = CherriStartupLifecycleObserver(context: context, output: path("main-probe"),
+            now: { probeClock.now() }, lifetime: 120, interval: 120,
+            enqueueMain: { heldMain.enqueue($0) })
+        probe.start()
+        for _ in 0..<12 { probe.observeMainQueueOnce() }
+        probe.record(.mainQueueExecuted)
+        probe.drainForTesting()
+        let pendingRows = try read(path("main-probe"))
+        expect(heldMain.count == 1, "at most one queued block")
+        expect(pendingRows.map { $0["phase"] as! String } == ["observer-opened", "main-queue-enqueued"],
+               "ordinary record cannot manufacture main execution")
+        probeClock.set(301)
+        heldMain.take()?()
+        probe.drainForTesting()
+        let executedRows = try read(path("main-probe"))
+        expect(executedRows.count == 3, "one exact response")
+        expect(executedRows[2]["phase"] as? String == "main-queue-executed", "response is distinct")
+        expect(executedRows[2]["observedUptimeMs"] as? Int == 301_000, "actual response observation time")
+        expect(executedRows[2]["mainThread"] as? Bool == Thread.isMainThread, "actual caller thread observed")
+        probe.observeMainQueueOnce(); probe.drainForTesting()
+        expect(heldMain.count == 0, "no second request after response")
+        probe.stopAndDrainForTesting()
+
+        let expiredQueue = HeldMainQueue()
+        let expiryClock = LockedClock(500)
+        let expiredProbe = CherriStartupLifecycleObserver(context: context, output: path("expired-main-probe"),
+            now: { expiryClock.now() }, lifetime: 1, interval: 1,
+            enqueueMain: { expiredQueue.enqueue($0) })
+        expiredProbe.start(); expiredProbe.observeMainQueueOnce(); expiredProbe.drainForTesting()
+        expiryClock.set(502); expiredQueue.take()?(); expiredProbe.drainForTesting()
+        let expiredProbeRows = try read(path("expired-main-probe"))
+        expect(expiredProbeRows.map { $0["phase"] as! String } ==
+            ["observer-opened", "main-queue-enqueued", "observer-expired"], "late response cannot claim progress")
+        expiredProbe.stopAndDrainForTesting()
 
         print("{\"status\":\"PASS_LOCAL_OBSERVER_CONTROLS\",\"assertions\":\(assertions),\"nativeAppExecution\":false,\"readinessDecisions\":false}")
     }

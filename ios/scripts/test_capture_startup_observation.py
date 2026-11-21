@@ -70,6 +70,48 @@ def log_lines(*middle, conclusion="failed"):
 
 
 class StartupObservationControls(unittest.TestCase):
+    def probe_events(self, response=True):
+        rows=events()[:2]
+        common={**rows[-1],"documentId":None}
+        rows.append(dict(common,sequence=2,phase="main-queue-enqueued",mainThread=False,
+                         observedUptimeMs=1200,writtenUptimeMs=1201))
+        if response:
+            rows.append(dict(common,sequence=3,phase="main-queue-executed",mainThread=True,
+                             observedUptimeMs=1210,writtenUptimeMs=1211))
+        return rows
+
+    def test_main_queue_pair_reports_only_actual_observation(self):
+        rows,health=capture.validate_app_events(event_bytes(self.probe_events()),TEST,NONCE)
+        self.assertTrue(health["mainQueueProbeEnqueued"])
+        self.assertTrue(health["mainQueueExecutionObserved"])
+        self.assertTrue(health["executionWasOnMainThread"])
+        self.assertEqual(health["mainQueueResponseMs"],10)
+        self.assertFalse(health["absenceProvesMainThreadBlocked"])
+        self.assertFalse(health["absenceProvesMissingLifecycle"])
+
+    def test_unanswered_main_queue_probe_does_not_invent_blocked_or_ready(self):
+        rows,health=capture.validate_app_events(event_bytes(self.probe_events(False)),TEST,NONCE)
+        self.assertTrue(health["mainQueueProbeEnqueued"])
+        self.assertFalse(health["mainQueueExecutionObserved"])
+        self.assertIsNone(health["executionWasOnMainThread"])
+        self.assertIsNone(health["mainQueueResponseMs"])
+        self.assertFalse(health["absenceProvesMainThreadBlocked"])
+
+    def test_main_queue_causal_order_and_identity_rejected(self):
+        for name,mutate in [
+            ("missing_request",lambda rows:rows[2].update(phase="heartbeat")),
+            ("wrong_request_thread",lambda rows:rows[2].update(mainThread=True)),
+            ("document_on_request",lambda rows:rows[2].update(documentId="b"*32)),
+            ("document_on_response",lambda rows:rows[3].update(documentId="b"*32)),
+            ("reversed_clock",lambda rows:rows[3].update(observedUptimeMs=1199)),
+            ("duplicate_request",lambda rows:rows[3].update(phase="main-queue-enqueued",mainThread=False)),
+            ("duplicate_response",lambda rows:rows.append(dict(rows[3],sequence=4))),
+        ]:
+            with self.subTest(name=name):
+                rows=self.probe_events();mutate(rows)
+                with self.assertRaises(ValueError):
+                    capture.validate_app_events(event_bytes(rows),TEST,NONCE)
+
     def test_observed_events_preserve_identity_and_partial_health(self):
         rows, health = capture.validate_app_events(event_bytes(), TEST, NONCE)
         self.assertEqual(rows, events())
