@@ -18,9 +18,16 @@ import (
 
 const p15VCardPrefix = "BEGIN:VCARD\nVERSION:3.0\nN;CHARSET=utf-8:"
 
-func p15VCardTokenStringOracle(actions []ShortcutAction) error {
-	if len(actions) != 3 {
-		return fmt.Errorf("want two producers and one VCard text action, got %d", len(actions))
+func p15VCardTokenStringOracle(actions []ShortcutAction, mainLegacy bool) error {
+	wantCount := 3
+	if !mainLegacy {
+		wantCount++
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
+	}
+	if len(actions) != wantCount {
+		return fmt.Errorf("two producers, VCard text, and source-mode main result changed: got %d want %d", len(actions), wantCount)
 	}
 	for i, value := range []string{"P15_TITLE", "P15_SUBTITLE"} {
 		if actions[i].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
@@ -89,17 +96,17 @@ func TestP15VCardTokenStringProduction(t *testing.T) {
 	}
 	v2 := "let p15Title = text(\"P15_TITLE\")\nlet p15Subtitle = text(\"P15_SUBTITLE\")\n"
 	for _, tc := range []struct {
-		name, source string
-		legacy       bool
+		name, source       string
+		legacy, mainLegacy bool
 	}{
-		{"legacy_control", legacy, true},
-		{"migrated_legacy", migrated, false},
-		{"authored_named", v2 + "makeVCard(title: f\"\U0001f30d {p15Title}\", subtitle: f\"e\u0301 {p15Subtitle}\")", false},
-		{"authored_named_reordered", v2 + "makeVCard(subtitle: f\"e\u0301 {p15Subtitle}\", title: f\"\U0001f30d {p15Title}\")", false},
+		{"legacy_control", legacy, true, true},
+		{"migrated_legacy", migrated, false, true},
+		{"authored_named", v2 + "makeVCard(title: f\"\U0001f30d {p15Title}\", subtitle: f\"e\u0301 {p15Subtitle}\")", false, false},
+		{"authored_named_reordered", v2 + "makeVCard(subtitle: f\"e\u0301 {p15Subtitle}\", title: f\"\U0001f30d {p15Title}\")", false, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actions := compileDebugFixture(t, tc.source, tc.legacy)
-			if err := p15VCardTokenStringOracle(actions); err != nil {
+			if err := p15VCardTokenStringOracle(actions, tc.mainLegacy); err != nil {
 				t.Fatal(err)
 			}
 			for _, mutation := range []string{"drop_attachment", "wrong_utf16_offset", "retarget_output", "stringify_token", "wrong_producer"} {
@@ -122,7 +129,7 @@ func TestP15VCardTokenStringProduction(t *testing.T) {
 				case "wrong_producer":
 					broken[0].WFWorkflowActionParameters["WFTextActionText"] = "NOT_THE_TITLE"
 				}
-				if p15VCardTokenStringOracle(broken) == nil {
+				if p15VCardTokenStringOracle(broken, tc.mainLegacy) == nil {
 					t.Fatalf("oracle accepted causal mutation %q", mutation)
 				}
 			}
