@@ -1,0 +1,493 @@
+{
+  "schema_version": 1,
+  "tested_source": "4abccc70a9f100886e5a79f47fac3580aada047d",
+  "source_commits": [
+    "1943f86b860f5584337b7ff950794302b164d445",
+    "4abccc70a9f100886e5a79f47fac3580aada047d"
+  ],
+  "driver": {
+    "source": "4abccc70a9f100886e5a79f47fac3580aada047d",
+    "command": [
+      "go",
+      "test",
+      "./tools/language-acceptance",
+      "-run",
+      "^TestEditorContract",
+      "-json",
+      "-count=1",
+      "-timeout=10m"
+    ],
+    "started": "2026-11-21T18:46:09.159130+00:00",
+    "finished": "2026-11-21T18:48:42.806470+00:00",
+    "duration": 153.64099999999962,
+    "exit_code": 0,
+    "timed_out": false,
+    "clean_after": true,
+    "artifacts": [
+      {
+        "path": "stdout.jsonl",
+        "bytes": 125176,
+        "sha256": "a1a230b593706fcb3a4ab9a8f0408a5fa3814c02f9ced6194adf255fbed2f18b"
+      },
+      {
+        "path": "stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "test_pass_events": 126,
+  "test_fail_events": 0,
+  "test_skip_events": 0,
+  "editor_requirements": [
+    {
+      "id": "E01",
+      "local_tier": "service",
+      "go_pass_events": 73,
+      "result": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E02",
+      "local_tier": "service",
+      "go_pass_events": 24,
+      "result": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E03",
+      "local_tier": "service",
+      "go_pass_events": 48,
+      "result": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E05",
+      "local_tier": "service",
+      "go_pass_events": 20,
+      "result": "PENDING_EXTERNAL",
+      "swift_controls": 26,
+      "swift_compile_seconds": 16.125,
+      "swift_execute_seconds": 0.6880000000001019
+    },
+    {
+      "id": "E06",
+      "local_tier": "protocol",
+      "go_pass_events": 68,
+      "result": "PENDING_EXTERNAL",
+      "swift_controls": 17,
+      "swift_compile_seconds": 9.171999999998661,
+      "swift_execute_seconds": 10.139999999999418
+    }
+  ],
+  "scoped_report": {
+    "timestamp": "2026-11-21T18:48:42Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 5,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "skipped_cases": 5,
+    "results": [
+      {
+        "id": "E01",
+        "group": "editor",
+        "requirement": "Contextual labels/enums/compatible variables completion",
+        "test_level": "service+ios-ui",
+        "executed_levels": [
+          "service"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      },
+      {
+        "id": "E02",
+        "group": "editor",
+        "requirement": "Multiple diagnostics and full ranges on incomplete code",
+        "test_level": "service+ios-ui",
+        "executed_levels": [
+          "service"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      },
+      {
+        "id": "E03",
+        "group": "editor",
+        "requirement": "Hover/signature/definition/semantic rename",
+        "test_level": "service+ios-ui",
+        "executed_levels": [
+          "service"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      },
+      {
+        "id": "E05",
+        "group": "editor",
+        "requirement": "Rapid edits, cancellation and stale responses",
+        "test_level": "service+ios-ui",
+        "executed_levels": [
+          "service"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      },
+      {
+        "id": "E06",
+        "group": "editor",
+        "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
+        "test_level": "protocol+ios-ui",
+        "executed_levels": [
+          "protocol"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      }
+    ]
+  },
+  "interrupted_attempt": {
+    "source": "1943f86b860f5584337b7ff950794302b164d445",
+    "sentinel_job": "job_532b5ff52304",
+    "outer_timeout_seconds": 60,
+    "status": "INTERRUPTED",
+    "compiler_timeout_proved": false
+  },
+  "scope": "Five independently executed local editor tiers. Actual service/mobile/framed protocol and portable Swift controls only. No C ABI, actual SwiftUI, device runtime, UI or final179 closure claimed.",
+  "immutable_contract_sha256": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 254233,
+    "sha256": "3f1e5e116fce8b63425545e41cf0e5f9fafc33092ff9e19a96a2494c40a23a8f",
+    "files": [
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e01-1218632083/e01-service-go.jsonl",
+        "bytes": 69016,
+        "sha256": "fd142485863b4598d421a400124998e17b4405e55dcebc95ef0c5d135eaf756b"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e01-1218632083/e01-service-process.json",
+        "bytes": 26413,
+        "sha256": "beabea4916ca56418aeda00548edb191779305efb96cbb93eb390eb8f4dee9c9"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e01-1218632083/e01-service-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e02-451563533/e02-service-go.jsonl",
+        "bytes": 24172,
+        "sha256": "72823e8ed1d70f3e622825b0d1a796476b057d169292d77267c2ac41249f26ae"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e02-451563533/e02-service-process.json",
+        "bytes": 20862,
+        "sha256": "866bb0f5b01919d065f3d6f111a03e148555f0edbe226f703b28664cd1cbb6bf"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e02-451563533/e02-service-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e03-2518742894/e03-service-go.jsonl",
+        "bytes": 45255,
+        "sha256": "8fc7c6a11816e730accdb2bc87a92bc65494974d1041590062836beeb846c437"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e03-2518742894/e03-service-process.json",
+        "bytes": 23327,
+        "sha256": "e6beb8f9cd81cf77c0731e192aa984deaa75a126c1abf06d9ce59e81c42bda3a"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e03-2518742894/e03-service-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e05-29395959/e05-mobile-go.jsonl",
+        "bytes": 17689,
+        "sha256": "1d2743aa9be837dbd286a547381aed1e2c1057841f2ccec396746ba8e7ef736f"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e05-29395959/e05-mobile-process.json",
+        "bytes": 20115,
+        "sha256": "c4682c2bebfc7e9605c5a8f3d432e93e754828ca7719383d19d4c7df5eae39b7"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e05-29395959/e05-mobile-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e05-29395959/swift/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e05-29395959/swift/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/editor-contract-e05-29395959/swift/editor-publication-generated.swift",
+        "bytes": 27538,
+        "sha256": "847a40a18debdbc11528a1c364f050f4d0147c5907d0e55175e3e4b98d62eccf"
+      },
+      {
+        "path": "registrar-clean-1943f86b/orchestration-interrupted.json",
+        "bytes": 656,
+        "sha256": "4dcad200ff14cfd0dbfee0dec8b5deef604020b7adad2c2ea7c15144ed2493da"
+      },
+      {
+        "path": "registrar-clean-1943f86b/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-1943f86b/stdout.jsonl",
+        "bytes": 94213,
+        "sha256": "de792ec4deaeb48dbf08e090f23868fa9c80cc59775b968587b83394a99f1d93"
+      },
+      {
+        "path": "registrar-clean-4abccc70/driver-receipt.json",
+        "bytes": 762,
+        "sha256": "4f88fa64cfc85d0a6cb090c806d7caacfdfebc4e4895119fca6d405569af54ce"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e01-124746106/e01-service-go.jsonl",
+        "bytes": 69041,
+        "sha256": "8eb2c0b46f31b4a71ca68e7e2f47d3740bdf88c39560a1f4ded14e8f4e6108cf"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e01-124746106/e01-service-process.json",
+        "bytes": 26412,
+        "sha256": "44dec85aecc3e5c86d99e96ac2e98fd6fccc2ab6e62c78bda5db6632aa22fb27"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e01-124746106/e01-service-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e02-2845147834/e02-service-go.jsonl",
+        "bytes": 24166,
+        "sha256": "9a88fbfd0b1ec8da91a775d68c20888781a52206ad74004cba98b2d7d2225997"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e02-2845147834/e02-service-process.json",
+        "bytes": 20861,
+        "sha256": "09c32c6e67fe90c46b01e002006b9dc6953e79981e1ea12db54397fd093d4cb6"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e02-2845147834/e02-service-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e03-2853596768/e03-service-go.jsonl",
+        "bytes": 45257,
+        "sha256": "0dd97e96a6b67f3cbaf82254d0dae771c9ba690919a4ef976b03c4413e81147d"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e03-2853596768/e03-service-process.json",
+        "bytes": 23326,
+        "sha256": "d75768b981ad646f8c7780d499647dedc59c20275a59aa6abaa86121e5a7868d"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e03-2853596768/e03-service-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/e05-mobile-go.jsonl",
+        "bytes": 17703,
+        "sha256": "dd676b5aee3152f5a2e8c3359b6b1b2af4c18aa7a2224ae3fb4ae3fc4b45de00"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/e05-mobile-process.json",
+        "bytes": 20113,
+        "sha256": "82175389cdb2a4e49b4aa49593d12cbbd7a52b088c7708d97da11d2d61cdfe3f"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/e05-mobile-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/e05-swift-go.jsonl",
+        "bytes": 371,
+        "sha256": "eff90e00c606e168c2fe698e89187ae7f9aeefe65caa773e4eefc9c33d6e07ee"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/e05-swift-process.json",
+        "bytes": 17851,
+        "sha256": "aff0f4d99636bda07a2cf6b8625ccb0fa414ed1906f71327c77023cdfcb0607b"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/e05-swift-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/compile.stderr",
+        "bytes": 415,
+        "sha256": "f0cb3ca02a1210071ad043b571d367d03652f9b4522c03f24dbc3398c40cef91"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/editor-publication-generated.swift",
+        "bytes": 27538,
+        "sha256": "847a40a18debdbc11528a1c364f050f4d0147c5907d0e55175e3e4b98d62eccf"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/editor-publication-probe.exe",
+        "bytes": 258560,
+        "sha256": "aa30c3b50cbc367ed815574456044d93bfe4bc2268008af377536bb17c37c072"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/editor-publication-probe.exp",
+        "bytes": 883,
+        "sha256": "36986c998b3f12cfd5e76864ddb4e5daf8a692c3d99918edd90833b33946b75b"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/editor-publication-probe.lib",
+        "bytes": 1976,
+        "sha256": "3196f6ec1fc954ad498891ec5676c222cd67af2f6966a9115bbeef72415fc453"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/execute.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/execute.stdout",
+        "bytes": 6453,
+        "sha256": "831d2ca474a1c31a362bc28a7b4cbf77ecd0ffebefc24073c4020414a87f1fa8"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e05-868945491/swift/receipt.json",
+        "bytes": 13090,
+        "sha256": "addd7d528fb25a15b26fca2e0014649a57b2a2cb4f7ae05d14577dfac1bc5b31"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-lsp-go.jsonl",
+        "bytes": 30293,
+        "sha256": "d759b4d482edfc88a8f9a7166270bd4cc8ae642be7e4d17d0a3b8a0205c71fff"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-lsp-process.json",
+        "bytes": 21256,
+        "sha256": "3793e1de5e4cdcec276bd6bb882f8fbb781615d82b52f2036d6ff69209af22b2"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-lsp-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-mobile-go.jsonl",
+        "bytes": 29768,
+        "sha256": "aac0953db613e564873c02eac33fbcb90e551696e6c99cd7a5575b23bb80012f"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-mobile-process.json",
+        "bytes": 21861,
+        "sha256": "72b13c24e432e1f442a70908bda229de11d4c937b384366f54b3997a49bb39e9"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-mobile-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-swift-go.jsonl",
+        "bytes": 2957,
+        "sha256": "d4146d62da019d9d5a545a224436991f15591a6ba3a59369abb80c45e00c6dd1"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-swift-process.json",
+        "bytes": 17844,
+        "sha256": "87fdff0a2b5f3f9fdb09345ee61e9beb7d18547e376e45e1e9bf68d409056fc8"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/e06-swift-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/compile.stderr",
+        "bytes": 397,
+        "sha256": "d49d1745994ec3e534fc28b0468b99e9e0015200dd2648b2768ebef395055b47"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/execute.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/execute.stdout",
+        "bytes": 2518,
+        "sha256": "4fee05d265796a66a7fcc3b03f70e4c32adec4a2c5552db4cadda76dc3e7dff2"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/position-generated.swift",
+        "bytes": 3344,
+        "sha256": "80b6f66a1b2b691422a30074dade773d85ae9cb0d8a29172cf13982f71c0004c"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/position-probe.exe",
+        "bytes": 59392,
+        "sha256": "41d70994a49ff5373c7ed0f59ffcbaabe40709183aa6976285e5952f02f2dc2c"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/position-probe.exp",
+        "bytes": 864,
+        "sha256": "6b507df72d2aef3880ffebfbc0d2c8cde893bf25a4ccb47a98bc539f6f24b79a"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/position-probe.lib",
+        "bytes": 1846,
+        "sha256": "09f0c0e9353fee9162583e59977a599556e74b89e201aeb8d66f53d8e7a9872a"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-e06-1235651662/swift/receipt.json",
+        "bytes": 7217,
+        "sha256": "fb9c674818a392b01be7f6968ab9ae52301751f79779fd4834e478191e5d58ad"
+      },
+      {
+        "path": "registrar-clean-4abccc70/editor-contract-evidence.json",
+        "bytes": 42102,
+        "sha256": "bcc5e8bf6e25dcda2ef8f32bfce1b96a18de0910ef8b26357e5f58c319c499e9"
+      },
+      {
+        "path": "registrar-clean-4abccc70/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "registrar-clean-4abccc70/stdout.jsonl",
+        "bytes": 125176,
+        "sha256": "a1a230b593706fcb3a4ab9a8f0408a5fa3814c02f9ced6194adf255fbed2f18b"
+      }
+    ]
+  }
+}
