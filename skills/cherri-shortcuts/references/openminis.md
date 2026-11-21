@@ -18,7 +18,7 @@ sh /var/minis/skills/cherri-shortcuts/scripts/setup.sh
 
 ## Ready-made ARM64 ZIP
 
-The repository's `OpenMinis Skill` GitHub Action builds a Linux/ARM64 Cherri binary and packages a ready-to-import ZIP that includes it. When that ZIP is imported from Files, `setup.sh` detects the bundled binary and avoids installing Go or compiling Cherri on the device.
+The repository's `OpenMinis Skill` GitHub Action builds the Linux/ARM64 Cherri compiler and `cherri-migrate` companion from the same pinned source and includes both in the ready-to-import ZIP. When that ZIP is imported from Files, `setup.sh` validates the bundled pair and avoids installing Go or compiling Cherri on the device.
 
 Because archive import may not preserve executable mode, invoke skill scripts with `sh ...` and let `setup.sh` apply `chmod +x` to the bundled compiler.
 
@@ -28,12 +28,14 @@ Default runtime state:
 
 - Compiler/source cache: `/var/minis/cherri/`
 - Compiler: `/var/minis/cherri/bin/cherri`
+- Migration companion: `/var/minis/cherri/bin/cherri-migrate`
 - Upstream docs checkout: `/var/minis/cherri/docs/`
 
 Override with environment variables:
 
 - `CHERRI_HOME`
 - `CHERRI_BIN`
+- `CHERRI_MIGRATE_BIN`
 - `CHERRI_REPO`
 - `CHERRI_REF`
 - `CHERRI_DOCS_REPO`
@@ -42,7 +44,7 @@ Override with environment variables:
 - `CHERRI_PREBUILT_URL`
 - `CHERRI_PREBUILT_SHA256` (required expected SHA-256 when using a prebuilt URL)
 
-Setup requires exact 40-digit compiler and docs commit IDs. It verifies a prebuilt download before executing it. Source builds and downloads record a SHA-256 beside the cached compiler; reuse checks that receipt before execution. Existing caches without a checksum remain compatible after the normal capability and commit checks.
+Setup requires exact 40-digit compiler and docs commit IDs. It verifies prebuilt downloads before executing them. Both the compiler and migration companion require matching source-commit and SHA-256 receipts, their expected tool roles, and the same clean embedded source revision. Cached tools with missing or stale receipts are rejected; ordinary setup can build or download a verified replacement. Capability compatibility alone does not authenticate an installed tool pair.
 
 Updates stage and validate the compiler and pinned docs before replacing the active pair. Command failures during replacement restore the preceding files; local changes in managed source/docs and unmanaged docs directories are preserved and reported. This rollback protects ordinary update failures and handled signals, but does not claim atomic visibility to concurrent readers or recovery from power loss. An interrupted install that cannot restore its backups retains them with its install lock for recovery.
 
@@ -95,10 +97,11 @@ the primary behavior.
 
 ## Package provenance and verification
 
-Ready-to-import packages contain the compiler from the immutable compilerCommit
-in compatibility-manifest.json. The ZIP includes its commit receipt and SHA-256
-digest, plus a package-manifest.json inventory of committed Skill files, source
-commit, docs pin and runtime platform. The source-only ZIP contains no compiler.
+Ready-to-import packages contain the compiler and migration companion from the
+immutable compilerCommit in compatibility-manifest.json. The ZIP includes source
+commit and SHA-256 receipts for both tools, plus a package-manifest.json inventory
+of committed Skill files, source commit, docs pin and runtime platform. The
+source-only ZIP contains neither executable.
 
 The release workflow verifies ZIP bytes against the committed Git tree and
 trusted compiler build, then runs the existing self-test from the unpacked ARM64
