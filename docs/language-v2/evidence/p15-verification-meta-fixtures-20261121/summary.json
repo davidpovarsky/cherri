@@ -1,0 +1,385 @@
+{
+  "format_version": 1,
+  "scope": "Actual causal acceptance-validator tests; E01 service execution only. Generic FN01/CI and encoding inputs remain synthetic validator models; no Apple run or formal179 closure.",
+  "source_commit": "d6a5ecf384b37ded7521f8c435b5afebd4ce6144",
+  "sentinel_job": "job_f1c1913e4ed9",
+  "run": {
+    "source": "d6a5ecf384b37ded7521f8c435b5afebd4ce6144",
+    "command": [
+      "go",
+      "test",
+      "./tools/language-acceptance",
+      "-run",
+      "^(TestEndToEndAggregator_All12AdversarialAttacks|TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15RP02ParserOnlyAndForeignSHA|TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence|TestRequiredEncodingPhaseArtifactReconciliation)$",
+      "-json",
+      "-count=1",
+      "-timeout=6m"
+    ],
+    "started_utc": "2026-11-21T19:50:58.220348+00:00",
+    "source_clean_before": true,
+    "finished_utc": "2026-11-21T19:53:49.970953+00:00",
+    "elapsed_seconds": 171.75,
+    "exit_code": 0,
+    "status_after": "",
+    "files": {
+      "stdout.jsonl": {
+        "sha256": "70a895e1547db061b9b76bbd7eef4503d32aade3bccee3b0914d2c59bd34be5b",
+        "bytes": 116964
+      },
+      "stderr.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    "source_clean_after": true,
+    "test_pass": [
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack01_DeleteAllEvidenceFilesWithGreenCI",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack02_NonZeroExitCodeWithPassedResult",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack03_ContradictoryFailedResultWithZeroExit",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack04_MissingAcceptanceRepairOrGateID",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack05_InjectedUnknownRequirementID",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack06_ModifiedContractHash",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack07_UnauthorizedTestIDPrefixAndSubstringSpoofing",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack08_WeakTierSubstitutionServiceForIOSUI",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack09_EmptyImplementationSHANotBackfilled",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack10_MissingOrCorruptArtifact",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack11_WrongRequiredAssertionValue",
+      "TestEndToEndAggregator_All12AdversarialAttacks/Attack12_DuplicateEvidenceIDAcrossIngestedFiles",
+      "TestEndToEndAggregator_All12AdversarialAttacks",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/literal_smoke_id",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/mock_process_tier",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_semantic_assertion",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/false_native_assertion",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_artifacts",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_digest",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_ci_run",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/duplicate_artifact",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/wrong_report_digest",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_per_form_report",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_process_receipt",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/no_engine",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/mock_engine_allowed",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/unknown_mock_scope",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/wrong_source",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/wrong_run",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/mutated_inputs",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/no_required_rejection",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/partial_required_set",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_restored_phase",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_positive_exit",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/negative_exit_zero",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/negative_timeout",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/missing_exact_diagnostic",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/CI01/restored_failure",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/literal_smoke_id",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/mock_process_tier",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_semantic_assertion",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/false_native_assertion",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_artifacts",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_digest",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_ci_run",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/duplicate_artifact",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/wrong_report_digest",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_per_form_report",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_process_receipt",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/no_engine",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/mock_engine_allowed",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/unknown_mock_scope",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/wrong_source",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/wrong_run",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/mutated_inputs",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/no_required_rejection",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/partial_required_set",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_restored_phase",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_positive_exit",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/negative_exit_zero",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/negative_timeout",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/missing_exact_diagnostic",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/RP47/restored_failure",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/changed_required_verdict",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/changed_actual_matrix",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/missing_required_result",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/wrong_applied_expectation",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/negative_report_claims_pass",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/missing_actual_forms",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/process_exit_disagrees",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/process_command_disagrees",
+      "TestRequiredEncodingPhaseArtifactReconciliation/CI01/wrong_engine_even_when_summary_agrees",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/changed_required_verdict",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/changed_actual_matrix",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/missing_required_result",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/wrong_applied_expectation",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/negative_report_claims_pass",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/missing_actual_forms",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/process_exit_disagrees",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/process_command_disagrees",
+      "TestRequiredEncodingPhaseArtifactReconciliation/RP47/wrong_engine_even_when_summary_agrees",
+      "TestRequiredEncodingPhaseArtifactReconciliation",
+      "TestP15VerificationInvalidRecordsNeverPass/empty_test_id",
+      "TestP15VerificationInvalidRecordsNeverPass/wrong_test_id",
+      "TestP15VerificationInvalidRecordsNeverPass/empty_evidence_id",
+      "TestP15VerificationInvalidRecordsNeverPass/duplicate_evidence_id",
+      "TestP15VerificationInvalidRecordsNeverPass/wrong_source_sha",
+      "TestP15VerificationInvalidRecordsNeverPass/missing_runtime_artifact",
+      "TestP15VerificationInvalidRecordsNeverPass/empty_artifact_path",
+      "TestP15VerificationInvalidRecordsNeverPass/missing_artifact_digest",
+      "TestP15VerificationInvalidRecordsNeverPass/missing_artifact_run",
+      "TestP15VerificationInvalidRecordsNeverPass/missing_artifact_file",
+      "TestP15VerificationInvalidRecordsNeverPass/stale_artifact",
+      "TestP15VerificationInvalidRecordsNeverPass/foreign_runtime_sha",
+      "TestP15VerificationInvalidRecordsNeverPass/failed_runtime_run",
+      "TestP15VerificationInvalidRecordsNeverPass/unknown_requirement",
+      "TestP15VerificationInvalidRecordsNeverPass",
+      "TestP15VerificationMalformedProducerFailsClosed/[",
+      "TestP15VerificationMalformedProducerFailsClosed/[]",
+      "TestP15VerificationMalformedProducerFailsClosed/{}",
+      "TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}",
+      "TestP15VerificationMalformedProducerFailsClosed",
+      "TestP15RP02ParserOnlyAndForeignSHA"
+    ],
+    "test_fail": [],
+    "test_skip": [],
+    "root_tests_passed": [
+      "TestEndToEndAggregator_All12AdversarialAttacks",
+      "TestP15RP02ParserOnlyAndForeignSHA",
+      "TestP15VerificationInvalidRecordsNeverPass",
+      "TestP15VerificationMalformedProducerFailsClosed",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence",
+      "TestRequiredEncodingPhaseArtifactReconciliation"
+    ]
+  },
+  "nested_e01": [
+    {
+      "owning_test": "TestEndToEndAggregator_All12AdversarialAttacks",
+      "requirement": "E01",
+      "fixed_pass_events": 73,
+      "source_file_count": 107,
+      "source_files_match_immutable_git": true,
+      "elapsed_seconds": 17.5800533,
+      "raw_sha256": "d26f3820de9e3a391987a730e7e8c27db3b651b50788bc94be2de7c474167273",
+      "process_sha256": "74afbdd970db2c4c86014e54d0bf488328b9e2489958a242e4560735272895cf"
+    },
+    {
+      "owning_test": "TestP15RP02ParserOnlyAndForeignSHA",
+      "requirement": "E01",
+      "fixed_pass_events": 73,
+      "source_file_count": 107,
+      "source_files_match_immutable_git": true,
+      "elapsed_seconds": 20.9596485,
+      "raw_sha256": "37150535f4a694d427ae86d17d38b059d789b63a382b7727cb7c578f8012a6ab",
+      "process_sha256": "ef9ac047bc1ba359c2219af1a28c92aa4cb40d6d23ee3a50e52372e804fba281"
+    },
+    {
+      "owning_test": "TestP15VerificationInvalidRecordsNeverPass",
+      "requirement": "E01",
+      "fixed_pass_events": 73,
+      "source_file_count": 107,
+      "source_files_match_immutable_git": true,
+      "elapsed_seconds": 25.9009063,
+      "raw_sha256": "542bbea3f443805ee3d5eb2d2004f2c721ca3f14e23568415a3815e669a8f554",
+      "process_sha256": "3137dc4ec597fbfd72c98b9a76a6b4048db15c35fa54e555507f3616392b1fde"
+    },
+    {
+      "owning_test": "TestP15VerificationMalformedProducerFailsClosed",
+      "requirement": "E01",
+      "fixed_pass_events": 73,
+      "source_file_count": 107,
+      "source_files_match_immutable_git": true,
+      "elapsed_seconds": 21.2737408,
+      "raw_sha256": "04a128e680be41967170869b0531283456b803f788cd47e2189b1f47bad5bd08",
+      "process_sha256": "294770048e120d322f5f76c475abb26188962b66a5601722249a33eff0724694"
+    },
+    {
+      "owning_test": "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence",
+      "requirement": "E01",
+      "fixed_pass_events": 73,
+      "source_file_count": 107,
+      "source_files_match_immutable_git": true,
+      "elapsed_seconds": 12.830775599999999,
+      "raw_sha256": "12bf8bfdb232e693ced39b83f60f8da2957f5e6c599f0a6aa5d23e6fd9a007c1",
+      "process_sha256": "cc962be98807f81ca371bc133602eee06515f98652fbede4f93dd5baf65275f2"
+    },
+    {
+      "owning_test": "TestRequiredEncodingPhaseArtifactReconciliation",
+      "requirement": "E01",
+      "fixed_pass_events": 73,
+      "source_file_count": 107,
+      "source_files_match_immutable_git": true,
+      "elapsed_seconds": 19.8294971,
+      "raw_sha256": "833f897f9123ff868a0edfbc2f6a74d537dac45916a5f12499341f400e87ac7a",
+      "process_sha256": "5ef20e0e807dfe28368886aec8fed3c0eff3bd878321341ec458e9f2938cf293"
+    }
+  ],
+  "immutable_contract_sha256": {
+    "acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "historical_failures": {
+    "local179_run": "44938764062",
+    "build_run": "44938761076",
+    "linux_job": "136951106499",
+    "local179_original_artifact_sha256": "ee4d0b529908b1c5c9f7820d85923c2571719dfe9c3317e5d616c59d2d3d1228",
+    "linux_original_log_sha256": "76bbb4be732160fee73892dfdb7b8a10281f02b63a5a2b90ebe46279675eac0e",
+    "status": "Preserved original failures; this later source repair does not change their conclusion."
+  },
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 91412,
+    "sha256": "17217a5979d169513489462ac03ec9b2048c649a8075f328d7c1621d1dcaa3c3",
+    "file_count": 30
+  },
+  "inventory": [
+    {
+      "path": "clean-replay/artifacts/TestEndToEndAggregator_All12AdversarialAttacks/actual-e01-service-record.json",
+      "bytes": 7641,
+      "sha256": "f47934161c51a2d874da2467215c87c593a3ef4a2cde6e9868f66668fa1fc306"
+    },
+    {
+      "path": "clean-replay/artifacts/TestEndToEndAggregator_All12AdversarialAttacks/editor-contract-e01-1208118441/e01-service-go.jsonl",
+      "bytes": 69027,
+      "sha256": "d26f3820de9e3a391987a730e7e8c27db3b651b50788bc94be2de7c474167273"
+    },
+    {
+      "path": "clean-replay/artifacts/TestEndToEndAggregator_All12AdversarialAttacks/editor-contract-e01-1208118441/e01-service-process.json",
+      "bytes": 26413,
+      "sha256": "74afbdd970db2c4c86014e54d0bf488328b9e2489958a242e4560735272895cf"
+    },
+    {
+      "path": "clean-replay/artifacts/TestEndToEndAggregator_All12AdversarialAttacks/editor-contract-e01-1208118441/e01-service-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15RP02ParserOnlyAndForeignSHA/actual-e01-service-record.json",
+      "bytes": 7605,
+      "sha256": "32bf73f5e64e234ad40b54a598f2a8d7212d833f453573d3b4ff3bc296f6588a"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15RP02ParserOnlyAndForeignSHA/editor-contract-e01-4041932106/e01-service-go.jsonl",
+      "bytes": 69040,
+      "sha256": "37150535f4a694d427ae86d17d38b059d789b63a382b7727cb7c578f8012a6ab"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15RP02ParserOnlyAndForeignSHA/editor-contract-e01-4041932106/e01-service-process.json",
+      "bytes": 26414,
+      "sha256": "ef9ac047bc1ba359c2219af1a28c92aa4cb40d6d23ee3a50e52372e804fba281"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15RP02ParserOnlyAndForeignSHA/editor-contract-e01-4041932106/e01-service-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationInvalidRecordsNeverPass/actual-e01-service-record.json",
+      "bytes": 7626,
+      "sha256": "742ceda2ff9f19976f0b4ed42a71286ac0eb4a53a9cba20e0a456875cfb281ed"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationInvalidRecordsNeverPass/editor-contract-e01-931731973/e01-service-go.jsonl",
+      "bytes": 69023,
+      "sha256": "542bbea3f443805ee3d5eb2d2004f2c721ca3f14e23568415a3815e669a8f554"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationInvalidRecordsNeverPass/editor-contract-e01-931731973/e01-service-process.json",
+      "bytes": 26414,
+      "sha256": "3137dc4ec597fbfd72c98b9a76a6b4048db15c35fa54e555507f3616392b1fde"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationInvalidRecordsNeverPass/editor-contract-e01-931731973/e01-service-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationMalformedProducerFailsClosed/actual-e01-service-record.json",
+      "bytes": 7644,
+      "sha256": "08ef151c52b60ff605c4c953315f0837ba80ca54f7c67f50e68a63946f7f8899"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationMalformedProducerFailsClosed/editor-contract-e01-2172476662/e01-service-go.jsonl",
+      "bytes": 69031,
+      "sha256": "04a128e680be41967170869b0531283456b803f788cd47e2189b1f47bad5bd08"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationMalformedProducerFailsClosed/editor-contract-e01-2172476662/e01-service-process.json",
+      "bytes": 26413,
+      "sha256": "294770048e120d322f5f76c475abb26188962b66a5601722249a33eff0724694"
+    },
+    {
+      "path": "clean-replay/artifacts/TestP15VerificationMalformedProducerFailsClosed/editor-contract-e01-2172476662/e01-service-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/actual-e01-service-record.json",
+      "bytes": 7683,
+      "sha256": "fb47cfb2c9ea3204cc40e2a626e3a26d2f421491352454396827c6a041c135fa"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/editor-contract-e01-3741386230/e01-service-go.jsonl",
+      "bytes": 69027,
+      "sha256": "12bf8bfdb232e693ced39b83f60f8da2957f5e6c599f0a6aa5d23e6fd9a007c1"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/editor-contract-e01-3741386230/e01-service-process.json",
+      "bytes": 26422,
+      "sha256": "cc962be98807f81ca371bc133602eee06515f98652fbede4f93dd5baf65275f2"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence/editor-contract-e01-3741386230/e01-service-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingPhaseArtifactReconciliation/actual-e01-service-record.json",
+      "bytes": 7644,
+      "sha256": "8076635d65e1c77a6e2cf44281bd81fcccd9f93c99dea216a853f9bc5b5d6d57"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingPhaseArtifactReconciliation/editor-contract-e01-1432160144/e01-service-go.jsonl",
+      "bytes": 69004,
+      "sha256": "833f897f9123ff868a0edfbc2f6a74d537dac45916a5f12499341f400e87ac7a"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingPhaseArtifactReconciliation/editor-contract-e01-1432160144/e01-service-process.json",
+      "bytes": 26414,
+      "sha256": "5ef20e0e807dfe28368886aec8fed3c0eff3bd878321341ec458e9f2938cf293"
+    },
+    {
+      "path": "clean-replay/artifacts/TestRequiredEncodingPhaseArtifactReconciliation/editor-contract-e01-1432160144/e01-service-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-replay/stdout.jsonl",
+      "bytes": 116964,
+      "sha256": "70a895e1547db061b9b76bbd7eef4503d32aade3bccee3b0914d2c59bd34be5b"
+    },
+    {
+      "path": "clean-replay/summary.json",
+      "bytes": 10264,
+      "sha256": "66c32356d2940ad51a3d855df38a60289819ea4b06c29b0bd5ccee4e2a4e2a6f"
+    },
+    {
+      "path": "compile-preflight/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "compile-preflight/stdout.log",
+      "bytes": 87,
+      "sha256": "8e5c9053ee8b02bf7bc6eeeed2d49ad036aeb77e927a63be78253cc528be32c5"
+    },
+    {
+      "path": "compile-preflight/summary.json",
+      "bytes": 171,
+      "sha256": "1eb0bf4eb6002bc83d959eceeff7644d59e12deda1174bc999b9cf4b832f0856"
+    }
+  ]
+}
