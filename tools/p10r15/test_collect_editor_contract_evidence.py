@@ -37,6 +37,25 @@ class PublicEditorCaptureTests(unittest.TestCase):
             self.assertEqual(archive.namelist(), [name])
             self.assertEqual(archive.read(name), b"public probe bytes")
 
+    def test_exact_windows_swift_sidecars_retained(self):
+        names = []
+        for ident, stem in (("e05", "editor-publication-probe"), ("e06", "position-probe")):
+            for suffix in (".exp", ".lib"):
+                name = f"canonical-swift-paths/editor-contract-{ident}-12345/swift/{stem}{suffix}"
+                self.file(name, name.encode())
+                names.append(name)
+        report = self.collect()
+        self.assertEqual([item["path"] for item in report["files"]], sorted(names))
+        with zipfile.ZipFile(self.output / "public-editor-evidence.zip") as archive:
+            for name in names:
+                self.assertEqual(archive.read(name), name.encode())
+
+    def test_other_sidecar_names_and_extensions_rejected(self):
+        for ident, name in (("e05", "position-probe.lib"), ("e06", "editor-publication-probe.exp"),
+                            ("e05", "private.lib"), ("e06", "position-probe.pdb")):
+            with self.subTest(ident=ident, name=name):
+                self.assertFalse(capture.allowed(Path(f"editor-contract-{ident}-12345/swift/{name}")))
+
     def test_foreign_path_rejected_before_publication(self):
         self.file("private-corpus.json")
         with self.assertRaisesRegex(ValueError, "foreign"):

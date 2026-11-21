@@ -37,7 +37,9 @@ def allowed(relative):
     stem, generated = (("editor-publication-probe", "editor-publication-generated.swift")
                        if ident == "e05" else ("position-probe", "position-generated.swift"))
     return parts[2] in {"receipt.json", "compile.stdout", "compile.stderr", "execute.stdout",
-                        "execute.stderr", generated, stem, stem + ".exe"}
+                        "execute.stderr", generated, stem, stem + ".exe",
+                        # Windows Swift emits these exact public binary sidecars.
+                        stem + ".exp", stem + ".lib"}
 
 def linked(path):
     return path.is_symlink() or getattr(path, "is_junction", lambda: False)()
