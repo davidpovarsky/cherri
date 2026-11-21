@@ -19,6 +19,7 @@ func init() {
 		"edit_cli_adapter.go", "internal/shortcutcompare/edit.go",
 		"build_profile.go", "language_emit_adapter.go", "language_cli_adapter.go", "main.go",
 		"p15_skill_edit_test.go", "p15_skill_edit_zlive_test.go",
+		"p15_skill_edit_native_graph_test.go",
 	}
 }
 
