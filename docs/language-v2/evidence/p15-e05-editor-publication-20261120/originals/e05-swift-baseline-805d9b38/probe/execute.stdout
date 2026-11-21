@@ -1,0 +1,15 @@
+{"event":"control","name":"current_success","observation":{"compiled":"CURRENT","diagnostic":"","diagnostics":[],"isCompiling":false},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"late_success_after_newer","observation":{"compiled":"NEW","diagnostic":"","diagnostics":[],"isCompiling":false},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"late_analysis_after_newer","observation":{"compiled":"NEW","diagnostic":"","diagnostics":["OLD_ANALYSIS"],"isCompiling":false},"result":"FAIL","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"late_generic_error_after_newer","observation":{"compiled":"NEW","diagnostic":"The operation could not be completed. (main.ProbeError error 1.)","diagnostics":["The operation could not be completed. (main.ProbeError error 1.)"],"isCompiling":false},"result":"FAIL","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"canonical_unicode_is_not_same_snapshot","observation":{"compiled":"OLD_UTF16","diagnostic":"","diagnostics":[],"isCompiling":false},"result":"FAIL","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"cancelled_same_source_does_not_publish","observation":{"compiled":"CANCELLED","diagnostic":"","diagnostics":[],"isCompiling":false},"result":"FAIL","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"old_completion_cannot_clear_new_busy","observation":{"busyWhileNewerPending":false,"compiled":"NEW","diagnostic":"","diagnostics":[],"isCompiling":false},"result":"FAIL","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"current_error_is_not_suppressed","observation":{"compiled":"","diagnostic":"CURRENT_COMPILE","diagnostics":["CURRENT_ANALYSIS"],"isCompiling":false},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"current_completion","observation":{"completed":true,"items":["CONTROLLED_ITEM"]},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"different_source","observation":{"completed":false,"items":[]},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"different_caret","observation":{"completed":false,"items":[]},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"canonical_unicode","observation":{"completed":false,"items":[]},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"cancelled_completion","observation":{"completed":false,"items":[]},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"control","name":"selection_range_does_not_call_completion","observation":{"completed":true},"result":"PASS","scope":"controlled adapter; actual production method body"}
+{"event":"summary","controls":14,"failed":5,"uiExecuted":false,"realCompilerExecuted":false}

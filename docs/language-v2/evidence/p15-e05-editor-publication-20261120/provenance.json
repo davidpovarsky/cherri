@@ -1,0 +1,1145 @@
+{
+  "schema_version": 1,
+  "source": "47630bedef7dc986af78ff293cac4109703f0847",
+  "base": "f03209a6b58b748add37aa09961cd21a8333e455",
+  "scope": "actual portable Swift publication control flow with explicit controlled adapters; no SwiftUI, real compiler adapter, signing, Apple runtime or formal UI credit",
+  "formal_requirements_proved": [],
+  "changed_paths": [
+    "ios/CherriApp/App/WorkspaceView.swift",
+    "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+    "tools/p10r15/editor_publication_probe.py",
+    "tools/p10r15/editor_publication_probe.swift",
+    "tools/p10r15/test_editor_publication_probe.py"
+  ],
+  "stages": [
+    {
+      "name": "e05-swift-baseline-805d9b38",
+      "source": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "controls": 14,
+      "passed": 9,
+      "failed": 5,
+      "raw_bytes": 3137,
+      "raw_sha256": "8a5fa1b682e86a727b4b4b3bce2ca2143a7f76b6ebe4dfa0bf4032648191c5b8",
+      "python_test_methods": 7,
+      "commands": [
+        {
+          "name": "python-controls",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/p10r15",
+            "-p",
+            "test_editor_publication_probe.py",
+            "-v"
+          ],
+          "timeout_seconds": 60,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_seconds": 1.375,
+          "artifacts": [
+            {
+              "path": "python-controls.stdout",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "python-controls.stderr",
+              "bytes": 1247,
+              "sha256": "7f7f64c1ee0614837d5333828eebafce0b8de6c3e17097703dc6524e3d80a92c"
+            }
+          ]
+        },
+        {
+          "name": "swift-probe",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "tools/p10r15/editor_publication_probe.py",
+            "--repo",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+            "--output",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe"
+          ],
+          "timeout_seconds": 180,
+          "exit_code": 1,
+          "timed_out": false,
+          "duration_seconds": 16.5,
+          "artifacts": [
+            {
+              "path": "swift-probe.stdout",
+              "bytes": 344,
+              "sha256": "f219d516ce5e1a900a3c8df39869c16e8525803e42a40b6271aaabeccbeb8d16"
+            },
+            {
+              "path": "swift-probe.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "e05-swift-expanded-baseline-8a026dbe",
+      "source": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "controls": 24,
+      "passed": 11,
+      "failed": 13,
+      "raw_bytes": 6122,
+      "raw_sha256": "24642bbbdb01a17e77ddd5ffb46d58243ee69ad1d27960f2f741957d70d4f1ce",
+      "python_test_methods": 7,
+      "commands": [
+        {
+          "name": "python-controls",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/p10r15",
+            "-p",
+            "test_editor_publication_probe.py",
+            "-v"
+          ],
+          "timeout_seconds": 60,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_seconds": 1.327999999979511,
+          "artifacts": [
+            {
+              "path": "python-controls.stdout",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "python-controls.stderr",
+              "bytes": 1247,
+              "sha256": "b575db971244852147051d720dff88d5b8a27cecc8e271d2269efc8c73939f78"
+            }
+          ]
+        },
+        {
+          "name": "swift-probe",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "tools/p10r15/editor_publication_probe.py",
+            "--repo",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+            "--output",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe"
+          ],
+          "timeout_seconds": 180,
+          "exit_code": 1,
+          "timed_out": false,
+          "duration_seconds": 12.75,
+          "artifacts": [
+            {
+              "path": "swift-probe.stdout",
+              "bytes": 354,
+              "sha256": "38a05115c65a6ee3dfb8c952ca0f8bbacc7f5cf364e9ed81fca76eaf19bea751"
+            },
+            {
+              "path": "swift-probe.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "e05-swift-owned-baseline-36a419df",
+      "source": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "controls": 26,
+      "passed": 11,
+      "failed": 15,
+      "raw_bytes": 6676,
+      "raw_sha256": "c2c0ed731142aec29a0e21c03a1d48d9e7d016d5e37bf656381b3419596bc7f4",
+      "python_test_methods": 7,
+      "commands": [
+        {
+          "name": "python-controls",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/p10r15",
+            "-p",
+            "test_editor_publication_probe.py",
+            "-v"
+          ],
+          "timeout_seconds": 60,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_seconds": 1.2820000000065193,
+          "artifacts": [
+            {
+              "path": "python-controls.stdout",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "python-controls.stderr",
+              "bytes": 1247,
+              "sha256": "5272f3c4c5c4b0d274634892811dfe7bdf18601ebdd7b848d362bad1a3f15b4b"
+            }
+          ]
+        },
+        {
+          "name": "swift-probe",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "tools/p10r15/editor_publication_probe.py",
+            "--repo",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+            "--output",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe"
+          ],
+          "timeout_seconds": 180,
+          "exit_code": 1,
+          "timed_out": false,
+          "duration_seconds": 12.60999999998603,
+          "artifacts": [
+            {
+              "path": "swift-probe.stdout",
+              "bytes": 351,
+              "sha256": "d43b5769ca6327236ffbceec83f2ca5aa2ec933f12ae2defecf8077957ad63cd"
+            },
+            {
+              "path": "swift-probe.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "e05-swift-clean-47630bed",
+      "source": "47630bedef7dc986af78ff293cac4109703f0847",
+      "controls": 26,
+      "passed": 26,
+      "failed": 0,
+      "raw_bytes": 6453,
+      "raw_sha256": "831d2ca474a1c31a362bc28a7b4cbf77ecd0ffebefc24073c4020414a87f1fa8",
+      "python_test_methods": 7,
+      "commands": [
+        {
+          "name": "python-controls",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/p10r15",
+            "-p",
+            "test_editor_publication_probe.py",
+            "-v"
+          ],
+          "timeout_seconds": 60,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_seconds": 1.3429999999934807,
+          "artifacts": [
+            {
+              "path": "python-controls.stdout",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "python-controls.stderr",
+              "bytes": 1247,
+              "sha256": "986b990e6f5096f37dc1e7a0b5a9266e5a9e5e9b5a30a9de181ccea16cd9ef55"
+            }
+          ]
+        },
+        {
+          "name": "swift-probe",
+          "command": [
+            "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+            "tools/p10r15/editor_publication_probe.py",
+            "--repo",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120",
+            "--output",
+            "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe"
+          ],
+          "timeout_seconds": 180,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_seconds": 16.5,
+          "artifacts": [
+            {
+              "path": "swift-probe.stdout",
+              "bytes": 340,
+              "sha256": "9f3f8ad4bf30b56056e4d34bb989dd942683d976b80b92d22c126a430a1667e2"
+            },
+            {
+              "path": "swift-probe.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "originals": [
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\compile.stderr",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/compile.stderr",
+      "bytes": 361,
+      "sha256": "c9eada4eef2ac0476f73ec97e186e99f9dfb66badae15a011fa428b2f0632e57"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\compile.stdout",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\editor-publication-generated.swift",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/editor-publication-generated.swift",
+      "bytes": 18156,
+      "sha256": "6a3df70d11b81e6350588fae9cdaa346999de889c097ad7aab747f53fbaea314"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\editor-publication-probe.exe",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/editor-publication-probe.exe",
+      "bytes": 189440,
+      "sha256": "a7f39df054219df80d26264d5a455ba5e277b1511f8118e3ad27fe781b1faf04"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\editor-publication-probe.exp",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/editor-publication-probe.exp",
+      "bytes": 856,
+      "sha256": "d37b79173f90c9efaf664b735aea492fe24762c4a20a2601c4a49430cff01454"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\editor-publication-probe.lib",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/editor-publication-probe.lib",
+      "bytes": 1976,
+      "sha256": "3196f6ec1fc954ad498891ec5676c222cd67af2f6966a9115bbeef72415fc453"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\execute.stderr",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/execute.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\execute.stdout",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/execute.stdout",
+      "bytes": 3137,
+      "sha256": "8a5fa1b682e86a727b4b4b3bce2ca2143a7f76b6ebe4dfa0bf4032648191c5b8"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\probe\\receipt.json",
+      "artifact": "originals/e05-swift-baseline-805d9b38/probe/receipt.json",
+      "bytes": 7879,
+      "sha256": "cfae59789064e14a52903aa7c4bf1dbf49add41f9a12d7d3ab19121252c92e73"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\python-controls.stderr",
+      "artifact": "originals/e05-swift-baseline-805d9b38/python-controls.stderr",
+      "bytes": 1247,
+      "sha256": "7f7f64c1ee0614837d5333828eebafce0b8de6c3e17097703dc6524e3d80a92c"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\python-controls.stdout",
+      "artifact": "originals/e05-swift-baseline-805d9b38/python-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\receipt.json",
+      "artifact": "originals/e05-swift-baseline-805d9b38/receipt.json",
+      "bytes": 2082,
+      "sha256": "376934169c1477c066461bf0d0026ba6f7d081278d17b8cfd9345626036b55ab"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\submitted-script.py",
+      "artifact": "originals/e05-swift-baseline-805d9b38/submitted-script.py",
+      "bytes": 2333,
+      "sha256": "1c492767c69f381cb6d35c453fa0373185e00d8c2de0527e986e525377104a4a"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\swift-probe.stderr",
+      "artifact": "originals/e05-swift-baseline-805d9b38/swift-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-baseline-805d9b38",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-baseline-805d9b38\\swift-probe.stdout",
+      "artifact": "originals/e05-swift-baseline-805d9b38/swift-probe.stdout",
+      "bytes": 344,
+      "sha256": "f219d516ce5e1a900a3c8df39869c16e8525803e42a40b6271aaabeccbeb8d16"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\compile.stderr",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/compile.stderr",
+      "bytes": 379,
+      "sha256": "c1f19573bc372176355bd41abddd94005f4831ad08c5f7dc6b7ac02ab9aa3484"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\compile.stdout",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-generated.swift",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/editor-publication-generated.swift",
+      "bytes": 25316,
+      "sha256": "2a329f024b4075683ab3a1cd28e3facdca8013c899e604224a52b856f0977f46"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-probe.exe",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/editor-publication-probe.exe",
+      "bytes": 242176,
+      "sha256": "aeb36a98fe150f910301873b9e0103e06db6a2bdbc99095170aea62fe32cf59f"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-probe.exp",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/editor-publication-probe.exp",
+      "bytes": 865,
+      "sha256": "6688d411ba03ea0312488f0be050d2a6ab66245c6068dbe99d444e3d0addeea9"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\editor-publication-probe.lib",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/editor-publication-probe.lib",
+      "bytes": 1976,
+      "sha256": "3196f6ec1fc954ad498891ec5676c222cd67af2f6966a9115bbeef72415fc453"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\execute.stderr",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/execute.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\execute.stdout",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/execute.stdout",
+      "bytes": 6122,
+      "sha256": "24642bbbdb01a17e77ddd5ffb46d58243ee69ad1d27960f2f741957d70d4f1ce"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\probe\\receipt.json",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/probe/receipt.json",
+      "bytes": 12201,
+      "sha256": "a33a2d351c8753d6b912742035396e0bb115f74c70571a00eff2979354d779ff"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\python-controls.stderr",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/python-controls.stderr",
+      "bytes": 1247,
+      "sha256": "b575db971244852147051d720dff88d5b8a27cecc8e271d2269efc8c73939f78"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\python-controls.stdout",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/python-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\receipt.json",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/receipt.json",
+      "bytes": 2104,
+      "sha256": "7540c8332d7d1a418654bcd4f6036edab79388bc6fdf88d0fc15cb20fb93ddd2"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\submitted-script.py",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/submitted-script.py",
+      "bytes": 2342,
+      "sha256": "eb795a2a8a1d46432901fee9097cfa3d29aabc3428e516561ded566340c48f7e"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\swift-probe.stderr",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/swift-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-expanded-baseline-8a026dbe",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-expanded-baseline-8a026dbe\\swift-probe.stdout",
+      "artifact": "originals/e05-swift-expanded-baseline-8a026dbe/swift-probe.stdout",
+      "bytes": 354,
+      "sha256": "38a05115c65a6ee3dfb8c952ca0f8bbacc7f5cf364e9ed81fca76eaf19bea751"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\compile.stderr",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/compile.stderr",
+      "bytes": 373,
+      "sha256": "f6f0f98db3e44d044451c9f29b230a2e4c2fa2d8b9c0aea17bb374256b641b9d"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\compile.stdout",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\editor-publication-generated.swift",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/editor-publication-generated.swift",
+      "bytes": 26295,
+      "sha256": "43460805f173c9184054427928f767e9950d38711c0fda7812b8e0eb0b3c7d7f"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\editor-publication-probe.exe",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/editor-publication-probe.exe",
+      "bytes": 248320,
+      "sha256": "19a0bb216d62acbf4a6d8afae119a134f7fd7442e7376b53be1ba8b86a944bee"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\editor-publication-probe.exp",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/editor-publication-probe.exp",
+      "bytes": 862,
+      "sha256": "f885f1fc2de1e57fbd67092c6c54bcc0f15e60da5d389c9d7367eb13fac85f86"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\editor-publication-probe.lib",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/editor-publication-probe.lib",
+      "bytes": 1976,
+      "sha256": "3196f6ec1fc954ad498891ec5676c222cd67af2f6966a9115bbeef72415fc453"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\execute.stderr",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/execute.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\execute.stdout",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/execute.stdout",
+      "bytes": 6676,
+      "sha256": "c2c0ed731142aec29a0e21c03a1d48d9e7d016d5e37bf656381b3419596bc7f4"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\probe\\receipt.json",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/probe/receipt.json",
+      "bytes": 12968,
+      "sha256": "91e10a495c5d2387f3cb82fd7719785c07f854e38057d68a39df88af708884fc"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\python-controls.stderr",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/python-controls.stderr",
+      "bytes": 1247,
+      "sha256": "5272f3c4c5c4b0d274634892811dfe7bdf18601ebdd7b848d362bad1a3f15b4b"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\python-controls.stdout",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/python-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\receipt.json",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/receipt.json",
+      "bytes": 2114,
+      "sha256": "ea7176a8181974c07feba147a302faea0a409a3ef5d0fe293b944c6040b70a8f"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\submitted-script.py",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/submitted-script.py",
+      "bytes": 2339,
+      "sha256": "f5f645f0142113f95dbe6866fc6a5f7656b0aa900ead709aadef6ac5620cf49d"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\swift-probe.stderr",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/swift-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-owned-baseline-36a419df",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-owned-baseline-36a419df\\swift-probe.stdout",
+      "artifact": "originals/e05-swift-owned-baseline-36a419df/swift-probe.stdout",
+      "bytes": 351,
+      "sha256": "d43b5769ca6327236ffbceec83f2ca5aa2ec933f12ae2defecf8077957ad63cd"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\compile.stderr",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/compile.stderr",
+      "bytes": 355,
+      "sha256": "5e6fecd4303f93d4e44232ce5fcb46a7367f1401bf2572dd693e705c0bf97dcd"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\compile.stdout",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\editor-publication-generated.swift",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/editor-publication-generated.swift",
+      "bytes": 27538,
+      "sha256": "847a40a18debdbc11528a1c364f050f4d0147c5907d0e55175e3e4b98d62eccf"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\editor-publication-probe.exe",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/editor-publication-probe.exe",
+      "bytes": 258560,
+      "sha256": "50ccf8003c5404de7d40b3a4f309bbbed37d9d28245fca2326d5a118d36898b2"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\editor-publication-probe.exp",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/editor-publication-probe.exp",
+      "bytes": 853,
+      "sha256": "1f69775019f547abd911bcdb36965cab1731db511f4fdda082be979d6a848213"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\editor-publication-probe.lib",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/editor-publication-probe.lib",
+      "bytes": 1976,
+      "sha256": "3196f6ec1fc954ad498891ec5676c222cd67af2f6966a9115bbeef72415fc453"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\execute.stderr",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/execute.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\execute.stdout",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/execute.stdout",
+      "bytes": 6453,
+      "sha256": "831d2ca474a1c31a362bc28a7b4cbf77ecd0ffebefc24073c4020414a87f1fa8"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\probe\\receipt.json",
+      "artifact": "originals/e05-swift-clean-47630bed/probe/receipt.json",
+      "bytes": 13009,
+      "sha256": "ac060e2e3cb61c2e9b4897db3139d5741adddba0aec9570d7b6e7647a8261ebe"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\python-controls.stderr",
+      "artifact": "originals/e05-swift-clean-47630bed/python-controls.stderr",
+      "bytes": 1247,
+      "sha256": "986b990e6f5096f37dc1e7a0b5a9266e5a9e5e9b5a30a9de181ccea16cd9ef55"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\python-controls.stdout",
+      "artifact": "originals/e05-swift-clean-47630bed/python-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\receipt.json",
+      "artifact": "originals/e05-swift-clean-47630bed/receipt.json",
+      "bytes": 2092,
+      "sha256": "c66b8b2d7ae7611d40a14f7567c755de2044eba8fcb402999fc6d828a7fe8c7d"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\submitted-script.py",
+      "artifact": "originals/e05-swift-clean-47630bed/submitted-script.py",
+      "bytes": 2330,
+      "sha256": "b3e59d82bd67dda324eefe7d54bec20329f5dda76498cb19bd2f05fa96df3373"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\swift-probe.stderr",
+      "artifact": "originals/e05-swift-clean-47630bed/swift-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "e05-swift-clean-47630bed",
+      "original_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261120\\e05-swift-clean-47630bed\\swift-probe.stdout",
+      "artifact": "originals/e05-swift-clean-47630bed/swift-probe.stdout",
+      "bytes": 340,
+      "sha256": "9f3f8ad4bf30b56056e4d34bb989dd942683d976b80b92d22c126a430a1667e2"
+    }
+  ],
+  "git_witnesses": [
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 20312,
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+      "absent": true
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22031,
+      "sha256": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "ios/project.yml",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/ios/project.yml",
+      "bytes": 3273,
+      "sha256": "c3fcc1772d6769451f65f3f1655cb1c4026cddc3f0f7374e48f5d6b80240c733"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "git/f03209a6b58b748add37aa09961cd21a8333e455/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "tools/p10r15/editor_publication_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "tools/p10r15/editor_publication_probe.swift",
+      "absent": true
+    },
+    {
+      "commit": "f03209a6b58b748add37aa09961cd21a8333e455",
+      "path": "tools/p10r15/test_editor_publication_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 20312,
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+      "absent": true
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22031,
+      "sha256": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "ios/project.yml",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/ios/project.yml",
+      "bytes": 3273,
+      "sha256": "c3fcc1772d6769451f65f3f1655cb1c4026cddc3f0f7374e48f5d6b80240c733"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "tools/p10r15/editor_publication_probe.py",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/tools/p10r15/editor_publication_probe.py",
+      "bytes": 9487,
+      "sha256": "9d13d2b123f13013ffe506b2d6131c091eec4233a2c323aafe5e4b4df1b54585"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "tools/p10r15/editor_publication_probe.swift",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/tools/p10r15/editor_publication_probe.swift",
+      "bytes": 14677,
+      "sha256": "e12f8535a92b6e87de145c7e3f13b11f4189187bbc825f7f34f892aca4f4ab05"
+    },
+    {
+      "commit": "805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf",
+      "path": "tools/p10r15/test_editor_publication_probe.py",
+      "artifact": "git/805d9b38e4ac13ec38ed3b497ab9dcf2492a1ecf/tools/p10r15/test_editor_publication_probe.py",
+      "bytes": 4263,
+      "sha256": "18f6f1b3a4b9f22f5aef637f35e6eea90961a88919b667b81babd98f32de6701"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 20312,
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+      "absent": true
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22031,
+      "sha256": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "ios/project.yml",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/ios/project.yml",
+      "bytes": 3273,
+      "sha256": "c3fcc1772d6769451f65f3f1655cb1c4026cddc3f0f7374e48f5d6b80240c733"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "tools/p10r15/editor_publication_probe.py",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/tools/p10r15/editor_publication_probe.py",
+      "bytes": 9842,
+      "sha256": "928e67c0c4c9338b04baff96d0f8f0a93036ea6ac0648f258f05d2fffbb6814f"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "tools/p10r15/editor_publication_probe.swift",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/tools/p10r15/editor_publication_probe.swift",
+      "bytes": 21837,
+      "sha256": "307062a589cb41041fc406e12535209d0c301e3b203c954917d8fafe8d9a7984"
+    },
+    {
+      "commit": "8a026dbe95e3cef62ec437319136c5c3e604eb5c",
+      "path": "tools/p10r15/test_editor_publication_probe.py",
+      "artifact": "git/8a026dbe95e3cef62ec437319136c5c3e604eb5c/tools/p10r15/test_editor_publication_probe.py",
+      "bytes": 4263,
+      "sha256": "bbb4792e4b2f19fd9e2bf3545bd8a26c2a566a24cfefa9f67d542937da3e471a"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 20312,
+      "sha256": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+      "absent": true
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22031,
+      "sha256": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "ios/project.yml",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/ios/project.yml",
+      "bytes": 3273,
+      "sha256": "c3fcc1772d6769451f65f3f1655cb1c4026cddc3f0f7374e48f5d6b80240c733"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "tools/p10r15/editor_publication_probe.py",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/tools/p10r15/editor_publication_probe.py",
+      "bytes": 9933,
+      "sha256": "4d34e43e3c76d489c739fd573f7431bd271ab8313ca630ea3c103bd5e507491f"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "tools/p10r15/editor_publication_probe.swift",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/tools/p10r15/editor_publication_probe.swift",
+      "bytes": 22816,
+      "sha256": "2c4d65d66d34cf944c207a65129ccfaad81b888387f670212345a9e64e3ddb2a"
+    },
+    {
+      "commit": "36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d",
+      "path": "tools/p10r15/test_editor_publication_probe.py",
+      "artifact": "git/36a419dfb32ba6b6f1872e6aaefa1ab5a6f9b87d/tools/p10r15/test_editor_publication_probe.py",
+      "bytes": 4263,
+      "sha256": "a00ccc9b9012ae9ae2b3029a7838e0d9923ea9600bea012d7580f83bca8a8a85"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 21699,
+      "sha256": "b5eadf08e6b60005dd55fc1f1680abbbdca0369b579f210a655f5a90300526c9"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+      "bytes": 683,
+      "sha256": "ad76a930802aab731c78c5310b4eb5da37cc810e2d85708b87eb68fcb29fe994"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22031,
+      "sha256": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "ios/project.yml",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/ios/project.yml",
+      "bytes": 3273,
+      "sha256": "c3fcc1772d6769451f65f3f1655cb1c4026cddc3f0f7374e48f5d6b80240c733"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "tools/p10r15/editor_publication_probe.py",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/tools/p10r15/editor_publication_probe.py",
+      "bytes": 9933,
+      "sha256": "4d34e43e3c76d489c739fd573f7431bd271ab8313ca630ea3c103bd5e507491f"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "tools/p10r15/editor_publication_probe.swift",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/tools/p10r15/editor_publication_probe.swift",
+      "bytes": 22816,
+      "sha256": "2c4d65d66d34cf944c207a65129ccfaad81b888387f670212345a9e64e3ddb2a"
+    },
+    {
+      "commit": "47630bedef7dc986af78ff293cac4109703f0847",
+      "path": "tools/p10r15/test_editor_publication_probe.py",
+      "artifact": "git/47630bedef7dc986af78ff293cac4109703f0847/tools/p10r15/test_editor_publication_probe.py",
+      "bytes": 4263,
+      "sha256": "a00ccc9b9012ae9ae2b3029a7838e0d9923ea9600bea012d7580f83bca8a8a85"
+    }
+  ],
+  "unchanged_contracts": [
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    }
+  ],
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 372849,
+    "sha256": "f1c1763d6f3facd4e31de86b5471aa379cf6a59207f3514db16fea4385bb315f"
+  },
+  "created_at": "2026-11-20T14:10:48.669353+00:00"
+}
