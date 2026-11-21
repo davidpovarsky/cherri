@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// The old short conditional trace does not observe the complete RP18/BRG13 scenarios.
+	if _, found := shortCircuitScenarios[id]; found {
+		return
+	}
 	// Historical capture-only runtime traces do not observe these full combined scenarios.
 	if _, found := captureOrderScenarios[id]; found {
 		return
@@ -81,10 +85,6 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		reqAssertions["f01_effect_trace"] = runtimePOCF01EffectTrace
 		reqAssertions["f01_boolean_results"] = runtimePOCF01BooleanResults
 		*testIDs = append(*testIDs, "ios27-runtime-poc:coverage-f01")
-	case "RP18", "BRG13":
-		reqAssertions["conditional_result"] = "true"
-		reqAssertions["short_circuit_trace"] = "START|RAN_RHS:0:1:1"
-		*testIDs = append(*testIDs, "ios27-runtime-poc:conditionals")
 	case "F02", "F04", "RP22", "BRG12", "BRG14":
 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
@@ -507,6 +507,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := shortCircuitScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := captureOrderScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -583,6 +586,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := shortCircuitScenarios[id]; found {
+		return append([]string{}, shortCircuitEvidence.SourcePaths...)
+	}
 	if _, found := captureOrderScenarios[id]; found {
 		return append([]string{}, captureOrderEvidence.SourcePaths...)
 	}
@@ -614,6 +620,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := shortCircuitScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := captureOrderScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -709,6 +718,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if _, found := shortCircuitScenarios[id]; found {
+		return append([]string{}, shortCircuitEvidence.SourcePaths...)
+	}
 	if _, found := captureOrderScenarios[id]; found {
 		return append([]string{}, captureOrderEvidence.SourcePaths...)
 	}
