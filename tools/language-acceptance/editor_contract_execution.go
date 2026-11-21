@@ -223,6 +223,39 @@ func editorContractValidateSwift(root, source, directory, kind, executedRoot, ex
 	}
 	return nil
 }
+
+// Match the producer's physical-path operation before recording an invocation.
+// This accepts only the two existing owned directories and proves file identity;
+// archived command vectors are still compared exactly by the unchanged intake.
+func editorCanonicalSwiftDirectories(python, root, directory string) (string, string, error) {
+	if !filepath.IsAbs(root) || !filepath.IsAbs(directory) {
+		return "", "", fmt.Errorf("Swift execution directories must be absolute")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	const script = "import json,sys; from pathlib import Path; print(json.dumps([str(Path(p).resolve(strict=True)) for p in sys.argv[1:]]))"
+	command := exec.CommandContext(ctx, python, "-B", "-c", script, root, directory)
+	command.Dir = root
+	var stdout, stderr loopBoundedOutput
+	command.Stdout, command.Stderr = &stdout, &stderr
+	if err := command.Run(); err != nil {
+		return "", "", fmt.Errorf("resolve owned Swift execution directories: %w", err)
+	}
+	var resolved []string
+	if err := json.Unmarshal(stdout.Bytes(), &resolved); err != nil || len(resolved) != 2 {
+		return "", "", fmt.Errorf("invalid physical Swift execution directories")
+	}
+	for index, original := range []string{root, directory} {
+		before, beforeErr := os.Stat(original)
+		after, afterErr := os.Stat(resolved[index])
+		if beforeErr != nil || afterErr != nil || !filepath.IsAbs(resolved[index]) ||
+			!before.IsDir() || !after.IsDir() || !os.SameFile(before, after) {
+			return "", "", fmt.Errorf("resolved Swift execution directory changed identity")
+		}
+	}
+	return resolved[0], resolved[1], nil
+}
+
 func (r *Runner) executeEditorContract(id string) ([]EvidenceArtifact, string, bool, error) {
 	var spec, ok = editorContracts.Scenarios[id]
 	if !ok {
@@ -231,15 +264,6 @@ func (r *Runner) executeEditorContract(id string) ([]EvidenceArtifact, string, b
 	var root, err = filepath.Abs(resolveRepoRoot())
 	if err != nil {
 		return nil, "", false, err
-	}
-	// The Swift producers resolve their existing repository/output directories.
-	// Record that same physical path before invocation (including macOS /var
-	// aliases and owned Windows junctions); the intake remains an exact compare.
-	if spec.SwiftProbe != "" {
-		root, err = filepath.EvalSymlinks(root)
-		if err != nil {
-			return nil, "", false, err
-		}
 	}
 	var source, clean, stateErr = editorSourceState(root)
 	if stateErr != nil || !clean || source != r.implSHA {
@@ -260,7 +284,7 @@ func (r *Runner) executeEditorContract(id string) ([]EvidenceArtifact, string, b
 		return nil, "", false, dirErr
 	}
 	if spec.SwiftProbe != "" {
-		directory, err = filepath.EvalSymlinks(directory)
+		root, directory, err = editorCanonicalSwiftDirectories(python, root, directory)
 		if err != nil {
 			return nil, "", false, err
 		}

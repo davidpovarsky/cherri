@@ -463,10 +463,6 @@ func TestEditorContractCanonicalSwiftExecutionPaths(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	root, err = filepath.EvalSymlinks(root)
-	if err != nil {
-		t.Fatal(err)
-	}
 	physical := t.TempDir()
 	if output := os.Getenv("CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT"); output != "" {
 		physical = filepath.Join(output, "canonical-swift-paths")
@@ -474,7 +470,11 @@ func TestEditorContractCanonicalSwiftExecutionPaths(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	physical, err = filepath.EvalSymlinks(physical)
+	python, err := acceptancePython3("CHERRI_EDITOR_PYTHON")
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, physical, err = editorCanonicalSwiftDirectories(python, root, physical)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -488,8 +488,10 @@ func TestEditorContractCanonicalSwiftExecutionPaths(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = os.Remove(alias) })
-	if actual, err := filepath.EvalSymlinks(alias); err != nil || actual != physical {
-		t.Fatalf("owned path control is not a real alias: %q %v", actual, err)
+	aliasInfo, aliasErr := os.Stat(alias)
+	physicalInfo, physicalErr := os.Stat(physical)
+	if aliasErr != nil || physicalErr != nil || !os.SameFile(aliasInfo, physicalInfo) {
+		t.Fatalf("owned path control is not a real alias: %v %v", aliasErr, physicalErr)
 	}
 	runner := NewRunner()
 	runner.artifactDir = alias
