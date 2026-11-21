@@ -90,7 +90,12 @@ def read_regular(path, limit=4 * 1024 * 1024):
     # but change time through fstat().ctime. Compare that field within each
     # API, never between those distinct meanings. Device/inode/type/size/mtime
     # still bind the path and opened handle exactly before and after the read.
-    identity = lambda value: (value.st_dev, value.st_ino, value.st_mode, value.st_size, value.st_mtime_ns)
+    # Windows path stat infers execute bits from an .exe suffix; fstat does not.
+    # Normalize only those cross-API bits on Windows. Full modes must remain
+    # unchanged within each API, including during the actual bounded read.
+    identity = lambda value: (value.st_dev, value.st_ino,
+        value.st_mode & ~0o111 if os.name == "nt" else value.st_mode,
+        value.st_size, value.st_mtime_ns)
     with path.open("rb") as stream:
         opened = os.fstat(stream.fileno())
         require(stat.S_ISREG(opened.st_mode) and identity(opened) == identity(before), "INPUT_CHANGED_DURING_READ")
@@ -100,6 +105,8 @@ def read_regular(path, limit=4 * 1024 * 1024):
     path_after = path.lstat()
     require(identity(after) == identity(before) == identity(path_after) and len(raw) == before.st_size
             and before.st_ctime_ns == path_after.st_ctime_ns and opened.st_ctime_ns == after.st_ctime_ns,
+            "INPUT_CHANGED_DURING_READ")
+    require(before.st_mode == path_after.st_mode and opened.st_mode == after.st_mode,
             "INPUT_CHANGED_DURING_READ")
     require(not getattr(path, "is_junction", lambda: False)() and all(
             not p.is_symlink() and not getattr(p, "is_junction", lambda: False)() for p in path.parents), "INPUT_PARENT_SYMLINK")

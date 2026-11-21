@@ -166,6 +166,63 @@ class ProvenanceControls(unittest.TestCase):
         with mock.patch.object(eb.os, "fstat", side_effect=handle_stat):
             self.assertEqual(eb.read_regular(actual, 8), b"{}")
 
+    def test_windows_exe_execute_bits_do_not_confuse_file_identity(self):
+        actual = self.root / "public-control.exe"
+        actual.write_bytes(b"public synthetic executable bytes")
+        actual.chmod(0o755)
+        real_fstat = eb.os.fstat
+        calls = []
+        def handle_stat(fd):
+            observed = real_fstat(fd)
+            fields = {key: getattr(observed, key) for key in (
+                "st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")}
+            fields["st_mode"] &= ~0o111
+            calls.append(fields)
+            return SimpleNamespace(**fields)
+        with mock.patch.object(eb, "os", SimpleNamespace(name="nt", fstat=handle_stat)):
+            self.assertEqual(eb.read_regular(actual, 64), b"public synthetic executable bytes")
+        self.assertEqual(len(calls), 2)
+
+    def test_windows_same_handle_mode_change_still_rejects_after_read(self):
+        actual = self.root / "changing-mode.exe"
+        actual.write_bytes(b"public synthetic executable bytes")
+        actual.chmod(0o755)
+        real_fstat = eb.os.fstat
+        calls = []
+        def handle_stat(fd):
+            observed = real_fstat(fd)
+            fields = {key: getattr(observed, key) for key in (
+                "st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")}
+            fields["st_mode"] &= ~0o111
+            if calls:
+                fields["st_mode"] ^= 0o200
+            calls.append(fields)
+            return SimpleNamespace(**fields)
+        with mock.patch.object(eb, "os", SimpleNamespace(name="nt", fstat=handle_stat)):
+            with self.assertRaisesRegex(eb.BundleError, "INPUT_CHANGED_DURING_READ"):
+                eb.read_regular(actual, 64)
+        self.assertEqual(len(calls), 2)
+
+    def test_other_cross_api_mode_changes_are_not_normalized(self):
+        actual = self.root / "preserved-permissions.exe"
+        actual.write_bytes(b"public synthetic executable bytes")
+        actual.chmod(0o755)
+        real_fstat = eb.os.fstat
+        for platform, changed_bits in (("posix", 0o111), ("nt", 0o200)):
+            calls = []
+            def handle_stat(fd):
+                observed = real_fstat(fd)
+                fields = {key: getattr(observed, key) for key in (
+                    "st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")}
+                fields["st_mode"] ^= changed_bits
+                calls.append(fields)
+                return SimpleNamespace(**fields)
+            with self.subTest(platform=platform), \
+                    mock.patch.object(eb, "os", SimpleNamespace(name=platform, fstat=handle_stat)):
+                with self.assertRaisesRegex(eb.BundleError, "INPUT_CHANGED_DURING_READ"):
+                    eb.read_regular(actual, 64)
+            self.assertEqual(len(calls), 1)
+
     def test_replaced_path_is_rejected_before_reading_its_bytes(self):
         actual = self.root / "before.json"
         changed = self.root / "replacement.json"
