@@ -312,7 +312,7 @@ def go_events(raw, package, required, process_receipt):
         else:raise ValueError("failed/skipped/unknown generation event")
     need(started==finished==1 and run==passed==required,"missing generation tests")
 
-def verify(repo,source,docs_repo,archive,requirement):
+def verify(repo,source,docs_repo,archive,requirement,started_utc,finished_utc):
     need(requirement in {"RP46","BRG29"} and re.fullmatch(r"[0-9a-f]{40}",source),"foreign requirement/source")
     manifest,files=read_archive(archive)
     pins=wrappers.strict_json(examples.git(repo,"show",source+":skills/cherri-shortcuts/compatibility-manifest.json"))
@@ -320,6 +320,20 @@ def verify(repo,source,docs_repo,archive,requirement):
     modes=["consumers"]+(["generation"] if requirement=="BRG29" else [])
     need(manifest.get("requirement")==requirement and manifest.get("tuple")==tuple_value and manifest.get("modes")==modes,
          "nested requirement/S/D/K tuple changed")
+    interval={"startedUTC":started_utc,"finishedUTC":finished_utc}
+    need(manifest.get("executionInterval")==interval,"nested outer execution interval changed")
+    begin=datetime.datetime.fromisoformat(started_utc.replace("Z","+00:00"))
+    finish=datetime.datetime.fromisoformat(finished_utc.replace("Z","+00:00"))
+    need(begin.tzinfo is not None and finish.tzinfo is not None and
+         begin.utcoffset()==finish.utcoffset()==datetime.timedelta(0) and begin<=finish,
+         "invalid original outer execution interval")
+    for path,raw in files.items():
+        if not path.endswith(".process.json"):
+            continue
+        receipt=wrappers.strict_json(raw)
+        budget_key="timeoutSeconds" if path.startswith("consumers/wrappers/") else "budgetSeconds"
+        start,end=check_time(receipt,"elapsedSeconds",budget_key)
+        need(begin<=start<=end<=finish,"nested process outside original Go execution: "+path)
     report_hashes={}
     for mode in modes:
         raw=file(files,mode+"/report.json");report=wrappers.strict_json(raw)
@@ -358,9 +372,9 @@ def verify(repo,source,docs_repo,archive,requirement):
     need(manifest.get("reportSha256")==report_hashes,"nested report bytes changed")
     return {"schemaVersion":1,"requirement":requirement,"tuple":tuple_value,"modes":modes,
             "reportSha256":report_hashes,"archiveSha256":sha(archive.read_bytes()),
-            "originalFiles":len(files),"status":"VERIFIED_NESTED_DOCUMENTATION_EVIDENCE"}
+            "originalFiles":len(files),"executionInterval":interval,"status":"VERIFIED_NESTED_DOCUMENTATION_EVIDENCE"}
 
-def pack(repo,source,docs_repo,directory,archive,requirement):
+def pack(repo,source,docs_repo,directory,archive,requirement,started_utc,finished_utc):
     need(not archive.exists(),"nested archive output already exists")
     modes=["consumers"]+(["generation"] if requirement=="BRG29" else [])
     files={};hashes={}
@@ -381,12 +395,12 @@ def pack(repo,source,docs_repo,directory,archive,requirement):
         hashes[mode]=sha(file(files,mode+"/report.json"))
     pins=wrappers.strict_json(examples.git(repo,"show",source+":skills/cherri-shortcuts/compatibility-manifest.json"))
     manifest={"schemaVersion":1,"requirement":requirement,"tuple":{"S":pins["compilerCommit"],"D":pins["docsCommit"],"K":source},
-              "modes":modes,"reportSha256":hashes,
+              "modes":modes,"reportSha256":hashes,"executionInterval":{"startedUTC":started_utc,"finishedUTC":finished_utc},
               "files":[{"path":name,"bytes":len(raw),"sha256":sha(raw)}for name,raw in sorted(files.items())]}
     with zipfile.ZipFile(archive,"x",compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
         for name,raw in sorted(files.items()):z.writestr(name,raw)
         z.writestr("manifest.json",canonical(manifest))
-    return verify(repo,source,docs_repo,archive,requirement)
+    return verify(repo,source,docs_repo,archive,requirement,started_utc,finished_utc)
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -397,11 +411,13 @@ def main():
     parser.add_argument("--archive",type=Path,required=True)
     parser.add_argument("--requirement",required=True)
     parser.add_argument("--directory",type=Path)
+    parser.add_argument("--started-utc",required=True)
+    parser.add_argument("--finished-utc",required=True)
     args=parser.parse_args()
     if args.operation=="pack":
-        result=pack(args.repo,args.source,args.docs_repo,args.directory,args.archive,args.requirement)
+        result=pack(args.repo,args.source,args.docs_repo,args.directory,args.archive,args.requirement,args.started_utc,args.finished_utc)
     else:
-        result=verify(args.repo,args.source,args.docs_repo,args.archive,args.requirement)
+        result=verify(args.repo,args.source,args.docs_repo,args.archive,args.requirement,args.started_utc,args.finished_utc)
     print(json.dumps(result,sort_keys=True))
     return 0
 

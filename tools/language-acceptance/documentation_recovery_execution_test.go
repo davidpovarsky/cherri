@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 )
 
 func documentationRecoverySelected(t *testing.T) *ContractsSet {
@@ -146,9 +147,36 @@ func documentationRecoveryMutateNested(t *testing.T, record *EvidenceRecord, fau
 			t.Fatal(err)
 		}
 		delete(files, "manifest.json")
+		oldReportSHA := ""
 		switch fault {
 		case "stale_S", "stale_D", "stale_K":
 			manifest["tuple"].(map[string]any)[strings.TrimPrefix(fault, "stale_")] = strings.Repeat("a", 40)
+		case "stale_process_interval":
+			oldReportSHA = manifest["reportSha256"].(map[string]any)["consumers"].(string)
+			var process map[string]any
+			if err := json.Unmarshal(files["consumers/examples/compiler-build-info.process.json"], &process); err != nil {
+				t.Fatal(err)
+			}
+			for _, key := range []string{"startedUTC", "endedUTC"} {
+				oldValue, ok := process[key].(string)
+				if !ok {
+					t.Fatal("missing original nested process time", key)
+				}
+				moment, err := time.Parse(time.RFC3339Nano, oldValue)
+				if err != nil {
+					t.Fatal(err)
+				}
+				originalTime, _ := json.Marshal(oldValue)
+				staleTime, _ := json.Marshal(moment.Add(-24 * time.Hour).Format(time.RFC3339Nano))
+				for name, raw := range files {
+					if strings.HasSuffix(name, ".json") {
+						files[name] = bytes.ReplaceAll(raw, originalTime, staleTime)
+					}
+				}
+			}
+			// Keep the embedded process copies and both levels of report/file
+			// hashes coherent, isolating the cross-execution interval check.
+			manifest["reportSha256"].(map[string]any)["consumers"] = editorSHA(files["consumers/report.json"])
 		case "missing_example_output":
 			delete(files, "consumers/examples/example-0000/check.stdout")
 		case "missing_wrapper_output":
@@ -208,6 +236,18 @@ func documentationRecoveryMutateNested(t *testing.T, record *EvidenceRecord, fau
 		}
 		artifact.Path, artifact.SHA256 = path, editorSHA(packed.Bytes())
 		record.Assertions["nested_evidence_sha256"] = artifact.SHA256
+		if fault == "stale_process_interval" {
+			newReportSHA := manifest["reportSha256"].(map[string]any)["consumers"].(string)
+			documentationRecoveryRewrite(t, record, func(data map[string][]byte, receipt *editorProcessReceipt) {
+				name := scenario.artifacts()[1]
+				before := []byte("P15_DOCUMENTATION_RECOVERY_REPORT_SHA256:consumers:" + oldReportSHA)
+				after := []byte("P15_DOCUMENTATION_RECOVERY_REPORT_SHA256:consumers:" + newReportSHA)
+				if bytes.Count(data[name], before) != 1 || oldReportSHA == newReportSHA {
+					t.Fatal("stale-time control did not preserve the report binding")
+				}
+				data[name] = bytes.ReplaceAll(data[name], before, after)
+			})
+		}
 		return
 	}
 	t.Fatal("nested original artifact missing")
@@ -250,7 +290,7 @@ func TestDocumentationRecoveryActualProductionEvidence(t *testing.T) {
 		}
 		checked[id] = true
 		encoded, _ := json.Marshal(original)
-		faults := []string{"stale_S", "stale_D", "stale_K", "missing_example_output", "missing_wrapper_output", "missing_package", "altered_snippet"}
+		faults := []string{"stale_S", "stale_D", "stale_K", "missing_example_output", "missing_wrapper_output", "missing_package", "altered_snippet", "stale_process_interval"}
 		if id == "BRG29" {
 			faults = append(faults, "missing_generation_raw", "missing_generation_child")
 		}
@@ -261,8 +301,12 @@ func TestDocumentationRecoveryActualProductionEvidence(t *testing.T) {
 					t.Fatal(err)
 				}
 				documentationRecoveryMutateNested(t, &changed, fault)
-				if validateDocumentationRecoveryRecord(id, changed) == nil {
+				rejected := validateDocumentationRecoveryRecord(id, changed)
+				if rejected == nil {
 					t.Fatal("hash-reconciled corrupt nested original accepted", fault)
+				}
+				if fault == "stale_process_interval" && !strings.Contains(rejected.Error(), "nested process outside original Go execution") {
+					t.Fatal("stale-time control rejected for a different cause", rejected)
 				}
 			})
 		}

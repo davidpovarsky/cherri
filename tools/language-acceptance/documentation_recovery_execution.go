@@ -151,7 +151,7 @@ func validateDocumentationRecoveryRecord(id string, record EvidenceRecord) error
 			archive = artifact.Path
 		}
 	}
-	nested, err := documentationRecoveryNestedOperation(record.ImplementationSHA, "verify", archive, "", id)
+	nested, err := documentationRecoveryNestedOperation(record.ImplementationSHA, "verify", archive, "", id, receipt.StartedUTC, receipt.FinishedUTC)
 	if err != nil {
 		return err
 	}
@@ -229,7 +229,7 @@ func (r *Runner) executeDocumentationRecovery(s documentationRecoveryScenario) (
 	var nestedBytes []byte
 	if processErr == nil && parseErr == nil && !timedOut && receipt.SourceCleanAfter {
 		archive := filepath.Join(directory, names[3])
-		nested, nestedErr := documentationRecoveryNestedOperation(before, "pack", archive, directory, s.ID)
+		nested, nestedErr := documentationRecoveryNestedOperation(before, "pack", archive, directory, s.ID, receipt.StartedUTC, receipt.FinishedUTC)
 		if nestedErr == nil {
 			nestedErr = documentationRecoveryBindNestedReports(nested, raw)
 		}

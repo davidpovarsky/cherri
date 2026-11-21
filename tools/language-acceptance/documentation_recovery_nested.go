@@ -18,19 +18,20 @@ var documentationRecoveryIntakeSources = []string{
 }
 
 type documentationRecoveryNestedReceipt struct {
-	SchemaVersion int
-	Requirement   string
-	Tuple         map[string]string
-	Modes         []string
-	ReportSHA256  map[string]string
-	ArchiveSHA256 string
-	OriginalFiles int
-	Status        string
+	SchemaVersion     int
+	Requirement       string
+	Tuple             map[string]string
+	Modes             []string
+	ReportSHA256      map[string]string
+	ArchiveSHA256     string
+	OriginalFiles     int
+	ExecutionInterval map[string]string
+	Status            string
 }
 
 // Stage the verifier and its reused parser/package helpers from Git K.
 // Relocated evidence never executes a caller-supplied script or executable.
-func documentationRecoveryNestedOperation(source, operation, archive, directory, id string) (documentationRecoveryNestedReceipt, error) {
+func documentationRecoveryNestedOperation(source, operation, archive, directory, id, startedUTC, finishedUTC string) (documentationRecoveryNestedReceipt, error) {
 	var result documentationRecoveryNestedReceipt
 	python, err := acceptancePython3("CHERRI_DOCS_PYTHON")
 	if err != nil {
@@ -64,7 +65,8 @@ func documentationRecoveryNestedOperation(source, operation, archive, directory,
 	}
 	bootstrap := "import runpy,sys;sys.path.insert(0,sys.argv[1]);sys.argv=sys.argv[2:];runpy.run_path(sys.argv[0],run_name='__main__')"
 	args := []string{"-I", "-B", "-c", bootstrap, stage, filepath.Join(stage, "documentation_recovery_intake.py"),
-		operation, "--repo", root, "--source", source, "--docs-repo", docs, "--archive", archive, "--requirement", id}
+		operation, "--repo", root, "--source", source, "--docs-repo", docs, "--archive", archive, "--requirement", id,
+		"--started-utc", startedUTC, "--finished-utc", finishedUTC}
 	if operation == "pack" {
 		args = append(args, "--directory", directory)
 	}
@@ -84,7 +86,8 @@ func documentationRecoveryNestedOperation(source, operation, archive, directory,
 	}
 	if result.SchemaVersion != 1 || result.Requirement != id || result.Status != "VERIFIED_NESTED_DOCUMENTATION_EVIDENCE" ||
 		result.OriginalFiles < 700 || result.Tuple["K"] != source || !documentationHash(result.Tuple["S"], 40) ||
-		!documentationHash(result.Tuple["D"], 40) || !editorDigest(result.ArchiveSHA256) {
+		!documentationHash(result.Tuple["D"], 40) || !editorDigest(result.ArchiveSHA256) ||
+		result.ExecutionInterval["startedUTC"] != startedUTC || result.ExecutionInterval["finishedUTC"] != finishedUTC {
 		return result, fmt.Errorf("incomplete independently validated nested documentation evidence")
 	}
 	return result, nil
