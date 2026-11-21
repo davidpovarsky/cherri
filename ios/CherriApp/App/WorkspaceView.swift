@@ -43,6 +43,7 @@ struct WorkspaceView: View {
     @State private var showDocumentation = false
 
     var body: some View {
+        let _ = CherriStartupLifecycleObserver.shared?.record(.workspaceBody, documentID: document.startupObservationID)
         VStack(spacing: 0) {
             if horizontalSizeClass == .regular {
                 HStack(spacing: 0) {
@@ -71,6 +72,9 @@ struct WorkspaceView: View {
             }
 
             statusBar
+        }
+        .onAppear {
+            CherriStartupLifecycleObserver.shared?.record(.workspaceAppeared, documentID: document.startupObservationID)
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -152,6 +156,18 @@ struct WorkspaceView: View {
         }
         .task(id: CherriEditorBuildRequest(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)) {
             guard livePreview, !isImporting, !isApplyingPreviewEdit else { return }
+            // An empty document has no preview to render. Keep editor metadata
+            // available without starting the compiler or WebKit during opening.
+            guard !document.text.isEmpty else {
+                compiled = nil
+                diagnostic = nil
+                diagnostics = []
+                signedURL = nil
+                if actionCatalog.isEmpty {
+                    await refreshActionCatalog()
+                }
+                return
+            }
             try? await Task.sleep(for: .milliseconds(650))
             guard !Task.isCancelled else { return }
             await build(signed: false, liveBuild: true)
@@ -167,31 +183,33 @@ struct WorkspaceView: View {
             text: $document.text,
             diagnostic: diagnostic,
             diagnostics: diagnostics,
-            actions: actionCatalog
+            actions: actionCatalog,
+            startupObservationID: document.startupObservationID
         )
     }
 
     private var previewPane: some View {
         VStack(spacing: 0) {
-            ShortcutPreviewView(
-                plist: compiled?.plist,
-                name: compiled?.name ?? fileDisplayName,
-                actionMetadataJSON: previewActionMetadataJSON,
-                onEdit: { edit in
-                    Task { @MainActor in
-                        handlePreviewEdit(edit)
+            if let compiled {
+                ShortcutPreviewView(
+                    plist: compiled.plist,
+                    name: compiled.name,
+                    actionMetadataJSON: previewActionMetadataJSON,
+                    onEdit: { edit in
+                        Task { @MainActor in
+                            handlePreviewEdit(edit)
+                        }
                     }
-                }
-            )
-            .overlay {
-                if compiled == nil && diagnostic == nil && !isCompiling {
-                    ContentUnavailableView(
-                        "No Preview Yet",
-                        systemImage: "wand.and.stars",
-                        description: Text("Build the Cherri source to render the Shortcut preview.")
-                    )
-                    .allowsHitTesting(false)
-                }
+                )
+            } else {
+                // A placeholder must not instantiate an invisible WKWebView.
+                // The editor remains the same sibling when compiled data arrives.
+                ContentUnavailableView(
+                    "No Preview Yet",
+                    systemImage: "wand.and.stars",
+                    description: Text("Build the Cherri source to render the Shortcut preview.")
+                )
+                .allowsHitTesting(false)
             }
 
             if compiled != nil {

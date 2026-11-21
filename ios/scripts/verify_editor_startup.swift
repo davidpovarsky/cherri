@@ -90,4 +90,117 @@ check(!fast.needsDocumentWait(pendingCreation), "expired total budget cannot sta
 check(!fast.claimDocumentCreation(creationState), "optimized path cannot issue a late tap")
 check(!fast.accepts(readyState, waitCompleted: true), "optimized path still rejects late readiness")
 check(!pending.claimDocumentCreation(editorAppeared), "editor arriving during wait remains protected")
+
+// The production observer evaluates a filtered query once, then invokes these
+// hit-test closures only for unique matches. An absent control has no AX lookup.
+var creationHitQueries = 0
+var editorHitQueries = 0
+func matched(_ creates: Int, _ editors: Int, unexpected: Int = 0,
+             window: Bool = true, foreground: Bool = true) -> CherriEditorStartupObservation {
+    CherriEditorStartupObservation.matchedControls(
+        windowExists: window, appRunningForeground: foreground,
+        createDocumentCount: creates, editorCount: editors, unexpectedControlCount: unexpected,
+        createDocumentHittable: { creationHitQueries += 1; return true },
+        editorHittable: { editorHitQueries += 1; return true })
+}
+let queryClock = StartupTestClock()
+var queryBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+let missingControls = matched(0, 0)
+check(creationHitQueries == 0 && editorHitQueries == 0, "zero matches never resolve missing controls")
+check(!queryBudget.claimDocumentCreation(missingControls), "zero results cannot authorize a tap")
+check(!queryBudget.accepts(missingControls, waitCompleted: true), "zero results cannot authorize readiness")
+check(queryBudget.needsDocumentWait(missingControls), "no known control requires a real wait")
+let soleCreation = matched(1, 0)
+check(creationHitQueries == 1 && editorHitQueries == 0, "ready creation never resolves absent editor")
+check(!queryBudget.needsDocumentWait(soleCreation), "current ready control does not require another observation wait")
+check(queryBudget.claimDocumentCreation(soleCreation), "unique ready creation can be tapped once")
+check(!queryBudget.claimDocumentCreation(soleCreation), "same current observation cannot tap twice")
+let soleEditor = matched(0, 1)
+check(creationHitQueries == 1 && editorHitQueries == 1, "ready editor never resolves absent creation")
+check(queryBudget.accepts(soleEditor, waitCompleted: true), "unique editor plus completed wait is valid")
+check(!queryBudget.accepts(soleEditor, waitCompleted: false), "query result never substitutes for completed wait")
+let coPresent = matched(1, 1)
+var coPresentBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+check(!coPresentBudget.claimDocumentCreation(coPresent), "same filtered result sees editor and forbids second document")
+check(!coPresentBudget.documentCreationIssued, "co-presence leaves creation unissued")
+check(coPresentBudget.accepts(coPresent, waitCompleted: true), "co-present unique editor may complete readiness")
+for (creates, editors, unexpected) in [(2, 0, 0), (0, 2, 0), (2, 1, 0), (1, 2, 0), (1, 0, 1), (0, 1, 1), (-1, 0, 0), (0, -1, 0)] {
+    let before = creationHitQueries + editorHitQueries
+    let ambiguous = matched(creates, editors, unexpected: unexpected)
+    var ambiguousBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+    check(creationHitQueries + editorHitQueries == before, "ambiguous query must not resolve or hit-test a candidate")
+    check(!ambiguousBudget.claimDocumentCreation(ambiguous), "ambiguous candidate never authorizes creation")
+    check(!ambiguousBudget.accepts(ambiguous, waitCompleted: true), "ambiguous candidate never authorizes readiness")
+}
+for (window, foreground) in [(false, true), (true, false)] {
+    let before = creationHitQueries + editorHitQueries
+    let unavailable = matched(1, 1, window: window, foreground: foreground)
+    check(creationHitQueries + editorHitQueries == before, "unavailable app does not query candidate hittability")
+    check(!coPresentBudget.accepts(unavailable, waitCompleted: true), "current window and foreground remain mandatory")
+}
+queryClock.value = 28.001
+var lateCreationBudget = CherriEditorStartupDeadline(now: { queryClock.value })
+queryClock.value += 28.001
+check(!lateCreationBudget.claimDocumentCreation(soleCreation), "query completing after deadline cannot authorize tap")
+check(!coPresentBudget.accepts(soleEditor, waitCompleted: true), "late resolved editor cannot authorize readiness")
+
+// Consume the actual successful predicate once, without querying the full AX
+// tree again. D03's original wait returned at 3.750s; its redundant known-control
+// query then took 20.684s. This reproduces the orchestration decision locally,
+// not the simulator timing or a repaired feature result.
+let observedClock = StartupTestClock()
+var observedBudget = CherriEditorStartupDeadline(now: { observedClock.value })
+let documentWait = CherriEditorStartupWaitObservation<String>(phase: .document)
+var fullQueries = 0
+fullQueries += 1
+observedClock.value = 3.750
+check(documentWait.record("owned-create-element", state: creationState), "actual document predicate observes an actionable control")
+let completedDocument = documentWait.takeCompleted(waitCompleted: true)
+check(completedDocument == "owned-create-element", "completed wait retains the same element identity")
+check(fullQueries == 1, "taking the completed observation performs no second AX query")
+check(observedBudget.claimDocumentCreation(creationState.recheckingForeground(true)), "completed observation authorizes one timely owned tap")
+check(!observedBudget.claimDocumentCreation(creationState), "completed observation cannot issue a second document")
+check(documentWait.takeCompleted(waitCompleted: true) == nil, "completed observation is consumed once")
+check(!documentWait.record("late-element", state: creationState), "closed wait rejects a late predicate callback")
+
+let staleWait = CherriEditorStartupWaitObservation<String>(phase: .editor)
+check(staleWait.record("ready", state: readyState), "first ready predicate is captured")
+check(!staleWait.record("lost-editor", state: states[2]), "later failed predicate invalidates readiness")
+check(staleWait.takeCompleted(waitCompleted: true) == nil, "stale earlier success cannot be consumed")
+let timedOutWait = CherriEditorStartupWaitObservation<String>(phase: .editor)
+check(timedOutWait.record("ready", state: readyState), "timed-out control has a positive observation")
+check(timedOutWait.takeCompleted(waitCompleted: false) == nil, "positive observation cannot substitute for actual completed wait")
+check(timedOutWait.takeCompleted(waitCompleted: true) == nil, "timeout cannot later be relabeled completed")
+let emptyWait = CherriEditorStartupWaitObservation<String>(phase: .editor)
+check(emptyWait.takeCompleted(waitCompleted: true) == nil, "completed result with no predicate observation fails closed")
+let anotherWait = CherriEditorStartupWaitObservation<String>(phase: .editor)
+check(anotherWait.takeCompleted(waitCompleted: true) == nil, "one phase cannot borrow another phase's observed state")
+
+let editorWait = CherriEditorStartupWaitObservation<CherriEditorStartupObservation>(phase: .editor)
+observedClock.value = 20
+check(editorWait.record(readyState, state: readyState), "full interactive-editor predicate is mandatory")
+let completedEditor = editorWait.takeCompleted(waitCompleted: true)!
+check(observedBudget.accepts(completedEditor.recheckingForeground(true), waitCompleted: true), "completed predicate and fresh foreground may pass before original deadline")
+check(!observedBudget.accepts(completedEditor.recheckingForeground(false), waitCompleted: true), "foreground loss after predicate rejects success")
+check(!states[1].recheckingForeground(true).interactiveEditor, "fresh foreground never repairs an earlier unavailable observation")
+for (index, state) in states.enumerated() {
+    check(!state.recheckingForeground(true).interactiveEditor, "foreground refresh cannot repair missing readiness field \(index)")
+}
+observedClock.value = 28.001
+check(!observedBudget.accepts(completedEditor.recheckingForeground(true), waitCompleted: true), "decision after deadline rejects an earlier timely observation")
+check(!observedBudget.claimDocumentCreation(creationState.recheckingForeground(true)), "foreground check finishing late cannot authorize a tap")
+
+let coPresentWait = CherriEditorStartupWaitObservation<CherriEditorStartupObservation>(phase: .document)
+var noSecondDocument = CherriEditorStartupDeadline()
+check(coPresentWait.record(coPresent, state: coPresent), "editor arriving during document wait is retained")
+let coPresentCompleted = coPresentWait.takeCompleted(waitCompleted: true)!
+check(!noSecondDocument.claimDocumentCreation(coPresentCompleted), "co-present editor and button still forbid a document tap")
+for (creates, editors, unexpected) in [(0, 0, 0), (2, 0, 0), (0, 2, 0), (1, 0, 1), (0, 1, 1)] {
+    let rejected = matched(creates, editors, unexpected: unexpected)
+    let waiting = CherriEditorStartupWaitObservation<CherriEditorStartupObservation>(phase: .editor)
+    check(!waiting.record(rejected, state: rejected), "empty or ambiguous matched controls cannot satisfy editor predicate")
+    check(waiting.takeCompleted(waitCompleted: true) == nil, "empty or ambiguous result cannot be borrowed at completion")
+    var tapBudget = CherriEditorStartupDeadline()
+    check(!tapBudget.claimDocumentCreation(rejected), "empty or ambiguous result cannot authorize a tap")
+}
 print("PASS_LOCAL_STARTUP_DEADLINE_CONTROLS: \(checked); Apple UI NOT_RUN")

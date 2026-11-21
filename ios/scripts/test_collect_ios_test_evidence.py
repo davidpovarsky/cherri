@@ -76,9 +76,61 @@ class IOSTestEvidenceTests(unittest.TestCase):
         diagnostic, records, outputs = self.collect(log, 65)
         self.assertEqual(records, [])
         self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
-        self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorInputTests/" + method, "sourceLine": 65}])
+        self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorInputTests/" + method,
+                                                   "sourceLine": 65, "failureCategory": "UNCLASSIFIED"}])
         self.assertNotIn("PRIVATE_MESSAGE", "".join(outputs.values()))
         self.assertNotIn("/Users/runner", "".join(outputs.values()))
+
+    def test_fixed_failure_categories_never_publish_private_failure_details(self):
+        cases = {
+            "Failed to get matching snapshot: ": "SNAPSHOT_QUERY_FAILURE",
+            "Failed to get matching snapshots: ": "SNAPSHOT_QUERY_FAILURE",
+            "Failed to get attributes for element: ": "ATTRIBUTE_QUERY_FAILURE",
+            "Multiple matching elements found for query: ": "AMBIGUOUS_ELEMENT",
+            "No matches found for query: ": "ELEMENT_NOT_FOUND",
+            "Application is not running: ": "APPLICATION_NOT_RUNNING",
+            "XCTAssertTrue failed - ": "ASSERTION_FAILURE",
+            "Unhandled future XCTest error: ": "UNCLASSIFIED",
+        }
+        secret = "PRIVATE_RESTORED_DOCUMENT /Users/Private/document.cherri ghp_FAKE_SECRET_TOKEN"
+        for prefix, expected in cases.items():
+            with self.subTest(prefix=prefix):
+                failure = (f"/Users/runner/project/CherriEditorUITests.swift:120: error: "
+                           f"-[CherriUITests.CherriEditorUITests {self.ui_method}] : {prefix}{secret}")
+                diagnostic, records, outputs = self.collect(self.block(status="failed", body=failure), 65)
+                self.assertEqual(records, [])
+                self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorUITests/" + self.ui_method,
+                    "sourceLine": 120, "failureCategory": expected}])
+                for private in (secret, "PRIVATE_RESTORED_DOCUMENT", "/Users/Private", "ghp_FAKE_SECRET_TOKEN"):
+                    self.assertNotIn(private, "".join(outputs.values()))
+
+    def test_failure_category_only_uses_immediate_bounded_prefix(self):
+        cases = (
+            "asserted private text: Multiple matching elements found for query",
+            "Unknown error: Failed to get matching snapshot",
+            "x" * 200 + "No matches found for query",
+            'XCTAssertEqual failed: ("No matches found for private value")',
+        )
+        expected = ("UNCLASSIFIED", "UNCLASSIFIED", "UNCLASSIFIED", "ASSERTION_FAILURE")
+        for message, category in zip(cases, expected):
+            with self.subTest(message=message[:40]):
+                self.assertEqual(collector.failure_category(message), category)
+
+    def test_preview_lifecycle_tests_remain_diagnostics_without_formal_membership(self):
+        target = "CherriTests.CherriPreviewLifecycleTests"
+        method = "testCompiledPreviewAppearsAndIsRemovedWhenSourceClears"
+        for status, exit_code in (("passed", 0), ("failed", 65)):
+            with self.subTest(status=status):
+                failure = (f"/Users/runner/CherriPreviewLifecycleTests.swift:89: error: "
+                           f"-[{target} {method}] : XCTAssertTrue failed - PRIVATE_CONTENT")
+                log = (f"Test Case '-[{target} {method}]' started.\n"
+                       + (failure + "\n" if status == "failed" else "")
+                       + f"Test Case '-[{target} {method}]' {status} (0.123 seconds).\n")
+                diagnostic, records, outputs = self.collect(log, exit_code)
+                self.assertEqual(records, [])
+                self.assertEqual(diagnostic["testResults"], [{"testId": "CherriPreviewLifecycleTests/" + method,
+                                                             "observedStatus": status}])
+                self.assertNotIn("PRIVATE_CONTENT", "".join(outputs.values()))
 
     def test_checkpoint_outside_case_or_inside_another_case_cannot_pass(self):
         log = self.checkpoint + "\n" + self.block() + self.block(method="testUnrelated", body=self.checkpoint)
@@ -143,6 +195,100 @@ class IOSTestEvidenceTests(unittest.TestCase):
                  "editorExists": False, "editorHittable": False}
         value.update(updates)
         return "[CHERRI_UI_STARTUP] " + json.dumps(value, ensure_ascii=False)
+
+    def startup_timing(self, **updates):
+        value = {"schemaVersion": "1.0", "testName": f"CherriEditorUITests/{self.ui_method}",
+                 "budgetMilliseconds": 28000, "elapsedMilliseconds": 31000,
+                 "droppedEntries": 0, "inFlightObservations": 0, "entries": [
+                     {"sequence": 0, "phase": "editor-wait", "operation": "editor-exists",
+                      "startedMilliseconds": 19000, "completedMilliseconds": 30000,
+                      "value": True, "mainThread": False},
+                     {"sequence": 1, "phase": "editor-wait", "operation": "returned",
+                      "startedMilliseconds": 31000, "completedMilliseconds": 31000,
+                      "value": False, "mainThread": True}]}
+        value.update(updates)
+        return collector.STARTUP_TIMING_PREFIX + json.dumps(value)
+
+    def test_startup_query_timing_preserves_late_observations_without_acceptance(self):
+        line = self.startup_timing()
+        diagnostic, records, outputs = self.collect(self.block(status="failed", body=line), 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["runStatus"], "FAILED")
+        trace = diagnostic["startupTimingTraces"][0]
+        self.assertTrue(trace["entries"][0]["value"])
+        self.assertFalse(trace["entries"][1]["value"])
+        self.assertEqual(trace["entries"][0]["completedMilliseconds"], 30000)
+        self.assertEqual(trace["budgetMilliseconds"], 28000)
+        self.assertIn("startupTimingTraces", outputs["ios-test-diagnostics.json"])
+        # Even a passed test boundary and a timing trace are not a UI checkpoint.
+        self.assertEqual(self.collect(self.block(body=line))[1], [])
+
+    def test_startup_query_timing_rejects_impossible_or_private_receipts(self):
+        original = json.loads(self.startup_timing()[len(collector.STARTUP_TIMING_PREFIX):])
+        mutations = []
+        for key, value in (("budgetMilliseconds", 29000), ("elapsedMilliseconds", True),
+                           ("elapsedMilliseconds", -1), ("droppedEntries", 1),
+                           ("inFlightObservations", False), ("privateTitle", "PRIVATE_TIMING_CANARY")):
+            changed = json.loads(json.dumps(original)); changed[key] = value; mutations.append(changed)
+        for key, value in (("phase", "private-document"), ("operation", "title"),
+                           ("value", 1), ("mainThread", 1), ("sequence", True),
+                           ("startedMilliseconds", 30001), ("completedMilliseconds", 31001),
+                           ("source", "PRIVATE_TIMING_CANARY")):
+            changed = json.loads(json.dumps(original)); changed["entries"][0][key] = value; mutations.append(changed)
+        changed = json.loads(json.dumps(original)); changed["entries"][1]["startedMilliseconds"] = 30001; mutations.append(changed)
+        for changed in mutations:
+            with self.subTest(changed=changed):
+                diagnostic, records, outputs = self.collect(self.block(status="failed",
+                    body=collector.STARTUP_TIMING_PREFIX + json.dumps(changed)), 65)
+                self.assertEqual(diagnostic["startupTimingTraces"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_TIMING_CANARY", "".join(outputs.values()))
+
+    def test_filtered_startup_query_timing_remains_bound_to_known_phases(self):
+        original = json.loads(self.startup_timing()[len(collector.STARTUP_TIMING_PREFIX):])
+        for phase in ("window-snapshot", "document-snapshot", "final-snapshot", "document-wait", "editor-wait"):
+            changed = json.loads(json.dumps(original))
+            changed["entries"][0].update(phase=phase, operation="known-controls")
+            line = collector.STARTUP_TIMING_PREFIX + json.dumps(changed)
+            diagnostic, records, _ = self.collect(self.block(status="failed", body=line), 65)
+            self.assertEqual(diagnostic["startupTimingTraces"], [changed])
+            self.assertEqual(records, [])
+        for phase in ("document-tap", "window-wait", "private-document"):
+            changed["entries"][0]["phase"] = phase
+            line = collector.STARTUP_TIMING_PREFIX + json.dumps(changed)
+            self.assertEqual(self.collect(self.block(status="failed", body=line), 65)[0]["startupTimingTraces"], [])
+
+    def test_startup_timing_can_retain_overlap_and_an_inflight_query(self):
+        original = json.loads(self.startup_timing()[len(collector.STARTUP_TIMING_PREFIX):])
+        original["entries"].reverse()
+        for index, entry in enumerate(original["entries"]): entry["sequence"] = index
+        original["inFlightObservations"] = 1
+        diagnostic, records, _ = self.collect(self.block(status="failed",
+            body=collector.STARTUP_TIMING_PREFIX + json.dumps(original)), 65)
+        self.assertEqual(diagnostic["startupTimingTraces"], [original])
+        self.assertEqual(records, [])
+
+    def test_startup_timing_requires_its_active_test_and_one_bounded_trace(self):
+        line = self.startup_timing()
+        self.assertEqual(self.collect(line, 65)[0]["startupTimingTraces"], [])
+        self.assertEqual(self.collect(self.block(method="testOther", body=line), 65)[0]["startupTimingTraces"], [])
+        log = self.block(status="failed", body="\n".join([line]*20))
+        self.assertEqual(len(self.collect(log, 65)[0]["startupTimingTraces"]), 1)
+        log = "".join(self.block(method=f"testTiming{index}", status="failed",
+            body=self.startup_timing(testName=f"CherriEditorUITests/testTiming{index}")) for index in range(20))
+        self.assertEqual(len(self.collect(log, 65)[0]["startupTimingTraces"]), 16)
+
+    def test_startup_timing_explicitly_reports_capacity_and_rejects_duplicate_keys(self):
+        row = json.loads(self.startup_timing()[len(collector.STARTUP_TIMING_PREFIX):])
+        first = row["entries"][0]
+        row["entries"] = [dict(first, sequence=index) for index in range(128)]
+        row["droppedEntries"] = 2
+        line = collector.STARTUP_TIMING_PREFIX + json.dumps(row)
+        self.assertEqual(self.collect(self.block(status="failed", body=line), 65)[0]["startupTimingTraces"], [row])
+        duplicate = line.replace('"schemaVersion": "1.0"', '"schemaVersion": "private", "schemaVersion": "1.0"')
+        self.assertEqual(self.collect(self.block(status="failed", body=duplicate), 65)[0]["startupTimingTraces"], [])
+        row["entries"].append(dict(first, sequence=128))
+        self.assertEqual(self.collect(self.block(status="failed", body=collector.STARTUP_TIMING_PREFIX + json.dumps(row)), 65)[0]["startupTimingTraces"], [])
 
     def test_startup_receipts_capture_only_known_state_without_source(self):
         secret = "PRIVATE_STARTUP_CANARY document label and restored source"
@@ -347,6 +493,109 @@ class IOSTestEvidenceTests(unittest.TestCase):
         self.assertEqual(d["inputReceipts"][0]["actualSource"], "[REDACTED_UNEXPECTED_CONTENT]")
         self.assertNotIn("a private document", "".join(outputs.values()))
         self.assertEqual(self.collect(receipt(), 65)[0]["inputReceipts"], [])
+
+    def test_paste_native_notification_and_predicate_match_remain_diagnostics(self):
+        method = "testSingleCharacterPasteDoesNotConsumeGeneratedText"
+        target = "CherriEditorInputTests/" + method
+        start = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' started.\n"
+        finish = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' failed (7.03 seconds).\n"
+        for stage, index in (("paste-native-text-change", 1), ("paste-predicate-match", 0)):
+            with self.subTest(stage=stage):
+                data = dict(testName=target, fixtureId="single-character-paste", stage=stage,
+                            keyIndex=index, actualSource='text("x"))', pasteElapsedMilliseconds=2890,
+                            viewIsFirstResponder=True, windowAttached=True, windowIsKey=True)
+                line = self.input_receipt(**data)
+                diagnostic, records, _ = self.collect(start + line + "\n" + finish, 65)
+                self.assertEqual(records, [])
+                self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+                self.assertEqual(diagnostic["inputReceipts"][0]["pasteElapsedMilliseconds"], 2890)
+                self.assertEqual(diagnostic["inputReceipts"][0]["actualSource"], 'text("x"))')
+                self.assertEqual(self.collect(line, 65)[0]["inputReceipts"], [])
+                bad = self.input_receipt(**dict(data, keyIndex=5))
+                self.assertEqual(self.collect(start + bad + "\n" + finish, 65)[0]["inputReceipts"], [])
+                private = self.input_receipt(**dict(data, actualSource="PRIVATE_PASTE_CONTENT"))
+                _, _, outputs = self.collect(start + private + "\n" + finish, 65)
+                self.assertNotIn("PRIVATE_PASTE_CONTENT", "".join(outputs.values()))
+
+    def stock_paste_receipt(self, **updates):
+        row = dict(schemaVersion="1.0",
+                   testName="CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+                   fixtureId="stock-ui-text-view-after-code-view", stage="after-paste-wait",
+                   ordering="AFTER_ORIGINAL_CODEVIEW_ASSERTION", scope="DIAGNOSTIC_ONLY_WARM_PROCESS",
+                   isolatedSyntheticEditor=True, budgetMilliseconds=3000, elapsedMilliseconds=3500,
+                   actualSource='text("x"))', actualUTF16Length=10, selectionLocation=9, selectionLength=0,
+                   viewIsFirstResponder=True, windowAttached=True, windowIsKey=True,
+                   syntheticClipboardVerified=True, pasteIssued=True, waitResult="TIMED_OUT", exactExpectedText=True)
+        row.update(updates)
+        return collector.STOCK_PASTE_PREFIX + json.dumps(row)
+
+    def stock_paste_log(self, body, *, original_wait=True, status="failed"):
+        method = "testSingleCharacterPasteDoesNotConsumeGeneratedText"
+        start = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' started.\n"
+        finish = f"Test Case '-[CherriTests.CherriEditorInputTests {method}]' {status} (7.03 seconds).\n"
+        prior = self.input_receipt(testName="CherriEditorInputTests/" + method,
+            fixtureId="single-character-paste", stage="after-paste-wait", actualSource='text("x"))',
+            actualUTF16Length=10, pasteElapsedMilliseconds=3592, viewIsFirstResponder=True,
+            windowAttached=True, windowIsKey=True) if original_wait else ""
+        return start + prior + "\n" + body + "\n" + finish
+
+    def test_stock_paste_is_separate_and_never_promotes_the_original_failure(self):
+        for result in ("COMPLETED", "TIMED_OUT"):
+            line = self.stock_paste_receipt(waitResult=result)
+            diagnostic, records, _ = self.collect(self.stock_paste_log(line), 65)
+            self.assertEqual(records, [])
+            self.assertEqual(diagnostic["runStatus"], "FAILED")
+            self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["waitResult"], result)
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["elapsedMilliseconds"], 3500)
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["scope"], "DIAGNOSTIC_ONLY_WARM_PROCESS")
+        self.assertEqual(self.collect(self.stock_paste_log(line, status="passed"))[1], [])
+
+    def test_stock_paste_requires_the_original_wait_and_same_active_test(self):
+        line = self.stock_paste_receipt()
+        for log in (line, self.stock_paste_log(line, original_wait=False),
+                    self.block(body=line), self.stock_paste_log(line).replace(
+                        "testSingleCharacterPasteDoesNotConsumeGeneratedText", "testOther")):
+            self.assertEqual(self.collect(log, 65)[0]["stockPasteDiagnostics"], [])
+
+    def test_stock_paste_rejects_unknown_fields_malformed_types_and_scope_changes(self):
+        mutations = [
+            {"budgetMilliseconds": 3001}, {"elapsedMilliseconds": True}, {"elapsedMilliseconds": 120001},
+            {"isolatedSyntheticEditor": False}, {"ordering": "BEFORE_ORIGINAL"}, {"scope": "ACCEPTANCE"},
+            {"fixtureId": "private-view"}, {"stage": "private-stage"}, {"waitResult": "PASS"},
+            {"pasteIssued": False}, {"syntheticClipboardVerified": False}, {"windowIsKey": 1},
+            {"actualUTF16Length": 9}, {"selectionLocation": -1}, {"selectionLength": 2},
+            {"exactExpectedText": False}, {"privateTitle": "PRIVATE_STOCK_CANARY"},
+        ]
+        for mutation in mutations:
+            with self.subTest(mutation=mutation):
+                diagnostic, records, outputs = self.collect(self.stock_paste_log(self.stock_paste_receipt(**mutation)), 65)
+                self.assertEqual(diagnostic["stockPasteDiagnostics"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_STOCK_CANARY", "".join(outputs.values()))
+        duplicate = self.stock_paste_receipt().replace('"schemaVersion": "1.0"',
+            '"schemaVersion": "private", "schemaVersion": "1.0"')
+        self.assertEqual(self.collect(self.stock_paste_log(duplicate), 65)[0]["stockPasteDiagnostics"], [])
+
+    def test_stock_paste_retains_only_fixed_values_and_bounded_events(self):
+        secret = "PRIVATE_STOCK_CANARY"
+        line = self.stock_paste_receipt(actualSource=secret, actualUTF16Length=len(secret), exactExpectedText=False)
+        diagnostic, records, outputs = self.collect(self.stock_paste_log(line), 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["actualSource"], "[REDACTED_UNEXPECTED_CONTENT]")
+        self.assertNotIn(secret, "".join(outputs.values()))
+        log = self.stock_paste_log("\n".join(self.stock_paste_receipt() for _ in range(12)))
+        self.assertEqual(len(self.collect(log, 65)[0]["stockPasteDiagnostics"]), 8)
+
+    def test_stock_paste_stages_retain_real_setup_and_native_event_boundaries(self):
+        for stage in ("setup-failed", "before-paste", "after-paste-call", "native-text-change"):
+            issued = stage not in {"setup-failed", "before-paste"}
+            row = self.stock_paste_receipt(stage=stage, waitResult="NOT_WAITED", pasteIssued=issued)
+            diagnostic, records, _ = self.collect(self.stock_paste_log(row), 65)
+            self.assertEqual(records, [])
+            self.assertEqual(diagnostic["stockPasteDiagnostics"][0]["stage"], stage)
+            bad = self.stock_paste_receipt(stage=stage, waitResult="COMPLETED", pasteIssued=issued)
+            self.assertEqual(self.collect(self.stock_paste_log(bad), 65)[0]["stockPasteDiagnostics"], [])
 
     def test_startup_deadline_receipt_is_bounded_and_cannot_authorize_source(self):
         method = "testE01CompletionDisplayAndInsertionUI"

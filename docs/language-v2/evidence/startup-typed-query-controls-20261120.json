@@ -1,0 +1,108 @@
+{
+  "schema_version": "1",
+  "kind": "local-startup-query-orchestration-controls",
+  "implementation_sha": "6591233759b8e80398b47f545168652b20017101",
+  "base_sha": "ddbab8fa4b313f8f9785c88344ebad72cf555d43",
+  "clean_before": true,
+  "clean_after": true,
+  "compiler": "Swift 6.3.3 on Windows",
+  "checks": [
+    {
+      "name": "compile",
+      "command": [
+        "swiftc",
+        "<owned>/startup-controls.swift",
+        "-o",
+        "<owned>/startup-controls.exe"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 6.141,
+      "stdout_sha256": "12220e1faaf39e674b0c2e68c7d26bff43fb5c5a39a28ea16e095077bc507b97"
+    },
+    {
+      "name": "controls",
+      "command": [
+        "<owned>/startup-controls.exe"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.125,
+      "stdout_sha256": "7f75ce079891253dad8e0b4788d26815704092649137172fb9b3974feff22f90"
+    },
+    {
+      "name": "parse",
+      "command": [
+        "swiftc",
+        "-frontend",
+        "-parse",
+        "ios/CherriUITests/CherriEditorUITests.swift"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.25,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "bytes": 49050,
+      "sha256": "c21f436318142ccced41030ea415539a13d1610c65b6dd3965b07c454a8fadce",
+      "changed_from_a8d4": true
+    },
+    {
+      "path": "ios/CherriUITests/EditorStartupDeadline.swift",
+      "bytes": 5972,
+      "sha256": "a263d9a1fc8dc8476ede4ab09f6096195fa1f1d14368830006a31c8fdfec92c3",
+      "changed_from_a8d4": false
+    },
+    {
+      "path": "ios/scripts/verify_editor_startup.swift",
+      "bytes": 15209,
+      "sha256": "ee2f19b19ac804830dd1812e61a14e59736c41b52c4b8f8895d6297ba34d5901",
+      "changed_from_a8d4": false
+    },
+    {
+      "path": "ios/CherriTests/CherriEditorInputTests.swift",
+      "bytes": 15443,
+      "sha256": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b",
+      "changed_from_a8d4": false
+    },
+    {
+      "path": ".github/workflows/ios-build.yml",
+      "bytes": 15774,
+      "sha256": "fa63589ca02e46bd1e80fb47b0ef184a1299e21b576826385f16160c61768d2d",
+      "changed_from_a8d4": false
+    }
+  ],
+  "local_controls_passed": 123,
+  "source_parse_passed": true,
+  "native_sdk_typecheck": "NOT_RUN",
+  "native_ui": "NOT_RUN",
+  "native_failure_baseline": {
+    "run_id": 44707326745,
+    "head_sha": "a8d4af3d2c708bec4cd3294e8a34dc12feb0ec38",
+    "passed": 45,
+    "failed": 11,
+    "source_line_126_categories": [
+      "SNAPSHOT_QUERY_FAILURE",
+      "SNAPSHOT_QUERY_FAILURE"
+    ],
+    "source_line_124_category": "UNCLASSIFIED"
+  },
+  "unchanged_budgets": {
+    "startup_seconds": 28,
+    "paste_seconds": 3
+  },
+  "declared_test_methods": 13,
+  "test_body_suffix_sha256": "1c225bcbcf13c8d66f1f6c26c3f60a17601881279ae32b53a675b13a92d6d2b3",
+  "production_go_actions_and_workflow_unchanged": true,
+  "acceptance_granted": false,
+  "scope": "Two exact typed query result arrays replace one broad OR result plus per-element type reads. The type comes from the query; original matched-control counts, duplicate/co-presence policy, element identity, one tap, real completed wait and decision deadline remain unchanged.",
+  "limits": [
+    "This removes the exact per-element type read at two observed native failure sites; it does not prove why those snapshots were unavailable.",
+    "Two typed queries still call real AX and may block or observe a transition. Their order is creation controls then editor; no atomic snapshot is claimed.",
+    "Pure Swift controls and parsing do not typecheck XCUI SDK APIs or establish simulator success.",
+    "Original failed run and fixed 28s/3s assertions remain required evidence."
+  ],
+  "prior_local_control_source_sha": "fd1aae3f28bb9139d5fe33661b65a66eb9e41937",
+  "reviewed_comment_only_followup": true
+}

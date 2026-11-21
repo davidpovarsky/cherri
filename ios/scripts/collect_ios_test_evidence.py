@@ -68,8 +68,8 @@ service_test_map = {
 }
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|DocumentationIndexTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
-FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|DocumentationIndexTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests|CherriPreviewLifecycleTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
 STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown", "completion-candidates"}
@@ -81,10 +81,12 @@ BOOL_FIELDS = {
 CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
 STARTUP_PREFIX = "[CHERRI_UI_STARTUP] "
+STARTUP_TIMING_PREFIX = "[CHERRI_UI_STARTUP_TIMING] "
 STARTUP_STAGES = {"window-wait", "document-wait", "document-check", "editor-wait"}
 STARTUP_BOOL_FIELDS = {"waitCompleted", "windowExists", "appRunningForeground",
                        "createDocumentExists", "createDocumentHittable", "editorExists", "editorHittable"}
 INPUT_PREFIX = "[CHERRI_INPUT_RECEIPT] "
+STOCK_PASTE_PREFIX = "[CHERRI_STOCK_PASTE_DIAGNOSTIC] "
 RUNTIME_PREFIX = "[CHERRI_NATIVE_RUNTIME_EVENT] "
 INPUT_FIXTURES = {"nested-call", "list", "dictionary", "curly-block", "block-comment", "single-character-paste"}
 INPUT_TEST_NAME = re.compile(r"^CherriEditorInputTests/test[A-Za-z0-9_]+$")
@@ -161,6 +163,53 @@ def safe_startup_receipt(line, active_test):
     return receipt
 
 
+def safe_startup_timing(line, active_test):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate timing key")
+            result[key] = value
+        return result
+    try:
+        raw = json.loads(line[len(STARTUP_TIMING_PREFIX):], object_pairs_hook=unique)
+    except (ValueError, TypeError):
+        return None
+    expected = {"schemaVersion", "testName", "budgetMilliseconds", "elapsedMilliseconds", "entries", "droppedEntries", "inFlightObservations"}
+    if (not isinstance(raw, dict) or set(raw) != expected or raw["schemaVersion"] != "1.0"
+            or not isinstance(active_test, str) or not TEST_NAME.fullmatch(active_test)
+            or raw["testName"] != active_test
+            or type(raw["budgetMilliseconds"]) is not int or raw["budgetMilliseconds"] != 28000
+            or type(raw["elapsedMilliseconds"]) is not int or not 0 <= raw["elapsedMilliseconds"] <= 120000
+            or type(raw["droppedEntries"]) is not int or not 0 <= raw["droppedEntries"] <= 10000
+            or type(raw["inFlightObservations"]) is not int or not 0 <= raw["inFlightObservations"] <= 128
+            or not isinstance(raw["entries"], list) or len(raw["entries"]) > 128):
+        return None
+    snapshots = {"foreground", "window", "known-controls", "create-exists", "create-hittable", "editor-exists", "editor-hittable", "foreground-final"}
+    operations = {"window-snapshot": snapshots, "document-snapshot": snapshots, "final-snapshot": snapshots,
+                  "window-wait": {"entered", "returned"}, "document-tap": {"entered", "returned"},
+                  "document-wait": snapshots | {"entered", "returned"},
+                  "editor-wait": snapshots | {"entered", "returned"}}
+    for index, entry in enumerate(raw["entries"]):
+        if (not isinstance(entry, dict) or set(entry) != {"sequence", "phase", "operation", "startedMilliseconds", "completedMilliseconds", "value", "mainThread"}
+                or type(entry["sequence"]) is not int or entry["sequence"] != index
+                or not isinstance(entry["phase"], str) or entry["phase"] not in operations
+                or not isinstance(entry["operation"], str) or entry["operation"] not in operations[entry["phase"]]
+                or type(entry["value"]) is not bool or type(entry["mainThread"]) is not bool
+                or type(entry["startedMilliseconds"]) is not int or type(entry["completedMilliseconds"]) is not int
+                or not 0 <= entry["startedMilliseconds"] <= entry["completedMilliseconds"] <= raw["elapsedMilliseconds"]):
+            return None
+        if entry["operation"] in {"entered", "returned"} and entry["startedMilliseconds"] != entry["completedMilliseconds"]:
+            return None
+    if raw["droppedEntries"] and len(raw["entries"]) != 128:
+        return None
+    # Overlap is observable: a blocked predicate can still be in flight when the
+    # waiter returns. Do not normalize such timing into an invented serial order.
+    # Only fixed control Boolean values and timing are retained. This diagnostic
+    # cannot supply source, satisfy a behavioral checkpoint, or grant acceptance.
+    return raw
+
+
 def safe_input_receipt(line, active_test):
     try:
         raw = json.loads(line[len(INPUT_PREFIX):])
@@ -173,7 +222,7 @@ def safe_input_receipt(line, active_test):
             or raw.get("fixtureId") not in INPUT_FIXTURES):
         return None
     paste = raw["fixtureId"] == "single-character-paste"
-    stages = {"before-paste", "after-paste-call", "after-paste-wait"} if paste else {"before-key", "after-key", "fixture-complete"}
+    stages = {"before-paste", "after-paste-call", "after-paste-wait", "paste-native-text-change", "paste-predicate-match"} if paste else {"before-key", "after-key", "fixture-complete"}
     if raw.get("stage") not in stages:
         return None
     if paste and (active_test != "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
@@ -187,6 +236,9 @@ def safe_input_receipt(line, active_test):
         if type(raw.get(key)) is not int or not 0 <= raw[key] <= 100000:
             return None
         receipt[key] = raw[key]
+    if paste and ((raw["stage"] == "paste-native-text-change" and not 1 <= raw.get("keyIndex", 0) <= 4)
+                  or (raw["stage"] == "paste-predicate-match" and raw.get("keyIndex") != 0)):
+        return None
     units = raw.get("inputUTF16")
     if not isinstance(units, list) or len(units) > 8 or any(type(unit) is not int or not 0 <= unit <= 65535 for unit in units):
         return None
@@ -201,6 +253,59 @@ def safe_input_receipt(line, active_test):
             receipt["actualSource"] = "[REDACTED_UNEXPECTED_CONTENT]"
         receipt.update({key: raw[key] for key in ("pasteElapsedMilliseconds", "viewIsFirstResponder", "windowAttached", "windowIsKey")})
     return receipt
+
+
+def safe_stock_paste_diagnostic(line, active_test):
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate stock paste key")
+            value[key] = item
+        return value
+    try:
+        if len(line) > 8192:
+            return None
+        raw = json.loads(line[len(STOCK_PASTE_PREFIX):], object_pairs_hook=unique)
+    except (ValueError, TypeError):
+        return None
+    target = "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
+    fixed = {"schemaVersion": "1.0", "testName": target,
+             "fixtureId": "stock-ui-text-view-after-code-view",
+             "ordering": "AFTER_ORIGINAL_CODEVIEW_ASSERTION", "scope": "DIAGNOSTIC_ONLY_WARM_PROCESS"}
+    booleans = {"isolatedSyntheticEditor", "viewIsFirstResponder", "windowAttached", "windowIsKey",
+                "syntheticClipboardVerified", "pasteIssued", "exactExpectedText"}
+    integers = {"budgetMilliseconds", "elapsedMilliseconds", "actualUTF16Length", "selectionLocation", "selectionLength"}
+    expected_keys = set(fixed) | booleans | integers | {"stage", "actualSource", "waitResult"}
+    if (active_test != target or not isinstance(raw, dict) or set(raw) != expected_keys
+            or any(raw.get(key) != value for key, value in fixed.items())
+            or any(type(raw.get(key)) is not bool for key in booleans)
+            or raw["isolatedSyntheticEditor"] is not True
+            or any(type(raw.get(key)) is not int for key in integers)
+            or raw["budgetMilliseconds"] != 3000 or not 0 <= raw["elapsedMilliseconds"] <= 120000
+            or not 0 <= raw["actualUTF16Length"] <= 100000
+            or not 0 <= raw["selectionLocation"] <= raw["actualUTF16Length"]
+            or not 0 <= raw["selectionLength"] <= raw["actualUTF16Length"] - raw["selectionLocation"]
+            or not isinstance(raw["stage"], str)
+            or raw["stage"] not in {"before-paste", "after-paste-call", "native-text-change", "after-paste-wait", "setup-failed"}):
+        return None
+    results = {"COMPLETED", "TIMED_OUT", "INCORRECT_ORDER", "INVERTED_FULFILLMENT", "INTERRUPTED", "UNKNOWN"}
+    if (not isinstance(raw["waitResult"], str)
+            or (raw["stage"] == "after-paste-wait" and raw["waitResult"] not in results)
+            or (raw["stage"] != "after-paste-wait" and raw["waitResult"] != "NOT_WAITED")
+            or raw["pasteIssued"] != (raw["stage"] not in {"before-paste", "setup-failed"})
+            or (raw["stage"] != "setup-failed" and raw["syntheticClipboardVerified"] is not True)):
+        return None
+    source = raw["actualSource"]
+    if not isinstance(source, str) or raw["exactExpectedText"] != (source == 'text("x"))'):
+        return None
+    allowed = {"", 'text("x")', 'text("x"))', 'text("x")))', 'text("x"))))'}
+    if source in allowed:
+        if raw["actualUTF16Length"] != len(source.encode("utf-16-le")) // 2:
+            return None
+    else:
+        raw["actualSource"] = "[REDACTED_UNEXPECTED_CONTENT]"
+    return raw
 
 
 def safe_runtime_event(line, active_test):
@@ -223,12 +328,37 @@ def safe_runtime_event(line, active_test):
     return record
 
 
+def failure_category(message):
+    """Retain only a fixed XCTest failure category, never the AX/error payload.
+
+    Match the immediate failure-message prefix, not arbitrary assertion text or
+    restored document content later in a log line. Unknown forms stay unknown.
+    This diagnostic has no role in deciding whether a test or run passed.
+    """
+    prefix = message.lstrip(" :")[:160]
+    patterns = (
+        (r"Failed to get matching snapshot(?:s)?\b", "SNAPSHOT_QUERY_FAILURE"),
+        (r"Failed to get attributes\b", "ATTRIBUTE_QUERY_FAILURE"),
+        (r"Multiple matching elements found\b", "AMBIGUOUS_ELEMENT"),
+        (r"No matches found for\b", "ELEMENT_NOT_FOUND"),
+        (r"Application is not running\b", "APPLICATION_NOT_RUNNING"),
+        (r"XCTAssert[A-Za-z0-9_]* failed\b", "ASSERTION_FAILURE"),
+    )
+    for pattern, category in patterns:
+        if re.match(pattern, prefix):
+            return category
+    return "UNCLASSIFIED"
+
+
 def bounded_log(raw_text):
     lines, receipts, failures = [], [], []
     case_events = 0
     input_events = 0
+    stock_paste_events = 0
+    original_paste_wait_observed = False
     runtime_events = 0
     startup_events = 0
+    startup_timed_tests = set()
     active_test = None
     documentation_events = 0
     documentation_ui_events = 0
@@ -236,6 +366,7 @@ def bounded_log(raw_text):
         line = raw_line.strip()
         if case := CASE_LINE.fullmatch(line):
             active_test = (case.group(1).split(".")[1] + "/" + case.group(2)) if case.group(3) == "started." else None
+            original_paste_wait_observed = False
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
@@ -270,6 +401,12 @@ def bounded_log(raw_text):
             if active_test in docs.TEST_IDS:
                 lines.append(docs.REJECTED_PREFIX + "UNSUPPORTED_TEST_BOUNDARY")
             active_test = None
+            original_paste_wait_observed = False
+        elif line.startswith(STARTUP_TIMING_PREFIX) and len(startup_timed_tests) < 16:
+            receipt = safe_startup_timing(line, active_test)
+            if receipt and active_test not in startup_timed_tests:
+                startup_timed_tests.add(active_test)
+                lines.append(STARTUP_TIMING_PREFIX + json.dumps(receipt, sort_keys=True))
         elif line.startswith(STARTUP_PREFIX) and startup_events < 64:
             receipt = safe_startup_receipt(line, active_test)
             if receipt:
@@ -280,13 +417,22 @@ def bounded_log(raw_text):
             if receipt:
                 input_events += 1
                 lines.append(INPUT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
+                if (receipt.get("fixtureId") == "single-character-paste"
+                        and receipt.get("stage") == "after-paste-wait"):
+                    original_paste_wait_observed = True
+        elif line.startswith(STOCK_PASTE_PREFIX) and stock_paste_events < 8 and original_paste_wait_observed:
+            receipt = safe_stock_paste_diagnostic(line, active_test)
+            if receipt:
+                stock_paste_events += 1
+                lines.append(STOCK_PASTE_PREFIX + json.dumps(receipt, sort_keys=True))
         elif line.startswith(RECEIPT_PREFIX) and len(receipts) < 64:
             receipt = safe_receipt(line)
             if receipt:
                 receipts.append(receipt)
                 lines.append(RECEIPT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
         elif (failure := FAILURE_LINE.search(line)):
-            record = {"testId": failure.group(1) + "/" + failure.group(3), "sourceLine": int(failure.group(2))}
+            record = {"testId": failure.group(1) + "/" + failure.group(3), "sourceLine": int(failure.group(2)),
+                      "failureCategory": failure_category(line[failure.end():])}
             if len(failures) < 64:
                 failures.append(record)
                 lines.append("[CHERRI_UI_FAILURE] " + json.dumps(record, sort_keys=True))
@@ -305,7 +451,8 @@ def bounded_log(raw_text):
 
 
 def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
-            documentation_index=None, documentation_manifest=None, documentation_receipt=None):
+            documentation_index=None, documentation_manifest=None, documentation_receipt=None,
+            diagnostic_only=False):
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValueError("evidence output already contains files; refusing to overwrite a prior run")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -352,6 +499,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
     passed_tests = {key for key, (status, _) in test_blocks.items() if status == "passed"}
     eligible_run = xcode_exit == 0 and bool(test_results) and all(entry["observedStatus"] == "passed" for entry in test_results)
 
+    acceptance_eligible = eligible_run and not diagnostic_only
     records = []
     for test_id, (reqs, assertions, required_checkpoint) in sorted(ui_test_map.items()):
         method = test_id.split("/")[1]
@@ -362,7 +510,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         test_passed = (test_status == "passed")
         checkpoint_verified = (required_checkpoint in test_body)
 
-        if eligible_run and test_passed and checkpoint_verified:
+        if acceptance_eligible and test_passed and checkpoint_verified:
             canonical_test_id = f"CherriUITests/{method}"
             records.append({
                 "evidence_id": f"ev-ios-ui-{method}",
@@ -386,7 +534,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
 
     for test_id, (reqs, assertions) in sorted(service_test_map.items()):
         method = test_id.split("/")[1]
-        if eligible_run and (test_id in passed_tests or f"CherriTests/{method}" in passed_tests):
+        if acceptance_eligible and (test_id in passed_tests or f"CherriTests/{method}" in passed_tests):
             safe_name = method
             records.append({
                 "evidence_id": f"ev-ios-service-{safe_name}",
@@ -441,6 +589,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
             for name, payload in documentation_files.items():
                 (output_dir / name).write_bytes(payload)
             docs.require(documentation_receipt is not None, "MISSING_GENERATION_RECEIPT")
+            docs.require(not diagnostic_only, "DIAGNOSTIC_ONLY_SCOPE")
             docs.require(eligible_run and run_id != "UNKNOWN", "RUN_NOT_ELIGIBLE")
             documentation_value = docs.receipt_from_log(log_text)
             docs.bind_receipt(documentation_value, index,
@@ -475,11 +624,14 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "schemaVersion": "1.0", "implementationSha": impl_sha, "runId": run_id,
         "xcodebuildExitCode": xcode_exit, "runStatus": run_status,
         "rawLogPresent": raw_present, "sanitizedLogSha256": log_sha,
+        "diagnosticOnly": diagnostic_only,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
         "documentationEvidence": documentation,
         "documentationUIStates": [json.loads(line[len(docs.UI_STATE_PREFIX):]) for line in log_text.splitlines() if line.startswith(docs.UI_STATE_PREFIX)],
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
+        "startupTimingTraces": [json.loads(line[len(STARTUP_TIMING_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_TIMING_PREFIX)],
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
+        "stockPasteDiagnostics": [json.loads(line[len(STOCK_PASTE_PREFIX):]) for line in log_text.splitlines() if line.startswith(STOCK_PASTE_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
         "privacy": {"rawLogsPublished": False, "screenshotsPublished": False,
                     "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},
@@ -508,6 +660,9 @@ if __name__ == "__main__":
     parser.add_argument("--documentation-index", type=Path)
     parser.add_argument("--documentation-manifest", type=Path)
     parser.add_argument("--documentation-receipt", type=Path)
+    parser.add_argument("--diagnostic-only", action="store_true",
+                        help="Retain actual outcomes without emitting any formal acceptance records")
     args = parser.parse_args()
     collect(args.log_path, args.output_dir, args.implementation_sha, args.run_id, args.exit_code_path,
-            args.documentation_index, args.documentation_manifest, args.documentation_receipt)
+            args.documentation_index, args.documentation_manifest, args.documentation_receipt,
+            diagnostic_only=args.diagnostic_only)

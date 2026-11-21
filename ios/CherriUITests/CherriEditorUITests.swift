@@ -13,23 +13,109 @@ final class CherriEditorUITests: XCTestCase {
     var app: XCUIApplication!
     private var syntheticSourceResetVerified = false
     private var expectedSyntheticSource: String?
+    private var startupObservationNonce: String?
+    private var startupObservationTestID: String?
+    private var startupObservationIssueCount = 0
+    private var observedStartupTrace: CherriEditorStartupTimingTrace?
 
     override func setUpWithError() throws {
         continueAfterFailure = false
         syntheticSourceResetVerified = false
         expectedSyntheticSource = nil
+        startupObservationNonce = nil
+        startupObservationTestID = nil
+        startupObservationIssueCount = 0
+        observedStartupTrace = nil
         app = XCUIApplication()
         app.launchArguments.append(contentsOf: [
             "--uitesting",
             "-AppleLanguages", "(en)",
             "-AppleKeyboards", "('en_US@hw=US;sw=QWERTY')"
         ])
+        configureStartupObservation()
+        recordStartupObservationSession("before-launch")
         app.launch()
+        recordStartupObservationSession("after-launch")
     }
 
     override func tearDownWithError() throws {
+        recordStartupObservationSession("teardown-start")
         recordEditorReceipt(stage: "teardown")
+        recordStartupObservationSession("teardown-finished")
         app = nil
+    }
+
+
+    /// Diagnostics are enabled only for these existing, fixed test identities.
+    /// They never query controls or contribute to a readiness decision.
+    private func configureStartupObservation() {
+        let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
+        let testID = "CherriEditorUITests/\(method)"
+        let selected = [
+            "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+            "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+            "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        ]
+        guard selected.contains(testID) else { return }
+        let nonce = UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
+        startupObservationNonce = nonce
+        startupObservationTestID = testID
+        app.launchEnvironment["CHERRI_STARTUP_OBSERVATION_NONCE"] = nonce
+        app.launchEnvironment["CHERRI_STARTUP_OBSERVATION_TEST"] = testID
+    }
+
+    private func recordStartupObservationSession(_ phase: String, readinessStartedAt: TimeInterval? = nil) {
+        guard let nonce = startupObservationNonce, let testID = startupObservationTestID else { return }
+        var row: [String: Any] = [
+            "schemaVersion": "1", "nonce": nonce, "testId": testID, "phase": phase,
+            "uptimeMs": Int((ProcessInfo.processInfo.systemUptime * 1_000).rounded(.down)),
+        ]
+        if let readinessStartedAt {
+            row["readinessStartedAtMs"] = Int((readinessStartedAt * 1_000).rounded(.down))
+        }
+        if let bytes = try? JSONSerialization.data(withJSONObject: row, options: [.sortedKeys]),
+           let json = String(data: bytes, encoding: .utf8) {
+            print("[CHERRI_UI_OBSERVATION_SESSION] \(json)")
+        }
+    }
+
+    override func record(_ issue: XCTIssue) {
+        if let nonce = startupObservationNonce, let testID = startupObservationTestID,
+           startupObservationIssueCount < 8 {
+            startupObservationIssueCount += 1
+            // The original trace is observed as-is, including an unfinished AX
+            // call. This does not retry the query or satisfy an expectation.
+            if let trace = observedStartupTrace { recordStartupTiming(trace) }
+            func bounded(_ text: String) -> [String: Any] {
+                let bytes = Data(text.utf8)
+                return ["base64": bytes.prefix(4_096).base64EncodedString(),
+                        "originalByteCount": bytes.count, "truncated": bytes.count > 4_096]
+            }
+            let error = issue.associatedError.map { $0 as NSError }
+            let location = issue.sourceCodeContext.location
+            let row: [String: Any] = [
+                "schemaVersion": "1", "nonce": nonce, "testId": testID,
+                "uptimeMs": Int((ProcessInfo.processInfo.systemUptime * 1_000).rounded(.down)),
+                "issueIndex": startupObservationIssueCount,
+                "issueType": String(describing: issue.type),
+                "sourceFile": location?.fileURL.lastPathComponent ?? "",
+                "sourceLine": location?.lineNumber ?? 0,
+                "errorPresent": error != nil,
+                "errorDomain": bounded(error?.domain ?? ""),
+                "errorCode": error?.code ?? 0,
+                "compact": bounded(issue.compactDescription),
+                "detailed": bounded(issue.detailedDescription ?? ""),
+                "errorDescription": bounded(error?.localizedDescription ?? ""),
+            ]
+            // Raw descriptions remain in the quarantined xcodebuild log.
+            // The collector publishes only fixed metadata and byte digests.
+            if let bytes = try? JSONSerialization.data(withJSONObject: row, options: [.sortedKeys]),
+               bytes.count <= 32_768, let json = String(data: bytes, encoding: .utf8) {
+                print("[CHERRI_UI_OBSERVATION_ISSUE_PRIVATE] \(json)")
+            }
+        }
+        super.record(issue)
     }
 
     private func waitForEditorValue(_ editor: XCUIElement, timeout: TimeInterval = 5,
@@ -90,29 +176,69 @@ final class CherriEditorUITests: XCTestCase {
         }
     }
 
-    /// Each fixed control is queried once. The receipt reuses these observations,
-    /// avoiding additional accessibility queries after a readiness wait expires.
-    private func observeStartupControls() -> CherriEditorStartupObservation {
-        let foreground = app.state == .runningForeground
+    private struct ObservedStartupControls {
+        let state: CherriEditorStartupObservation
+        let creationControl: XCUIElement?
+
+        func recheckingForeground(_ foreground: Bool) -> Self {
+            Self(state: state.recheckingForeground(foreground), creationControl: creationControl)
+        }
+    }
+
+    /// Resolve only the two fixed startup controls through their typed queries.
+    /// Typed queries avoid an additional elementType lookup for each result.
+    /// Keep the returned element identities; do not resolve absent controls or
+    /// rebind a creation candidate by its index in a later query.
+    private func observeStartupControls(trace: CherriEditorStartupTimingTrace,
+                                        phase: CherriEditorStartupTimingTrace.Phase) -> ObservedStartupControls {
+        let foreground = trace.measure(phase, .foreground) { app.state == .runningForeground }
         guard foreground else {
-            return CherriEditorStartupObservation(
+            return ObservedStartupControls(state: CherriEditorStartupObservation(
                 windowExists: false, appRunningForeground: false,
                 createDocumentExists: false, createDocumentHittable: false,
-                editorExists: false, editorHittable: false)
+                editorExists: false, editorHittable: false), creationControl: nil)
         }
-        let windowExists = app.windows.firstMatch.exists
-        let createDoc = app.buttons["Create Document"]
-        let createExists = createDoc.exists
-        let createHittable = createExists && createDoc.isHittable
-        // Check the editor after the creation control: an editor that appeared
-        // meanwhile must prevent a second document from being opened.
-        let editor = app.textViews["cherriCodeEditor"]
-        let editorExists = editor.exists
-        let editorHittable = editorExists && editor.isHittable
-        return CherriEditorStartupObservation(
-            windowExists: windowExists, appRunningForeground: app.state == .runningForeground,
-            createDocumentExists: createExists, createDocumentHittable: createHittable,
-            editorExists: editorExists, editorHittable: editorHittable)
+        let windowExists = trace.measure(phase, .window) { app.windows.firstMatch.exists }
+        var creationControls: [XCUIElement] = []
+        var editors: [XCUIElement] = []
+        if windowExists {
+            trace.measure(phase, .knownControls) {
+                creationControls = app.buttons.matching(NSPredicate(
+                    format: "identifier == %@ OR label == %@", "Create Document", "Create Document"))
+                    .allElementsBoundByAccessibilityElement
+                // Read the editor after creation controls so its absence is the
+                // latest observed existence state before considering a tap.
+                editors = app.textViews.matching(NSPredicate(
+                    format: "identifier == %@", "cherriCodeEditor"))
+                    .allElementsBoundByAccessibilityElement
+                return !creationControls.isEmpty || !editors.isEmpty
+            }
+        }
+        // Existence comes from those typed results, not another AX query.
+        trace.mark(phase, .createExists, value: !creationControls.isEmpty)
+        trace.mark(phase, .editorExists, value: !editors.isEmpty)
+        let observed = CherriEditorStartupObservation.matchedControls(
+            windowExists: windowExists, appRunningForeground: foreground,
+            createDocumentCount: creationControls.count, editorCount: editors.count,
+            createDocumentHittable: { trace.measure(phase, .createHittable) { creationControls[0].isHittable } },
+            editorHittable: { trace.measure(phase, .editorHittable) { editors[0].isHittable } })
+        let state = CherriEditorStartupObservation(
+            windowExists: observed.windowExists,
+            appRunningForeground: trace.measure(phase, .foregroundFinal) { app.state == .runningForeground },
+            createDocumentExists: observed.createDocumentExists,
+            createDocumentHittable: observed.createDocumentHittable,
+            editorExists: observed.editorExists, editorHittable: observed.editorHittable)
+        return ObservedStartupControls(state: state,
+            creationControl: state.createDocumentHittable && !state.editorExists ? creationControls.first : nil)
+    }
+
+    private func recordStartupTiming(_ trace: CherriEditorStartupTimingTrace) {
+        let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
+        if let data = trace.encoded(testName: "CherriEditorUITests/\(method)"), data.count <= 65_536,
+           let json = String(data: data, encoding: .utf8) {
+            print("[CHERRI_UI_STARTUP_TIMING] \(json)")
+        }
     }
 
     /// No source, document title, AX tree or screenshot is read before an empty reset.
@@ -142,52 +268,92 @@ final class CherriEditorUITests: XCTestCase {
     @discardableResult
     private func ensureEditorReady() -> XCUIElement {
         var deadline = CherriEditorStartupDeadline()
+        let trace = CherriEditorStartupTimingTrace(startedAt: deadline.diagnosticStartedAt)
+        observedStartupTrace = trace
+        recordStartupObservationSession("readiness-start", readinessStartedAt: deadline.diagnosticStartedAt)
         let window = app.windows.firstMatch
         let editor = app.textViews["cherriCodeEditor"]
+        trace.mark(.windowWait, .entered, value: true)
         let windowReady = window.waitForExistence(timeout: deadline.remaining(maximum: 10))
-        let windowState = observeStartupControls()
+        trace.mark(.windowWait, .returned, value: windowReady)
+        let windowControls = observeStartupControls(trace: trace, phase: .windowSnapshot)
+        let windowState = windowControls.state
         recordStartupReceipt(stage: "window-wait", waitCompleted: windowReady,
                              state: windowState, deadline: deadline)
         guard windowReady, windowState.windowExists, windowState.appRunningForeground,
               deadline.remaining() > 0 else {
+            recordStartupTiming(trace)
             XCTFail("Main application window must exist in the foreground within the startup budget")
             return editor
         }
 
         if !windowState.editorExists, deadline.remaining() > 0 {
             let createDoc = app.buttons["Create Document"]
+            var creationControls = windowControls
+            var creationAuthorized = true
             if deadline.needsDocumentWait(windowState) {
+                let observations = CherriEditorStartupWaitObservation<ObservedStartupControls>(phase: .document)
                 let controlReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                    self.app.state == .runningForeground &&
-                        (editor.exists || (createDoc.exists && createDoc.isHittable))
+                    let current = self.observeStartupControls(trace: trace, phase: .documentWait)
+                    return observations.record(current, state: current.state)
                 }, object: createDoc)
+                trace.mark(.documentWait, .entered, value: true)
                 let waitCompleted = XCTWaiter.wait(for: [controlReady],
                     timeout: deadline.remaining(maximum: 6)) == .completed
-                let creationState = observeStartupControls()
+                trace.mark(.documentWait, .returned, value: waitCompleted)
+                // The successful predicate already observed both controls and
+                // bound the exact creation element. Do not repeat its full AX
+                // query. A timed-out wait never authorizes a fallback tap.
+                if let completed = observations.takeCompleted(waitCompleted: waitCompleted) {
+                    creationControls = completed.recheckingForeground(
+                        trace.measure(.documentSnapshot, .foregroundFinal) { app.state == .runningForeground })
+                } else {
+                    creationAuthorized = false
+                    // Keep an actual failed-state diagnostic; it cannot authorize
+                    // creation, even if this later observation sees a button.
+                    creationControls = observeStartupControls(trace: trace, phase: .documentSnapshot)
+                }
                 recordStartupReceipt(stage: "document-wait", waitCompleted: waitCompleted,
-                                     state: creationState, deadline: deadline)
-                if deadline.claimDocumentCreation(creationState) { createDoc.tap() }
+                                     state: creationControls.state, deadline: deadline)
             } else {
-                // The initial live observation already found a ready button.
-                // Check current state before the one allowed tap; do not spend
-                // the remaining budget waiting again for that same control.
-                let creationState = observeStartupControls()
+                // This current filtered observation already proves a ready
+                // control and no editor. Do not repeat the negative query.
                 recordStartupReceipt(stage: "document-check", waitCompleted: false,
-                                     state: creationState, deadline: deadline)
-                if deadline.claimDocumentCreation(creationState) { createDoc.tap() }
+                                     state: creationControls.state, deadline: deadline)
+            }
+            if creationAuthorized, let create = creationControls.creationControl,
+               deadline.claimDocumentCreation(creationControls.state) {
+                trace.mark(.documentTap, .entered, value: true)
+                create.tap()
+                trace.mark(.documentTap, .returned, value: true)
             }
         }
 
         // The original total allowance is shared across transitions. Fast earlier
         // stages leave their unused time for the actual document-to-editor transition.
+        let observations = CherriEditorStartupWaitObservation<ObservedStartupControls>(phase: .editor)
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            self.app.state == .runningForeground && window.exists && editor.exists && editor.isHittable
+            let current = self.observeStartupControls(trace: trace, phase: .editorWait)
+            return observations.record(current, state: current.state)
         }, object: editor)
+        trace.mark(.editorWait, .entered, value: true)
         let waitCompleted = XCTWaiter.wait(for: [ready], timeout: deadline.remaining()) == .completed
-        let finalState = observeStartupControls()
-        let editorReady = deadline.accepts(finalState, waitCompleted: waitCompleted)
+        trace.mark(.editorWait, .returned, value: waitCompleted)
+        let completed = observations.takeCompleted(waitCompleted: waitCompleted)
+        let finalState: CherriEditorStartupObservation
+        if let completed {
+            finalState = completed.state.recheckingForeground(
+                trace.measure(.finalSnapshot, .foregroundFinal) { app.state == .runningForeground })
+        } else {
+            finalState = observeStartupControls(trace: trace, phase: .finalSnapshot).state
+        }
+        // Success requires the real completed wait, its own full successful
+        // observation, current foreground and the original decision-time limit.
+        // A later diagnostic snapshot can never replace the failed predicate.
+        let editorReady = deadline.accepts(finalState, waitCompleted: waitCompleted && completed != nil)
         recordStartupReceipt(stage: "editor-wait", waitCompleted: waitCompleted,
                              state: finalState, deadline: deadline)
+        recordStartupTiming(trace)
         XCTAssertTrue(editorReady, "cherriCodeEditor must exist and be interactive in the foreground within the startup budget")
         return editor
     }

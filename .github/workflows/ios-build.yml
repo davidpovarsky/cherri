@@ -11,6 +11,11 @@ on:
         required: false
         type: boolean
         default: false
+      startup_observation_only:
+        description: "Observe three original startup UI tests; publish no formal acceptance records"
+        required: false
+        type: boolean
+        default: false
       runner_label:
         description: "Standard runner for the full iOS build (same macOS 15 Xcode/SDK scope)"
         required: true
@@ -78,6 +83,13 @@ jobs:
 
       - name: Test bounded iOS evidence collector
         run: python3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v
+
+      - name: Verify bounded startup observation controls
+        run: |
+          python3 -m unittest discover -s ios/scripts -p 'test_capture_startup_observation.py' -v
+          swiftc -swift-version 5 ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift \
+            ios/scripts/verify_startup_lifecycle_observer.swift -o "$RUNNER_TEMP/cherri-startup-observer-controls"
+          "$RUNNER_TEMP/cherri-startup-observer-controls"
 
       - name: Verify bounded editor startup policy
         run: |
@@ -261,6 +273,8 @@ jobs:
           github_token: ${{ github.token }}
       - name: Run CherriCore in iOS Simulator
         working-directory: ios
+        env:
+          STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
         run: |
           if [ ! -d "CherriUITests" ]; then
             echo "CRITICAL: ios/CherriUITests target missing!" >&2
@@ -272,6 +286,16 @@ jobs:
             echo "No available iPhone Simulator was found." >&2
             xcrun simctl list devices available
             exit 1
+          fi
+
+          printf '%s\n' "$SIMULATOR_UDID" > .build/startup-observation-udid.txt
+          STARTUP_SELECTION=()
+          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ]; then
+            STARTUP_SELECTION=(
+              "-only-testing:CherriUITests/CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI"
+              "-only-testing:CherriUITests/CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+              "-only-testing:CherriUITests/CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"
+            )
           fi
 
           defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool NO
@@ -291,6 +315,7 @@ jobs:
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
             -derivedDataPath .build/tests \
             CODE_SIGNING_ALLOWED=NO \
+            "${STARTUP_SELECTION[@]}" \
             test > xcodetest.log 2>&1
           status=$?
           set -e
@@ -306,13 +331,42 @@ jobs:
         env:
           IOS_EVIDENCE_SHA: ${{ github.sha }}
           IOS_EVIDENCE_RUN_ID: ${{ github.run_id }}
+          STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
         run: |
+          DIAGNOSTIC_ARGS=()
+          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ]; then
+            DIAGNOSTIC_ARGS=(--diagnostic-only)
+          fi
           python3 scripts/collect_ios_test_evidence.py \
             xcodetest.log .build/test-evidence \
             "$IOS_EVIDENCE_SHA" "$IOS_EVIDENCE_RUN_ID" xcodetest.exitcode \
             --documentation-index CherriApp/Resources/Documentation/documentation-index.json \
             --documentation-manifest ../skills/cherri-shortcuts/compatibility-manifest.json \
-            --documentation-receipt .build/documentation-receipt.json
+            --documentation-receipt .build/documentation-receipt.json \
+            "${DIAGNOSTIC_ARGS[@]}"
+
+      - name: Capture owned startup lifecycle observations
+        id: startup_observation
+        if: always() && inputs.startup_observation_only == true
+        working-directory: ios
+        env:
+          IOS_EVIDENCE_SHA: ${{ github.sha }}
+          IOS_EVIDENCE_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 scripts/capture_startup_observation.py \
+            --repo .. --log xcodetest.log --udid-file .build/startup-observation-udid.txt \
+            --output .build/startup-observation-public \
+            --quarantine .build/startup-observation-private \
+            --source "$IOS_EVIDENCE_SHA" --run-id "$IOS_EVIDENCE_RUN_ID"
+
+      - name: Upload bounded startup lifecycle observations
+        if: always() && steps.startup_observation.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: startup-lifecycle-observation
+          path: ios/.build/startup-observation-public
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload iOS test evidence
         if: always() && steps.ios_evidence.outcome == 'success'

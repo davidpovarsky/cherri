@@ -8,6 +8,7 @@ struct CherriEditorView: View {
     let diagnostic: CompilationDiagnostic?
     var diagnostics: [CompilationDiagnostic] = []
     let actions: [CherriActionInfo]
+    var startupObservationID: String? = nil
 
     @Environment(\.colorScheme) private var colorScheme
     @State private var editPosition = CodeEditor.Position()
@@ -27,6 +28,7 @@ struct CherriEditorView: View {
     @State private var renameTargetPosition: (line: Int, column: Int)?
 
     var body: some View {
+        let _ = CherriStartupLifecycleObserver.shared?.record(.editorBody, documentID: startupObservationID)
         VStack(spacing: 0) {
             if !diagnostics.isEmpty {
                 diagnosticsBanner
@@ -86,6 +88,17 @@ struct CherriEditorView: View {
                 \.codeEditorTheme,
                 colorScheme == .dark ? Theme.defaultDark : Theme.defaultLight
             )
+            .background {
+                if CherriStartupLifecycleObserver.shared != nil {
+                    CherriStartupContainerWitness(documentID: startupObservationID)
+                        .frame(width: 0, height: 0)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+            }
+            .onAppear {
+                CherriStartupLifecycleObserver.shared?.record(.editorAppeared, documentID: startupObservationID)
+            }
 
             Divider()
             completionBar
