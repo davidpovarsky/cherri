@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-21T18:28:11.553619+00:00",
+  "mode": "MAIN_SESSION",
+  "sourceBefore": "6d5ba354fa12b885e6b4c7ff60b49f86faf6ece5",
+  "merges": [
+    {
+      "source": "f677944e4e71000e75a7f4b972a0b0f1a29e2929",
+      "merge": "ce34a3a04c57b21968e98d36e7acbc3a471b01af",
+      "output": "Merge made by the 'ort' strategy.\n p15_optional_presence_acceptance_test.go |  23 +++-\n p15_optional_transport_boundary_test.go  |   5 +-\n p15_output_signing_contract_test.go      |  17 ++-\n p15_output_signing_security_test.go      |   8 +-\n p15_paginate_result_oracle_test.go       | 194 +++++++++++++++++++++++++++++++\n p15_paginate_test.go                     |  15 ++-\n p15_platform_version_acceptance_test.go  |   5 +-\n p15_prompt_number_evidence_test.go       |   5 +-\n p15_raw_native_result_test.go            |   5 +-\n p15_raw_null_boundary_test.go            |   5 +-\n p15_registry_lifetime_test.go            |  12 +-\n p15_rp11_parameter_wire_test.go          |  25 ++--\n p15_schema_labels_recovery_test.go       |   5 +-\n p15_schema_optional_propagation_test.go  |   5 +-\n p15_scoped_blocks_test.go                |  24 ++--\n p15_semantic_typed_list_test.go          |  14 ++-\n 16 files changed, 317 insertions(+), 50 deletions(-)\n create mode 100644 p15_paginate_result_oracle_test.go"
+    },
+    {
+      "source": "ade15eea8437475be4f34062b1605d8090c7fa92",
+      "merge": "c31344aadd79c358fbab6137fe32989cc3b5c034",
+      "output": "Merge made by the 'ort' strategy.\n p15_legacy_inline_test.go                | 12 +++----\n p15_setter_mode_roundtrip_test.go        | 48 +++++++++++++++++++++-------\n p15_supplemental_local_contracts_test.go | 40 +++++++++++++++++------\n p15_types_acceptance_test.go             |  5 ++-\n p15_unary_number_literal_test.go         | 19 +++++++++--\n p15_variadic_migration_test.go           | 55 ++++++++++++++++++++++----------\n p15_variadic_required_test.go            |  2 +-\n p15_variadic_structure_test.go           | 42 +++++++++++++++++-------\n p15_vcard_tokenstring_test.go            | 29 ++++++++++-------\n 9 files changed, 181 insertions(+), 71 deletions(-)"
+    }
+  ],
+  "verifiedHistoricalExecutions": [
+    {
+      "path": "r5-root-remaining-oracles/focused-clean",
+      "source": "08e34e294fd06097529ddaf8aa06ba7123d6b975",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=15m",
+        "-run",
+        "^(TestP15(HybridNative.*|L02IndexBoundaryWire|L04.*|F02Loop.*|RP22Loop.*|RP33.*|Native.*|T03NumberString.*|N01.*|M02.*|V02.*|EmptyList.*|C04.*|Filter.*)|TestBackendRecovery12Loop.*)$",
+        "."
+      ],
+      "counts": {
+        "run": 769,
+        "pass": 769,
+        "fail": 0,
+        "skip": 0
+      },
+      "stdoutSHA256": "32b8d08ea0f85964d726904f2b7a1d2d8e985345f0eb06f42bd38e50c2157750",
+      "durationSeconds": 121.75
+    },
+    {
+      "path": "r5-root-boundary-oracles/focused-clean",
+      "source": "0e3a803718d9f40a61d32b64f12ea68a2fcae9f3",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=15m",
+        "-run",
+        "^(TestP15ComputedKeysResolveLazyNativeActions|TestP15JSONNullTextRemainsData|TestP15M02MainVoidBoundaryRejectsMalformedFinalActions|TestP15NativePlistEncodedNullCannotDisappear|TestP15OptionalTransportFailsPrecisely|TestP15OptionalTransportKeepsNarrowedAndDefaultValues|TestP15OptionalTransportKeepsPresentValues|TestP15PaginateAnalysisAndCompileRejectUnsupportedContracts|TestP15PaginateBothFrontendsProfilesAndTypedOutput|TestP15PaginateNativeMetadataAndPublicBoundary|TestP15PaginateResultOracleRejectsDetachedGraph|TestP15PaginateZeroBudgetsEmitNoRequest|TestP15PromptNumberDescriptorGuards|TestP15PromptNumberIndependentNativeContract|TestP15PromptNumberLiteralOutput|TestP15PromptNumberOrderedImport|TestP15PromptNumberService|TestP15PromptNumberUnprovedModesRemainUnknown|TestP15RP11NativeOracleRejectsFaults|TestP15RP11NativeParameterDifferential|TestP15RP11SemanticNumberAndContext|TestP15RP43EncodingFailureReturnsNoPartialBytes|TestP15RP43EncodingFaultProcessHelper|TestP15RP43LegacyEncodingFailurePreservesDestination|TestP15RP43LinuxOutputPermissions|TestP15RP43PublicOutputDestinations|TestP15RP43PublicSignerFailureBoundaries|TestP15RP43UnsignedAndAnalysisBoundaries|TestP15RawNativeJSONNullCannotDisappear|TestP15RawNativeResultBindings|TestP15RawNativeResultFinalizationRejectsIdentityCorruption|TestP15RawNativeResultReleaseRequiresAnEmittedConsumer|TestP15RawNativeResultTypedTraversalPreservesOpaqueValues|TestP15RegistryCustomOutputReferenceIsolation|TestP15RegistryRepeatedCompileIsolation|TestP15SchemaCanonicalLabels|TestP15SchemaCorrectedLabelNativeBindings|TestP15SchemaOptionalDeclarationPropagation|TestP15SemanticUnconsumedListRetainsTypedGraph|TestP15T05AuthoredNullRejected|TestP15T05PresenceBinding|TestP15T05PresenceNativeWire|TestP15T07CanonicalCatalogPropagation|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07MissingPlatformIsUnverified|TestP15T07PerPlatformVersionProduction|TestP15T07PlatformVersionSchemaIdentity|TestP15T07PlatformVersionService|TestP15_CollectTypedBodyHasSingleNativeProducer|TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator|TestP15_MeasureAndCollectReusableFixturesCompile|TestP15_MeasureFreezesCurrentDateBeforeStoppingTimer|TestP15_MeasureNestedSameLabelRunsBodyOnce|TestP15_MeasurePreservesOriginalDictionaryProducer|TestP15_MeasureRejectsUnprovenForms|TestP15_MeasureShadowedNativeStorageDoesNotOverwriteOuter|TestP15_MeasureWaitAndNativeControlResults)$",
+        "."
+      ],
+      "counts": {
+        "run": 429,
+        "pass": 427,
+        "fail": 0,
+        "skip": 2
+      },
+      "stdoutSHA256": "20cb21d6f8ac3a583c7c189004f71dfcc97cbb861037ad6664185cd37ada281a",
+      "durationSeconds": 243.359
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-green-retry1",
+      "source": "f677944e4e71000e75a7f4b972a0b0f1a29e2929",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=15m",
+        "-run",
+        "^(TestP15M02MainVoidBoundaryRejectsMalformedFinalActions|TestP15PaginateAnalysisAndCompileRejectUnsupportedContracts|TestP15PaginateBothFrontendsProfilesAndTypedOutput|TestP15PaginateNativeMetadataAndPublicBoundary|TestP15PaginateResultOracleRejectsDetachedGraph|TestP15PaginateZeroBudgetsEmitNoRequest)$",
+        "."
+      ],
+      "counts": {
+        "run": 21,
+        "pass": 21,
+        "fail": 0,
+        "skip": 0
+      },
+      "stdoutSHA256": "e8029338441fafa12060f2d4eb72fa32f2daf744e90118a694e6786c8f9e6c34",
+      "durationSeconds": 32.25
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-modes",
+      "source": "ade15eea8437475be4f34062b1605d8090c7fa92",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=15m",
+        "-run",
+        "^(TestP15C03CustomActionShadow|TestP15C03DynamicContactAndAppBoundary|TestP15C03ElementOrderAndReferences|TestP15C03EmptyIsNotAnEmptyItem|TestP15C03LegacyWireControl|TestP15C03ListTypeEvidence|TestP15C03LiteralOracleMutations|TestP15C03MigrationStructure|TestP15C03NamedListNativeStructure|TestP15C03NestedMigrationAndSourceIdentity|TestP15C03OriginalCLIParity|TestP15C03PackBoundaries|TestP15C03PackElementSnapshot|TestP15C03SingletonReferencesAndTemplates|TestP15C03TemplateMixturesFailClosed|TestP15CanonicalCallbackCausality|TestP15LegacyInlineArgumentBoundariesCLI|TestP15LegacyInlineCapturedNativeDefinition|TestP15LegacyInlineControlPlacement|TestP15LegacyInlineEarlierVariableSnapshot|TestP15LegacyInlineFunctionCLI|TestP15LegacyInlineOracleMutations|TestP15LegacyInlineTemplateSnapshot|TestP15LegacyInlineTypedCustomCLI|TestP15LegacyInlineWrittenProducers|TestP15M02MainVoidBoundaryRejectsMalformedFinalActions|TestP15MenusMigrationCLIParity|TestP15RP05LiteralPublicRoutes|TestP15RP09StaticVariantNativeDifferential|TestP15RP30HeaderAbsenceAndNameRoundTrip|TestP15RP32SevenTriggerMigrationAndNativeRoundTrip|TestP15RequiredVariadicPresence|TestP15SetterLegacyExplicitRemoveValue|TestP15SetterModeGraphRejectsCorruption|TestP15SetterModeSemanticRoundTrip|TestP15SetterNamedModeWordsRemainData|TestP15SetterShorthandMigration|TestP15T02LiteralRequiredProduction|TestP15UnaryIntegerOverflowRejected|TestP15UnaryNumberLiteralNative|TestP15UnaryQuantityLiteralNative|TestP15VCardLiteralBoundary|TestP15VCardTokenStringCapabilityMetadata|TestP15VCardTokenStringProduction)$",
+        "."
+      ],
+      "counts": {
+        "run": 401,
+        "pass": 401,
+        "fail": 0,
+        "skip": 0
+      },
+      "stdoutSHA256": "3dc845d6df0c44358072d1be2d3f2918e578a38601cce5becad5d1366a26cf4d",
+      "durationSeconds": 75.969
+    }
+  ],
+  "contractSHA256": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "originalArchiveSHA256": "6b33d2303f8082bc2e746c1c9b1c1bdee9181c589bd8e61f3efbbbf1c59b0712",
+  "files": [
+    {
+      "path": "r5-root-graph-oracles/edit-launcher.py",
+      "size": 7727,
+      "sha256": "c494357f2cc393b9b64ad0ceaa7124a1c31012be3de983e5bac86f4c1a3cbfa9"
+    },
+    {
+      "path": "r5-root-graph-oracles/focused-clean/launcher.py",
+      "size": 4585,
+      "sha256": "3d8a7e94ada7fa9b1f2a825568d87223c0290fde24af90731553f243f7105784"
+    },
+    {
+      "path": "r5-root-graph-oracles/focused-clean/started.json",
+      "size": 434,
+      "sha256": "53f23b34d645fbc9a99a9f66715114ee0eab1f425a00c2df29836c7f0da26435"
+    },
+    {
+      "path": "r5-root-graph-oracles/focused-clean/stdout.jsonl",
+      "size": 451882,
+      "sha256": "02d5069c938d1761ca9f221bd88dfedab89a563ed2c5ab5d655edac28632ef28"
+    },
+    {
+      "path": "r5-root-graph-oracles/focused-clean/summary.json",
+      "size": 2026,
+      "sha256": "2bfa313229c5a90a4bdd97774938246183800a43c00e68d8c51d6be03353fa69"
+    },
+    {
+      "path": "r5-root-graph-oracles/source.json",
+      "size": 507,
+      "sha256": "bed14e4be9b37a991503bfce5871f27a1ba6b7211341d2d3b5290ef6500d9198"
+    },
+    {
+      "path": "r5-root-remaining-oracles/edit-launcher.py",
+      "size": 13366,
+      "sha256": "28c74910352a864bdb41d7f7ff4a75766c7202493c09bfd7924402d4f3531481"
+    },
+    {
+      "path": "r5-root-remaining-oracles/focused-clean/launcher.py",
+      "size": 6099,
+      "sha256": "0560c5bacdd313136ea81f731d322ba8463ed82b837698243615f818e8c9fb02"
+    },
+    {
+      "path": "r5-root-remaining-oracles/focused-clean/started.json",
+      "size": 471,
+      "sha256": "ec6e7fba7fbad94f17f625347478440cddb9bb4986b85871a8ae57d630954234"
+    },
+    {
+      "path": "r5-root-remaining-oracles/focused-clean/stdout.jsonl",
+      "size": 783068,
+      "sha256": "32b8d08ea0f85964d726904f2b7a1d2d8e985345f0eb06f42bd38e50c2157750"
+    },
+    {
+      "path": "r5-root-remaining-oracles/focused-clean/summary.json",
+      "size": 823,
+      "sha256": "97f0517dffb51d25518e9769215710653dcd850236145591b1ed0e3db13b51e8"
+    },
+    {
+      "path": "r5-root-remaining-oracles/source.json",
+      "size": 862,
+      "sha256": "e9e12fcaf72097b854704b9d5fab41f3f30632496cfa13132187e2bdf7e70129"
+    },
+    {
+      "path": "r5-root-boundary-oracles/edit-launcher-retry1.py",
+      "size": 15632,
+      "sha256": "425cac33a9ee8161b8db49c41c5eb07e4aeaba09fa0dddb1c64f643ebb259242"
+    },
+    {
+      "path": "r5-root-boundary-oracles/edit-launcher.py",
+      "size": 15623,
+      "sha256": "5537ab9a2633667ae7b9f0b0970d4756df65b12daa189089f6ce29db76e84c4a"
+    },
+    {
+      "path": "r5-root-boundary-oracles/focused-clean/stderr.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r5-root-boundary-oracles/focused-clean/stdout.jsonl",
+      "size": 423498,
+      "sha256": "20cb21d6f8ac3a583c7c189004f71dfcc97cbb861037ad6664185cd37ada281a"
+    },
+    {
+      "path": "r5-root-boundary-oracles/focused-clean/submitted-script.py",
+      "size": 2713,
+      "sha256": "4e2ae90014c07b516626c3135bc936dece8c9ee6f1f81781a44bc67fe9752c19"
+    },
+    {
+      "path": "r5-root-boundary-oracles/focused-clean/summary.json",
+      "size": 6169,
+      "sha256": "5c8f405d2304b643cd8412b31d1bffc805111380103cb4af0ec6b4fa6dbcffef"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-controls/launcher.py",
+      "size": 3980,
+      "sha256": "ef0d2c46816ea2fd376b99c4250afb98e6e994f35861c8190bb0ca81a570dc62"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-controls/source.json",
+      "size": 169,
+      "sha256": "1f6e8a596cd9cd4897b534c97d7098338e906e162023a8bec16c0d1b0d15afad"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-green/submitted-script.py",
+      "size": 2773,
+      "sha256": "9c1c818a01c855743fb7f45aa975947dad7d7b17ed6fc0eb286e1fdc7cf1153c"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-green-retry1/stderr.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-green-retry1/stdout.jsonl",
+      "size": 64296,
+      "sha256": "e8029338441fafa12060f2d4eb72fa32f2daf744e90118a694e6786c8f9e6c34"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-green-retry1/submitted-script.py",
+      "size": 2774,
+      "sha256": "a04edf273eba6a370bde1df6f047bf60dfa87df85e698c34ee349e9d5ee44763"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-green-retry1/summary.json",
+      "size": 1493,
+      "sha256": "9af0e517168cd57d950907cc44c148ecbb2c2aaa785119c6d0a7c497ff16a28c"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-red/stderr.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-red/stdout.jsonl",
+      "size": 6660,
+      "sha256": "5064d83e6f24249a6f7a4ad949588617a79f0d4dec645c5fc2dc242aaf17a96b"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-red/submitted-script.py",
+      "size": 2782,
+      "sha256": "84a03f464aea68bee6d21dcdcebe40a5f9b3c9f9c3312d10338a10263233c5a0"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-red/summary.json",
+      "size": 1165,
+      "sha256": "8b038e7082ca2170b23cbebca2ea212a0ca1792a8ec0701848b2c1689d909fcd"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-repair/launcher.py",
+      "size": 9420,
+      "sha256": "9665f80c33e3b31f73f0b039cd250106e933f2b263c53f393453b0fdaa0fe1c4"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-input-peer-repair/source.json",
+      "size": 148,
+      "sha256": "57529df7a06e5ed21a929c3598fedaf0947872d6c5a811f364f1a3101df6a8fd"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-oracle-red/launcher.py",
+      "size": 5109,
+      "sha256": "2ab6f68cd2f1fc30e7ba489622c94b66affa87673398a18a3652ca3f1f0d51aa"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-oracle-red/stdout.jsonl",
+      "size": 5040,
+      "sha256": "c412f47e5d9a2e7e7580bfbd0f29b8f48a54733bc45f98524902812817c846e0"
+    },
+    {
+      "path": "r5-root-boundary-oracles/paginate-oracle-red/summary.json",
+      "size": 830,
+      "sha256": "66cd5a48d8b1fbe52e9647bffcd8dd05a467790789753c92bf496d76e89025c0"
+    },
+    {
+      "path": "r5-root-boundary-oracles/source.json",
+      "size": 939,
+      "sha256": "3b29a2eaaf4cca518118373c8f73cc21a5d2b371a8ca9352c30e3d282de023ed"
+    },
+    {
+      "path": "r5-root-final-oracles/edit-launcher.py",
+      "size": 223349,
+      "sha256": "5a7293632a2f4e6b64158f4f88317579cde5f13af83fd8e7477b105a37952acb"
+    },
+    {
+      "path": "r5-root-final-oracles/explicit-legacy-snapshot-and-literal-setter/launcher.py",
+      "size": 9420,
+      "sha256": "9665f80c33e3b31f73f0b039cd250106e933f2b263c53f393453b0fdaa0fe1c4"
+    },
+    {
+      "path": "r5-root-final-oracles/explicit-legacy-snapshot-and-literal-setter/previous-source.json",
+      "size": 642,
+      "sha256": "f7c9fb2f63242ec7fce348777ca31d56061d32d978ade2bfecd6fba2e64c5f07"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean/stderr.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean/stdout.jsonl",
+      "size": 2328,
+      "sha256": "94912950515e52493a370c711f65c07f01dc50bd380d15f19dc6685180f5069a"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean/submitted-script.py",
+      "size": 2708,
+      "sha256": "fc4b88393df63df198c77a5dde74ec6bea3c94523dac3b388dcb12b543d23505"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean/summary.json",
+      "size": 5010,
+      "sha256": "3dc4cf2ea1a1c813f05be0c69d38f39ce72665adad49c3d654ef2685c57f2cb3"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-callers/stderr.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-callers/stdout.jsonl",
+      "size": 356466,
+      "sha256": "bc35de11b68be6cc97b9cd993ae7cfb224278cb2591095354465695abadc7e63"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-callers/submitted-script.py",
+      "size": 2716,
+      "sha256": "7403190d414d920fcb19c1265d7aad7257c9c7819a5eb3f10b4edb7f810c569b"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-callers/summary.json",
+      "size": 5021,
+      "sha256": "256f3192e11b454e712e59a6e71dd3ea7a04d0c6b1f8ed2b59a8bb6c65d5f3bb"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-modes/stderr.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-modes/stdout.jsonl",
+      "size": 356048,
+      "sha256": "3dc845d6df0c44358072d1be2d3f2918e578a38601cce5becad5d1366a26cf4d"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-modes/submitted-script.py",
+      "size": 2714,
+      "sha256": "db39c29700e954d27efad78d3c73587df319304d7d5a8d78dc4f513ffed8fefd"
+    },
+    {
+      "path": "r5-root-final-oracles/focused-clean-modes/summary.json",
+      "size": 4265,
+      "sha256": "75b215c956d1af466f2b79d1d2433cb0ead81be6a60f6e608a240f409f6689b4"
+    },
+    {
+      "path": "r5-root-final-oracles/legacy-helper-call-repair/launcher.py",
+      "size": 3980,
+      "sha256": "ef0d2c46816ea2fd376b99c4250afb98e6e994f35861c8190bb0ca81a570dc62"
+    },
+    {
+      "path": "r5-root-final-oracles/legacy-helper-call-repair/previous-source.json",
+      "size": 578,
+      "sha256": "ef6a3f36b8eae5ee06d50de8a9b58b3490e57e62b98f36f94ef0d8d628c6ecef"
+    },
+    {
+      "path": "r5-root-final-oracles/named-setter-native-diagnostic/editEvent/receipt.json",
+      "size": 730,
+      "sha256": "1122ef58b941a4c42830fdafd55e25c938ef501f5391b549be3608bc6df1ccbf"
+    },
+    {
+      "path": "r5-root-final-oracles/named-setter-native-diagnostic/editReminder/receipt.json",
+      "size": 737,
+      "sha256": "395c6f063ba80ea32a9e41fe61d7e9c0a807d271711b411bd0ce118f7f55455b"
+    },
+    {
+      "path": "r5-root-final-oracles/named-setter-native-diagnostic/launcher.py",
+      "size": 2374,
+      "sha256": "61f792ac76a71802d6cc4cb441f4034e4b35d86c38215670cd59b78e14eb57e7"
+    },
+    {
+      "path": "r5-root-final-oracles/setup-launcher.py",
+      "size": 1038,
+      "sha256": "08bafb65c8c27e6b813fa85f8d8b31e5079519968402177f74c78e2cdaa4a440"
+    },
+    {
+      "path": "r5-root-final-oracles/source.json",
+      "size": 642,
+      "sha256": "8e4e50ea953302e2c84165e780ac5232405bb2e80677b212802476d16dd77d32"
+    }
+  ],
+  "newTestExecution": false,
+  "formalAcceptanceGranted": false
+}
