@@ -42,3 +42,24 @@ Retain the full bundle, signing key, seed, raw Asana responses and original prov
 The measured scope is fresh exact instances of six existing public patterns. Both Apple runtime and unseen-pattern provenance remain false. The Python report does not grant global acceptance; the formal runner can credit only the applicable evaluation tier after independent validation. Other179 requirements, final CI and release closure remain separate.
 
 Go shape fixtures are explicitly synthetic validator controls. They never produce actual model evidence. A complete actual positive measurement requires the root-authenticated originals and canonical revalidation described above.
+
+
+## Exact held-out scope and source witnesses
+
+The immutable AI01 clause requires a held-out equal-budget old/new evaluation
+harness with real measured results or explicit AI_EVAL_NOT_RUN. RP50 separately
+requires actual fake-adapter control flow and an authorized configured endpoint
+for actual models. This protocol holds out newly generated and sealed exact
+task instances before provider execution. Its six underlying task patterns are
+already public. It does not establish unseen-pattern provenance, model-training
+exclusion, broad generalization, or Apple execution; the canonical report must
+retain those explicit false scope flags. Measured task failures remain results
+with the original six-per-arm denominator.
+
+The fixed Go witness set also includes documentation_intake.go, which defines
+the digest-shape helper used by both the intake and immutable source reader,
+and verification_contract_test.go, which defines the actual RP50 report helper.
+These 38 relevant witnesses retain the shared 128-file, 4 MiB-per-file, 16 MiB
+aggregate and 15-second immutable-read limits. Exact clean Git identity still
+binds the whole checkout. This dependency correction is source-only until its
+own clean execution; it does not inherit a prior Python control result.
