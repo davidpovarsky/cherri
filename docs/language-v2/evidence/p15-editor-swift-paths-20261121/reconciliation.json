@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "tested_source": "254313031edf3cad9fd78d97c265eb06a21fd392",
+  "capture_tool_source": "d21d3bede6853c3034708c0032aae2a793e12671",
+  "scope": "Actual local Windows Go/Swift observations; macOS replay and editor ios-ui remain pending",
+  "go_steps": [
+    {
+      "name": "e05-mobile-process.json",
+      "passed_events": 20,
+      "raw_sha256": "af605c8cd15715fd9facf93b1da1480fc9ae80e9c0cb7ff898c20ecc9a04d034"
+    },
+    {
+      "name": "e06-lsp-process.json",
+      "passed_events": 33,
+      "raw_sha256": "2e8e8448a596261b47150787971ba5f53acb8e24836463cf5930a2bf7d371f5c"
+    },
+    {
+      "name": "e06-mobile-process.json",
+      "passed_events": 35,
+      "raw_sha256": "4a2471b5d66646db70bbdad6fb1ad71674b99de32342a2e59087fb72da53043b"
+    }
+  ],
+  "swift_steps": [
+    {
+      "id": "E05",
+      "controls": 26,
+      "compile_command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-parse-as-library",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261121\\swift-path-clean-25431303\\artifacts\\canonical-swift-paths\\editor-contract-e05-2606835722\\swift\\editor-publication-generated.swift",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\ios\\CherriApp\\Editor\\CherriCompletionRequest.swift",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\ios\\CherriApp\\Editor\\CherriEditorBuildRequest.swift",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261121\\swift-path-clean-25431303\\artifacts\\canonical-swift-paths\\editor-contract-e05-2606835722\\swift\\editor-publication-probe.exe"
+      ],
+      "execution_command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261121\\swift-path-clean-25431303\\artifacts\\canonical-swift-paths\\editor-contract-e05-2606835722\\swift\\editor-publication-probe.exe"
+      ],
+      "binary_sha256": "d566ba73b7a6fc0c9db13a1ac6424927f9c5279bb77d361c25ecf0f50440ca58"
+    },
+    {
+      "id": "E06",
+      "controls": 17,
+      "compile_command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-parse-as-library",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261121\\swift-path-clean-25431303\\artifacts\\canonical-swift-paths\\editor-contract-e06-2972598445\\swift\\position-generated.swift",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\ios\\CherriApp\\Editor\\CherriCompletionRequest.swift",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261121\\swift-path-clean-25431303\\artifacts\\canonical-swift-paths\\editor-contract-e06-2972598445\\swift\\position-probe.exe"
+      ],
+      "execution_command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-local-gates-integration-20261120\\dist\\p15-editor-evidence-20261121\\swift-path-clean-25431303\\artifacts\\canonical-swift-paths\\editor-contract-e06-2972598445\\swift\\position-probe.exe"
+      ],
+      "binary_sha256": "a773fef8258907a8c295707ddd3e742382b9fd4d99ddf59787054370bc4cbcc5"
+    }
+  ],
+  "ui_executed": false,
+  "formal_requirements_proved": [],
+  "source_files_verified": 107,
+  "results": {
+    "E05": {
+      "status": "PENDING_EXTERNAL",
+      "passed": false,
+      "executed_levels": [
+        "service"
+      ]
+    },
+    "E06": {
+      "status": "PENDING_EXTERNAL",
+      "passed": false,
+      "executed_levels": [
+        "protocol"
+      ]
+    }
+  },
+  "unchanged_swift_intake_sha256": "11365ad99ed4b763b6fc855fc1ac5926505fb7e4887f65333b3379db641dbc9b",
+  "immutable_contract_sha256": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "original_mac_log": {
+    "bytes": 5608167,
+    "sha256": "d0678188eff54024022ab0da333f5231ff6e12255ba8837574cc1f112fc9e457",
+    "run_id": 44938761076,
+    "job_id": 136951106592,
+    "excerpt_matches": 4,
+    "exact_swift_receipts_retained": false
+  }
+}
