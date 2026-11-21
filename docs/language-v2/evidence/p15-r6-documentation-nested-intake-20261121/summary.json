@@ -1,0 +1,205 @@
+{
+  "formatVersion": 1,
+  "observedAtUTC": "2026-11-21T19:17:01.971481+00:00",
+  "source": "a7d4f8eba56eedeeddd44627de9dde679447ae30",
+  "compilerSource": "c46902bbe6cf7d0d8a6f5acd2d776eb1f77c7262",
+  "docs": "56811d6bdf68238b8a213e38274d8ecad01abf70",
+  "actualGoExitCode": 0,
+  "actualGoElapsedSeconds": 338.9529999999995,
+  "namedPassed": 49,
+  "tamperControls": 48,
+  "nestedTamperControls": 18,
+  "outerTamperControls": 30,
+  "actualSelectedRequirements": {
+    "timestamp": "2026-11-21T19:13:40Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 2,
+    "passed_cases": 2,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG29",
+        "group": "gate",
+        "requirement": "Generated active docs and executable examples",
+        "test_level": "generation+docs+integration",
+        "executed_levels": [
+          "generation",
+          "docs",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP46",
+        "group": "repair",
+        "requirement": "Docs and Skill retrieval coherence",
+        "test_level": "docs+integration",
+        "executed_levels": [
+          "docs",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "nested": {
+    "RP46": {
+      "archiveSHA256": "a880381bee0a7e5b0127da3ce7cedee798e7ae57d9cec66dc15e96c92f9e5507",
+      "originalFiles": 971,
+      "tuple": {
+        "D": "56811d6bdf68238b8a213e38274d8ecad01abf70",
+        "K": "a7d4f8eba56eedeeddd44627de9dde679447ae30",
+        "S": "c46902bbe6cf7d0d8a6f5acd2d776eb1f77c7262"
+      },
+      "executionInterval": {
+        "finishedUTC": "2026-11-21T19:10:49.4203495Z",
+        "startedUTC": "2026-11-21T19:09:41.8105669Z"
+      },
+      "outerSeconds": 67.6097826,
+      "modes": [
+        "consumers"
+      ],
+      "reportSHA256": {
+        "consumers": "b903a7236669f755d199cad38fd1e103512135c2fa2d4da2e9510367459932b6"
+      }
+    },
+    "BRG29": {
+      "archiveSHA256": "81517b38e30ae5e58b88b13a24c7874b44922068ca7ae9a146f056201fe8935c",
+      "originalFiles": 991,
+      "tuple": {
+        "D": "56811d6bdf68238b8a213e38274d8ecad01abf70",
+        "K": "a7d4f8eba56eedeeddd44627de9dde679447ae30",
+        "S": "c46902bbe6cf7d0d8a6f5acd2d776eb1f77c7262"
+      },
+      "executionInterval": {
+        "finishedUTC": "2026-11-21T19:13:11.8987565Z",
+        "startedUTC": "2026-11-21T19:10:57.917297Z"
+      },
+      "outerSeconds": 133.9814595,
+      "modes": [
+        "consumers",
+        "generation"
+      ],
+      "reportSHA256": {
+        "consumers": "1dcb463722936a7a74874ac6c26cddc20e75832431584c1057e4e68b9c186da3",
+        "generation": "9bfc1191002e7cb65df463f49acd281239327584416cabb564606b32160a02c7"
+      }
+    }
+  },
+  "closureComplete": false,
+  "publicationVerified": false,
+  "nativeVerified": false,
+  "supersedesFormalIntakeClaim": "2af5f55345f89aa0019b1623b5052d88c3e605e6",
+  "originalAttemptPreserved": "docs/language-v2/evidence/p15-r6-documentation-recovery-20261121",
+  "launcherPostprocessFailure": "Original Go process exited 0 with clean source. Background job later exited 1 because the launcher decoded one chunk of a Go Output event as complete JSON. Read-only concatenation of original Output chunks recovered the exact emitted JSON; no production replay, source edit or raw change.",
+  "archive": {
+    "path": "original-evidence.zip",
+    "bytes": 1393659,
+    "sha256": "0646c392903fede12b18c89e7744b628cf987f70aee733b43cb84435e4360a43"
+  },
+  "files": [
+    {
+      "path": "actual/brg29/brg29-go.jsonl",
+      "bytes": 10239,
+      "sha256": "53563aa83b4e8871141078251ced5e818a423f2bdac0411acd6d2a97d1eeb353"
+    },
+    {
+      "path": "actual/brg29/brg29-nested.zip",
+      "bytes": 967922,
+      "sha256": "81517b38e30ae5e58b88b13a24c7874b44922068ca7ae9a146f056201fe8935c"
+    },
+    {
+      "path": "actual/brg29/brg29-process.json",
+      "bytes": 8888,
+      "sha256": "3ea3b82625666479ed0133f289f08d169071c3f0079445665946001677cf86e1"
+    },
+    {
+      "path": "actual/brg29/brg29-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual/derived-intake-receipt.json",
+      "bytes": 17605,
+      "sha256": "5d49b748f172cc0ffbeb8ce307d61bd51569a20b12c931afd515e117c5d207de"
+    },
+    {
+      "path": "actual/go.jsonl",
+      "bytes": 71842,
+      "sha256": "dd7d931b2f30ea73af186a9b5ecc1ebd62b6e032fc238c515e5bdd14a9fec072"
+    },
+    {
+      "path": "actual/launcher-report.json",
+      "bytes": 646,
+      "sha256": "9ea93794c54dd6ac743921c92d5da21fff76654da7ded731746997be8f1650ca"
+    },
+    {
+      "path": "actual/launcher.py",
+      "bytes": 2771,
+      "sha256": "c252d9fa65b2022dd13ac362b362519fdcddf02ed18256e655dd437c205bde8a"
+    },
+    {
+      "path": "actual/rp46/rp46-go.jsonl",
+      "bytes": 4904,
+      "sha256": "654d737ffd4b5cfaed6c0c60103273ea1747ca9dc17843f1c42b45812fd2936c"
+    },
+    {
+      "path": "actual/rp46/rp46-nested.zip",
+      "bytes": 915516,
+      "sha256": "a880381bee0a7e5b0127da3ce7cedee798e7ae57d9cec66dc15e96c92f9e5507"
+    },
+    {
+      "path": "actual/rp46/rp46-process.json",
+      "bytes": 8343,
+      "sha256": "ca4e836d2fb60b77637a0d88aaa6833b7db815f1630ad5e93c55756ba952baa3"
+    },
+    {
+      "path": "actual/rp46/rp46-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "inputs/10-capabilities.stdout",
+      "bytes": 26982,
+      "sha256": "01bf10f58fbb4e72b04c34a6c790a0572b109b0687a01bcd3f33e365b32de833"
+    },
+    {
+      "path": "inputs/exact-07-cherri-migrate-identity.stdout",
+      "bytes": 696,
+      "sha256": "4685c72d142c9fb148897dd8cb733bece1383bd74a29c4e95c897b37fc505e0a"
+    },
+    {
+      "path": "inputs/exact-07-compiler-identity.stdout",
+      "bytes": 3461,
+      "sha256": "d9430fe6e5375cdad986d54c1dc0bfce910439d67099573bb3f68c2974504505"
+    },
+    {
+      "path": "inputs/exact-build-report.json",
+      "bytes": 273,
+      "sha256": "3d92413c2f104c1c8d1dcc7808f705ce3f31dc9d611b9a5150156e6c52fe753f"
+    },
+    {
+      "path": "preflight/interval-go.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preflight/interval-go.stdout",
+      "bytes": 69,
+      "sha256": "92f42d09c79092e981d93460a50122cedee288874438df201c23d262a3608746"
+    }
+  ]
+}
