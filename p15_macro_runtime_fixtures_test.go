@@ -18,13 +18,13 @@ func p15ReadMacroRuntimeFixture(t *testing.T, name string) string {
 }
 
 func TestP15_MacroRuntimeFixturesUseCanonicalGuardsAndTimers(t *testing.T) {
-	require := p15MeasureActions(t, p15ReadMacroRuntimeFixture(t, "qa-require-v2"), BuildProfileDebug)
+	require := p15MacroExplicitOutputActions(t, p15ReadMacroRuntimeFixture(t, "qa-require-v2"), BuildProfileDebug)
 	// The native metadata distinguishes Get Type from Get File of Type.
 	// Using the latter can silently alter the value and invalidate a type guard.
 	if len(p15ActionsNamed(require, "gettypeaction")) != 0 || len(p15ActionsNamed(require, "getitemtype")) == 0 {
 		t.Fatal("require runtime fixture did not use canonical Get Type")
 	}
-	measure := p15MeasureActions(t, p15ReadMacroRuntimeFixture(t, "qa-measure-v2"), BuildProfileDebug)
+	measure := p15MacroExplicitOutputActions(t, p15ReadMacroRuntimeFixture(t, "qa-measure-v2"), BuildProfileDebug)
 	if len(p15ActionsNamed(measure, "gettimebetweendates")) != 3 {
 		t.Fatal("Debug fixture must retain two nested measurements plus its independent outer timing assertion")
 	}
@@ -37,7 +37,7 @@ func TestP15_MacroRuntimeFixturesUseCanonicalGuardsAndTimers(t *testing.T) {
 func TestP15_MeasureReleaseRuntimeFixtureRetainsEffectsAndValueProducers(t *testing.T) {
 	source := p15ReadMacroRuntimeFixture(t, "qa-measure-release-v2")
 	for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
-		actions := p15MeasureActions(t, source, profile)
+		actions := p15MacroExplicitOutputActions(t, source, profile)
 		if len(p15ActionsNamed(actions, "delay")) != 1 || len(p15ActionsNamed(actions, "dictionary")) != 1 {
 			t.Fatalf("%s lost or duplicated the single native body effect/value", profile)
 		}
