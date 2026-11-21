@@ -1,0 +1,206 @@
+// Self-contained safe RHS expression helpers; no separate function invocation or external state.
+let zero = number(0)
+let one = number(1)
+var flagFalse: Bool = zero == 1
+var flagTrue: Bool = one == 1
+let textLeft = text("abc")
+let textSame = text("abc")
+let textCase = text("ABC")
+let numberLeft = number(2)
+let numberRight = number(3)
+let textSameEqual = textLeft == textSame
+let textCaseEqual = textLeft == textCase
+let textSameNotEqual = textLeft != textSame
+let textCaseNotEqual = textLeft != textCase
+let numericEqual = numberLeft == numberRight
+let numericNotEqual = numberLeft != numberRight
+let numericLess = numberLeft < numberRight
+let numericLessEqual = numberLeft <= numberRight
+let numericGreater = numberLeft > numberRight
+let numericGreaterEqual = numberLeft >= numberRight
+let foldedCaseEqual = "abc" == "ABC"
+var calls = 0
+var order = ""
+var verdict = "P15_BRG13_LOCAL_OK"
+let andFF = flagFalse && (if flagFalse {
+    calls += 1
+    order = f"{order}|AND_FF"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|AND_FF"
+    yield false
+})
+let andFT = flagFalse && (if flagTrue {
+    calls += 1
+    order = f"{order}|AND_FT"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|AND_FT"
+    yield false
+})
+let andTF = flagTrue && (if flagFalse {
+    calls += 1
+    order = f"{order}|AND_TF"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|AND_TF"
+    yield false
+})
+let andTT = flagTrue && (if flagTrue {
+    calls += 1
+    order = f"{order}|AND_TT"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|AND_TT"
+    yield false
+})
+let orFF = flagFalse || (if flagFalse {
+    calls += 1
+    order = f"{order}|OR_FF"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|OR_FF"
+    yield false
+})
+let orFT = flagFalse || (if flagTrue {
+    calls += 1
+    order = f"{order}|OR_FT"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|OR_FT"
+    yield false
+})
+let orTF = flagTrue || (if flagFalse {
+    calls += 1
+    order = f"{order}|OR_TF"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|OR_TF"
+    yield false
+})
+let orTT = flagTrue || (if flagTrue {
+    calls += 1
+    order = f"{order}|OR_TT"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|OR_TT"
+    yield false
+})
+let mixedAnd = flagTrue && ((if flagTrue {
+    calls += 1
+    order = f"{order}|MIX_A"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|MIX_A"
+    yield false
+}) && ((if flagFalse {
+    calls += 1
+    order = f"{order}|MIX_B"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|MIX_B"
+    yield false
+}) || (if flagTrue {
+    calls += 1
+    order = f"{order}|MIX_C"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|MIX_C"
+    yield false
+})))
+let mixedOr = flagFalse || ((if flagFalse {
+    calls += 1
+    order = f"{order}|MIX_D"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|MIX_D"
+    yield false
+}) || ((if flagTrue {
+    calls += 1
+    order = f"{order}|MIX_E"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|MIX_E"
+    yield false
+}) && (if flagTrue {
+    calls += 1
+    order = f"{order}|MIX_F"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|MIX_F"
+    yield false
+})))
+let mixedSkip = (flagFalse && (if flagTrue {
+    calls += 1
+    order = f"{order}|SKIP_G"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|SKIP_G"
+    yield false
+})) || (flagTrue && (if flagFalse {
+    calls += 1
+    order = f"{order}|NEED_H"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|NEED_H"
+    yield false
+}))
+let mixedKeep = (flagTrue || (if flagFalse {
+    calls += 1
+    order = f"{order}|SKIP_I"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|SKIP_I"
+    yield false
+})) && (flagFalse || (if flagTrue {
+    calls += 1
+    order = f"{order}|NEED_J"
+    yield true
+} else {
+    calls += 1
+    order = f"{order}|NEED_J"
+    yield false
+}))
+if andFF != false { verdict = "FAIL_andFF" }
+if andFT != false { verdict = "FAIL_andFT" }
+if andTF != false { verdict = "FAIL_andTF" }
+if andTT != true { verdict = "FAIL_andTT" }
+if orFF != false { verdict = "FAIL_orFF" }
+if orFT != true { verdict = "FAIL_orFT" }
+if orTF != true { verdict = "FAIL_orTF" }
+if orTT != true { verdict = "FAIL_orTT" }
+if mixedAnd != true { verdict = "FAIL_mixedAnd" }
+if mixedOr != true { verdict = "FAIL_mixedOr" }
+if mixedSkip != false { verdict = "FAIL_mixedSkip" }
+if mixedKeep != true { verdict = "FAIL_mixedKeep" }
+if textSameEqual != true { verdict = "FAIL_textSameEqual" }
+if textCaseEqual != false { verdict = "FAIL_textCaseEqual" }
+if textSameNotEqual != false { verdict = "FAIL_textSameNotEqual" }
+if textCaseNotEqual != true { verdict = "FAIL_textCaseNotEqual" }
+if numericEqual != false { verdict = "FAIL_numericEqual" }
+if numericNotEqual != true { verdict = "FAIL_numericNotEqual" }
+if numericLess != true { verdict = "FAIL_numericLess" }
+if numericLessEqual != true { verdict = "FAIL_numericLessEqual" }
+if numericGreater != false { verdict = "FAIL_numericGreater" }
+if numericGreaterEqual != false { verdict = "FAIL_numericGreaterEqual" }
+if foldedCaseEqual != false { verdict = "FAIL_foldedCaseEqual" }
+if calls != 12 { verdict = "FAIL_CALLS" }
+if order != "|AND_TF|AND_TT|OR_FF|OR_FT|MIX_A|MIX_B|MIX_C|MIX_D|MIX_E|MIX_F|NEED_H|NEED_J" { verdict = "FAIL_ORDER" }
+return f"{verdict}:calls={calls}:order={order}"

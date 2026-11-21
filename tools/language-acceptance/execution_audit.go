@@ -342,6 +342,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = exhaustiveNodeScope
 		}
+		if scenario, found := shortCircuitScenarios[row.ID]; found {
+			row.TestNames = scenario.tests()
+			row.ProductionPath = append([]string{}, shortCircuitEvidence.SourcePaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = scenario.Scope
+		}
 		if scenario, found := captureOrderScenarios[row.ID]; found {
 			row.TestNames = scenario.tests()
 			row.ProductionPath = append([]string{}, captureOrderEvidence.SourcePaths...)

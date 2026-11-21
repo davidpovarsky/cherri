@@ -80,9 +80,12 @@ func runExactSourceProcess(root, source, id, prefix, directory string, command [
 	if err != nil {
 		return receipt, nil, err
 	}
-	var before, clean, stateErr = editorSourceState(root)
-	if stateErr != nil || !clean || before != source {
-		return receipt, nil, fmt.Errorf("editor source changed before process")
+	var before, clean, diagnostic, stateErr = editorSourceStateWithDiagnostic(root)
+	if stateErr != nil {
+		return receipt, nil, fmt.Errorf("editor source verification before process failed: %w", stateErr)
+	}
+	if !clean || before != source {
+		return receipt, nil, fmt.Errorf("editor source changed before process: expected_head=%s observed_head=%s clean=%t; %s", source, before, clean, diagnostic)
 	}
 	var ctx, cancel = context.WithTimeout(context.Background(), timeout)
 	defer cancel()
