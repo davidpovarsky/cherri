@@ -62,3 +62,9 @@ encrypt/decrypt control must reconcile a synthetic ZIP byte-for-byte using the
 dedicated certificate before dispatch. Local controls do not prove macOS
 runner behavior; the actual inventory result remains pending until the single
 authorized run is downloaded, decrypted and inspected.
+
+## Verified offline source stage — 21 November 2026
+
+Clean source 915d99bafd01097f43f6fb247f79f39452e5e327 passed all 14 controls on Windows with zero failures or skips. The actual dedicated-recipient OpenSSL encryption/decryption control returned the same synthetic ZIP bytes (SHA-256 a6615925d4191ddb9b9e5477f9198cda36ea060f76e1da3a64be9559bf59acb9). YAML syntax, two-file upload allowlist, five committed source bindings and clean pre/post state were verified. Combined bounded execution took 1.062 seconds. These are offline controls, not macOS inventory results.
+
+Eight byte-verified original members, including the full test stdout/stderr and synthetic encryption artifacts, are retained in evidence/xcode27-inventory-controls-915d99ba/originals.zip; ZIP SHA-256 acf7aba1b17c78bb76b0ef12c8bfe1175d670c8474a77ccf76bbf8c741b48a47. The private key is excluded. No Apple, compiler, Go or model call was performed.
