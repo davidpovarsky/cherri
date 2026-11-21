@@ -1,0 +1,186 @@
+{
+  "archive": {
+    "bytes": 18802,
+    "members": [
+      {
+        "bytes": 100,
+        "path": "worktree.stdout.bin",
+        "sha256": "e6e57524bccb9aecf02398293e915c6e6607e154b06cad4194456548560d33a7"
+      },
+      {
+        "bytes": 3739,
+        "path": "worktree.stderr.bin",
+        "sha256": "96bc54a74df17d4b2c60e4c8261312ffd9df1f5281577e8144acf2a2be851b47"
+      },
+      {
+        "bytes": 2917,
+        "path": "run_combined.py.txt",
+        "sha256": "5fbcea1325e11c64ca66866c2511cbbcb06c1aa381d34d1a856496fab4d55a6b"
+      },
+      {
+        "bytes": 771,
+        "path": "started.json",
+        "sha256": "0a54038078389cb8538bee708a9281a50f008de0ac922c7c69a02f10a029b71a"
+      },
+      {
+        "bytes": 9095,
+        "path": "inventory.json",
+        "sha256": "50ab2bdac85bdd98825f390a5a4d717d22add2dc58f13eb1fdea4d7b9a80056e"
+      },
+      {
+        "bytes": 123888,
+        "path": "test-events.jsonl",
+        "sha256": "993f8d13f04995d7115923b2b52c7ccc88b54aca1a12dec458beaf6989d30970"
+      },
+      {
+        "bytes": 9499,
+        "path": "result.json",
+        "sha256": "30a80d1bc347c64590e1bce5b3a58286dba53e992c2655f68ed674bf5dabdbc7"
+      },
+      {
+        "bytes": 213,
+        "path": "stdout.bin",
+        "sha256": "0fefe737861a72a85196b67d5f5eda3fc1e47b1bc048a2d7af2b69441c5bf593"
+      },
+      {
+        "bytes": 13531,
+        "path": "stderr.bin",
+        "sha256": "97d864b4861c9deb1f19334458b05251fddcaaa49b8c2de7a7dc741d55efb500"
+      },
+      {
+        "bytes": 1229,
+        "path": "process.json",
+        "sha256": "80ae7c15e072ea1b7dc16de87f45d3fbf69dbf3ddde37f01e314a94fff938ea2"
+      }
+    ],
+    "path": "originals.zip",
+    "sha256": "fed3bd3b4c7730767de80ae4cf134a2dbdbdbd3bbfb2d51e8b28d253b0fb8987"
+  },
+  "cases": {
+    "discovered": 74,
+    "errors": 0,
+    "existingPosixOnlySkips": 1,
+    "failures": 0,
+    "pass": 73,
+    "unstarted": 0
+  },
+  "formalAcceptanceGranted": false,
+  "fullSuitePassClaimed": false,
+  "groups": {
+    "test_nested_list_probe": 15,
+    "test_nested_list_runtime": 12,
+    "test_project_prerequisite": 8,
+    "test_terminal_receipts": 7,
+    "test_xcode_destination_readiness": 32
+  },
+  "nativeDestinationRepairVerified": false,
+  "prior6742ContraryFailureExplained": false,
+  "processBudgetSeconds": 600,
+  "processSeconds": 208.296,
+  "schemaVersion": "1.0",
+  "scope": "BOUNDED_APPLE_HARNESS_INTEGRATION_CHECK",
+  "singleProcessSelectedSuitePass": true,
+  "sourceCommit": "6b79f628c8c3b23cf3c0e8ed195e91a7a76f9eef",
+  "sourceFiles": [
+    {
+      "bytes": 10552,
+      "path": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "sha256": "a61d26e375b9aa39d02897a207b7d1f50860856f38cc1c040b98aa5759256770"
+    },
+    {
+      "bytes": 174093,
+      "path": "scripts/ios27_shortcuts_simulator_qa.sh",
+      "sha256": "de2f7265cc91cc171a924089cce957afbabc87eee66d0355b06ac5a50c0e8659"
+    },
+    {
+      "bytes": 15548,
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift",
+      "sha256": "1bbd251685887fea2657537cab0a797eba85ef5009e96772512dd69bb3db8d62"
+    },
+    {
+      "bytes": 3529,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-candidate-v2.cherri",
+      "sha256": "b13ca17d1eb425e0b54854c922df46fc50cbcf1aff491f988191c774d2760299"
+    },
+    {
+      "bytes": 1542,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-candidate-v2.expected.json",
+      "sha256": "5aa826dce959a4667a3f498a5b6c9fae4c91a3f71eeb6209c3772e405ff5c9a8"
+    },
+    {
+      "bytes": 2823,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-control-v2.cherri",
+      "sha256": "5452ff03c5c09f8fa7c9c511e988f398059ea5a901f00da63314cfeef7ede121"
+    },
+    {
+      "bytes": 1632,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-control-v2.expected.json",
+      "sha256": "c825bfff307008d032c08143de019a6125f825b138ed213c03ecae2e9c8f9feb"
+    },
+    {
+      "bytes": 32947,
+      "path": "tools/shortcuts-simulator-qa/nested_list_probe.py",
+      "sha256": "b21d24eecac940ab6decd9330015a49004ccdbbb7d21e5a3b42f1b15f878d925"
+    },
+    {
+      "bytes": 14611,
+      "path": "tools/shortcuts-simulator-qa/nested_list_runtime.py",
+      "sha256": "1d78bc44abbd62b14f7af4a3272270736f37eb3a2c86bc43fa37f0d0ea179d8a"
+    },
+    {
+      "bytes": 20671,
+      "path": "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+      "sha256": "145b769facc4892d51267de617a3e5d7ad347b5e58a99e85ee5724b16803f626"
+    },
+    {
+      "bytes": 4717,
+      "path": "tools/shortcuts-simulator-qa/project_prerequisite.py",
+      "sha256": "6c0bed088dc53e73af138221ce72a6faff0dfa0bc0279cc254ae622dd54bd843"
+    },
+    {
+      "bytes": 38502,
+      "path": "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
+      "sha256": "fd5c2c227a86479f20cfb315f6df6251a8d2a176eeb94c78f919ea28a3bcf188"
+    },
+    {
+      "bytes": 17002,
+      "path": "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
+      "sha256": "86b5585f67f7aff7e9d28dd85061f9f9df2b3f9c956c6a0dfa552273ba007a89"
+    },
+    {
+      "bytes": 11353,
+      "path": "tools/shortcuts-simulator-qa/test_nested_list_probe.py",
+      "sha256": "b602e775e9af59a47290da31f9ad96f0393a83ade0d5da124839d48dfbcace86"
+    },
+    {
+      "bytes": 17787,
+      "path": "tools/shortcuts-simulator-qa/test_nested_list_runtime.py",
+      "sha256": "ad1a9b791fe98b63d978e8138c6a748626011c25486d69c0a7de2a1feabf1815"
+    },
+    {
+      "bytes": 7129,
+      "path": "tools/shortcuts-simulator-qa/test_project_prerequisite.py",
+      "sha256": "cbbbe4c3b45a794b23f0285f86c3b0f1e84c0dca931310361a02df690e6ae079"
+    },
+    {
+      "bytes": 46562,
+      "path": "tools/shortcuts-simulator-qa/test_terminal_receipts.py",
+      "sha256": "2f56a910e5998778d536a4a1b409bbd55e30f8e2b4c95c572e67f5a77a964cf8"
+    },
+    {
+      "bytes": 37091,
+      "path": "tools/shortcuts-simulator-qa/test_xcode_destination_readiness.py",
+      "sha256": "d52c25603759f765985f216e653352ada06ad09025469674f09d40dfd1737fe4"
+    },
+    {
+      "bytes": 14324,
+      "path": "tools/shortcuts-simulator-qa/xcode_destination_diagnostic.py",
+      "sha256": "985161ed1cbfbb40192923b2af3747f9f1601c59758073452736dc7487179a89"
+    },
+    {
+      "bytes": 22091,
+      "path": "tools/shortcuts-simulator-qa/xcode_destination_readiness.py",
+      "sha256": "297a6a4acea3b1c2d6fca4e9083b70011acf60225eddd00dc3a82cf1ee82359a"
+    }
+  ]
+}
