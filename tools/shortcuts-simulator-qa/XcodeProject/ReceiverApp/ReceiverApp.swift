@@ -111,6 +111,8 @@ final class CallbackEventStore: ObservableObject {
         }
         if trimmed.hasPrefix("CHERRI_QA_") ||
            trimmed.hasPrefix("CHERRI_OPTIONAL_FORWARDING_DIAGNOSTIC_V1:") ||
+           trimmed.hasPrefix("CHERRI_NESTED_LIST_CONTROL_V1:") ||
+           trimmed.hasPrefix("CHERRI_NESTED_LIST_CANDIDATE_V1:") ||
            trimmed.hasPrefix("{\"schemaVersion\":\"1.4\"") ||
            trimmed.hasPrefix("{\"schemaVersion\":\"1.0\"") ||
            trimmed.hasPrefix("===CHERRI_QA_TRACE_NDJSON_V14===") ||
