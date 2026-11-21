@@ -1,0 +1,115 @@
+{
+  "schema_version": "1",
+  "kind": "BOUNDED_QA_ACQUISITION_LOCAL_PROOF",
+  "base_sha": "f05a6221b44582cb04bb085d254df9ff25cf64a8",
+  "implementation_commits": [
+    "3c433277442cc3407e189b35d8b9b8e462ec1ac5",
+    "6ca4493a8d2fac1cf0ba27675dd40c365d2f412a"
+  ],
+  "source_files": {
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": {
+      "bytes": 10093,
+      "sha256": "8bfac9b9c2460731167e5ae00ca03b490b7b9c9eebff6f1a1369451f5dc16503"
+    },
+    "scripts/ios27_shortcuts_simulator_qa.sh": {
+      "bytes": 172389,
+      "sha256": "43ab2e6761e92184d30600fd0c06b0985ff49cdeed9f4004e9b765782c8e128e"
+    },
+    "tools/shortcuts-simulator-qa/prepare_public_artifacts.py": {
+      "bytes": 19726,
+      "sha256": "66cd0aa24b12ddeb41025e86c19a3d9bf058ebd2db2f4b05c25a3a331bed45b3"
+    },
+    "tools/shortcuts-simulator-qa/simulator_session_recovery.py": {
+      "bytes": 17002,
+      "sha256": "86b5585f67f7aff7e9d28dd85061f9f9df2b3f9c956c6a0dfa552273ba007a89"
+    },
+    "tools/shortcuts-simulator-qa/qa_terminal_receipts.py": {
+      "bytes": 37849,
+      "sha256": "8dd151335b23de1005c74fa243b18092d0db427a9b75d999977c5a5993eac647"
+    },
+    "tools/shortcuts-simulator-qa/test_terminal_receipts.py": {
+      "bytes": 46562,
+      "sha256": "2f56a910e5998778d536a4a1b409bbd55e30f8e2b4c95c572e67f5a77a964cf8"
+    }
+  },
+  "local_clean_replay": {
+    "command": [
+      "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+      "-m",
+      "unittest",
+      "test_terminal_receipts",
+      "test_simulator_session_recovery",
+      "test_xcode_destination_readiness",
+      "test_public_artifacts",
+      "-v"
+    ],
+    "exit_code": 0,
+    "discovered": 98,
+    "passed": 94,
+    "skipped": 4,
+    "failed": 0,
+    "elapsed_seconds": 117.60899999999674,
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "65179bbb8f4199b38b38311eaaaab3f31d18ca33aaba41c482449237a028aed9",
+    "skipped_tests": [
+      "test_actual_mid_child_sigterm_keeps_partial_receipt_and_kills_descendant (test_terminal_receipts.AcquisitionTests.test_actual_mid_child_sigterm_keeps_partial_receipt_and_kills_descendant) ... skipped 'actual SIGTERM/process-group control requires POSIX'",
+      "test_actual_shell_wrapper_passes_identity_and_propagates_failure (test_simulator_session_recovery.RealProcessTimeoutTests.test_actual_shell_wrapper_passes_identity_and_propagates_failure) ... skipped 'actual bash wrapper control runs on POSIX'",
+      "test_actual_timeout_kills_descendant_before_delayed_write (test_simulator_session_recovery.RealProcessTimeoutTests.test_actual_timeout_kills_descendant_before_delayed_write) ... skipped 'POSIX process groups are the macOS runtime path'",
+      "test_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation (test_xcode_destination_readiness.RealProcessAndShellTests.test_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation) ... skipped 'actual shell route requires POSIX'"
+    ]
+  },
+  "precommit_replay": {
+    "discovered": 98,
+    "passed": 94,
+    "skipped": 4,
+    "failed": 0,
+    "elapsed_seconds": 113.35899999999674,
+    "stderr_sha256": "1e0d451825febb95ad5ac6843f2b84c6333851eb3b221c6f07f5d3c364613f1c"
+  },
+  "retained_red_originals": [
+    {
+      "stage": "retention-red",
+      "path": "retention-red/stderr.log",
+      "bytes": 2412,
+      "sha256": "055fbf96b43d875087fca00eaf54cf57848d29358a8ea934f3582725466804ef"
+    },
+    {
+      "stage": "peer-identity-red",
+      "path": "peer-identity-red/stderr.log",
+      "bytes": 10838,
+      "sha256": "6baa0c52f8d96ae33482e48aaa892a630cdb6129006c26be28deb200ad9f409c"
+    }
+  ],
+  "peer_review": {
+    "scope": "Read-only source/diff review; no execution claimed",
+    "followup_diff_sha256": "e3812e82485906de11bb4cc86d10b2b560213803ae9faad4724664c747d56489",
+    "result": "No remaining concrete regression in the bounded reviewed delta"
+  },
+  "unchanged_budgets": {
+    "test02_phase_seconds": 900,
+    "per_inspection_max_seconds": 20,
+    "workflow_job_minutes": 45
+  },
+  "native_component_execution": "NOT_RUN",
+  "formal_acceptance_granted": false,
+  "runtime_acceptance_granted": false,
+  "signing_acceptance_granted": false,
+  "original_file_run": {
+    "run_id": 44734439652,
+    "job_id": 136282159818,
+    "source": "e4b648d4d30dae265e02a5be325e167c81934231",
+    "conclusion": "cancelled",
+    "artifact_count": 0,
+    "original_log_bytes": 140789,
+    "original_log_sha256": "169d70659cbc9920e9de949f7427791ae89c526d653e295179a3d601780bcf7f",
+    "terminal_marker": "Phase4b-confirm before GitHub cancellation; publisher SUMMARY_MISSING",
+    "body_semantics_verified": false
+  },
+  "scope_limits": [
+    "Private originals remain quarantined; no raw payload is included in this proof.",
+    "Existing signing provenance is independent and unchanged.",
+    "A source-bound macOS replay is still required; four POSIX controls were not executed on this Windows host."
+  ]
+}

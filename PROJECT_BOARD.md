@@ -199,3 +199,14 @@ Actual WorkflowKit observation explained literal U+FFFC loss. Clean da0ba0e5 pas
 - Original causal failures, corrected fixture expectations and Windows NOT_RUN evidence remain unchanged. The registration-only push is not counted as execution.
 - Final integrated179, required CI, Apple/native signing and coherent consumer publication remain open. No related-ID inheritance or manifest/pin change.
 - Proof: docs/language-v2/p15-output-signing-linux-20261120.md, with the original Linux archive and source/member manifests alongside it.
+
+
+## P15 bounded post-test acquisition (2026-11-20)
+
+The QA collector now anchors its three post-test02 metadata queries to the original 900-second phase, retains separate original stdout/stderr with strict hashes, and preserves private build evidence required by existing validators. Source/run/fixture checkpoints and incomplete terminal receipts cannot create callback/trace or import/runtime success; completed summaries win exclusive atomic writes. Publication keeps the existing explicit text allowlist and quarantines all raw originals. Actual Windows replay: 89 discovered controls, 85 passes, four POSIX-only skips, zero failures; source/checkpoint, deadline, corruption, cancellation and late-finalizer controls are retained. Native process-group and Simulator replay remain pending. The original Optional c0 and File e4 job-limit cancellations remain unchanged, and no formal requirement is closed by this local repair.
+
+## 2026-11-20 — Apple QA terminal evidence identity follow-up
+
+- Preserved the peer-review RED: four actual controls exposed 11 stale assertion/summary and publisher-continuation failures at 3c433277442cc3407e189b35d8b9b8e462ec1ac5.
+- Bind existing assertion source/run/fixture/profile/unsigned bytes and invocation nonce, including exclusive-write races and summary early returns. Persist the actual emitter nonce once so the existing storage reader transition remains explicit. Stop publication if finalization rejects identity.
+- Actual combined Windows replay: 98 discovered, 94 PASS, 4 explicitly POSIX-only skips, no failures (113.359 seconds). Original 900-second phase, 45-minute job, callback/trace/value oracles, and private raw originals are preserved. Peer review found no remaining concrete regression in the bounded delta. Clean-source replay and actual macOS execution are separate gates; no runtime or 179 completion granted.

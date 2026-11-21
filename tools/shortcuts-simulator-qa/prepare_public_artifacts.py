@@ -23,6 +23,7 @@ ALLOWED = {
     "runtime/json-body-diagnostic.json",
     "runtime/debug-label-acceptance.json", "editor/debug-label-preview.json",
     "runtime/xcode-destination-readiness.json",
+    "runtime/post-test-inspection.json", "runtime/terminal-acquisition.json",
     "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
     "editor/editor-foreground-recovery.json",
@@ -99,7 +100,7 @@ def trusted_fixture_sources(fixtures):
     return trusted
 
 
-def verify_synthetic_manifest(root, trusted_sources):
+def verify_synthetic_sources(root, trusted_sources):
     manifest_path = root / "compiler-manifest.json"
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -119,6 +120,10 @@ def verify_synthetic_manifest(root, trusted_sources):
             raise PublicationBlocked("FIXTURE_SOURCE_HASH_MISMATCH")
         if fixture["fixtureId"] != PurePosixPath(file_name).stem:
             raise PublicationBlocked("FIXTURE_SOURCE_ID_MISMATCH")
+
+
+def verify_synthetic_manifest(root, trusted_sources):
+    verify_synthetic_sources(root, trusted_sources)
     summary_path = root / "summary.json"
     try:
         summary = json.loads(summary_path.read_text(encoding="utf-8"))
@@ -156,6 +161,60 @@ def structured_privacy_failure(value):
         elif isinstance(item, list):
             pending.extend(item)
     return None
+
+
+def scan_public_privacy(root, raw_udid="", custom_server=""):
+    """Scan only the existing explicit publication candidates.
+
+    Raw originals remain available under the same root for strict receipt
+    validation. They are quarantined by stage(), never treated as sanitized
+    content. This function does not approve source, receipts or publication.
+    """
+    root = Path(root)
+    violations = []
+    for path in sorted(root.rglob("*")):
+        rel = path.relative_to(root)
+        name = rel.as_posix()
+        if path.is_symlink():
+            violations.append({"path": safe_path(rel), "reason": "SYMLINK_NOT_ALLOWED"})
+            continue
+        if not path.is_file():
+            continue
+        raw = any(p.suffix.lower() in RAW_SUFFIXES
+                  for p in [path] + list(rel.parents))
+        if raw or name not in ALLOWED:
+            continue
+        if path.stat().st_size > 10 * 1024 * 1024:
+            violations.append({"path": safe_path(rel), "reason": "TEXT_SIZE_LIMIT"})
+            continue
+        data = path.read_bytes()
+        if data.startswith(MAGIC):
+            # Identical classifier to stage(): disguised raster/archive bytes
+            # are quarantined, not admitted as public text.
+            continue
+        reason = None
+        try:
+            text = data.decode("utf-8")
+            if "\x00" in text:
+                raise ValueError("binary")
+            values = ([public_json(text)] if name.endswith(".json") else
+                      [public_json(line) for line in text.splitlines() if line.strip()]
+                      if name.endswith(".jsonl") else [])
+            reason = next((failure for value in values
+                           if (failure := structured_privacy_failure(value))), None)
+            if not reason and CANARY.search(text):
+                reason = "SECRET_OR_PRIVATE_CANARY"
+            observed_text = text + "\n" + "\n".join(json.dumps(v, ensure_ascii=False) for v in values)
+            if not reason and raw_udid and len(raw_udid) >= 36 and raw_udid.lower() in observed_text.lower():
+                reason = "UNMASKED_DEVICE_ID"
+            if (not reason and custom_server and "sign.shortcuty.app" not in custom_server
+                    and custom_server in observed_text):
+                reason = "CUSTOM_SIGNING_URL"
+        except (UnicodeError, ValueError):
+            reason = "INVALID_TEXT_OR_STRUCTURED_DATA"
+        if reason:
+            violations.append({"path": safe_path(rel), "reason": reason})
+    return {"passed": not violations, "violations": violations}
 
 
 def stage(root, output, trusted_sources):
@@ -228,6 +287,18 @@ def stage(root, output, trusted_sources):
                                          assertions["targetFixtureId"])
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_SESSION_DIAGNOSTIC"})
+                        continue
+                if name in ("runtime/post-test-inspection.json", "runtime/terminal-acquisition.json"):
+                    from qa_terminal_receipts import context, validate_inspection, validate_terminal
+                    try:
+                        compiler = public_json((root / "compiler-manifest.json").read_text(encoding="utf-8"))
+                        assertions = public_json((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
+                        expected = context(root, compiler["compilerCommitSha"], root.name,
+                                           assertions["targetFixtureId"])
+                        (validate_inspection if name == "runtime/post-test-inspection.json" else
+                         validate_terminal)(parsed, root, expected)
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_ACQUISITION_RECEIPT"})
                         continue
                 if name == "runtime/xcode-destination-readiness.json":
                     from xcode_destination_readiness import validate_receipt
