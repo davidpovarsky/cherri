@@ -180,6 +180,13 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Install QA Python test dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cherri-simulator-qa-python"
+          "$RUNNER_TEMP/cherri-simulator-qa-python/bin/python" -m pip install --disable-pip-version-check \
+            -r tools/shortcuts-simulator-qa/requirements-test.txt
+          echo "$RUNNER_TEMP/cherri-simulator-qa-python/bin" >> "$GITHUB_PATH"
+
       - name: Verify Swift evidence serialization contracts
         run: bash tools/shortcuts-simulator-qa/verify_foundation_contracts.sh
 
