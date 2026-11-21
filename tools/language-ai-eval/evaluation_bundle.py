@@ -86,15 +86,20 @@ def read_regular(path, limit=4 * 1024 * 1024):
     require(stat.S_ISREG(before.st_mode) and not path.is_symlink() and not getattr(path, "is_junction", lambda: False)(), "INPUT_NOT_REGULAR")
     require(all(not p.is_symlink() and not getattr(p, "is_junction", lambda: False)() for p in path.parents), "INPUT_PARENT_SYMLINK")
     require(before.st_size <= limit, "INPUT_SIZE_LIMIT")
-    identity = lambda value: (value.st_dev, value.st_ino, value.st_mode, value.st_size,
-                              value.st_mtime_ns, value.st_ctime_ns)
+    # Python 3.12 on Windows exposes creation time through path.lstat().ctime
+    # but change time through fstat().ctime. Compare that field within each
+    # API, never between those distinct meanings. Device/inode/type/size/mtime
+    # still bind the path and opened handle exactly before and after the read.
+    identity = lambda value: (value.st_dev, value.st_ino, value.st_mode, value.st_size, value.st_mtime_ns)
     with path.open("rb") as stream:
         opened = os.fstat(stream.fileno())
         require(stat.S_ISREG(opened.st_mode) and identity(opened) == identity(before), "INPUT_CHANGED_DURING_READ")
         raw = stream.read(limit + 1)
         after = os.fstat(stream.fileno())
     require(len(raw) <= limit, "INPUT_SIZE_LIMIT")
-    require(identity(after) == identity(before) == identity(path.lstat()) and len(raw) == before.st_size,
+    path_after = path.lstat()
+    require(identity(after) == identity(before) == identity(path_after) and len(raw) == before.st_size
+            and before.st_ctime_ns == path_after.st_ctime_ns and opened.st_ctime_ns == after.st_ctime_ns,
             "INPUT_CHANGED_DURING_READ")
     require(not getattr(path, "is_junction", lambda: False)() and all(
             not p.is_symlink() and not getattr(p, "is_junction", lambda: False)() for p in path.parents), "INPUT_PARENT_SYMLINK")

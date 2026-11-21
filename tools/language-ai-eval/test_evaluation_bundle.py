@@ -3,6 +3,7 @@ import copy
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -25,7 +26,7 @@ class ProvenanceControls(unittest.TestCase):
         (self.root / "signature.bin").write_bytes(b"s"*64)
 
     def test_generator_is_reproducible_and_retains_original_six_contracts(self):
-        original = json.loads(Path(eb.__file__).with_name("tasks.json").read_text())
+        original = json.loads(Path(eb.__file__).with_name("tasks.json").read_text(encoding="utf-8"))
         first = eb.generate_suite(bytes(range(32)))
         self.assertEqual(first, eb.generate_suite(bytes(range(32))))
         second = eb.generate_suite(bytes(reversed(range(32))))
@@ -151,6 +152,33 @@ class ProvenanceControls(unittest.TestCase):
             with self.assertRaisesRegex(eb.BundleError, "INPUT_SIZE_LIMIT"):
                 eb.read_regular(actual, 8)
         self.assertEqual(reads, [9])
+
+    def test_handle_and_path_time_semantics_do_not_confuse_file_identity(self):
+        actual = self.root / "ctime-control.json"
+        actual.write_bytes(b"{}")
+        real_fstat = eb.os.fstat
+        def handle_stat(fd):
+            observed = real_fstat(fd)
+            fields = {key: getattr(observed, key) for key in (
+                "st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")}
+            fields["st_ctime_ns"] += 100
+            return SimpleNamespace(**fields)
+        with mock.patch.object(eb.os, "fstat", side_effect=handle_stat):
+            self.assertEqual(eb.read_regular(actual, 8), b"{}")
+
+    def test_replaced_path_is_rejected_before_reading_its_bytes(self):
+        actual = self.root / "before.json"
+        changed = self.root / "replacement.json"
+        actual.write_bytes(b"{}")
+        changed.write_bytes(b"[]")
+        real_open = Path.open
+        def opened(path, *args, **kwargs):
+            if path == actual and args == ("rb",):
+                changed.replace(actual)
+            return real_open(path, *args, **kwargs)
+        with mock.patch.object(Path, "open", opened):
+            with self.assertRaisesRegex(eb.BundleError, "INPUT_CHANGED_DURING_READ"):
+                eb.read_regular(actual, 8)
 
 
 if __name__ == "__main__":

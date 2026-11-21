@@ -317,7 +317,7 @@ class SixTaskGraphControls(unittest.TestCase):
                 "HOME": "private-home", "USERPROFILE": "private-profile", "PATH": "private-search-path",
                 "TEMP": "private-temp", "SystemRoot": "public-os-root", "LANG": "C.UTF-8"}, clear=True):
             result = validator.compiler_environment(Path(temporary))
-            self.assertEqual(set(result), {"SystemRoot", "LANG", "TEMP", "TMP"})
+            self.assertEqual({key.upper() for key in result}, {"SYSTEMROOT", "LANG", "TEMP", "TMP"})
             self.assertEqual(result["TEMP"], str(Path(temporary) / "compiler-temp"))
             self.assertEqual(result["TMP"], result["TEMP"])
             self.assertNotIn("private", json.dumps(result))
