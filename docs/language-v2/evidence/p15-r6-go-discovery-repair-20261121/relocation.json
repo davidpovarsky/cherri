@@ -1,0 +1,899 @@
+{
+  "schemaVersion": 1,
+  "parentSource": "019bbb15e4b15380915d523fd6ee5e10b76095b9",
+  "cause": "Historical evidence .go snapshots were discovered as incomplete Go packages; Linux, macOS and Nix builds failed before tests at run44936881496, and iOS existing-compiler selection failed at44936763355.",
+  "operation": "Rename historical evidence .go files to .go.txt only; every original Git blob and local file byte is preserved. Active production/test sources and package enumeration remain unchanged.",
+  "movedCount": 127,
+  "files": [
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-expanded-repair-draft/editor_context.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-expanded-repair-draft/editor_context.go.txt",
+      "gitBlobUnchanged": "b4820ee82a0f0d3b64d22037df5dd40cb1116afc",
+      "localOriginalSha256": "ccf4b1b10ff69a4f7e49f82a7f108f40ae64a40b60a0914484545352f6b4ebc9",
+      "bytes": 4564
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-expanded-repair-draft/typed_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-expanded-repair-draft/typed_completion.go.txt",
+      "gitBlobUnchanged": "bbd9a1c9612a8f4b86962ff1871dc2cdc1270fc2",
+      "localOriginalSha256": "29c1c5ea37a18bb21ce46119f3e4b4d44ff87527580b3c9473de2f108f9c035d",
+      "bytes": 2961
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-first-repair-draft/editor_context.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-first-repair-draft/editor_context.go.txt",
+      "gitBlobUnchanged": "b4820ee82a0f0d3b64d22037df5dd40cb1116afc",
+      "localOriginalSha256": "ccf4b1b10ff69a4f7e49f82a7f108f40ae64a40b60a0914484545352f6b4ebc9",
+      "bytes": 4564
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-first-repair-draft/typed_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/e01-first-repair-draft/typed_completion.go.txt",
+      "gitBlobUnchanged": "e78f63b5b675dab4d3f0c10463b412b3f72b35ed",
+      "localOriginalSha256": "306787671a827ffecb42d421445eeba384df9d738af29758f47cb0138ab3ec46",
+      "bytes": 1348
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/analysis/editor_context.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/analysis/editor_context.go.txt",
+      "gitBlobUnchanged": "b4820ee82a0f0d3b64d22037df5dd40cb1116afc",
+      "localOriginalSha256": "ccf4b1b10ff69a4f7e49f82a7f108f40ae64a40b60a0914484545352f6b4ebc9",
+      "bytes": 4564
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "a7a1260cd7d07c13910e67825f7b9f98d85716b5",
+      "localOriginalSha256": "6550b3cb620c43d1e9757f7e1f5a7f40481f2fe2a7c57f6ac09b2b5fa1f4e34f",
+      "bytes": 1666
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "24c51d9949c1ecbe3fb9b4ba87c2056a606a511f",
+      "localOriginalSha256": "bdc40717a27a2a15f676c992d8d2aa31a61e7bb1cbe9b2dedbb9ba1a1746b9b2",
+      "bytes": 33423
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/service/typed_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/originals/first-repair-source/internal/language/service/typed_completion.go.txt",
+      "gitBlobUnchanged": "e78f63b5b675dab4d3f0c10463b412b3f72b35ed",
+      "localOriginalSha256": "306787671a827ffecb42d421445eeba384df9d738af29758f47cb0138ab3ec46",
+      "bytes": 1348
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "2bbb48eae6bb275aa52b817cc68b0b78a523aa26",
+      "localOriginalSha256": "dc76b3338a7944f24038916886459b7e47987eed2c727570d0a2369f64c41512",
+      "bytes": 69816
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/function_arguments.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/function_arguments.go.txt",
+      "gitBlobUnchanged": "47982b3bf3bc923c78a0738c773afaab3500f741",
+      "localOriginalSha256": "5e4a3dfff3739b167da0dd1925e2c1a253bdee5e6a3d327fd3d0d76d48b366c4",
+      "bytes": 3819
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/type_aliases.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/analysis/type_aliases.go.txt",
+      "gitBlobUnchanged": "56aba7641d914defe034f74427e98019f954bbd6",
+      "localOriginalSha256": "2a380ae14ebb2ed791d5a52fa41261e85e19e54f3799baedbc2a980d0aeae985",
+      "bytes": 2629
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/modules/graph.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/modules/graph.go.txt",
+      "gitBlobUnchanged": "9b0ff747f62fe56d4b570e9f1ba00c94a17848a4",
+      "localOriginalSha256": "a494fff02dddc986a042a5bb76e52a35481c12e96dbd3f0b2d1824ab4823076f",
+      "bytes": 9377
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/context_position.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/context_position.go.txt",
+      "gitBlobUnchanged": "99c02a9ffa3e35a188d2f835e13cefc6223a2628",
+      "localOriginalSha256": "28db417692f05518a177400ca700d3ae655651ad35cfcdd390a6cae398d8e1d7",
+      "bytes": 1315
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/enum_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/enum_completion.go.txt",
+      "gitBlobUnchanged": "43662b80f933b52bf90aa7291656a653d29d7ae3",
+      "localOriginalSha256": "a5e114f4eb92a7f8bf505915e4e42cb197d4968cfa879b6fd9b84503cb5c32d5",
+      "bytes": 7468
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "e75da5b9c05c1d537f0eea841eae9c5aefa07ae8",
+      "localOriginalSha256": "73627652093ea9ea465b0ed69f7e2d85dfff0c023a4f5e00739312f0e61fb27d",
+      "bytes": 1633
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "e47833d00bc05659d4e900667e3a0a5c3a780d13",
+      "localOriginalSha256": "ac6ae27ca33b2fdb9148df03ab1a9409a8cc8bf078a9c1e88f39325db7ca3345",
+      "bytes": 33218
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/types/record_evidence.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/types/record_evidence.go.txt",
+      "gitBlobUnchanged": "1932e5d07cc9f3c4a5ab8b7ca4d0894ba9507a98",
+      "localOriginalSha256": "31f2750e1b004f8e0c047fdd3942b8148c0ae5c9b071a66e03bce8d03bf8a78f",
+      "bytes": 2849
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/types/types.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/1bb5cd1cbd742a04821943bc0f0b44b84aa9a6b9/internal/language/types/types.go.txt",
+      "gitBlobUnchanged": "b1be2d24551fbf4907bb844ccb5834c96a40007b",
+      "localOriginalSha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31",
+      "bytes": 14524
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/2a4230d9a2a94a3fba31a48d83aad8626dc05138/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/2a4230d9a2a94a3fba31a48d83aad8626dc05138/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "b1c1e775748f27f26d89281d8a0c05b38ae8de85",
+      "localOriginalSha256": "3f5aa9b62ac3da859ec08e594858d426a73652bfed32965a549c6399ce5ab4ce",
+      "bytes": 5307
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/2f66c81a14a37e62a7233715dcca2f8d547972a1/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/2f66c81a14a37e62a7233715dcca2f8d547972a1/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "790b0a1b97e06e09946937b47dde0e0ee0f27750",
+      "localOriginalSha256": "aeac289a63a2fa2329493f9aeaa1c34a712515a61d5c0956e9df1ce199f6c6bb",
+      "bytes": 14588
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/3bbea9f2af3b0a1db829f43125d7bfcd91435189/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/3bbea9f2af3b0a1db829f43125d7bfcd91435189/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "1423189b2b520f72cb3f3303f3f45184af5d5d7f",
+      "localOriginalSha256": "e3070d7dd0edabea8b606ae19046bc1241b22cca48e9e9fe00d99245f6bea2c1",
+      "bytes": 10584
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/6809ba0645211e2cb4086eed4dc6b1593a497ba7/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/6809ba0645211e2cb4086eed4dc6b1593a497ba7/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "d0944c9e055386c70cc23e49e7d1eb1cc6240029",
+      "localOriginalSha256": "2a0957488387435375582b9c591f1f00e91b1f539534a9645a832234d54dc943",
+      "bytes": 5894
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/editor_context.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/editor_context.go.txt",
+      "gitBlobUnchanged": "75de927c6fcc4515d0707cedc48cdd59ff79b052",
+      "localOriginalSha256": "6cce8bcd1544b1501d1face4079077526de0569bdbec65429a83627d239ac799",
+      "bytes": 4632
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/function_arguments.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/function_arguments.go.txt",
+      "gitBlobUnchanged": "47982b3bf3bc923c78a0738c773afaab3500f741",
+      "localOriginalSha256": "5e4a3dfff3739b167da0dd1925e2c1a253bdee5e6a3d327fd3d0d76d48b366c4",
+      "bytes": 3819
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/type_aliases.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/analysis/type_aliases.go.txt",
+      "gitBlobUnchanged": "56aba7641d914defe034f74427e98019f954bbd6",
+      "localOriginalSha256": "2a380ae14ebb2ed791d5a52fa41261e85e19e54f3799baedbc2a980d0aeae985",
+      "bytes": 2629
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/modules/graph.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/modules/graph.go.txt",
+      "gitBlobUnchanged": "9b0ff747f62fe56d4b570e9f1ba00c94a17848a4",
+      "localOriginalSha256": "a494fff02dddc986a042a5bb76e52a35481c12e96dbd3f0b2d1824ab4823076f",
+      "bytes": 9377
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/context_position.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/context_position.go.txt",
+      "gitBlobUnchanged": "99c02a9ffa3e35a188d2f835e13cefc6223a2628",
+      "localOriginalSha256": "28db417692f05518a177400ca700d3ae655651ad35cfcdd390a6cae398d8e1d7",
+      "bytes": 1315
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/enum_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/enum_completion.go.txt",
+      "gitBlobUnchanged": "43662b80f933b52bf90aa7291656a653d29d7ae3",
+      "localOriginalSha256": "a5e114f4eb92a7f8bf505915e4e42cb197d4968cfa879b6fd9b84503cb5c32d5",
+      "bytes": 7468
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "fed1b4b69b3685ddb032594ad48b892940cc26fb",
+      "localOriginalSha256": "41c4b60a5f06eed73437b048392292b7b348ede1f12f21121914da19f2106eef",
+      "bytes": 18061
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "e9f3e7103943ee83ec1443680dc1d1a5754f1c7d",
+      "localOriginalSha256": "c00016d64e52867a3fd04fb517b6df69623e835a2703360010f868052b174f6a",
+      "bytes": 32256
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/typed_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/service/typed_completion.go.txt",
+      "gitBlobUnchanged": "1b94db641e601ff4efc435496924252bca038bfb",
+      "localOriginalSha256": "c818ac5f77ed0086b12fcdb0832ac93e9a153ae03db7a3cba84d711026073e35",
+      "bytes": 3001
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/types/record_evidence.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/types/record_evidence.go.txt",
+      "gitBlobUnchanged": "1932e5d07cc9f3c4a5ab8b7ca4d0894ba9507a98",
+      "localOriginalSha256": "31f2750e1b004f8e0c047fdd3942b8148c0ae5c9b071a66e03bce8d03bf8a78f",
+      "bytes": 2849
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/types/types.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/73d0c7b3b914d943b4200139dda018f5d6ed02ed/internal/language/types/types.go.txt",
+      "gitBlobUnchanged": "b1be2d24551fbf4907bb844ccb5834c96a40007b",
+      "localOriginalSha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31",
+      "bytes": 14524
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/8da4c027f855a2721e012669a5c90fba459a751a/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e01-editor-context-20261120/source/8da4c027f855a2721e012669a5c90fba459a751a/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "d370a358f26275433a928156089ff8b61ef7e459",
+      "localOriginalSha256": "2620d2e356c79d919c6e1472866746774c7139eafa99209b2f70f0d8555f8743",
+      "bytes": 17097
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/0fd899ca5caebb806aeea2648d1d9af0d5bac791/internal/language/service/p15_editor_diagnostics_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/0fd899ca5caebb806aeea2648d1d9af0d5bac791/internal/language/service/p15_editor_diagnostics_contract_test.go.txt",
+      "gitBlobUnchanged": "110a3b3605b2d5cd67dcda8834c9d19cf86c3843",
+      "localOriginalSha256": "13c6a5f3a57775c2c5361b6f466be7d3e3da7c577ffa7ba104fa2e544d491932",
+      "bytes": 6488
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/0fd899ca5caebb806aeea2648d1d9af0d5bac791/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/0fd899ca5caebb806aeea2648d1d9af0d5bac791/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "e9f3e7103943ee83ec1443680dc1d1a5754f1c7d",
+      "localOriginalSha256": "c00016d64e52867a3fd04fb517b6df69623e835a2703360010f868052b174f6a",
+      "bytes": 32256
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/analysis/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/analysis/diagnostics.go.txt",
+      "gitBlobUnchanged": "e246ddbb1c4e13b9bfc0069505c2965fee5c5acc",
+      "localOriginalSha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f",
+      "bytes": 2621
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "e9f3e7103943ee83ec1443680dc1d1a5754f1c7d",
+      "localOriginalSha256": "c00016d64e52867a3fd04fb517b6df69623e835a2703360010f868052b174f6a",
+      "bytes": 32256
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/4049876b88f5be9f02625f5745917c3f7b797ac1/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/50d6bf695cd5d110b90a792081328aae7cb6f129/internal/language/service/p15_editor_diagnostics_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/50d6bf695cd5d110b90a792081328aae7cb6f129/internal/language/service/p15_editor_diagnostics_contract_test.go.txt",
+      "gitBlobUnchanged": "370dcfdcdac603a5fa10638cf45abd74c91476a6",
+      "localOriginalSha256": "9f1723b107ff0c8a1c897de27c08fe5aa44cf17026797ad0a90961f299d3a490",
+      "bytes": 6508
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/50d6bf695cd5d110b90a792081328aae7cb6f129/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/50d6bf695cd5d110b90a792081328aae7cb6f129/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "e9f3e7103943ee83ec1443680dc1d1a5754f1c7d",
+      "localOriginalSha256": "c00016d64e52867a3fd04fb517b6df69623e835a2703360010f868052b174f6a",
+      "bytes": 32256
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/53f2b02f475016214569200f9771418efc549c58/internal/language/service/p15_editor_diagnostics_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/53f2b02f475016214569200f9771418efc549c58/internal/language/service/p15_editor_diagnostics_contract_test.go.txt",
+      "gitBlobUnchanged": "2746f1e4f709aa39608f7b497038ccefadb777f3",
+      "localOriginalSha256": "e5d9f261779df2cb7e70790df79f034bdf4ae7a69fedf6503e57828aa4245412",
+      "bytes": 7815
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/53f2b02f475016214569200f9771418efc549c58/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/53f2b02f475016214569200f9771418efc549c58/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "e9f3e7103943ee83ec1443680dc1d1a5754f1c7d",
+      "localOriginalSha256": "c00016d64e52867a3fd04fb517b6df69623e835a2703360010f868052b174f6a",
+      "bytes": 32256
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/analysis/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/analysis/diagnostics.go.txt",
+      "gitBlobUnchanged": "e246ddbb1c4e13b9bfc0069505c2965fee5c5acc",
+      "localOriginalSha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f",
+      "bytes": 2621
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/diagnostics.go.txt",
+      "gitBlobUnchanged": "849177677cd02cd3323d6609224fcc41d163fd7a",
+      "localOriginalSha256": "6c69595812a702a9ceb6727d2bbe53399437183db03604dd6600aedcc638ca5b",
+      "bytes": 660
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/p15_editor_diagnostics_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/p15_editor_diagnostics_contract_test.go.txt",
+      "gitBlobUnchanged": "9e352dcf39eef918b9c63f4740ad9df12373e95a",
+      "localOriginalSha256": "d6243cc7406cc77120a145f5f7ce14ee694966dafc03ee5bde6ab37a84419cfa",
+      "bytes": 9470
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "57b34cbdc0b40feba755d0872736fdeebff7fc07",
+      "localOriginalSha256": "0db2874217da16966d1a04a4f064e45b69bef4b92e33c7fcc1241a03435fcfb3",
+      "bytes": 32283
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e02-editor-diagnostics-20261120/source/c0f9bdc95d9e6d9fc363680dbb0f167afe6fbc72/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/originals/e03-first-repair-draft/source/internal/language/service/semantic_symbols.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/originals/e03-first-repair-draft/source/internal/language/service/semantic_symbols.go.txt",
+      "gitBlobUnchanged": "9a8ff8265e656a5cdfc45ae314527e72bfe6b5a2",
+      "localOriginalSha256": "06bbb7b6b82fc2d7ef3a1b88fd60704500ce36f326614f0855a17af1113e60c4",
+      "bytes": 5904
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/originals/e03-first-repair-draft/source/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/originals/e03-first-repair-draft/source/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "481fc9380cc53f80be16cb30d7875378045f972a",
+      "localOriginalSha256": "d60a05b4795a83d0f321909fe1c948c8c53207ab29136540b338d5e0bdd23f31",
+      "bytes": 31327
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/context_position.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/context_position.go.txt",
+      "gitBlobUnchanged": "99c02a9ffa3e35a188d2f835e13cefc6223a2628",
+      "localOriginalSha256": "28db417692f05518a177400ca700d3ae655651ad35cfcdd390a6cae398d8e1d7",
+      "bytes": 1315
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/enum_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/enum_completion.go.txt",
+      "gitBlobUnchanged": "43662b80f933b52bf90aa7291656a653d29d7ae3",
+      "localOriginalSha256": "a5e114f4eb92a7f8bf505915e4e42cb197d4968cfa879b6fd9b84503cb5c32d5",
+      "bytes": 7468
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "fed1b4b69b3685ddb032594ad48b892940cc26fb",
+      "localOriginalSha256": "41c4b60a5f06eed73437b048392292b7b348ede1f12f21121914da19f2106eef",
+      "bytes": 18061
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/p15_editor_diagnostics_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/p15_editor_diagnostics_contract_test.go.txt",
+      "gitBlobUnchanged": "9e352dcf39eef918b9c63f4740ad9df12373e95a",
+      "localOriginalSha256": "d6243cc7406cc77120a145f5f7ce14ee694966dafc03ee5bde6ab37a84419cfa",
+      "bytes": 9470
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/p15_editor_symbols_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/p15_editor_symbols_contract_test.go.txt",
+      "gitBlobUnchanged": "9dd004562e6f08b8e23df6b53b3d110603e5e672",
+      "localOriginalSha256": "28299b239502771d4a5e0fc5bcb5e733b55c7ee4049b2c94b8326a9f69d15386",
+      "bytes": 18987
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/semantic_symbols.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/semantic_symbols.go.txt",
+      "gitBlobUnchanged": "9a8ff8265e656a5cdfc45ae314527e72bfe6b5a2",
+      "localOriginalSha256": "06bbb7b6b82fc2d7ef3a1b88fd60704500ce36f326614f0855a17af1113e60c4",
+      "bytes": 5904
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "481fc9380cc53f80be16cb30d7875378045f972a",
+      "localOriginalSha256": "d60a05b4795a83d0f321909fe1c948c8c53207ab29136540b338d5e0bdd23f31",
+      "bytes": 31327
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/syntax/ast.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/syntax/ast.go.txt",
+      "gitBlobUnchanged": "aec8fd6921022e65ad666fec8c2e551d6caea2c4",
+      "localOriginalSha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f",
+      "bytes": 11243
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/456e4dfce3535e100ad5a9ec36cff2b5adc9d371/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/8adbb96be0db9e87df26c02981d1072207bea322/internal/language/service/p15_editor_symbols_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/8adbb96be0db9e87df26c02981d1072207bea322/internal/language/service/p15_editor_symbols_contract_test.go.txt",
+      "gitBlobUnchanged": "746271bd7a7840cce56b65f860f88ec43ae3a56d",
+      "localOriginalSha256": "e1c9c892f7a0b310c40a1e9675b56dacfd56d04a92f2181b4834ae3da6af0fb5",
+      "bytes": 12877
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/8adbb96be0db9e87df26c02981d1072207bea322/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/8adbb96be0db9e87df26c02981d1072207bea322/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "57b34cbdc0b40feba755d0872736fdeebff7fc07",
+      "localOriginalSha256": "0db2874217da16966d1a04a4f064e45b69bef4b92e33c7fcc1241a03435fcfb3",
+      "bytes": 32283
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/context_position.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/context_position.go.txt",
+      "gitBlobUnchanged": "99c02a9ffa3e35a188d2f835e13cefc6223a2628",
+      "localOriginalSha256": "28db417692f05518a177400ca700d3ae655651ad35cfcdd390a6cae398d8e1d7",
+      "bytes": 1315
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/enum_completion.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/enum_completion.go.txt",
+      "gitBlobUnchanged": "43662b80f933b52bf90aa7291656a653d29d7ae3",
+      "localOriginalSha256": "a5e114f4eb92a7f8bf505915e4e42cb197d4968cfa879b6fd9b84503cb5c32d5",
+      "bytes": 7468
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/p15_editor_completion_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/p15_editor_completion_contract_test.go.txt",
+      "gitBlobUnchanged": "fed1b4b69b3685ddb032594ad48b892940cc26fb",
+      "localOriginalSha256": "41c4b60a5f06eed73437b048392292b7b348ede1f12f21121914da19f2106eef",
+      "bytes": 18061
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/p15_editor_diagnostics_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/p15_editor_diagnostics_contract_test.go.txt",
+      "gitBlobUnchanged": "9e352dcf39eef918b9c63f4740ad9df12373e95a",
+      "localOriginalSha256": "d6243cc7406cc77120a145f5f7ce14ee694966dafc03ee5bde6ab37a84419cfa",
+      "bytes": 9470
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "57b34cbdc0b40feba755d0872736fdeebff7fc07",
+      "localOriginalSha256": "0db2874217da16966d1a04a4f064e45b69bef4b92e33c7fcc1241a03435fcfb3",
+      "bytes": 32283
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/syntax/ast.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/syntax/ast.go.txt",
+      "gitBlobUnchanged": "aec8fd6921022e65ad666fec8c2e551d6caea2c4",
+      "localOriginalSha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f",
+      "bytes": 11243
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/90ec31a82efdc2542fee6567a0cebcc30b510fb8/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/99b33e29119374c42cacb3acd710c863a1dd3781/internal/language/service/p15_editor_symbols_contract_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/99b33e29119374c42cacb3acd710c863a1dd3781/internal/language/service/p15_editor_symbols_contract_test.go.txt",
+      "gitBlobUnchanged": "f9eca5a465b486c67375b44d002a79ed20a2bea9",
+      "localOriginalSha256": "3261457a3c13f202174777856cacd86dd309b3a1ea21766304191e03aab57cc9",
+      "bytes": 14515
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/99b33e29119374c42cacb3acd710c863a1dd3781/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e03-semantic-editor-symbols-20261120/source/99b33e29119374c42cacb3acd710c863a1dd3781/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "57b34cbdc0b40feba755d0872736fdeebff7fc07",
+      "localOriginalSha256": "0db2874217da16966d1a04a4f064e45b69bef4b92e33c7fcc1241a03435fcfb3",
+      "bytes": 32283
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "481fc9380cc53f80be16cb30d7875378045f972a",
+      "localOriginalSha256": "d60a05b4795a83d0f321909fe1c948c8c53207ab29136540b338d5e0bdd23f31",
+      "bytes": 31327
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/ios_bridge.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/ios_bridge.go.txt",
+      "gitBlobUnchanged": "a26f00d24e2d445d2e0d09d4572e7b85506073c6",
+      "localOriginalSha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/mobile_language_service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/mobile_language_service.go.txt",
+      "gitBlobUnchanged": "9950b5a7a33670bb91bd702c5b600a79e374d923",
+      "localOriginalSha256": "9fb261fc9194e26a8b74dfd2d83da476ee89f53be0fd8f14d84c592295ce7c24",
+      "bytes": 1062
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/p15_editor_version_snapshot_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/05a454651b3cbe07309e6a30e824ebdb869eed6f/p15_editor_version_snapshot_test.go.txt",
+      "gitBlobUnchanged": "d6ef392e8cf63f113c3968aad301ca1d122b6b7d",
+      "localOriginalSha256": "79ec5c789038a9505d5ffd0fb04e732a6c3ddddc29ee2ecc23bdd039f7e48134",
+      "bytes": 7380
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/analysis/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/analysis/diagnostics.go.txt",
+      "gitBlobUnchanged": "e246ddbb1c4e13b9bfc0069505c2965fee5c5acc",
+      "localOriginalSha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f",
+      "bytes": 2621
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/protocol/protocol.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/protocol/protocol.go.txt",
+      "gitBlobUnchanged": "4e009250b2b36c3796f504918667739d45d4d88d",
+      "localOriginalSha256": "c2105189b5b660dfe0704c8e3b2f58c73ef37742fe274a5f780d11a536ed98d9",
+      "bytes": 5731
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/schema/registry_clone.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/schema/registry_clone.go.txt",
+      "gitBlobUnchanged": "a1cadccab28ea6637dfff434a8675ce73a9514ba",
+      "localOriginalSha256": "068220c9bf1a0067343dc13698a3883def14bccaa3629fc21315f2bb09c5c908",
+      "bytes": 4105
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/schema/schema.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/schema/schema.go.txt",
+      "gitBlobUnchanged": "e87bad77aed204964e11bb103ac5beda1ec0e6ce",
+      "localOriginalSha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919",
+      "bytes": 27984
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/service/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/service/diagnostics.go.txt",
+      "gitBlobUnchanged": "849177677cd02cd3323d6609224fcc41d163fd7a",
+      "localOriginalSha256": "6c69595812a702a9ceb6727d2bbe53399437183db03604dd6600aedcc638ca5b",
+      "bytes": 660
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "481fc9380cc53f80be16cb30d7875378045f972a",
+      "localOriginalSha256": "d60a05b4795a83d0f321909fe1c948c8c53207ab29136540b338d5e0bdd23f31",
+      "bytes": 31327
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/ios_bridge.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/ios_bridge.go.txt",
+      "gitBlobUnchanged": "189bbe5bcd3c83be36be938779f611ab2c0495de",
+      "localOriginalSha256": "6f3baec33cc1619cefd08f70253c74c89b3f4b319724bf4de7d77095bded8a77",
+      "bytes": 11960
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/mobile_compiler.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/1720ccd8f9272cfcc379ad5c5bea0e4720a55aa8/mobile_compiler.go.txt",
+      "gitBlobUnchanged": "26f5320d511ec33b249ec482bee6c8fb3be86f19",
+      "localOriginalSha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602",
+      "bytes": 15989
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/analysis/analyzer.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/analysis/analyzer.go.txt",
+      "gitBlobUnchanged": "bfda5c519db397e786c3104d006be3349a8c4c2f",
+      "localOriginalSha256": "eec026ca5f2545c6cc06598583c76c132b7af2935ee5bb2de1d84888ccfed296",
+      "bytes": 70205
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/analysis/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/analysis/diagnostics.go.txt",
+      "gitBlobUnchanged": "e246ddbb1c4e13b9bfc0069505c2965fee5c5acc",
+      "localOriginalSha256": "001358d615a4ef7913e2ec9b6928596b87cff4cedf71e7a02f93487df953061f",
+      "bytes": 2621
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/protocol/protocol.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/protocol/protocol.go.txt",
+      "gitBlobUnchanged": "4e009250b2b36c3796f504918667739d45d4d88d",
+      "localOriginalSha256": "c2105189b5b660dfe0704c8e3b2f58c73ef37742fe274a5f780d11a536ed98d9",
+      "bytes": 5731
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/schema/registry_clone.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/schema/registry_clone.go.txt",
+      "gitBlobUnchanged": "a1cadccab28ea6637dfff434a8675ce73a9514ba",
+      "localOriginalSha256": "068220c9bf1a0067343dc13698a3883def14bccaa3629fc21315f2bb09c5c908",
+      "bytes": 4105
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/schema/schema.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/schema/schema.go.txt",
+      "gitBlobUnchanged": "e87bad77aed204964e11bb103ac5beda1ec0e6ce",
+      "localOriginalSha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919",
+      "bytes": 27984
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/service/diagnostics.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/service/diagnostics.go.txt",
+      "gitBlobUnchanged": "849177677cd02cd3323d6609224fcc41d163fd7a",
+      "localOriginalSha256": "6c69595812a702a9ceb6727d2bbe53399437183db03604dd6600aedcc638ca5b",
+      "bytes": 660
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/service/module_analysis.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/service/module_analysis.go.txt",
+      "gitBlobUnchanged": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "localOriginalSha256": "1b1636d93b0018ee6d81b1caf6f6e24838e6bf9f84280186282525af324b6230",
+      "bytes": 1846
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "6cee8d00abf619d1e4d0b80e9b538ae4db8b3bff",
+      "localOriginalSha256": "87570e144d997f6104bd1727e6b795562f79bd93754ecc534febe0390f074371",
+      "bytes": 32221
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/source/span.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/source/span.go.txt",
+      "gitBlobUnchanged": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "localOriginalSha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/syntax/parser.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/internal/language/syntax/parser.go.txt",
+      "gitBlobUnchanged": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "localOriginalSha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/ios_bridge.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/ios_bridge.go.txt",
+      "gitBlobUnchanged": "a26f00d24e2d445d2e0d09d4572e7b85506073c6",
+      "localOriginalSha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/mobile_compiler.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/mobile_compiler.go.txt",
+      "gitBlobUnchanged": "26f5320d511ec33b249ec482bee6c8fb3be86f19",
+      "localOriginalSha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602",
+      "bytes": 15989
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/mobile_language_service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/mobile_language_service.go.txt",
+      "gitBlobUnchanged": "158ae467a4e485e9011138e28f8b92797d8c5b11",
+      "localOriginalSha256": "d34e8088a49ebe47fc51570ba34329399992e40ead8c8149fcb49e8854b5d853",
+      "bytes": 1012
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/p15_editor_version_snapshot_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/46246596dee9032fb41ce9bf35107183fda19bab/p15_editor_version_snapshot_test.go.txt",
+      "gitBlobUnchanged": "d6ef392e8cf63f113c3968aad301ca1d122b6b7d",
+      "localOriginalSha256": "79ec5c789038a9505d5ffd0fb04e732a6c3ddddc29ee2ecc23bdd039f7e48134",
+      "bytes": 7380
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "481fc9380cc53f80be16cb30d7875378045f972a",
+      "localOriginalSha256": "d60a05b4795a83d0f321909fe1c948c8c53207ab29136540b338d5e0bdd23f31",
+      "bytes": 31327
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/ios_bridge.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/ios_bridge.go.txt",
+      "gitBlobUnchanged": "a26f00d24e2d445d2e0d09d4572e7b85506073c6",
+      "localOriginalSha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/mobile_language_service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/mobile_language_service.go.txt",
+      "gitBlobUnchanged": "9950b5a7a33670bb91bd702c5b600a79e374d923",
+      "localOriginalSha256": "9fb261fc9194e26a8b74dfd2d83da476ee89f53be0fd8f14d84c592295ce7c24",
+      "bytes": 1062
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/p15_editor_version_snapshot_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/a1b83438187fc6b135c8b29539f6589ee710ed15/p15_editor_version_snapshot_test.go.txt",
+      "gitBlobUnchanged": "81ff1fc2fbb90580a0f3d56afd58b94d99b9426a",
+      "localOriginalSha256": "8527224025da1fb5c97293fcc4d39b2aeac749246ca0a84bd2a406b02988c939",
+      "bytes": 7343
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/internal/language/service/service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/internal/language/service/service.go.txt",
+      "gitBlobUnchanged": "481fc9380cc53f80be16cb30d7875378045f972a",
+      "localOriginalSha256": "d60a05b4795a83d0f321909fe1c948c8c53207ab29136540b338d5e0bdd23f31",
+      "bytes": 31327
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/ios_bridge.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/ios_bridge.go.txt",
+      "gitBlobUnchanged": "a26f00d24e2d445d2e0d09d4572e7b85506073c6",
+      "localOriginalSha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/mobile_language_service.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/mobile_language_service.go.txt",
+      "gitBlobUnchanged": "9950b5a7a33670bb91bd702c5b600a79e374d923",
+      "localOriginalSha256": "9fb261fc9194e26a8b74dfd2d83da476ee89f53be0fd8f14d84c592295ce7c24",
+      "bytes": 1062
+    },
+    {
+      "originalPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/p15_editor_version_snapshot_test.go",
+      "storedPath": "docs/language-v2/evidence/p15-e05-atomic-analysis-snapshot-20261120/source/d22ec46a09fc196b4b194a0d44f79f4ed02700f3/p15_editor_version_snapshot_test.go.txt",
+      "gitBlobUnchanged": "d4b3a311dff6da2313ac01248c1a34f5c557f1ab",
+      "localOriginalSha256": "941886d45bdc88ecff00f2d35cbb0a10fff9381abfa6876ebe6ab1c2f8cfffb2",
+      "bytes": 7380
+    }
+  ],
+  "formalAcceptanceGranted": false
+}
