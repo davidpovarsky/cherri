@@ -425,7 +425,7 @@ func TestP15RP15CompoundOnceUnit(t *testing.T) {
 	})
 	for _, op := range []struct{ name, token string }{{"add", "+="}, {"multiply", "*="}, {"subtract", "-="}, {"divide", "/="}} {
 		t.Run("reject_bool_"+op.name, func(t *testing.T) {
-			p15AMRejectTypedOperand(t, "var value = 10\nvalue "+op.token+" false\noutput(value)\n", "false")
+			p15AMRejectTypedOperand(t, "var value = 10\nvalue "+op.token+" false\nreturn value\n", "false")
 		})
 	}
 	p15AMHealthyCompile(t, source)
@@ -454,7 +454,7 @@ func TestP15RP17ComparisonsArithmeticUnit(t *testing.T) {
 		{"text_divisor", "5 / \"two\"", "\"two\""}, {"bool_modulus", "10 % false", "false"}, {"zero_divisor", "5 / 0", "0"},
 	} {
 		t.Run("reject_"+spec.name, func(t *testing.T) {
-			p15AMRejectTypedOperand(t, "let result = "+spec.expression+"\noutput(result)\n", spec.operand)
+			p15AMRejectTypedOperand(t, "let result = "+spec.expression+"\nreturn result\n", spec.operand)
 		})
 	}
 	for _, spec := range []struct{ name, expression string }{{"double_star", "5 ** 2"}, {"ampersand", "5 & 2"}} {
