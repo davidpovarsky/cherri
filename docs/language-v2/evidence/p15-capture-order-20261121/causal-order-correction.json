@@ -1,0 +1,132 @@
+{
+  "format_version": 1,
+  "test_source": "2435236df4076915613c4f5ae77a36c5a146c3c8",
+  "supersedes_completeness_claim_at": "b81068956a48f3e3a272ae27604eb4a389c29277",
+  "original_archive_unchanged_sha256": "d3bb2959a69506d8c02866fcc58a4e04110453ceece783c2c7c11a88899dab6b",
+  "finding": "Relative effect order and UUID ownership did not prove producer-before-binding/invocation. Original execution remains valid history but lacks this causal check.",
+  "repair": "Explicit joined marker positions before sole invocation; every actual UUID consumer after producer for six function/custom cases and native resize; late-A, late-B+A, and seven late-all-producers controls.",
+  "driver": {
+    "source": "2435236df4076915613c4f5ae77a36c5a146c3c8",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "command": [
+      "go",
+      "test",
+      "./tools/language-acceptance",
+      "-run",
+      "^Test(CaptureOrder|EditorContract(Rejects|Inventory|Strict))",
+      "-json",
+      "-count=1",
+      "-timeout=6m"
+    ],
+    "started_utc": "2026-11-21T19:23:12.507864+00:00",
+    "finished_utc": "2026-11-21T19:26:13.065656+00:00",
+    "elapsed_seconds": 180.5630000000001,
+    "exit_code": 0,
+    "timed_out": false,
+    "counts": {
+      "pass": 126,
+      "fail": 0,
+      "skip": 0
+    },
+    "stdout_sha256": "dea74fe43c85ee45cda41787ac981df222fe2e10a369e504d79e660ceba2144c",
+    "stdout_bytes": 138221,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0
+  },
+  "scenarios": [
+    {
+      "id": "BRG10",
+      "counts": {
+        "pass": 129,
+        "fail": 0,
+        "skip": 0
+      },
+      "elapsed_seconds": 12.2584134,
+      "source_files": 84,
+      "raw_sha256": "bb3bf9d9bcf1bab6f896ca222c805402a805303dbcf91151346a0375620bcbb8",
+      "source": "2435236df4076915613c4f5ae77a36c5a146c3c8"
+    },
+    {
+      "id": "RP12",
+      "counts": {
+        "pass": 65,
+        "fail": 0,
+        "skip": 0
+      },
+      "elapsed_seconds": 132.2860408,
+      "source_files": 84,
+      "raw_sha256": "54f79866c2d4698b000246890ed987c30129b48060adac1485d699c7782b779f",
+      "source": "2435236df4076915613c4f5ae77a36c5a146c3c8"
+    }
+  ],
+  "scope": {
+    "actual_local_records": 4,
+    "complete_requirements_passed": 0,
+    "runner_statuses": {
+      "BRG10": "PENDING_EXTERNAL",
+      "RP12": "PENDING_EXTERNAL"
+    },
+    "closure_complete": false,
+    "immutable_requirement_total": 179,
+    "apple_runtime": "PENDING_EXTERNAL"
+  },
+  "original_archive": {
+    "file": "causal-order-correction.zip",
+    "sha256": "85bd746e84a8033a6249eec9083efd66506fca723a6ffb3b37339f36b3fc4c08",
+    "bytes": 31753,
+    "files": 10
+  },
+  "originals": [
+    {
+      "path": "artifacts/capture-order-brg10-1625889120/capture-order-brg10-go.jsonl",
+      "sha256": "bb3bf9d9bcf1bab6f896ca222c805402a805303dbcf91151346a0375620bcbb8",
+      "bytes": 134474
+    },
+    {
+      "path": "artifacts/capture-order-brg10-1625889120/capture-order-brg10-process.json",
+      "sha256": "62edccb4298b986e3c34c2c0099380d68358d911d2e4727224e90dc3d32a880f",
+      "bytes": 37196
+    },
+    {
+      "path": "artifacts/capture-order-brg10-1625889120/capture-order-brg10-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts/capture-order-evidence.json",
+      "sha256": "e4bf7634887afd720efc5e287cf3308b2fc274d5f8e920efedb325c884979930",
+      "bytes": 46057
+    },
+    {
+      "path": "artifacts/capture-order-rp12-3153974525/capture-order-rp12-go.jsonl",
+      "sha256": "54f79866c2d4698b000246890ed987c30129b48060adac1485d699c7782b779f",
+      "bytes": 61418
+    },
+    {
+      "path": "artifacts/capture-order-rp12-3153974525/capture-order-rp12-process.json",
+      "sha256": "ca2426bd73654817ed6281d42c472247c0ff68042747c13bc74700f750dae764",
+      "bytes": 23047
+    },
+    {
+      "path": "artifacts/capture-order-rp12-3153974525/capture-order-rp12-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "driver-receipt.json",
+      "sha256": "17c8eacd48b0ca3f1c4875fb588388d341a2f4081cec7c677c16e95e85823ef0",
+      "bytes": 797
+    },
+    {
+      "path": "stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "stdout.jsonl",
+      "sha256": "dea74fe43c85ee45cda41787ac981df222fe2e10a369e504d79e660ceba2144c",
+      "bytes": 138221
+    }
+  ]
+}

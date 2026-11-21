@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// Historical capture-only runtime traces do not observe these full combined scenarios.
+	if _, found := captureOrderScenarios[id]; found {
+		return
+	}
 	// The full main-output scenario needs its own actual Apple proof.
 	if _, found := mainOutputScenarios[id]; found {
 		return
@@ -506,6 +510,9 @@ func deriveRepairTestIDs(id, title string) []string {
 	if scenario, found := documentationRecoveryScenarios[id]; found {
 		return scenario.testIDs()
 	}
+	if scenario, found := captureOrderScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if id == "RP52" {
 		return publicFrontendTestIDs()
 	}
@@ -582,6 +589,9 @@ func deriveRepairFixtures(id string) []string {
 	if _, found := documentationRecoveryScenarios[id]; found {
 		return append([]string{}, documentationRecoveryProductionPaths...)
 	}
+	if _, found := captureOrderScenarios[id]; found {
+		return append([]string{}, captureOrderEvidence.SourcePaths...)
+	}
 	if id == "RP52" {
 		return append([]string{}, publicFrontendProductionPaths...)
 	}
@@ -611,6 +621,9 @@ func deriveRepairFixtures(id string) []string {
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
 	if scenario, found := documentationRecoveryScenarios[id]; found {
+		return scenario.testIDs()
+	}
+	if scenario, found := captureOrderScenarios[id]; found {
 		return scenario.testIDs()
 	}
 	if id == "BRG30" {
@@ -707,6 +720,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 func deriveGateFixtures(id string) []string {
 	if _, found := documentationRecoveryScenarios[id]; found {
 		return append([]string{}, documentationRecoveryProductionPaths...)
+	}
+	if _, found := captureOrderScenarios[id]; found {
+		return append([]string{}, captureOrderEvidence.SourcePaths...)
 	}
 	if id == "BRG30" {
 		return append([]string{}, packagedSkillProductionPaths...)
