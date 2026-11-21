@@ -214,7 +214,7 @@ class ProvenanceControls(unittest.TestCase):
                 observed = real_fstat(fd)
                 fields = {key: getattr(observed, key) for key in (
                     "st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")}
-                fields["st_mode"] ^= changed_bits
+                fields["st_mode"] = actual.lstat().st_mode ^ changed_bits
                 calls.append(fields)
                 return SimpleNamespace(**fields)
             with self.subTest(platform=platform), \
