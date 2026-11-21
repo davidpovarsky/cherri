@@ -55,9 +55,9 @@ func TestCaptureOrderInventoryAndUnprovedRuntime(t *testing.T) {
 		if spec.Title != title || spec.Group != group || !reflect.DeepEqual(parseRequiredTiers(strings.Join(tiers, "+")), captureOrderRequiredTiers) {
 			t.Fatal("changed immutable combined requirement")
 		}
-		expected := 58
+		expected := 65
 		if id == "BRG10" {
-			expected = 120
+			expected = 129
 		}
 		events := captureOrderEvidence.Events[id]
 		if len(events) != expected || !sort.StringsAreSorted(events) {

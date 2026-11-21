@@ -100,6 +100,71 @@ func p15C01References(fields map[string]any, expected map[string]string, ids map
 	return nil
 }
 
+// Source-order effects must precede every encoding or invocation that consumes
+// them. Relative producer order and a matching UUID alone do not prove causality.
+func p15C01EffectsBeforeConsumers(actions []map[string]any, ids map[string]string) error {
+	positions := map[string]int{}
+	for index, action := range actions {
+		if uuid, ok := p15C01Params(action)["UUID"].(string); ok && uuid != "" {
+			if _, duplicate := positions[uuid]; duplicate {
+				return fmt.Errorf("duplicate producer identity")
+			}
+			positions[uuid] = index
+		}
+	}
+	for marker, uuid := range ids {
+		producer, exists := positions[uuid]
+		if !exists {
+			return fmt.Errorf("missing effect producer %s", marker)
+		}
+		consumers := 0
+		for index, action := range actions {
+			refs, _ := p15V02NativeReferences(p15C01Params(action))
+			for _, ref := range refs {
+				if ref != uuid {
+					continue
+				}
+				consumers++
+				if producer >= index {
+					return fmt.Errorf("effect %s was not produced before its binding/consumer", marker)
+				}
+			}
+		}
+		if consumers == 0 {
+			return fmt.Errorf("effect %s has no actual binding/consumer", marker)
+		}
+	}
+	return nil
+}
+
+func p15C01RejectLateProducers(t *testing.T, actions []map[string]any, ids map[string]string) {
+	t.Helper()
+	if err := p15C01EffectsBeforeConsumers(actions, ids); err != nil {
+		t.Fatal(err)
+	}
+	var retained, effects []map[string]any
+	for _, action := range p15C01Clone(t, actions) {
+		isEffect := false
+		for _, uuid := range ids {
+			if p15C01Params(action)["UUID"] == uuid {
+				isEffect = true
+			}
+		}
+		if isEffect {
+			effects = append(effects, action)
+		} else {
+			retained = append(retained, action)
+		}
+	}
+	if len(effects) != len(ids) {
+		t.Fatal("late-producer control missed actual effects")
+	}
+	broken := append(retained, effects...)
+	if err := p15C01EffectsBeforeConsumers(broken, ids); err == nil || !strings.Contains(err.Error(), "before its binding/consumer") {
+		t.Fatalf("late effects did not fail specifically at the consumer-order gate: %v", err)
+	}
+}
+
 func TestP15C01SourceOrderNativeStructure(t *testing.T) {
 	for _, tc := range []struct {
 		name, prefix, call string
@@ -127,6 +192,9 @@ func TestP15C01SourceOrderNativeStructure(t *testing.T) {
 			if err := p15C01References(fields, expected, ids); err != nil {
 				t.Fatal(err)
 			}
+			t.Run("producer_after_binding", func(t *testing.T) {
+				p15C01RejectLateProducers(t, actions, ids)
+			})
 			corrupt := p15C01Clone(t, actions)
 			corruptFields := p15C01CallFields(t, corrupt, tc.native)
 			key := "arg_0"
@@ -180,6 +248,9 @@ func TestP15C01SourceOrderNativeStructure(t *testing.T) {
 		if !reflect.DeepEqual(values, []int{202, 101}) {
 			t.Fatalf("native explicit source order=%v", values)
 		}
+		t.Run("producer_after_binding", func(t *testing.T) {
+			p15C01RejectLateProducers(t, actions, map[string]string{"height": ids[202], "width": ids[101]})
+		})
 		for key, value := range map[string]int{"WFImageResizeHeight": 202, "WFImageResizeWidth": 101} {
 			outputs, variables := p15V02NativeReferences(resize[key])
 			if len(variables) != 0 || len(outputs) != 1 || outputs[0] != ids[value] {

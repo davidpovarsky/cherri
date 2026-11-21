@@ -45,15 +45,27 @@ func p15CombinedCaptureOrderError(actions []map[string]any) error {
 		return err
 	}
 	var fields map[string]any
-	count := 0
-	for _, action := range actions {
+	count, callIndex := 0, -1
+	for index, action := range actions {
 		if action["WFWorkflowActionIdentifier"] == "com.example.c01.order" {
 			fields = p15C01Params(action)
+			callIndex = index
 			count++
 		}
 	}
 	if count != 1 {
 		return fmt.Errorf("joined scenario has %d named calls, want exactly one", count)
+	}
+	for marker, uuid := range ids {
+		producer := -1
+		for index, action := range actions {
+			if p15C01Params(action)["UUID"] == uuid {
+				producer = index
+			}
+		}
+		if producer < 0 || producer >= callIndex {
+			return fmt.Errorf("joined effect %s was not produced before its call", marker)
+		}
 	}
 	return p15C01References(fields, map[string]string{"A": "P15_C01_A", "B": "P15_C01_B"}, ids)
 }
@@ -65,7 +77,7 @@ func p15CombinedCaptureOrderGraph(t *testing.T) {
 	if err := p15CombinedCaptureOrderError(actions); err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"wrong_binding", "swapped_effects", "duplicate_effect", "late_capture", "late_consumer_read", "scope_rebinding", "missing_saved_use", "duplicate_call"} {
+	for _, fault := range []string{"wrong_binding", "swapped_effects", "duplicate_effect", "late_effect", "late_effects", "late_capture", "late_consumer_read", "scope_rebinding", "missing_saved_use", "duplicate_call"} {
 		t.Run(fault, func(t *testing.T) {
 			broken := p15C01Clone(t, actions)
 			markers := []int{}
@@ -98,6 +110,26 @@ func p15CombinedCaptureOrderGraph(t *testing.T) {
 				broken[markers[0]], broken[markers[1]] = broken[markers[1]], broken[markers[0]]
 			case "duplicate_effect":
 				broken = append(broken[:len(broken)-2], append([]map[string]any{broken[markers[0]]}, broken[len(broken)-2:]...)...)
+			case "late_effect", "late_effects":
+				move := map[int]bool{markers[1]: true}
+				if fault == "late_effects" {
+					move[markers[0]] = true
+				}
+				var retained, effects []map[string]any
+				for index, action := range broken {
+					if move[index] {
+						effects = append(effects, action)
+					} else {
+						retained = append(retained, action)
+					}
+				}
+				broken = nil
+				for _, action := range retained {
+					broken = append(broken, action)
+					if action["WFWorkflowActionIdentifier"] == "com.example.c01.order" {
+						broken = append(broken, effects...)
+					}
+				}
 			case "late_capture":
 				saved := broken[capture]
 				broken = append(broken[:capture], broken[capture+1:]...)
@@ -137,8 +169,12 @@ func p15CombinedCaptureOrderGraph(t *testing.T) {
 					t.Fatal("fault missed actual saved consumer")
 				}
 			}
-			if p15CombinedCaptureOrderError(broken) == nil {
+			err := p15CombinedCaptureOrderError(broken)
+			if err == nil {
 				t.Fatalf("joined native scenario accepted %s", fault)
+			}
+			if (fault == "late_effect" || fault == "late_effects") && !strings.Contains(err.Error(), "before its call") {
+				t.Fatalf("late joined effects did not reach their causal position gate: %v", err)
 			}
 		})
 	}
