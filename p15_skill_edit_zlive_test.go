@@ -58,6 +58,13 @@ func TestP15K05LiveSigning(t *testing.T) {
 	unsigned := p15InstallRead(t, capture.gate)
 	requestInput := p15InstallRead(t, capture.input)
 	signed := p15InstallRead(t, signedPath)
+	if _, err := p15K05AuthoredNativeGraph(originalBytes, "P15_K05_ORIGINAL"); err != nil {
+		t.Fatal("original source graph", err)
+	}
+	nativeActionCount, graphErr := p15K05AuthoredNativeGraph(unsigned, "P15_K05_EDITED")
+	if graphErr != nil {
+		t.Fatal("edited source graph", graphErr)
+	}
 	if string(unsigned) != string(requestInput) {
 		t.Fatal("live sign input differs from exact gated bytes")
 	}
@@ -72,7 +79,7 @@ func TestP15K05LiveSigning(t *testing.T) {
 	digest := func(value []byte) string { return fmt.Sprintf("%x", sha256.Sum256(value)) }
 	if gate.OriginalSHA256 != digest(originalBytes) || gate.CandidateSHA256 != digest(unsigned) ||
 		provenance.CompilerCommitSHA != head || provenance.SourceSHA256 != digest(sourceBytes) || provenance.UnsignedPlistSHA256 != digest(unsigned) ||
-		provenance.SignedArtifactSHA256 != digest(signed) || provenance.NativeActionCount != 2 ||
+		provenance.SignedArtifactSHA256 != digest(signed) || provenance.NativeActionCount != nativeActionCount ||
 		provenance.ShortcutName != "P15-K05-Verified-Edit" {
 		t.Fatalf("source/gate/signing provenance is detached: gate=%+v signing=%+v", gate, provenance)
 	}
@@ -95,6 +102,7 @@ func TestP15K05LiveSigning(t *testing.T) {
 		"signed_sha256": digest(signed), "signed_bytes": len(signed), "service": provenance.ServiceName,
 		"signing_method": provenance.SigningMethod, "verification_tier": tier,
 		"allowed_changes": gate.AllowedChanges, "native_actions": provenance.NativeActionCount,
+		"native_graph_verified":  true,
 		"apple_runtime_verified": false,
 		"scope":                  "Actual configured remote signing service and container validation of synthetic data only; no Apple import, validity, installed-consumer or runtime inference.",
 	}
