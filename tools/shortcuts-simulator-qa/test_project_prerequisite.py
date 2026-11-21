@@ -17,7 +17,9 @@ class OriginalGeneratorShellTests(unittest.TestCase):
         self.repo,self.root,self.home=self.harness.repo,self.harness.root,self.harness.home
         self.project=self.repo/"tools/shortcuts-simulator-qa/XcodeProject"
         self.project.mkdir(parents=True,exist_ok=True)
-        info=self.project/"ReceiverApp/Info.plist";info.parent.mkdir()
+        info=self.project/"ReceiverApp/Info.plist"
+        self.assertFalse(info.exists(), "the owned prerequisite fixture must create fresh Info.plist bytes")
+        info.parent.mkdir(exist_ok=True)
         info.write_bytes(plistlib.dumps({"CFBundleURLTypes":[{"CFBundleURLSchemes":["cherriqa"]}]}))
         shutil.copyfile(original.REPO/"tools/shortcuts-simulator-qa/XcodeProject/project.yml",self.project/"project.yml")
         self.harness.git("add","tools")
