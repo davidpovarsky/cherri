@@ -535,6 +535,28 @@ class FixedTransportControls(unittest.TestCase):
         self.assertEqual(response.read1.call_args.args, (5,))
         connection.close.assert_called_once()
 
+    def test_late_eof_cannot_be_a_successful_http_response(self):
+        connection, response = self.fake_connection(chunks=[])
+        with mock.patch.object(adapter.http.client, "HTTPSConnection", return_value=connection), \
+             mock.patch.object(adapter.time, "monotonic", side_effect=[0, 0, 0, 16]):
+            with self.assertRaises(adapter.TransportFailure) as failure:
+                adapter.post_json("/v1/messages/count_tokens", b"{}", KEY, 15)
+        self.assertEqual(failure.exception.kind, "transport_timeout")
+        self.assertIs(failure.exception.result.complete, False)
+        self.assertEqual(failure.exception.result.status, 200)
+        connection.request.assert_called_once()
+        connection.close.assert_called_once()
+
+    def test_late_body_is_preserved_as_incomplete(self):
+        connection, response = self.fake_connection(chunks=[b"{}"])
+        with mock.patch.object(adapter.http.client, "HTTPSConnection", return_value=connection), \
+             mock.patch.object(adapter.time, "monotonic", side_effect=[0, 0, 0, 91]):
+            with self.assertRaises(adapter.TransportFailure) as failure:
+                adapter.post_json("/v1/messages", b"{}", KEY, 90)
+        self.assertEqual(failure.exception.kind, "transport_timeout")
+        self.assertEqual(failure.exception.result.body, b"{}")
+        self.assertIs(failure.exception.result.complete, False)
+
     def test_transport_exception_message_is_discarded(self):
         connection, response = self.fake_connection()
         connection.request.side_effect = OSError(KEY)

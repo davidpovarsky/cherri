@@ -92,13 +92,13 @@ def post_json(path, body, credential, timeout):
     """Fixed HTTPS origin, one request, no redirect/fallback/retry mechanism."""
     if path not in (COUNT_PATH, MESSAGE_PATH):
         raise AdapterFailure("endpoint_not_allowed")
+    deadline = time.monotonic() + timeout
     connection = http.client.HTTPSConnection(
         HOST, timeout=timeout, context=ssl.create_default_context()
     )
     status = request_id = response_date = None
     chunks = []
     size = 0
-    deadline = time.monotonic() + timeout
     try:
         connection.request("POST", path, body=body, headers={
             "x-api-key": credential,
@@ -122,6 +122,11 @@ def post_json(path, body, credential, timeout):
             if connection.sock is not None:
                 connection.sock.settimeout(remaining)
             chunk = response.read1(min(65536, MAX_BYTES + 1 - size))
+            if time.monotonic() > deadline:
+                # A completed late read must not become a successful response.
+                if chunk:
+                    chunks.append(chunk)
+                raise TimeoutError()
             if not chunk:
                 return HTTPResult(status, request_id, b"".join(chunks), True, response_date)
             chunks.append(chunk)
