@@ -449,7 +449,9 @@ func p15UTGraph(root map[string]any, id string) (p15UTView, error) {
 	if id == "RP19" {
 		var first = c.take("gettext", "first", map[string]any{"WFTextActionText": "α"}, true)
 		var second = c.take("gettext", "second", map[string]any{"WFTextActionText": "ב"}, true)
-		var inline = c.take("gettext", "Text", map[string]any{"WFTextActionText": "Ω"}, true)
+		// lowerBinding keeps result active while lowering the inline call;
+		// both its producer and its token reference carry that authored name.
+		var inline = c.take("gettext", "result", map[string]any{"WFTextActionText": "Ω"}, true)
 		refs = []map[string]any{first, second, first, inline}
 		view.template, view.offsets = p15UTRP19Template, []int{22, 23, 26, 30}
 	} else if id == "BRG08" {
@@ -526,7 +528,7 @@ func p15UTNative(t *testing.T, id string) {
 		"hidden_output", "missing_output", "extra_action", "wrong_output_name",
 	}
 	if id == "RP19" {
-		controls = append(controls, "number_literal", "bool_literal", "duplicate_inline_action", "late_inline_action")
+		controls = append(controls, "number_literal", "bool_literal", "duplicate_inline_action", "late_inline_action", "reconciled_inline_output_name")
 	}
 	if id == "BRG08" {
 		controls = append(controls, "native_numeric_kind", "literal_braces", "raw_escape", "reconciled_wrong_transform")
@@ -640,6 +642,14 @@ func p15UTNative(t *testing.T, id string) {
 			case "wrong_output_name":
 				refs[first].(map[string]any)["OutputName"] = "foreign"
 				cause = "token attachment"
+			case "reconciled_inline_output_name":
+				var inline = p15UTParams(actions[2])
+				var attachment = refs[fmt.Sprintf("{%d, 1}", view.offsets[len(view.offsets)-1])].(map[string]any)
+				if inline["CustomOutputName"] != "result" || attachment["OutputName"] != "result" {
+					t.Fatal("authored inline output-name control absent")
+				}
+				inline["CustomOutputName"], attachment["OutputName"] = "Text", "Text"
+				cause = "native gettext fields"
 			case "number_literal":
 				body["string"] = strings.Replace(view.template, "42false", "43false", 1)
 				cause = "exact text bytes"

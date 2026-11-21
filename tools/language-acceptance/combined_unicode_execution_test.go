@@ -92,7 +92,7 @@ func TestCombinedUnicodeInventoryAndUnprovedRuntime(t *testing.T) {
 		if spec.Title != title || spec.Group != group || !reflect.DeepEqual(parseRequiredTiers(strings.Join(tiers, "+")), combinedUnicodeRequiredTiers) {
 			t.Fatal("changed immutable combined requirement")
 		}
-		expected := map[string]int{"RP19": 45, "BRG08": 61}[id]
+		expected := map[string]int{"RP19": 46, "BRG08": 61}[id]
 		events := combinedUnicodeEvidence.Events[id]
 		if len(events) != expected || !sort.StringsAreSorted(events) {
 			t.Fatal("fixed causal child inventory changed")
