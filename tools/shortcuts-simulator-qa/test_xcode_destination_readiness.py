@@ -40,6 +40,7 @@ class DestinationTests(unittest.TestCase):
         self.tool = self.root / "Selected Xcode.app/Contents/Developer/usr/bin/simctl"
         self.tool.parent.mkdir(parents=True)
         self.tool.write_bytes(b"SYNTHETIC_ACTIVE_TOOL")
+        self.tool.chmod(0o700)
         self.simulator = self.root / "Selected Xcode.app/Contents/Developer/Applications/Simulator.app"
         self.simulator.mkdir(parents=True)
         self.clock = 10.0
@@ -122,7 +123,7 @@ class DestinationTests(unittest.TestCase):
         code, receipt = self.phase().run()
         self.assertEqual(code, 0)
         self.assertTrue(receipt["refreshAttempted"])
-        self.assertEqual([x["stage"] for x in receipt["commands"]], ["destinations", "open", "bootstatus", "destinations", "test"])
+        self.assertEqual([x["stage"] for x in receipt["commands"]], ["destinations", "prepare", "bootstatus", "destinations", "test"])
         self.assertEqual(self.calls[1][0], ["xcrun", "--find", "simctl"])
         self.assertEqual(self.calls[2][0], ["open", "-g", "-a", str(self.simulator), "--args", "-CurrentDeviceUDID", UDID])
         self.assertEqual(self.calls[3][0], ["xcrun", "simctl", "bootstatus", UDID, "-b"])
@@ -141,6 +142,164 @@ class DestinationTests(unittest.TestCase):
         self.assertFalse(receipt["testStarted"])
         self.assertEqual(len(self.calls), 5)
         self.assertFalse((self.artifacts / "builds/xcodebuild-test.log").exists())
+
+    def test_headless_active_tool_requires_owned_bootstatus_and_fresh_available_destination(self):
+        self.simulator.rmdir()
+        self.tool.chmod(0o700)
+        self.outputs = [listing(OTHER), listing()]
+        code, receipt = self.phase().run()
+        self.assertEqual(code, 0)
+        self.assertEqual([x["stage"] for x in receipt["commands"]],
+            ["destinations", "prepare", "bootstatus", "destinations", "test"])
+        self.assertFalse(any(args[0] == "open" for args, _ in self.calls))
+        self.assertEqual(self.calls[2][0], ["xcrun", "simctl", "bootstatus", UDID, "-b"])
+        self.assertEqual(sum("-showdestinations" in args for args, _ in self.calls), 2)
+        self.assertEqual(sum("test-without-building" in args for args, _ in self.calls), 1)
+        observed = self.diagnostic()["launch"]
+        self.assertEqual(observed["selectionStatus"], "HEADLESS_TOOL_RESOLVED")
+        self.assertEqual(observed["preparationMode"], "HEADLESS_BOOTSTATUS")
+        self.assertFalse(observed["simulatorAppExists"])
+        self.assertTrue(observed["toolExecutable"])
+        self.assertTrue(observed["toolBoundToActiveDeveloper"])
+        self.assertEqual([x["stage"] for x in observed["commands"]], ["resolve"])
+        self.assertEqual(receipt["phaseBudgetMs"], 900000)
+        self.assertEqual(receipt["gateBudgetMs"], 90000)
+        self.assertFalse(receipt["formalAcceptanceGranted"])
+        destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_headless_missing_ineligible_ambiguous_or_late_fresh_query_never_tests(self):
+        self.simulator.rmdir()
+        bad = (f'Destinations incompatible with the "{destination.SCHEME}" scheme:\n'
+               f'{{ platform:iOS Simulator, id:{UDID}, error:Unavailable }}\n').encode()
+        cases = [("missing", listing(OTHER)), ("ineligible", listing(OTHER) + bad),
+                 ("ambiguous", listing() + bad), ("late", listing())]
+        for name, final in cases:
+            with self.subTest(name=name):
+                self.independent_case("headless-query-" + name)
+                self.outputs, self.calls = [listing(OTHER), final], []
+                queries = []
+                def runner(args, allowance, *, output=None):
+                    result = self.runner(args, allowance, output=output)
+                    if "-showdestinations" in args:
+                        queries.append(True)
+                        if name == "late" and len(queries) == 2:
+                            self.clock += 91; result["elapsedMs"] += 91000
+                    return result
+                code, receipt = self.phase(runner).run()
+                self.assertEqual(code, 70)
+                self.assertFalse(receipt["testStarted"])
+                self.assertEqual(len(queries), 2)
+                self.assertEqual(sum("bootstatus" in args for args, _ in self.calls), 1)
+                self.assertFalse(any(args[0] == "open" or "test-without-building" in args for args, _ in self.calls))
+                destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_headless_failed_timed_out_or_late_bootstatus_cannot_requery(self):
+        self.simulator.rmdir()
+        for name, result, code, elapsed in (("failed", "EXIT_NONZERO", 72, 1),
+                ("timeout", "TIMEOUT", None, 60), ("late", "PASS", 0, 61)):
+            with self.subTest(name=name):
+                self.independent_case("headless-boot-" + name)
+                self.outputs, self.calls = [listing(OTHER)], []
+                def runner(args, allowance, *, output=None):
+                    if "bootstatus" in args:
+                        self.calls.append((args, allowance)); self.clock += elapsed
+                        return {"result": result, "exitCode": code, "elapsedMs": elapsed * 1000}
+                    return self.runner(args, allowance, output=output)
+                actual, receipt = self.phase(runner).run()
+                self.assertEqual(actual, 70)
+                self.assertFalse(receipt["testStarted"])
+                self.assertEqual(len(self.calls), 3)
+                self.assertEqual(len(receipt["queries"]), 1)
+                self.assertFalse(any(args[0] == "open" for args, _ in self.calls))
+                destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_headless_requires_regular_executable_tool_in_same_physical_developer_root(self):
+        self.simulator.rmdir()
+        foreign = self.root / "Foreign Xcode.app/Contents/Developer/usr/bin/simctl"
+        foreign.parent.mkdir(parents=True); foreign.write_bytes(b"FOREIGN_TOOL"); foreign.chmod(0o700)
+        original_resolve = Path.resolve
+        for name in ("missing", "directory", "not-executable", "foreign-resolved-tool"):
+            with self.subTest(name=name):
+                self.independent_case("headless-tool-" + name)
+                self.outputs, self.calls = [listing(OTHER)], []
+                self.tool.unlink()
+                if name == "directory":
+                    self.tool.mkdir()
+                elif name != "missing":
+                    self.tool.write_bytes(b"SYNTHETIC_ACTIVE_TOOL"); self.tool.chmod(0o700)
+                def resolve(path, *args, **kwargs):
+                    return foreign if name == "foreign-resolved-tool" and path == self.tool else original_resolve(path, *args, **kwargs)
+                actual_access = os.access
+                def access(path, mode):
+                    return False if name == "not-executable" and Path(path) == self.tool else actual_access(path, mode)
+                with patch.object(Path, "resolve", resolve), patch.object(diagnostic.os, "access", access):
+                    code, receipt = self.phase().run()
+                self.assertEqual((code, len(self.calls)), (70, 2))
+                self.assertFalse(receipt["testStarted"])
+                self.assertEqual(self.diagnostic()["launch"]["selectionStatus"], "RESOLUTION_REJECTED")
+                destination.validate_receipt(receipt, artifact_root=self.artifacts)
+                if self.tool.is_dir():self.tool.rmdir()
+                if not self.tool.exists():self.tool.write_bytes(b"SYNTHETIC_ACTIVE_TOOL"); self.tool.chmod(0o700)
+
+    def test_headless_cannot_replace_invalid_or_foreign_application_with_absence(self):
+        original_resolve, original_symlink = Path.resolve, Path.is_symlink
+        foreign = self.root / "Foreign Xcode.app/Contents/Developer/Applications/Simulator.app"
+        foreign.mkdir(parents=True)
+        for name in ("regular-file", "dangling-link", "foreign-application"):
+            with self.subTest(name=name):
+                self.independent_case("headless-app-" + name)
+                self.outputs, self.calls = [listing(OTHER)], []
+                if self.simulator.is_dir():self.simulator.rmdir()
+                if self.simulator.is_file():self.simulator.unlink()
+                if name == "regular-file":self.simulator.write_bytes(b"NOT_AN_APP_BUNDLE")
+                if name == "foreign-application":self.simulator.mkdir()
+                def resolve(path, *args, **kwargs):
+                    return foreign if name == "foreign-application" and path == self.simulator else original_resolve(path, *args, **kwargs)
+                def symlink(path):
+                    return True if name == "dangling-link" and path == self.simulator else original_symlink(path)
+                with patch.object(Path, "resolve", resolve), patch.object(Path, "is_symlink", symlink):
+                    code, receipt = self.phase().run()
+                self.assertEqual((code, len(self.calls)), (70, 2))
+                self.assertFalse(receipt["testStarted"])
+                self.assertEqual(self.diagnostic()["launch"]["selectionStatus"], "RESOLUTION_REJECTED")
+                destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_headless_receipt_rejects_fabricated_gui_tool_scope_and_version(self):
+        self.simulator.rmdir(); self.outputs = [listing(OTHER), listing()]
+        _, receipt = self.phase().run(); valid = self.diagnostic()
+        mutations = {
+            "tool executable false": lambda x: x["launch"].update(toolExecutable=False),
+            "tool executable Boolean": lambda x: x["launch"].update(toolExecutable=1),
+            "foreign tool": lambda x: x["launch"].update(toolBoundToActiveDeveloper=False),
+            "app not absent": lambda x: x["launch"].update(simulatorAppAbsent=False),
+            "app exists": lambda x: x["launch"].update(simulatorAppExists=True),
+            "app bound": lambda x: x["launch"].update(simulatorAppBoundToActiveDeveloper=True),
+            "claims GUI": lambda x: x["launch"].update(preparationMode="GRAPHICAL_LAUNCH"),
+            "claims launch": lambda x: x["launch"].update(selectionStatus="BOUND_TO_ACTIVE_XCODE"),
+            "old launch schema": lambda x: x["launch"].update(schemaVersion="1.0"),
+            "formal promotion": lambda x: x["launch"].update(formalAcceptanceGranted=True),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                changed = copy.deepcopy(valid); mutate(changed)
+                with self.assertRaises(ValueError):diagnostic.validate(changed, self.artifacts, receipt)
+        older = copy.deepcopy(receipt); older["schemaVersion"] = "1.1"
+        with self.assertRaisesRegex(ValueError, "DESTINATION_COMMAND_ORDER"):
+            destination.validate_receipt(older)
+
+    def test_original_version_one_point_one_graphical_receipt_remains_valid(self):
+        self.outputs = [listing(OTHER), listing()]
+        _, receipt = self.phase().run()
+        old = copy.deepcopy(receipt); old["schemaVersion"] = "1.1"
+        old["commands"][1]["stage"] = "open"
+        launch = self.diagnostic()["launch"]; launch["schemaVersion"] = "1.0"
+        for field in ("preparationMode", "toolExecutable", "toolBoundToActiveDeveloper",
+                      "simulatorAppAbsent", "simulatorAppBoundToActiveDeveloper"):
+            del launch[field]
+        original = diagnostic.document(self.artifacts, old, launch)
+        diagnostic.validate(original, self.artifacts, old)
+        (self.artifacts / "runtime/xcode-destination-command-diagnostic.json").write_bytes(diagnostic.encoded(original))
+        destination.validate_receipt(old, artifact_root=self.artifacts)
 
     def test_ineligible_or_unknown_metadata_does_not_refresh(self):
         for index, output in enumerate((listing().replace(b"OS:27.1", b"error:unsupported"), b"unknown output")):
@@ -435,9 +594,8 @@ class DestinationTests(unittest.TestCase):
         self.assertEqual(self.diagnostic()["launch"]["selectionStatus"], "RESOLVE_COMMAND_FAILED")
         destination.validate_receipt(receipt, artifact_root=self.artifacts)
 
-    def test_invalid_resolved_path_or_missing_active_application_never_launches_fallback(self):
-        values = (b"simctl\n", b"/usr/bin/simctl\n", b"/bad/path\n/second/path\n", b"\xff",
-                  (str(self.tool) + "\n").encode())
+    def test_invalid_resolved_path_never_launches_fallback(self):
+        values = (b"simctl\n", b"/usr/bin/simctl\n", b"/bad/path\n/second/path\n", b"\xff")
         self.simulator.rmdir()
         for index, original in enumerate(values):
             with self.subTest(index=index):

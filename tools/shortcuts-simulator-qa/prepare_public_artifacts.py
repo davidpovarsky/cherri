@@ -313,7 +313,7 @@ def stage(root, output, trusted_sources):
                         compiler = public_json((root / "compiler-manifest.json").read_text(encoding="utf-8"))
                         assertions = public_json((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
                         readiness = public_json((root / "runtime/xcode-destination-readiness.json").read_text(encoding="utf-8"))
-                        if name == "runtime/xcode-destination-command-diagnostic.json" and readiness["schemaVersion"] != "1.1":
+                        if name == "runtime/xcode-destination-command-diagnostic.json" and readiness["schemaVersion"] not in ("1.1", "1.2"):
                             raise ValueError("DESTINATION_DIAGNOSTIC_REQUIRES_BOUND_SCHEMA")
                         validate_receipt(readiness, compiler["compilerCommitSha"], root.name,
                                          assertions["targetFixtureId"], artifact_root=root)

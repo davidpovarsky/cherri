@@ -24,7 +24,7 @@ PHASE_SECONDS = 900
 GATE_SECONDS = 90
 MAX_OUTPUT = 256 * 1024
 MAX_OBSERVED_MS = 86_400_000
-STAGES = {"destinations": 30, "open": 15, "bootstatus": 60, "test": PHASE_SECONDS}
+STAGES = {"destinations": 30, "open": 15, "prepare": 15, "bootstatus": 60, "test": PHASE_SECONDS}
 RESULTS = {"PASS", "EXIT_NONZERO", "TIMEOUT", "LAUNCH_FAILED", "DEADLINE_EXHAUSTED"}
 PARSE_RESULTS = {"AVAILABLE", "MISSING", "INELIGIBLE", "AMBIGUOUS", "UNPARSEABLE"}
 
@@ -121,7 +121,7 @@ class DestinationTestPhase:
         self.started = now()
         self.commands, self.queries = [], []
         self.launch_receipt = None
-        self.value = {"schemaVersion": "1.1", **identity,
+        self.value = {"schemaVersion": "1.2", **identity,
                       "deviceIdSha256": sha(udid.upper().encode()),
                       "project": PROJECT, "scheme": SCHEME, "testIdentifier": TEST,
                       "phaseBudgetMs": PHASE_SECONDS * 1000,
@@ -139,8 +139,8 @@ class DestinationTestPhase:
         phase_limit = GATE_SECONDS if gate else PHASE_SECONDS
         before = self.elapsed()
         allowance = max(0, min(STAGES[stage], phase_limit - before))
-        if stage == "open":
-            result, self.launch_receipt = diagnostic.launch(self.artifacts, self.udid, allowance,
+        if stage == "prepare":
+            result, self.launch_receipt = diagnostic.prepare(self.artifacts, self.udid, allowance,
                                                            runner=self.runner, now=self.now)
         else:
             result = (self.runner(args, allowance, output=output) if allowance else
@@ -184,8 +184,8 @@ class DestinationTestPhase:
             # The same pre-issued import request remains untouched.
             self.value["refreshAttempted"] = True
             for stage, args in (
-                # The launch helper binds Simulator.app to the active Xcode.
-                ("open", None),
+                # Resolve the active Xcode tool; launch its GUI only if present.
+                ("prepare", None),
                 ("bootstatus", ["xcrun", "simctl", "bootstatus", self.udid, "-b"]),
             ):
                 if self.command(stage, args)["result"] != "PASS":
@@ -235,7 +235,7 @@ def validate_receipt(value, source_sha=None, run_id=None, fixture_id=None, artif
               "project", "scheme", "testIdentifier", "phaseBudgetMs", "gateBudgetMs", "status",
               "elapsedMs", "gateElapsedMs", "refreshAttempted", "testStarted", "commands", "queries", "formalAcceptanceGranted"}
     require(isinstance(value, dict) and set(value) == fields, "DESTINATION_RECEIPT_FIELDS")
-    require(value["schemaVersion"] in ("1.0", "1.1") and value["formalAcceptanceGranted"] is False, "DESTINATION_RECEIPT_SCOPE")
+    require(value["schemaVersion"] in ("1.0", "1.1", "1.2") and value["formalAcceptanceGranted"] is False, "DESTINATION_RECEIPT_SCOPE")
     require(isinstance(value["compilerCommitSha"], str) and re.fullmatch(r"[0-9a-f]{40}", value["compilerCommitSha"]), "DESTINATION_SOURCE")
     require(isinstance(value["deviceIdSha256"], str) and re.fullmatch(r"[0-9a-f]{64}", value["deviceIdSha256"]), "DESTINATION_DEVICE")
     for key, limit, expected in (("runId", 64, run_id), ("fixtureId", 96, fixture_id)):
@@ -288,7 +288,8 @@ def validate_receipt(value, source_sha=None, run_id=None, fixture_id=None, artif
             else:
                 require(query["status"] == "UNPARSEABLE" and query["availableMatches"] == 0 and query["ineligibleMatches"] == 0, "DESTINATION_ORIGINAL_OVERSIZE")
     stages = [x["stage"] for x in commands]
-    expected = ["destinations", "open", "bootstatus", "destinations"] if value["refreshAttempted"] else ["destinations"]
+    preparation_stage = "prepare" if value["schemaVersion"] == "1.2" else "open"
+    expected = ["destinations", preparation_stage, "bootstatus", "destinations"] if value["refreshAttempted"] else ["destinations"]
     if value["refreshAttempted"]:
         require(len(commands) >= 2 and queries[0]["status"] == "MISSING" and commands[0]["result"] == "PASS", "DESTINATION_REFRESH_REASON")
     gate_commands = commands[:-1] if value["testStarted"] else commands
@@ -304,7 +305,7 @@ def validate_receipt(value, source_sha=None, run_id=None, fixture_id=None, artif
         require(commands[-1]["result"] != "PASS" or value["elapsedMs"] <= 900001, "DESTINATION_PHASE_LATE_PASS")
     else:
         require(value["status"] == "BLOCKED_DESTINATION" and "test" not in stages, "DESTINATION_FALSE_BLOCK")
-    if artifact_root is not None and value["schemaVersion"] == "1.1":
+    if artifact_root is not None and value["schemaVersion"] in ("1.1", "1.2"):
         path = Path(artifact_root) / "runtime/xcode-destination-command-diagnostic.json"
         require(path.is_file() and not path.is_symlink() and not path.parent.is_symlink()
                 and path.stat().st_size <= MAX_OUTPUT, "DESTINATION_DIAGNOSTIC_REQUIRED")
