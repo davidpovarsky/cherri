@@ -249,3 +249,10 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 - Integrated local short-circuit source173d4ced/proof2ef45b2e after independent26/96/139 event and105source-witness verification; RP18/BRG13 still pendingApple.
 - Integrated Apple proofc34057f4 for sourcec543:129members verified and six original narrow runtime records canonically recomputed on exactclean source. Startup andFileUTF8 failures remain; no test02/native inheritance.
 - Root review0c04c0efae8365a014d08529227e734b625f18b58252d17e02636872c11902d7. No task or full179 closure. HistoricalK1 aggregate unchanged until a new combined run.
+
+
+## 2026-11-22 — R6 verified joined Unicode integration (root)
+- Source 82560cfb / proof 450dd404: root independently verified all 23 original members, 117 Git source witnesses, 26 outer events and 46 RP19 / 61 BRG08 named passes.
+- Reassembled fragmented Go output and decoded all 18 retained XML specimens: two actual compiled originals plus 16 actual import/recompile results. Per-requirement bytes and typed trees are exact; original binary inputs are not claimed retained.
+- Four local unit/native-roundtrip records; RP19 and BRG08 remain pending Apple runtime. Original 24cada failure remains unchanged. No full requirement or CI inheritance.
+- Integration preserves documentation recovery, short-circuit and Unicode mappings and both independent intake guards. Root review SHA256: 9395ccf788c7819145c9abd5d5c49cf2b11583111c376b917800412f8a8dbe0e.

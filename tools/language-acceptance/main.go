@@ -939,6 +939,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateShortCircuitRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateCombinedUnicodeRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateCaptureOrderRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1937,6 +1941,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		if r.runShortCircuitRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}
+		if r.runCombinedUnicodeRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runCaptureOrderRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1979,6 +1986,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 			continue
 		}
 		if r.runShortCircuitRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
+			continue
+		}
+		if r.runCombinedUnicodeRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
 			continue
 		}
 		if r.runCaptureOrderRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {

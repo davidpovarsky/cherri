@@ -1,0 +1,1605 @@
+{
+  "schema": "cherri-independent-unicode-proof/v1",
+  "reviewed_utc": "2026-11-21T23:33:10.046716+00:00",
+  "source": "82560cfb93bbf1716f55b723d9bb78140691c5cd",
+  "source_clean_at_review": true,
+  "fixed_inventory_sha256": "2e66c5b40cdb66c26b7c9a7b6e07b0ba2ef072ec140e2aa528235a95ade93281",
+  "source_path_digest": "bebcedcda5c5e62ab1c824cb171416b18028976edb22381c74cdee8533d4203d",
+  "source_files": [
+    {
+      "path": "action.go",
+      "sha256": "d8e0aab1e7d425c879ac225631a4fecfa4e3f42c71bb998daeb1b484cc3ade6c",
+      "bytes": 53080,
+      "git_blob": "c51d8345b2fb156b311e05baf2c2fee155e1e39e"
+    },
+    {
+      "path": "actions_catalog.go",
+      "sha256": "4a0dcafa435fa63bd93341d09f1e1f9eed0b6e07d590195c1a24790d501d47c7",
+      "bytes": 12755,
+      "git_blob": "3dbb4adc154642a1687c02b22e82f1d701c188bb"
+    },
+    {
+      "path": "actions_std.go",
+      "sha256": "408f9ad4006916f796cf3208f43db542feafb878f44eac24e20a225ea0e5fccc",
+      "bytes": 97516,
+      "git_blob": "56665de9b466e7b1d873970e22b289b3333cc336"
+    },
+    {
+      "path": "args.go",
+      "sha256": "46915519af85d5c79271fc03beda6363c68ccf1872756d2b6db61b448bd1a96a",
+      "bytes": 7244,
+      "git_blob": "8d474f7bdd32b59589f7f549f5760f05c8693e52"
+    },
+    {
+      "path": "build_profile.go",
+      "sha256": "d08f397a3d1c2978ce10969c05534f4809c2d4d99b87cee7d765c101eef4945b",
+      "bytes": 6151,
+      "git_blob": "f6636d666a999fef64d04c4bf34672f958f08413"
+    },
+    {
+      "path": "compiler_state.go",
+      "sha256": "5874cb7c6e5f7196f95c5a991b2debb5499cc25980818e6c2409021f2ebdac80",
+      "bytes": 5763,
+      "git_blob": "5efd11724aa2945399334bb6691198fb971e32ae"
+    },
+    {
+      "path": "decompile.go",
+      "sha256": "19d41c9feddae9bc95ed5dec75b3fac00690f6d2d895f7a406a096ea221c58c3",
+      "bytes": 101040,
+      "git_blob": "16f4c5a95c225a518c3d7b283a553db9305a8bd0"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c",
+      "bytes": 1618,
+      "git_blob": "0bc0002815d1779cf4f094bbe141df03557d37ed"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c",
+      "bytes": 11884,
+      "git_blob": "00552c157626f542aee6906578955f7ded0ebf4c"
+    },
+    {
+      "path": "hybrid_import.go",
+      "sha256": "e5418f8ba31028da3e2f96a7e269916f62d8230bf1e997f6bc0be24db2941c6f",
+      "bytes": 31124,
+      "git_blob": "947fa6a863288819029586fde493c0bfcec4164c"
+    },
+    {
+      "path": "import.go",
+      "sha256": "8ff75c5eaef4403efacc9d213e83ddd6e70d7976a07d7ff6fa4ef56c2e7be705",
+      "bytes": 10095,
+      "git_blob": "a7e524124a2e0f1f933622fa41096d814d176914"
+    },
+    {
+      "path": "import_fidelity.go",
+      "sha256": "cba3ca8ce5b2a3f444708687d2383f6079ca8db711f56e51e44968613fd80e74",
+      "bytes": 34991,
+      "git_blob": "d3723cb7e4fe81de4b5816b563322fb5e8592f3c"
+    },
+    {
+      "path": "import_provenance.go",
+      "sha256": "6fa32e54161e77ecbc18d3771450ee7704ca0a39c5b58e235c4dc46aa38bd131",
+      "bytes": 19422,
+      "git_blob": "ea96c0980f0f9a1869d28bb51635cdf15596a68d"
+    },
+    {
+      "path": "import_provenance_oracle_nopatch.go",
+      "sha256": "302d319c98f067b357fbf4d9b519602150898eab4ce1b439e4440680075de017",
+      "bytes": 303,
+      "git_blob": "541b8d4bda774527668eb640891c08c64e10feef"
+    },
+    {
+      "path": "import_provenance_restore.go",
+      "sha256": "c1dc43ac6339f64b5ea31e61de06c79a7c8377a77fd017660707fdb57b647cfa",
+      "bytes": 195,
+      "git_blob": "2575ccac33ccef58bba38a566d1ebf46d8c78a5e"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "3eb93f253fbab0809e75c393bf69628c80854ceca7d7035e7e63c00acdf2eee6",
+      "bytes": 71362,
+      "git_blob": "0bc1a2ab47282d149749e8f086768879adb7b76a"
+    },
+    {
+      "path": "internal/language/analysis/cardinality.go",
+      "sha256": "fce90c100fce43a327c78b522baa7e9ffc015eed1a5214b304ad447b16e8b0f6",
+      "bytes": 2438,
+      "git_blob": "a0fe0c9a7e4772ae4f40365999718c982b6f06f9"
+    },
+    {
+      "path": "internal/language/analysis/diagnostics.go",
+      "sha256": "f36439fc1f4eb78b27ce67a54b387f43d30e4da79d45bd36e051c9cf4a253705",
+      "bytes": 2675,
+      "git_blob": "35788b2211644758aa86e052e0c2250763111409"
+    },
+    {
+      "path": "internal/language/analysis/function_arguments.go",
+      "sha256": "5e4a3dfff3739b167da0dd1925e2c1a253bdee5e6a3d327fd3d0d76d48b366c4",
+      "bytes": 3819,
+      "git_blob": "47982b3bf3bc923c78a0738c773afaab3500f741"
+    },
+    {
+      "path": "internal/language/analysis/literal_arguments.go",
+      "sha256": "ad0fa727d6766098ed74338b26cbe23420e31172b62edd675f4248caf45c55c6",
+      "bytes": 4314,
+      "git_blob": "2e4ec2b286113e70c0588af39f353212abf6e9ea"
+    },
+    {
+      "path": "internal/language/analysis/native_reference.go",
+      "sha256": "56a47c18b02fb4cb167230cb54fe428c6ebfccb8658222fbbcd871882e3435f7",
+      "bytes": 4294,
+      "git_blob": "f249ad0ed1f9484bc1540c2b195f34fdd13fca77"
+    },
+    {
+      "path": "internal/language/analysis/resolved_actions.go",
+      "sha256": "9773452cdf6f59779486baa15e67f20c2c740e8a251bf65175742fcb166b5e3d",
+      "bytes": 682,
+      "git_blob": "a5be6214778929dfe591d18fbe5921e7fbda51f0"
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "sha256": "d97d0eb0c41771506c51f1dd1c214042d1d104ae1f5c43b5f8a84d7f77089dc9",
+      "bytes": 6912,
+      "git_blob": "b277cd3229e424d0c48d81ad380b59fc934fb4b1"
+    },
+    {
+      "path": "internal/language/backend/native_envelope.go",
+      "sha256": "3f61a12dfd9867c66e8bffa716ab8a0393c86f97492ee4658c182384ddece6e6",
+      "bytes": 871,
+      "git_blob": "7d2ac6a80651b0a9366d980f89b3e65913ffce66"
+    },
+    {
+      "path": "internal/language/backend/parameter_codecs.go",
+      "sha256": "b2a965e0b9bf14ec619c1467601aa4f57dd8368bbdd94ad33988cc9d323682ae",
+      "bytes": 700,
+      "git_blob": "bf0327f897e06563909378df403c00ba72507b99"
+    },
+    {
+      "path": "internal/language/ir/ir.go",
+      "sha256": "165ace82a2892e24a3e5a36a1d7813abe0f83e5a97f204b060d9b23888bc994c",
+      "bytes": 3491,
+      "git_blob": "02bf65d59871da11c8f5400cde2869a2323d39dc"
+    },
+    {
+      "path": "internal/language/ir/native_reference.go",
+      "sha256": "6ba68605c3582d1c91e23b6a2b1aaf1f4bf2749cc3563d463db25c26b69ec13b",
+      "bytes": 2167,
+      "git_blob": "1c0c5d467862b34892a9912c5bf334ba60f4df4b"
+    },
+    {
+      "path": "internal/language/lower/argument_type.go",
+      "sha256": "f1e6c937c76f62f125dd96e8888327e18c6d93b2a189b31cb29c6ad177ba37d8",
+      "bytes": 643,
+      "git_blob": "3a0f9f46b4967a560850f3e0983c85f3ee10e879"
+    },
+    {
+      "path": "internal/language/lower/binding_capture.go",
+      "sha256": "20d197223c554c837e45d528187b227780a878bd380caa13714fa04b6a4e06be",
+      "bytes": 883,
+      "git_blob": "32257e1dad75407ce963d97abf9e7dd80e1eed79"
+    },
+    {
+      "path": "internal/language/lower/call_arguments.go",
+      "sha256": "f853ffe2d9393d01236cf55c1dc53ee5e6fdff39ee97b87ade3401f63f8e11a8",
+      "bytes": 7247,
+      "git_blob": "d15694f0ffa1078972e7cdc338a558ba3e97e666"
+    },
+    {
+      "path": "internal/language/lower/lexical_scope.go",
+      "sha256": "06499149973ab6b2629be5ed64edaa8b32eda1d5397695a10223be3590af7b61",
+      "bytes": 5338,
+      "git_blob": "8e5267458532a3bc4c98b72e67b9080cf6950d93"
+    },
+    {
+      "path": "internal/language/lower/literal_text_carriers.go",
+      "sha256": "c819ff45675b29cc47ded46196cd28288502f5fa0e0fb0bbd7952d7e45b0e0e5",
+      "bytes": 5011,
+      "git_blob": "fb11e1aff883ad1130c1066cb3748d2ee2c265cf"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "6dc79f139f44199051d1bd5e18d284cd6b663305711ec28190bfeb35c0ba88e7",
+      "bytes": 189276,
+      "git_blob": "05c7f264ee142cbb3fc20757d77ceacacbdf28c2"
+    },
+    {
+      "path": "internal/language/lower/main_output.go",
+      "sha256": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619",
+      "bytes": 1917,
+      "git_blob": "7b4029685e2cecf8317bd3bb70c0e8a001893349"
+    },
+    {
+      "path": "internal/language/lower/native_action_envelope.go",
+      "sha256": "bcdb586142cb0f8b45dd52af58f6dfffcf4f8a0a9be64279b1fb23ed644c0158",
+      "bytes": 1059,
+      "git_blob": "9317803968c1e62c8f432d03c972b71237c66114"
+    },
+    {
+      "path": "internal/language/lower/native_action_result.go",
+      "sha256": "b0fdbe77242776bcc55603ef937b30a981fd920231ddf0057673b16509de4005",
+      "bytes": 1210,
+      "git_blob": "42a149a9be7ddeafec3c22855ae6373a65a6dff1"
+    },
+    {
+      "path": "internal/language/lower/native_plist_value.go",
+      "sha256": "212de0c9f2aefb29ad168fbc5e86451c11b993bd55a54793d138c01e64e7c872",
+      "bytes": 1240,
+      "git_blob": "79dab40d831d7f9d7e3706fde879988e9dc9367c"
+    },
+    {
+      "path": "internal/language/lower/parameter_codecs.go",
+      "sha256": "089aca8aedbd5f166e9aad3af92c01074bdf672b571d4bcc8c50cce510390b4a",
+      "bytes": 2164,
+      "git_blob": "2bf7fe94ba6a04988646ce45f7b28e95fac2153a"
+    },
+    {
+      "path": "internal/language/protocol/protocol.go",
+      "sha256": "c2105189b5b660dfe0704c8e3b2f58c73ef37742fe274a5f780d11a536ed98d9",
+      "bytes": 5731,
+      "git_blob": "4e009250b2b36c3796f504918667739d45d4d88d"
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "sha256": "35f1bd2a4e7ad9dd4061eab5c432d69b404455ac9fcaf28b2f97a6d81ef46474",
+      "bytes": 710514,
+      "git_blob": "242e062b6b65c1156b9dc632d57199a3dc294de2"
+    },
+    {
+      "path": "internal/language/schema/metadata.go",
+      "sha256": "fdfbb8742fc836241a2aab3f65c6cac822b003d54bf01f3aa50f1264ac936f50",
+      "bytes": 26470,
+      "git_blob": "191ad75419fe9b8510fd94faf9206ce14cac933c"
+    },
+    {
+      "path": "internal/language/schema/registry_clone.go",
+      "sha256": "068220c9bf1a0067343dc13698a3883def14bccaa3629fc21315f2bb09c5c908",
+      "bytes": 4105,
+      "git_blob": "a1cadccab28ea6637dfff434a8675ce73a9514ba"
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "sha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919",
+      "bytes": 27984,
+      "git_blob": "e87bad77aed204964e11bb103ac5beda1ec0e6ce"
+    },
+    {
+      "path": "internal/language/schema/semantic_metadata.go",
+      "sha256": "215348ddf835905fb275babcfb14259fee28524b05e8d06a7a1d205aaa79a61d",
+      "bytes": 3262,
+      "git_blob": "902fe4401e8f15c7ed7a0ae9ca9777c231a6c1e9"
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "sha256": "87570e144d997f6104bd1727e6b795562f79bd93754ecc534febe0390f074371",
+      "bytes": 32221,
+      "git_blob": "6cee8d00abf619d1e4d0b80e9b538ae4db8b3bff"
+    },
+    {
+      "path": "internal/language/source/span.go",
+      "sha256": "3abfacae149d79bec6a094c39e34fa5ee3f97c680a3e5b587e0a45eaf540fab6",
+      "bytes": 7597,
+      "git_blob": "32b5745e64efa2b699c2e61a0c41930873ae257f"
+    },
+    {
+      "path": "internal/language/syntax/ast.go",
+      "sha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f",
+      "bytes": 11243,
+      "git_blob": "aec8fd6921022e65ad666fec8c2e551d6caea2c4"
+    },
+    {
+      "path": "internal/language/syntax/identifier.go",
+      "sha256": "b835ab0fb417908a85763169cf0736dde40743140b6583c8d813a42a49222369",
+      "bytes": 455,
+      "git_blob": "b32295b347cb52a8855b52fbbd837122f9b78882"
+    },
+    {
+      "path": "internal/language/syntax/lexer.go",
+      "sha256": "e85deee166dc6bc2d44c78028cb8bc9fd5e02df5f992e7b69e065ae4f009d692",
+      "bytes": 15082,
+      "git_blob": "2fc6c948403a1f1218ea39ecd2419aa50061739d"
+    },
+    {
+      "path": "internal/language/syntax/main_output.go",
+      "sha256": "9d53c9c5fa4bb27dbcdb44e3ce75dece9ffe4e532543d7fef9685ea7fd37f9b9",
+      "bytes": 1988,
+      "git_blob": "f24fa0337703150e928811b2cc84b0b1bc7764d1"
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "sha256": "25a5caab0ea6f46af493bdaaf8a46ed1cb6d1234dc76111d4999ba63e9a2fc33",
+      "bytes": 42624,
+      "git_blob": "3a0282d919d4984e62d34f694ca13e74529001ae"
+    },
+    {
+      "path": "internal/language/syntax/parser_predicates.go",
+      "sha256": "fcf51fb32333748099035f6f383d4d4c59f51590a59db1b3915c983b2a28a039",
+      "bytes": 585,
+      "git_blob": "69a5f2987bf4a916066f2f58e0362b150616ead8"
+    },
+    {
+      "path": "internal/language/syntax/token.go",
+      "sha256": "a33cc88b825eb87d319e2a10959aa9f98b5f6f46aba6febf2b94aae3e0ca2128",
+      "bytes": 3270,
+      "git_blob": "c975f16389bcf307a36b68730cddeb3e584f3794"
+    },
+    {
+      "path": "internal/language/types/optional_presence.go",
+      "sha256": "58e3a99cfc260c53d8ff77d6bff09ac22efe201425cc98f8b81cde80b30b1a9c",
+      "bytes": 1133,
+      "git_blob": "b226a8537b206209fe30407d2bb5e856ace79527"
+    },
+    {
+      "path": "internal/language/types/record_evidence.go",
+      "sha256": "31f2750e1b004f8e0c047fdd3942b8148c0ae5c9b071a66e03bce8d03bf8a78f",
+      "bytes": 2849,
+      "git_blob": "1932e5d07cc9f3c4a5ab8b7ca4d0894ba9507a98"
+    },
+    {
+      "path": "internal/language/types/types.go",
+      "sha256": "b4df1e1b94616d0c4e977e477cefca2e357855bdb3de7bc71564530270496f31",
+      "bytes": 14524,
+      "git_blob": "b1be2d24551fbf4907bb844ccb5834c96a40007b"
+    },
+    {
+      "path": "internal/shortcutcompare/compare.go",
+      "sha256": "903899415feb475f382c09659b3ccfdfa983f5a59e0a38e470b4b483caad472a",
+      "bytes": 14324,
+      "git_blob": "9209d990adbc7bd3caa95bfe21fe9a8a3bc01f0e"
+    },
+    {
+      "path": "internal/shortcutcompare/normalize.go",
+      "sha256": "6f2f57a173aafe14618fdf87779ef2a2e60ba03ddd7ebde67a1d22ac6c57fc69",
+      "bytes": 57725,
+      "git_blob": "33439f2df55565f4d973adc4c0a2a3f3beab022a"
+    },
+    {
+      "path": "internal/shortcutcompare/p15_snapshot_symbols.go",
+      "sha256": "18af54b457165aa9e2a416095d9989b69a6490ef8e999d570836bfd57c349f5a",
+      "bytes": 4455,
+      "git_blob": "4e3cbe235030054dfcc5ba9c12b4f5d0f8fd560d"
+    },
+    {
+      "path": "internal/shortcutcompare/question_targets.go",
+      "sha256": "6d83241521ac325a89dc04a964431a4c8740006e9646b388e40c612b40f8bfa6",
+      "bytes": 3004,
+      "git_blob": "accad31cc2fb65784f635db75f8c0c69bef15f79"
+    },
+    {
+      "path": "internal/shortcutcompare/strict_scalars.go",
+      "sha256": "934a7516cec175b9259234eb0b7dd69ca0c2aa035fc5d7c7187851913a9a715b",
+      "bytes": 1575,
+      "git_blob": "30e0c565d280f9f05956e529ce1811c760ab5b55"
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "sha256": "d32324fdc3aa3667f8280ff9e931a41de568e0a6e3422b7d6d6a7c8c37789762",
+      "bytes": 36831,
+      "git_blob": "2e1f9aa8188e5be3e46fd1cc151f113bfd710cd1"
+    },
+    {
+      "path": "language_backend_session.go",
+      "sha256": "73c13ef203c9eeca641d5c52e9d330c68231c8b272f3c9f155c99f636b72de96",
+      "bytes": 2609,
+      "git_blob": "f447e66acdb03c8789f32d277f0d3a6e7a100235"
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "sha256": "94b4fd6ab51b679de2dc0a24dce867a6f4fc23a7fa158be5f96d0da7718d2058",
+      "bytes": 15964,
+      "git_blob": "009a12db25e56901623278275446ad6cc9df5ed1"
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "sha256": "7913b0bec818c0caeeddcf42e0dfc63458ca8e9b318873054b4b038761f3db3f",
+      "bytes": 16621,
+      "git_blob": "87bc4ffd1d39ae3d4976bad3dd7a71ac37c83a17"
+    },
+    {
+      "path": "language_registry_adapter.go",
+      "sha256": "a7a22d65cb058f9e8113d2961bb66bdd09884a5829b0db6e90e40dc0a9ba81bf",
+      "bytes": 1441,
+      "git_blob": "a84fcf48739a604a542696240409650b4eeaab89"
+    },
+    {
+      "path": "language_typed_literal_adapter.go",
+      "sha256": "e24e4d373de1ea8a26870371ce540a6cfc28d151d36fc063048ca2c3691aaba5",
+      "bytes": 2673,
+      "git_blob": "025e046707ccd04bca86d67c336e1937d98a710f"
+    },
+    {
+      "path": "language_value_adapter.go",
+      "sha256": "d490e6a0b09629cd3cd9e8226481d086daed4f38455c84abfd40466b5c3dd260",
+      "bytes": 4298,
+      "git_blob": "7922e3208de6f93a61507ac3df167a00f39a8426"
+    },
+    {
+      "path": "literal_text_carrier_binding.go",
+      "sha256": "7025089facd0b7bb55bd4bc82fcb6759da601a3324b99e6e9f4f4e592f06ffa2",
+      "bytes": 3813,
+      "git_blob": "2fe80ece09535b259620efeb955dc9d1ec7f62f1"
+    },
+    {
+      "path": "mobile_compiler.go",
+      "sha256": "e7f2b4c3517493d6170a2a1e0a0aae51e8991b92d560e4fc912a9d64a1037602",
+      "bytes": 15989,
+      "git_blob": "26f5320d511ec33b249ec482bee6c8fb3be86f19"
+    },
+    {
+      "path": "output.go",
+      "sha256": "e2865c10011359849686e0fcf379ed3f4037ecac19e46771df8651b63d351585",
+      "bytes": 4097,
+      "git_blob": "a2940abd916c134fdd1a99c055b8958b902ac0f3"
+    },
+    {
+      "path": "p10r8_fidelity_test.go",
+      "sha256": "9b396d82ef05759074163a75749695c0e9ca3d84d575315fa96ebe911dc9fc1e",
+      "bytes": 20380,
+      "git_blob": "fde4b084dc2fdef48ea0425ac62f1eff6aa7b8db"
+    },
+    {
+      "path": "p10r9_hybrid_test.go",
+      "sha256": "57f0d40ee663370f6d19268941cce74c0485cda32e8e64d0260bbd6e25d00253",
+      "bytes": 77730,
+      "git_blob": "904fe7b3da509120f5e066b10276dd059d2ad07e"
+    },
+    {
+      "path": "p15_combined_unicode_text_test.go",
+      "sha256": "9aea25aba750313dcf23fcfa0757a59c9505ebc5c8289086baf828037fdf9d68",
+      "bytes": 28830,
+      "git_blob": "22271fbe06db38152242909acbe999e872c9f794"
+    },
+    {
+      "path": "p15_container_shape_acceptance_test.go",
+      "sha256": "f916e23b6d5f95288751319adcec739cae7c7e384ebd26710c5a6caa51b30caa",
+      "bytes": 14567,
+      "git_blob": "29e7b09f08182f33b3f089bd9efcb742f57a84bd"
+    },
+    {
+      "path": "p15_dictionary_list_reserved_test.go",
+      "sha256": "41bd80f476f0c073b87137a4f1892d5e38a15fdb9ed773ea714da782e34693a3",
+      "bytes": 5148,
+      "git_blob": "a71ab8955023e9649f220b22a09841bdcdaab4ac"
+    },
+    {
+      "path": "p15_metadata_acceptance_test.go",
+      "sha256": "7b96264685ac7a9e22a2fdce0f8a510ddb1c3b7e321a362c74c31638eb81d630",
+      "bytes": 17714,
+      "git_blob": "befb025bef68eb7604828da3a0d77dda833a943a"
+    },
+    {
+      "path": "p15_native_acceptance_test.go",
+      "sha256": "68d50ee22426b1d3c814f822449e705a6ffb51da1d51f4e57eab1f82da59b5db",
+      "bytes": 22835,
+      "git_blob": "fdf3fb30e1513bc7f86084f94c6e068a9a360f1b"
+    },
+    {
+      "path": "p15_parser_acceptance_test.go",
+      "sha256": "d996b4708544d2470e1cacdce463866c938d470ed0c631eddec490c178ef3cd2",
+      "bytes": 18663,
+      "git_blob": "edcda8f33c6fba3b117ebf6b1e67f643c21cd91c"
+    },
+    {
+      "path": "p15_s01_literal_placeholder_test.go",
+      "sha256": "11a662c8aa82120ed2bd5a841fa4a2ff6bac88c0143dca8e740aabf1674a2097",
+      "bytes": 9855,
+      "git_blob": "8ca54299acd7a781435ac96cc0993e3069d08676"
+    },
+    {
+      "path": "parser.go",
+      "sha256": "fbb8e1c5843821957b4d64a8420b11c78b0072f20a223f152823484f3c28a853",
+      "bytes": 58691,
+      "git_blob": "74b127561830cc6bc9b92dade7aad36f4606e214"
+    },
+    {
+      "path": "raw_actions.go",
+      "sha256": "620f01e09623d3be7218a32feeef3709158843b039562181ac0cee9d34699706",
+      "bytes": 5003,
+      "git_blob": "e355904f66960c14469823919e364b9330d1dc06"
+    },
+    {
+      "path": "references.go",
+      "sha256": "089e0d764735df58a23369b11e1e03166417faebbb80c37731fe2aff04749731",
+      "bytes": 5013,
+      "git_blob": "3a8aecd29044aa7706fbb9fb4dfa9376e129f9e2"
+    },
+    {
+      "path": "reverse_action_registry.go",
+      "sha256": "42698854526a322839b292fcc5d0d91c2924b0868c4385976bd6e9bfd577d0a8",
+      "bytes": 13823,
+      "git_blob": "6b8b04de843381024a285c1a1da4673ddeaba3e3"
+    },
+    {
+      "path": "semantic_import_native_loop_results.go",
+      "sha256": "091a6e8f07fdf7e8a83676692120bfda71911841e1b90b41a8a3e086b3326cea",
+      "bytes": 1189,
+      "git_blob": "ed862b94dad0c22969f9878ae43d9702b5ee4692"
+    },
+    {
+      "path": "semantic_import_native_operands.go",
+      "sha256": "4300d13f7c34bdb50724601717610b206072300556acac3562a091698b9bdc2c",
+      "bytes": 687,
+      "git_blob": "e1645ca1f40b3ca4fca080b5206db2b97317df87"
+    },
+    {
+      "path": "semantic_import_planner.go",
+      "sha256": "0e304f7843a69de7375386d133268446c0bb4b213cfd0e19a3b7f3f0e65c2ab5",
+      "bytes": 127878,
+      "git_blob": "df83047c8688d2036167780654f173d513a28d06"
+    },
+    {
+      "path": "shared_codec.go",
+      "sha256": "57da3538aabbfe0a9ce7ad497181f546209d9b20eaef5774ef943a053ebb9bad",
+      "bytes": 5438,
+      "git_blob": "3b9e0e62505d7e4fc3c83d183db527124a1bb1d9"
+    },
+    {
+      "path": "shortcutgen.go",
+      "sha256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e",
+      "bytes": 50830,
+      "git_blob": "08d59a04fbdfb30a0ec5abf16c1924df9ebfca67"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "git_blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "git_blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "git_blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e"
+    },
+    {
+      "path": "tests/language-v2/v2-brg08-inline-codec.cherri",
+      "sha256": "5b59664946c8e2ecf9841512839db6670df622538f065aa408b696fc0cb72f0d",
+      "bytes": 658,
+      "git_blob": "c41f0378c0fdb81ad31e9b3a92482313cb1e5687"
+    },
+    {
+      "path": "tests/language-v2/v2-rp19-literal-unicode.cherri",
+      "sha256": "57ecba5206a2418b595f5f5d023dc148fe96e4531ae80029ad7383d441913158",
+      "bytes": 241,
+      "git_blob": "4b2cd588b39dcfa6b98d6632cd73d6244436b1c2"
+    },
+    {
+      "path": "token.go",
+      "sha256": "798733ea74f0095c5fb3dbd77264b8d9be5e9db37bd6a8cf39168656b85bab3a",
+      "bytes": 3591,
+      "git_blob": "36d2c23dba12e53fa46074766e3e31274309e6b3"
+    },
+    {
+      "path": "tools/language-acceptance/aggregate_contracts.go",
+      "sha256": "4cb6de1435a7e6570d62900bf1a5b05d9c9374f961cd1d012f9601d010b49d53",
+      "bytes": 933,
+      "git_blob": "44f798dfe657fec607d53292b9ddac5b6fbb2b00"
+    },
+    {
+      "path": "tools/language-acceptance/combined_unicode_execution.go",
+      "sha256": "c4fa05f7935a8757672ecb96e653d16d7a151a2859d1ecb9dfd8933fd488c5cd",
+      "bytes": 8761,
+      "git_blob": "ca6edef963c9cd0881f255a2353d23e4599bc741"
+    },
+    {
+      "path": "tools/language-acceptance/combined_unicode_execution_test.go",
+      "sha256": "f9db328c4540fce97a646528d685829c46fa79acb93ccc7fe06462db5cc02f02",
+      "bytes": 11906,
+      "git_blob": "a98000b496424f177c84657d3e2444a47abdfcf8"
+    },
+    {
+      "path": "tools/language-acceptance/combined_unicode_inventory.json",
+      "sha256": "2e66c5b40cdb66c26b7c9a7b6e07b0ba2ef072ec140e2aa528235a95ade93281",
+      "bytes": 12711,
+      "git_blob": "19c33659765387c22601bd5cd7d2282314db6eb5"
+    },
+    {
+      "path": "tools/language-acceptance/documentation_intake.go",
+      "sha256": "317908bc79bba2c41dc139788f69473e06e2a92736fdff584f09829487877ab4",
+      "bytes": 21907,
+      "git_blob": "3179c41c81604e69e8fa9c000d1293c58f2aa654"
+    },
+    {
+      "path": "tools/language-acceptance/editor_contract_execution.go",
+      "sha256": "809ad97f55234a6d72ca3088b410267f7f2cd1463c5a3c19058fb10fc650747a",
+      "bytes": 17838,
+      "git_blob": "b2accd767b01b5874c81f34f3f652aa47d4e0fe8"
+    },
+    {
+      "path": "tools/language-acceptance/editor_contract_execution_test.go",
+      "sha256": "cad0e157c3bdb738acd84d26c30aea26133fef84370595f8e51bee962cca9098",
+      "bytes": 20437,
+      "git_blob": "e90cac98e57d8f90cb708bbedcf6a499376b2108"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "sha256": "88463676db61f8bb6ea9a9e1c9efccc22657a0e1795dac263edff8b21126f7e3",
+      "bytes": 19167,
+      "git_blob": "99240687ae711d335bdb81453cdd8fb6d36c5fca"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead",
+      "bytes": 571,
+      "git_blob": "7bab8402ce91b609bd74f0ae5066b0b43039213d"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109",
+      "bytes": 650,
+      "git_blob": "bd92d3acc1cf5eeeb7d9614b82f5ccd685670cb3"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212",
+      "bytes": 3250,
+      "git_blob": "6b8e94c611d2bb6d85798b9ece13665103e23737"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "7eff505abed379f82f112a13f380b9eb454a9108760bf2b5d9af94bebbc0e114",
+      "bytes": 28913,
+      "git_blob": "46c7f084930d01601187971a87cda250501b3535"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "b4c8dff15cb3dc8469881a276160f106785725b732ffe7a09ba5df9101471ed5",
+      "bytes": 22724,
+      "git_blob": "1951b827cfe0e880316f363907e38282d6ecd351"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding.go",
+      "sha256": "fa655ca644934ec8e8cb3fb636694095eeb1cce14b261522b587e1d2cca1ad2e",
+      "bytes": 3652,
+      "git_blob": "d0442e7e547915b54b7e78cd8a800b67f9c1a06b"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3",
+      "bytes": 13859,
+      "git_blob": "4f415c3de47eedff9491e5317f093e82f4651af5"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "db2868f01dc8b5011091d75dde1fcb490a69735cd72f2a5adc0a5f7edec521a0",
+      "bytes": 72610,
+      "git_blob": "fa51d174e892174966fcc6a1da1bd2980ad51ec4"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676",
+      "bytes": 2131,
+      "git_blob": "04366f3a10bb86ee4259ed8ce239f65951b11730"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_execution.go",
+      "sha256": "b969cbff32bbc943dec39cf4325eb2c6ab79a6f33d977d7855ba1cf7b678614d",
+      "bytes": 9741,
+      "git_blob": "07e33c682640088d92486b5b629313e37aa60d30"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591",
+      "bytes": 13578,
+      "git_blob": "d56012d6ce6061881283c161f69d8fe109722355"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "sha256": "3ae85f353f686de9e1b19d6a407dc81db1a9f9ac183434a0204f1df2284ac598",
+      "bytes": 4293,
+      "git_blob": "b56cfd75f6d88f24bdf91c52d1670e13bb09de47"
+    },
+    {
+      "path": "typed_array_value.go",
+      "sha256": "76306d0c62f24c972712af06af006529208486546c38d34b03b2c9097bd0d8a9",
+      "bytes": 607,
+      "git_blob": "15259ade84347ec27a1103c9c69da2daee106d0d"
+    },
+    {
+      "path": "variables.go",
+      "sha256": "b6e3f9f7cf3b2d7ada01d345b2ef0d97fc40368453ddccd206407c367fc33e5d",
+      "bytes": 6391,
+      "git_blob": "cccbf55bad68c13377a98794cc0b9334c7e9d1a1"
+    }
+  ],
+  "source_bytes": 2691639,
+  "fixed_nested_events": {
+    "RP19": [
+      "TestP15RP19LiteralUnicodeNativeRoundTrip",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/bool_literal",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/byte_offsets",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/casefold_uuid_collision",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/combining_bytes",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/duplicate_inline_action",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/duplicate_uuid",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/extra_action",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/extra_attachment",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/hebrew_mark",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/hidden_output",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/joined_graph",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/late_inline_action",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/late_producer",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/malformed_uuid",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/missing_attachment",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/missing_output",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/number_literal",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/range_length_two",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/reconciled_inline_output_name",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/hybrid/legacy",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/hybrid/v2",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/lossless/legacy",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/lossless/v2",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/hybrid/legacy",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/hybrid/v2",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/lossless/legacy",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/lossless/v2",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/rune_offsets",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/shift_one",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/swapped_producer",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/unbound_placeholder",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/wrong_output_name",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/zero_uuid",
+      "TestP15RP19LiteralUnicodeNativeRoundTrip/zwj_bytes",
+      "TestP15RP19LiteralUnicodeUnit",
+      "TestP15RP19LiteralUnicodeUnit/adjacent_owner_order",
+      "TestP15RP19LiteralUnicodeUnit/combining_bytes",
+      "TestP15RP19LiteralUnicodeUnit/false_as_number",
+      "TestP15RP19LiteralUnicodeUnit/inline_action_value",
+      "TestP15RP19LiteralUnicodeUnit/joined_semantics",
+      "TestP15RP19LiteralUnicodeUnit/number_as_text_same_format",
+      "TestP15RP19LiteralUnicodeUnit/producer_type",
+      "TestP15RP19LiteralUnicodeUnit/returned_observation",
+      "TestP15RP19LiteralUnicodeUnit/zwj_bytes"
+    ],
+    "BRG08": [
+      "TestBackendRecovery08InlineCodecNativeRoundTrip",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/byte_offsets",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/casefold_uuid_collision",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/combining_bytes",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/drop_chain",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/output_name",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/swap_chain",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/wrong_coercion",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/wrong_key",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/duplicate_uuid",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/extra_action",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/extra_attachment",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/hebrew_mark",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/hidden_output",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/drop_chain",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/output_name",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/swap_chain",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/wrong_coercion",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/wrong_key",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/drop_chain",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/output_name",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/swap_chain",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/wrong_coercion",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/wrong_key",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/joined_graph",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/late_producer",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/literal_braces",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/malformed_uuid",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/missing_attachment",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/missing_output",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/native_numeric_kind",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/range_length_two",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/raw_escape",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/reconciled_wrong_transform",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/hybrid/legacy",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/hybrid/v2",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/lossless/legacy",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/lossless/v2",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/hybrid/legacy",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/hybrid/v2",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/lossless/legacy",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/lossless/v2",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/rune_offsets",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/shift_one",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/swapped_producer",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/unbound_placeholder",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/wrong_output_name",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/zero_uuid",
+      "TestBackendRecovery08InlineCodecNativeRoundTrip/zwj_bytes",
+      "TestBackendRecovery08InlineCodecUnit",
+      "TestBackendRecovery08InlineCodecUnit/combining_bytes",
+      "TestBackendRecovery08InlineCodecUnit/direct_owner",
+      "TestBackendRecovery08InlineCodecUnit/inline_owner",
+      "TestBackendRecovery08InlineCodecUnit/joined_semantics",
+      "TestBackendRecovery08InlineCodecUnit/literal_braces",
+      "TestBackendRecovery08InlineCodecUnit/raw_string_boundary",
+      "TestBackendRecovery08InlineCodecUnit/returned_observation",
+      "TestBackendRecovery08InlineCodecUnit/transform_key",
+      "TestBackendRecovery08InlineCodecUnit/transform_kind",
+      "TestBackendRecovery08InlineCodecUnit/zwj_bytes"
+    ]
+  },
+  "outer": {
+    "path": "go-test.jsonl",
+    "bytes": 27507,
+    "sha256": "cef9a51d514f58ed7aad3367f92566588fbe50b71c0bbcc116bde0e484631a82",
+    "event_count": 109,
+    "run_names": [
+      "TestCombinedUnicodeActualProductionEvidence",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/cross_tier_producer",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/dirty_source",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/foreign_package",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/missing_artifact",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/missing_child",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/missing_source_file",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/partial_command",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/skipped_child",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/wrong_requirement",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/wrong_source_digest",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/wrong_tier",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/cross_tier_producer",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/dirty_source",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/foreign_package",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/missing_artifact",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/missing_child",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/missing_source_file",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/partial_command",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/skipped_child",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/wrong_requirement",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/wrong_source_digest",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/wrong_tier",
+      "TestCombinedUnicodeInventoryAndUnprovedRuntime",
+      "TestCombinedUnicodeInventoryAndUnprovedRuntime/required_source_before_launch",
+      "TestCombinedUnicodeInventoryAndUnprovedRuntime/source_count_before_launch"
+    ],
+    "pass_names": [
+      "TestCombinedUnicodeActualProductionEvidence",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/cross_tier_producer",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/dirty_source",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/foreign_package",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/missing_artifact",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/missing_child",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/missing_source_file",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/partial_command",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/skipped_child",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/wrong_requirement",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/wrong_source_digest",
+      "TestCombinedUnicodeActualProductionEvidence/BRG08/wrong_tier",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/cross_tier_producer",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/dirty_source",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/foreign_package",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/missing_artifact",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/missing_child",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/missing_source_file",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/partial_command",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/skipped_child",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/wrong_requirement",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/wrong_source_digest",
+      "TestCombinedUnicodeActualProductionEvidence/RP19/wrong_tier",
+      "TestCombinedUnicodeInventoryAndUnprovedRuntime",
+      "TestCombinedUnicodeInventoryAndUnprovedRuntime/required_source_before_launch",
+      "TestCombinedUnicodeInventoryAndUnprovedRuntime/source_count_before_launch"
+    ],
+    "package_elapsed_seconds": 157.086
+  },
+  "nested": {
+    "RP19": {
+      "path": "producer/combined-unicode-rp19-1022482256/combined-unicode-rp19-go.jsonl",
+      "bytes": 114393,
+      "sha256": "12417b708c1f5a025499bc837e42faf0624142318352d631a1e7ab2861196438",
+      "event_count": 259,
+      "run_names": [
+        "TestP15RP19LiteralUnicodeNativeRoundTrip",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/bool_literal",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/byte_offsets",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/casefold_uuid_collision",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/combining_bytes",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/duplicate_inline_action",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/duplicate_uuid",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/extra_action",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/extra_attachment",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/hebrew_mark",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/hidden_output",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/joined_graph",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/late_inline_action",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/late_producer",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/malformed_uuid",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/missing_attachment",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/missing_output",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/number_literal",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/range_length_two",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/reconciled_inline_output_name",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/hybrid/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/hybrid/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/lossless/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/lossless/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/hybrid/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/hybrid/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/lossless/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/lossless/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/rune_offsets",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/shift_one",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/swapped_producer",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/unbound_placeholder",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/wrong_output_name",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/zero_uuid",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/zwj_bytes",
+        "TestP15RP19LiteralUnicodeUnit",
+        "TestP15RP19LiteralUnicodeUnit/adjacent_owner_order",
+        "TestP15RP19LiteralUnicodeUnit/combining_bytes",
+        "TestP15RP19LiteralUnicodeUnit/false_as_number",
+        "TestP15RP19LiteralUnicodeUnit/inline_action_value",
+        "TestP15RP19LiteralUnicodeUnit/joined_semantics",
+        "TestP15RP19LiteralUnicodeUnit/number_as_text_same_format",
+        "TestP15RP19LiteralUnicodeUnit/producer_type",
+        "TestP15RP19LiteralUnicodeUnit/returned_observation",
+        "TestP15RP19LiteralUnicodeUnit/zwj_bytes"
+      ],
+      "pass_names": [
+        "TestP15RP19LiteralUnicodeNativeRoundTrip",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/bool_literal",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/byte_offsets",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/casefold_uuid_collision",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/combining_bytes",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/duplicate_inline_action",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/duplicate_uuid",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/extra_action",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/extra_attachment",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/hebrew_mark",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/hidden_output",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/joined_graph",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/late_inline_action",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/late_producer",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/malformed_uuid",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/missing_attachment",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/missing_output",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/number_literal",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/range_length_two",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/reconciled_inline_output_name",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/hybrid/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/hybrid/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/lossless/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/1/lossless/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/hybrid/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/hybrid/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/lossless/legacy",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip/rp19-joined/2/lossless/v2",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/rune_offsets",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/shift_one",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/swapped_producer",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/unbound_placeholder",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/wrong_output_name",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/zero_uuid",
+        "TestP15RP19LiteralUnicodeNativeRoundTrip/zwj_bytes",
+        "TestP15RP19LiteralUnicodeUnit",
+        "TestP15RP19LiteralUnicodeUnit/adjacent_owner_order",
+        "TestP15RP19LiteralUnicodeUnit/combining_bytes",
+        "TestP15RP19LiteralUnicodeUnit/false_as_number",
+        "TestP15RP19LiteralUnicodeUnit/inline_action_value",
+        "TestP15RP19LiteralUnicodeUnit/joined_semantics",
+        "TestP15RP19LiteralUnicodeUnit/number_as_text_same_format",
+        "TestP15RP19LiteralUnicodeUnit/producer_type",
+        "TestP15RP19LiteralUnicodeUnit/returned_observation",
+        "TestP15RP19LiteralUnicodeUnit/zwj_bytes"
+      ],
+      "package_elapsed_seconds": 4.585,
+      "receipt_path": "producer/combined-unicode-rp19-1022482256/combined-unicode-rp19-process.json",
+      "receipt_sha256": "a5f17f24d39d412dc0c63ad08147c7841fbf98e04fc9ec6db9a2325fd95e29df",
+      "started_utc": "2026-11-21T23:25:19.9125348Z",
+      "finished_utc": "2026-11-21T23:27:05.99606Z",
+      "elapsed_seconds": 106.0835252,
+      "source_files_verified": 117,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP19LiteralUnicodeUnit|TestP15RP19LiteralUnicodeNativeRoundTrip)$"
+      ]
+    },
+    "BRG08": {
+      "path": "producer/combined-unicode-brg08-2187607755/combined-unicode-brg08-go.jsonl",
+      "bytes": 168222,
+      "sha256": "2987fe0eb15936059aacc1e991f54f5a3d43ea6ff18c69504be3bbd747294c86",
+      "event_count": 346,
+      "run_names": [
+        "TestBackendRecovery08InlineCodecNativeRoundTrip",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/byte_offsets",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/casefold_uuid_collision",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/combining_bytes",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/drop_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/swap_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/wrong_coercion",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/wrong_key",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/duplicate_uuid",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/extra_action",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/extra_attachment",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/hebrew_mark",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/hidden_output",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/drop_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/swap_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/wrong_coercion",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/wrong_key",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/drop_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/swap_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/wrong_coercion",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/wrong_key",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/joined_graph",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/late_producer",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/literal_braces",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/malformed_uuid",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/missing_attachment",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/missing_output",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/native_numeric_kind",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/range_length_two",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/raw_escape",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/reconciled_wrong_transform",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/hybrid/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/hybrid/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/lossless/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/lossless/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/hybrid/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/hybrid/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/lossless/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/lossless/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/rune_offsets",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/shift_one",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/swapped_producer",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/unbound_placeholder",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/wrong_output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/zero_uuid",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/zwj_bytes",
+        "TestBackendRecovery08InlineCodecUnit",
+        "TestBackendRecovery08InlineCodecUnit/combining_bytes",
+        "TestBackendRecovery08InlineCodecUnit/direct_owner",
+        "TestBackendRecovery08InlineCodecUnit/inline_owner",
+        "TestBackendRecovery08InlineCodecUnit/joined_semantics",
+        "TestBackendRecovery08InlineCodecUnit/literal_braces",
+        "TestBackendRecovery08InlineCodecUnit/raw_string_boundary",
+        "TestBackendRecovery08InlineCodecUnit/returned_observation",
+        "TestBackendRecovery08InlineCodecUnit/transform_key",
+        "TestBackendRecovery08InlineCodecUnit/transform_kind",
+        "TestBackendRecovery08InlineCodecUnit/zwj_bytes"
+      ],
+      "pass_names": [
+        "TestBackendRecovery08InlineCodecNativeRoundTrip",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/byte_offsets",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/casefold_uuid_collision",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/combining_bytes",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/drop_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/swap_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/wrong_coercion",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/direct/wrong_key",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/duplicate_uuid",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/extra_action",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/extra_attachment",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/hebrew_mark",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/hidden_output",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/drop_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/swap_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/wrong_coercion",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_first/wrong_key",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/drop_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/swap_chain",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/wrong_coercion",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/inline_second/wrong_key",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/joined_graph",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/late_producer",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/literal_braces",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/malformed_uuid",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/missing_attachment",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/missing_output",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/native_numeric_kind",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/range_length_two",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/raw_escape",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/reconciled_wrong_transform",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/hybrid/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/hybrid/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/lossless/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/1/lossless/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/hybrid/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/hybrid/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/lossless/legacy",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip/brg08-joined/2/lossless/v2",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/rune_offsets",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/shift_one",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/swapped_producer",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/unbound_placeholder",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/wrong_output_name",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/zero_uuid",
+        "TestBackendRecovery08InlineCodecNativeRoundTrip/zwj_bytes",
+        "TestBackendRecovery08InlineCodecUnit",
+        "TestBackendRecovery08InlineCodecUnit/combining_bytes",
+        "TestBackendRecovery08InlineCodecUnit/direct_owner",
+        "TestBackendRecovery08InlineCodecUnit/inline_owner",
+        "TestBackendRecovery08InlineCodecUnit/joined_semantics",
+        "TestBackendRecovery08InlineCodecUnit/literal_braces",
+        "TestBackendRecovery08InlineCodecUnit/raw_string_boundary",
+        "TestBackendRecovery08InlineCodecUnit/returned_observation",
+        "TestBackendRecovery08InlineCodecUnit/transform_key",
+        "TestBackendRecovery08InlineCodecUnit/transform_kind",
+        "TestBackendRecovery08InlineCodecUnit/zwj_bytes"
+      ],
+      "package_elapsed_seconds": 5.729,
+      "receipt_path": "producer/combined-unicode-brg08-2187607755/combined-unicode-brg08-process.json",
+      "receipt_sha256": "07b72fa1e9f6a347d3fbd8e0a9cd27c19f0f0bf9dcbf34457c55a4f8427f76f7",
+      "started_utc": "2026-11-21T23:27:09.9128858Z",
+      "finished_utc": "2026-11-21T23:27:36.4455177Z",
+      "elapsed_seconds": 26.5336657,
+      "source_files_verified": 117,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestBackendRecovery08InlineCodecUnit|TestBackendRecovery08InlineCodecNativeRoundTrip)$"
+      ]
+    }
+  },
+  "specimens": {
+    "RP19": {
+      "total": 9,
+      "actual_compiled": 1,
+      "roundtrip_routes": 8,
+      "all_raw_xml_equal": true,
+      "all_plist_trees_equal": true,
+      "workflow_action_count": 5,
+      "items": [
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "actual-compiled",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/joined_graph"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-0-hybrid-legacy",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-1-hybrid-v2",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-2-lossless-legacy",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-3-lossless-v2",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-4-hybrid-legacy",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-5-hybrid-v2",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-6-lossless-legacy",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 4520,
+          "native_sha256": "fe3a1b11e7a129845bfcb26ee556504308a749402a3627ad0c7f16a8bce5db0c",
+          "rendered_text_observed": false,
+          "requirement": "RP19",
+          "stage": "roundtrip-7-lossless-v2",
+          "go_test": "TestP15RP19LiteralUnicodeNativeRoundTrip/roundtrip"
+        }
+      ],
+      "retained_scope": "Original XML specimens and fixed passing Go events; binary input/import/recompile executed by the source-bound roundtrip helper. Temporary binary input files are not claimed retained."
+    },
+    "BRG08": {
+      "total": 9,
+      "actual_compiled": 1,
+      "roundtrip_routes": 8,
+      "all_raw_xml_equal": true,
+      "all_plist_trees_equal": true,
+      "workflow_action_count": 6,
+      "items": [
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "actual-compiled",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/joined_graph"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-0-hybrid-legacy",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-1-hybrid-v2",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-2-lossless-legacy",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-3-lossless-v2",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-4-hybrid-legacy",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-5-hybrid-v2",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-6-lossless-legacy",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        },
+        {
+          "apple_runtime_observed": false,
+          "native_bytes": 7220,
+          "native_sha256": "ed4e29cf16bf9a7fa09ab36849f0307e3e29ba7287760c6516453a70a83d074f",
+          "rendered_text_observed": false,
+          "requirement": "BRG08",
+          "stage": "roundtrip-7-lossless-v2",
+          "go_test": "TestBackendRecovery08InlineCodecNativeRoundTrip/roundtrip"
+        }
+      ],
+      "retained_scope": "Original XML specimens and fixed passing Go events; binary input/import/recompile executed by the source-bound roundtrip helper. Temporary binary input files are not claimed retained."
+    }
+  },
+  "local_records": 4,
+  "runner_results": {
+    "BRG08": {
+      "id": "BRG08",
+      "group": "recovery_gate",
+      "requirement": "Inline text references share canonical codec",
+      "test_level": "unit+native-roundtrip+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": false,
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Distinct complete local joined scenario: repeated Unicode references, ordinary and raw literal braces/backslashes, one independently specified Dictionary/coercion/key/Text transform retained on direct and repeated inline paths, complete native graph and final output, typed native field and per-path corruption controls, actual XML/binary hybrid/lossless Legacy/V2 roundtrip. Actual Apple transformed values and rendered text remain unproved.)"
+    },
+    "RP19": {
+      "id": "RP19",
+      "group": "repair",
+      "requirement": "Literal and Unicode f-strings",
+      "test_level": "unit+native-roundtrip+iOS",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": false,
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Distinct complete local joined scenario: Number 42 and Bool false literals plus real action outputs, adjacent/repeated tokens after Hebrew, non-BMP ZWJ emoji and combining marks; independent semantic and exact UTF-16/text expectations, complete native producer/consumer/output graph, causal corruptions and actual XML/binary import/recompile through Legacy/V2 in hybrid/lossless modes. Actual Apple rendered content and action-value formatting remain unproved.)"
+    }
+  },
+  "manifest_report": {
+    "timestamp": "2026-11-21T23:27:38Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 2,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "skipped_cases": 2,
+    "results": [
+      {
+        "id": "BRG08",
+        "group": "gate",
+        "requirement": "Inline text references share canonical codec",
+        "test_level": "unit+native-roundtrip+ios-runtime",
+        "executed_levels": [
+          "unit",
+          "native-roundtrip"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      },
+      {
+        "id": "RP19",
+        "group": "repair",
+        "requirement": "Literal and Unicode f-strings",
+        "test_level": "unit+native-roundtrip+ios-runtime",
+        "executed_levels": [
+          "unit",
+          "native-roundtrip"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      }
+    ]
+  },
+  "old_failure": {
+    "source": "24cada33084844eaffa27c63c13a694260ef60ec",
+    "source_clean_before": true,
+    "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-unicode-combined-20261121",
+    "command": [
+      "go",
+      "test",
+      "./tools/language-acceptance",
+      "-run",
+      "^(TestCombinedUnicodeInventoryAndUnprovedRuntime|TestCombinedUnicodeActualProductionEvidence)$",
+      "-count=1",
+      "-json",
+      "-timeout=9m"
+    ],
+    "started_utc": "2026-11-21T23:04:13.099337+00:00",
+    "go_test_timeout_seconds": 540,
+    "driver_timeout_seconds": 570,
+    "expected_outer_pass_events": 26,
+    "fixed_nested_event_counts": {
+      "RP19": 45,
+      "BRG08": 61
+    },
+    "scope": "Two actual local unit/native Unicode scenarios with full import/recompile roundtrips; Apple runtime and rendered text remain unproved",
+    "finished_utc": "2026-11-21T23:07:23.378277+00:00",
+    "elapsed_seconds": 190.281,
+    "exit_code": 1,
+    "timed_out": false,
+    "source_after": "24cada33084844eaffa27c63c13a694260ef60ec",
+    "status_after": "",
+    "event_counts": {
+      "pass": 3,
+      "fail": 1,
+      "skip": 0
+    },
+    "package_results": [
+      {
+        "Time": "2026-11-22T01:07:22.9402854+02:00",
+        "Action": "fail",
+        "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+        "Elapsed": 134.753
+      }
+    ],
+    "malformed_events": [],
+    "raw_bytes": 5136,
+    "raw_sha256": "2a67cc44d84c1b957f82c474db23faac182d2f3a256860203bd0471aa166f1f3",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originals": [
+    {
+      "member": "r6-unicode-24cada33-20261121/go-test.jsonl",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\go-test.jsonl",
+      "bytes": 5136,
+      "sha256": "2a67cc44d84c1b957f82c474db23faac182d2f3a256860203bd0471aa166f1f3"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/launch.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\launch.json",
+      "bytes": 802,
+      "sha256": "97a01f6a0fa58809f9ed8a1a8ab7e8d5075e922d93ad099684246fdb37477929"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/pid.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\pid.json",
+      "bytes": 39,
+      "sha256": "becda116518bee6e0fb49acc0fee5e96c4568d67581b6a2076c50647dde438b4"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/producer/combined-unicode-brg08-3300578290/combined-unicode-brg08-go.jsonl",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\producer\\combined-unicode-brg08-3300578290\\combined-unicode-brg08-go.jsonl",
+      "bytes": 168231,
+      "sha256": "0fe826713a301796805fcb153c56239e4e42329e4da66b732d62b6fed9a16718"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/producer/combined-unicode-brg08-3300578290/combined-unicode-brg08-process.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\producer\\combined-unicode-brg08-3300578290\\combined-unicode-brg08-process.json",
+      "bytes": 27173,
+      "sha256": "f108484a297111a8aa8519c5cc2c452f627db99b90601ab11f13e8149b01381e"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/producer/combined-unicode-brg08-3300578290/combined-unicode-brg08-stderr.log",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\producer\\combined-unicode-brg08-3300578290\\combined-unicode-brg08-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/producer/combined-unicode-rp19-351973414/combined-unicode-rp19-go.jsonl",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\producer\\combined-unicode-rp19-351973414\\combined-unicode-rp19-go.jsonl",
+      "bytes": 9827,
+      "sha256": "76581a68b25b48cfebdfc1bf961fea3e4564e5ac03c7fa117d01cff861c328e3"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/producer/combined-unicode-rp19-351973414/combined-unicode-rp19-process.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\producer\\combined-unicode-rp19-351973414\\combined-unicode-rp19-process.json",
+      "bytes": 21187,
+      "sha256": "8ca18ad95f7a6e50962eb659b529fc29482f6c99fd8dbca73079e688374e1a2d"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/producer/combined-unicode-rp19-351973414/combined-unicode-rp19-stderr.log",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\producer\\combined-unicode-rp19-351973414\\combined-unicode-rp19-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/stderr.log",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "r6-unicode-24cada33-20261121/summary.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-24cada33-20261121\\summary.json",
+      "bytes": 1559,
+      "sha256": "3a051ac5232915487b9e694781457fff98d1ac8854f637b3468bc895f6b36985"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/go-test.jsonl",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\go-test.jsonl",
+      "bytes": 27507,
+      "sha256": "cef9a51d514f58ed7aad3367f92566588fbe50b71c0bbcc116bde0e484631a82"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/launch.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\launch.json",
+      "bytes": 802,
+      "sha256": "fa2988dd830ba6ff97bc5dac55ce29c59a4127d54f89a2241131228ef7c4de66"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/pid.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\pid.json",
+      "bytes": 40,
+      "sha256": "b57a0611ff659fed2f13dfce5135a13f613e6985a6fe0db07489182326aa3a75"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-brg08-2187607755/combined-unicode-brg08-go.jsonl",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-brg08-2187607755\\combined-unicode-brg08-go.jsonl",
+      "bytes": 168222,
+      "sha256": "2987fe0eb15936059aacc1e991f54f5a3d43ea6ff18c69504be3bbd747294c86"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-brg08-2187607755/combined-unicode-brg08-process.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-brg08-2187607755\\combined-unicode-brg08-process.json",
+      "bytes": 27174,
+      "sha256": "07b72fa1e9f6a347d3fbd8e0a9cd27c19f0f0bf9dcbf34457c55a4f8427f76f7"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-brg08-2187607755/combined-unicode-brg08-stderr.log",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-brg08-2187607755\\combined-unicode-brg08-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-evidence.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-evidence.json",
+      "bytes": 29557,
+      "sha256": "3ee134397fac7610291a25ec5df5999e35d4b5cbbedbf228b401ce834c7a5607"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-rp19-1022482256/combined-unicode-rp19-go.jsonl",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-rp19-1022482256\\combined-unicode-rp19-go.jsonl",
+      "bytes": 114393,
+      "sha256": "12417b708c1f5a025499bc837e42faf0624142318352d631a1e7ab2861196438"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-rp19-1022482256/combined-unicode-rp19-process.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-rp19-1022482256\\combined-unicode-rp19-process.json",
+      "bytes": 24248,
+      "sha256": "a5f17f24d39d412dc0c63ad08147c7841fbf98e04fc9ec6db9a2325fd95e29df"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/producer/combined-unicode-rp19-1022482256/combined-unicode-rp19-stderr.log",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\producer\\combined-unicode-rp19-1022482256\\combined-unicode-rp19-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/stderr.log",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "r6-unicode-82560cfb-20261121/summary.json",
+      "absolute_path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-unicode-82560cfb-20261121\\summary.json",
+      "bytes": 1561,
+      "sha256": "04dc8514c84a6210fe75926eff9ecd2c01b33f8dc09ae7f8a6c8dd2e450d80cc"
+    }
+  ],
+  "apple_runtime_observed": false,
+  "full_acceptance_granted": false
+}

@@ -1,0 +1,8 @@
+// BRG08 joined local scenario. Direct and inline paths share one authored transform.
+let seed = {"payload": "Δ"}
+let transformed = native.ref(seed, aggrandizements: [{"Type":"WFCoercionVariableAggrandizement","CoercionItemClass":"WFDictionaryContentItem"},{"Type":"WFDictionaryValueVariableAggrandizement","DictionaryKey":"payload"},{"Type":"WFCoercionVariableAggrandizement","CoercionItemClass":"WFStringContentItem"}])
+let direct = getVariable(transformed)
+let plain = "{seed}|JSON:{\"n\":42}|\\path"
+let raw = r"\d+{seed}\n"
+let result = f"שָׁלוֹם👩‍💻é|{{literal}}|{transformed}{transformed}|é{direct}|🌍{plain}{raw}\n"
+return result
