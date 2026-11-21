@@ -1,0 +1,777 @@
+{
+  "schema": 1,
+  "stage": "E06 original evidence recovered; no new execution",
+  "recorded_utc": "2026-11-21T18:28:11.851948+00:00",
+  "implementation_source": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+  "proof_scope": "actual Go mobile coordinate response producers and framed LSP; portable Foundation positions; not C ABI, SwiftUI, simulator, physical device or formal acceptance",
+  "formal_acceptance_granted": false,
+  "receipts": [
+    {
+      "directory": "e06-clean-94012e22",
+      "source": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "receipt_sha256": "a74f5605588fe4db204ec14e1718108d37791863dfb79c6c81ee9dad86e88adb",
+      "counts": {
+        "pass": 63
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "raw_sha256": "cdd5ca22ad0562c05e885ae47f0e32ac463be32e89075c6841a95ded1b028184"
+    },
+    {
+      "directory": "e06-mobile-baseline-b329bc21",
+      "source": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "receipt_sha256": "ffaf67c92f9ba72907bdc63a97f16781a5f012a53e39f3b3890b5abea6cd4a48",
+      "counts": {
+        "pass": 22,
+        "fail": 13
+      },
+      "exit_code": 1,
+      "timed_out": false,
+      "raw_sha256": "677c345da1ab866e3366279ba91a6f776f3577f0b62a691577b215eadf893b3b"
+    },
+    {
+      "directory": "e06-mobile-clean-25c5eb25",
+      "source": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "receipt_sha256": "c56f7d73e35275301acb7aa78a3bc9435fa63c2be0aeaf61d4d441e444053546",
+      "counts": {
+        "pass": 55
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "raw_sha256": "b740de587e6148c4617906962fa5d98093303b2c77dc86c789cd6c75dbbf1464"
+    },
+    {
+      "directory": "e06-mobile-corrected-baseline-145b4927",
+      "source": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "receipt_sha256": "e82ea7927a58b3a8e6cc884c45be3596fd5468d39dd9e87de6c89c496adf276f",
+      "counts": {
+        "pass": 21,
+        "fail": 14
+      },
+      "exit_code": 1,
+      "timed_out": false,
+      "raw_sha256": "5a6cf485b50287979cabddbd44cc4cab2e4b34e17ec5b2d2ceb26a683c4d7e70"
+    },
+    {
+      "directory": "e06-packages-clean-25c5eb25",
+      "source": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "receipt_sha256": "928d97308ee393db4493e3ca239d7704ee9e5ccc6021d16999d3d7d42f87ef97",
+      "counts": {
+        "pass": 63
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "raw_sha256": "f5065b64294a698d8c596826a880d1ab83389a180152bd029ef8767ba34bc592"
+    },
+    {
+      "directory": "e06-position-clean-25c5eb25",
+      "source": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "receipt_sha256": "b95d0749be713caaa47e7ea7bca6d6a46d7efe762bd6ed48dcc6b98d7b2ad551"
+    }
+  ],
+  "source_witnesses": [
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "ios_bridge.go",
+      "sha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304,
+      "blob": "a26f00d24e2d445d2e0d09d4572e7b85506073c6"
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "mobile_language_service.go",
+      "sha256": "d34e8088a49ebe47fc51570ba34329399992e40ead8c8149fcb49e8854b5d853",
+      "bytes": 1012,
+      "blob": "158ae467a4e485e9011138e28f8b92797d8c5b11"
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "p15_editor_mobile_coordinates_test.go",
+      "absent": true
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "absent": true
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "tools/p10r15/editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "tools/p10r15/editor_position_probe.swift",
+      "absent": true
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "tools/p10r15/test_editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "ios/CherriApp/Editor/CherriTextPosition.swift",
+      "absent": true
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a"
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e"
+    },
+    {
+      "commit": "4697956e60676116565c75774548f1ed845dcbaa",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab"
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "ios_bridge.go",
+      "sha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304,
+      "blob": "a26f00d24e2d445d2e0d09d4572e7b85506073c6"
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "mobile_language_service.go",
+      "sha256": "d34e8088a49ebe47fc51570ba34329399992e40ead8c8149fcb49e8854b5d853",
+      "bytes": 1012,
+      "blob": "158ae467a4e485e9011138e28f8b92797d8c5b11"
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "p15_editor_mobile_coordinates_test.go",
+      "absent": true
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159,
+      "blob": "11ac4535cc3850d52dd9979564373e542181d02a"
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "tools/p10r15/editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "tools/p10r15/editor_position_probe.swift",
+      "absent": true
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "tools/p10r15/test_editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "ios/CherriApp/Editor/CherriTextPosition.swift",
+      "absent": true
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a"
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e"
+    },
+    {
+      "commit": "94012e227b1cfd32409eddef4b405555f0c95eb8",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "ios_bridge.go",
+      "sha256": "5cf0d9233634bb7b953666704e51c3974d3debd741edcf777e92c1a53398b4f3",
+      "bytes": 8326,
+      "blob": "1301b54f3fa5ea79e75c0164b921370883d6d954"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "mobile_language_service.go",
+      "sha256": "0d358e21497a15a68d65afb32b18675a6678230ccc0de8368e8a7282c61eed1d",
+      "bytes": 4860,
+      "blob": "ae13fa5b5c455c7cbb876598624e16d86d2d1478"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "p15_editor_mobile_coordinates_test.go",
+      "sha256": "f910324e0900c3307df047fffd78f64c4f971a198a90bf72ca71f7931c84e480",
+      "bytes": 9984,
+      "blob": "d7eaf22bc39cb09aa698e9d4b89a8d931dcab1c4"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159,
+      "blob": "11ac4535cc3850d52dd9979564373e542181d02a"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "tools/p10r15/editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "tools/p10r15/editor_position_probe.swift",
+      "absent": true
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "tools/p10r15/test_editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "ios/CherriApp/Editor/CherriTextPosition.swift",
+      "absent": true
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e"
+    },
+    {
+      "commit": "b329bc2147e43e3cebbfbf6bdff9c40a589bfea8",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "ios_bridge.go",
+      "sha256": "5cf0d9233634bb7b953666704e51c3974d3debd741edcf777e92c1a53398b4f3",
+      "bytes": 8326,
+      "blob": "1301b54f3fa5ea79e75c0164b921370883d6d954"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "mobile_language_service.go",
+      "sha256": "0d358e21497a15a68d65afb32b18675a6678230ccc0de8368e8a7282c61eed1d",
+      "bytes": 4860,
+      "blob": "ae13fa5b5c455c7cbb876598624e16d86d2d1478"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "p15_editor_mobile_coordinates_test.go",
+      "sha256": "dab86ee55e0052f026a35fd87af732665f59a44301998966b5ef1de4e5092fc2",
+      "bytes": 10031,
+      "blob": "3108f4db6e56a56ded10751bbc88a26998dd1ed2"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159,
+      "blob": "11ac4535cc3850d52dd9979564373e542181d02a"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "tools/p10r15/editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "tools/p10r15/editor_position_probe.swift",
+      "absent": true
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "tools/p10r15/test_editor_position_probe.py",
+      "absent": true
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "ios/CherriApp/Editor/CherriTextPosition.swift",
+      "absent": true
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e"
+    },
+    {
+      "commit": "145b4927b6d2528f472249aef07454e3016aa12f",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "ios_bridge.go",
+      "sha256": "dcaff4f59ce627c8959b4cfe2ac9f2ee75b2aebbe6ba8a4137d3a4882efd0e62",
+      "bytes": 8701,
+      "blob": "2d3ab2e4829c8a92ed08b8cef6662ef9865f4f96"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "mobile_language_service.go",
+      "sha256": "90f4fc21dae84d9fa10b5811ec499387183d0483571f7d23020036cdbf1858a0",
+      "bytes": 6210,
+      "blob": "a2ab9b20b7ded0617c6917dfce028006609be2f1"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "p15_editor_mobile_coordinates_test.go",
+      "sha256": "dab86ee55e0052f026a35fd87af732665f59a44301998966b5ef1de4e5092fc2",
+      "bytes": 10031,
+      "blob": "3108f4db6e56a56ded10751bbc88a26998dd1ed2"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159,
+      "blob": "11ac4535cc3850d52dd9979564373e542181d02a"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "tools/p10r15/editor_position_probe.py",
+      "sha256": "50d8b103d14b4014a18e8a9856a21cd26ac7be4e24072e2db2469eaca898a02a",
+      "bytes": 4107,
+      "blob": "151690ccc2e8b8c40146a89dac7cbf6b3438a8ca"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "tools/p10r15/editor_position_probe.swift",
+      "sha256": "ca4511a0c25fbe3c8610cb674b0b4dcdeac6e8982391da8a9d13e7e0f732c758",
+      "bytes": 3084,
+      "blob": "05bf438af891cbe56586189da38be96cd8a94376"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "tools/p10r15/test_editor_position_probe.py",
+      "sha256": "f8c70f25ef024107b3903c174e795408348d2808ca9a78c3e368679b6350360f",
+      "bytes": 1851,
+      "blob": "c1968063aa98eb94831c23119e152a57acb8762b"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "ios/CherriApp/Editor/CherriTextPosition.swift",
+      "absent": true
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418,
+      "blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665,
+      "blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e"
+    },
+    {
+      "commit": "25c5eb2528ecfe64fe56aa996dab1e6db61efd12",
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212,
+      "blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab"
+    }
+  ],
+  "archive": {
+    "path": "original-evidence.zip",
+    "sha256": "5a735ab56e61a9194834a6366e55f4e3e54fae19038d7c15474d990d5c1e651c",
+    "bytes": 218164,
+    "members": 70
+  },
+  "members": [
+    {
+      "path": "originals/e06-clean-94012e22/receipt.json",
+      "sha256": "a74f5605588fe4db204ec14e1718108d37791863dfb79c6c81ee9dad86e88adb",
+      "bytes": 1118
+    },
+    {
+      "path": "originals/e06-clean-94012e22/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-clean-94012e22/stdout.jsonl",
+      "sha256": "cdd5ca22ad0562c05e885ae47f0e32ac463be32e89075c6841a95ded1b028184",
+      "bytes": 58568
+    },
+    {
+      "path": "originals/e06-clean-94012e22/submitted-script.py",
+      "sha256": "d3ad9034f55203bcf6d4e52aa9a7af544c9135d0d19779a5aff10d5991650306",
+      "bytes": 2531
+    },
+    {
+      "path": "originals/e06-mobile-baseline-b329bc21/receipt.json",
+      "sha256": "ffaf67c92f9ba72907bdc63a97f16781a5f012a53e39f3b3890b5abea6cd4a48",
+      "bytes": 1821
+    },
+    {
+      "path": "originals/e06-mobile-baseline-b329bc21/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-mobile-baseline-b329bc21/stdout.jsonl",
+      "sha256": "677c345da1ab866e3366279ba91a6f776f3577f0b62a691577b215eadf893b3b",
+      "bytes": 33700
+    },
+    {
+      "path": "originals/e06-mobile-baseline-b329bc21/submitted-script.py",
+      "sha256": "9846fcc46d2dad7f875f63f8c48461eb35038cfec10484a7da47ac313e54981b",
+      "bytes": 2511
+    },
+    {
+      "path": "originals/e06-mobile-clean-25c5eb25/receipt.json",
+      "sha256": "c56f7d73e35275301acb7aa78a3bc9435fa63c2be0aeaf61d4d441e444053546",
+      "bytes": 1097
+    },
+    {
+      "path": "originals/e06-mobile-clean-25c5eb25/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-mobile-clean-25c5eb25/stdout.jsonl",
+      "sha256": "b740de587e6148c4617906962fa5d98093303b2c77dc86c789cd6c75dbbf1464",
+      "bytes": 46997
+    },
+    {
+      "path": "originals/e06-mobile-clean-25c5eb25/submitted-script.py",
+      "sha256": "05c65683d38514b967edd0e632dd8a90cc6a5666b2e62df83c076d442be3da03",
+      "bytes": 7849
+    },
+    {
+      "path": "originals/e06-mobile-corrected-baseline-145b4927/receipt.json",
+      "sha256": "e82ea7927a58b3a8e6cc884c45be3596fd5468d39dd9e87de6c89c496adf276f",
+      "bytes": 1883
+    },
+    {
+      "path": "originals/e06-mobile-corrected-baseline-145b4927/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-mobile-corrected-baseline-145b4927/stdout.jsonl",
+      "sha256": "5a6cf485b50287979cabddbd44cc4cab2e4b34e17ec5b2d2ceb26a683c4d7e70",
+      "bytes": 33510
+    },
+    {
+      "path": "originals/e06-mobile-corrected-baseline-145b4927/submitted-script.py",
+      "sha256": "59979a8df63f6e1860555e15fc7a2f271f016700caeefd892d8e16dedd6784f7",
+      "bytes": 2521
+    },
+    {
+      "path": "originals/e06-packages-clean-25c5eb25/receipt.json",
+      "sha256": "928d97308ee393db4493e3ca239d7704ee9e5ccc6021d16999d3d7d42f87ef97",
+      "bytes": 1118
+    },
+    {
+      "path": "originals/e06-packages-clean-25c5eb25/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-packages-clean-25c5eb25/stdout.jsonl",
+      "sha256": "f5065b64294a698d8c596826a880d1ab83389a180152bd029ef8767ba34bc592",
+      "bytes": 58505
+    },
+    {
+      "path": "originals/e06-packages-clean-25c5eb25/submitted-script.py",
+      "sha256": "05c65683d38514b967edd0e632dd8a90cc6a5666b2e62df83c076d442be3da03",
+      "bytes": 7849
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/compile.stderr",
+      "sha256": "74722c543334899d3f8b699a160e991853c27e5c3f51b243f340a1d7d7060f97",
+      "bytes": 341
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/execute.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/execute.stdout",
+      "sha256": "4fee05d265796a66a7fcc3b03f70e4c32adec4a2c5552db4cadda76dc3e7dff2",
+      "bytes": 2518
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/position-generated.swift",
+      "sha256": "80b6f66a1b2b691422a30074dade773d85ae9cb0d8a29172cf13982f71c0004c",
+      "bytes": 3344
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/position-probe.exe",
+      "sha256": "939213d67c82ffbbb6c4cde5810086c54f83145c391224f91c2ddda2c1a80237",
+      "bytes": 59392
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/position-probe.exp",
+      "sha256": "3a0dbdd4efb4a0293b2f3efe8207d646361ebcb4ee03798a21bd3739d1f3abd7",
+      "bytes": 836
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/position-probe.lib",
+      "sha256": "09f0c0e9353fee9162583e59977a599556e74b89e201aeb8d66f53d8e7a9872a",
+      "bytes": 1846
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/probe/receipt.json",
+      "sha256": "9343acff56a58d2dd6829332ebaea735000b1e1f28e94a2e52f559ad89946352",
+      "bytes": 7010
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/python-controls.stderr",
+      "sha256": "5d475fce7024ce866a340ca7004c58b5d588799249b54a27f49755066d9cd6cb",
+      "bytes": 497
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/python-controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/receipt.json",
+      "sha256": "b95d0749be713caaa47e7ea7bca6d6a46d7efe762bd6ed48dcc6b98d7b2ad551",
+      "bytes": 2103
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/submitted-script.py",
+      "sha256": "05c65683d38514b967edd0e632dd8a90cc6a5666b2e62df83c076d442be3da03",
+      "bytes": 7849
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/swift-probe.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "originals/e06-position-clean-25c5eb25/swift-probe.stdout",
+      "sha256": "202fadb675604fb8234a56eca21028ed6e36068102bef4b4e5b600e088667c6b",
+      "bytes": 2928
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/ios_bridge.go",
+      "sha256": "5cf0d9233634bb7b953666704e51c3974d3debd741edcf777e92c1a53398b4f3",
+      "bytes": 8326
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/mobile_language_service.go",
+      "sha256": "0d358e21497a15a68d65afb32b18675a6678230ccc0de8368e8a7282c61eed1d",
+      "bytes": 4860
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/p15_editor_mobile_coordinates_test.go",
+      "sha256": "dab86ee55e0052f026a35fd87af732665f59a44301998966b5ef1de4e5092fc2",
+      "bytes": 10031
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212
+    },
+    {
+      "path": "source/145b4927b6d2528f472249aef07454e3016aa12f/tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/ios_bridge.go",
+      "sha256": "dcaff4f59ce627c8959b4cfe2ac9f2ee75b2aebbe6ba8a4137d3a4882efd0e62",
+      "bytes": 8701
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/mobile_language_service.go",
+      "sha256": "90f4fc21dae84d9fa10b5811ec499387183d0483571f7d23020036cdbf1858a0",
+      "bytes": 6210
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/p15_editor_mobile_coordinates_test.go",
+      "sha256": "dab86ee55e0052f026a35fd87af732665f59a44301998966b5ef1de4e5092fc2",
+      "bytes": 10031
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/tools/p10r15/editor_position_probe.py",
+      "sha256": "50d8b103d14b4014a18e8a9856a21cd26ac7be4e24072e2db2469eaca898a02a",
+      "bytes": 4107
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/tools/p10r15/editor_position_probe.swift",
+      "sha256": "ca4511a0c25fbe3c8610cb674b0b4dcdeac6e8982391da8a9d13e7e0f732c758",
+      "bytes": 3084
+    },
+    {
+      "path": "source/25c5eb2528ecfe64fe56aa996dab1e6db61efd12/tools/p10r15/test_editor_position_probe.py",
+      "sha256": "f8c70f25ef024107b3903c174e795408348d2808ca9a78c3e368679b6350360f",
+      "bytes": 1851
+    },
+    {
+      "path": "source/4697956e60676116565c75774548f1ed845dcbaa/ios_bridge.go",
+      "sha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304
+    },
+    {
+      "path": "source/4697956e60676116565c75774548f1ed845dcbaa/mobile_language_service.go",
+      "sha256": "d34e8088a49ebe47fc51570ba34329399992e40ead8c8149fcb49e8854b5d853",
+      "bytes": 1012
+    },
+    {
+      "path": "source/4697956e60676116565c75774548f1ed845dcbaa/tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418
+    },
+    {
+      "path": "source/4697956e60676116565c75774548f1ed845dcbaa/tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212
+    },
+    {
+      "path": "source/4697956e60676116565c75774548f1ed845dcbaa/tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665
+    },
+    {
+      "path": "source/94012e227b1cfd32409eddef4b405555f0c95eb8/internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159
+    },
+    {
+      "path": "source/94012e227b1cfd32409eddef4b405555f0c95eb8/ios_bridge.go",
+      "sha256": "d95569adcddbc7dcbaba4173b8ae3ca04eed370c70b87c479ae5ff2d89d8b508",
+      "bytes": 11304
+    },
+    {
+      "path": "source/94012e227b1cfd32409eddef4b405555f0c95eb8/mobile_language_service.go",
+      "sha256": "d34e8088a49ebe47fc51570ba34329399992e40ead8c8149fcb49e8854b5d853",
+      "bytes": 1012
+    },
+    {
+      "path": "source/94012e227b1cfd32409eddef4b405555f0c95eb8/tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418
+    },
+    {
+      "path": "source/94012e227b1cfd32409eddef4b405555f0c95eb8/tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212
+    },
+    {
+      "path": "source/94012e227b1cfd32409eddef4b405555f0c95eb8/tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/internal/language/lsp/p15_editor_utf16_protocol_test.go",
+      "sha256": "71b2cf696f6060b6312417910d5fa2e18a092d5f32685276358a927ce1413d84",
+      "bytes": 14159
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/ios_bridge.go",
+      "sha256": "5cf0d9233634bb7b953666704e51c3974d3debd741edcf777e92c1a53398b4f3",
+      "bytes": 8326
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/mobile_language_service.go",
+      "sha256": "0d358e21497a15a68d65afb32b18675a6678230ccc0de8368e8a7282c61eed1d",
+      "bytes": 4860
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/p15_editor_mobile_coordinates_test.go",
+      "sha256": "f910324e0900c3307df047fffd78f64c4f971a198a90bf72ca71f7931c84e480",
+      "bytes": 9984
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212
+    },
+    {
+      "path": "source/b329bc2147e43e3cebbfbf6bdff9c40a589bfea8/tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665
+    }
+  ]
+}
