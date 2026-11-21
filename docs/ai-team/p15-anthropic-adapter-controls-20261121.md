@@ -9,3 +9,35 @@ The retained [original evidence archive](evidence/20261121-ai-provider-controls/
 The adapter enforces the anchored public request, pinned model/settings/code, fixed HTTPS endpoint, single count plus at most one generation, exclusive zero-retry claim, original source preservation, genuine request IDs, all input and cache accounting, actual usage caps, retained refusals/truncations and safe error receipts. Mock controls also cover unapproved input, changed code/caps, redirects, malformed responses, no retries after cancellation/success, bounded reads and reflected-credential withholding.
 
 These were mock transport controls. No actual provider request, token-count request, compiler invocation, paid generation, semantic validation or Apple execution occurred. The fake bundle in these tests exercises the adapter interface; integration with the independently implemented bundle/runner/intake still requires review. The adapter's HTTP Date is only a server receipt. AI01 quality and final 179-requirement acceptance remain unproved.
+
+
+## Deadline correction and exact 57-control replay
+
+Final adapter source: e2027ee2b8f89e482fcd720205f998712ea05433.
+The transport now rechecks its monotonic deadline after every blocking read,
+including EOF. A late final read is retained as incomplete and cannot become a
+successful response. The 15/90-second deadlines and 120-second outer cap did not
+change.
+
+The original 9487 source failed the new late-EOF contrary: it returned instead of
+raising TransportFailure. The late-body control already passed through the old
+next-read guard. The first diagnostic wrapper incorrectly expected both to fail;
+its original failed receipt and all raw files are preserved, with a separate
+read-only reconciliation identifying the actual one RED/one PASS. No original
+receipt was replaced or relabeled.
+
+On the exact clean fixed source, all 57 source-derived offline controls passed,
+0 failures/skips, in an actual 4.594-second subprocess under the same 60-second
+test envelope. All four source files matched Git and remained unchanged.
+Receipt SHA256: 72bc988c0b88b98f6690dc5afa4d4ccfb8ed8ca8cd9c3ee05f98cfb7f21fa818.
+Original test output SHA256:
+20bfddcdc2ff946e23ba45c1206694f969082976f24837c282969119bb996802.
+Adapter source SHA256:
+0a5b4ce7719e7cc0a5ccd47c60b2bff5b169d79f9e9c8d1df7cd7fa3426f36cf.
+
+The [follow-up archive](evidence/20261121-ai-provider-deadline/originals.zip)
+and [ten member bindings](evidence/20261121-ai-provider-deadline/bindings.json)
+retain the causal old-source run, its reconciliation, and the complete clean
+fixed-source run. No actual network, token counting, model generation or compiler
+call occurred. Root protocol/source review and the shared bundle integration
+remain separate gates.
