@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "26b3f79de15df5b073928eefa8725909aae6fddf",
+  "baseSha": "d90b69a92e83b5034728c22e062a3dd96153a2a8",
+  "compilerSourceChanged": false,
+  "productionBehaviorChanged": false,
+  "scope": "K05 native observer correction with actual source-built signing and existing-file preservation; no full seven-parent group PASS or Apple execution claim",
+  "originalCIRunId": 44938764062,
+  "originalCIArtifactId": 14721915227,
+  "originalCIArtifactSha256": "ee4d0b529908b1c5c9f7820d85923c2571719dfe9c3317e5d616c59d2d3d1228",
+  "baseline": {
+    "exitCode": 1,
+    "failedTests": [
+      "TestP15K05BuildPreservesExistingFiles/healthy_unsigned_control",
+      "TestP15K05BuildPreservesExistingFiles"
+    ],
+    "goSha256": "2d93797b52414cc5882acd43deb1fb66a1a5748954de071d52df2ba488d3b2ce"
+  },
+  "negativeNativeControls": 21,
+  "consistentUUIDPositiveControl": true,
+  "cleanBroadAttempt": {
+    "exitCode": 1,
+    "reason": "unchanged3m test deadline",
+    "namedPasses": 38,
+    "passedParents": [
+      "TestP15K05BuildPreservesExistingFiles",
+      "TestP15K05PreparePreservesOriginal",
+      "TestP15K05RepairBuildImportEdit",
+      "TestP15K05SigningGateAndExactInput"
+    ],
+    "missingRequiredParents": [
+      "TestP15K05CopiedImportRequiresPolicy",
+      "TestP15K05LiveSigning",
+      "TestP15K05PrepareRequiresComparator"
+    ],
+    "goSha256": "2a7505ea56c7da10b73ac1e4adf327c24a35728031920f3cddc02b57dbf523ee"
+  },
+  "firstLiveAttempt": {
+    "exitCode": 1,
+    "reason": "cold exact compiler build exceeded3m test deadline before signing; completed binary and original source verified separately",
+    "goSha256": "9737dec86454f27bac9cdef547db1152c3cd431a58039eebb251af1557fd9a88"
+  },
+  "freshLiveAttempt": {
+    "exitCode": 0,
+    "namedPasses": [
+      "TestP15K05LiveSigning"
+    ],
+    "testElapsedSeconds": 153.32,
+    "processElapsedSeconds": 217.01500000000124,
+    "testBudgetSeconds": 180,
+    "sourceCleanBefore": true,
+    "sourceCleanAfter": true,
+    "goSha256": "ec8dfc36812db2e99d0478715c4ab0ca4060a279824af49da03279e1b084cb5c",
+    "receipt": {
+      "allowed_changes": 1,
+      "apple_runtime_verified": false,
+      "compiler_binary_sha256": "935253f4d0b205e0a7ac1de0f85c43ebcb50e60eaade0a07619f6f8270abccd3",
+      "edited_source_sha256": "f1818c9788f7b33750c6900bad0b136836152cd3a381156fd6a95fd9e7a307fd",
+      "native_actions": 3,
+      "native_graph_verified": true,
+      "original_sha256": "5bd56ad28cb57850ce1602a9bb1daa82d9fdb84170f2f8fe70db7d3d6aaf98fd",
+      "scope": "Actual configured remote signing service and container validation of synthetic data only; no Apple import, validity, installed-consumer or runtime inference.",
+      "service": "Shortcuty Sign",
+      "sign_input_sha256": "27b11a0198bb15f7158ad799f2f8fd2b07349dac5582d2dfd263e44a2d2d510a",
+      "signed_bytes": 22182,
+      "signed_sha256": "c03c54e45b8cd0a25c1ad35d43c0530a778578cf2969ade0e400070e11ae169f",
+      "signing_method": "HUBSIGN_REMOTE_SERVICE",
+      "source_sha": "26b3f79de15df5b073928eefa8725909aae6fddf",
+      "unsigned_sha256": "27b11a0198bb15f7158ad799f2f8fd2b07349dac5582d2dfd263e44a2d2d510a",
+      "verification_tier": "AEA1_HEADER_PASS"
+    }
+  },
+  "evidenceZipSha256": "f24fa35522c030bb4d9b362e1e23b4dcb98b6f211585e3d24cb521bfec5cef56",
+  "evidenceZipBytes": 40625,
+  "files": [
+    {
+      "path": "actual-26b3f79d/go.jsonl",
+      "bytes": 58083,
+      "sha256": "2a7505ea56c7da10b73ac1e4adf327c24a35728031920f3cddc02b57dbf523ee"
+    },
+    {
+      "path": "actual-26b3f79d/receipt.json",
+      "bytes": 4520,
+      "sha256": "0d5d567893c3e22b55c072c8542766b3cb0dc0bbd3ef279fc26f8f8ed2726072"
+    },
+    {
+      "path": "actual-26b3f79d/start.json",
+      "bytes": 610,
+      "sha256": "cf68567df8d78747237b5690ea5ed145d418acb477814856d5e73c0ae64bda3b"
+    },
+    {
+      "path": "actual-26b3f79d/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual-live-26b3f79d/go.jsonl",
+      "bytes": 19181,
+      "sha256": "9737dec86454f27bac9cdef547db1152c3cd431a58039eebb251af1557fd9a88"
+    },
+    {
+      "path": "actual-live-26b3f79d/receipt.json",
+      "bytes": 1084,
+      "sha256": "c297188ec3dca8d4254805bcdda1f2a2586016c234d436d0e5c7e16dc6184dcf"
+    },
+    {
+      "path": "actual-live-26b3f79d/start.json",
+      "bytes": 397,
+      "sha256": "769e107f2c90350d5f669d4c66aa0a1455c01223c7a38c6b656596a810b7fe77"
+    },
+    {
+      "path": "actual-live-26b3f79d/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/go.jsonl",
+      "bytes": 2568,
+      "sha256": "ec8dfc36812db2e99d0478715c4ab0ca4060a279824af49da03279e1b084cb5c"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/allowed-delta.json",
+      "bytes": 345,
+      "sha256": "7dbb03832d29b26997454c621763304e39ed10dd199614edb994746851324a34"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/edited.cherri",
+      "bytes": 3268,
+      "sha256": "f1818c9788f7b33750c6900bad0b136836152cd3a381156fd6a95fd9e7a307fd"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/gate-receipt.json",
+      "bytes": 228,
+      "sha256": "bc2dc41197ba749e23eddc2fa7bb1c6b19b2203bf8ea0d354b2f8908f113c2df"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/live-signing-receipt.json",
+      "bytes": 1041,
+      "sha256": "769054c7e013eebf58283a0dcc1ca1370997c9da98a0eaa3d5a9c36feb1854c7"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/original.plist",
+      "bytes": 1744,
+      "sha256": "5bd56ad28cb57850ce1602a9bb1daa82d9fdb84170f2f8fe70db7d3d6aaf98fd"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/sign-input.shortcut",
+      "bytes": 3447,
+      "sha256": "27b11a0198bb15f7158ad799f2f8fd2b07349dac5582d2dfd263e44a2d2d510a"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/signed.shortcut",
+      "bytes": 22182,
+      "sha256": "c03c54e45b8cd0a25c1ad35d43c0530a778578cf2969ade0e400070e11ae169f"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/signing-provenance.json",
+      "bytes": 772,
+      "sha256": "fcc1624383820568ca215429d155d521e4fb6cb15ca54cde44a8b8d99699933d"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/live-signing/verified-unsigned.shortcut",
+      "bytes": 3447,
+      "sha256": "27b11a0198bb15f7158ad799f2f8fd2b07349dac5582d2dfd263e44a2d2d510a"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/receipt.json",
+      "bytes": 2158,
+      "sha256": "f586f8bdefc853e02254eaa6e25d2f96bf097eecc73ef504a5229db1795161a4"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/start.json",
+      "bytes": 397,
+      "sha256": "453f12f88d333f87644c81f6879f923a72e8d2b99475ec411bcf6bf87147d2e1"
+    },
+    {
+      "path": "actual-live-after-build-26b3f79d/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "baseline-K1/go.jsonl",
+      "bytes": 7026,
+      "sha256": "2d93797b52414cc5882acd43deb1fb66a1a5748954de071d52df2ba488d3b2ce"
+    },
+    {
+      "path": "baseline-K1/receipt.json",
+      "bytes": 1349,
+      "sha256": "6ff41bc8a90b3f40489c1bbb1c6284280faa2713c85cecce5d861db05d8e9d61"
+    },
+    {
+      "path": "baseline-K1/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "completed-build-prerequisite/build-info.original.txt",
+      "bytes": 3458,
+      "sha256": "c20d274d88964b3e7dc007a213b6d14d93f766e0cb91e66f37ffe2cd659d30de"
+    },
+    {
+      "path": "completed-build-prerequisite/receipt.json",
+      "bytes": 861,
+      "sha256": "0155c090eab3c7cf84bab70feb7698c3cae5ed09328504279498d4d756cd6d45"
+    },
+    {
+      "path": "development/go.jsonl",
+      "bytes": 25520,
+      "sha256": "1cae72244b31f78a2d3b77d4653cfd2a02e4f49b062fb3654afd493fb2dca1ad"
+    },
+    {
+      "path": "development/receipt.json",
+      "bytes": 3921,
+      "sha256": "0ff660a890246dfdb51e4f8b14df539fbceb856cd63bc3be36b3ec761754fccf"
+    },
+    {
+      "path": "development/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "public-graph-inspection/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "public-graph-inspection/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "public-graph-inspection/fixture.cherri",
+      "bytes": 53,
+      "sha256": "3592b262b5ea29257e88e04535783de83368accb48234b22d24de11c161a4018"
+    },
+    {
+      "path": "public-graph-inspection/fixture.plist",
+      "bytes": 3209,
+      "sha256": "b0bf2870fc82f41b7f933882934c33ee9c8cd7f043c5fee60da3d9f461ffec9f"
+    },
+    {
+      "path": "public-graph-inspection/receipt.json",
+      "bytes": 879,
+      "sha256": "ce17480beb12e7677b9edaad4130172fc0e725d8481f2078433e4e9302feebac"
+    },
+    {
+      "path": "worktree-add.stderr",
+      "bytes": 3773,
+      "sha256": "49008ea55576ec29950a8bfc8fd71ec333393b484be9eae315e5b92a9463aaeb"
+    },
+    {
+      "path": "worktree-add.stdout",
+      "bytes": 105,
+      "sha256": "c7c36b9b1660d20929660ff8ce4be1ff574a9f9d233fcf06aed3740707b6c948"
+    }
+  ],
+  "closureComplete": false,
+  "appleRuntimeVerified": false
+}

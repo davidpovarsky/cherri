@@ -136,15 +136,19 @@ func TestP15K05BuildPreservesExistingFiles(t *testing.T) {
 				if string(p15InstallRead(t, sibling)) != string(previousSibling) {
 					t.Fatal("explicit staged output overwrote unrelated existing source sibling")
 				}
+				if _, err := p15K05AuthoredNativeGraph(p15InstallRead(t, output), "P15_K05_ORIGINAL"); err != nil {
+					t.Fatal(err)
+				}
 			case "healthy_unsigned_control":
 				out, err := f.run(t, "build", p15EditPath(source), p15EditPath(output), "--unsigned")
 				if err != nil {
 					t.Fatalf("healthy actual wrapper: %v\n%s", err, out)
 				}
-				doc := p15EditDocument(t, output)
-				if len(doc["WFWorkflowActions"].([]any)) != 2 {
-					t.Fatal("healthy build did not produce expected two-action workflow")
+				native := p15InstallRead(t, output)
+				if _, err := p15K05AuthoredNativeGraph(native, "P15_K05_ORIGINAL"); err != nil {
+					t.Fatal(err)
 				}
+				p15K05AssertNativeGraphControls(t, native)
 				if string(p15InstallRead(t, source)) != string(original) {
 					t.Fatal("healthy build mutated source")
 				}
