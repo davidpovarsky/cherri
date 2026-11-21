@@ -96,6 +96,7 @@ raise SystemExit(0 if result.wasSuccessful() else 1)
 }
 
 func TestAIEvaluationHarnessEvidenceRetainsExternalRequirement(t *testing.T) {
+	p15ClearAIMeasurementEnvironment(t)
 	var all, err = LoadAllContracts("", "", "")
 	if err != nil {
 		t.Fatal(err)
@@ -140,7 +141,7 @@ func TestAIEvaluationHarnessEvidenceRetainsExternalRequirement(t *testing.T) {
 	if marshalErr != nil {
 		t.Fatal(marshalErr)
 	}
-	for _, fault := range []string{"invented_evaluation", "borrowed_AI01", "wrong_command", "missing_python_tests", "quality_claim", "stale_sha"} {
+	for _, fault := range []string{"invented_evaluation", "borrowed_AI01", "wrong_command", "missing_python_tests", "quality_claim", "stale_sha", "missing_harness_original", "wrong_harness_source_digest", "missing_harness_python_child"} {
 		t.Run(fault, func(t *testing.T) {
 			var changed EvidenceManifest
 			if err := json.Unmarshal(encoded, &changed); err != nil {
@@ -159,10 +160,22 @@ func TestAIEvaluationHarnessEvidenceRetainsExternalRequirement(t *testing.T) {
 				changed.Records[0].Assertions["ai_quality_measured"] = "true"
 			case "stale_sha":
 				changed.Records[0].ImplementationSHA = strings.Repeat("f", 40)
+			case "missing_harness_original":
+				changed.Records[0].Artifacts = changed.Records[0].Artifacts[:2]
+			case "wrong_harness_source_digest", "missing_harness_python_child":
+				p15MutateAIBoundHarnessOriginal(t, &changed.Records[0], fault)
 			}
 			var rejected, err = ValidateEvidenceManifest(&changed, selected, "local")
 			if err == nil || rejected.ClosureComplete || rejected.PassedCases != 0 {
 				t.Fatal("detached or falsely promoted harness evidence was accepted", err)
+			}
+			var causes = map[string]string{
+				"missing_harness_original":     "not source-bound actual execution",
+				"wrong_harness_source_digest":  "immutable source manifest mismatch",
+				"missing_harness_python_child": "complete fixed Python harness inventory",
+			}
+			if cause := causes[fault]; cause != "" && !strings.Contains(err.Error(), cause) {
+				t.Fatalf("harness corruption reached the wrong gate: want %q, got %v", cause, err)
 			}
 		})
 	}

@@ -274,6 +274,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "AI01" {
+		return []string{aiMeasurementTestID(id)}
+	}
 	if _, ok := editorContracts.Scenarios[id]; ok {
 		return editorContractTestIDs(id)
 	}
@@ -476,6 +479,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == "AI01" {
+		return append([]string{}, aiMeasurementSources...)
+	}
 	if _, ok := editorContracts.Scenarios[id]; ok {
 		return append([]string{}, editorContracts.SourcePaths...)
 	}
@@ -541,7 +547,7 @@ func deriveRepairTestIDs(id, title string) []string {
 		return assetAuthorizationScenario.testIDs()
 	}
 	if id == "RP50" {
-		return aiEvaluationHarnessScenario.testIDs()
+		return append(aiEvaluationHarnessScenario.testIDs(), aiMeasurementTestID(id))
 	}
 	if producer, ok := supplementalProductionScenarios[id]; ok {
 		return producer.testIDs()
@@ -614,7 +620,7 @@ func deriveRepairFixtures(id string) []string {
 		return append([]string{}, assetAuthorizationScenario.ProductionPaths...)
 	}
 	if id == "RP50" {
-		return append([]string{}, aiEvaluationHarnessScenario.ProductionPaths...)
+		return append(append([]string{}, aiEvaluationHarnessScenario.ProductionPaths...), aiMeasurementSources...)
 	}
 	return []string{"tests/language-v2/repair-regression-plan.json#" + id}
 }

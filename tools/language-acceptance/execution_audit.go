@@ -457,11 +457,21 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = append([]string{}, producer.ProductionPaths...)
 			row.PositiveAndNegative = res.Passed
 		}
+		if row.ID == "AI01" {
+			row.TestNames = []string{aiMeasurementTestID(row.ID)}
+			row.ProductionPath = append([]string{}, aiMeasurementSources...)
+			row.Scope = "Only complete original twelve-outcome measurement with independent authenticated Asana pins; fresh public-pattern instances, no unseen-pattern or Apple claim"
+		}
 		if row.ID == "RP50" {
 			row.TestNames = append([]string{}, aiEvaluationHarnessScenario.TestNames...)
 			row.ProductionPath = append([]string{}, aiEvaluationHarnessScenario.ProductionPaths...)
 			row.PositiveAndNegative = false
 			row.Scope = "Actual task-runner control flow only; fake adapters do not measure model quality, and the immutable evaluation tier remains required"
+			if hasLevel(res.ExecutedLevels, "external-eval") {
+				row.TestNames = append(row.TestNames, aiMeasurementTestID(row.ID))
+				row.ProductionPath = append(row.ProductionPath, aiMeasurementSources...)
+				row.Scope = "Harness controls plus separately revalidated original twelve-outcome measurement; no unseen-pattern, Apple or global closure claim"
+			}
 		}
 		if row.ID == "F01" {
 			row.ProductionPath = []string{"internal/language/syntax/parser.go", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "internal/language/lower/short_circuit.go", "language_backend_adapter.go"}
