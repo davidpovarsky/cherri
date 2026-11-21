@@ -23,7 +23,7 @@ func p15ImportedPresenceSource(t *testing.T, body string) string {
 }
 
 func p15ImportedPresenceDynamicBody() string {
-	return fmt.Sprintf("let parsed = getDictionary(text(%q))\ntarget = parsed[%q]\n", "{\"key\":\"VALUE\"}", "key")
+	return fmt.Sprintf("target = none\nlet parsed = getDictionary(text(%q))\ntarget = parsed[%q]\n", "{\"key\":\"VALUE\"}", "key")
 }
 
 func TestP15ImportedPresenceUnusedAssignment(t *testing.T) {
@@ -40,7 +40,7 @@ func TestP15ImportedPresenceUnusedAssignment(t *testing.T) {
 	if !ok {
 		t.Fatalf("actions type %T", doc["WFWorkflowActions"])
 	}
-	expected := []string{"is.workflow.actions.gettext", "is.workflow.actions.detect.dictionary", "is.workflow.actions.getvalueforkey", "is.workflow.actions.setvariable", "is.workflow.actions.showresult"}
+	expected := []string{"is.workflow.actions.setvariable", "is.workflow.actions.gettext", "is.workflow.actions.detect.dictionary", "is.workflow.actions.setvariable", "is.workflow.actions.showresult"}
 	if len(actions) != len(expected) {
 		t.Fatalf("expected exactly %d native actions, got %d", len(expected), len(actions))
 	}
@@ -66,7 +66,7 @@ func TestP15ImportedPresenceLiteralAssignmentControl(t *testing.T) {
 func TestP15ImportedPresenceRequiredRemainsFailClosed(t *testing.T) {
 	for name, tail := range map[string]string{
 		"none_comparison": "if target == none {\nshow(\"ABSENT\")\n}\n",
-		"user_function":   "function echo(value: Text?) -> Text? {\nreturn value\n}\nlet result = echo(target)\nreturn result\n",
+		"user_function":   "function echo(value: Any?) -> Any? {\nreturn value\n}\nlet result = echo(target)\nreturn result\n",
 	} {
 		t.Run(name, func(t *testing.T) {
 			source := p15ImportedPresenceSource(t, p15ImportedPresenceDynamicBody()+tail)
