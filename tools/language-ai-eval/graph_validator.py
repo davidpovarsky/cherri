@@ -29,6 +29,12 @@ MAX_SOURCE = 64 * 1024
 MAX_PLIST = 4 * 1024 * 1024
 MAX_ACTIONS = 96
 COMPILE_TIMEOUT = 35
+ORIGINAL_LIMITS = {
+    "intent.json": 1024 * 1024, "request.json": 1024 * 1024,
+    "source.cherri": MAX_SOURCE, "compiler.stdout": MAX_PLIST,
+    "compiler.stderr": MAX_PLIST, "output.shortcut": MAX_PLIST,
+    "reply.json": 1024 * 1024,
+}
 META = {"UUID", "CustomOutputName"}
 ACTION_FIELDS = {
     "gettext": {"WFTextActionText"},
@@ -67,13 +73,17 @@ def number(value):
     if type(value) is float:
         supported(math.isfinite(value), "NUMBER_NONFINITE")
     if isinstance(value, str):
-        supported(re.fullmatch(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?", value) is not None,
-                  "NUMBER_TEXT_GRAMMAR")
+        supported(len(value) <= 128, "NUMBER_TEXT_LIMIT")
+        match = re.fullmatch(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE]([+-]?[0-9]+))?", value)
+        supported(match is not None, "NUMBER_TEXT_GRAMMAR")
+        if match.group(1) is not None:
+            exponent = match.group(1)
+            supported(len(exponent) <= 4 and -308 <= int(exponent) <= 308, "NUMBER_EXPONENT_RANGE")
     try:
         result = Decimal(str(value))
     except InvalidOperation as error:
         raise Unsupported("NUMBER_PARSE") from error
-    supported(result.is_finite() and abs(result) <= Decimal(2)**53, "NUMBER_EXACT_RANGE")
+    supported(result.is_finite() and result.copy_abs() <= Decimal(2)**53, "NUMBER_EXACT_RANGE")
     return result
 
 
@@ -657,10 +667,27 @@ def evaluate_request(request, bundle):
             receipt["error_code"] = str(error)
         raise
     finally:
-        receipt["finished_at"] = utc_now()
-        receipt["originals"] = {p.name: {"sha256": digest(p.read_bytes()), "bytes": p.stat().st_size}
-                               for p in directory.iterdir() if p.is_file() and p.name != "validator-receipt.json"}
+        originals, errors = {}, {}
+        for name, limit in ORIGINAL_LIMITS.items():
+            path = directory / name
+            if not path.exists() and not path.is_symlink():
+                continue
+            try:
+                raw = read_regular(path, limit)
+                originals[name] = {"sha256": digest(raw), "bytes": len(raw), "complete": True}
+            except (OSError, BundleError) as error:
+                errors[name] = {"error_type": type(error).__name__}
+                if isinstance(error, BundleError):
+                    errors[name]["error_code"] = str(error)
+        receipt.update(originals=originals, originals_complete=not errors, finished_at=utc_now())
+        if errors:
+            # Preserve oversized/changed originals in place. Their complete
+            # bytes were not safely verified and cannot support adjudication.
+            receipt.update(status="UNADJUDICATED", original_errors=errors,
+                           error_code="VALIDATOR_ORIGINALS_INCOMPLETE")
         write_new(directory / "validator-receipt.json", canonical(receipt))
+        if errors:
+            raise BundleError("VALIDATOR_ORIGINALS_INCOMPLETE")
 
 
 def main():

@@ -260,6 +260,29 @@ class IntakeTamperControls(unittest.TestCase):
         with self.assertRaisesRegex(eb.BundleError, "VALIDATOR_CHECKS_NOT_RECOMPUTED"):
             intake.verify_validator(directory, request, provider, self.bundle)
 
+    def test_validator_original_inventory_and_numeric_receipt_types_are_required(self):
+        request = self.requests[0]
+        reply = self.provider(request)
+        self.validator(request, reply)
+        parent = self.root / "attempts" / request["request_id"]
+        provider = intake.verify_provider(parent / "provider", request, self.bundle)
+        path = parent / "validator" / "validator-receipt.json"
+        original = eb.unique_json(path.read_bytes())
+        for fields, expected in (
+                ({"originals_complete": False}, "VALIDATOR_ORIGINALS_INCOMPLETE"),
+                ({"compile_returncode": False}, "VALIDATOR_STATUS"),
+                ({"compile_elapsed_seconds": True}, "VALIDATOR_COMMAND_OR_BUDGET")):
+            with self.subTest(fields=fields):
+                put(path, {**original, **fields})
+                with self.assertRaisesRegex(eb.BundleError, expected):
+                    intake.verify_validator(parent / "validator", request, provider, self.bundle)
+        overflowing = eb.canonical({**original, "compile_elapsed_seconds": "CONTROL_OVERFLOW"})
+        path.write_bytes(overflowing.replace(b'"CONTROL_OVERFLOW"', b"1e999"))
+        with self.assertRaisesRegex(eb.BundleError, "VALIDATOR_COMMAND_OR_BUDGET"):
+            intake.verify_validator(parent / "validator", request, provider, self.bundle)
+        put(path, original)
+        self.assertEqual(intake.verify_validator(parent / "validator", request, provider, self.bundle)["status"], "MEASURED")
+
     def test_signed_original_inventory_rejects_reconciled_receipt_tampering(self):
         request = self.requests[0]
         self.provider(request)
