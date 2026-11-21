@@ -185,6 +185,15 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = []string{"tools/p10r15/verify_documentation_consumers.py", "skills/cherri-shortcuts/scripts/search-docs.sh", "ios/scripts/collect_ios_test_evidence.py", "ios/scripts/build_documentation_index.py", "tools/language-acceptance/documentation_generation.go", "tools/language-acceptance/documentation_intake.go", "tools/language-acceptance/documentation_consumers_intake.go", "ios/CherriApp/Documentation/DocumentationIndex.swift", "ios/CherriApp/Documentation/DocumentationSearchView.swift"}
 			row.Scope = "External published/installed/app consumers only; local model tests and file existence do not prove either required tier"
 		}
+		if spec, ok := editorContracts.Scenarios[row.ID]; ok {
+			row.TestNames = editorContractTestIDs(row.ID)
+			row.ProductionPath = append([]string{}, editorContracts.SourcePaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = spec.Scope
+			if res.Status == "NOT_RUN" {
+				row.Blocker = res.Detail
+			}
+		}
 		if tests, ok := editorProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = editorProductionPathsForID(row.ID)

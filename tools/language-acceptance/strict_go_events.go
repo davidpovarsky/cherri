@@ -13,6 +13,13 @@ import (
 // Shared closed-world event validator. Exact source-bound scenario inventories
 // stay independent; no parent pass can conceal a missing or skipped child.
 func parseStrictNamedProductionOutput(names []string, maximum time.Duration, raw []byte) error {
+	return parseStrictNamedProductionOutputInPackage("github.com/electrikmilk/cherri", names, maximum, raw)
+}
+
+func parseStrictNamedProductionOutputInPackage(packageID string, names []string, maximum time.Duration, raw []byte) error {
+	if packageID == "" {
+		return fmt.Errorf("missing production package identity")
+	}
 	if len(names) == 0 || maximum <= 0 || !utf8.Valid(raw) {
 		return fmt.Errorf("empty production inventory, invalid budget or invalid UTF-8")
 	}
@@ -53,7 +60,7 @@ func parseStrictNamedProductionOutput(names []string, maximum time.Duration, raw
 		if event.Elapsed != nil && (event.Action != "pass" || math.IsNaN(*event.Elapsed) || math.IsInf(*event.Elapsed, 0) || *event.Elapsed < 0 || *event.Elapsed > maximum.Seconds()) {
 			return fmt.Errorf("invalid bounded production event elapsed time")
 		}
-		if event.Package != "github.com/electrikmilk/cherri" || event.Test != "" && !required[event.Test] {
+		if event.Package != packageID || event.Test != "" && !required[event.Test] {
 			return fmt.Errorf("foreign or unselected production event %s:%s", event.Package, event.Test)
 		}
 		switch event.Action {

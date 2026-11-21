@@ -25,12 +25,6 @@ var incompleteLocalAssertions = map[string]string{
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
 
-	"E01": "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
-	"E02": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",
-	"E03": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
-	"E05": "One out-of-order document update does not test cancellation and stale response publication.",
-	"E06": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
-
 	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",
 	"CI03":  "A 40-character local SHA does not prove final workflow head/checkout provenance.",

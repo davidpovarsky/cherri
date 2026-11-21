@@ -270,6 +270,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if _, ok := editorContracts.Scenarios[id]; ok {
+		return editorContractTestIDs(id)
+	}
 	if scenario, found := mainOutputScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -469,6 +472,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if _, ok := editorContracts.Scenarios[id]; ok {
+		return append([]string{}, editorContracts.SourcePaths...)
+	}
 	if _, found := mainOutputScenarios[id]; found {
 		return append([]string{}, mainOutputProductionPaths...)
 	}
