@@ -220,6 +220,20 @@ func TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure(t *testing
 			}
 			defaultEvidencePathsFunc = func() []string { return []string{input} }
 			output := filepath.Join(dir, "final-manifest.json")
+			if len(records) == 0 {
+				// A declared empty file is rejected at ingestion. Assert that
+				// precise boundary, then test final closure with no declared
+				// evidence files. Neither path can acquire executed tiers.
+				emptyManifest, emptyErr := BuildFinalEvidenceManifest(contracts, implSHA, docsSHA, output)
+				want := fmt.Sprintf("failed to ingest declared evidence file %s: no evidence records parsed from %s", input, input)
+				if emptyManifest != nil || emptyErr == nil || emptyErr.Error() != want {
+					t.Fatalf("empty declared input must fail only at ingestion: manifest=%+v err=%v want=%q", emptyManifest, emptyErr, want)
+				}
+				if _, statErr := os.Stat(output); !os.IsNotExist(statErr) {
+					t.Fatalf("rejected empty input wrote a manifest: %v", statErr)
+				}
+				defaultEvidencePathsFunc = func() []string { return nil }
+			}
 			manifest, err := BuildFinalEvidenceManifest(contracts, implSHA, docsSHA, output)
 			if err != nil {
 				t.Fatal(err)
