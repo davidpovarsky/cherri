@@ -1,6 +1,7 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -44,7 +45,7 @@ class EvaluationHarnessTests(unittest.TestCase):
         self.assertEqual(report["status"], "HARNESS_CONTROL_PASS")
         self.assertFalse(report["ai_quality_measured"])
         self.assertNotIn("measured_results", report)
-        tasks, _ = runner.load_suite(ROOT / "tasks.json")
+        tasks, suite_sha = runner.load_suite(ROOT / "tasks.json")
         self.assertEqual({(r["task_id"], r["arm"]) for r in report["records"]},
                          {(t["id"], a) for t in tasks for a in runner.ARMS})
         self.assertTrue(all(r["process"]["exit_code"] == 0 and r["process"]["synthetic"] for r in report["records"]))
@@ -53,6 +54,20 @@ class EvaluationHarnessTests(unittest.TestCase):
             task = next(t for t in tasks if t["id"] == record["task_id"])
             self.assertEqual({c["name"] for c in record["control_checks"]}, set(runner.required_checks(task)))
             self.assertNotIn("passed", record)
+            request = runner.model_request(task, record["arm"], self.guide.read_text(),
+                "control-model", report["budget"], 0, suite_sha)
+            source = 'show("HARNESS_CONTROL_ONLY")\n'
+            generation = {"schema": runner.SCHEMA, "request_id": request["request_id"],
+                "model": "control-model", "synthetic": True, "code": source,
+                "usage": {"input_tokens": 1, "output_tokens": 1}}
+            validation = {"schema": runner.SCHEMA, "request_id": request["request_id"],
+                "task_id": task["id"], "arm": record["arm"], "source_sha256": runner.digest(source.encode())}
+            validation.update(synthetic=True, checks=[{"name": name, "passed": True}
+                for name in runner.required_checks(task)])
+            for key, reply in (("process", generation), ("validator_process", validation)):
+                raw = (json.dumps(reply) + os.linesep).encode()
+                self.assertEqual(record[key]["stdout_sha256"], runner.digest(raw))
+                self.assertEqual(record[key]["stdout_total_bytes"], len(raw))
 
     def test_duplicate_task_and_missing_arm_fail_closed(self):
         original = json.loads((ROOT / "tasks.json").read_text(encoding="utf-8"))

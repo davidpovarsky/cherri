@@ -5,9 +5,32 @@ Adapters are explicit executable paths, speak JSON on stdin/stdout, and own
 provider integration. Fake controls never generate AI-quality measurements.
 """
 
+import json
+import sys
+
+
+SCHEMA = "cherri-language-ai-eval/v1"
+
+# Internal synthetic protocol children need only JSON. Dispatch them before
+# importing orchestration modules; every request still uses its own process.
+# Their byte protocol, errors, budgets and no-quality status stay unchanged.
+if __name__ == "__main__":
+    if sys.argv[1:] == ["--fake-adapter"]:
+        request = json.load(sys.stdin)
+        print(json.dumps({"schema": SCHEMA, "request_id": request["request_id"],
+                          "model": request["model"], "synthetic": True,
+                          "code": 'show("HARNESS_CONTROL_ONLY")\n',
+                          "usage": {"input_tokens": 1, "output_tokens": 1}}))
+        raise SystemExit(0)
+    elif sys.argv[1:] == ["--fake-validator"]:
+        request = json.load(sys.stdin)
+        response = {key: request[key] for key in ("schema", "request_id", "task_id", "arm", "source_sha256")}
+        response.update(synthetic=True, checks=[{"name": name, "passed": True} for name in request["required_checks"]])
+        print(json.dumps(response))
+        raise SystemExit(0)
+
 import argparse
 import hashlib
-import json
 import math
 import os
 from pathlib import Path
@@ -15,12 +38,10 @@ import random
 import re
 import signal
 import subprocess
-import sys
 import tempfile
 import time
 
 
-SCHEMA = "cherri-language-ai-eval/v1"
 ARMS = ("legacy", "v2")
 MAX_ADAPTER_BYTES = 1024 * 1024
 
@@ -403,16 +424,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--fake-adapter"]:
-        request = json.load(sys.stdin)
-        print(json.dumps({"schema": SCHEMA, "request_id": request["request_id"],
-                          "model": request["model"], "synthetic": True,
-                          "code": 'show("HARNESS_CONTROL_ONLY")\n',
-                          "usage": {"input_tokens": 1, "output_tokens": 1}}))
-    elif sys.argv[1:] == ["--fake-validator"]:
-        request = json.load(sys.stdin)
-        response = {key: request[key] for key in ("schema", "request_id", "task_id", "arm", "source_sha256")}
-        response.update(synthetic=True, checks=[{"name": name, "passed": True} for name in request["required_checks"]])
-        print(json.dumps(response))
-    else:
-        raise SystemExit(main())
+    raise SystemExit(main())
