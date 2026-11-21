@@ -98,11 +98,17 @@ def verify_provider(directory, request, bundle):
             and intent.get("manifest_sha256") == digest(canonical(bundle["manifest"]))
             and intent.get("anchor") == bundle["anchor"], "PROVIDER_INTENT")
     ordered_times(bundle["anchor"]["created_at"], intent["started_at"], receipt["started_at"])
+    started_at = receipt["started_at"]
+    finished_at = receipt.get("finished_at")
+    if finished_at is not None:
+        ordered_times(started_at, finished_at)
     # Non-generated outcomes remain in the denominator. A STARTED/forced-kill
     # receipt is incomplete evidence, never a successful generation.
     if not completed:
         require(receipt.get("status") in {"STARTED", "COUNT_STARTED", "GENERATION_STARTED", "REFUSED", "TRUNCATED", "CANCELLED", "FAILED"}, "PROVIDER_STATUS")
-        return {"status": "PROVIDER_ERROR", "provider_status": receipt["status"], "receipt_sha256": digest(canonical(receipt))}
+        return {"status": "PROVIDER_ERROR", "provider_status": receipt["status"],
+                "started_at": started_at, "finished_at": finished_at,
+                "receipt_sha256": digest(canonical(receipt))}
     stop_reason = {"GENERATED": "end_turn", "REFUSED": "refusal", "TRUNCATED": "max_tokens"}[provider_status]
     require(receipt.get("actual_model") == MODEL and receipt.get("stop_reason") == stop_reason, "ACTUAL_MODEL_OR_COMPLETION")
     ordered_times(receipt["started_at"], receipt["finished_at"])
@@ -179,7 +185,8 @@ def verify_provider(directory, request, bundle):
         result = {"status": "MEASURED_PROVIDER_FAILURE", "provider_status": provider_status,
                   "usage": {"input_tokens": actual_usage["total_input_tokens"], "output_tokens": actual_usage["output_tokens"]},
                   "provider_request_id": request_id, "passed": False,
-                  "finished_at": receipt["finished_at"], "receipt_sha256": digest(canonical(receipt))}
+                  "started_at": started_at, "finished_at": receipt["finished_at"],
+                  "receipt_sha256": digest(canonical(receipt))}
         if code is not None:
             result["source_sha256"] = digest(code.encode())
         return result
@@ -188,7 +195,8 @@ def verify_provider(directory, request, bundle):
             and reply.get("provider_request_id") == request_id
             and reply.get("usage") == {"input_tokens": actual_usage["total_input_tokens"], "output_tokens": actual_usage["output_tokens"]}, "PROVIDER_REPLY_NOT_ORIGINAL")
     return {"status": "GENERATED", "code": code, "usage": reply["usage"], "provider_request_id": request_id,
-            "finished_at": receipt["finished_at"], "receipt_sha256": digest(canonical(receipt))}
+            "started_at": started_at, "finished_at": receipt["finished_at"],
+            "receipt_sha256": digest(canonical(receipt))}
 
 
 def verify_validator(directory, request, provider, bundle):
@@ -207,7 +215,8 @@ def verify_validator(directory, request, provider, bundle):
             and receipt.get("source_sha256") == digest(source), "VALIDATOR_SOURCE_MISMATCH")
     ordered_times(provider["finished_at"], receipt["started_at"], receipt["finished_at"])
     if receipt.get("status") == "UNADJUDICATED":
-        return {"status": "VALIDATOR_UNADJUDICATED", "receipt_sha256": digest(canonical(receipt))}
+        return {"status": "VALIDATOR_UNADJUDICATED", "finished_at": receipt["finished_at"],
+                "receipt_sha256": digest(canonical(receipt))}
     command = [str(bundle["root"] / "compiler.exe"), "compile", str(directory / "source.cherri"),
                "--mode="+request["arm"], "--output", str(directory / "output.shortcut"), "--skip-sign"]
     require(receipt.get("command") == command and isinstance(receipt.get("compile_elapsed_seconds"), (int, float))
@@ -225,7 +234,7 @@ def verify_validator(directory, request, provider, bundle):
     expected.update(synthetic=False, checks=checks)
     require(reply == expected and digest(canonical(reply)) == receipt.get("reply_sha256"), "VALIDATOR_CHECKS_NOT_RECOMPUTED")
     return {"status": "MEASURED", "checks": checks, "passed": all(item["passed"] for item in checks),
-            "receipt_sha256": digest(canonical(receipt))}
+            "finished_at": receipt["finished_at"], "receipt_sha256": digest(canonical(receipt))}
 
 
 def intake(bundle_path, trusted_asana_response):
@@ -255,18 +264,27 @@ def intake(bundle_path, trusted_asana_response):
     require(attempts.is_dir() and {path.name for path in attempts.iterdir()} <= set(expected_ids), "UNDECLARED_OR_RETRIED_REQUEST")
     results = []
     provider_ids = set()
+    provider_starts = []
+    evidence_finishes = []
+    all_started_providers_finished = True
     for request, record in zip(sequence, records):
         verify_outcome_seal(bundle, record)
         require(record.get("task_id") == request["task_id"] and record.get("arm") == request["arm"], "OUTCOME_CASE_IDENTITY")
         directory = attempts / request["request_id"]
         require(directory.is_dir() and (directory / "provider").is_dir(), "MISSING_STARTED_OUTCOME")
         provider = verify_provider(directory / "provider", request, bundle)
+        provider_starts.append(utc_time(provider["started_at"]))
+        if provider["finished_at"] is None:
+            all_started_providers_finished = False
+        else:
+            evidence_finishes.append(utc_time(provider["finished_at"]))
         result = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
                   "status": provider["status"], "provider_receipt_sha256": provider["receipt_sha256"]}
         if provider["status"] == "GENERATED":
             require(provider["provider_request_id"] not in provider_ids, "REUSED_PROVIDER_REQUEST_ID")
             provider_ids.add(provider["provider_request_id"])
             validated = verify_validator(directory / "validator", request, provider, bundle)
+            evidence_finishes.append(utc_time(validated["finished_at"]))
             result.update(status=validated["status"], validator_receipt_sha256=validated["receipt_sha256"],
                           source_sha256=digest(provider["code"].encode()), usage=provider["usage"],
                           provider_request_id_sha256=digest(provider["provider_request_id"].encode()))
@@ -295,6 +313,12 @@ def intake(bundle_path, trusted_asana_response):
         "manifest_sha256": digest(canonical(bundle["manifest"])), "implementation_sha": bundle["manifest"]["implementation_sha"],
         "compiler": bundle["manifest"]["compiler"], "suite_sha256": bundle["manifest"]["suite_sha256"],
         "trusted_asana_response_sha256": digest(trusted_raw), "anchor": bundle["anchor"],
+        # Original receipt times bound all validated count/generation calls and
+        # any validator execution. An unfinished attempt has no claimed end.
+        "execution_interval": {
+            "started_utc": min(provider_starts).isoformat().replace("+00:00", "Z"),
+            "finished_utc": max(evidence_finishes).isoformat().replace("+00:00", "Z")
+                if all_started_providers_finished else None},
         "asana_authentication_boundary": "independent authenticated connector read supplied by operator",
         "ai_quality_measured": complete, "expected_outcomes": 12, "records": results,
         "provenance_scope": "fresh exact instances of six existing public patterns",

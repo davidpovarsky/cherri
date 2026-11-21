@@ -130,9 +130,20 @@ class IntakeTamperControls(unittest.TestCase):
         put(directory / "validator-receipt.json", receipt)
         return answer
 
-    def complete(self, first_refusal=False):
+    def complete(self, first_refusal=False, first_unfinished=False):
         records = []
         for index, request in enumerate(self.requests):
+            if first_unfinished and index == 0:
+                self.provider(request, partial_generation=True)
+                path = self.root / "attempts" / request["request_id"] / "provider" / "provider-receipt.json"
+                receipt = eb.unique_json(path.read_bytes())
+                receipt.update(status="GENERATION_STARTED", finished_at=None)
+                put(path, receipt)
+                record = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
+                          "status": "PROVIDER_ERROR", "finished_at": eb.utc_now()}
+                record.update(eb.seal_outcome(self.bundle, record))
+                records.append(record)
+                continue
             if first_refusal and index == 0:
                 self.provider(request, "refusal")
                 provider = intake.verify_provider(self.root / "attempts" / request["request_id"] / "provider", request, self.bundle)
@@ -155,8 +166,10 @@ class IntakeTamperControls(unittest.TestCase):
                   "manifest_sha256": eb.digest(eb.canonical(self.bundle["manifest"])),
                   "suite_sha256": self.bundle["manifest"]["suite_sha256"], "budget": self.bundle["manifest"]["budget"],
                   "seed": self.bundle["manifest"]["order_seed"], "records": records,
-                  "status": "EVALUATION_COMPLETED", "ai_quality_measured": True,
-                  "measured_results": {arm: {"passed": sum(r["passed"] for r in records if r["arm"] == arm), "total": 6} for arm in ("legacy", "v2")}}
+                  "status": "EVALUATION_INCOMPLETE" if first_unfinished else "EVALUATION_COMPLETED",
+                  "ai_quality_measured": not first_unfinished}
+        if not first_unfinished:
+            report["measured_results"] = {arm: {"passed": sum(r["passed"] for r in records if r["arm"] == arm), "total": 6} for arm in ("legacy", "v2")}
         put(self.root / "report.json", report)
         return report
 
@@ -176,6 +189,26 @@ class IntakeTamperControls(unittest.TestCase):
         self.assertFalse(result["formal_acceptance_granted"])
         self.assertFalse(result["apple_runtime_proved"])
         self.assertFalse(result["unseen_pattern_provenance_proved"])
+        starts, finishes = [], []
+        for request in self.requests:
+            directory = self.root / "attempts" / request["request_id"]
+            provider = eb.unique_json((directory / "provider" / "provider-receipt.json").read_bytes())
+            validator = eb.unique_json((directory / "validator" / "validator-receipt.json").read_bytes())
+            starts.append(eb.utc_time(provider["started_at"]))
+            finishes.extend(eb.utc_time(value) for value in (provider["finished_at"], validator["finished_at"]))
+        self.assertEqual(result["execution_interval"], {
+            "started_utc": min(starts).isoformat().replace("+00:00", "Z"),
+            "finished_utc": max(finishes).isoformat().replace("+00:00", "Z")})
+
+    def test_unfinished_provider_has_no_invented_interval_end_or_quality_measurement(self):
+        self.complete(first_unfinished=True)
+        result = self.run_intake()
+        self.assertEqual(result["status"], "VERIFIED_INCOMPLETE_OUTCOMES")
+        self.assertFalse(result["ai_quality_measured"])
+        self.assertIsNone(result["execution_interval"]["finished_utc"])
+        self.assertIsNotNone(eb.utc_time(result["execution_interval"]["started_utc"]))
+        self.assertEqual(len(result["records"]), 12)
+        self.assertNotIn("measured_results", result)
 
     def test_provider_identity_usage_public_context_and_chronology_are_recomputed(self):
         request = self.requests[0]
@@ -291,6 +324,11 @@ class IntakeTamperControls(unittest.TestCase):
         receipt = eb.unique_json((directory / "provider-receipt.json").read_bytes())
         self.assertFalse(receipt["originals"]["generation.response.original.body"]["complete"])
         self.assertEqual(intake.verify_provider(directory, request, self.bundle)["status"], "PROVIDER_ERROR")
+        invalid = {**receipt, "finished_at": "2026-11-21T18:00:00Z"}
+        put(directory / "provider-receipt.json", invalid)
+        with self.assertRaisesRegex(eb.BundleError, "RECEIPT_CHRONOLOGY"):
+            intake.verify_provider(directory, request, self.bundle)
+        put(directory / "provider-receipt.json", receipt)
         (directory / "generation.response.original.body").write_bytes(b"changed partial bytes")
         with self.assertRaisesRegex(eb.BundleError, "ORIGINAL_HASH_OR_SIZE"):
             intake.verify_provider(directory, request, self.bundle)

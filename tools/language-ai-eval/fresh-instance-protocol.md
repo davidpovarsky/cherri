@@ -50,6 +50,19 @@ Asana server response. The source of this trusted input remains explicit in its
 output. HTTP response Date values support provider chronology and are not
 described as cryptographic timestamps.
 
+For formal project intake, the operator supplies two independent authenticated
+Asana observations from outside the bundle: one collected before the first
+provider request, and one after all provider and validator work has finished.
+Their original response hashes and observation UTC values are pinned separately
+by the caller. Invoke the canonical checker against each response and require
+the same unchanged anchor and measured content. Its safe `execution_interval`
+contains `started_utc` and `finished_utc`, derived only from the original
+validated provider and validator receipts. Provider start precedes its validated
+count request; the end includes the latest validator completion. An unfinished
+provider attempt leaves `finished_utc` null and cannot establish a completed
+measurement. These host receipt times support the caller's chronology checks;
+they do not authenticate the Asana observations or assert cryptographic time.
+
 The seed and oracle stay out of the provider payload. After every outcome is
 sealed, enough generator/seed/suite/oracle material can be disclosed for
 reproduction. The signing private key remains private. No private project
