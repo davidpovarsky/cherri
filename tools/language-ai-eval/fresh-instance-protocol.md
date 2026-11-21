@@ -11,9 +11,11 @@ Freeze the generator, adapter, runner, validator, intake and both guides in a
 clean Git commit before preparing a real bundle. The model is the canonical
 `claude-sonnet-5-5` identity retrieved through the provider Models API. The
 original metadata response and its receipt are required; key presence alone is
-insufficient. The exact S3 compiler binary is separately pinned to source
-`9c8daf721aa241127df8d1e3f91bbadf90110e73`, not the evaluation implementation
-commit. All hashes are checked again when loading a bundle.
+insufficient. The exact S4 compiler binary is separately pinned to source
+`b791ce0616d1821cebfc57909a6bc50a195ca68c`, not the evaluation implementation
+commit. Its binary SHA256 is
+`50e73c811c6829448f7406a6be4731b632cf27ef038615c83bdd5c96cb3b6ef3`.
+All hashes are checked again when loading a bundle.
 
 `evaluation_bundle.py --prepare` creates a new output directory exactly once,
 obtains a 32-byte seed from the operating system CSPRNG, and deterministically
@@ -99,7 +101,7 @@ already-started outcomes and the declared denominator.
 
 ## Independent semantic adjudication
 
-The validator compiles the exact unmodified provider text using the pinned S3
+The validator compiles the exact unmodified provider text using the pinned S4
 binary, in the requested language mode. It rejects file directives, native
 escapes and unsupported source calls before compilation. A conservative lexer
 and statement/expression grammar permits only scalar literals, bindings,
@@ -131,7 +133,7 @@ automatically counted as a model error or success. This limited graph evaluator
 does not replace the compiler or a general Shortcuts semantic specification.
 
 Before freezing a real evaluation, calibrate this subset against twelve real
-public baseline compilations, one per task/arm, using the pinned S3 binary.
+public baseline compilations, one per task/arm, using the pinned S4 binary.
 Synthetic graph and transport controls alone cannot establish compiler
 compatibility or measure model quality. Preserve every calibration failure and
 correct only a demonstrated mismatch; freeze the corrected implementation
@@ -186,3 +188,11 @@ model, caps, timeout and the source-bound adapter/validator. `--sealed-bundle`
 requires the report path to be `<bundle>/report.json`. The same absolute bundle
 path must be in `CHERRI_AI_EVAL_BUNDLE`. Changing an option after commitment
 fails before the next provider request.
+
+The S4 calibration preserves the same twelve authored public inputs used with
+S3. All twelve original S4 compilations succeeded. The initial oracle retained
+two complete scientific-number operands as unadjudicated until its bounded
+Decimal grammar was corrected from actual bytes. Python-only replay then
+adjudicated all twelve original S4 plists without recompilation. Both malformed
+S3 exponent originals remain unadjudicated; no text or numeric domain was repaired
+after generation, and no model generation took place during calibration.
