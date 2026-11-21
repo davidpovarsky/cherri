@@ -350,7 +350,7 @@ func makeExpressionValue(reference *WFActionReference, value *any) {
 	var expression = fmt.Sprintf("%s", *value)
 	var expressionParts = strings.Split(expression, " ")
 	if len(expressionParts) == 3 && containsTokens(&expression, Plus, Minus, Multiply, Divide) {
-		makeMathValue(reference, expression, expressionParts)
+		makeMathValue(reference, expressionParts)
 		return
 	}
 
@@ -359,15 +359,13 @@ func makeExpressionValue(reference *WFActionReference, value *any) {
 	}, reference))
 }
 
-func makeMathValue(reference *WFActionReference, expression string, expressionParts []string) {
-	var operandOne string
-	var operandTwo string
-
+func makeMathValue(reference *WFActionReference, expressionParts []string) {
+	// makeExpressionValue already identified the three space-delimited parts.
+	// Splitting again at the operator would also split a numeric exponent sign
+	// or a negative operand (for example, 7 + 1e+06 or -7 - -2).
+	var operandOne = strings.Trim(expressionParts[0], " ")
+	var operandTwo = strings.Trim(expressionParts[2], " ")
 	var operation = expressionParts[1]
-	expressionParts = strings.Split(expression, operation)
-
-	operandOne = strings.Trim(expressionParts[0], " ")
-	operandTwo = strings.Trim(expressionParts[1], " ")
 
 	switch operation {
 	case "*":
