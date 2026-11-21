@@ -324,11 +324,38 @@ func TestEditorContractActualProductionEvidence(t *testing.T) {
 				})
 			}
 			if editorContracts.Scenarios[id].SwiftProbe != "" {
-				for _, fault := range []string{"compiled_body_changed", "missing_control", "swift_timeout", "native_scope_claim"} {
+				for _, fault := range []string{"compiled_body_changed", "compiled_binary_changed", "missing_control", "swift_timeout", "native_scope_claim", "duplicate_swift_key"} {
 					t.Run(fault, func(t *testing.T) {
 						broken := editorContractCopyRecord(t, record)
 						kind := editorContracts.Scenarios[id].SwiftProbe
 						switch fault {
+						case "compiled_binary_changed":
+							for _, artifact := range broken.Artifacts {
+								name := filepath.Base(artifact.Path)
+								if strings.HasSuffix(name, "-probe") || strings.HasSuffix(name, "-probe.exe") {
+									editorContractMutateArtifact(t, &broken, name, func(raw []byte) []byte { return append(raw, 0) })
+									break
+								}
+							}
+						case "duplicate_swift_key":
+							var changed []byte
+							editorContractMutateArtifact(t, &broken, "execute.stdout", func(raw []byte) []byte {
+								changed = bytes.Replace(raw, []byte("\"event\":"), []byte("\"event\":\"control\",\"event\":"), 1)
+								return changed
+							})
+							editorContractMutateArtifact(t, &broken, "receipt.json", func(raw []byte) []byte {
+								var receipt map[string]any
+								json.Unmarshal(raw, &receipt)
+								for _, value := range receipt["execution"].(map[string]any)["artifacts"].([]any) {
+									artifact := value.(map[string]any)
+									if artifact["path"] == "execute.stdout" {
+										artifact["sha256"] = editorSHA(changed)
+										artifact["bytes"] = len(changed)
+									}
+								}
+								out, _ := json.Marshal(receipt)
+								return out
+							})
 						case "compiled_body_changed":
 							name := "position-generated.swift"
 							if kind == "publication" {

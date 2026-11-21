@@ -53,6 +53,7 @@ def main():
              "generated":{"path":generated.name,"bytes":generated.stat().st_size,"sha256":sha(generated.read_bytes())},
              "compile":compiled,"execution":None,"rows":[]}
     if successful(compiled):
+        receipt["binary"]={"bytes":binary.stat().st_size,"sha256":sha(binary.read_bytes())}
         receipt["execution"]=invoke([str(binary)],repo,output,"execute",20)
         try:receipt["rows"]=inspect((output/"execute.stdout").read_bytes())
         except (ValueError,UnicodeError) as error:receipt["intake_error"]=str(error)

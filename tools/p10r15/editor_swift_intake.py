@@ -11,15 +11,16 @@ from editor_position_probe import inspect as inspect_position
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
+def unique_pairs(values):
+    result = {}
+    for key, value in values:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
 def read_json(path):
-    def pairs(values):
-        result = {}
-        for key, value in values:
-            if key in result:
-                raise ValueError("duplicate JSON key")
-            result[key] = value
-        return result
-    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=pairs)
+    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_pairs)
 
 def verify(repo, source, directory, kind, executed_repo, executed_directory):
     if len(source) != 40 or any(c not in "0123456789abcdef" for c in source):
@@ -103,11 +104,14 @@ def verify(repo, source, directory, kind, executed_repo, executed_directory):
     expected += ["-o", str(executed_binary)]
     if command != expected or Path(command[0]).name.lower() not in {"swiftc", "swiftc.exe"} or receipt["execution"]["command"] != [str(executed_binary)] or not binary.is_file():
         raise ValueError("detached Swift compiler/executable command")
+    data = binary.read_bytes()
+    if receipt.get("binary") != {"bytes": len(data), "sha256": digest(data)}:
+        raise ValueError("changed compiled executable")
+    output = (directory / "execute.stdout").read_bytes()
+    for line in output.decode("utf-8", errors="strict").splitlines():
+        json.loads(line, object_pairs_hook=unique_pairs)
     if kind == "publication":
-        data = binary.read_bytes()
-        if receipt.get("binary") != {"bytes": len(data), "sha256": digest(data)}:
-            raise ValueError("changed compiled executable")
-        controls, summary = inspect_output((directory / "execute.stdout").read_bytes())
+        controls, summary = inspect_output(output)
         if receipt.get("controls") != controls or receipt.get("summary") != summary or summary["failed"] != 0:
             raise ValueError("incomplete publication observations")
         count = len(controls)
