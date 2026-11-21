@@ -118,22 +118,65 @@ func editorSHA(data []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func editorSourceState(root string) (string, bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// Source verification retains only Git metadata, with one unchanged aggregate
+// ten-second context. Failure diagnostics never include the process environment.
+type editorGitStateOutput struct {
+	data  []byte
+	total int
+}
+
+func (out *editorGitStateOutput) Write(data []byte) (int, error) {
+	const limit = 4096
+	out.total += len(data)
+	if remaining := limit - len(out.data); remaining > 0 {
+		if remaining > len(data) {
+			remaining = len(data)
+		}
+		out.data = append(out.data, data[:remaining]...)
+	}
+	return len(data), nil
+}
+func editorSourceStateWithDiagnostic(root string) (string, bool, string, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	head := exec.CommandContext(ctx, "git", "rev-parse", "HEAD")
-	head.Dir = root
-	revision, err := head.Output()
-	if err != nil {
-		return "", false, err
+	var observations []string
+	run := func(phase string, args ...string) ([]byte, error) {
+		var command = exec.CommandContext(ctx, "git", args...)
+		command.Dir = root
+		var stdout, stderr editorGitStateOutput
+		command.Stdout, command.Stderr = &stdout, &stderr
+		var err = command.Run()
+		var exitCode = -1
+		if command.ProcessState != nil {
+			exitCode = command.ProcessState.ExitCode()
+		}
+		observations = append(observations, fmt.Sprintf(
+			"phase=%s argv=%q exit=%d context=%v command_error=%v stdout_bytes=%d stdout_truncated=%t stdout=%q stderr_bytes=%d stderr_truncated=%t stderr=%q",
+			phase, args, exitCode, ctx.Err(), err, stdout.total, stdout.total > len(stdout.data), stdout.data,
+			stderr.total, stderr.total > len(stderr.data), stderr.data))
+		if err == nil && (stdout.total > len(stdout.data) || stderr.total > len(stderr.data)) {
+			err = fmt.Errorf("Git source metadata exceeds the retained 4096-byte stream bound")
+		}
+		if err != nil {
+			return nil, err
+		}
+		return stdout.data, nil
 	}
-	status := exec.CommandContext(ctx, "git", "status", "--porcelain", "--untracked-files=all")
-	status.Dir = root
-	raw, err := status.Output()
+	var revision, err = run("rev-parse", "rev-parse", "HEAD")
 	if err != nil {
-		return "", false, err
+		var detail = strings.Join(observations, "; ")
+		return "", false, detail, fmt.Errorf("editor source Git verification failed: %s: %w", detail, err)
 	}
-	return strings.TrimSpace(string(revision)), len(bytes.TrimSpace(raw)) == 0, nil
+	var raw, statusErr = run("status", "status", "--porcelain", "--untracked-files=all")
+	var detail = strings.Join(observations, "; ")
+	if statusErr != nil {
+		return "", false, detail, fmt.Errorf("editor source Git verification failed: %s: %w", detail, statusErr)
+	}
+	return strings.TrimSpace(string(revision)), len(bytes.TrimSpace(raw)) == 0, detail, nil
+}
+func editorSourceState(root string) (string, bool, error) {
+	var revision, clean, _, err = editorSourceStateWithDiagnostic(root)
+	return revision, clean, err
 }
 
 // Parse the actual go test JSON stream. Required named test discovery, the full

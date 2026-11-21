@@ -95,8 +95,11 @@ func (r *Runner) executeShortCircuit(id string) ([]EvidenceArtifact, string, boo
 		return nil, "", false, err
 	}
 	source, clean, stateErr := editorSourceState(root)
-	if stateErr != nil || !clean || source != r.implSHA {
-		return nil, "", false, fmt.Errorf("combined short-circuit requires exact clean source")
+	if stateErr != nil {
+		return nil, "", false, fmt.Errorf("combined short-circuit source verification failed: %w", stateErr)
+	}
+	if !clean || source != r.implSHA {
+		return nil, "", false, fmt.Errorf("combined short-circuit requires exact clean source: expected_head=%s observed_head=%s clean=%t", r.implSHA, source, clean)
 	}
 	directory, err := stateEvidenceDirectory(r, shortCircuitPrefix(id)+"-")
 	if err != nil {
