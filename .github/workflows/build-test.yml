@@ -167,7 +167,29 @@ jobs:
         go build -o cherri .
 
     - name: Full Go Test Suite
+      env:
+        CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT: ${{ runner.temp }}/cherri-editor-contract-evidence
       run: python3 -B tools/p10r15/run_full_go_suite.py --report "$RUNNER_TEMP/cherri-full-go-suite.json"
+
+    - name: Collect bounded public editor execution evidence
+      if: always()
+      run: |
+        python3 -B -m unittest discover -s tools/p10r15 -p 'test_collect_editor_contract_evidence.py' -v
+        python3 -B tools/p10r15/collect_editor_contract_evidence.py \
+          --root "$RUNNER_TEMP/cherri-editor-contract-evidence" \
+          --output "$RUNNER_TEMP/cherri-editor-contract-public-capture" \
+          --source "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+
+    - name: Upload public editor execution tuples and raw observations
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cherri-editor-contract-macos-${{ github.run_id }}
+        path: |
+          ${{ runner.temp }}/cherri-editor-contract-public-capture/inventory.json
+          ${{ runner.temp }}/cherri-editor-contract-public-capture/public-editor-evidence.zip
+        if-no-files-found: warn
+        retention-days: 14
 
     - name: Upload complete Go suite execution receipt
       if: always()

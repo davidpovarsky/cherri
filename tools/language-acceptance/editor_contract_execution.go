@@ -232,6 +232,15 @@ func (r *Runner) executeEditorContract(id string) ([]EvidenceArtifact, string, b
 	if err != nil {
 		return nil, "", false, err
 	}
+	// The Swift producers resolve their existing repository/output directories.
+	// Record that same physical path before invocation (including macOS /var
+	// aliases and owned Windows junctions); the intake remains an exact compare.
+	if spec.SwiftProbe != "" {
+		root, err = filepath.EvalSymlinks(root)
+		if err != nil {
+			return nil, "", false, err
+		}
+	}
 	var source, clean, stateErr = editorSourceState(root)
 	if stateErr != nil || !clean || source != r.implSHA {
 		return nil, "", false, fmt.Errorf("editor producer requires exact clean source")
@@ -249,6 +258,12 @@ func (r *Runner) executeEditorContract(id string) ([]EvidenceArtifact, string, b
 	var directory, dirErr = stateEvidenceDirectory(r, "editor-contract-"+strings.ToLower(id)+"-")
 	if dirErr != nil {
 		return nil, "", false, dirErr
+	}
+	if spec.SwiftProbe != "" {
+		directory, err = filepath.EvalSymlinks(directory)
+		if err != nil {
+			return nil, "", false, err
+		}
 	}
 	var artifacts []EvidenceArtifact
 	for _, step := range spec.Steps {

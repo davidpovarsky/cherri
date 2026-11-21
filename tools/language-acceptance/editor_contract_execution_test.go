@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"testing"
@@ -451,5 +452,112 @@ func TestEditorContractRejectsUnprovedExternalAndCrossIDRecords(t *testing.T) {
 				t.Fatal("different requirement borrowed editor proof")
 			}
 		})
+	}
+}
+
+func TestEditorContractCanonicalSwiftExecutionPaths(t *testing.T) {
+	if _, err := exec.LookPath("swiftc"); err != nil {
+		t.Skip("actual Swift compiler unavailable; canonical execution proof NOT_RUN")
+	}
+	root, err := filepath.Abs(resolveRepoRoot())
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	physical := t.TempDir()
+	if output := os.Getenv("CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT"); output != "" {
+		physical = filepath.Join(output, "canonical-swift-paths")
+		if err := os.MkdirAll(physical, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	physical, err = filepath.EvalSymlinks(physical)
+	if err != nil {
+		t.Fatal(err)
+	}
+	alias := filepath.Join(t.TempDir(), "aliased-output")
+	if runtime.GOOS == "windows" {
+		command := exec.Command("cmd", "/d", "/c", "mklink", "/J", alias, physical)
+		if output, err := command.CombinedOutput(); err != nil {
+			t.Fatalf("create owned directory junction: %v %s", err, output)
+		}
+	} else if err := os.Symlink(physical, alias); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Remove(alias) })
+	if actual, err := filepath.EvalSymlinks(alias); err != nil || actual != physical {
+		t.Fatalf("owned path control is not a real alias: %q %v", actual, err)
+	}
+	runner := NewRunner()
+	runner.artifactDir = alias
+	for _, id := range []string{"E05", "E06"} {
+		t.Run(id, func(t *testing.T) {
+			before := len(runner.records)
+			runner.runEditorContract(id)
+			result := runner.results[id]
+			if result.Status != "PENDING_EXTERNAL" || result.Passed || len(runner.records) != before+1 {
+				t.Fatalf("actual aliased Swift execution incomplete: %+v", result)
+			}
+			record := runner.records[before]
+			if err := validateEditorContractRecord(id, record); err != nil {
+				t.Fatalf("actual canonical Swift record rejected: %v", err)
+			}
+			swiftDirectory, _, err := editorContractReadSwift(record, editorContracts.Scenarios[id])
+			if err != nil {
+				t.Fatal(err)
+			}
+			var receipt editorProcessReceipt
+			found := false
+			for _, artifact := range record.Artifacts {
+				if filepath.Base(artifact.Path) != editorContractPrefix(id, "swift")+"-process.json" {
+					continue
+				}
+				raw, err := os.ReadFile(artifact.Path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := decodeEditorJSON(raw, &receipt); err != nil {
+					t.Fatal(err)
+				}
+				found = true
+			}
+			if !found || len(receipt.Command) != 7 || receipt.Command[4] != root || receipt.Command[6] != swiftDirectory {
+				t.Fatalf("outer execution tuple is not the actual canonical tuple: %+v", receipt)
+			}
+			canonical, err := filepath.EvalSymlinks(receipt.Command[6])
+			if err != nil || canonical != receipt.Command[6] {
+				t.Fatalf("producer recorded an unresolved directory: %q %v", receipt.Command[6], err)
+			}
+			relative, err := filepath.Rel(physical, canonical)
+			if err != nil || strings.HasPrefix(relative, "..") || filepath.IsAbs(relative) {
+				t.Fatalf("probe escaped its owned output tree: %q %v", relative, err)
+			}
+			// Keep exact comparison: an alias for the same physical files does
+			// not authorize another invocation, nor a nonexistent foreign path.
+			for _, mutation := range []struct{ name, repo, directory string }{
+				{"original_alias", root, filepath.Join(alias, relative)},
+				{"foreign_directory", root, filepath.Join(physical, "not-executed", "swift")},
+				{"foreign_repository", filepath.Join(physical, "not-executed-repository"), canonical},
+			} {
+				t.Run(mutation.name, func(t *testing.T) {
+					err := editorContractValidateSwift(root, runner.implSHA, swiftDirectory, editorContracts.Scenarios[id].SwiftProbe, mutation.repo, mutation.directory)
+					if err == nil || !strings.Contains(err.Error(), "detached Swift compiler/executable command") {
+						t.Fatalf("changed invocation was accepted or rejected for another reason: %v", err)
+					}
+				})
+			}
+		})
+	}
+	if output := os.Getenv("CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT"); output != "" {
+		proof, err := json.MarshalIndent(map[string]any{"source": runner.implSHA, "records": runner.records, "results": runner.results, "ui_executed": false}, "", "  ")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(physical, "canonical-swift-paths-evidence.json"), append(proof, '\n'), 0600); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
