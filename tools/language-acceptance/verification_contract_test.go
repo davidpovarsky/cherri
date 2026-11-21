@@ -38,9 +38,10 @@ func p15VerificationResult(t *testing.T, report *AcceptanceReport, id string) Ca
 	return *found
 }
 
-// The fixture's runtime/artifact data is simulated input to the real validator;
-// no Apple execution or FN01/E01 production acceptance is claimed by this test.
+// FN01 and CI data are synthetic inputs to the real validator. E01 service
+// evidence is executed at the exact source; no Apple execution or closure is claimed.
 func TestP15VerificationInvalidRecordsNeverPass(t *testing.T) {
+	baseManifest, baseContracts := p15VerifiedEditorMetaFixture(t)
 	for _, mutation := range []struct {
 		name  string
 		apply func(*EvidenceManifest)
@@ -62,11 +63,9 @@ func TestP15VerificationInvalidRecordsNeverPass(t *testing.T) {
 	} {
 		t.Run(mutation.name, func(t *testing.T) {
 			for _, phase := range []string{"local", "final"} {
-				var manifest, contracts = baseValidManifestAndContracts(t)
-				var baseline, err = ValidateEvidenceManifest(manifest, contracts, phase)
-				if err != nil || !p15VerificationResult(t, baseline, "FN01").Passed {
-					t.Fatalf("causal validator control failed: %v %+v", err, baseline)
-				}
+				manifest, contracts := p15CloneMetaFixture(t, baseManifest, baseContracts)
+				baseline, err := ValidateEvidenceManifest(manifest, contracts, phase)
+				p15AssertMetaFixtureBaseline(t, baseline, err, phase)
 				mutation.apply(manifest)
 				var report, changedErr = ValidateEvidenceManifest(manifest, contracts, phase)
 				var result = p15VerificationResult(t, report, "FN01")
@@ -83,7 +82,7 @@ func TestP15VerificationMalformedProducerFailsClosed(t *testing.T) {
 	t.Cleanup(func() {
 		ciRunDiscoveryFunc, defaultEvidencePathsFunc = originalDiscovery, originalPaths
 	})
-	var manifest, contracts = baseValidManifestAndContracts(t)
+	var manifest, contracts = p15VerifiedEditorMetaFixture(t)
 	var dir = t.TempDir()
 	var validPath = filepath.Join(dir, "producer.json")
 	var raw, err = json.Marshal(manifest.Records)
@@ -100,8 +99,9 @@ func TestP15VerificationMalformedProducerFailsClosed(t *testing.T) {
 	if buildErr != nil {
 		t.Fatal(buildErr)
 	}
-	if report, err := ValidateEvidenceManifest(built, contracts, "final"); err != nil || !report.ClosureComplete {
-		t.Fatalf("valid producer intake control failed: %v %+v", err, report)
+	for _, phase := range []string{"local", "final"} {
+		report, err := ValidateEvidenceManifest(built, contracts, phase)
+		p15AssertMetaFixtureBaseline(t, report, err, phase)
 	}
 	var before, readErr = os.ReadFile(outPath)
 	if readErr != nil {
@@ -146,10 +146,9 @@ func TestP15RP02ParserOnlyAndForeignSHA(t *testing.T) {
 		t.Fatal("parser-only report closed a native/runtime contract")
 	}
 
-	var manifest, contracts = baseValidManifestAndContracts(t)
-	if report, err := ValidateEvidenceManifest(manifest, contracts, "final"); err != nil || !p15VerificationResult(t, report, "FN01").Passed {
-		t.Fatalf("valid source-binding control failed: %v", err)
-	}
+	var manifest, contracts = p15VerifiedEditorMetaFixture(t)
+	baseline, baselineErr := ValidateEvidenceManifest(manifest, contracts, "final")
+	p15AssertMetaFixtureBaseline(t, baseline, baselineErr, "final")
 	manifest.Runs[3].HeadSHA = "foreign-runtime-sha"
 	manifest.Records[2].ImplementationSHA = "foreign-runtime-sha"
 	var rejected, rejectErr = ValidateEvidenceManifest(manifest, contracts, "final")

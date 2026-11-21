@@ -659,6 +659,10 @@ func TestMeta_FalsePassedClaimWithMissingTiersRejected(t *testing.T) {
 	}
 }
 
+// Historical synthetic model for rejection controls. Its E01 placeholders are
+// deliberately invalid under the strict editor intake. Positive controls must
+// use p15VerifiedEditorMetaFixture, which replaces them with actual service proof
+// and preserves the missing UI tier.
 func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsSet) {
 	t.Helper()
 	artPath := filepath.Join(t.TempDir(), "clipboard-result.txt")
@@ -1013,9 +1017,10 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 		defaultEvidencePathsFunc = origPaths
 	})
 
+	verifiedManifest, verifiedContracts := p15VerifiedEditorMetaFixture(t)
 	runEndToEnd := func(t *testing.T, mutate func(dir string, baseManifest *EvidenceManifest, contracts *ContractsSet, evFile string)) (*AcceptanceReport, error) {
 		t.Helper()
-		baseManifest, contracts := baseValidManifestAndContracts(t)
+		baseManifest, contracts := p15CloneMetaFixture(t, verifiedManifest, verifiedContracts)
 		dir := t.TempDir()
 		evFile := filepath.Join(dir, "producer-evidence.json")
 		raw, err := json.MarshalIndent(baseManifest.Records, "", "  ")
@@ -1052,20 +1057,17 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 		return ValidateEvidenceManifest(built, contracts, "final")
 	}
 
-	// Sanity check: unmodified end-to-end aggregator passes
+	// All supplied records validate. The actual service proof cannot close E01's
+	// UI tier; each attack below must cause its own additional rejection.
 	repOk, errOk := runEndToEnd(t, nil)
-	if errOk != nil || !repOk.ClosureComplete {
-		t.Fatalf("expected unmodified end-to-end aggregator to pass, got err=%v, closure=%v", errOk, repOk)
-	}
+	p15AssertMetaFixtureBaseline(t, repOk, errOk, "final")
 
 	// Attack 1: Delete all evidence files while leaving all four successful CI run IDs
 	t.Run("Attack01_DeleteAllEvidenceFilesWithGreenCI", func(t *testing.T) {
 		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
 			_ = os.Remove(evFile)
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) || (rep != nil && rep.FailedCases == 0) {
-			t.Fatalf("Attack 1 must fail closed when all evidence files are deleted: err=%v, rep=%+v", err, rep)
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "requirement FN01 has unsatisfied required tiers in final phase")
 	})
 
 	// Attack 2: Evidence record with exit_code != 0 and result = "passed"
@@ -1074,9 +1076,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 			bm.Records[0].ExitCode = 2
 			bm.Records[0].Result = "passed"
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 2 must reject exit_code != 0 with passed result")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "non-zero exit code 2 with passed result")
 	})
 
 	// Attack 3: Contradictory exit_code == 0 with result = "failed"
@@ -1085,9 +1085,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 			bm.Records[0].ExitCode = 0
 			bm.Records[0].Result = "failed"
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 3 must reject contradictory failed status")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "zero exit code with failed result")
 	})
 
 	// Attack 4: Missing any single acceptance ID, repair ID, or gate ID
@@ -1096,9 +1094,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 			// Drop BRG01 record
 			bm.Records = bm.Records[:len(bm.Records)-1]
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 4 must reject missing gate ID")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "requirement BRG01 has unsatisfied required tiers in final phase")
 	})
 
 	// Attack 5: Injected unknown requirement ID
@@ -1106,9 +1102,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
 			bm.Records[0].Requirements = append(bm.Records[0].Requirements, "BOGUS_REQ_999")
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 5 must reject unknown requirement ID")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "unknown requirement ID \"BOGUS_REQ_999\"")
 	})
 
 	// Attack 6: Modified contract file hash
@@ -1126,23 +1120,21 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 			// Prefix spoof without "/" boundary and substring spoof
 			bm.Records[0].TestID = "spoof/tools/language-acceptance:runFunctionsEvil"
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 7 must reject spoofed test_id")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "is not authorized for requirement FN01")
 	})
 
 	// Attack 8: Weak tier substitution (service supplied where ios-ui is required)
 	t.Run("Attack08_WeakTierSubstitutionServiceForIOSUI", func(t *testing.T) {
 		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
 			for i := range bm.Records {
-				if bm.Records[i].EvidenceID == "ev-e01-ui" {
-					bm.Records[i].Tier = "service"
+				if len(bm.Records[i].Requirements) == 1 && bm.Records[i].Requirements[0] == "E01" {
+					// Retag the actual service receipt as UI, keeping its producer,
+					// source and raw observations unchanged.
+					bm.Records[i].Tier = "ios-ui"
 				}
 			}
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 8 must reject service tier substituted for ios-ui")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "detached editor local contract E01")
 	})
 
 	// Attack 9: Empty or mismatched implementation_sha on evidence record (no silent backfilling!)
@@ -1150,9 +1142,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
 			bm.Records[0].ImplementationSHA = ""
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 9 must reject empty implementation_sha without backfilling")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "has empty implementation_sha")
 	})
 
 	// Attack 10: Missing referenced artifact or corrupt artifact SHA-256
@@ -1164,9 +1154,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 				}
 			}
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 10 must reject ios-runtime record with missing artifacts")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "on tier ios-runtime missing required CI artifacts")
 	})
 
 	// Attack 11: Wrong RequiredAssertions value (function_result = "0" instead of "21")
@@ -1178,9 +1166,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 				}
 			}
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 11 must reject wrong function_result assertion value")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, `assertion "function_result" value mismatch`)
 	})
 
 	// Attack 12: Duplicate evidence_id across ingested files
@@ -1189,9 +1175,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 			dup := bm.Records[0]
 			bm.Records = append(bm.Records, dup)
 		})
-		if err == nil || (rep != nil && rep.ClosureComplete) {
-			t.Fatalf("Attack 12 must reject duplicate evidence_id in ingested files")
-		}
+		p15AssertCausalMetaRejection(t, rep, err, "duplicate evidence_id")
 	})
 }
 
