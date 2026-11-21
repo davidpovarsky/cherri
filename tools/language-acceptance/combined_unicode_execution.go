@@ -47,7 +47,7 @@ var combinedUnicodeLocalTiers = []string{"unit", "native-roundtrip"}
 // This reviewed witness set covers this scenario and its actual intake helpers.
 // Exact clean Git source identity separately binds the whole checkout. Preserve
 // the shared 128-file, 4MiB-per-blob, 16MiB-total and 15s limits.
-const combinedUnicodeSourceWitnessSHA256 = "4c406d15441b8ec3df3be72e42013c03ed9771dc840f6c7c8bee2002118c5904"
+const combinedUnicodeSourceWitnessSHA256 = "bebcedcda5c5e62ab1c824cb171416b18028976edb22381c74cdee8533d4203d"
 
 func validateCombinedUnicodeSourceInventory(names []string) error {
 	if len(names) == 0 || len(names) > 128 {
