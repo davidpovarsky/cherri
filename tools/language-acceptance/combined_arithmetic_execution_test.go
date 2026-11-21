@@ -58,7 +58,7 @@ func TestCombinedArithmeticInventoryAndUnprovedRuntime(t *testing.T) {
 	t.Run("required_source_before_launch", func(t *testing.T) {
 		var missing []string
 		for _, path := range combinedArithmeticEvidence.SourcePaths {
-			if path != "p15_combined_combined_arithmetic_test.go" {
+			if path != "p15_combined_arithmetic_test.go" {
 				missing = append(missing, path)
 			}
 		}
@@ -200,7 +200,7 @@ func combinedArithmeticActualProductionEvidence(t *testing.T, ids []string) {
 							originalCount := len(receipt.SourceFiles)
 							var retained []editorSourceFile
 							for _, file := range receipt.SourceFiles {
-								if file.Path != "p15_combined_combined_arithmetic_test.go" {
+								if file.Path != "p15_combined_arithmetic_test.go" {
 									retained = append(retained, file)
 								}
 							}
