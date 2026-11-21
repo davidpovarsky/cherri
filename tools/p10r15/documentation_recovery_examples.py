@@ -7,6 +7,9 @@ the formal RP46/BRG29 aggregator.
 """
 import argparse
 import hashlib
+import datetime
+import math
+import signal
 import json
 import os
 from pathlib import Path
@@ -80,69 +83,162 @@ def bound_bytes(root, commit, path):
     return raw
 
 
+def completed(result):
+    budget, elapsed = result.get("budgetSeconds"), result.get("elapsedSeconds")
+    return (type(budget) in (int, float) and math.isfinite(budget) and budget > 0
+            and type(elapsed) in (int, float) and math.isfinite(elapsed)
+            and 0 <= elapsed <= budget and result.get("timedOut") is False
+            and type(result.get("exitCode")) is int)
+
+
+def succeeded(result):
+    return completed(result) and result["exitCode"] == 0
+
+
+def stop_process_tree(child):
+    if child.poll() is None:
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/PID", str(child.pid), "/T", "/F"],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                           stdin=subprocess.DEVNULL, timeout=10, check=False)
+        else:
+            try:
+                os.killpg(child.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+    try:
+        child.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        child.kill()
+        child.wait(timeout=5)
+
+
 def process(output, name, command, cwd, budget=30):
     require(re.fullmatch(r"[a-z0-9_-]+", name), "PROCESS_NAME")
+    require(type(budget) in (int, float) and math.isfinite(budget) and budget > 0,
+            "PROCESS_BUDGET")
     stdout, stderr = output/(name+".stdout"), output/(name+".stderr")
     require(not stdout.exists() and not stderr.exists(), "PROCESS_OUTPUT_EXISTS")
+    started_utc = datetime.datetime.now(datetime.timezone.utc).isoformat()
     started = time.monotonic()
+    deadline = started + budget
+    child, code, timed_out, launch_error = None, None, False, None
     with stdout.open("xb") as out, stderr.open("xb") as err:
         try:
-            child = subprocess.run(command, cwd=cwd, stdin=subprocess.DEVNULL,
-                                   stdout=out, stderr=err, timeout=budget)
-            code, timed_out = child.returncode, False
-        except subprocess.TimeoutExpired:
-            code, timed_out = None, True
+            options = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt"
+                       else {"start_new_session": True})
+            child = subprocess.Popen(command, cwd=cwd, stdin=subprocess.DEVNULL,
+                                     stdout=out, stderr=err, **options)
+            remaining = deadline-time.monotonic()
+            if remaining <= 0:
+                timed_out = True
+                stop_process_tree(child)
+            else:
+                try:
+                    child.wait(timeout=remaining)
+                except subprocess.TimeoutExpired:
+                    timed_out = True
+                    stop_process_tree(child)
+            code = child.returncode
+            if time.monotonic() > deadline:
+                timed_out = True
+        except OSError as error:
+            launch_error = str(error)
+        except BaseException:
+            if child is not None:
+                stop_process_tree(child)
+            raise
+    elapsed = time.monotonic()-started
     result = {"command": list(command), "cwd": str(cwd), "exitCode": code,
               "timedOut": timed_out, "budgetSeconds": budget,
-              "elapsedSeconds": time.monotonic()-started,
+              "elapsedSeconds": elapsed, "startedUTC": started_utc,
+              "endedUTC": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "launchError": launch_error,
               "stdout": {"path": stdout.name, "bytes": stdout.stat().st_size,
                          "sha256": digest(stdout.read_bytes())},
               "stderr": {"path": stderr.name, "bytes": stderr.stat().st_size,
                          "sha256": digest(stderr.read_bytes())}}
-    (output/(name+".process.json")).write_text(json.dumps(result, indent=2)+"\n", encoding="utf-8")
+    (output/(name+".process.json")).write_bytes(
+        (json.dumps(result, indent=2)+"\n").encode("utf-8"))
     return result, stdout.read_bytes(), stderr.read_bytes()
 
 
+def documentation_blocks(text):
+    blocks, active, offset = [], None, 0
+    for line_number, line in enumerate(text.splitlines(keepends=True), 1):
+        raw = line.rstrip("\r\n")
+        opener = re.fullmatch(r" {0,3}([" + TICK + r"~]{3,})([^\r\n]*)", raw)
+        if active is None:
+            if opener and len(set(opener[1])) == 1:
+                info = opener[2].strip()
+                active = {"start": offset, "codeStart": offset+len(line),
+                          "kind": info, "delimiter": opener[1],
+                          "lineStart": line_number+1}
+        else:
+            delimiter = active["delimiter"]
+            close = re.fullmatch(r" {0,3}" + re.escape(delimiter[0]) +
+                                 "{"+str(len(delimiter)) + r",}\s*", raw)
+            if close:
+                active.update(end=offset+len(line), code=text[active["codeStart"]:offset])
+                blocks.append(active)
+                active = None
+        offset += len(line)
+    require(active is None, "UNCLOSED_DOCUMENTATION_FENCE")
+    return blocks
+
+
 def fence_examples(text, role, path):
-    cases = []
-    for ordinal, match in enumerate(FENCES.finditer(text), 1):
-        code, kind = match["code"].strip(), match["kind"]
-        require(bool(code), "EMPTY_DOCUMENTATION_EXAMPLE")
-        prefix = ""
-        errors = []
-        mode = "v2"
-        annotation = EXPECTATION.search(text[:match.start()])
+    cases, used_annotations = [], set()
+    blocks = documentation_blocks(text)
+    for block in blocks:
+        kind = block["kind"]
+        if not kind.startswith("cherri"):
+            continue
+        require(re.fullmatch(r"cherri(?:-[a-z]+)?", kind), "UNSUPPORTED_DOCUMENTATION_FENCE")
+        code = block["code"]
+        stripped = code.strip()
+        require(bool(stripped), "EMPTY_DOCUMENTATION_EXAMPLE")
+        prefix, errors, mode = "", [], "v2"
+        annotation = EXPECTATION.search(text[:block["start"]])
         if annotation:
             fields = annotation[1].split()
             require(len(fields) >= 2 and fields[0] == "diagnostic"
-                    and all(re.fullmatch(r"E_[A-Z0-9_]+", code) for code in fields[1:]),
+                    and all(re.fullmatch(r"E_[A-Z0-9_]+", value) for value in fields[1:])
+                    and len(fields[1:]) == len(set(fields[1:])),
                     "INVALID_DIAGNOSTIC_ANNOTATION")
             errors = fields[1:]
+            used_annotations.add(annotation.start())
         if kind == "cherri-legacy":
             require(not errors, "LEGACY_ANNOTATION_AMBIGUOUS")
             mode = "legacy"
-            # Supply only explicitly missing bindings in the two historical
-            # migration fragments; the original fragment remains byte-for-byte.
-            if path == "fork-language/migration.md" and code == "resizeImage(@photo, 800, 600)":
+            if path == "fork-language/migration.md" and stripped == "resizeImage(@photo, 800, 600)":
                 prefix = "@photo = selectPhotos()\n"
-            elif path == "fork-language/migration.md" and code == "@first = getListItem(@list, 1) // 1-based action index":
+            elif path == "fork-language/migration.md" and stripped == "@first = getListItem(@list, 1) // 1-based action index":
                 prefix = '@list = ["first", "second"]\n'
         else:
             require(kind == "cherri", "UNIMPLEMENTED_CONTEXTUAL_FENCE:" + kind)
-        cases.append({"repository": role, "path": path, "ordinal": ordinal,
-                      "location": "fence", "mode": mode,
+        suffix = "" if code.endswith("\n") else "\n"
+        cases.append({"repository": role, "path": path, "ordinal": len(cases)+1,
+                      "location": "fence", "lineStart": block["lineStart"], "mode": mode,
                       "classification": "intended-error" if errors else
                           ("historical-context" if mode == "legacy" else "runnable"),
-                      "originalSnippet": code, "originalSnippetSHA256": digest(code.encode()),
-                      "contextPrefix": prefix, "contextSuffix": "\n",
-                      "expectedErrors": errors, "source": prefix+code+"\n"})
+                      "originalSnippet": code, "originalSnippetSHA256": digest(code.encode("utf-8")),
+                      "contextPrefix": prefix, "contextSuffix": suffix,
+                      "expectedErrors": errors, "source": prefix+code+suffix})
+    for annotation in re.finditer(r"<!--\s*cherri-test:.*?-->", text, re.S):
+        if any(block["start"] <= annotation.start() < block["end"] for block in blocks):
+            continue
+        require(annotation.start() in used_annotations, "ORPHAN_DOCUMENTATION_EXPECTATION")
     return cases
 
 
 def skill_examples(text, path):
     # Keep every inline token in the inventory. Only complete calls and the
     # explicit expression contexts below are compiler examples.
-    body = re.sub(TICK*3+r".*?"+TICK*3, "", text, flags=re.S)
+    body = list(text)
+    for block in documentation_blocks(text):
+        body[block["start"]:block["end"]] = ["\n" if c == "\n" else " " for c in text[block["start"]:block["end"]]]
+    body = "".join(body)
     cases, inventory = [], []
     for ordinal, match in enumerate(INLINE.finditer(body), 1):
         code = match[1]
@@ -181,28 +277,64 @@ def skill_examples(text, path):
     return cases, inventory
 
 
-def compiler_identity(binary, expected, pins, output):
-    info, metadata, _ = process(output, "compiler-build-info", ["go", "version", "-m", str(binary)], output)
-    require(info["exitCode"] == 0 and not info["timedOut"], "COMPILER_METADATA_FAILED")
+def compiler_identity(binary, expected, pins, output, go="go"):
+    require(re.fullmatch(r"[0-9a-f]{40}", expected), "INVALID_COMPILER_COMMIT")
+    before = regular(binary, 128*1024*1024)
+    info, metadata, info_stderr = process(output, "compiler-build-info", [str(go), "version", "-m", str(binary)], output)
+    require(succeeded(info) and not info_stderr, "COMPILER_METADATA_FAILED")
     text = metadata.decode("utf-8", errors="strict")
-    require(re.search(r"^\s*path\s+github\.com/electrikmilk/cherri\s*$", text, re.M), "COMPILER_ROLE")
-    for item in ("vcs.revision="+expected, "vcs.modified=false"):
-        require(re.search(r"^\s*build\s+"+re.escape(item)+r"\s*$", text, re.M), "COMPILER_VCS_IDENTITY")
-    cap_process, raw, _ = process(output, "compiler-capabilities", [str(binary), "--capabilities-json"], output)
-    require(cap_process["exitCode"] == 0 and not cap_process["timedOut"], "CAPABILITIES_FAILED")
+    paths = re.findall(r"^\s*path\s+(\S+)\s*$", text, re.M)
+    require(paths == ["github.com/electrikmilk/cherri"], "COMPILER_ROLE")
+    build = {}
+    for line in re.findall(r"^\s*build\s+(.+?)\s*$", text, re.M):
+        key, separator, value = line.partition("=")
+        require(separator and key not in build, "COMPILER_BUILD_INFO_AMBIGUOUS")
+        build[key] = value
+    require(build.get("vcs") == "git" and build.get("vcs.revision") == expected
+            and build.get("vcs.modified") == "false", "COMPILER_VCS_IDENTITY")
+    require(all(isinstance(build.get(k), str) and re.fullmatch(r"[a-z0-9]+", build[k])
+                for k in ("GOOS", "GOARCH")), "COMPILER_PLATFORM")
+    cap_process, raw, cap_stderr = process(output, "compiler-capabilities", [str(binary), "--capabilities-json"], output)
+    require(succeeded(cap_process) and not cap_stderr, "CAPABILITIES_FAILED")
     caps = load_json(raw)
-    require(caps.get("compilerCommit") == expected, "CAPABILITIES_SOURCE")
-    for key in ("languageVersion", "catalogSchemaVersion", "protocolVersion",
+    require(type(caps) is dict and caps.get("protocolVersion") == "1.0", "CAPABILITIES_PROTOCOL")
+    for key in ("languageVersion", "catalogSchemaVersion",
                 "schemaFingerprint", "codecFingerprint", "macroFingerprint"):
-        require(caps.get(key) == pins.get(key), "CAPABILITIES_PIN:" + key)
-    return {"path": str(binary), "sha256": digest(regular(binary, 128*1024*1024)),
-            "commit": expected, "buildInfo": info, "capabilitiesProcess": cap_process}
+        require(type(pins.get(key)) is str and type(caps.get(key)) is str
+                and caps[key] == pins[key], "CAPABILITIES_PIN:" + key)
+        if key.endswith("Fingerprint"):
+            require(re.fullmatch(r"[0-9a-f]{64}", caps[key]), "CAPABILITIES_DIGEST:" + key)
+    if "compilerCommit" in caps:
+        require(caps["compilerCommit"] == expected, "CAPABILITIES_SOURCE")
+    require(regular(binary, 128*1024*1024) == before, "COMPILER_BYTES_CHANGED")
+    return {"path": str(binary), "sha256": digest(before), "bytes": len(before),
+            "commit": expected, "role": paths[0], "goos": build["GOOS"], "goarch": build["GOARCH"],
+            "protocolVersion": caps["protocolVersion"], "buildInfo": info,
+            "capabilitiesProcess": cap_process}
+
+
+def diagnostic_errors(raw):
+    diagnostic = load_json(raw)
+    require(type(diagnostic) is dict and type(diagnostic.get("valid")) is bool, "CHECK_SCHEMA")
+    require("diagnostics" in diagnostic, "DIAGNOSTICS_SCHEMA")
+    values = diagnostic["diagnostics"]
+    # protocol.DocumentAnalysis serializes an empty nil Go slice as JSON null.
+    # Only the explicit valid/no-errors response may use that exact wire value.
+    if values is None:
+        require(diagnostic["valid"] is True, "NULL_INVALID_DIAGNOSTICS")
+        values = []
+    require(type(values) is list, "DIAGNOSTICS_SCHEMA")
+    for item in values:
+        require(type(item) is dict and item.get("severity") in ("ERROR", "WARNING", "INFO", "HINT")
+                and type(item.get("code")) is str and re.fullmatch(r"[A-Z][A-Z0-9_]+", item["code"])
+                and type(item.get("message")) is str, "DIAGNOSTIC_ENTRY_SCHEMA")
+    return diagnostic, [item["code"] for item in values if item["severity"] == "ERROR"]
 
 
 def execute_example(binary, case, directory):
     directory.mkdir()
     source = directory/"snippet.cherri"
-    source.write_text(case["source"], encoding="utf-8", newline="\n")
+    source.write_bytes(case["source"].encode("utf-8"))
     case = dict(case, sourceSHA256=digest(source.read_bytes()), artifact=None)
     failures = []
     if case["mode"] == "v2":
@@ -210,45 +342,49 @@ def execute_example(binary, case, directory):
                                  [str(binary), "check", str(source), "--json", "--no-ansi"], directory)
         case["check"] = checked
         try:
-            diagnostic = load_json(raw)
-            require(type(diagnostic) is dict and type(diagnostic.get("valid")) is bool, "CHECK_SCHEMA")
-            values = diagnostic.get("diagnostics") or []
-            require(type(values) is list, "DIAGNOSTICS_SCHEMA")
-            errors = [item["code"] for item in values if item.get("severity") == "ERROR"]
+            require(completed(checked), "CHECK_DEADLINE_OR_PROCESS")
+            diagnostic, errors = diagnostic_errors(raw)
             case["actualErrors"] = errors
             if case["expectedErrors"]:
-                require(checked["exitCode"] not in (None, 0) and diagnostic["valid"] is False
+                require(checked["exitCode"] != 0 and diagnostic["valid"] is False
                         and errors == case["expectedErrors"], "INTENDED_ERROR_MISMATCH")
             else:
                 require(checked["exitCode"] == 0 and diagnostic["valid"] is True and not errors,
                         "RUNNABLE_CHECK_FAILED")
-            require(not checked["timedOut"], "CHECK_TIMEOUT")
         except (ValueError, KeyError, TypeError, UnicodeError) as error:
             failures.append("check:" + str(error))
     command = [str(binary), str(source), "--skip-sign", "--no-ansi"]
     if case["mode"] == "legacy":
         command = [str(binary), "compile", str(source), "--mode=legacy",
                    "--load-all-actions", "--skip-sign", "--no-ansi"]
-    compiled, _, _ = process(directory, "compile", command, directory)
+    compiled, compile_stdout, compile_stderr = process(directory, "compile", command, directory)
     case["compile"] = compiled
     artifact = directory/"snippet_unsigned.shortcut"
     try:
-        require(not compiled["timedOut"], "COMPILE_TIMEOUT")
+        require(completed(compiled), "COMPILE_DEADLINE_OR_PROCESS")
         if case["expectedErrors"]:
-            require(compiled["exitCode"] not in (None, 0) and not artifact.exists(),
+            require(compiled["exitCode"] != 0 and not artifact.exists(),
                     "INVALID_EXAMPLE_EMITTED_OUTPUT")
+            codes = re.findall(r"\bE_[A-Z0-9_]+\b",
+                               (compile_stdout+b"\n"+compile_stderr).decode("utf-8", errors="strict"))
+            case["compileErrors"] = list(dict.fromkeys(codes))
+            require(case["compileErrors"] == case["expectedErrors"], "INTENDED_COMPILE_ERROR_MISMATCH")
         else:
             require(compiled["exitCode"] == 0, "RUNNABLE_COMPILE_FAILED")
             raw = regular(artifact, 16*1024*1024)
             workflow = plistlib.loads(raw)
             require(type(workflow) is dict and type(workflow.get("WFWorkflowActions")) is list,
                     "NOT_NATIVE_WORKFLOW")
+            require(all(type(row) is dict and type(row.get("WFWorkflowActionIdentifier")) is str
+                        and row["WFWorkflowActionIdentifier"] for row in workflow["WFWorkflowActions"]),
+                    "NATIVE_ACTION_SCHEMA")
             case["artifact"] = {"path": artifact.name, "bytes": len(raw),
                                 "sha256": digest(raw), "actionCount": len(workflow["WFWorkflowActions"])}
-    except (ValueError, OSError, plistlib.InvalidFileException) as error:
+    except (ValueError, OSError, UnicodeError, plistlib.InvalidFileException) as error:
         failures.append("compile:" + str(error))
     case.update(passed=not failures, failures=failures)
-    (directory/"example.json").write_text(json.dumps(case, indent=2, ensure_ascii=False)+"\n", encoding="utf-8")
+    (directory/"example.json").write_bytes(
+        (json.dumps(case, indent=2, ensure_ascii=False)+"\n").encode("utf-8"))
     return case
 
 

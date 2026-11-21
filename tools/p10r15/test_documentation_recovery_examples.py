@@ -134,10 +134,17 @@ class DiagnosticControls(unittest.TestCase):
                 return collector.execute_example(root / "not-executed", case, root / "example")
 
     def test_malformed_empty_diagnostic_container_cannot_pass(self):
-        for invalid in ({}, False, "", None):
+        for invalid in ({}, False, ""):
             with self.subTest(value=repr(invalid)):
                 row = self.execute({"valid": True, "diagnostics": invalid})
                 self.assertFalse(row["passed"], "non-array diagnostics were accepted")
+
+    def test_documented_nil_slice_wire_is_empty_only_when_valid(self):
+        # The actual f05 public check emits diagnostics:null for no diagnostics;
+        # its original bytes are retained in the component evidence.
+        self.assertTrue(self.execute({"valid": True, "diagnostics": None})["passed"])
+        self.assertFalse(self.execute({"valid": False, "diagnostics": None})["passed"])
+        self.assertFalse(self.execute({"valid": True})["passed"])
 
     def test_compile_failure_must_match_the_intended_diagnostic(self):
         row = self.execute({"valid": False, "diagnostics": [
