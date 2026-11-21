@@ -187,6 +187,7 @@ func TestRequiredEncodingMappingHasDedicatedProducerAndAssertions(t *testing.T) 
 }
 
 func TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence(t *testing.T) {
+	baseManifest, baseContracts := p15VerifiedEditorMetaFixture(t)
 	mutations := []struct {
 		name  string
 		apply func(*EvidenceRecord, map[string]any)
@@ -222,7 +223,7 @@ func TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence(t *testing.T) 
 	for _, id := range []string{"CI01", "RP47"} {
 		for _, mutation := range mutations {
 			t.Run(id+"/"+mutation.name, func(t *testing.T) {
-				manifest, contracts := baseValidManifestAndContracts(t)
+				manifest, contracts := p15CloneMetaFixture(t, baseManifest, baseContracts)
 				record, summary := nativeEncodingIntakeFixture(t, id, manifest.ImplementationSHA)
 				if err := validateNativeEncodingRecord(id, record); err != nil {
 					t.Fatalf("causal intake control: %v", err)
@@ -237,8 +238,10 @@ func TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence(t *testing.T) 
 				}
 				other, _ := nativeEncodingIntakeFixture(t, otherID, manifest.ImplementationSHA)
 				manifest.Records = append(manifest.Records, other, record)
-				if report, err := ValidateEvidenceManifest(manifest, contracts, "final"); err != nil || !p15VerificationResult(t, report, id).Passed {
-					t.Fatalf("causal full validator control: %v %+v", err, report)
+				baseline, baselineErr := ValidateEvidenceManifest(manifest, contracts, "final")
+				p15AssertMetaFixtureBaseline(t, baseline, baselineErr, "final")
+				if !p15VerificationResult(t, baseline, id).Passed {
+					t.Fatal("causal encoding intake control did not pass its own requirement")
 				}
 				mutation.apply(&record, summary)
 				if len(record.Artifacts) > 0 && filepath.Base(record.Artifacts[len(record.Artifacts)-1].Path) == "required-encoding-gate.json" {
@@ -320,6 +323,7 @@ func rewriteNativeEncodingArtifact(t *testing.T, record *EvidenceRecord, summary
 }
 
 func TestRequiredEncodingPhaseArtifactReconciliation(t *testing.T) {
+	baseManifest, baseContracts := p15VerifiedEditorMetaFixture(t)
 	mutations := []struct {
 		name, phase, suffix string
 		change              func(map[string]any)
@@ -341,7 +345,7 @@ func TestRequiredEncodingPhaseArtifactReconciliation(t *testing.T) {
 	for _, id := range []string{"CI01", "RP47"} {
 		for _, mutation := range mutations {
 			t.Run(id+"/"+mutation.name, func(t *testing.T) {
-				manifest, contracts := baseValidManifestAndContracts(t)
+				manifest, contracts := p15CloneMetaFixture(t, baseManifest, baseContracts)
 				record, summary := nativeEncodingIntakeFixture(t, id, manifest.ImplementationSHA)
 				contracts.Acceptance.Cases = append(contracts.Acceptance.Cases, CaseSpec{ID: "CI01", Group: "verification", MinimumTestLevel: "negative-CI"})
 				contracts.Acceptance.CaseCount++
@@ -353,8 +357,10 @@ func TestRequiredEncodingPhaseArtifactReconciliation(t *testing.T) {
 				}
 				other, _ := nativeEncodingIntakeFixture(t, otherID, manifest.ImplementationSHA)
 				manifest.Records = append(manifest.Records, other, record)
-				if report, err := ValidateEvidenceManifest(manifest, contracts, "final"); err != nil || !p15VerificationResult(t, report, id).Passed {
-					t.Fatalf("complete synthetic intake control failed: %v", err)
+				baseline, baselineErr := ValidateEvidenceManifest(manifest, contracts, "final")
+				p15AssertMetaFixtureBaseline(t, baseline, baselineErr, "final")
+				if !p15VerificationResult(t, baseline, id).Passed {
+					t.Fatal("complete synthetic encoding intake did not pass its own requirement")
 				}
 				rewriteNativeEncodingArtifact(t, &record, summary, mutation.phase, mutation.suffix, mutation.change, mutation.changeSummary)
 				manifest.Records[len(manifest.Records)-1] = record
