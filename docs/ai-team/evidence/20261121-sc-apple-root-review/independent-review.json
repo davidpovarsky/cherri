@@ -1,0 +1,186 @@
+{
+  "reviewedUTC": "2026-11-21T23:29:38.707278+00:00",
+  "reviewer": "root independent source and original reconciliation",
+  "shortCircuit": {
+    "source": "173d4ced39dd50c4887e0fb8ea39cdce3f726eff",
+    "proofCommit": "2ef45b2e2cf32fbef86b5bba55f8815e54f8c0ed",
+    "archiveSHA256": "f02d30a53a78bb5972f3d324856969ba0d9eb6bcbd6932fb01d945574613a623",
+    "members": 44,
+    "sourceWitnesses": 105,
+    "sourceBytes": 2199901,
+    "outer": {
+      "start": 26,
+      "pass": 26,
+      "fail": 0,
+      "skip": 0,
+      "packageElapsed": 67.05,
+      "rawBytes": 27037,
+      "rawSHA256": "c2438d7be7d92e18a0c5874dde204bcf173090004c7f4a7ae17aae3f245fad0c"
+    },
+    "nested": {
+      "RP18": {
+        "start": 96,
+        "pass": 96,
+        "fail": 0,
+        "skip": 0,
+        "packageElapsed": 3.35,
+        "rawBytes": 83738,
+        "rawSHA256": "43662504ac23151448468938d23e92a455017c4906192de14eb256b10090a0d1",
+        "actualProcessSeconds": 34.3988232
+      },
+      "BRG13": {
+        "start": 139,
+        "pass": 139,
+        "fail": 0,
+        "skip": 0,
+        "packageElapsed": 3.356,
+        "rawBytes": 126644,
+        "rawSHA256": "55d6e43b3a4c522c3903293e517304870fa649009d119c5840d57bef9427de33",
+        "actualProcessSeconds": 19.6505737
+      }
+    },
+    "scope": {
+      "local_records": 4,
+      "full_pass": 0,
+      "pending_apple_requirements": [
+        "RP18",
+        "BRG13"
+      ],
+      "runner_status": "PENDING_EXTERNAL",
+      "manifest_local_status": "NOT_RUN with pending external tier",
+      "closure_complete": false
+    },
+    "evidenceRecordKeys": [
+      {
+        "keys": [
+          "evidence_id",
+          "requirements",
+          "tier",
+          "implementation_sha",
+          "test_id",
+          "command",
+          "exit_code",
+          "result",
+          "assertions",
+          "artifacts",
+          "detail"
+        ],
+        "requirements": [
+          "RP18"
+        ],
+        "tier": "unit",
+        "result": "passed"
+      },
+      {
+        "keys": [
+          "evidence_id",
+          "requirements",
+          "tier",
+          "implementation_sha",
+          "test_id",
+          "command",
+          "exit_code",
+          "result",
+          "assertions",
+          "artifacts",
+          "detail"
+        ],
+        "requirements": [
+          "RP18"
+        ],
+        "tier": "native-structure",
+        "result": "passed"
+      },
+      {
+        "keys": [
+          "evidence_id",
+          "requirements",
+          "tier",
+          "implementation_sha",
+          "test_id",
+          "command",
+          "exit_code",
+          "result",
+          "assertions",
+          "artifacts",
+          "detail"
+        ],
+        "requirements": [
+          "BRG13"
+        ],
+        "tier": "unit",
+        "result": "passed"
+      },
+      {
+        "keys": [
+          "evidence_id",
+          "requirements",
+          "tier",
+          "implementation_sha",
+          "test_id",
+          "command",
+          "exit_code",
+          "result",
+          "assertions",
+          "artifacts",
+          "detail"
+        ],
+        "requirements": [
+          "BRG13"
+        ],
+        "tier": "native-structure",
+        "result": "passed"
+      }
+    ]
+  },
+  "apple": {
+    "source": "c543d9001e7b9c486fd441c2e775cfee3de5a927",
+    "proofCommit": "c34057f4ce7e335c59aa9a111e8ae75144d54056",
+    "archiveSHA256": "fd2af68708408e4c0c00b07757791161eef85ad9e1c7c3cd6b78373cbe5ca63e",
+    "members": 129,
+    "runtimeSourceWitnesses": 11,
+    "startupSourceWitnesses": 11,
+    "originalGitHubArtifactSHA256": "980b1096780ec28875b6f3634edeed64c78af3e61f2372900c020b2511573246",
+    "artifactMemberCount": 32,
+    "actualCanonicalExporterReplaySeconds": 9.969,
+    "formalRecordsRecomputedExactly": 6,
+    "runtimeRequirements": [
+      "F01",
+      "FN01",
+      "FN02",
+      "FN03",
+      "L02",
+      "L04",
+      "N01",
+      "S01",
+      "V01",
+      "V03"
+    ],
+    "runs": [
+      {
+        "id": 44953909996,
+        "head": "c543d9001e7b9c486fd441c2e775cfee3de5a927",
+        "attempt": 1,
+        "conclusion": "failure"
+      },
+      {
+        "id": 44953915448,
+        "head": "c543d9001e7b9c486fd441c2e775cfee3de5a927",
+        "attempt": 1,
+        "conclusion": "failure"
+      },
+      {
+        "id": 44953920775,
+        "head": "c543d9001e7b9c486fd441c2e775cfee3de5a927",
+        "attempt": 1,
+        "conclusion": "success"
+      }
+    ],
+    "finalKCIInherited": false,
+    "fullRequirementAcceptance": false,
+    "test02Started": false
+  },
+  "allArchiveMembersVerified": true,
+  "noRequirementsClosed": true,
+  "immutableContractsUnchanged": true
+}

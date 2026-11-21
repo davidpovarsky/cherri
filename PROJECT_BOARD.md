@@ -243,3 +243,9 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 - Legacy b791ce06: same26-event baseline RED/fixed PASS, independently reconciled; ordinary-clone compiler/migrator carry exactb791 VCS stamps. Private/consumer/finalCI gates at this source remain pending.
 - full179 negative8930e497: all5 validator-only events PASS; all179 row and exact-cause assertions preserved. Original36d empty-file failure retained and its valid ingestion rejection explicitly asserted. Aggregate acceptance is still the original K1 report, not this meta-test.
 - Evidence: docs/ai-team/evidence/20261121-legacy-math-and-full179-controls. No formal requirement, Apple or release marked complete by this stage.
+
+
+## 2026-11-22 — R6 verified short-circuit and Apple intake (root)
+- Integrated local short-circuit source173d4ced/proof2ef45b2e after independent26/96/139 event and105source-witness verification; RP18/BRG13 still pendingApple.
+- Integrated Apple proofc34057f4 for sourcec543:129members verified and six original narrow runtime records canonically recomputed on exactclean source. Startup andFileUTF8 failures remain; no test02/native inheritance.
+- Root review0c04c0efae8365a014d08529227e734b625f18b58252d17e02636872c11902d7. No task or full179 closure. HistoricalK1 aggregate unchanged until a new combined run.
