@@ -92,7 +92,7 @@ func TestShortCircuitInventoryAndUnprovedRuntime(t *testing.T) {
 		if spec.Title != title || spec.Group != group || !reflect.DeepEqual(parseRequiredTiers(strings.Join(tiers, "+")), shortCircuitRequiredTiers) {
 			t.Fatal("changed immutable combined requirement")
 		}
-		expected := map[string]int{"RP18": 95, "BRG13": 138}[id]
+		expected := map[string]int{"RP18": 96, "BRG13": 139}[id]
 		events := shortCircuitEvidence.Events[id]
 		if len(events) != expected || !sort.StringsAreSorted(events) {
 			t.Fatal("fixed causal child inventory changed")

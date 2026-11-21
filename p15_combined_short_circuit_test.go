@@ -368,7 +368,8 @@ func p15SCGraph(actions []map[string]any, typed bool) (p15SCView, error) {
 		name string
 		ref  map[string]any
 	}{{"flagFalse", zero}, {"flagTrue", one}} {
-		group := c.start(seed.ref, 4, "WFNumberValue", uint64(1))
+		// BuildIfStartTyped serializes literal comparison operands as real values.
+		group := c.start(seed.ref, 4, "WFNumberValue", float64(1))
 		c.boolean(1, "", false)
 		c.alternate(group)
 		c.boolean(0, "", false)
@@ -410,7 +411,7 @@ func p15SCGraph(actions []map[string]any, typed bool) (p15SCView, error) {
 		}
 		c.check("foldedCaseEqual", c.view.results["foldedCaseEqual"], "WFNumberValue", float64(0))
 	}
-	c.check("CALLS", p15SCVariable("calls"), "WFNumberValue", uint64(12))
+	c.check("CALLS", p15SCVariable("calls"), "WFNumberValue", float64(12))
 	c.check("ORDER", p15SCVariable("order"), "WFConditionalActionString", p15SCExpectedOrder)
 	c.view.finalText = c.index
 	result := c.take("gettext", "Text", map[string]any{"WFTextActionText": p15SCToken("\ufffc:calls=\ufffc:order=\ufffc", map[string]any{"{0, 1}": p15SCVariable("verdict"), "{8, 1}": p15SCVariable("calls"), "{16, 1}": p15SCVariable("order")})}, true)
@@ -538,15 +539,25 @@ func TestBackendRecovery13TypedShortCircuitUnit(t *testing.T) { p15SCUnit(t, tru
 func p15SCNative(t *testing.T, typed bool) {
 	source := p15CombinedShortCircuitSource(t, typed)
 	actions := p15CompiledActions(t, source)
-	kinds := map[string]string{}
+	kinds := map[string]map[string]bool{}
 	for _, action := range actions {
 		for key, value := range p15SCParams(action) {
 			if key == "WFNumberActionNumber" || key == "WFCondition" || key == "WFControlFlowMode" || key == "WFMathOperand" || key == "WFNumberValue" {
-				kinds[key] = fmt.Sprintf("%T", value)
+				if kinds[key] == nil {
+					kinds[key] = map[string]bool{}
+				}
+				kinds[key][fmt.Sprintf("%T", value)] = true
 			}
 		}
 	}
-	t.Logf("decoded native numeric kinds: %v", kinds)
+	observedKinds := map[string][]string{}
+	for key, values := range kinds {
+		for value := range values {
+			observedKinds[key] = append(observedKinds[key], value)
+		}
+		sort.Strings(observedKinds[key])
+	}
+	t.Logf("decoded native numeric kinds (observations only): %v", observedKinds)
 	view, err := p15SCGraph(actions, typed)
 	if err != nil {
 		t.Fatal(err)
@@ -619,7 +630,7 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 			})
 		}
 	}
-	for _, fault := range []string{"initial_counter", "skipped_result", "bool_carrier", "eager_effect", "duplicate_effect", "mixed_outer_producer", "crosswired_store", "late_counter_producer", "count_observer", "order_observer", "hidden_output", "missing_output", "extra_effect", "foreign_action", "stale_group", "malformed_uuid", "zero_uuid", "malformed_group", "zero_group", "wrong_native_numeric_kind", "casefold_uuid_collision", "casefold_group_collision"} {
+	for _, fault := range []string{"initial_counter", "skipped_result", "bool_carrier", "eager_effect", "duplicate_effect", "mixed_outer_producer", "crosswired_store", "late_counter_producer", "count_observer", "order_observer", "hidden_output", "missing_output", "extra_effect", "foreign_action", "stale_group", "malformed_uuid", "zero_uuid", "malformed_group", "zero_group", "wrong_native_numeric_kind", "wrong_native_comparison_kind", "casefold_uuid_collision", "casefold_group_collision"} {
 		t.Run(fault, func(t *testing.T) {
 			broken := p15SCClone(t, actions)
 			first := view.effects["andFF"][0]
@@ -676,6 +687,13 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 					t.Fatal("group corruption did not reconcile start/else/end")
 				}
 				cause = "invalid native condition group"
+			case "wrong_native_comparison_kind":
+				params := p15SCParams(broken[2])
+				if original, ok := params["WFNumberValue"].(float64); !ok || original != 1 {
+					t.Fatal("positive comparison operand is not real one")
+				}
+				params["WFNumberValue"] = uint64(1)
+				cause = "native conditional action differs"
 			case "wrong_native_numeric_kind":
 				params := p15SCParams(broken[view.guards["andFF"]])
 				if original, ok := params["WFControlFlowMode"].(uint64); !ok || original != 0 {
@@ -720,7 +738,7 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 				broken[first], broken[first+1] = broken[first+1], broken[first]
 				cause = "missing or late native producer"
 			case "count_observer":
-				p15SCParams(broken[view.checks["CALLS"]])["WFNumberValue"] = uint64(11)
+				p15SCParams(broken[view.checks["CALLS"]])["WFNumberValue"] = float64(11)
 				cause = "native conditional action differs"
 			case "order_observer":
 				p15SCParams(broken[view.checks["ORDER"]])["WFConditionalActionString"] = strings.Replace(p15SCExpectedOrder, "|MIX_A|MIX_B", "|MIX_B|MIX_A", 1)
