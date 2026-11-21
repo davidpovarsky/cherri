@@ -1,0 +1,691 @@
+{
+  "schema_version": "1",
+  "scope": "SOURCE_ORCHESTRATION_REPAIR_LOCAL_ONLY_NATIVE_REPLAY_PENDING",
+  "implementation_sha": "0f2898941246245040221d0b2753ebaee4e60113",
+  "acceptance_records": [],
+  "original_native_run": {
+    "repository": "davidpovarsky/cherri",
+    "workflow": ".github/workflows/ios-build.yml",
+    "run_id": "44675053289",
+    "run_attempt": 1,
+    "source_commit": "b62a18469c66028d3310aecda5b0b9abbd43ddff",
+    "conclusion": "failure",
+    "job_id": "136084801156",
+    "runner_labels": [
+      "macos-15-intel"
+    ],
+    "job_started_at": "2026-11-20T04:46:14Z",
+    "job_completed_at": "2026-11-20T05:23:26Z",
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/44675053289",
+    "artifact_id": "14603654217",
+    "artifact_name": "ios-build-evidence",
+    "artifact_zip_bytes": 74801,
+    "artifact_zip_sha256": "8d9375ff575725da9a9b9d9f419a927f7252e5ed7df90c215afe276b0745183e",
+    "original_metadata_sha256": {
+      "run.json": "bec3e88420b50a147bbb6e2b8f4d14d5c1114578551e67e7275ab5732db7279b",
+      "job.json": "ee4d80acfe3d6d1b8154b10ac0752a0044ab1a636d1579e46fd365961a34aaaf",
+      "artifact.json": "4816852be5c8308c69516a52b197fe9e710377aef64efee79267974ec59e7fee",
+      "retention.json": "983c82bae63c543e53f6f1adaf2ee9a26288229173f5517c2f7d547d62b76d1d"
+    },
+    "published_files_sha256": {
+      "documentation-compatibility-manifest.json": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a",
+      "documentation-index.json": "858bb2225a60d9eb3136b9613dd445c4419e89929196e0163db32e67eebf2bda",
+      "documentation-receipt.json": "ae9c29f1965dc563ead4eed201b6386d8ef527eee3e58b68c2ead0ad75323bfb",
+      "ios-test-diagnostics.json": "5608eea9bb3702579daa5775f0ff664967e83df6537bec8647e81921441708c9",
+      "ios-test-evidence.json": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359",
+      "xcodetest.log": "457c3a557c98267b35959ea3ebe53128aefc350bc3b647a84ee2d4264b980de2"
+    },
+    "original_job_log_sha256": "4474d7ee37702aa9349fb94e2cfee1c8776235c4e1cd5491702b7e66eb59bd96",
+    "derived_timing_report_sha256": "7fcad6358003f3a0eda908ac398310b17323b1535388a6801f135bd637f9c17d",
+    "test_counts": {
+      "passed": 41,
+      "failed": 12
+    },
+    "xcodebuild_exit_code": 65,
+    "failed_tests": [
+      {
+        "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+        "sourceLine": 209
+      },
+      {
+        "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+        "sourceLine": 224
+      },
+      {
+        "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+        "sourceLine": 224
+      }
+    ],
+    "startup_observations": [
+      {
+        "test_id": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "final_elapsed_ms": 28562,
+        "wait_completed": false,
+        "editor_exists": false,
+        "editor_hittable": false,
+        "document_creation_issued": true,
+        "trace_entry_count": 39,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 6646,
+            "completedMilliseconds": 22422,
+            "durationMilliseconds": 15776,
+            "value": false
+          },
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 22859,
+            "completedMilliseconds": 24768,
+            "durationMilliseconds": 1909,
+            "value": false
+          },
+          {
+            "phase": "editor-wait",
+            "operation": "window",
+            "startedMilliseconds": 5773,
+            "completedMilliseconds": 6646,
+            "durationMilliseconds": 873,
+            "value": true
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "final_elapsed_ms": 44738,
+        "wait_completed": false,
+        "editor_exists": false,
+        "editor_hittable": false,
+        "document_creation_issued": true,
+        "trace_entry_count": 28,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "editor-exists",
+            "startedMilliseconds": 13565,
+            "completedMilliseconds": 24503,
+            "durationMilliseconds": 10938,
+            "value": false
+          },
+          {
+            "phase": "final-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 32258,
+            "completedMilliseconds": 42193,
+            "durationMilliseconds": 9935,
+            "value": false
+          },
+          {
+            "phase": "document-snapshot",
+            "operation": "create-hittable",
+            "startedMilliseconds": 3758,
+            "completedMilliseconds": 13565,
+            "durationMilliseconds": 9807,
+            "value": true
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "final_elapsed_ms": 37133,
+        "wait_completed": false,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 31,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 9969,
+            "completedMilliseconds": 18310,
+            "durationMilliseconds": 8341,
+            "value": true
+          },
+          {
+            "phase": "final-snapshot",
+            "operation": "window",
+            "startedMilliseconds": 28368,
+            "completedMilliseconds": 34045,
+            "durationMilliseconds": 5677,
+            "value": true
+          },
+          {
+            "phase": "document-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 3961,
+            "completedMilliseconds": 9181,
+            "durationMilliseconds": 5220,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+        "final_elapsed_ms": 30705,
+        "wait_completed": false,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 31,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 19449,
+            "completedMilliseconds": 27742,
+            "durationMilliseconds": 8293,
+            "value": false
+          },
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 9334,
+            "completedMilliseconds": 16890,
+            "durationMilliseconds": 7556,
+            "value": true
+          },
+          {
+            "phase": "document-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 3598,
+            "completedMilliseconds": 8846,
+            "durationMilliseconds": 5248,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+        "final_elapsed_ms": 35195,
+        "wait_completed": false,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 31,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 9844,
+            "completedMilliseconds": 23150,
+            "durationMilliseconds": 13306,
+            "value": true
+          },
+          {
+            "phase": "final-snapshot",
+            "operation": "window",
+            "startedMilliseconds": 28365,
+            "completedMilliseconds": 33708,
+            "durationMilliseconds": 5343,
+            "value": true
+          },
+          {
+            "phase": "document-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 4051,
+            "completedMilliseconds": 9291,
+            "durationMilliseconds": 5240,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+        "final_elapsed_ms": 24927,
+        "wait_completed": true,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 36,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 3637,
+            "completedMilliseconds": 13995,
+            "durationMilliseconds": 10358,
+            "value": true
+          },
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 17223,
+            "completedMilliseconds": 22248,
+            "durationMilliseconds": 5025,
+            "value": false
+          },
+          {
+            "phase": "document-wait",
+            "operation": "create-hittable",
+            "startedMilliseconds": 2617,
+            "completedMilliseconds": 3624,
+            "durationMilliseconds": 1007,
+            "value": true
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+        "final_elapsed_ms": 32869,
+        "wait_completed": false,
+        "editor_exists": false,
+        "editor_hittable": false,
+        "document_creation_issued": true,
+        "trace_entry_count": 30,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 10473,
+            "completedMilliseconds": 22389,
+            "durationMilliseconds": 11916,
+            "value": true
+          },
+          {
+            "phase": "document-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 4255,
+            "completedMilliseconds": 9531,
+            "durationMilliseconds": 5276,
+            "value": false
+          },
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 25303,
+            "completedMilliseconds": 28360,
+            "durationMilliseconds": 3057,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+        "final_elapsed_ms": 35940,
+        "wait_completed": false,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 31,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "final-snapshot",
+            "operation": "window",
+            "startedMilliseconds": 28337,
+            "completedMilliseconds": 34076,
+            "durationMilliseconds": 5739,
+            "value": true
+          },
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 22653,
+            "completedMilliseconds": 28333,
+            "durationMilliseconds": 5680,
+            "value": false
+          },
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 9694,
+            "completedMilliseconds": 15369,
+            "durationMilliseconds": 5675,
+            "value": true
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+        "final_elapsed_ms": 41977,
+        "wait_completed": false,
+        "editor_exists": false,
+        "editor_hittable": false,
+        "document_creation_issued": true,
+        "trace_entry_count": 29,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 10370,
+            "completedMilliseconds": 23504,
+            "durationMilliseconds": 13134,
+            "value": true
+          },
+          {
+            "phase": "final-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 30284,
+            "completedMilliseconds": 38847,
+            "durationMilliseconds": 8563,
+            "value": false
+          },
+          {
+            "phase": "document-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 3898,
+            "completedMilliseconds": 9191,
+            "durationMilliseconds": 5293,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+        "final_elapsed_ms": 28605,
+        "wait_completed": false,
+        "editor_exists": false,
+        "editor_hittable": false,
+        "document_creation_issued": false,
+        "trace_entry_count": 32,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "create-hittable",
+            "startedMilliseconds": 16778,
+            "completedMilliseconds": 25102,
+            "durationMilliseconds": 8324,
+            "value": false
+          },
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 11356,
+            "completedMilliseconds": 16778,
+            "durationMilliseconds": 5422,
+            "value": true
+          },
+          {
+            "phase": "document-wait",
+            "operation": "create-exists",
+            "startedMilliseconds": 6788,
+            "completedMilliseconds": 10860,
+            "durationMilliseconds": 4072,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+        "final_elapsed_ms": 33827,
+        "wait_completed": false,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 34,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 19126,
+            "completedMilliseconds": 26985,
+            "durationMilliseconds": 7859,
+            "value": false
+          },
+          {
+            "phase": "document-snapshot",
+            "operation": "create-exists",
+            "startedMilliseconds": 9927,
+            "completedMilliseconds": 17061,
+            "durationMilliseconds": 7134,
+            "value": true
+          },
+          {
+            "phase": "document-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 4198,
+            "completedMilliseconds": 9460,
+            "durationMilliseconds": 5262,
+            "value": false
+          }
+        ]
+      },
+      {
+        "test_id": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+        "final_elapsed_ms": 34249,
+        "wait_completed": false,
+        "editor_exists": true,
+        "editor_hittable": true,
+        "document_creation_issued": true,
+        "trace_entry_count": 30,
+        "dropped_entries": 0,
+        "inflight_observations": 0,
+        "longest_queries": [
+          {
+            "phase": "document-snapshot",
+            "operation": "editor-exists",
+            "startedMilliseconds": 3102,
+            "completedMilliseconds": 14391,
+            "durationMilliseconds": 11289,
+            "value": false
+          },
+          {
+            "phase": "editor-wait",
+            "operation": "editor-exists",
+            "startedMilliseconds": 16703,
+            "completedMilliseconds": 22968,
+            "durationMilliseconds": 6265,
+            "value": false
+          },
+          {
+            "phase": "final-snapshot",
+            "operation": "window",
+            "startedMilliseconds": 28331,
+            "completedMilliseconds": 33685,
+            "durationMilliseconds": 5354,
+            "value": true
+          }
+        ]
+      }
+    ],
+    "paste_observations": [
+      {
+        "stage": "before-paste",
+        "pasteElapsedMilliseconds": 11,
+        "actualSource": "text(\"x\")",
+        "actualUTF16Length": 9,
+        "selectionLocation": 8,
+        "selectionLength": 0,
+        "viewIsFirstResponder": true,
+        "windowAttached": true,
+        "windowIsKey": true
+      },
+      {
+        "stage": "after-paste-call",
+        "pasteElapsedMilliseconds": 31,
+        "actualSource": "text(\"x\")",
+        "actualUTF16Length": 9,
+        "selectionLocation": 8,
+        "selectionLength": 0,
+        "viewIsFirstResponder": true,
+        "windowAttached": true,
+        "windowIsKey": true
+      },
+      {
+        "stage": "paste-native-text-change",
+        "pasteElapsedMilliseconds": 3592,
+        "actualSource": "text(\"x\"))",
+        "actualUTF16Length": 10,
+        "selectionLocation": 9,
+        "selectionLength": 0,
+        "viewIsFirstResponder": true,
+        "windowAttached": true,
+        "windowIsKey": true
+      },
+      {
+        "stage": "after-paste-wait",
+        "pasteElapsedMilliseconds": 8283,
+        "actualSource": "text(\"x\"))",
+        "actualUTF16Length": 10,
+        "selectionLocation": 9,
+        "selectionLength": 0,
+        "viewIsFirstResponder": true,
+        "windowAttached": true,
+        "windowIsKey": true
+      }
+    ],
+    "formal_records_emitted": 0
+  },
+  "local_validation": {
+    "clean_receipt_sha256": "1100f2da04c08f9779c2144c42f6e74c3058aa736ee32ce6217b65b4b17a78b9",
+    "source_files_sha256": {
+      "ios/CherriUITests/CherriEditorUITests.swift": "73fca2dcc4f79745f552f1fb026de9d4abd9f007ec12b958fa873d1c99d39ade",
+      "ios/CherriUITests/EditorStartupDeadline.swift": "f6975d9278590e74d4e5588d802c8d7e4743e059727aa210709d78bbea17abb8",
+      "ios/CherriUITests/EditorStartupTimingTrace.swift": "90075bbf28408fbe1c5d338a182820be938d8ada753435bd0411a22892e54f6d",
+      "ios/CherriTests/CherriEditorInputTests.swift": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b",
+      "ios/scripts/verify_editor_startup.swift": "83a99a982bccc8761e541bb194ea215d9847c2070063e2f07467b1bede957b35",
+      "ios/scripts/verify_editor_startup_timing.swift": "02ec4be137f621d97c549786fe4e5fc7f401321f2233c3c2567c251912128ca8",
+      "ios/scripts/collect_ios_test_evidence.py": "f59d2bd3ff17e1070cf517f5cd57b2f228fc59c441a23d6169d6dd689b6cacf0",
+      "ios/scripts/test_collect_ios_test_evidence.py": "6532e6e352c6346ea6417072e1758640266d2397faafe70c8887d5a1c005a4f4"
+    },
+    "startup_controls": 81,
+    "timing_controls": 24,
+    "collector_tests": 40,
+    "swift_encoder_to_production_collector": "PASS_SYNTHETIC_FAILED_CONTROL_ONLY",
+    "commands": [
+      {
+        "name": "parse-ui",
+        "exit_code": 0,
+        "elapsed_seconds": 0.203,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "parse-input",
+        "exit_code": 0,
+        "elapsed_seconds": 0.187,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "compile-startup",
+        "exit_code": 0,
+        "elapsed_seconds": 2.516,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "602f59c5efc211450c59048f393387bd942eb64c5dc2105feb6aa82ddd07bdb9"
+      },
+      {
+        "name": "run-startup",
+        "exit_code": 0,
+        "elapsed_seconds": 0.062,
+        "stdout_sha256": "23b3f74c0227770e6e09d2e5dd70a13b672794a818785d7fe72d2e367fe3ae02",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "compile-timing",
+        "exit_code": 0,
+        "elapsed_seconds": 3.375,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "6de202e5d4f0f9fa74dea7914a9d6c8f3d2d57d7b160271034cfd82d9928a1ab"
+      },
+      {
+        "name": "run-timing",
+        "exit_code": 0,
+        "elapsed_seconds": 0.109,
+        "stdout_sha256": "dae9a72bd52124bd03b41b844d42d8115858cb6326e3eec523cc1c427cd3928a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "python-collector",
+        "exit_code": 0,
+        "elapsed_seconds": 3.594,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "6d8a12848fdfd39e8a5efa35b83d838d15d4d8b1b4dec49eb2ae59228049785b"
+      },
+      {
+        "name": "encoder-intake",
+        "exit_code": 0,
+        "elapsed_seconds": 0.156,
+        "stdout_sha256": "0fa3e903198838f385542a2adac8db6d8d4c8a875c3e98fcb90723106188651c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "clean_before": true,
+    "clean_after": true,
+    "original_paste_body_unchanged": true,
+    "startup_budget_ms": 28000,
+    "paste_budget_ms": 3000,
+    "apple_sdk_typecheck": "NOT_RUN",
+    "apple_ui": "NOT_RUN"
+  },
+  "changes": [
+    "One immediate query restricted to the two fixed startup controls replaces repeated absent-element lookups.",
+    "The unique accessibility-bound creation element is used for the one permitted tap; co-present, duplicate and unexpected controls cannot authorize creation.",
+    "A real control wait is followed by one fresh observation; the final completed wait, current foreground/window/editor/hittability and original 28-second deadline remain mandatory.",
+    "A stock UITextView paste diagnostic runs only after the original CodeView wait and exact assertion, with its own 3-second expectation and explicitly warm-process scope.",
+    "The collector accepts stock diagnostics only after the same active test original wait receipt, bounds all fields/events and emits no acceptance record from them."
+  ],
+  "limitations": [
+    "This corrects measured test orchestration, not a proven production application defect.",
+    "Windows Swift parsing does not typecheck XCUIAutomation or UIKit SDK APIs; actual Apple build/run remains required.",
+    "Timing data include instrumentation and accessibility overhead and are not an uninstrumented performance baseline.",
+    "Exact paste text arriving at 3592ms does not satisfy the unchanged 3-second assertion.",
+    "The later stock control cannot establish cold UIKit latency or replace the original CodeView result.",
+    "No result is inherited by a later integration candidate and no physical-device verification is claimed."
+  ],
+  "references": [
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielementquery/allelementsboundbyaccessibilityelement",
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielementquery/matching(_:)",
+    "https://developer.apple.com/documentation/xctest/xctwaiter/fulfillment(of:timeout:enforceorder:)-swift.type.method"
+  ]
+}

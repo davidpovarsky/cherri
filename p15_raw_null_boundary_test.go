@@ -74,7 +74,10 @@ func TestP15JSONNullTextRemainsData(t *testing.T) {
 		"native.action(\"com.example.p15.json\",native.plist({\"JSON\":" + string(literal) + ",\"Present\":false}))",
 	} {
 		actions := p15CompiledActions(t, source)
-		if len(actions) != 1 || actions[0]["WFWorkflowActionIdentifier"] != "com.example.p15.json" {
+		if err := p15M02MainVoidBoundaryError(actions); err != nil {
+			t.Fatal(err)
+		}
+		if len(actions) != 2 || actions[0]["WFWorkflowActionIdentifier"] != "com.example.p15.json" {
 			t.Fatal("literal JSON specimen lost its native action identity")
 		}
 		if !reflect.DeepEqual(p15Param(actions[0]), map[string]any{"JSON": payload, "Present": false}) {

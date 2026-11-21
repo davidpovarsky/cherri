@@ -34,12 +34,22 @@ func TestP15SemanticUnconsumedListRetainsTypedGraph(t *testing.T) {
 		if !ok || len(actions) == 0 {
 			t.Fatalf("unconsumed native List or typed producers were lost: %#v", root["WFWorkflowActions"])
 		}
+		if err := p15M02MainVoidRowsError(actions); err != nil {
+			t.Fatal(err)
+		}
 		numbers := map[string]string{}
 		var rows []any
 		listCount := 0
-		for _, value := range actions {
+		for index, value := range actions {
 			action := value.(map[string]any)
-			parameters := action["WFWorkflowActionParameters"].(map[string]any)
+			if index == len(actions)-1 {
+				// The exact original empty-result action was checked above.
+				continue
+			}
+			parameters, okay := action["WFWorkflowActionParameters"].(map[string]any)
+			if !okay {
+				t.Fatal("typed List producer lost its parameter dictionary", action)
+			}
 			switch action["WFWorkflowActionIdentifier"] {
 			case "is.workflow.actions.number":
 				numbers[fmt.Sprint(parameters["UUID"])] = fmt.Sprint(parameters["WFNumberActionNumber"])

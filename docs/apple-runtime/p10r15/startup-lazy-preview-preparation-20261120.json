@@ -1,0 +1,56 @@
+{
+  "schema_version": "1",
+  "source_sha": "b61a9cce83bdbb366a5b11fb561b3695d6840d3e",
+  "base_sha": "fe5c937d76ed58204496a76d121c326cde3241cc",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_files": {
+    "ios/CherriApp/App/WorkspaceView.swift": {
+      "before": "4bb3c186bc222e842920b2ee038bccd4eeb260c602173d55ee7ced779120159d",
+      "after": "85f79158869e045e08d88947c450e1b90f593051ae7e1e379bd2e1f43ef47aea"
+    },
+    "ios/CherriTests/CherriPreviewLifecycleTests.swift": {
+      "before": null,
+      "after": "f63ccc28ddb3b9d6e4366e7b99e9eea305b955953f5223fd19103c12365e788e"
+    },
+    "ios/scripts/collect_ios_test_evidence.py": {
+      "before": "f59d2bd3ff17e1070cf517f5cd57b2f228fc59c441a23d6169d6dd689b6cacf0",
+      "after": "c23375bd253b2a2b182bcede325e20bb9960403845668f02b25844687625c5a2"
+    },
+    "ios/scripts/test_collect_ios_test_evidence.py": {
+      "before": "6532e6e352c6346ea6417072e1758640266d2397faafe70c8887d5a1c005a4f4",
+      "after": "9f93257632a4ed620786fd783923a9376a7c8d3c96090e6a57d9bcc36985a19c"
+    }
+  },
+  "unchanged_acceptance_files": {
+    "ios/CherriUITests/CherriEditorUITests.swift": "73fca2dcc4f79745f552f1fb026de9d4abd9f007ec12b958fa873d1c99d39ade",
+    "ios/CherriUITests/EditorStartupDeadline.swift": "f6975d9278590e74d4e5588d802c8d7e4743e059727aa210709d78bbea17abb8",
+    "ios/CherriUITests/EditorStartupTimingTrace.swift": "90075bbf28408fbe1c5d338a182820be938d8ada753435bd0411a22892e54f6d",
+    "ios/CherriTests/CherriEditorInputTests.swift": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b",
+    ".github/workflows/ios-build.yml": "fa63589ca02e46bd1e80fb47b0ef184a1299e21b576826385f16160c61768d2d"
+  },
+  "local_receipt_sha256": "b420f86508f9f1dfeb9f1d8e490fedfac53daac08ed86b22c6cc33a6a66f55a6",
+  "local_checks": [
+    {
+      "kind": "collector Python controls",
+      "test_count": 43,
+      "exit_code": 0,
+      "elapsed_seconds": 2.578,
+      "raw_sha256": "29cc151f23cc9e074e270bcda29096c7dc34f123d4734cbe96a2f9782942d641"
+    },
+    {
+      "kind": "Swift syntax parse only",
+      "test_count": null,
+      "exit_code": 0,
+      "elapsed_seconds": 0.25,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "native_sdk_typecheck": "NOT_RUN",
+  "native_lifecycle_tests": "NOT_RUN",
+  "original_ui_acceptance_replay": "NOT_RUN",
+  "compiler_source_equals_K": true,
+  "compiler_reference_sha": "8e66254d56ea3e4ac70f6cda6ef9d31217e0937c",
+  "formal_acceptance_granted": false,
+  "initial_mirror_limit": "Initial local mirror passed42 controls; workflow-source control could not read missing mirror workflow. Exact complete Windows source subsequently passed all43."
+}

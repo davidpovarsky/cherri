@@ -1,0 +1,9 @@
+# Actual startup lazy-preview component result
+
+Run 44699102028, attempt 1, executed source b6329e22537793dd453401c7ae85a45235c5f048 on the full Intel iOS workflow. Its original conclusion is FAILURE: 56 test outcomes comprise 44 passes and 12 failures. The original ZIP is artifact 14613922136, SHA-256 56d5167be20237c10d18a6772bce7792a97c69e985337f0b2a0c045a46bebcea. The accompanying JSON retains all 56 named outcomes, 12 failure records, 30 startup receipts, seven timing traces, paste receipts and all six published file hashes.
+
+The three new real UIKit/WebKit lifecycle tests passed. This establishes their preview lifecycle behavior only. All 53 shared test outcomes match the prior component. All 12 positive editor UI cases failed before their feature bodies; the separate negative missing-element method passed. D03 UI remains unreached, and formal evidence contains zero records. There are 13 declared editor test methods, with none removed.
+
+The original CodeView paste assertion passed with exact text observed at 2349 ms, predicate at 2481 ms and completed wait at 2538 ms under the unchanged 3-second rule. The separate stock UITextView diagnostic ran afterward in the warm process; its 115 ms text and 1051 ms completed-wait observations do not replace the original assertion or establish a cold-process comparison.
+
+For D03, the document predicate wait succeeded at 3750 ms. A subsequent window query took 1451 ms and redundant known-control query took 20684 ms, before document creation. The final readiness decision failed under the original 28-second limit. Other traces include slow accessibility observations and tap operations. These observations justify investigating harness orchestration overhead; they do not prove an app-startup defect or repair. All original failures and timing records remain unchanged.

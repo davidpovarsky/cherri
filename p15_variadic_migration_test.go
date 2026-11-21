@@ -67,6 +67,7 @@ func p15C03Actions(src string, legacy bool) (actions []ShortcutAction, err error
 	for _, entry := range p15C03Array(document["WFWorkflowActions"]) {
 		action := debugParamMap(entry)
 		actions = append(actions, ShortcutAction{
+			rawNativeEnvelope:          action,
 			WFWorkflowActionIdentifier: fmt.Sprint(action["WFWorkflowActionIdentifier"]),
 			WFWorkflowActionParameters: debugParamMap(action["WFWorkflowActionParameters"]),
 		})
@@ -89,8 +90,25 @@ func p15C03Array(value any) []any {
 	return out
 }
 
-func p15C03LiteralOracle(actions []ShortcutAction, tc p15C03Case, count int) error {
-	if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions."+tc.identifier {
+func p15C03ActionCountError(actions []ShortcutAction, prefixCount int, mainLegacy bool) error {
+	want := prefixCount
+	if !mainLegacy {
+		want++
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
+	}
+	if len(actions) != want {
+		return fmt.Errorf("complete variadic graph has %d actions, want %d", len(actions), want)
+	}
+	return nil
+}
+
+func p15C03LiteralOracle(actions []ShortcutAction, tc p15C03Case, count int, mainLegacy bool) error {
+	if err := p15C03ActionCountError(actions, 1, mainLegacy); err != nil {
+		return err
+	}
+	if len(actions) == 0 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions."+tc.identifier {
 		return fmt.Errorf("unexpected producer graph: %#v", actions)
 	}
 	params := actions[0].WFWorkflowActionParameters
@@ -175,7 +193,7 @@ func TestP15C03LegacyWireControl(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if err := p15C03LiteralOracle(actions, tc, count); err != nil {
+				if err := p15C03LiteralOracle(actions, tc, count, true); err != nil {
 					t.Fatal(err)
 				}
 			})
@@ -191,7 +209,7 @@ func TestP15C03NamedListNativeStructure(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if err := p15C03LiteralOracle(actions, tc, count); err != nil {
+				if err := p15C03LiteralOracle(actions, tc, count, false); err != nil {
 					t.Fatal(err)
 				}
 			})
@@ -238,7 +256,7 @@ func TestP15C03MigrationStructure(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if err := p15C03LiteralOracle(actions, tc, count); err != nil {
+				if err := p15C03LiteralOracle(actions, tc, count, true); err != nil {
 					t.Fatal(err)
 				}
 			})
@@ -265,6 +283,9 @@ func TestP15C03LiteralOracleMutations(t *testing.T) {
 			healthy, err := p15C03Actions(p15C03Source(tc, 3, true), false)
 			if err != nil {
 				t.Fatal(err)
+			}
+			if err := p15C03LiteralOracle(healthy, tc, 3, false); err != nil {
+				t.Fatal("healthy variadic graph rejected before corruption controls", err)
 			}
 			for _, mutation := range []string{"drop", "reverse", "duplicate", "scalar", "wrong_native"} {
 				broken := p15C03Clone(t, healthy)
@@ -305,7 +326,7 @@ func TestP15C03LiteralOracleMutations(t *testing.T) {
 				if mutation == "wrong_native" {
 					broken[0].WFWorkflowActionIdentifier = "is.workflow.actions.text"
 				}
-				if p15C03LiteralOracle(broken, tc, 3) == nil {
+				if p15C03LiteralOracle(broken, tc, 3, false) == nil {
 					t.Fatalf("oracle accepted %s", mutation)
 				}
 			}
@@ -337,9 +358,9 @@ func p15C03TokenUUID(value any) (string, error) {
 	return uuid, nil
 }
 
-func p15C03EffectOracle(actions []ShortcutAction) error {
-	if len(actions) != 4 {
-		return fmt.Errorf("expected three once-only producers plus URL, got %d", len(actions))
+func p15C03EffectOracle(actions []ShortcutAction, mainLegacy bool) error {
+	if err := p15C03ActionCountError(actions, 4, mainLegacy); err != nil {
+		return err
 	}
 	seen := map[string]bool{}
 	for index, want := range []string{"FIRST", "SECOND", "THIRD"} {
@@ -380,19 +401,19 @@ func TestP15C03ElementOrderAndReferences(t *testing.T) {
 		t.Fatalf("%v %v", err, diagnostics)
 	}
 	for _, tc := range []struct {
-		name, src string
-		legacy    bool
+		name, src          string
+		legacy, mainLegacy bool
 	}{
-		{"legacy", legacy, true},
-		{"migrated", migrated, false},
-		{"named", "url(url: [text(\"FIRST\"), text(\"SECOND\"), text(\"THIRD\")])", false},
+		{"legacy", legacy, true, true},
+		{"migrated", migrated, false, true},
+		{"named", "url(url: [text(\"FIRST\"), text(\"SECOND\"), text(\"THIRD\")])", false, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actions, err := p15C03Actions(tc.src, tc.legacy)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err = p15C03EffectOracle(actions); err != nil {
+			if err = p15C03EffectOracle(actions, tc.mainLegacy); err != nil {
 				t.Fatal(err)
 			}
 			for _, mutation := range []string{"reorder", "drop", "duplicate", "retarget", "stringify"} {
@@ -411,7 +432,7 @@ func TestP15C03ElementOrderAndReferences(t *testing.T) {
 				case "stringify":
 					broken[3].WFWorkflowActionParameters["WFURLActionURL"] = []any{"FIRST", "SECOND", "THIRD"}
 				}
-				if p15C03EffectOracle(broken) == nil {
+				if p15C03EffectOracle(broken, tc.mainLegacy) == nil {
 					t.Fatalf("effect oracle accepted %s", mutation)
 				}
 			}
@@ -449,7 +470,7 @@ func TestP15C03PackBoundaries(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err = p15C03LiteralOracle(actions, tc, 1); err != nil {
+		if err = p15C03LiteralOracle(actions, tc, 1, false); err != nil {
 			t.Fatal(err)
 		}
 	}

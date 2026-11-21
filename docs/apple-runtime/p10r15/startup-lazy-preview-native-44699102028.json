@@ -1,0 +1,5042 @@
+{
+  "schema_version": "1",
+  "evidence_kind": "actual-iOS-Simulator-component-test-result",
+  "source_sha": "b6329e22537793dd453401c7ae85a45235c5f048",
+  "run": {
+    "id": 44699102028,
+    "run_attempt": 1,
+    "head_sha": "b6329e22537793dd453401c7ae85a45235c5f048",
+    "head_branch": "audit/cherri-p10r15-startup-lazy-preview-20261120",
+    "path": ".github/workflows/ios-build.yml",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-11-20T08:00:13Z",
+    "updated_at": "2026-11-20T08:31:38Z"
+  },
+  "job": {
+    "id": 136162895891,
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at": "2026-11-20T08:00:19Z",
+    "completed_at": "2026-11-20T08:31:37Z"
+  },
+  "artifact": {
+    "artifact_id": 14613922136,
+    "artifact_bytes": 76712,
+    "artifact_sha256": "56d5167be20237c10d18a6772bce7792a97c69e985337f0b2a0c045a46bebcea",
+    "job_log_sha256": "64616c520d5aa68af0e777acf6bafcd2e1c806c777edefac5110483481312ad9"
+  },
+  "published_files": [
+    {
+      "path": "documentation-compatibility-manifest.json",
+      "bytes": 620,
+      "sha256": "82d46cd8268a9d768249adb89a1f4869c75035c2f40d7ff32aed41c742e2cc7a"
+    },
+    {
+      "path": "documentation-index.json",
+      "bytes": 534718,
+      "sha256": "858bb2225a60d9eb3136b9613dd445c4419e89929196e0163db32e67eebf2bda"
+    },
+    {
+      "path": "documentation-receipt.json",
+      "bytes": 251,
+      "sha256": "ae9c29f1965dc563ead4eed201b6386d8ef527eee3e58b68c2ead0ad75323bfb"
+    },
+    {
+      "path": "ios-test-diagnostics.json",
+      "bytes": 236695,
+      "sha256": "9fb005484ca2d520319789e4d8b3f8fc32a90f2ff8542facc702d3279fa21742"
+    },
+    {
+      "path": "ios-test-evidence.json",
+      "bytes": 20,
+      "sha256": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359"
+    },
+    {
+      "path": "xcodetest.log",
+      "bytes": 185340,
+      "sha256": "49248b7b69aadb230931c01c5487097294935d9abe3a455b73092bd45871e84d"
+    }
+  ],
+  "test_counts": {
+    "passed": 44,
+    "failed": 12
+  },
+  "test_results": [
+    {
+      "testId": "CherriCoreIntegrationTests/testActionCatalogUsesCompilerDefinitions",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testBuildProfilesPreserveSourceThroughCABI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCompileProducesShortcutPlist",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCompletionRequestBindsExactUTF16SourceAndCaret",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE01ContextualCompletionService",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testEveryCatalogActionEmptyCallReturnsWithoutCrashingBridge",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testExactShoCompletionUsesCurrentBridgeSnapshot",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testPaletteSnippetSuppliesRequiredArguments",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testRP40SwiftIntegrationService",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testRepeatedCompileResetsIncludedActions",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testShortcutPlistEditorAppliesPreviewEdits",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testSimpleCompileDecompileRoundTrip",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testVisualMetadataDecompileRoundTrip",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testAuthoredCloserIsNeverConsumed",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testCommentGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testCurlyBlockGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testDeletionInvalidatesGeneratedProvenance",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testDictionaryGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testGeneratedCloserSurvivesUntilMatchingKeyAndIsConsumedOnce",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testListGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testMultiCharacterInsertionDoesNotConsumeGeneratedText",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testSelectionMovementInvalidatesGeneratedProvenance",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testUnicodeUTF16OffsetsPreserveGeneratedCloser",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriPreviewLifecycleTests/testCompiledPreviewAppearsAndIsRemovedWhenSourceClears",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriPreviewLifecycleTests/testDisabledLivePreviewDoesNotCreateWebViewForUncompiledSource",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriPreviewLifecycleTests/testEmptyWorkspaceMountsEditorWithoutWebPreview",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "DocumentationIndexTests/testD03BundledCurrentDocumentationSearch",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "DocumentationIndexTests/testD03RejectsHistoricalAndDamagedBundleRows",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testNegativeMissingUIElementFailsClosed",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "observedStatus": "failed"
+    },
+    {
+      "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "observedStatus": "failed"
+    }
+  ],
+  "ui_failures": [
+    {
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "sourceLine": 229,
+      "failureCategory": "UNCLASSIFIED"
+    },
+    {
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "sourceLine": 120,
+      "failureCategory": "UNCLASSIFIED"
+    },
+    {
+      "testId": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+      "sourceLine": 122,
+      "failureCategory": "SNAPSHOT_QUERY_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "sourceLine": 120,
+      "failureCategory": "UNCLASSIFIED"
+    },
+    {
+      "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "sourceLine": 247,
+      "failureCategory": "ASSERTION_FAILURE"
+    },
+    {
+      "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "sourceLine": 120,
+      "failureCategory": "UNCLASSIFIED"
+    }
+  ],
+  "startup_receipts": [
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3955,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3956,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 1195,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 26383,
+      "schemaVersion": "1.0",
+      "stage": "document-wait",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 42000,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 4346,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 4347,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 29310,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3410,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3411,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 4327,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 4328,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 28766,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3794,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3795,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 29092,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 1225,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": false,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 16204,
+      "schemaVersion": "1.0",
+      "stage": "document-wait",
+      "testName": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": false,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 28469,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 1179,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 2701,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 2701,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 29288,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 2804,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 2804,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 1198,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3148,
+      "schemaVersion": "1.0",
+      "stage": "document-wait",
+      "testName": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": true,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 28844,
+      "schemaVersion": "1.0",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3741,
+      "schemaVersion": "1.0",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3742,
+      "schemaVersion": "1.0",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "waitCompleted": false,
+      "windowExists": true
+    }
+  ],
+  "startup_timing_traces": [
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 42000,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1101,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 1101,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1101,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 1101,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1113,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 1101,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1195,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 1120,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1195,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 1195,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1195,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 1195,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1195,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 1195,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1196,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-wait",
+          "sequence": 8,
+          "startedMilliseconds": 1196,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2359,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "document-wait",
+          "sequence": 9,
+          "startedMilliseconds": 2359,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2866,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "document-wait",
+          "sequence": 10,
+          "startedMilliseconds": 2359,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3430,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "document-wait",
+          "sequence": 11,
+          "startedMilliseconds": 2866,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3430,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "document-wait",
+          "sequence": 12,
+          "startedMilliseconds": 3430,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3430,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "document-wait",
+          "sequence": 13,
+          "startedMilliseconds": 3430,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 3748,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "document-wait",
+          "sequence": 14,
+          "startedMilliseconds": 3430,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3748,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "document-wait",
+          "sequence": 15,
+          "startedMilliseconds": 3748,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3750,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-wait",
+          "sequence": 16,
+          "startedMilliseconds": 3750,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3750,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "document-snapshot",
+          "sequence": 17,
+          "startedMilliseconds": 3750,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5201,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "document-snapshot",
+          "sequence": 18,
+          "startedMilliseconds": 3750,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25885,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "document-snapshot",
+          "sequence": 19,
+          "startedMilliseconds": 5201,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25885,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "document-snapshot",
+          "sequence": 20,
+          "startedMilliseconds": 25885,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25885,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "document-snapshot",
+          "sequence": 21,
+          "startedMilliseconds": 25885,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26382,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "document-snapshot",
+          "sequence": 22,
+          "startedMilliseconds": 25885,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26383,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "document-snapshot",
+          "sequence": 23,
+          "startedMilliseconds": 26383,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26383,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-tap",
+          "sequence": 24,
+          "startedMilliseconds": 26383,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27630,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-tap",
+          "sequence": 25,
+          "startedMilliseconds": 27630,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27630,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 26,
+          "startedMilliseconds": 27630,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28007,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 27,
+          "startedMilliseconds": 28007,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28007,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 28,
+          "startedMilliseconds": 28007,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28954,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 29,
+          "startedMilliseconds": 28007,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 42000,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 30,
+          "startedMilliseconds": 28955,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 42000,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 31,
+          "startedMilliseconds": 42000,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 42000,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 32,
+          "startedMilliseconds": 42000,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 42000,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 33,
+          "startedMilliseconds": 42000,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+    },
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 29310,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2585,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 2585,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2585,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 2585,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2716,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 2585,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4150,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 2717,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4150,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 4150,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4150,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 4150,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 4346,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 4150,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4346,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 8,
+          "startedMilliseconds": 4346,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4347,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-tap",
+          "sequence": 9,
+          "startedMilliseconds": 4347,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5807,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-tap",
+          "sequence": 10,
+          "startedMilliseconds": 5807,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5807,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 11,
+          "startedMilliseconds": 5807,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6837,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 12,
+          "startedMilliseconds": 6837,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 8148,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 13,
+          "startedMilliseconds": 6837,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25980,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 14,
+          "startedMilliseconds": 8148,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25980,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 15,
+          "startedMilliseconds": 25980,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25980,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 16,
+          "startedMilliseconds": 25980,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26222,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 17,
+          "startedMilliseconds": 25980,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26222,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 18,
+          "startedMilliseconds": 26222,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26818,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 19,
+          "startedMilliseconds": 26818,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26837,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 20,
+          "startedMilliseconds": 26818,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27220,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 21,
+          "startedMilliseconds": 26841,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27220,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 22,
+          "startedMilliseconds": 27220,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27220,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 23,
+          "startedMilliseconds": 27220,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 27487,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 24,
+          "startedMilliseconds": 27220,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27487,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 25,
+          "startedMilliseconds": 27487,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27860,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 26,
+          "startedMilliseconds": 27860,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27878,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 27,
+          "startedMilliseconds": 27860,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28182,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 28,
+          "startedMilliseconds": 27879,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28182,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 29,
+          "startedMilliseconds": 28182,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28182,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 30,
+          "startedMilliseconds": 28182,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28275,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 31,
+          "startedMilliseconds": 28182,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28275,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 32,
+          "startedMilliseconds": 28275,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28279,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 33,
+          "startedMilliseconds": 28279,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28279,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 34,
+          "startedMilliseconds": 28279,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28596,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 35,
+          "startedMilliseconds": 28279,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29009,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 36,
+          "startedMilliseconds": 28596,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29009,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 37,
+          "startedMilliseconds": 29009,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29009,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 38,
+          "startedMilliseconds": 29009,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 29310,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "final-snapshot",
+          "sequence": 39,
+          "startedMilliseconds": 29009,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29310,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 40,
+          "startedMilliseconds": 29310,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"
+    },
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 28770,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2862,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 2862,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2862,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 2862,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3021,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 2862,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3846,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 3021,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3846,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 3846,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3846,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 3846,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 4327,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 3846,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4327,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 8,
+          "startedMilliseconds": 4327,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4328,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-tap",
+          "sequence": 9,
+          "startedMilliseconds": 4328,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6342,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-tap",
+          "sequence": 10,
+          "startedMilliseconds": 6342,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6342,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 11,
+          "startedMilliseconds": 6342,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7394,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 12,
+          "startedMilliseconds": 7394,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7410,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 13,
+          "startedMilliseconds": 7394,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27652,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 14,
+          "startedMilliseconds": 7410,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27652,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 15,
+          "startedMilliseconds": 27652,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27652,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 16,
+          "startedMilliseconds": 27652,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 27920,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 17,
+          "startedMilliseconds": 27652,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27920,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 18,
+          "startedMilliseconds": 27920,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28008,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 19,
+          "startedMilliseconds": 28008,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28008,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 20,
+          "startedMilliseconds": 28008,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28032,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 21,
+          "startedMilliseconds": 28008,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28441,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 22,
+          "startedMilliseconds": 28033,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28441,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 23,
+          "startedMilliseconds": 28441,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28441,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 24,
+          "startedMilliseconds": 28441,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28765,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "final-snapshot",
+          "sequence": 25,
+          "startedMilliseconds": 28441,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28765,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 26,
+          "startedMilliseconds": 28765,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI"
+    },
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 29092,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2883,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 2883,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2883,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 2883,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2973,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 2883,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3555,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 2974,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3555,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 3555,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3555,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 3555,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 3794,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 3555,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3794,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 8,
+          "startedMilliseconds": 3794,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3795,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-tap",
+          "sequence": 9,
+          "startedMilliseconds": 3795,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4526,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-tap",
+          "sequence": 10,
+          "startedMilliseconds": 4526,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4526,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 11,
+          "startedMilliseconds": 4526,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5564,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 12,
+          "startedMilliseconds": 5564,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5585,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 13,
+          "startedMilliseconds": 5564,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21547,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 14,
+          "startedMilliseconds": 5586,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21547,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 15,
+          "startedMilliseconds": 21547,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21547,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 16,
+          "startedMilliseconds": 21547,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 21783,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 17,
+          "startedMilliseconds": 21547,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21783,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 18,
+          "startedMilliseconds": 21783,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22612,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 19,
+          "startedMilliseconds": 22612,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22626,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 20,
+          "startedMilliseconds": 22612,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22927,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 21,
+          "startedMilliseconds": 22626,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22927,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 22,
+          "startedMilliseconds": 22927,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22927,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 23,
+          "startedMilliseconds": 22927,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 23116,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 24,
+          "startedMilliseconds": 22927,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23116,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 25,
+          "startedMilliseconds": 23116,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23528,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 26,
+          "startedMilliseconds": 23528,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23549,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 27,
+          "startedMilliseconds": 23528,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23921,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 28,
+          "startedMilliseconds": 23550,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23921,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 29,
+          "startedMilliseconds": 23921,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23921,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 30,
+          "startedMilliseconds": 23921,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 24179,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 31,
+          "startedMilliseconds": 23921,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24179,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 32,
+          "startedMilliseconds": 24179,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24564,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 33,
+          "startedMilliseconds": 24564,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24579,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 34,
+          "startedMilliseconds": 24564,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24946,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 35,
+          "startedMilliseconds": 24581,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24946,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 36,
+          "startedMilliseconds": 24946,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24946,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 37,
+          "startedMilliseconds": 24946,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 25101,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 38,
+          "startedMilliseconds": 24946,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25101,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 39,
+          "startedMilliseconds": 25101,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25613,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 40,
+          "startedMilliseconds": 25613,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25631,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 41,
+          "startedMilliseconds": 25613,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25963,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 42,
+          "startedMilliseconds": 25631,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25963,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 43,
+          "startedMilliseconds": 25963,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25963,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 44,
+          "startedMilliseconds": 25963,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26201,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 45,
+          "startedMilliseconds": 25963,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26201,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 46,
+          "startedMilliseconds": 26201,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26615,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 47,
+          "startedMilliseconds": 26615,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26634,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 48,
+          "startedMilliseconds": 26615,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27179,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 49,
+          "startedMilliseconds": 26634,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27179,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 50,
+          "startedMilliseconds": 27179,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27179,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 51,
+          "startedMilliseconds": 27179,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 27442,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 52,
+          "startedMilliseconds": 27179,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27442,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 53,
+          "startedMilliseconds": 27442,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27531,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 54,
+          "startedMilliseconds": 27531,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27548,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 55,
+          "startedMilliseconds": 27531,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28145,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 56,
+          "startedMilliseconds": 27549,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28145,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 57,
+          "startedMilliseconds": 28145,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28145,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 58,
+          "startedMilliseconds": 28145,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28277,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 59,
+          "startedMilliseconds": 28145,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28277,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 60,
+          "startedMilliseconds": 28277,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28285,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 61,
+          "startedMilliseconds": 28285,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28285,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 62,
+          "startedMilliseconds": 28285,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28475,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 63,
+          "startedMilliseconds": 28285,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28867,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 64,
+          "startedMilliseconds": 28476,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28867,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 65,
+          "startedMilliseconds": 28867,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28867,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 66,
+          "startedMilliseconds": 28867,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 29092,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "final-snapshot",
+          "sequence": 67,
+          "startedMilliseconds": 28867,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29092,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 68,
+          "startedMilliseconds": 29092,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testE03EditorActionsHoverRenameUI"
+    },
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 28469,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1135,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 1135,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1135,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 1135,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1165,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 1135,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1225,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 1165,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1225,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 1225,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1225,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 1225,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1225,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 1225,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1226,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-wait",
+          "sequence": 8,
+          "startedMilliseconds": 1226,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2241,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "document-wait",
+          "sequence": 9,
+          "startedMilliseconds": 2241,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2673,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "document-wait",
+          "sequence": 10,
+          "startedMilliseconds": 2241,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3297,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "document-wait",
+          "sequence": 11,
+          "startedMilliseconds": 2674,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3297,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "document-wait",
+          "sequence": 12,
+          "startedMilliseconds": 3297,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3297,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "document-wait",
+          "sequence": 13,
+          "startedMilliseconds": 3297,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 7535,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "document-wait",
+          "sequence": 14,
+          "startedMilliseconds": 3297,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 7535,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "document-wait",
+          "sequence": 15,
+          "startedMilliseconds": 7535,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7539,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-wait",
+          "sequence": 16,
+          "startedMilliseconds": 7539,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 7539,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "document-snapshot",
+          "sequence": 17,
+          "startedMilliseconds": 7539,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7684,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "document-snapshot",
+          "sequence": 18,
+          "startedMilliseconds": 7539,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 16017,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "document-snapshot",
+          "sequence": 19,
+          "startedMilliseconds": 7685,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 16017,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "document-snapshot",
+          "sequence": 20,
+          "startedMilliseconds": 16017,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 16017,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "document-snapshot",
+          "sequence": 21,
+          "startedMilliseconds": 16017,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 16204,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "document-snapshot",
+          "sequence": 22,
+          "startedMilliseconds": 16017,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 16204,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "document-snapshot",
+          "sequence": 23,
+          "startedMilliseconds": 16204,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 16204,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 24,
+          "startedMilliseconds": 16204,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17206,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 25,
+          "startedMilliseconds": 17206,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17218,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 26,
+          "startedMilliseconds": 17206,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17496,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 27,
+          "startedMilliseconds": 17219,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17496,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 28,
+          "startedMilliseconds": 17496,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17496,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 29,
+          "startedMilliseconds": 17496,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 17677,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 30,
+          "startedMilliseconds": 17496,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 17677,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 31,
+          "startedMilliseconds": 17677,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 18240,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 32,
+          "startedMilliseconds": 18240,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 18252,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 33,
+          "startedMilliseconds": 18240,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 18548,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 34,
+          "startedMilliseconds": 18253,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 18548,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 35,
+          "startedMilliseconds": 18548,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 18548,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 36,
+          "startedMilliseconds": 18548,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 18727,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 37,
+          "startedMilliseconds": 18548,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 18727,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 38,
+          "startedMilliseconds": 18727,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19239,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 39,
+          "startedMilliseconds": 19239,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19252,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 40,
+          "startedMilliseconds": 19239,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19509,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 41,
+          "startedMilliseconds": 19252,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19509,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 42,
+          "startedMilliseconds": 19509,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19509,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 43,
+          "startedMilliseconds": 19509,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 19687,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 44,
+          "startedMilliseconds": 19509,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 19687,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 45,
+          "startedMilliseconds": 19687,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20207,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 46,
+          "startedMilliseconds": 20207,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20219,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 47,
+          "startedMilliseconds": 20207,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20486,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 48,
+          "startedMilliseconds": 20219,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20486,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 49,
+          "startedMilliseconds": 20486,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20486,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 50,
+          "startedMilliseconds": 20486,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 20690,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 51,
+          "startedMilliseconds": 20486,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 20690,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 52,
+          "startedMilliseconds": 20690,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21206,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 53,
+          "startedMilliseconds": 21206,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21218,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 54,
+          "startedMilliseconds": 21206,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21484,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 55,
+          "startedMilliseconds": 21219,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21484,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 56,
+          "startedMilliseconds": 21484,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21484,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 57,
+          "startedMilliseconds": 21484,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 21667,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 58,
+          "startedMilliseconds": 21484,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 21667,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 59,
+          "startedMilliseconds": 21667,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22256,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 60,
+          "startedMilliseconds": 22256,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22273,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 61,
+          "startedMilliseconds": 22256,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22565,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 62,
+          "startedMilliseconds": 22273,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22565,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 63,
+          "startedMilliseconds": 22565,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22565,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 64,
+          "startedMilliseconds": 22565,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 22761,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 65,
+          "startedMilliseconds": 22565,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 22761,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 66,
+          "startedMilliseconds": 22761,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23256,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 67,
+          "startedMilliseconds": 23256,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23272,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 68,
+          "startedMilliseconds": 23256,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23830,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 69,
+          "startedMilliseconds": 23273,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23830,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 70,
+          "startedMilliseconds": 23830,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23830,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 71,
+          "startedMilliseconds": 23830,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 24008,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 72,
+          "startedMilliseconds": 23830,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 24008,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 73,
+          "startedMilliseconds": 24008,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24208,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 74,
+          "startedMilliseconds": 24208,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24219,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 75,
+          "startedMilliseconds": 24208,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24483,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 76,
+          "startedMilliseconds": 24219,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24483,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 77,
+          "startedMilliseconds": 24483,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24483,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 78,
+          "startedMilliseconds": 24483,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 24699,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 79,
+          "startedMilliseconds": 24483,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 24699,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 80,
+          "startedMilliseconds": 24699,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25208,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 81,
+          "startedMilliseconds": 25208,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25222,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 82,
+          "startedMilliseconds": 25208,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25509,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 83,
+          "startedMilliseconds": 25222,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25509,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 84,
+          "startedMilliseconds": 25509,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25509,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 85,
+          "startedMilliseconds": 25509,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 25701,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 86,
+          "startedMilliseconds": 25509,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 25701,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 87,
+          "startedMilliseconds": 25701,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26206,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 88,
+          "startedMilliseconds": 26206,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26257,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 89,
+          "startedMilliseconds": 26207,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26521,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 90,
+          "startedMilliseconds": 26257,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26521,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 91,
+          "startedMilliseconds": 26521,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26521,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 92,
+          "startedMilliseconds": 26521,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26742,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 93,
+          "startedMilliseconds": 26521,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26742,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 94,
+          "startedMilliseconds": 26742,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27240,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 95,
+          "startedMilliseconds": 27240,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27257,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 96,
+          "startedMilliseconds": 27240,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27582,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 97,
+          "startedMilliseconds": 27257,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27582,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 98,
+          "startedMilliseconds": 27582,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27582,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 99,
+          "startedMilliseconds": 27582,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 27793,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 100,
+          "startedMilliseconds": 27582,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 27793,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 101,
+          "startedMilliseconds": 27793,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28011,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 102,
+          "startedMilliseconds": 28011,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28011,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 103,
+          "startedMilliseconds": 28011,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28027,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 104,
+          "startedMilliseconds": 28011,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28290,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 105,
+          "startedMilliseconds": 28027,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28290,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 106,
+          "startedMilliseconds": 28290,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28290,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 107,
+          "startedMilliseconds": 28290,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28469,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "final-snapshot",
+          "sequence": 108,
+          "startedMilliseconds": 28290,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28469,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 109,
+          "startedMilliseconds": 28469,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI"
+    },
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 29289,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2264,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 2264,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2264,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 2264,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2340,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 2264,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2623,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 2341,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2623,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 2623,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2623,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 2623,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 2701,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 2623,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2701,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 8,
+          "startedMilliseconds": 2701,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2701,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-tap",
+          "sequence": 9,
+          "startedMilliseconds": 2701,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 16615,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-tap",
+          "sequence": 10,
+          "startedMilliseconds": 16615,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 16615,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 11,
+          "startedMilliseconds": 16615,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17625,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 12,
+          "startedMilliseconds": 17625,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 17662,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 13,
+          "startedMilliseconds": 17625,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26996,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 14,
+          "startedMilliseconds": 17663,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26996,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 15,
+          "startedMilliseconds": 26996,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26996,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 16,
+          "startedMilliseconds": 26996,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26996,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 17,
+          "startedMilliseconds": 26996,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27633,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 18,
+          "startedMilliseconds": 27633,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28181,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 19,
+          "startedMilliseconds": 27633,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28286,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 20,
+          "startedMilliseconds": 28181,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28286,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 21,
+          "startedMilliseconds": 28286,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28286,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 22,
+          "startedMilliseconds": 28286,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28286,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 23,
+          "startedMilliseconds": 28286,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28290,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 24,
+          "startedMilliseconds": 28290,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28290,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 25,
+          "startedMilliseconds": 28290,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28627,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 26,
+          "startedMilliseconds": 28290,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29071,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 27,
+          "startedMilliseconds": 28628,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29071,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 28,
+          "startedMilliseconds": 29071,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 29071,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 29,
+          "startedMilliseconds": 29071,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29288,
+          "mainThread": true,
+          "operation": "editor-hittable",
+          "phase": "final-snapshot",
+          "sequence": 30,
+          "startedMilliseconds": 29071,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 29288,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 31,
+          "startedMilliseconds": 29288,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"
+    },
+    {
+      "budgetMilliseconds": 28000,
+      "droppedEntries": 0,
+      "elapsedMilliseconds": 28844,
+      "entries": [
+        {
+          "completedMilliseconds": 0,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "window-wait",
+          "sequence": 0,
+          "startedMilliseconds": 0,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1060,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "window-wait",
+          "sequence": 1,
+          "startedMilliseconds": 1060,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1060,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "window-snapshot",
+          "sequence": 2,
+          "startedMilliseconds": 1060,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1109,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "window-snapshot",
+          "sequence": 3,
+          "startedMilliseconds": 1060,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1197,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "window-snapshot",
+          "sequence": 4,
+          "startedMilliseconds": 1109,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1197,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "window-snapshot",
+          "sequence": 5,
+          "startedMilliseconds": 1197,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1197,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "window-snapshot",
+          "sequence": 6,
+          "startedMilliseconds": 1197,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 1197,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "window-snapshot",
+          "sequence": 7,
+          "startedMilliseconds": 1197,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 1198,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-wait",
+          "sequence": 8,
+          "startedMilliseconds": 1198,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2239,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "document-wait",
+          "sequence": 9,
+          "startedMilliseconds": 2239,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2403,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "document-wait",
+          "sequence": 10,
+          "startedMilliseconds": 2239,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2686,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "document-wait",
+          "sequence": 11,
+          "startedMilliseconds": 2404,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2686,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "document-wait",
+          "sequence": 12,
+          "startedMilliseconds": 2686,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2686,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "document-wait",
+          "sequence": 13,
+          "startedMilliseconds": 2686,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 2810,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "document-wait",
+          "sequence": 14,
+          "startedMilliseconds": 2686,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2810,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "document-wait",
+          "sequence": 15,
+          "startedMilliseconds": 2810,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2812,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-wait",
+          "sequence": 16,
+          "startedMilliseconds": 2812,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2812,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "document-snapshot",
+          "sequence": 17,
+          "startedMilliseconds": 2812,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 2836,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "document-snapshot",
+          "sequence": 18,
+          "startedMilliseconds": 2812,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3007,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "document-snapshot",
+          "sequence": 19,
+          "startedMilliseconds": 2836,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3008,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "document-snapshot",
+          "sequence": 20,
+          "startedMilliseconds": 3008,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3008,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "document-snapshot",
+          "sequence": 21,
+          "startedMilliseconds": 3008,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 3148,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "document-snapshot",
+          "sequence": 22,
+          "startedMilliseconds": 3008,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3148,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "document-snapshot",
+          "sequence": 23,
+          "startedMilliseconds": 3148,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3148,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "document-tap",
+          "sequence": 24,
+          "startedMilliseconds": 3148,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3839,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "document-tap",
+          "sequence": 25,
+          "startedMilliseconds": 3839,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 3839,
+          "mainThread": true,
+          "operation": "entered",
+          "phase": "editor-wait",
+          "sequence": 26,
+          "startedMilliseconds": 3839,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4846,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 27,
+          "startedMilliseconds": 4846,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 4862,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 28,
+          "startedMilliseconds": 4846,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5077,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 29,
+          "startedMilliseconds": 4862,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5077,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 30,
+          "startedMilliseconds": 5077,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5077,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 31,
+          "startedMilliseconds": 5077,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 5191,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 32,
+          "startedMilliseconds": 5077,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5191,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 33,
+          "startedMilliseconds": 5191,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5906,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 34,
+          "startedMilliseconds": 5906,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 5921,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 35,
+          "startedMilliseconds": 5906,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6025,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 36,
+          "startedMilliseconds": 5922,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6025,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 37,
+          "startedMilliseconds": 6025,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6025,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 38,
+          "startedMilliseconds": 6025,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 6099,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 39,
+          "startedMilliseconds": 6025,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6099,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 40,
+          "startedMilliseconds": 6099,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6931,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 41,
+          "startedMilliseconds": 6931,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 6942,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 42,
+          "startedMilliseconds": 6931,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7043,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 43,
+          "startedMilliseconds": 6942,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7043,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 44,
+          "startedMilliseconds": 7043,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7043,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 45,
+          "startedMilliseconds": 7043,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 7129,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 46,
+          "startedMilliseconds": 7043,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7129,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 47,
+          "startedMilliseconds": 7129,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7850,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 48,
+          "startedMilliseconds": 7850,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 7863,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 49,
+          "startedMilliseconds": 7850,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19042,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 50,
+          "startedMilliseconds": 7863,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19042,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 51,
+          "startedMilliseconds": 19042,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19042,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 52,
+          "startedMilliseconds": 19042,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 19235,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 53,
+          "startedMilliseconds": 19042,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19235,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 54,
+          "startedMilliseconds": 19235,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19840,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 55,
+          "startedMilliseconds": 19840,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 19855,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 56,
+          "startedMilliseconds": 19840,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20193,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 57,
+          "startedMilliseconds": 19856,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20193,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 58,
+          "startedMilliseconds": 20193,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20193,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 59,
+          "startedMilliseconds": 20193,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 20410,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 60,
+          "startedMilliseconds": 20193,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20410,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 61,
+          "startedMilliseconds": 20410,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20888,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 62,
+          "startedMilliseconds": 20888,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 20906,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 63,
+          "startedMilliseconds": 20888,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21195,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 64,
+          "startedMilliseconds": 20907,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21195,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 65,
+          "startedMilliseconds": 21195,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21195,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 66,
+          "startedMilliseconds": 21195,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 21355,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 67,
+          "startedMilliseconds": 21195,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21355,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 68,
+          "startedMilliseconds": 21355,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21847,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 69,
+          "startedMilliseconds": 21847,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 21903,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 70,
+          "startedMilliseconds": 21847,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22188,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 71,
+          "startedMilliseconds": 21903,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22188,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 72,
+          "startedMilliseconds": 22188,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22188,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 73,
+          "startedMilliseconds": 22188,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 22365,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 74,
+          "startedMilliseconds": 22188,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22365,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 75,
+          "startedMilliseconds": 22365,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22848,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 76,
+          "startedMilliseconds": 22848,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 22864,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 77,
+          "startedMilliseconds": 22848,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23172,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 78,
+          "startedMilliseconds": 22865,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23172,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 79,
+          "startedMilliseconds": 23172,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23172,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 80,
+          "startedMilliseconds": 23172,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 23351,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 81,
+          "startedMilliseconds": 23172,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23351,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 82,
+          "startedMilliseconds": 23351,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23845,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 83,
+          "startedMilliseconds": 23845,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 23859,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 84,
+          "startedMilliseconds": 23845,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24153,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 85,
+          "startedMilliseconds": 23860,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24153,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 86,
+          "startedMilliseconds": 24153,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24153,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 87,
+          "startedMilliseconds": 24153,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 24341,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 88,
+          "startedMilliseconds": 24153,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24341,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 89,
+          "startedMilliseconds": 24341,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24855,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 90,
+          "startedMilliseconds": 24855,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 24874,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 91,
+          "startedMilliseconds": 24855,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25149,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 92,
+          "startedMilliseconds": 24874,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25149,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 93,
+          "startedMilliseconds": 25149,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25149,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 94,
+          "startedMilliseconds": 25149,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 25327,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 95,
+          "startedMilliseconds": 25149,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25327,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 96,
+          "startedMilliseconds": 25327,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25845,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 97,
+          "startedMilliseconds": 25845,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 25860,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 98,
+          "startedMilliseconds": 25845,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26119,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 99,
+          "startedMilliseconds": 25861,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26119,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 100,
+          "startedMilliseconds": 26119,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26119,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 101,
+          "startedMilliseconds": 26119,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 26285,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 102,
+          "startedMilliseconds": 26119,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26285,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 103,
+          "startedMilliseconds": 26285,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26888,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 104,
+          "startedMilliseconds": 26888,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 26903,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 105,
+          "startedMilliseconds": 26888,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27153,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 106,
+          "startedMilliseconds": 26903,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27153,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 107,
+          "startedMilliseconds": 27153,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27153,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 108,
+          "startedMilliseconds": 27153,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 27326,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 109,
+          "startedMilliseconds": 27153,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27326,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 110,
+          "startedMilliseconds": 27326,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27845,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "editor-wait",
+          "sequence": 111,
+          "startedMilliseconds": 27845,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 27857,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "editor-wait",
+          "sequence": 112,
+          "startedMilliseconds": 27845,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28122,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "editor-wait",
+          "sequence": 113,
+          "startedMilliseconds": 27857,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28122,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "editor-wait",
+          "sequence": 114,
+          "startedMilliseconds": 28122,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28122,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "editor-wait",
+          "sequence": 115,
+          "startedMilliseconds": 28122,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28266,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "editor-wait",
+          "sequence": 116,
+          "startedMilliseconds": 28122,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28266,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "editor-wait",
+          "sequence": 117,
+          "startedMilliseconds": 28266,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28270,
+          "mainThread": true,
+          "operation": "returned",
+          "phase": "editor-wait",
+          "sequence": 118,
+          "startedMilliseconds": 28270,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28270,
+          "mainThread": true,
+          "operation": "foreground",
+          "phase": "final-snapshot",
+          "sequence": 119,
+          "startedMilliseconds": 28270,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28377,
+          "mainThread": true,
+          "operation": "window",
+          "phase": "final-snapshot",
+          "sequence": 120,
+          "startedMilliseconds": 28270,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28672,
+          "mainThread": true,
+          "operation": "known-controls",
+          "phase": "final-snapshot",
+          "sequence": 121,
+          "startedMilliseconds": 28378,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28672,
+          "mainThread": true,
+          "operation": "create-exists",
+          "phase": "final-snapshot",
+          "sequence": 122,
+          "startedMilliseconds": 28672,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28672,
+          "mainThread": true,
+          "operation": "editor-exists",
+          "phase": "final-snapshot",
+          "sequence": 123,
+          "startedMilliseconds": 28672,
+          "value": false
+        },
+        {
+          "completedMilliseconds": 28844,
+          "mainThread": true,
+          "operation": "create-hittable",
+          "phase": "final-snapshot",
+          "sequence": 124,
+          "startedMilliseconds": 28672,
+          "value": true
+        },
+        {
+          "completedMilliseconds": 28844,
+          "mainThread": true,
+          "operation": "foreground-final",
+          "phase": "final-snapshot",
+          "sequence": 125,
+          "startedMilliseconds": 28844,
+          "value": true
+        }
+      ],
+      "inFlightObservations": 0,
+      "schemaVersion": "1.0",
+      "testName": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed"
+    }
+  ],
+  "original_codeview_paste_receipts": [
+    {
+      "actualSource": "text(\"x\")",
+      "actualUTF16Length": 9,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 0,
+      "pasteElapsedMilliseconds": 5,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 8,
+      "stage": "before-paste",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\")",
+      "actualUTF16Length": 9,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 1,
+      "pasteElapsedMilliseconds": 12,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 8,
+      "stage": "after-paste-call",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\"))",
+      "actualUTF16Length": 10,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 1,
+      "pasteElapsedMilliseconds": 2349,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 9,
+      "stage": "paste-native-text-change",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\"))",
+      "actualUTF16Length": 10,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 0,
+      "pasteElapsedMilliseconds": 2481,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 9,
+      "stage": "paste-predicate-match",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\"))",
+      "actualUTF16Length": 10,
+      "fixtureId": "single-character-paste",
+      "inputUTF16": [
+        41
+      ],
+      "isolatedSyntheticEditor": true,
+      "keyIndex": 2,
+      "pasteElapsedMilliseconds": 2538,
+      "schemaVersion": "1.0",
+      "selectionLength": 0,
+      "selectionLocation": 9,
+      "stage": "after-paste-wait",
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "windowAttached": true,
+      "windowIsKey": true
+    }
+  ],
+  "stock_paste_diagnostics": [
+    {
+      "actualSource": "text(\"x\")",
+      "actualUTF16Length": 9,
+      "budgetMilliseconds": 3000,
+      "elapsedMilliseconds": 3,
+      "exactExpectedText": false,
+      "fixtureId": "stock-ui-text-view-after-code-view",
+      "isolatedSyntheticEditor": true,
+      "ordering": "AFTER_ORIGINAL_CODEVIEW_ASSERTION",
+      "pasteIssued": false,
+      "schemaVersion": "1.0",
+      "scope": "DIAGNOSTIC_ONLY_WARM_PROCESS",
+      "selectionLength": 0,
+      "selectionLocation": 8,
+      "stage": "before-paste",
+      "syntheticClipboardVerified": true,
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "waitResult": "NOT_WAITED",
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\")",
+      "actualUTF16Length": 9,
+      "budgetMilliseconds": 3000,
+      "elapsedMilliseconds": 4,
+      "exactExpectedText": false,
+      "fixtureId": "stock-ui-text-view-after-code-view",
+      "isolatedSyntheticEditor": true,
+      "ordering": "AFTER_ORIGINAL_CODEVIEW_ASSERTION",
+      "pasteIssued": true,
+      "schemaVersion": "1.0",
+      "scope": "DIAGNOSTIC_ONLY_WARM_PROCESS",
+      "selectionLength": 0,
+      "selectionLocation": 8,
+      "stage": "after-paste-call",
+      "syntheticClipboardVerified": true,
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "waitResult": "NOT_WAITED",
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\"))",
+      "actualUTF16Length": 10,
+      "budgetMilliseconds": 3000,
+      "elapsedMilliseconds": 115,
+      "exactExpectedText": true,
+      "fixtureId": "stock-ui-text-view-after-code-view",
+      "isolatedSyntheticEditor": true,
+      "ordering": "AFTER_ORIGINAL_CODEVIEW_ASSERTION",
+      "pasteIssued": true,
+      "schemaVersion": "1.0",
+      "scope": "DIAGNOSTIC_ONLY_WARM_PROCESS",
+      "selectionLength": 0,
+      "selectionLocation": 9,
+      "stage": "native-text-change",
+      "syntheticClipboardVerified": true,
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "waitResult": "NOT_WAITED",
+      "windowAttached": true,
+      "windowIsKey": true
+    },
+    {
+      "actualSource": "text(\"x\"))",
+      "actualUTF16Length": 10,
+      "budgetMilliseconds": 3000,
+      "elapsedMilliseconds": 1051,
+      "exactExpectedText": true,
+      "fixtureId": "stock-ui-text-view-after-code-view",
+      "isolatedSyntheticEditor": true,
+      "ordering": "AFTER_ORIGINAL_CODEVIEW_ASSERTION",
+      "pasteIssued": true,
+      "schemaVersion": "1.0",
+      "scope": "DIAGNOSTIC_ONLY_WARM_PROCESS",
+      "selectionLength": 0,
+      "selectionLocation": 9,
+      "stage": "after-paste-wait",
+      "syntheticClipboardVerified": true,
+      "testName": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "viewIsFirstResponder": true,
+      "waitResult": "COMPLETED",
+      "windowAttached": true,
+      "windowIsKey": true
+    }
+  ],
+  "prior_component_comparison": {
+    "run_id": 44683546015,
+    "common_named_tests": 53,
+    "common_outcomes_unchanged": true,
+    "new_tests": [
+      "CherriPreviewLifecycleTests/testCompiledPreviewAppearsAndIsRemovedWhenSourceClears",
+      "CherriPreviewLifecycleTests/testDisabledLivePreviewDoesNotCreateWebViewForUncompiledSource",
+      "CherriPreviewLifecycleTests/testEmptyWorkspaceMountsEditorWithoutWebPreview"
+    ],
+    "controlled_cold_start_performance_comparison": false
+  },
+  "documentation_evidence": {
+    "status": "NOT_VERIFIED",
+    "errorCodes": [
+      "RUN_NOT_ELIGIBLE"
+    ]
+  },
+  "formal_records": [],
+  "scope_limits": [
+    "Three real UIKit/WebKit lifecycle test passes establish lazy-preview lifecycle behavior only.",
+    "The same12 original editor UI cases fail before their feature bodies; no startup or D03 UI closure.",
+    "Original28-second readiness and3-second paste requirements are unchanged.",
+    "Seven predicate traces show actual query/tap durations; they are instrumented observations, not a calibrated performance benchmark.",
+    "The completed document predicate followed by another slow snapshot is an observed orchestration cost; root cause of every AX failure remains unclassified.",
+    "Stock UITextView paste runs after the original CodeView assertion in a warm process and cannot replace it."
+  ]
+}

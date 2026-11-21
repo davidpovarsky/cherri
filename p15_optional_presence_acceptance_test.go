@@ -170,14 +170,20 @@ func TestP15T05PresenceBinding(t *testing.T) {
 }
 
 func p15T05FlatWire(actions []ShortcutAction, tc p15T05PresenceCase) error {
-	if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != tc.identifier || !reflect.DeepEqual(actions[0].WFWorkflowActionParameters, tc.params) {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		return err
+	}
+	if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != tc.identifier || !reflect.DeepEqual(actions[0].WFWorkflowActionParameters, tc.params) {
 		return fmt.Errorf("native explicit values or absent fields changed: %+v", actions)
 	}
 	return nil
 }
 
 func p15T05EmptyContainerWire(actions []ShortcutAction) error {
-	if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.dictionary" || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.showresult" {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		return err
+	}
+	if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.dictionary" || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.showresult" {
 		return fmt.Errorf("container producers changed")
 	}
 	text := func(s string) any {
@@ -281,12 +287,21 @@ func TestP15T05PresenceNativeWire(t *testing.T) {
 	}
 	// JSON text is preserved as Text. This is not a JsonNull native value proof.
 	actions = compileDebugFixture(t, `let value=text("{\"missing\":null}");show(value)`, false)
-	if len(actions) != 2 || actions[0].WFWorkflowActionParameters["WFTextActionText"] != `{"missing":null}` {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
+		actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.showresult" ||
+		actions[0].WFWorkflowActionParameters["WFTextActionText"] != `{"missing":null}` {
 		t.Fatal("JSON text bytes changed")
 	}
 	// The opaque native escape retains its existing exact, non-null payload route.
 	actions = compileDebugFixture(t, `native.action("com.example.p15.presence", {"flag":false,"count":0,"empty":""})`, false)
-	if len(actions) != 1 || !reflect.DeepEqual(actions[0].WFWorkflowActionParameters, map[string]any{"flag": false, "count": uint64(0), "empty": ""}) {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "com.example.p15.presence" ||
+		!reflect.DeepEqual(actions[0].WFWorkflowActionParameters, map[string]any{"flag": false, "count": uint64(0), "empty": ""}) {
 		t.Fatal("opaque native payload changed")
 	}
 }

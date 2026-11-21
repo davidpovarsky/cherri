@@ -94,7 +94,7 @@ func TestP15RP43EncodingFailureReturnsNoPartialBytes(t *testing.T) {
 			if (format == "binary") != bytes.HasPrefix(data, []byte("bplist00")) {
 				t.Fatalf("restored control did not exercise %s encoder", format)
 			}
-			p15RP43AssertNativeOutput(t, data)
+			p15RP43AssertNativeOutput(t, data, false)
 		})
 	}
 }
@@ -163,7 +163,7 @@ func TestP15RP43PublicSignerFailureBoundaries(t *testing.T) {
 			if readErr != nil {
 				t.Fatal(readErr)
 			}
-			p15RP43AssertNativeOutput(t, unsigned)
+			p15RP43AssertNativeOutput(t, unsigned, false)
 			var sibling = strings.TrimSuffix(input, ".cherri") + "_unsigned.shortcut"
 			p15SchemaWrite(t, sibling, []byte("P15_RP43_PRIOR_UNSIGNED_SIBLING\x00\xff"))
 			var output = filepath.Join(directory, "signed שלום result.shortcut")
@@ -196,7 +196,7 @@ func TestP15RP43PublicSignerFailureBoundaries(t *testing.T) {
 						if observed[0].uri != suffix || observed[0].name == "" {
 							t.Error("explicit local signer request identity changed")
 						}
-						p15RP43AssertNativeOutput(t, observed[0].data)
+						p15RP43AssertNativeOutput(t, observed[0].data, strings.HasSuffix(route, "_legacy"))
 						if route == "sign" && !bytes.Equal(observed[0].data, unsigned) {
 							t.Error("explicit signing changed the exact input bytes")
 						}
@@ -263,7 +263,7 @@ func TestP15RP43UnsignedAndAnalysisBoundaries(t *testing.T) {
 			if readErr != nil {
 				t.Fatal(readErr)
 			}
-			p15RP43AssertNativeOutput(t, data)
+			p15RP43AssertNativeOutput(t, data, strings.HasSuffix(route, "_legacy"))
 			if tier, err := ValidateSignedShortcutBytes(data); err == nil || tier != "" {
 				t.Fatalf("unsigned output was claimed signed: tier=%q err=%v", tier, err)
 			}

@@ -13,8 +13,11 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
-func p15C03SingletonReference(actions []ShortcutAction, tc p15C03Case) error {
-	if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
+func p15C03SingletonReference(actions []ShortcutAction, tc p15C03Case, mainLegacy bool) error {
+	if err := p15C03ActionCountError(actions, 2, mainLegacy); err != nil {
+		return err
+	}
+	if len(actions) < 2 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.gettext" ||
 		actions[0].WFWorkflowActionParameters["WFTextActionText"] != tc.values[0] ||
 		actions[1].WFWorkflowActionIdentifier != "is.workflow.actions."+tc.identifier {
 		return fmt.Errorf("single-item graph changed: %#v", actions)
@@ -63,12 +66,12 @@ func TestP15C03SingletonReferencesAndTemplates(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if err = p15C03SingletonReference(actions, tc); err != nil {
+				if err = p15C03SingletonReference(actions, tc, legacy); err != nil {
 					t.Fatal(err)
 				}
 				broken := p15C03Clone(t, actions)
 				broken[0].WFWorkflowActionParameters["UUID"] = "foreign-producer"
-				if p15C03SingletonReference(broken, tc) == nil {
+				if p15C03SingletonReference(broken, tc, legacy) == nil {
 					t.Fatal("reference oracle accepted producer substitution")
 				}
 			})
@@ -148,7 +151,7 @@ func TestP15C03NestedMigrationAndSourceIdentity(t *testing.T) {
 				t.Fatal(err)
 			}
 			if tc.name == "nested_calls" {
-				if err = p15C03EffectOracle(actions); err != nil {
+				if err = p15C03EffectOracle(actions, true); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -199,9 +202,12 @@ func TestP15C03EmptyIsNotAnEmptyItem(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		if err := p15C03LiteralOracle(actions, tc, 0, false); err != nil {
+			t.Fatal("healthy empty pack rejected before scalar fault", err)
+		}
 		broken := p15C03Clone(t, actions)
 		broken[0].WFWorkflowActionParameters[tc.key] = ""
-		if p15C03LiteralOracle(broken, tc, 0) == nil {
+		if p15C03LiteralOracle(broken, tc, 0, false) == nil {
 			t.Fatalf("empty %s pack accepted a scalar field", tc.name)
 		}
 	}
@@ -211,10 +217,10 @@ func TestP15C03EmptyIsNotAnEmptyItem(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = p15C03LiteralOracle(actions, tc, 1); err != nil {
+	if err = p15C03LiteralOracle(actions, tc, 1, false); err != nil {
 		t.Fatal(err)
 	}
-	if p15C03LiteralOracle(actions, tc, 0) == nil {
+	if p15C03LiteralOracle(actions, tc, 0, false) == nil {
 		t.Fatal("single empty string collapsed into zero arguments")
 	}
 }
@@ -276,7 +282,14 @@ func TestP15C03CustomActionShadow(t *testing.T) {
 					t.Fatal(err)
 				}
 				actions := p15C03Array(document["WFWorkflowActions"])
-				if len(actions) != 1 {
+				want := 1 // Migration explicitly preserves Legacy main output.
+				if index == 0 {
+					want++
+					if err := p15M02MainVoidRowsError(actions); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if len(actions) != want {
 					t.Fatalf("custom native action count changed: %d", len(actions))
 				}
 				action := debugParamMap(actions[0])
@@ -289,7 +302,12 @@ func TestP15C03CustomActionShadow(t *testing.T) {
 	}
 }
 
-func p15C03SnapshotOracle(actions []ShortcutAction) error {
+func p15C03SnapshotOracle(actions []ShortcutAction, mainLegacy bool) error {
+	if !mainLegacy {
+		if err := p15M02MainVoidDebugError(actions); err != nil {
+			return err
+		}
+	}
 	capture, mutation, consumer := -1, -1, -1
 	stores := 0
 	for index, action := range actions {
@@ -340,7 +358,7 @@ func TestP15C03PackElementSnapshot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = p15C03SnapshotOracle(actions); err != nil {
+	if err = p15C03SnapshotOracle(actions, false); err != nil {
 		t.Fatal(err)
 	}
 	broken := p15C03Clone(t, actions)
@@ -354,7 +372,7 @@ func TestP15C03PackElementSnapshot(t *testing.T) {
 			delete(value, "OutputUUID")
 		}
 	}
-	if p15C03SnapshotOracle(broken) == nil {
+	if p15C03SnapshotOracle(broken, false) == nil {
 		t.Fatal("snapshot oracle accepted deferred post-mutation lookup")
 	}
 }

@@ -17,6 +17,9 @@ func p15MeasureActions(t *testing.T, source string, profile BuildProfile) []Shor
 	if err != nil {
 		t.Fatal(err)
 	}
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		t.Fatal(err)
+	}
 	return actions
 }
 
@@ -52,14 +55,14 @@ getVariable(result)`
 			t.Fatalf("body dictionary rerun/lost: %v", actionSuffixes(actions))
 		}
 		producer := dictionaries[0].WFWorkflowActionParameters["UUID"]
-		last := actions[len(actions)-1]
+		last := actions[len(actions)-2]
 		if last.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
 			t.Fatal("consumer changed")
 		}
 		if ref := p15OutputReference(last.WFWorkflowActionParameters["WFVariable"]); ref["Type"] != "ActionOutput" || ref["OutputUUID"] != producer {
 			t.Fatalf("result retargeted to timing output: %v", ref)
 		}
-		restore := actions[len(actions)-2]
+		restore := actions[len(actions)-3]
 		if ref := p15OutputReference(restore.WFWorkflowActionParameters["WFVariable"]); ref["OutputUUID"] != producer {
 			t.Fatalf("implicit output not restored: %v", restore)
 		}
@@ -89,7 +92,7 @@ getVariable(result)`
 			t.Fatalf("source effect was removed or rerun: %v", actionSuffixes(actions))
 		}
 		producer := calls[0].WFWorkflowActionParameters["UUID"]
-		last := actions[len(actions)-1]
+		last := actions[len(actions)-2]
 		if p15OutputReference(last.WFWorkflowActionParameters["WFVariable"])["OutputUUID"] != producer {
 			t.Fatal("nested return lost original producer")
 		}
@@ -133,7 +136,7 @@ getVariable(measured)`
 	if outerWrites != 1 || len(localNames) != 2 {
 		t.Fatalf("native scope leaked: outer writes=%d local names=%v", outerWrites, localNames)
 	}
-	outerRead := p15OutputReference(actions[len(actions)-2].WFWorkflowActionParameters["WFVariable"])
+	outerRead := p15OutputReference(actions[len(actions)-3].WFWorkflowActionParameters["WFVariable"])
 	if outerRead["Type"] != "Variable" || outerRead["VariableName"] != "value" {
 		t.Fatalf("outer variable binding lost: %v", outerRead)
 	}
@@ -152,7 +155,10 @@ func TestP15_MeasureWaitAndNativeControlResults(t *testing.T) {
 		if strings.Contains(source, "wait(1)") && len(p15ActionsNamed(actions, "delay")) != 1 {
 			t.Fatalf("wait body rerun/lost: %v", actionSuffixes(actions))
 		}
-		last := p15OutputReference(actions[len(actions)-1].WFWorkflowActionParameters["WFVariable"])
+		last := p15OutputReference(actions[len(actions)-2].WFWorkflowActionParameters["WFVariable"])
+		if uuid, okay := last["OutputUUID"].(string); last["Type"] != "ActionOutput" || !okay || uuid == "" {
+			t.Fatal("measure result consumer has no actual body producer", last)
+		}
 		for _, timer := range p15ActionsNamed(actions, "gettimebetweendates") {
 			if last["OutputUUID"] == timer.WFWorkflowActionParameters["UUID"] {
 				t.Fatal("returned elapsed number instead of body value")
@@ -176,7 +182,7 @@ func TestP15_MeasureFreezesCurrentDateBeforeStoppingTimer(t *testing.T) {
 	if snapshotIndex < 0 || elapsedIndex <= snapshotIndex {
 		t.Fatalf("CurrentDate not frozen at body boundary: %v", actionSuffixes(actions))
 	}
-	last := p15OutputReference(actions[len(actions)-1].WFWorkflowActionParameters["WFVariable"])
+	last := p15OutputReference(actions[len(actions)-2].WFWorkflowActionParameters["WFVariable"])
 	if last["OutputUUID"] != snapshotUUID {
 		t.Fatalf("consumer rereads CurrentDate instead of its snapshot: %v", last)
 	}
@@ -273,10 +279,10 @@ func TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator(t *testing.T) {
 				t.Fatalf("loop is not bound to the typed input List: %v", input)
 			}
 		}
-		if len(actions[end+1:]) != 1 {
+		if len(actions[end+1:]) != 2 || actions[end+1].WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" {
 			t.Fatalf("unexpected post-loop work: %v", actionSuffixes(actions[end+1:]))
 		}
-		t.Logf("collect N=%d total=%d inputConstruction=%d repeatRegion=%d resultConsumer=%d", size, len(actions), len(inputActions), len(region), len(actions[end+1:]))
+		t.Logf("collect N=%d total=%d inputConstruction=%d repeatRegion=%d postLoopActions=%d", size, len(actions), len(inputActions), len(region), len(actions[end+1:]))
 		loops := p15ActionsNamed(actions, "repeat.each")
 		if len(loops) != 2 || loops[0].WFWorkflowActionParameters["GroupingIdentifier"] != loops[1].WFWorkflowActionParameters["GroupingIdentifier"] {
 			t.Fatal("repeat control region not paired")
@@ -287,7 +293,7 @@ func TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator(t *testing.T) {
 		if len(p15ActionsNamed(actions, "appendvariable")) != 0 {
 			t.Fatal("collection added an accumulator")
 		}
-		last := p15OutputReference(actions[len(actions)-1].WFWorkflowActionParameters["WFVariable"])
+		last := p15OutputReference(actions[len(actions)-2].WFWorkflowActionParameters["WFVariable"])
 		if last["OutputUUID"] != loops[1].WFWorkflowActionParameters["UUID"] {
 			t.Fatalf("consumer does not use Repeat Results: %v", last)
 		}

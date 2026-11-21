@@ -48,7 +48,7 @@ func TestP15RequiredVariadicPresence(t *testing.T) {
 			if err != nil {
 				t.Fatal("supplied empty pack rejected", err)
 			}
-			if err := p15C03LiteralOracle(actions, tc, 0); err != nil {
+			if err := p15C03LiteralOracle(actions, tc, 0, false); err != nil {
 				t.Fatal("empty pack changed canonical wire", err)
 			}
 		})

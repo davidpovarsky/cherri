@@ -157,7 +157,10 @@ func TestP15T07PerPlatformVersionProduction(t *testing.T) {
 				t.Fatal(err)
 			}
 			actions, _ := root["WFWorkflowActions"].([]any)
-			if len(actions) != 1 {
+			if err := p15M02MainVoidRowsError(actions); err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 2 {
 				t.Fatalf("version checking changed native action count: %d", len(actions))
 			}
 			action := actions[0].(map[string]any)

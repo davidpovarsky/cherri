@@ -31,6 +31,7 @@ struct WorkspaceView: View {
     @State private var actionCatalog: [CherriActionInfo] = []
     @State private var previewActionMetadataJSON: String?
     @State private var isCompiling = false
+    @State private var buildRequestGeneration: UInt64 = 0
     @State private var isSigning = false
     @State private var isImporting = false
     @State private var isApplyingPreviewEdit = false
@@ -42,6 +43,7 @@ struct WorkspaceView: View {
     @State private var showDocumentation = false
 
     var body: some View {
+        let _ = CherriStartupLifecycleObserver.shared?.record(.workspaceBody, documentID: document.startupObservationID)
         VStack(spacing: 0) {
             if horizontalSizeClass == .regular {
                 HStack(spacing: 0) {
@@ -70,6 +72,9 @@ struct WorkspaceView: View {
             }
 
             statusBar
+        }
+        .onAppear {
+            CherriStartupLifecycleObserver.shared?.record(.workspaceAppeared, documentID: document.startupObservationID)
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -149,8 +154,20 @@ struct WorkspaceView: View {
                 diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
             }
         }
-        .task(id: document.text) {
+        .task(id: CherriEditorBuildRequest(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)) {
             guard livePreview, !isImporting, !isApplyingPreviewEdit else { return }
+            // An empty document has no preview to render. Keep editor metadata
+            // available without starting the compiler or WebKit during opening.
+            guard !document.text.isEmpty else {
+                compiled = nil
+                diagnostic = nil
+                diagnostics = []
+                signedURL = nil
+                if actionCatalog.isEmpty {
+                    await refreshActionCatalog()
+                }
+                return
+            }
             try? await Task.sleep(for: .milliseconds(650))
             guard !Task.isCancelled else { return }
             await build(signed: false, liveBuild: true)
@@ -166,31 +183,33 @@ struct WorkspaceView: View {
             text: $document.text,
             diagnostic: diagnostic,
             diagnostics: diagnostics,
-            actions: actionCatalog
+            actions: actionCatalog,
+            startupObservationID: document.startupObservationID
         )
     }
 
     private var previewPane: some View {
         VStack(spacing: 0) {
-            ShortcutPreviewView(
-                plist: compiled?.plist,
-                name: compiled?.name ?? fileDisplayName,
-                actionMetadataJSON: previewActionMetadataJSON,
-                onEdit: { edit in
-                    Task { @MainActor in
-                        handlePreviewEdit(edit)
+            if let compiled {
+                ShortcutPreviewView(
+                    plist: compiled.plist,
+                    name: compiled.name,
+                    actionMetadataJSON: previewActionMetadataJSON,
+                    onEdit: { edit in
+                        Task { @MainActor in
+                            handlePreviewEdit(edit)
+                        }
                     }
-                }
-            )
-            .overlay {
-                if compiled == nil && diagnostic == nil && !isCompiling {
-                    ContentUnavailableView(
-                        "No Preview Yet",
-                        systemImage: "wand.and.stars",
-                        description: Text("Build the Cherri source to render the Shortcut preview.")
-                    )
-                    .allowsHitTesting(false)
-                }
+                )
+            } else {
+                // A placeholder must not instantiate an invisible WKWebView.
+                // The editor remains the same sibling when compiled data arrives.
+                ContentUnavailableView(
+                    "No Preview Yet",
+                    systemImage: "wand.and.stars",
+                    description: Text("Build the Cherri source to render the Shortcut preview.")
+                )
+                .allowsHitTesting(false)
             }
 
             if compiled != nil {
@@ -267,49 +286,59 @@ struct WorkspaceView: View {
 
     @MainActor
     private func build(signed: Bool, liveBuild: Bool = false) async {
-        let source = document.text
-        let requestedName = fileDisplayName
+        guard !Task.isCancelled else { return }
+        buildRequestGeneration += 1
+        let generation = buildRequestGeneration
+        let request = CherriEditorBuildRequest(
+            source: document.text, mode: languageMode.rawValue, name: fileDisplayName
+        )
 
-        if signed {
-            isSigning = true
-        } else {
-            isCompiling = true
-        }
-
+        // Only the current request owns publication and the busy indicator.
+        // Manual builds use the same snapshot boundary as live preview.
+        isSigning = signed
+        isCompiling = !signed
         defer {
-            if signed {
+            if generation == buildRequestGeneration {
                 isSigning = false
-            } else {
                 isCompiling = false
             }
         }
 
         do {
             let result = try await CherriCompiler.compile(
-                source: source,
-                name: requestedName,
-                mode: languageMode.rawValue,
+                source: request.source,
+                name: request.name,
+                mode: request.mode,
                 signed: signed
             )
 
-            if liveBuild && source != document.text {
-                return
-            }
+            guard !Task.isCancelled, generation == buildRequestGeneration,
+                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+            else { return }
 
             compiled = result
             diagnostic = nil
             diagnostics = []
+            signedURL = nil
             await refreshActionCatalog()
 
+            guard !Task.isCancelled, generation == buildRequestGeneration,
+                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+            else { return }
             if let signedData = result.signedShortcut {
                 signedURL = try writeSignedShortcut(signedData, name: result.name)
             }
         } catch let compilerError as CompilationDiagnostic {
-            if liveBuild && source != document.text {
-                return
-            }
+            guard !Task.isCancelled, generation == buildRequestGeneration,
+                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+            else { return }
+            let analysis = try? await CherriCompiler.analyze(source: request.source)
+            guard !Task.isCancelled, generation == buildRequestGeneration,
+                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+            else { return }
+
             diagnostic = compilerError
-            if let analysis = try? await CherriCompiler.analyze(source: source), !analysis.valid && !analysis.diagnostics.isEmpty {
+            if let analysis, !analysis.valid && !analysis.diagnostics.isEmpty {
                 diagnostics = analysis.diagnostics.map {
                     let startLine = $0.range.start.line + 1
                     let startCol = $0.range.start.character + 1
@@ -330,6 +359,9 @@ struct WorkspaceView: View {
             }
             signedURL = nil
         } catch {
+            guard !Task.isCancelled, generation == buildRequestGeneration,
+                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+            else { return }
             let diag = CompilationDiagnostic(
                 message: error.localizedDescription,
                 line: 1,

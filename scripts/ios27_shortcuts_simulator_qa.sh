@@ -51,6 +51,7 @@ SOURCE_SHA="$(git rev-parse HEAD 2>/dev/null || echo "unknown")"
 HTTP_PROBE_PID=""
 HTTP_PROBE_STARTED="false"
 HTTP_PROBE_DIAGNOSTIC_RC=0
+POST_TEST_INSPECTION_RC=0
 http_probe() {
   # Only fixed, reviewed fixture IDs may select an endpoint implementation.
   case "$TARGET_FIXTURE_ID" in
@@ -632,6 +633,30 @@ TARGET_SOURCE_FILE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${TARGET_SOU
 LEGACY_COUNTERPART_SOURCE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${LEGACY_COUNTERPART_ID}.cherri"
 
 # ---------------------------------------------------------------------------
+qa_acquisition_checkpoint() {
+  local stage="$1"
+  local phase_exit="${2:-}"
+  local args=(
+    checkpoint --repo "$ROOT_DIR" --root "$ARTIFACT_DIR"
+    --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID"
+    --stage "$stage" --require-runtime "$REQUIRE_RUNTIME"
+    --gates "$GATE_RUNNER_AVAILABLE" "$GATE_SIMULATOR_BOOTED"
+    "$GATE_SHORTCUTS_APP_INSTALLED" "$GATE_SHORTCUTS_LAUNCHED"
+    "$GATE_EDITOR_OPENED" "$GATE_FILE_IMPORT_ATTEMPTED"
+    "$GATE_COMPILER_ARTIFACT_IMPORTED" "$GATE_SHORTCUT_EXISTS_IN_LIBRARY"
+    "$GATE_ACTION_EDITOR_CAPTURED" "$GATE_SHORTCUT_RUN_ATTEMPTED"
+    "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED"
+    "$GATE_TRACE_CAPTURED" "$GATE_PHYSICAL_DEVICE_TESTED"
+  )
+  if [ "$stage" != "COMPILED" ]; then
+    args+=(--udid "$UDID" --nonce "${EXEC_RUN_NONCE:-}")
+  fi
+  if [ "$stage" = "TEST02_COMPLETED" ]; then
+    args+=(--test-exit-code "$phase_exit")
+  fi
+  python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" "${args[@]}"
+}
+
 # Phase 0: Build Cherri CLI & Compile Synthetic Sanitized Fixtures
 # ---------------------------------------------------------------------------
 echo "=== Phase 0: Building Cherri & Compiling Synthetic Fixtures ==="
@@ -1032,6 +1057,8 @@ esac
 
 
 # ---------------------------------------------------------------------------
+qa_acquisition_checkpoint COMPILED || exit 2
+
 # Phase 1: Preflight & Runner / Simulator Discovery
 # ---------------------------------------------------------------------------
 echo "=== Phase 1: Runner & Simulator Preflight ==="
@@ -2020,12 +2047,15 @@ PY
     # Xcode must currently advertise this same owned simulator as an eligible
     # destination. One non-reboot readiness refresh and test02 share the original
     # 900-second phase; the pre-issued import and handshake are not repeated.
+    # This persisted monotonic origin precedes the unchanged 900-second test phase.
+    qa_acquisition_checkpoint TEST02_STARTED || exit 2
     python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/xcode_destination_readiness.py" \
       --repo "$ROOT_DIR" --scratch "$QA_SCRATCH_DIR" --artifacts "$ARTIFACT_DIR" \
       --udid "$UDID" --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" \
       --fixture-id "$TARGET_FIXTURE_ID"
     XCODEBUILD_TEST_RC=$?
     echo "test02 destination/test phase exit code: $XCODEBUILD_TEST_RC"
+    qa_acquisition_checkpoint TEST02_COMPLETED "$XCODEBUILD_TEST_RC" || exit 2
     if [ "$XCODEBUILD_TEST_RC" -ne 0 ] && [ -f "$ARTIFACT_DIR/builds/xcodebuild-test.log" ]; then
       grep -Ev "DVTAssertions|nativeArchitecture|Apple Watch|SimDevice :|Object:[[:space:]]+<DVTiPhoneSimulator|Method:[[:space:]]+-nativeArchitecture|Thread:[[:space:]]+<_NSMainThread|feedbackassistant\.apple\.com|^[[:space:]]*\)[[:space:]]*$" "$ARTIFACT_DIR/builds/xcodebuild-test.log" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | tail -n 35 || true
     fi
@@ -2081,12 +2111,13 @@ PY
     PART1_JSON="$ARTIFACT_DIR/tests/xcresult-part1.json"
     PART2_JSON="$ARTIFACT_DIR/tests/xcresult-part2.json"
     rm -f "$PART1_JSON" "$PART2_JSON"
-    if [ -d "$XCRESULT_PART1_PATH" ]; then
-      xcrun xcresulttool get test-results summary --path "$XCRESULT_PART1_PATH" > "$PART1_JSON" 2>/dev/null || true
-    fi
-    if [ -d "$XCRESULT_PATH" ]; then
-      xcrun xcresulttool get test-results summary --path "$XCRESULT_PATH" > "$PART2_JSON" 2>/dev/null || true
-    fi
+    # Metadata collection shares the original phase deadline; each original
+    # stdout/stderr remains private and hash-bound even after a failed query.
+    python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" collect \
+      --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
+      --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --udid "$UDID" \
+      --scratch "$QA_SCRATCH_DIR"
+    POST_TEST_INSPECTION_RC=$?
     python3 - "$ARTIFACT_DIR/tests/xcresult-summary.json" "$PART1_JSON" "$PART2_JSON" "$UDID" "$MASKED_UDID" <<'PY'
 import json, os, sys
 out_path, p1_path, p2_path, udid, masked = sys.argv[1:6]
@@ -2121,7 +2152,9 @@ PY
     rm -f "$ARTIFACT_DIR/tests/xcodebuild-test.log"
 
     # Extract receiver callback events from app data container (or Part1 snapshot if Simulator resprung)
-    RECEIVER_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
+    RECEIVER_DATA_DIR="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" receiver-path \
+      --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
+      --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" 2>/dev/null || true)"
     if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
       cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
       GATE_CALLBACK_CAPTURED="PASS"
@@ -2129,7 +2162,7 @@ PY
       cp "$ARTIFACT_DIR/runtime/callback-events-part1.json" "$ARTIFACT_DIR/runtime/callback-events.json"
       GATE_CALLBACK_CAPTURED="PASS"
     else
-      echo "[]" > "$ARTIFACT_DIR/runtime/callback-events.json"
+      # No native callback file was acquired. Preserve absence, not a fabricated empty event stream.
       GATE_CALLBACK_CAPTURED="FAIL_UI"
     fi
     rm -f "$ARTIFACT_DIR/runtime/callback-events-part1.json"
@@ -2675,8 +2708,15 @@ PY
   fi
 fi
 
-# Remove compiled binary, raw sim log, xcresult bundles, and raw .shortcut build intermediates before artifact upload
-rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
+# Keep private build originals for hash-bound receipt validation. The existing
+# explicit publisher quarantines them; no build/raw path is uploaded.
+rm -rf "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
+
+# Bind the actual current invocation before the normal assertion emitter.
+# Storage cross-run may have advanced to its reader nonce after test02.
+python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" output-context \
+  --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
+  --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --nonce "${EXEC_RUN_NONCE:-}" || exit 2
 
 # Write output-assertions.json and runtime-trace.jsonl
 python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
@@ -2841,24 +2881,11 @@ fi
 # Legacy pattern scan only; raster safety is NOT established by this scan.
 # The separate publication gate quarantines all raster/archives/raw inputs.
 PRIVACY_SCAN_OUT="$(python3 - "$ARTIFACT_DIR" "$UDID" <<'PY'
-import json, os, re, sys
-
-root, raw_udid = sys.argv[1], sys.argv[2]
-forbidden = re.compile(rb"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,})")
-violations = []
-
-for dirpath, _, filenames in os.walk(root):
-    for fn in filenames:
-        p = os.path.join(dirpath, fn)
-        with open(p, "rb") as f:
-            data = f.read()
-        m = forbidden.search(data)
-        if m:
-            violations.append(f"{fn}: matched-forbidden-regex (len={len(m.group(0))})")
-        if raw_udid and len(raw_udid) >= 36 and raw_udid.encode("utf-8") in data:
-            violations.append(f"{fn}: unmasked simulator UDID present")
-
-print(json.dumps({"passed": len(violations) == 0, "violations": violations}))
+import json, os, sys
+sys.path.insert(0, os.path.join(os.getcwd(), "tools", "shortcuts-simulator-qa"))
+from prepare_public_artifacts import scan_public_privacy
+print(json.dumps(scan_public_privacy(sys.argv[1], sys.argv[2],
+                                    os.environ.get("CHERRI_SIGNING_SERVER", "").strip())))
 PY
 )"
 
@@ -2951,24 +2978,14 @@ elif gates["COMPILER_ARTIFACT_IMPORTED"] == "BLOCKED_SIGNING":
 else:
     readiness = "PARTIAL_READY"
 
-# Pattern scan including metadata; this is not pixel inspection or redaction.
-forbidden = re.compile(rb"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,})")
-custom_server = os.environ.get("CHERRI_SIGNING_SERVER", "").strip()
-privacy_violations = []
-for dirpath, _, filenames in os.walk(artifact_dir):
-    for fn in filenames:
-        p = os.path.join(dirpath, fn)
-        with open(p, "rb") as f:
-            data = f.read()
-        m = forbidden.search(data)
-        if m:
-            privacy_violations.append(f"{fn}: matched-forbidden-regex (len={len(m.group(0))})")
-        if raw_udid and len(raw_udid) >= 36 and raw_udid.encode("utf-8") in data:
-            privacy_violations.append(f"{fn}: unmasked simulator UDID present")
-        if custom_server and "sign.shortcuty.app" not in custom_server and custom_server.encode("utf-8") in data:
-            privacy_violations.append(f"{fn}: custom signing URL leaked into artifact")
-
-privacy_passed = (len(privacy_violations) == 0)
+# The same explicit text boundary is used by the independent publisher.
+# Raw original logs remain quarantined and available for exact receipt checks.
+sys.path.insert(0, os.path.join(os.getcwd(), "tools", "shortcuts-simulator-qa"))
+from prepare_public_artifacts import scan_public_privacy
+privacy = scan_public_privacy(artifact_dir, raw_udid,
+                             os.environ.get("CHERRI_SIGNING_SERVER", "").strip())
+privacy_violations = privacy["violations"]
+privacy_passed = privacy["passed"]
 inspector_status = "NOT_RUN"
 inspector_path = os.path.join(artifact_dir, "editor", "editor-comparison.json")
 if os.path.exists(inspector_path):
@@ -2978,6 +2995,22 @@ if os.path.exists(inspector_path):
         inspector_status = "NEEDS_REVIEW"
 if readiness == "READY_SIMULATOR_VERIFIED" and inspector_status != "PASS":
     readiness = "RUNTIME_VERIFIED_EDITOR_NEEDS_REVIEW"
+
+inspection_status = "NOT_RUN"
+inspection_path = os.path.join(artifact_dir, "runtime", "post-test-inspection.json")
+checkpoint_path = os.path.join(artifact_dir, "builds", "qa-acquisition-test02_started.json")
+if os.path.exists(checkpoint_path):
+    inspection_status = "INCOMPLETE"
+    try:
+        from qa_terminal_receipts import context, unique_json, validate_inspection
+        expected = context(artifact_dir, sha, run_id, assertions.get("targetFixtureId", ""))
+        inspection = unique_json(open(inspection_path, "rb").read())
+        validate_inspection(inspection, artifact_dir, expected)
+        inspection_status = inspection["status"]
+    except (OSError, ValueError, TypeError, KeyError):
+        inspection_status = "REJECTED"
+    if inspection_status != "COLLECTED" and readiness.startswith(("READY_", "RUNTIME_VERIFIED_")):
+        readiness = "RUNTIME_VERIFIED_COLLECTION_INCOMPLETE"
 
 summary = {
     "schemaVersion": "1.4",
@@ -2991,11 +3024,13 @@ summary = {
     "runtimeContractVerified": assertions.get("runtimeContractVerified") is True,
     "releaseReadiness": readiness,
     "privacyGatePassed": privacy_passed,
-    "privacyScope": "SYNTHETIC_TEXT_AND_BYTE_PATTERNS_ONLY",
+    "privacyScope": "EXPLICIT_SYNTHETIC_TEXT_PATHS_ONLY",
     "pixelRedactionVerified": False,
     "editorInspectorStatus": inspector_status,
     "privacyViolations": privacy_violations,
     "gates": gates,
+    "postTestInspectionStatus": inspection_status,
+    "acquisitionIncomplete": inspection_status in ("INCOMPLETE", "REJECTED"),
 }
 with open(os.path.join(artifact_dir, "summary.json"), "w", encoding="utf-8") as f:
     json.dump(summary, f, indent=2)
@@ -3061,4 +3096,10 @@ fi
 if [ "$HTTP_PROBE_DIAGNOSTIC_RC" -ne 0 ]; then
   echo "ERROR: bounded HTTP diagnostic evidence was incomplete or rejected" >&2
   exit "$HTTP_PROBE_DIAGNOSTIC_RC"
+fi
+
+# Required acquisition data is separate from any independently verified callback.
+if [ "$POST_TEST_INSPECTION_RC" -ne 0 ]; then
+  echo "ERROR: post-test metadata collection was incomplete; originals are retained" >&2
+  exit "$POST_TEST_INSPECTION_RC"
 fi

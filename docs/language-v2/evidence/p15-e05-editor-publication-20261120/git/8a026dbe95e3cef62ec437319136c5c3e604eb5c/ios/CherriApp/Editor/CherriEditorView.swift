@@ -1,0 +1,524 @@
+import CodeEditorView
+import Foundation
+import LanguageSupport
+import SwiftUI
+
+struct CherriEditorView: View {
+    @Binding var text: String
+    let diagnostic: CompilationDiagnostic?
+    var diagnostics: [CompilationDiagnostic] = []
+    let actions: [CherriActionInfo]
+
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var editPosition = CodeEditor.Position()
+    @State private var messages: Set<TextLocated<Message>> = []
+    @State private var showActionPalette = false
+    @State private var pendingPaletteAction: CherriActionInfo?
+    @State private var paletteInsertionRange: NSRange?
+    @State private var paletteCompletionContext: CompletionContext?
+    @State private var paletteInsertionSource: String?
+    @State private var contextualCompletions: [CherriCompletionItem] = []
+    @State private var completedRequest: CherriCompletionRequest?
+    @State private var hoverText: String?
+    @State private var signatureText: String?
+    @State private var definitionText: String?
+    @State private var showRenameAlert = false
+    @State private var renameNewName = ""
+    @State private var renameTargetPosition: (line: Int, column: Int)?
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if !diagnostics.isEmpty {
+                diagnosticsBanner
+            }
+            if let hover = hoverText {
+                HStack {
+                    Text(hover)
+                        .font(.caption)
+                        .accessibilityIdentifier("hoverContent")
+                    Spacer()
+                    Button("Dismiss") { hoverText = nil }
+                        .font(.caption2)
+                        .accessibilityIdentifier("dismissHoverButton")
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.blue.opacity(0.12))
+            }
+            if let sig = signatureText {
+                HStack {
+                    Text(sig)
+                        .font(.caption)
+                        .accessibilityIdentifier("signatureContent")
+                    Spacer()
+                    Button("Dismiss") { signatureText = nil }
+                        .font(.caption2)
+                        .accessibilityIdentifier("dismissSignatureButton")
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.purple.opacity(0.12))
+            }
+            if let def = definitionText {
+                HStack {
+                    Text(def)
+                        .font(.caption)
+                        .accessibilityIdentifier("definitionContent")
+                    Spacer()
+                    Button("Dismiss") { definitionText = nil }
+                        .font(.caption2)
+                        .accessibilityIdentifier("dismissDefinitionButton")
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.green.opacity(0.12))
+            }
+
+            CodeEditor(
+                text: $text,
+                position: $editPosition,
+                messages: $messages,
+                language: .cherri(),
+                layout: CodeEditor.LayoutConfiguration(showMinimap: false, wrapText: true)
+            )
+            .accessibilityIdentifier("cherriCodeEditor")
+            .environment(
+                \.codeEditorTheme,
+                colorScheme == .dark ? Theme.defaultDark : Theme.defaultLight
+            )
+
+            Divider()
+            completionBar
+        }
+        .task(id: diagnostic?.id) {
+            refreshDiagnostic()
+        }
+        .task(id: diagnostics.map(\.id)) {
+            refreshDiagnostic()
+        }
+        .task(id: completionRequest) {
+            await refreshContextualCompletions(for: completionRequest)
+        }
+        .sheet(isPresented: $showActionPalette, onDismiss: commitPaletteSelection) {
+            ActionPaletteView(actions: actions) { action in
+                pendingPaletteAction = action
+            }
+        }
+        .alert("Rename Symbol", isPresented: $showRenameAlert) {
+            TextField("New Name", text: $renameNewName)
+                .accessibilityIdentifier("renameTextField")
+            Button("Rename") {
+                if let pos = renameTargetPosition, !renameNewName.isEmpty {
+                    Task {
+                        if let resp = try? await CherriCompiler.rename(source: text, line: pos.line, column: pos.column, newName: renameNewName), resp.ok, let newSource = resp.source {
+                            text = newSource
+                        }
+                    }
+                }
+            }
+            .accessibilityIdentifier("confirmRenameButton")
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private var diagnosticsBanner: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            ForEach(Array(diagnostics.prefix(4).enumerated()), id: \.offset) { idx, diag in
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.red)
+                        .font(.caption2)
+                    Text("L\(diag.line):C\(diag.column) (len:\(diag.length ?? 1)): \(diag.message)")
+                        .font(.caption2)
+                        .lineLimit(1)
+                        .accessibilityIdentifier("diagnosticItem_\(idx)")
+                }
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("diagnosticsBanner")
+    }
+
+    private var completionBar: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Button {
+                        paletteInsertionRange = editPosition.selections.first
+                        paletteCompletionContext = completionContext
+                        paletteInsertionSource = text
+                        pendingPaletteAction = nil
+                        showActionPalette = true
+                    } label: {
+                        Label("Actions", systemImage: "wand.and.stars")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .accessibilityIdentifier("actionsButton")
+                    .buttonStyle(.borderless)
+                    .disabled(actions.isEmpty)
+
+                    Divider()
+                        .frame(height: 20)
+
+                    Button {
+                        let (line, col) = effectivePosition()
+                        Task {
+                            if let resp = try? await CherriCompiler.hover(source: text, line: line, column: col), let contents = resp.contents {
+                                hoverText = contents
+                            } else {
+                                hoverText = "No hover info at line \(line):\(col)"
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "info.circle")
+                    }
+                    .accessibilityIdentifier("hoverButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        let (line, col) = effectiveSignaturePosition()
+                        Task {
+                            if let resp = try? await CherriCompiler.signatureHelp(source: text, line: line, column: col), let label = resp.label {
+                                signatureText = label
+                            } else {
+                                signatureText = "No signature at line \(line):\(col)"
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "function")
+                    }
+                    .accessibilityIdentifier("signatureButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        let (line, col) = effectivePosition()
+                        Task {
+                            if let resp = try? await CherriCompiler.definition(source: text, line: line, column: col), let range = resp.range {
+                                definitionText = "Definition at \(range.start.line + 1):\(range.start.character + 1)"
+                            } else {
+                                definitionText = "No definition found"
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.forward.app")
+                    }
+                    .accessibilityIdentifier("definitionButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        renameTargetPosition = effectivePosition()
+                        renameNewName = ""
+                        showRenameAlert = true
+                    } label: {
+                        Image(systemName: "pencil.and.outline")
+                    }
+                    .accessibilityIdentifier("renameButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        Task {
+                            if let resp = try? await CherriCompiler.editSourceNode(source: text, actionIndex: 0, paramLabel: "text", newExpr: "\"VisualParamUpdated\""), resp.ok, let newSource = resp.source {
+                                text = newSource
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                    }
+                    .accessibilityIdentifier("visualEditButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        text = ""
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .accessibilityIdentifier("clearEditorButton")
+                    .buttonStyle(.borderless)
+
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+
+            if !currentContextualCompletions.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(currentContextualCompletions.prefix(8)) { item in
+                            Button {
+                                insertItem(item, replacing: completionContext?.range)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(item.label)
+                                        .font(.system(.caption, design: .monospaced, weight: .semibold))
+                                    if let detail = item.detail, !detail.isEmpty {
+                                        Text(detail)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 5)
+                            }
+                            .accessibilityIdentifier("completionItem_\(item.label)")
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("contextualCompletionsList")
+            } else if !completionSuggestions.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(completionSuggestions) { action in
+                            Button {
+                                insert(action: action, replacing: completionContext?.range)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(action.name)
+                                        .font(.system(.caption, design: .monospaced, weight: .semibold))
+                                    if let title = action.title, !title.isEmpty, title != action.name {
+                                        Text(title)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 5)
+                            }
+                            .accessibilityIdentifier("suggestionItem_\(action.name)")
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("suggestionsList")
+            }
+
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(.bar)
+    }
+
+    private struct CompletionContext {
+        let range: NSRange
+        let prefix: String
+    }
+
+    private var completionContext: CompletionContext? {
+        guard let selection = editPosition.selections.first, selection.length == 0 else { return nil }
+
+        let source = text as NSString
+        let cursor = min(max(selection.location, 0), source.length)
+        var start = cursor
+
+        while start > 0 && isIdentifierUnit(source.character(at: start - 1)) {
+            start -= 1
+        }
+
+        guard start < cursor else { return nil }
+        if start > 0 {
+            let previous = source.character(at: start - 1)
+            if previous == 35 || previous == 64 || previous == 34 || previous == 39 { // # @ " '
+                return nil
+            }
+        }
+
+        let range = NSRange(location: start, length: cursor - start)
+        return CompletionContext(range: range, prefix: source.substring(with: range))
+    }
+
+    private var completionSuggestions: [CherriActionInfo] {
+        guard let context = completionContext else { return [] }
+        let prefix = context.prefix.lowercased()
+        guard !prefix.isEmpty else { return [] }
+
+        return Array(
+            actions.lazy
+                .filter { $0.name.lowercased().hasPrefix(prefix) }
+                .prefix(6)
+        )
+    }
+
+    private func isIdentifierUnit(_ value: unichar) -> Bool {
+        guard let scalar = UnicodeScalar(value) else { return false }
+        return scalar == "_" || CharacterSet.letters.contains(scalar) || CharacterSet.decimalDigits.contains(scalar)
+    }
+
+    private func commitPaletteSelection() {
+        guard let action = pendingPaletteAction else {
+            paletteInsertionRange = nil
+            paletteCompletionContext = nil
+            paletteInsertionSource = nil
+            return
+        }
+
+        let insertionRange = paletteInsertionRange
+        let completion = paletteCompletionContext
+        let capturedSource = paletteInsertionSource
+        pendingPaletteAction = nil
+        paletteInsertionRange = nil
+        paletteCompletionContext = nil
+        paletteInsertionSource = nil
+
+        // Wait until the sheet has fully left the hierarchy before changing the
+        // CodeEditor binding. This avoids updating its underlying UITextView while
+        // UIKit is still completing the presentation transition.
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(300))
+            // The sheet may outlive the source it was opened for. Never apply an
+            // old UTF-16 range to a changed document or replace an unrelated word.
+            guard let capturedSource, text.utf16.elementsEqual(capturedSource.utf16) else { return }
+            let replacementRange: NSRange?
+            if let completion, action.name.lowercased().hasPrefix(completion.prefix.lowercased()) {
+                replacementRange = completion.range
+            } else {
+                replacementRange = insertionRange
+            }
+            insert(action: action, replacing: replacementRange)
+        }
+    }
+
+    private func insert(action: CherriActionInfo, replacing requestedRange: NSRange?) {
+        let source = text as NSString
+        let selection = editPosition.selections.first ?? NSRange(location: source.length, length: 0)
+        let candidate = requestedRange ?? selection
+        let range: NSRange
+
+        if candidate.location >= 0 && candidate.location + candidate.length <= source.length {
+            range = candidate
+        } else {
+            range = NSRange(location: source.length, length: 0)
+        }
+
+        // Deliberately update only the text binding. CodeEditorView owns its UIKit
+        // selection lifecycle on iOS; programmatically replacing CodeEditor.Position
+        // immediately after a text mutation can hand UITextView a range from the old
+        // storage and crash the host process. The existing selection remains valid
+        // because insertion only grows the document.
+        text = source.replacingCharacters(in: range, with: action.insertionSnippet)
+    }
+
+    private func insertItem(_ item: CherriCompletionItem, replacing requestedRange: NSRange?) {
+        let source = text as NSString
+        let selection = editPosition.selections.first ?? NSRange(location: source.length, length: 0)
+        let candidate = requestedRange ?? selection
+        let range: NSRange
+
+        if candidate.location >= 0 && candidate.location + candidate.length <= source.length {
+            range = candidate
+        } else {
+            range = NSRange(location: source.length, length: 0)
+        }
+
+        let replacement = item.insertText ?? item.label
+        text = source.replacingCharacters(in: range, with: replacement)
+    }
+
+    private func effectivePosition() -> (line: Int, column: Int) {
+        let ns = text as NSString
+        guard ns.length > 0 else { return (1, 1) }
+
+        if let sel = editPosition.selections.first {
+            let loc = min(max(sel.location, 0), ns.length)
+            if loc < ns.length && isIdentifierUnit(ns.character(at: loc)) {
+                return lineAndColumn(at: loc)
+            }
+            if loc > 0 && isIdentifierUnit(ns.character(at: loc - 1)) {
+                return lineAndColumn(at: loc - 1)
+            }
+            for i in stride(from: min(loc, ns.length - 1), through: 0, by: -1) {
+                if isIdentifierUnit(ns.character(at: i)) {
+                    return lineAndColumn(at: i)
+                }
+            }
+        }
+        for i in stride(from: ns.length - 1, through: 0, by: -1) {
+            if isIdentifierUnit(ns.character(at: i)) {
+                return lineAndColumn(at: i)
+            }
+        }
+        return (1, 1)
+    }
+
+    private func effectiveSignaturePosition() -> (line: Int, column: Int) {
+        let ns = text as NSString
+        guard ns.length > 0 else { return (1, 1) }
+
+        // Find last '(' in text to target the enclosing action/function call
+        for i in stride(from: ns.length - 1, through: 0, by: -1) {
+            if ns.character(at: i) == 40 { // '('
+                return lineAndColumn(at: min(i + 1, ns.length))
+            }
+        }
+        return effectivePosition()
+    }
+
+    private func lineAndColumn(at offset: Int) -> (line: Int, column: Int) {
+        let ns = text as NSString
+        let bounded = min(max(offset, 0), ns.length)
+        var line = 1
+        var col = 1
+        for i in 0..<bounded {
+            if ns.character(at: i) == 10 { // newline
+                line += 1
+                col = 1
+            } else {
+                col += 1
+            }
+        }
+        return (line, col)
+    }
+
+    private var completionRequest: CherriCompletionRequest {
+        CherriCompletionRequest(source: text, selection: editPosition.selections.first)
+    }
+
+    private var currentContextualCompletions: [CherriCompletionItem] {
+        guard completedRequest == completionRequest else { return [] }
+        return completionRequest.matchingItems(contextualCompletions, prefix: completionContext?.prefix)
+    }
+
+    private func refreshContextualCompletions(for request: CherriCompletionRequest) async {
+        guard let position = request.position else {
+            if request == completionRequest {
+                contextualCompletions = []
+                completedRequest = request
+            }
+            return
+        }
+        let items = (try? await CherriCompiler.complete(
+            source: request.source, line: position.line, column: position.column
+        )) ?? []
+        // Source edits can precede selection notifications. Both invalidate the
+        // old request; a cancelled bridge call cannot publish stale candidates.
+        guard !Task.isCancelled, request == completionRequest else { return }
+        contextualCompletions = items
+        completedRequest = request
+    }
+
+    private func refreshDiagnostic() {
+        messages.removeAll()
+        let allDiags = diagnostics.isEmpty ? (diagnostic.map { [$0] } ?? []) : diagnostics
+        for diag in allDiags {
+            let msgLength = max(1, diag.length ?? 1)
+            messages.insert(
+                TextLocated(
+                    location: TextLocation(
+                        oneBasedLine: max(diag.line, 1),
+                        column: max(diag.column, 1)
+                    ),
+                    entity: Message(
+                        category: .error,
+                        length: msgLength,
+                        summary: "Error",
+                        description: AttributedString(diag.message)
+                    )
+                )
+            )
+        }
+    }
+}

@@ -17,7 +17,10 @@ func TestP15UnaryNumberLiteralNative(t *testing.T) {
 	} {
 		t.Run(tc.expression, func(t *testing.T) {
 			actions := compileDebugFixture(t, "let value=number("+tc.expression+")\nwait(value)", false)
-			if len(actions) != 2 || actions[0].WFWorkflowActionIdentifier != nativeID || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.delay" {
+			if err := p15M02MainVoidDebugError(actions); err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 3 || actions[0].WFWorkflowActionIdentifier != nativeID || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.delay" {
 				t.Fatalf("literal negation added a runtime producer: %#v", actions)
 			}
 			value := actions[0].WFWorkflowActionParameters[nativeKey]
@@ -39,7 +42,10 @@ func TestP15UnaryNumberLiteralNative(t *testing.T) {
 	}
 	// A runtime operand still requires the existing Math producer.
 	actions := compileDebugFixture(t, "let original=number(\"3\")\nlet negative=-original\nwait(negative)", false)
-	if len(actions) != 3 || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.math" {
+	if err := p15M02MainVoidDebugError(actions); err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 4 || actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.math" {
 		t.Fatalf("runtime negation path changed: %#v", actions)
 	}
 	operand := actions[1].WFWorkflowActionParameters
@@ -63,7 +69,14 @@ func TestP15UnaryQuantityLiteralNative(t *testing.T) {
 			source = "#include 'actions/calendar'\n" + source
 		}
 		actions := compileDebugFixture(t, source, legacy)
-		if len(actions) != 1 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.adjustdate" {
+		count := 1
+		if !legacy {
+			count++
+			if err := p15M02MainVoidDebugError(actions); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if len(actions) != count || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.adjustdate" {
 			t.Fatalf("scalar duration gained a Math producer: %#v", actions)
 		}
 		quantity := debugParamMap(actions[0].WFWorkflowActionParameters["WFDuration"])

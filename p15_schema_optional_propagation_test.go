@@ -120,8 +120,11 @@ func TestP15SchemaOptionalDeclarationPropagation(t *testing.T) {
 		t.Fatal(err)
 	}
 	actions, ok := workflow["WFWorkflowActions"].([]any)
-	if !ok || len(actions) != 1 {
+	if !ok || len(actions) != 2 {
 		t.Fatalf("actual CLI emitted the wrong action cardinality: %+v", workflow)
+	}
+	if err := p15M02MainVoidRowsError(actions); err != nil {
+		t.Fatal(err)
 	}
 	nativeAction := actions[0].(map[string]any)
 	params, ok := nativeAction["WFWorkflowActionParameters"].(map[string]any)
