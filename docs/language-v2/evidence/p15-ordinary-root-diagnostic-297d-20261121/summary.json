@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "taskId": "1220737847318371",
+  "verifiedAtUtc": "2026-11-21T20:55:19.947657+00:00",
+  "sourceSha": "297d5a657885ec2144f7366be1bcf721a0032a47",
+  "inventoryCount": 1089,
+  "includedCount": 1074,
+  "excludedCount": 15,
+  "originalInventorySha256": "3d63746e4c53a4f0a1c1f42504bb073b7672e9d2b22f6e521c3c8dae195f4793",
+  "goSha256": "7e9ff51221559c38de6110cc22a60a1b1cc92fb26c1b4769f9244a5a49a6477f",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "goEventCount": 7821,
+  "allNamedTerminalCounts": {
+    "pass": 1725,
+    "skip": 3,
+    "fail": 7
+  },
+  "parentCounts": {
+    "pass": 560,
+    "fail": 3,
+    "skip": 3,
+    "incomplete": 1
+  },
+  "startedParentCount": 567,
+  "unstartedParentCount": 507,
+  "incompleteParents": [
+    "TestP15BRG07DirectReferenceKindsRoundTrip"
+  ],
+  "failedParents": [
+    "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer",
+    "TestP15CanonicalBehaviorSourcePropagation",
+    "TestP15V02ImportedScopeIdentity"
+  ],
+  "skippedParents": [
+    "TestCherri",
+    "TestP10R10CorpusMeasure",
+    "TestP11_WIRE_01_Fresh38x2NativeActionWire"
+  ],
+  "excludedStarted": [],
+  "unexpectedParents": [],
+  "duplicateRuns": [],
+  "duplicateTerminals": [],
+  "orphanTerminals": [],
+  "foreignPackages": [],
+  "jsonParseErrors": [],
+  "allEventTimesWithinObservedProcess": true,
+  "firstEventUtc": "2026-11-21T20:29:10.294646+00:00",
+  "lastEventUtc": "2026-11-21T20:44:09.290914+00:00",
+  "packageEvents": [
+    {
+      "Time": "2026-11-21T22:29:10.2946468+02:00",
+      "Action": "start",
+      "Package": "github.com/electrikmilk/cherri"
+    },
+    {
+      "Time": "2026-11-21T22:44:09.2909141+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Elapsed": 900.297
+    }
+  ],
+  "exactScopeVerified": true,
+  "sourceUnchangedAndClean": true,
+  "singleActualAttempt": true,
+  "diagnosticDefinitionOfDoneMet": true,
+  "testSuitePassed": false,
+  "formalAcceptanceGranted": false,
+  "closureDecisionOwner": "/root",
+  "process": {
+    "sourceSha": "297d5a657885ec2144f7366be1bcf721a0032a47",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=15m",
+      ".",
+      "-run",
+      "^Test",
+      "-skip",
+      "^(TestP15RP42ExtractedInstallPublicCLI|TestP15RP42MigrationDocumentedFlags|TestP15RP44ExtractedCapabilitiesRejection|TestP15RP44InstalledDocsIdentity|TestP15RP44ExtractedCacheAndBundleSelection|TestP15RP44GitIndexDocsIntegrity|TestP15RP44ExtractedCompatibilityConsumer|TestP15RP45InstalledBinaryOwnership|TestP15RP45RuntimePackageOwnership|TestP15RP45PackageIgnoresGitReplacements|TestP15RP45IdentityValidationOrder|TestP15RP45ExtractedInstallAndRollback|TestP15RP45ExtractedRuntimePair|TestP15RP45GitIndexSourceIntegrity|TestP15RP45LockAcquisitionSignals)$"
+    ],
+    "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-ordinary-root-diagnostic-297d5a65-20261121",
+    "sourceCleanBefore": true,
+    "scopeSha256": "62ed2a42d4019473ea177419a91fcf2cd99f8c91ef6aa0c362feea5ae5f16ca0",
+    "reservedAtUtc": "2026-11-21T20:28:29.871924+00:00",
+    "testTimeoutSeconds": 900,
+    "processTimeoutSeconds": 1080,
+    "freeBytesBefore": 12296507392,
+    "pid": 20488,
+    "startedAtUtc": "2026-11-21T20:28:29.886307+00:00",
+    "finishedAtUtc": "2026-11-21T20:44:10.265302+00:00",
+    "elapsedSeconds": 941.703,
+    "exitCode": 1,
+    "outerTimedOut": false,
+    "ownedProcessKill": null,
+    "sourceShaAfter": "297d5a657885ec2144f7366be1bcf721a0032a47",
+    "sourceCleanAfter": true,
+    "sourceStatusAfter": "",
+    "freeBytesAfter": 8043122688,
+    "goBytes": 1829878,
+    "goSha256": "7e9ff51221559c38de6110cc22a60a1b1cc92fb26c1b4769f9244a5a49a6477f",
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "events": 7821,
+    "parseErrorCount": 0,
+    "includedCount": 1074,
+    "excludedCount": 15,
+    "startedParentCount": 567,
+    "terminalParentCount": 566,
+    "parentCounts": {
+      "pass": 560,
+      "skip": 3,
+      "fail": 3
+    },
+    "unstartedParentCount": 507,
+    "incompleteParents": [
+      "TestP15BRG07DirectReferenceKindsRoundTrip"
+    ],
+    "unexpectedParents": [],
+    "excludedStarted": [],
+    "failedParents": [
+      "TestP10_B1_B2_JsonRequest_DynamicAndLiteralContract_And_LocalEchoServer",
+      "TestP15V02ImportedScopeIdentity",
+      "TestP15CanonicalBehaviorSourcePropagation"
+    ],
+    "packageEvents": [
+      {
+        "Time": "2026-11-21T22:29:10.2946468+02:00",
+        "Action": "start",
+        "Package": "github.com/electrikmilk/cherri"
+      },
+      {
+        "Time": "2026-11-21T22:44:09.2909141+02:00",
+        "Action": "fail",
+        "Package": "github.com/electrikmilk/cherri",
+        "Elapsed": 900.297
+      }
+    ],
+    "formalAcceptanceGranted": false
+  },
+  "fullOriginalArchive": {
+    "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-continuation-evidence-20261119\\r6-ordinary-root-diagnostic-297d5a65-20261121\\full-original-evidence.zip",
+    "bytes": 231727,
+    "sha256": "da8fb77e2850822a76279a655c01c2cccfdf4a7773b70f9c524d424121b0e724"
+  },
+  "metadataArchiveSha256": "0bcdac6fcf7279049d0833246e957c68eea5b1ea3c1a235ebe4ca1cf2eb7c8c9",
+  "metadataArchiveBytes": 107905,
+  "fullOriginalGoStreamRetainedOnHost": true,
+  "fullOriginalGoStreamIncludedInPublicMetadataArchive": false
+}
