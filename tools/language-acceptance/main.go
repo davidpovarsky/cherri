@@ -936,6 +936,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateCaptureOrderRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateEditorContractRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1921,6 +1924,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		if r.runExhaustiveNodeRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
+		if r.runCaptureOrderRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runLoopRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1954,6 +1960,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 			continue
 		}
 		if r.runSafeImportEditRequirement(g) {
+			continue
+		}
+		if r.runCaptureOrderRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
 			continue
 		}
 		if r.runLoopRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {

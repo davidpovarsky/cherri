@@ -70,9 +70,13 @@ func editorContractBinding(spec editorContractScenario) string {
 }
 
 func editorContractRun(root, source, id, prefix, directory string, command []string, timeout time.Duration, events []string) (editorProcessReceipt, []EvidenceArtifact, error) {
+	return runExactSourceProcess(root, source, id, prefix, directory, command, timeout, events, editorContracts.SourcePaths)
+}
+
+func runExactSourceProcess(root, source, id, prefix, directory string, command []string, timeout time.Duration, events, sourcePaths []string) (editorProcessReceipt, []EvidenceArtifact, error) {
 	var receipt = editorProcessReceipt{FormatVersion: 1, Requirement: id, SourceCommit: source, SourceCleanBefore: true, Command: command, RequiredTests: events}
 	var err error
-	receipt.SourceFiles, err = localGateSourceFiles(root, source, editorContracts.SourcePaths)
+	receipt.SourceFiles, err = localGateSourceFiles(root, source, sourcePaths)
 	if err != nil {
 		return receipt, nil, err
 	}
@@ -146,6 +150,10 @@ func editorContractRun(root, source, id, prefix, directory string, command []str
 	return receipt, artifacts, nil
 }
 func validateEditorContractProcess(id, source string, receipt editorProcessReceipt, command []string, events []string, raw, stderr []byte, timeout time.Duration) error {
+	return validateExactSourceProcess(id, source, receipt, command, events, raw, stderr, timeout, editorContracts.SourcePaths)
+}
+
+func validateExactSourceProcess(id, source string, receipt editorProcessReceipt, command []string, events []string, raw, stderr []byte, timeout time.Duration, sourcePaths []string) error {
 	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != source ||
 		!receipt.SourceCleanBefore || !receipt.SourceCleanAfter ||
 		!reflect.DeepEqual(receipt.Command, command) || !reflect.DeepEqual(receipt.RequiredTests, events) || !reflect.DeepEqual(receipt.DiscoveredTests, events) ||
@@ -157,7 +165,7 @@ func validateEditorContractProcess(id, source string, receipt editorProcessRecei
 	if err := stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, timeout.Seconds()); err != nil {
 		return err
 	}
-	return localGateExactSourceFiles(source, receipt.SourceFiles, editorContracts.SourcePaths)
+	return localGateExactSourceFiles(source, receipt.SourceFiles, sourcePaths)
 }
 func editorContractSwiftFiles(kind string, exe bool) []string {
 	var stem, generated = "position-probe", "position-generated.swift"
