@@ -573,6 +573,7 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/xcode_destination_diagnostic.py",
     "tools/shortcuts-simulator-qa/project_prerequisite.py",
     "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
     "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",

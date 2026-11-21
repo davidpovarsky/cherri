@@ -22,7 +22,7 @@ ALLOWED = {
     "runtime/http-probe-diagnostic.json", "runtime/simulator-session-recovery.json",
     "runtime/json-body-diagnostic.json",
     "runtime/debug-label-acceptance.json", "editor/debug-label-preview.json",
-    "runtime/xcode-destination-readiness.json",
+    "runtime/xcode-destination-readiness.json", "runtime/xcode-destination-command-diagnostic.json",
     "runtime/post-test-inspection.json", "runtime/terminal-acquisition.json",
     "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
@@ -300,12 +300,15 @@ def stage(root, output, trusted_sources):
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_ACQUISITION_RECEIPT"})
                         continue
-                if name == "runtime/xcode-destination-readiness.json":
+                if name in ("runtime/xcode-destination-readiness.json", "runtime/xcode-destination-command-diagnostic.json"):
                     from xcode_destination_readiness import validate_receipt
                     try:
                         compiler = public_json((root / "compiler-manifest.json").read_text(encoding="utf-8"))
                         assertions = public_json((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
-                        validate_receipt(parsed, compiler["compilerCommitSha"], root.name,
+                        readiness = public_json((root / "runtime/xcode-destination-readiness.json").read_text(encoding="utf-8"))
+                        if name == "runtime/xcode-destination-command-diagnostic.json" and readiness["schemaVersion"] != "1.1":
+                            raise ValueError("DESTINATION_DIAGNOSTIC_REQUIRES_BOUND_SCHEMA")
+                        validate_receipt(readiness, compiler["compilerCommitSha"], root.name,
                                          assertions["targetFixtureId"], artifact_root=root)
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_DESTINATION_DIAGNOSTIC"})

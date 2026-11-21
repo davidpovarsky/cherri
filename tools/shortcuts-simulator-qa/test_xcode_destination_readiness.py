@@ -13,6 +13,7 @@ from unittest.mock import patch
 import prepare_public_artifacts as publication
 import simulator_session_recovery as recovery
 import xcode_destination_readiness as destination
+import xcode_destination_diagnostic as diagnostic
 
 UDID = "11111111-2222-3333-4444-555555555555"
 OTHER = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"
@@ -36,6 +37,11 @@ class DestinationTests(unittest.TestCase):
         for path in (self.repo / destination.PROJECT, self.scratch,
                      self.artifacts / "builds", self.artifacts / "runtime"):
             path.mkdir(parents=True)
+        self.tool = self.root / "Selected Xcode.app/Contents/Developer/usr/bin/simctl"
+        self.tool.parent.mkdir(parents=True)
+        self.tool.write_bytes(b"SYNTHETIC_ACTIVE_TOOL")
+        self.simulator = self.root / "Selected Xcode.app/Contents/Developer/Applications/Simulator.app"
+        self.simulator.mkdir(parents=True)
         self.clock = 10.0
         self.calls = []
         self.outputs = [listing()]
@@ -47,6 +53,8 @@ class DestinationTests(unittest.TestCase):
         code = 0
         if "-showdestinations" in args:
             output.write(self.outputs.pop(0))
+        elif args == ["xcrun", "--find", "simctl"]:
+            output.write((str(self.tool) + "\n").encode())
         elif "test-without-building" in args:
             code = self.test_code
             output.write(b"PUBLIC_SYNTHETIC_XCODE_TEST_OUTPUT\n")
@@ -115,9 +123,12 @@ class DestinationTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertTrue(receipt["refreshAttempted"])
         self.assertEqual([x["stage"] for x in receipt["commands"]], ["destinations", "open", "bootstatus", "destinations", "test"])
-        self.assertEqual(self.calls[1][0], ["open", "-g", "-a", "Simulator", "--args", "-CurrentDeviceUDID", UDID])
-        self.assertEqual(self.calls[2][0], ["xcrun", "simctl", "bootstatus", UDID, "-b"])
-        self.assertEqual(self.calls[-1][1], 896)
+        self.assertEqual(self.calls[1][0], ["xcrun", "--find", "simctl"])
+        self.assertEqual(self.calls[2][0], ["open", "-g", "-a", str(self.simulator), "--args", "-CurrentDeviceUDID", UDID])
+        self.assertEqual(self.calls[3][0], ["xcrun", "simctl", "bootstatus", UDID, "-b"])
+        self.assertEqual(self.calls[1][1], 5)
+        self.assertEqual(self.calls[2][1], 14)
+        self.assertEqual(self.calls[-1][1], 895)
         self.assertNotIn("shutdown", json.dumps(self.calls))
         self.assertNotIn("openurl", json.dumps(self.calls))
         destination.validate_receipt(receipt)
@@ -128,7 +139,7 @@ class DestinationTests(unittest.TestCase):
         self.assertEqual(code, 70)
         self.assertEqual(receipt["status"], "BLOCKED_DESTINATION")
         self.assertFalse(receipt["testStarted"])
-        self.assertEqual(len(self.calls), 4)
+        self.assertEqual(len(self.calls), 5)
         self.assertFalse((self.artifacts / "builds/xcodebuild-test.log").exists())
 
     def test_ineligible_or_unknown_metadata_does_not_refresh(self):
@@ -162,7 +173,7 @@ class DestinationTests(unittest.TestCase):
                 return {"result": "TIMEOUT", "exitCode": None, "elapsedMs": round(allowance * 1000)}
             return self.runner(args, allowance, output=output)
         code, receipt = self.phase(runner).run()
-        self.assertEqual((code, len(self.calls)), (70, 3))
+        self.assertEqual((code, len(self.calls)), (70, 4))
         self.assertFalse(receipt["testStarted"])
         self.assertEqual(receipt["commands"][-1]["result"], "TIMEOUT")
 
@@ -170,7 +181,7 @@ class DestinationTests(unittest.TestCase):
         self.outputs = [listing(OTHER), listing()]
         def runner(args, allowance, *, output=None):
             result = self.runner(args, allowance, output=output)
-            if len(self.calls) == 4:
+            if len(self.calls) == 5:
                 self.clock += 100
                 result["elapsedMs"] += 100000
             return result
@@ -365,6 +376,191 @@ class DestinationTests(unittest.TestCase):
                 with self.assertRaisesRegex(publication.PublicationBlocked, "INVALID_BOUNDED_DESTINATION_DIAGNOSTIC"):
                     publication.stage(raw, self.root / ("rejected-" + key), trusted)
 
+    def diagnostic(self):
+        return json.loads((self.artifacts / "runtime/xcode-destination-command-diagnostic.json").read_bytes())
+
+    def test_failed_explicit_open_retains_exact_original_and_stops_before_boot_query_or_test(self):
+        self.outputs = [listing(OTHER)]
+        private = (b'CHERRI_PRIVATE_CANARY /Users/private/name@example.invalid\n'
+                   b'The application cannot be opened: NSOSStatusErrorDomain Code=-10810\n')
+        def runner(args, allowance, *, output=None):
+            if args[0] == "open":
+                self.calls.append((args, allowance)); self.clock += 1
+                output.write(private)
+                return {"result": "EXIT_NONZERO", "exitCode": 1, "elapsedMs": 1000}
+            return self.runner(args, allowance, output=output)
+        code, receipt = self.phase(runner).run()
+        self.assertEqual((code, len(self.calls), receipt["testStarted"]), (70, 3, False))
+        self.assertEqual(receipt["commands"][-1]["exitCode"], 1)
+        self.assertEqual((self.artifacts / "builds/xcode-destination-launch.log").read_bytes(), private)
+        value = self.diagnostic()
+        observed = value["launch"]["commands"][-1]["combinedOutput"]["safeObservation"]
+        self.assertEqual(observed["knownErrors"], ["APPLICATION_LAUNCH_FAILED"])
+        self.assertEqual(observed["systemErrorCodes"], [{"domain": "NSOSStatusErrorDomain", "code": -10810}])
+        public = json.dumps(value)
+        for secret in ("CHERRI_PRIVATE_CANARY", "/Users/private", "name@example.invalid", UDID, str(self.simulator)):
+            self.assertNotIn(secret, public)
+        destination.validate_receipt(receipt, artifact_root=self.artifacts)
+        (self.artifacts / "compiler-manifest.json").write_text(json.dumps({"syntheticOnly": True,
+            "compilerCommitSha": SOURCE, "fixtures": [{"fixtureId": FIXTURE,
+            "fileName": FIXTURE + ".cherri", "sourceSha256": "1" * 64}]}))
+        (self.artifacts / "summary.json").write_text('{"privacyGatePassed":true}')
+        (self.artifacts / "runtime/output-assertions.json").write_text(json.dumps({"targetFixtureId": FIXTURE}))
+        main = self.artifacts / "runtime/xcode-destination-readiness.json"
+        main.write_text(json.dumps(receipt))
+        trusted = {FIXTURE + ".cherri": "1" * 64}
+        public_root = self.root / "published-open-failure"
+        publication.stage(self.artifacts, public_root, trusted)
+        side = "runtime/xcode-destination-command-diagnostic.json"
+        self.assertEqual((public_root / side).read_bytes(), (self.artifacts / side).read_bytes())
+        for name in ("resolve", "launch", "query-1"):
+            self.assertFalse((public_root / ("builds/xcode-destination-" + name + ".log")).exists())
+        main.write_text(json.dumps({**receipt, "schemaVersion": "1.0"}))
+        with self.assertRaisesRegex(publication.PublicationBlocked, "INVALID_BOUNDED_DESTINATION_DIAGNOSTIC"):
+            publication.stage(self.artifacts, self.root / "rejected-legacy-with-unbound-side", trusted)
+
+    def test_resolve_failure_retains_original_without_guessing_an_application(self):
+        self.outputs = [listing(OTHER)]
+        original = b"xcrun: error: unable to find utility simctl\n"
+        def runner(args, allowance, *, output=None):
+            if args == ["xcrun", "--find", "simctl"]:
+                self.calls.append((args, allowance)); self.clock += 1; output.write(original)
+                return {"result": "EXIT_NONZERO", "exitCode": 72, "elapsedMs": 1000}
+            return self.runner(args, allowance, output=output)
+        code, receipt = self.phase(runner).run()
+        self.assertEqual((code, len(self.calls)), (70, 2))
+        self.assertEqual(receipt["commands"][-1]["exitCode"], 72)
+        self.assertFalse((self.artifacts / "builds/xcode-destination-launch.log").exists())
+        self.assertEqual((self.artifacts / "builds/xcode-destination-resolve.log").read_bytes(), original)
+        self.assertEqual(self.diagnostic()["launch"]["selectionStatus"], "RESOLVE_COMMAND_FAILED")
+        destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_invalid_resolved_path_or_missing_active_application_never_launches_fallback(self):
+        values = (b"simctl\n", b"/usr/bin/simctl\n", b"/bad/path\n/second/path\n", b"\xff",
+                  (str(self.tool) + "\n").encode())
+        self.simulator.rmdir()
+        for index, original in enumerate(values):
+            with self.subTest(index=index):
+                self.independent_case("invalid-active-" + str(index))
+                self.outputs, self.calls = [listing(OTHER)], []
+                def runner(args, allowance, *, output=None):
+                    if args == ["xcrun", "--find", "simctl"]:
+                        self.calls.append((args, allowance)); self.clock += 1; output.write(original)
+                        return {"result": "PASS", "exitCode": 0, "elapsedMs": 1000}
+                    return self.runner(args, allowance, output=output)
+                code, receipt = self.phase(runner).run()
+                self.assertEqual((code, len(self.calls)), (70, 2))
+                self.assertEqual(receipt["commands"][-1]["result"], "LAUNCH_FAILED")
+                self.assertEqual(self.diagnostic()["launch"]["selectionStatus"], "RESOLUTION_REJECTED")
+                destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_resolve_and_launch_share_original_fifteen_second_allowance(self):
+        self.outputs = [listing(OTHER)]
+        def runner(args, allowance, *, output=None):
+            if args == ["xcrun", "--find", "simctl"]:
+                self.calls.append((args, allowance)); self.clock += 4
+                output.write((str(self.tool) + "\n").encode())
+                return {"result": "PASS", "exitCode": 0, "elapsedMs": 4000}
+            if args[0] == "open":
+                self.calls.append((args, allowance)); self.clock += 12
+                output.write(b"LATE_ZERO_EXIT_CONTROL")
+                return {"result": "PASS", "exitCode": 0, "elapsedMs": 12000}
+            return self.runner(args, allowance, output=output)
+        code, receipt = self.phase(runner).run()
+        self.assertEqual((code, len(self.calls)), (70, 3))
+        self.assertEqual(self.calls[-1][1], 11)
+        self.assertEqual(receipt["commands"][-1]["result"], "DEADLINE_EXHAUSTED")
+        self.assertFalse(receipt["testStarted"])
+        destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_late_resolver_zero_exit_cannot_start_application(self):
+        self.outputs = [listing(OTHER)]
+        def runner(args, allowance, *, output=None):
+            result = self.runner(args, allowance, output=output)
+            if args == ["xcrun", "--find", "simctl"]:
+                self.clock += 5; result["elapsedMs"] += 5000
+            return result
+        code, receipt = self.phase(runner).run()
+        self.assertEqual((code, len(self.calls)), (70, 2))
+        self.assertEqual(receipt["commands"][-1]["result"], "DEADLINE_EXHAUSTED")
+        destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_zero_remaining_launch_budget_records_no_child_process(self):
+        result, value = diagnostic.launch(self.artifacts, UDID, 0, runner=self.runner, now=lambda: self.clock)
+        self.assertEqual(result["result"], "DEADLINE_EXHAUSTED")
+        self.assertEqual(self.calls, [])
+        self.assertEqual(value["commands"][0]["combinedOutput"]["bytes"], 0)
+        self.assertEqual(value["selectionStatus"], "RESOLVE_COMMAND_FAILED")
+
+    def test_launch_diagnostic_rejects_promotion_rebinding_types_and_fabricated_results(self):
+        self.outputs = [listing(OTHER), listing()]
+        _, receipt = self.phase().run()
+        valid = self.diagnostic()
+        mutations = {
+            "formal promotion": lambda x: x.update(formalAcceptanceGranted=True),
+            "scope": lambda x: x.update(scope="NATIVE_SEMANTICS"),
+            "unknown raw field": lambda x: x.update(rawOutput="PRIVATE"),
+            "canonical binding": lambda x: x.update(destinationReceiptCanonicalSha256="f" * 64),
+            "Boolean count": lambda x: x["queryOutputs"][0]["safeObservation"].update(destinationRows=True),
+            "raw path": lambda x: x["queryOutputs"][0].update(path="../unowned.log"),
+            "hash": lambda x: x["launch"].update(toolPathSha256="f" * 64),
+            "numeric boolean flag": lambda x: x["launch"].update(toolExists=1),
+            "launch formal": lambda x: x["launch"].update(formalAcceptanceGranted=True),
+            "Boolean exit": lambda x: x["launch"]["commands"][1].update(exitCode=False),
+            "false positive": lambda x: x["launch"]["commands"][1].update(exitCode=1),
+            "false failure": lambda x: x["launch"]["commands"][1].update(result="EXIT_NONZERO"),
+            "unknown result": lambda x: x["launch"]["commands"][1].update(result="READY"),
+            "extra budget": lambda x: x["launch"]["commands"][1].update(allowanceMs=15000),
+            "late positive": lambda x: x["launch"]["commands"][1].update(elapsedMs=15001),
+            "different stage": lambda x: x["launch"]["commands"][1].update(stage="reboot"),
+            "invented observation": lambda x: x["launch"]["commands"][1]["combinedOutput"]["safeObservation"].update(knownErrors=["APPLICATION_LAUNCH_FAILED"]),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                changed = copy.deepcopy(valid); mutate(changed)
+                with self.assertRaises(ValueError):
+                    diagnostic.validate(changed, self.artifacts, receipt)
+        aggregate = copy.deepcopy(receipt)
+        aggregate["commands"][1]["exitCode"] = 77
+        with self.assertRaisesRegex(ValueError, "SIMULATOR_LAUNCH_AGGREGATE_RESULT"):
+            diagnostic.validate(valid, self.artifacts, aggregate)
+
+    def test_changed_or_removed_launch_original_is_rejected(self):
+        self.outputs = [listing(OTHER), listing()]
+        _, receipt = self.phase().run()
+        raw = self.artifacts / "builds/xcode-destination-launch.log"
+        raw.write_bytes(b"ALTERED_ORIGINAL")
+        with self.assertRaisesRegex(ValueError, "SIMULATOR_LAUNCH_ORIGINAL_CHANGED"):
+            destination.validate_receipt(receipt, artifact_root=self.artifacts)
+        raw.unlink()
+        with self.assertRaisesRegex(ValueError, "DESTINATION_DIAGNOSTIC_ORIGINAL"):
+            destination.validate_receipt(receipt, artifact_root=self.artifacts)
+
+    def test_legacy_receipt_remains_valid_but_new_schema_requires_exact_diagnostic(self):
+        _, receipt = self.phase().run()
+        side = self.artifacts / "runtime/xcode-destination-command-diagnostic.json"
+        side.unlink()
+        with self.assertRaisesRegex(ValueError, "DESTINATION_DIAGNOSTIC_REQUIRED"):
+            destination.validate_receipt(receipt, artifact_root=self.artifacts)
+        legacy = {**receipt, "schemaVersion": "1.0"}
+        destination.validate_receipt(legacy, artifact_root=self.artifacts)
+
+    def test_safe_diagnostic_only_reports_fixed_errors_numeric_codes_and_destination_properties(self):
+        raw = (listing().replace(b"PUBLIC_OWNED_SIMULATOR", b"CHERRI_PRIVATE_CANARY name@example.invalid")
+               + b'LSOpenURLsWithRole() failed with error -10810 for /Users/private/SECRET.app\n'
+               + b'{ platform:iOS Simulator, id:private-placeholder, OS:27.0.1, name:SECRET }\n')
+        value = diagnostic.safe_detail(raw)
+        self.assertEqual(value["destinationRows"], 2)
+        self.assertEqual(value["placeholderRows"], 1)
+        self.assertEqual(value["platforms"], ["iOS Simulator"])
+        self.assertEqual(value["osVersions"], ["27.0.1", "27.1"])
+        self.assertEqual(value["systemErrorCodes"], [{"domain": "NSOSStatusErrorDomain", "code": -10810}])
+        for secret in ("CHERRI_PRIVATE_CANARY", "name@example.invalid", "SECRET", "private", UDID):
+            self.assertNotIn(secret, json.dumps(value))
+        for raw, expected in ((b"\xff", "INVALID_UTF8"), (b"\x00", "NUL_PRESENT"), (b"x" * (diagnostic.LIMIT + 1), "OVERSIZED")):
+            self.assertEqual(diagnostic.safe_detail(raw)["encoding"], expected)
+
+
 
 class RealProcessAndShellTests(unittest.TestCase):
     def test_existing_process_runner_captures_actual_stdout_and_stderr(self):
@@ -388,7 +584,7 @@ class RealProcessAndShellTests(unittest.TestCase):
             for path in (repo / destination.PROJECT, scratch, artifacts / "builds", artifacts / "runtime", bins):
                 path.mkdir(parents=True)
             helper_dir = repo / "tools/shortcuts-simulator-qa"
-            for name in ("xcode_destination_readiness.py", "simulator_session_recovery.py"):
+            for name in ("xcode_destination_readiness.py", "xcode_destination_diagnostic.py", "simulator_session_recovery.py"):
                 shutil.copyfile(source / name, helper_dir / name)
             executable = bins / "xcodebuild"
             executable.write_text("#!" + sys.executable + "\nimport sys\nif '-showdestinations' in sys.argv:\n print(" + repr(listing().decode()) + ")\n raise SystemExit(0)\nprint('PUBLIC_XCODE_FAILURE_CONTROL')\nraise SystemExit(7)\n")
