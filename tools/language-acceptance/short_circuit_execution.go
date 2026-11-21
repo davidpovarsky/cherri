@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 )
@@ -43,6 +44,29 @@ var shortCircuitEvidence = func() struct {
 var shortCircuitRequiredTiers = []string{"unit", "native-structure", "ios-runtime"}
 var shortCircuitLocalTiers = []string{"unit", "native-structure"}
 
+// This reviewed witness set covers this scenario and its actual intake helpers.
+// Exact clean Git source identity separately binds the whole checkout. Preserve
+// the shared 128-file, 4MiB-per-blob, 16MiB-total and 15s limits.
+const shortCircuitSourceWitnessSHA256 = "dda7690f8d40b070692a62f305fe9d083b096eeca769a91906a6f1c07d56c363"
+
+func validateShortCircuitSourceInventory(names []string) error {
+	if len(names) == 0 || len(names) > 128 {
+		return fmt.Errorf("invalid bounded short-circuit source inventory")
+	}
+	if !sort.StringsAreSorted(names) {
+		return fmt.Errorf("unordered short-circuit source inventory")
+	}
+	for i := 1; i < len(names); i++ {
+		if names[i] == names[i-1] {
+			return fmt.Errorf("duplicate short-circuit source witness")
+		}
+	}
+	if editorSHA([]byte(strings.Join(names, "\n")+"\n")) != shortCircuitSourceWitnessSHA256 {
+		return fmt.Errorf("short-circuit inventory omits or changes reviewed source witnesses")
+	}
+	return nil
+}
+
 func (s shortCircuitScenario) tests() []string { return []string{s.Unit, s.Native} }
 func (s shortCircuitScenario) testIDs() []string {
 	return []string{"github.com/electrikmilk/cherri:" + s.Unit, "github.com/electrikmilk/cherri:" + s.Native}
@@ -62,6 +86,9 @@ func (r *Runner) executeShortCircuit(id string) ([]EvidenceArtifact, string, boo
 	scenario, ok := shortCircuitScenarios[id]
 	if !ok {
 		return nil, "", false, fmt.Errorf("unknown combined short-circuit scenario")
+	}
+	if err := validateShortCircuitSourceInventory(shortCircuitEvidence.SourcePaths); err != nil {
+		return nil, "", false, err
 	}
 	root, err := filepath.Abs(resolveRepoRoot())
 	if err != nil {
@@ -127,6 +154,9 @@ func validateShortCircuitRecord(id string, record EvidenceRecord) error {
 	scenario, ok := shortCircuitScenarios[id]
 	if !ok {
 		return nil
+	}
+	if err := validateShortCircuitSourceInventory(shortCircuitEvidence.SourcePaths); err != nil {
+		return err
 	}
 	producer := scenario.producer(record.Tier)
 	if producer == "" {

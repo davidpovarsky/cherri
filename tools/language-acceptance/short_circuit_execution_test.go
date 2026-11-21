@@ -46,6 +46,30 @@ func shortCircuitSelectedContracts(t *testing.T, ids ...string) (*ContractsSet, 
 	return all, selected
 }
 func TestShortCircuitInventoryAndUnprovedRuntime(t *testing.T) {
+	if err := validateShortCircuitSourceInventory(shortCircuitEvidence.SourcePaths); err != nil {
+		t.Fatal(err)
+	}
+	t.Run("source_count_before_launch", func(t *testing.T) {
+		err := validateShortCircuitSourceInventory(make([]string, 129))
+		if err == nil || !strings.Contains(err.Error(), "invalid bounded") {
+			t.Fatal("oversized source inventory did not reach the prelaunch size gate", err)
+		}
+	})
+	t.Run("required_source_before_launch", func(t *testing.T) {
+		var missing []string
+		for _, path := range shortCircuitEvidence.SourcePaths {
+			if path != "p15_combined_short_circuit_test.go" {
+				missing = append(missing, path)
+			}
+		}
+		if len(missing) != len(shortCircuitEvidence.SourcePaths)-1 {
+			t.Fatal("required-source control did not remove the actual oracle")
+		}
+		err := validateShortCircuitSourceInventory(missing)
+		if err == nil || !strings.Contains(err.Error(), "reviewed source witnesses") {
+			t.Fatal("removed required source did not reach the prelaunch witness gate", err)
+		}
+	})
 	_, selected := shortCircuitSelectedContracts(t, "RP18", "BRG13")
 	for _, id := range []string{"RP18", "BRG13"} {
 		spec := shortCircuitScenarios[id]
@@ -151,7 +175,7 @@ func shortCircuitActualProductionEvidence(t *testing.T, ids []string) {
 		if err := validateShortCircuitRecord(id, relocated); err != nil {
 			t.Fatal("unchanged relocated proof rejected", err)
 		}
-		for _, fault := range []string{"wrong_tier", "wrong_requirement", "cross_tier_producer", "partial_command", "missing_artifact", "dirty_source", "wrong_source_digest", "missing_child", "skipped_child", "foreign_package"} {
+		for _, fault := range []string{"wrong_tier", "wrong_requirement", "cross_tier_producer", "partial_command", "missing_artifact", "dirty_source", "wrong_source_digest", "missing_source_file", "missing_child", "skipped_child", "foreign_package"} {
 			t.Run(id+"/"+fault, func(t *testing.T) {
 				broken := editorContractCopyRecord(t, original)
 				prefix := shortCircuitPrefix(id)
@@ -166,12 +190,24 @@ func shortCircuitActualProductionEvidence(t *testing.T, ids []string) {
 					broken.Command = productionTestCommand(shortCircuitScenarios[id].tests()[:1])
 				case "missing_artifact":
 					broken.Artifacts = broken.Artifacts[:2]
-				case "dirty_source", "wrong_source_digest":
+				case "dirty_source", "wrong_source_digest", "missing_source_file":
 					editorContractMutateArtifact(t, &broken, prefix+"-process.json", func(raw []byte) []byte {
 						var receipt editorProcessReceipt
 						json.Unmarshal(raw, &receipt)
 						if fault == "dirty_source" {
 							receipt.SourceCleanAfter = false
+						} else if fault == "missing_source_file" {
+							originalCount := len(receipt.SourceFiles)
+							var retained []editorSourceFile
+							for _, file := range receipt.SourceFiles {
+								if file.Path != "p15_combined_short_circuit_test.go" {
+									retained = append(retained, file)
+								}
+							}
+							if len(retained) != originalCount-1 {
+								t.Fatal("missing-source receipt control did not remove the oracle")
+							}
+							receipt.SourceFiles = retained
 						} else {
 							receipt.SourceFiles[0].SHA256 = strings.Repeat("f", 64)
 						}
@@ -221,8 +257,12 @@ func shortCircuitActualProductionEvidence(t *testing.T, ids []string) {
 						return data
 					})
 				}
-				if err := validateShortCircuitRecord(id, broken); err == nil {
+				err := validateShortCircuitRecord(id, broken)
+				if err == nil {
 					t.Fatalf("accepted combined evidence mutation %s", fault)
+				}
+				if fault == "missing_source_file" && !strings.Contains(err.Error(), "source manifest mismatch") {
+					t.Fatal("missing-source receipt control failed before the intended source gate", err)
 				}
 			})
 		}
