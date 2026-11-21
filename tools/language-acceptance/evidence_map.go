@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// The short historical Unicode trace does not exercise either joined scenario.
+	if _, found := combinedUnicodeScenarios[id]; found {
+		return
+	}
 	// Historical capture-only runtime traces do not observe these full combined scenarios.
 	if _, found := captureOrderScenarios[id]; found {
 		return
@@ -68,9 +72,6 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "S01":
 		reqAssertions["s01_unicode_output"] = runtimePOCS01UnicodeOutput
 		*testIDs = append(*testIDs, "ios27-runtime-poc:coverage-s01")
-	case "RP19", "BRG08":
-		reqAssertions["unicode_output"] = "שָׁלוֹם:🌍:1"
-		*testIDs = append(*testIDs, "ios27-runtime-poc:unicode")
 	case "L02", "L04", "RP21":
 		reqAssertions["index_trace"] = "alpha:gamma:::::beta"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:indexing")
@@ -507,6 +508,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := combinedUnicodeScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := documentationRecoveryScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -586,6 +590,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := combinedUnicodeScenarios[id]; found {
+		return append([]string{}, combinedUnicodeEvidence.SourcePaths...)
+	}
 	if _, found := documentationRecoveryScenarios[id]; found {
 		return append([]string{}, documentationRecoveryProductionPaths...)
 	}
@@ -620,6 +627,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := combinedUnicodeScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := documentationRecoveryScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -718,6 +728,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if _, found := combinedUnicodeScenarios[id]; found {
+		return append([]string{}, combinedUnicodeEvidence.SourcePaths...)
+	}
 	if _, found := documentationRecoveryScenarios[id]; found {
 		return append([]string{}, documentationRecoveryProductionPaths...)
 	}
