@@ -34,6 +34,9 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	if _, found := combinedIndexArithmeticScenarios[id]; found {
+		return
+	}
 	// Arithmetic needs its own complete actual Apple observations.
 	if _, found := combinedArithmeticScenarios[id]; found {
 		return
@@ -511,6 +514,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := combinedIndexArithmeticScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := combinedArithmeticScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -593,6 +599,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := combinedIndexArithmeticScenarios[id]; found {
+		return append([]string{}, combinedIndexArithmeticEvidence.SourcePaths...)
+	}
 	if _, found := combinedArithmeticScenarios[id]; found {
 		return append([]string{}, combinedArithmeticEvidence.SourcePaths...)
 	}
@@ -630,6 +639,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := combinedIndexArithmeticScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := documentationRecoveryScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -728,6 +740,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if _, found := combinedIndexArithmeticScenarios[id]; found {
+		return append([]string{}, combinedIndexArithmeticEvidence.SourcePaths...)
+	}
 	if _, found := documentationRecoveryScenarios[id]; found {
 		return append([]string{}, documentationRecoveryProductionPaths...)
 	}

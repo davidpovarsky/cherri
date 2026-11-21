@@ -1,0 +1,90 @@
+{
+  "schema": "cherri.p15.combined-index/v1",
+  "requirement": "RP21",
+  "cases": [
+    {
+      "name": "static_first",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[0]\nreturn observed\n"
+    },
+    {
+      "name": "static_last",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[2]\nreturn observed\n"
+    },
+    {
+      "name": "static_empty",
+      "source": "let items: List<Text> = []\nlet observed = items[0]\nreturn observed\n"
+    },
+    {
+      "name": "static_negative",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[-1]\nreturn observed\n"
+    },
+    {
+      "name": "static_out_of_range",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[3]\nreturn observed\n"
+    },
+    {
+      "name": "static_uint64_max",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[18446744073709551615]\nreturn observed\n"
+    },
+    {
+      "name": "static_fraction",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[0.5]\nreturn observed\n"
+    },
+    {
+      "name": "static_negative_fraction",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[-0.5]\nreturn observed\n"
+    },
+    {
+      "name": "static_integral_real",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[2.0]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_first",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nvar index = number(0)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_last",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nvar index = number(2)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_empty",
+      "source": "let items: List<Text> = []\nvar index = number(0)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_negative",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nvar index = number(-1)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_out_of_range",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nvar index = number(3)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_fraction",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nvar index = number(0.5)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_negative_fraction",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nvar index = number(-0.5)\nlet observed = items[index]\nreturn observed\n"
+    },
+    {
+      "name": "inline_fraction",
+      "source": "let items: List<Text> = [\"alpha\",\"beta\",\"gamma\"]\nlet observed = items[number(0.5)]\nreturn observed\n"
+    },
+    {
+      "name": "dynamic_empty_text",
+      "source": "let items: List<Text> = [\"\"]\nvar index = number(0)\nlet observed = items[index]\nreturn observed\n"
+    }
+  ],
+  "invalid": [
+    {
+      "name": "text_index",
+      "operand": "\"not-an-index\"",
+      "source": "let items: List<Text> = [\"alpha\"]\nlet observed = items[\"not-an-index\"]\nreturn observed\n"
+    },
+    {
+      "name": "bool_index",
+      "operand": "false",
+      "source": "let items: List<Text> = [\"alpha\"]\nlet observed = items[false]\nreturn observed\n"
+    }
+  ]
+}
