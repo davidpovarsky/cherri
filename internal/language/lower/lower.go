@@ -60,55 +60,56 @@ func lookupContentItemClass(prop string) (string, bool) {
 
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
-	mainOutputMode             syntax.MainOutputMode
-	lastEmittedIdentifier      string
-	registry                   *schema.Registry
-	session                    backend.Session
-	workflow                   *ir.NativeWorkflow
-	bindings                   map[string]BindingRef
-	functions                  map[string]*syntax.FunctionDecl
-	setupQuestions             map[string]*syntax.SetupDecl
-	setupBindings              map[string]*setupQuestionLoweringBinding
-	setupDeclarationOrder      []*setupQuestionLoweringBinding
-	enums                      map[string]*syntax.EnumDecl
-	types                      map[string]*syntax.TypeDecl
-	actions                    map[string]*syntax.ActionDecl
-	copyBlocks                 map[string]*syntax.CopyBlockStmt
-	importStack                []string
-	modules                    map[string]string
-	virtualModules             map[string]string
-	baseFilePath               string
-	importedFunctions          []*syntax.FunctionDecl
-	moduleGraph                *modules.Graph
-	moduleRegistries           map[*modules.Module]*schema.Registry
-	moduleScopes               map[*modules.Module]*moduleScope
-	functionModules            map[*syntax.FunctionDecl]*modules.Module
-	functionDispatchNames      map[*syntax.FunctionDecl]string
-	WorkflowName               string
-	uuidCounter                int
-	autoNumberProducerCount    int
-	repeatDepth                int
-	currentBindingName         string
-	emitErr                    error
-	isMac                      *bool
-	exprTypes                  map[syntax.Expression]types.Type
-	typeAnnotations            map[syntax.TypeAnnotation]types.Type
-	enumValues                 map[syntax.Expression]string
-	inExprStmt                 bool
-	hasImportProvenance        bool
-	provenanceUUIDs            map[string]string
-	provenanceSymbols          map[string]bool
-	provenanceOutputNames      map[string]provenanceOutputNameSpec
-	lexical                    lexicalLoweringState
-	provenanceVarNames         map[string]string
-	optionalFunctionReturn     bool
-	optionalExpressionPresence map[syntax.Expression]interface{}
-	optionalPresenceDemand     map[*syntax.BindingStmt]bool
-	optionalJoinDemand         map[syntax.Expression]bool
-	optionalJoinYields         map[*syntax.YieldStmt]bool
-	knownDictionaryIndexes     map[syntax.Expression]bool
-	literalTextCarriers        map[*ir.NativeActionNode]bool
-	nativeResultReferences     map[*ir.NativeActionNode]*ir.AttachmentToken
+	mainOutputMode                 syntax.MainOutputMode
+	lastEmittedIdentifier          string
+	registry                       *schema.Registry
+	session                        backend.Session
+	workflow                       *ir.NativeWorkflow
+	bindings                       map[string]BindingRef
+	functions                      map[string]*syntax.FunctionDecl
+	setupQuestions                 map[string]*syntax.SetupDecl
+	setupBindings                  map[string]*setupQuestionLoweringBinding
+	setupDeclarationOrder          []*setupQuestionLoweringBinding
+	enums                          map[string]*syntax.EnumDecl
+	types                          map[string]*syntax.TypeDecl
+	actions                        map[string]*syntax.ActionDecl
+	copyBlocks                     map[string]*syntax.CopyBlockStmt
+	importStack                    []string
+	modules                        map[string]string
+	virtualModules                 map[string]string
+	baseFilePath                   string
+	importedFunctions              []*syntax.FunctionDecl
+	moduleGraph                    *modules.Graph
+	moduleRegistries               map[*modules.Module]*schema.Registry
+	moduleScopes                   map[*modules.Module]*moduleScope
+	functionModules                map[*syntax.FunctionDecl]*modules.Module
+	functionDispatchNames          map[*syntax.FunctionDecl]string
+	WorkflowName                   string
+	uuidCounter                    int
+	autoNumberProducerCount        int
+	repeatDepth                    int
+	currentBindingName             string
+	emitErr                        error
+	isMac                          *bool
+	exprTypes                      map[syntax.Expression]types.Type
+	typeAnnotations                map[syntax.TypeAnnotation]types.Type
+	enumValues                     map[syntax.Expression]string
+	inExprStmt                     bool
+	hasImportProvenance            bool
+	provenanceUUIDs                map[string]string
+	provenanceSymbols              map[string]bool
+	provenanceOutputNames          map[string]provenanceOutputNameSpec
+	lexical                        lexicalLoweringState
+	provenanceVarNames             map[string]string
+	optionalFunctionReturn         bool
+	optionalExpressionPresence     map[syntax.Expression]interface{}
+	optionalPresenceDemand         map[*syntax.BindingStmt]bool
+	importedOptionalPresenceDemand map[string]bool
+	optionalJoinDemand             map[syntax.Expression]bool
+	optionalJoinYields             map[*syntax.YieldStmt]bool
+	knownDictionaryIndexes         map[syntax.Expression]bool
+	literalTextCarriers            map[*ir.NativeActionNode]bool
+	nativeResultReferences         map[*ir.NativeActionNode]*ir.AttachmentToken
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -6194,7 +6195,7 @@ func (l *Lowerer) applyImportProvenanceFromRawWorkflow(rawMap map[string]any) {
 		bType := provenanceBindingTypeFromValueType(vtStr)
 		appendVar, _ := entry["AppendVariable"].(bool)
 		if kind == "Variable" {
-			l.bindings[symName] = BindingRef{IsVariable: true, VariableName: varName, Type: bType, AppendVariable: appendVar}
+			l.bindings[symName] = BindingRef{IsVariable: true, VariableName: varName, Type: bType, AppendVariable: appendVar, OptionalPresenceUnused: !l.importedOptionalPresenceNeeded(symName)}
 		} else if uuid != "" {
 			effOut := outputName
 			if !hasOutputName {

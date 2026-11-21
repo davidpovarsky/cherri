@@ -134,10 +134,22 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 			markJoins(expression)
 		}
 	}
+	// Imported variables have no authored BindingStmt. Retain explicit demand
+	// decisions only for names with analyzed assignments/bindings; unknown or
+	// generated names must still conservatively keep their presence metadata.
+	l.importedOptionalPresenceDemand = map[string]bool{}
+	for name := range dependencies {
+		l.importedOptionalPresenceDemand[name] = needed[name]
+	}
 	l.optionalPresenceDemand = map[*syntax.BindingStmt]bool{}
 	for binding, name := range bindings {
 		l.optionalPresenceDemand[binding] = needed[name]
 	}
+}
+
+func (l *Lowerer) importedOptionalPresenceNeeded(name string) bool {
+	needed, analyzed := l.importedOptionalPresenceDemand[name]
+	return !analyzed || needed
 }
 
 func (l *Lowerer) optionalPresenceNeeded(binding *syntax.BindingStmt) bool {
