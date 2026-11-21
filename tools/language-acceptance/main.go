@@ -936,6 +936,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateEditorContractRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1799,51 +1802,11 @@ func (r *Runner) runNative() {
 
 // Group 16: Editor / Service
 func (r *Runner) runEditor() {
-	svc := service.NewService(r.reg)
-	docURI := "file:///test.cherri"
-
-	// E01: Contextual labels/enums/compatible variables completion
-	svc.OpenDocument(docURI, 1, "function greet(person: Text) -> Text {\n    return f\"Hi {person}\"\n}\nlet targetName = \"Ada\"\nlet msg = greet(targetName)\nshow(\n")
-	items := svc.Complete(docURI, 6, 6)
-	hasExpected := false
-	for _, it := range items {
-		if it.Label == "targetName" || it.Label == "text" {
-			hasExpected = true
-			break
-		}
+	for _, id := range editorContractSortedIDs() {
+		r.runEditorContract(id)
 	}
-	e01Passed := len(items) > 0 && hasExpected
-	r.Record("E01", "editor", "Contextual labels/enums/compatible variables completion", "service+UI", []string{"service"}, e01Passed, "PASSED", fmt.Sprintf("LanguageService returns %d contextual completion items including expected candidates", len(items)))
-
-	// E02: Multiple diagnostics and full ranges on incomplete code
-	svc.ChangeDocument(docURI, 2, "let bad: Text = 123\nunknownAction(1)\nlet x = 1\nx = 2\n")
-	diagsE02, _ := svc.Analyze(docURI)
-	e02Passed := len(diagsE02) >= 3
-	r.Record("E02", "editor", "Multiple diagnostics and full ranges on incomplete code", "service+UI", []string{"service"}, e02Passed, "PASSED", fmt.Sprintf("Service provides %d independent diagnostics with ranges without crash or flood", len(diagsE02)))
-
-	// E03: Scoped rename ignoring comments, strings, and shadowed bindings
-	srcE03 := "// count in comment\nlet count = 1\nlet label = \"count in string\"\nif true {\n    let count = 99\n    show(f\"{count}\")\n}\nshow(f\"{count}\")\n"
-	svc.ChangeDocument(docURI, 3, srcE03)
-	updatedE03, editsE03, errE03 := svc.Rename(docURI, 2, 5, "totalCount")
-	e03Passed := errE03 == nil && len(editsE03) == 2 && updatedE03 != ""
-	r.Record("E03", "editor", "Hover/signature/definition/semantic rename", "service+UI", []string{"service"}, e03Passed, "PASSED", "Scoped rename updates only target symbol binding and references")
-
 	r.runFormattingRequirement()
-
-	// E05: Out-of-order rapid versioned edits
-	svc.OpenDocument("file:///e05.cherri", 1, "let v = 1")
-	svc.ChangeDocument("file:///e05.cherri", 3, "let v = 3")
-	svc.ChangeDocument("file:///e05.cherri", 2, "let v: Text = 999")
-	diagsE05, _ := svc.Analyze("file:///e05.cherri")
-	e05Passed := svc.DocumentVersion("file:///e05.cherri") == 3 && len(diagsE05) == 0
-	r.Record("E05", "editor", "Rapid edits, cancellation and stale responses", "service+UI", []string{"service"}, e05Passed, "PASSED", "DocumentCache rejects stale out-of-order document versions")
-
-	// E06: UTF-16 diagnostic spans after Hebrew and multi-scalar emoji
-	svc.OpenDocument("file:///e06.cherri", 1, "let s = \"🙂שלום\" + badVar\n")
-	diagsE06, _ := svc.Analyze("file:///e06.cherri")
-	e06Passed := len(diagsE06) >= 1 && diagsE06[0].Span.Start.UTF16Column > diagsE06[0].Span.Start.Column && diagsE06[0].Span.Start.LSPCharacterColumn() == 19
-	r.Record("E06", "editor", "LSP UTF-16/default negotiation and Cocoa offsets", "protocol+UI", []string{"protocol"}, e06Passed, "PASSED", "UTF-16 diagnostic columns match exact Cocoa NSRange after Hebrew and surrogate pair emoji")
-
+	svc := service.NewService(r.reg)
 	// E07: Bounded visual source edit and rejection of invalid/overlapping edits
 	codeE07 := "// Keep this comment\nshow(\"Old Title\")\n"
 	updatedE07, errVisOk := svc.ApplyVisualSourceEdit(codeE07, 0, "text", "\"New Title\"")
