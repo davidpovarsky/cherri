@@ -1666,20 +1666,9 @@ fi
 if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_LEVEL" = "full" ]; then
   if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
     echo "=== Phase 3 & 4: Running XCTest UI Automation & Callback Receiver ==="
-    if ! command -v xcodegen >/dev/null 2>&1; then
-      HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 brew install xcodegen
-    fi
-    pushd "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject" >/dev/null
-    xcodegen generate
-    python3 - <<'PY'
-import plistlib, sys
-with open("ReceiverApp/Info.plist", "rb") as f:
-    pl = plistlib.load(f)
-schemes = [s for t in pl.get("CFBundleURLTypes", []) for s in t.get("CFBundleURLSchemes", [])]
-assert "cherriqa" in schemes, f"Missing cherriqa URL scheme after xcodegen generate: {schemes}"
-print("Verified ReceiverApp/Info.plist URL schemes:", schemes)
-PY
-    popd >/dev/null
+    python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/project_prerequisite.py" \
+      --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
+      --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --bash "$BASH" || exit 2
 
     # A GitHub rerun reuses RUN_ID. A fresh random suffix prevents old callbacks
     # from a previous attempt or a retained simulator container satisfying this run.
