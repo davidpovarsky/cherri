@@ -1,0 +1,219 @@
+{
+  "format_version": 1,
+  "test_source": "cbf542c3b62bc12e54372101436938b0c046ebf3",
+  "driver": {
+    "source": "cbf542c3b62bc12e54372101436938b0c046ebf3",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "command": [
+      "go",
+      "test",
+      "./tools/language-acceptance",
+      "-run",
+      "^Test(CaptureOrder|TypedCapture|EditorContract(Rejects|Inventory|Strict))",
+      "-json",
+      "-count=1",
+      "-timeout=6m"
+    ],
+    "started_utc": "2026-11-21T19:37:02.993651+00:00",
+    "finished_utc": "2026-11-21T19:38:23.349123+00:00",
+    "elapsed_seconds": 80.35900000000038,
+    "exit_code": 0,
+    "timed_out": false,
+    "counts": {
+      "pass": 137,
+      "fail": 0,
+      "skip": 0
+    },
+    "stdout_sha256": "74b6baa462d059abca2d161f4dea369707f9c81a07578251065911b973d47efd",
+    "stdout_bytes": 149489,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0
+  },
+  "scenarios": [
+    {
+      "id": "BRG10",
+      "counts": {
+        "pass": 129,
+        "fail": 0,
+        "skip": 0
+      },
+      "elapsed_seconds": 11.476407,
+      "source_files": 86,
+      "raw_sha256": "4b90f7ee6b20ceca5131836dedf63295f64a9f710d3c48f57ccb96bc97e1a28c",
+      "source": "cbf542c3b62bc12e54372101436938b0c046ebf3"
+    },
+    {
+      "id": "RP12",
+      "counts": {
+        "pass": 65,
+        "fail": 0,
+        "skip": 0
+      },
+      "elapsed_seconds": 51.706148,
+      "source_files": 86,
+      "raw_sha256": "3a177697313cb1ebf2093a398678f8b0dcd032841df19d7226af81d69ca41f4d",
+      "source": "cbf542c3b62bc12e54372101436938b0c046ebf3"
+    },
+    {
+      "id": "RP14",
+      "counts": {
+        "pass": 45,
+        "fail": 0,
+        "skip": 0
+      },
+      "elapsed_seconds": 5.3063581,
+      "source_files": 86,
+      "raw_sha256": "d3e801e02c66ec6b11c0ca19eac0fded6df420eacde1c8c05096b79af9f256d0",
+      "source": "cbf542c3b62bc12e54372101436938b0c046ebf3"
+    }
+  ],
+  "scope": {
+    "new_requirement": "RP14",
+    "new_actual_local_records": 2,
+    "complete_requirements_passed": 0,
+    "rp14_status": "PENDING_EXTERNAL",
+    "closure_complete": false,
+    "immutable_requirement_total": 179,
+    "native_boolean_note": "Semantic Bool is checked independently; its established standalone native carrier is Number0/1. Actual Apple saved values/types are not claimed. List/map false retains Bool, distinct from Number0.",
+    "nested_native_list_note": "Initial development literal with a nested native List was rejected E_NESTED_NATIVE_LIST. This supported RP14 test uses a mixed flat List and explicit empty nested Dictionary fields; native nested List support is not claimed."
+  },
+  "immutable_contract_sha256": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "original_archive": {
+    "file": "original-evidence.zip",
+    "sha256": "dbfffab85c0db3537f854bc6a1f6f0b4c2d251b08a73ae695a626da3872a19b7",
+    "bytes": 51054,
+    "files": 25
+  },
+  "originals": [
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-brg10-837780181/capture-order-brg10-go.jsonl",
+      "bytes": 134455,
+      "sha256": "4b90f7ee6b20ceca5131836dedf63295f64a9f710d3c48f57ccb96bc97e1a28c"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-brg10-837780181/capture-order-brg10-process.json",
+      "bytes": 37489,
+      "sha256": "287dc4c2e752df28bf015b480cde047afeaafc14ca9c62c35d131e9a87776faf"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-brg10-837780181/capture-order-brg10-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-evidence.json",
+      "bytes": 46051,
+      "sha256": "ae4baf833f566dfcb3b1e0ab9f6666010d27754b041a6936cea78d4ea09fc9e5"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-rp12-4060826891/capture-order-rp12-go.jsonl",
+      "bytes": 61436,
+      "sha256": "3a177697313cb1ebf2093a398678f8b0dcd032841df19d7226af81d69ca41f4d"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-rp12-4060826891/capture-order-rp12-process.json",
+      "bytes": 23341,
+      "sha256": "c262f752c4306616973963faf85993355242faf992d8f2a39a8a45de83286472"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/capture-order-rp12-4060826891/capture-order-rp12-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/typed-capture/capture-order-evidence.json",
+      "bytes": 12163,
+      "sha256": "29bab0d96fa8e32a31fa3c2ce35d8872a379ab3cccebafb12b4a9bc02e621db4"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/typed-capture/capture-order-rp14-1226604720/capture-order-rp14-go.jsonl",
+      "bytes": 36192,
+      "sha256": "d3e801e02c66ec6b11c0ca19eac0fded6df420eacde1c8c05096b79af9f256d0"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/typed-capture/capture-order-rp14-1226604720/capture-order-rp14-process.json",
+      "bytes": 18171,
+      "sha256": "4b9ee2f801eeca31b12afe5392db2d88115e560cd5e11e7546a5822fc9c8f135"
+    },
+    {
+      "path": "clean-cbf542c3/artifacts/typed-capture/capture-order-rp14-1226604720/capture-order-rp14-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-cbf542c3/driver-receipt.json",
+      "bytes": 810,
+      "sha256": "f73b51e208f82a5a84e873d04b69a8fed8b5a0cdaf15c36c2d2cebb1a8834d77"
+    },
+    {
+      "path": "clean-cbf542c3/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "clean-cbf542c3/stdout.jsonl",
+      "bytes": 149489,
+      "sha256": "74b6baa462d059abca2d161f4dea369707f9c81a07578251065911b973d47efd"
+    },
+    {
+      "path": "development-only/compile.stderr",
+      "bytes": 347,
+      "sha256": "b2eaac5e8d17136af1a5a90a026f551a050874a6d7014ad4dd9824c7d22c26d6"
+    },
+    {
+      "path": "development-only/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "development-only/production-tests/driver-receipt.json",
+      "bytes": 605,
+      "sha256": "e41e9e8127fca014084174a4536699199f85045cd69aeb20030f432662c72d3e"
+    },
+    {
+      "path": "development-only/production-tests/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "development-only/production-tests/stdout.jsonl",
+      "bytes": 36175,
+      "sha256": "f7b2ef324d7895cf0b1eea65a83e3eb48a815319f7f7bc9e22ac25d0b12e0f22"
+    },
+    {
+      "path": "development-only/supported.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "development-only/supported.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "development-only/typed-capture-supported.actions.json",
+      "bytes": 14897,
+      "sha256": "61a930e5207e96e4640bc91f1254ff6fa96c23b8939009ee67093f0e469f5970"
+    },
+    {
+      "path": "development-only/typed-capture-supported.cherri",
+      "bytes": 767,
+      "sha256": "7c5a7ccd3a9ba6192bf535a320a3b96a1e0b5af88318207a33a2aba4dfc9c680"
+    },
+    {
+      "path": "development-only/typed-capture-supported.shortcut",
+      "bytes": 25303,
+      "sha256": "9b557d7da4a44e09e14c2444cab3f84b5f0dbe4431df74412a450193f3cec3a9"
+    },
+    {
+      "path": "development-only/typed-capture.cherri",
+      "bytes": 775,
+      "sha256": "50faef568d805257c71ac25ca2418ca41e951d3fa310e96cbbcdcb6f67b1bc40"
+    }
+  ]
+}
