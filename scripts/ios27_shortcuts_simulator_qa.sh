@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-optional-forwarding-diagnostic|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-json-body-control|qa-json-body-null-candidate|qa-json-body-file-utf8|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-native-boundary-diagnostic|qa-file-materialization-diagnostic|qa-n03-text-equality-diagnostic|qa-optional-forwarding-diagnostic|qa-nested-list-control|qa-nested-list-candidate|qa-export-unicode-diagnostic|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-json-body-control|qa-json-body-null-candidate|qa-json-body-file-utf8|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-number-coercion-control|qa-nil-clear|qa-collect-empty-split|qa-export-file-bytes|qa-file-name-binding|qa-file-name-extension|qa-f04-yield-list|qa-f04-yield-empty-list|qa-f04-record-empty|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-binding-capture|qa-typed-defaults|qa-debug-label-plain-v2|qa-debug-label-plain-legacy|qa-debug-label-dated-v2|qa-debug-label-dated-legacy|qa-debug-label-typed-v2|qa-debug-label-typed-legacy|qa-debug-label-dated-typed-v2|qa-debug-label-dated-typed-legacy|qa-debug-label-text-v2|qa-debug-label-text-legacy|qa-debug-label-dated-text-v2|qa-debug-label-dated-text-legacy) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -325,6 +325,13 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-n03-text-equality-diagnostic-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_N03_TEXT_EQ_DIAG:LEFT64=YWJj:SAME64=YWJj:CASE64=QUJD:FOLD_SAME_EQ=Y:FOLD_SAME_NE=N:FOLD_CASE_EQ=N:FOLD_CASE_NE=Y:DYN_SAME_EQ=Y:DYN_SAME_NE=N:DYN_CASE_EQ=N:DYN_CASE_NE=Y:IF_SAME_EQ=Y:IF_SAME_NE=N:IF_CASE_EQ=N:IF_CASE_NE=Y:MATCH_SAME_CS=1:MATCH_CASE_CS=0:MATCH_CASE_CI=1"
+    ;;
+  qa-nested-list-control|qa-nested-list-candidate)
+    # Fixed observation contract; no callback-derived expected value.
+    TARGET_FIXTURE_ID="${SAMPLE_ID}-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
+    EXPECTED_SEMANTIC_OUTPUT=""
     ;;
   qa-optional-forwarding-diagnostic)
     # Tagged Optional diagnostic only. Preserve every contradictory actual field.
@@ -682,6 +689,7 @@ from file_materialization_diagnostic import verify_source as verify_file_materia
 from n03_text_equality_diagnostic import verify_source as verify_n03_text_equality_source
 from optional_forwarding_diagnostic import verify_source as verify_optional_forwarding_source, verify_prepared_unsigned as verify_optional_forwarding_unsigned
 from binding_defaults_probe import verify_adapter_source, verify_adapter_graph
+from nested_list_runtime import prepared as verify_nested_list_prepared
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from native_boundary_diagnostic import verify_source as verify_boundary_source, verify_graph as verify_boundary_graph
 from fixture_compile_contract import EXPECTED_REJECTIONS, verify_expected_rejection
@@ -691,6 +699,8 @@ fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtur
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-nested-list-control-v2", "qa-nested-list-control-v2.cherri", "v2"),
+    ("qa-nested-list-candidate-v2", "qa-nested-list-candidate-v2.cherri", "v2"),
     ("qa-json-body-file-utf8-v2", "qa-json-body-file-utf8-v2.cherri", "v2"),
     ("qa-json-body-control-v2", "qa-json-body-control-v2.cherri", "v2"),
     ("qa-json-body-null-candidate-v2", "qa-json-body-null-candidate-v2.cherri", "v2"),
@@ -860,6 +870,7 @@ for fid, fname, dialect in fixture_specs:
         "exportUnicodeDiagnosticGraph": validate_export_unicode_graph(fid, actions),
         "fileMaterializationSource": verify_file_materialization_source(root_dir, fid, src_bytes),
         "n03TextEqualitySource": verify_n03_text_equality_source(root_dir, fid, src_bytes),
+        "nestedListProbe": verify_nested_list_prepared(root_dir, fid, src_bytes, plist_bytes),
         "optionalForwardingSource": optional_forwarding_source,
         "optionalForwardingGraph": verify_optional_forwarding_unsigned(root_dir, artifact_dir, fid, out_shortcut, plist_sha256),
         "fileMaterializationGraph": verify_file_materialization_graph(fid, actions),
@@ -2377,10 +2388,17 @@ PY
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
       evaluate_runtime_callback() {
-      RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
+      RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" "$ROOT_DIR" <<'PY'
 import json, re, sys
 
 cb_path, expected_nonce, expected_trace_run_id, expected_out, trace_out_path, manifest_path, expected_sha = sys.argv[1:8]
+if expected_trace_run_id in ("qa-nested-list-control-v2", "qa-nested-list-candidate-v2"):
+    from pathlib import Path
+    assert len(sys.argv) == 9
+    sys.path.insert(0, str(Path(sys.argv[8]) / "tools/shortcuts-simulator-qa"))
+    from nested_list_runtime import emit
+    emit(sys.argv[8], *sys.argv[1:8])
+    sys.exit(0)
 profile = "UNKNOWN"
 trace_expectation = "REQUIRED_NDJSON"
 release_build_verified = False
@@ -2708,7 +2726,7 @@ python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" output-
   --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --nonce "${EXEC_RUN_NONCE:-}" || exit 2
 
 # Write output-assertions.json and runtime-trace.jsonl
-python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
+python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" "$ROOT_DIR" <<'PY'
 import json
 import os
 import re
@@ -2725,7 +2743,7 @@ except (ValueError, TypeError):
 # An import failure can prevent the callback oracle from running. Preserve
 # independently validated compiler facts without inventing oracle PASS gates.
 # A partial/invalid manifest never produces a partially trusted provenance tuple.
-if not oracle and len(sys.argv) == 12:
+if not oracle and len(sys.argv) >= 12:
     manifest_path, expected_sha = sys.argv[10:12]
     try:
         manifest = json.load(open(manifest_path, encoding="utf-8"))
@@ -2829,6 +2847,12 @@ assertions = {
     "diagnosticReason": reason,
     "notes": "Receiver self-test and compiled Shortcut callbacks are separate. Verified runtime requires the strict oracle plus exact source, fixture, fresh nonce and output. ERROR/CANCELLED are observed outcomes, never substituted for SUCCESS; their causes remain unverified. Inline trace events do not establish typed per-action coverage."
 }
+if fid in ("qa-nested-list-control-v2", "qa-nested-list-candidate-v2"):
+    from pathlib import Path
+    assert len(sys.argv) == 13
+    sys.path.insert(0, str(Path(sys.argv[12]) / "tools/shortcuts-simulator-qa"))
+    from nested_list_runtime import apply_assertions
+    apply_assertions(assertions, oracle, sys.argv[12], artifact_dir, sys.argv[11], expected_out)
 with open(os.path.join(artifact_dir, "runtime", "output-assertions.json"), "w", encoding="utf-8") as f:
     json.dump(assertions, f, indent=2)
 
@@ -2836,7 +2860,7 @@ trace_jsonl_path = os.path.join(artifact_dir, "runtime", "runtime-trace.jsonl")
 # A missing storage reader trace is evidence bound by the earlier phase report.
 # Preserve that absence after a timeout; a collector fallback would change its
 # hash without observing a native reader callback and block truthful publication.
-if not os.path.exists(trace_jsonl_path) and fid != "qa-storage-text-cross-run-v2":
+if not os.path.exists(trace_jsonl_path) and fid not in ("qa-storage-text-cross-run-v2", "qa-nested-list-control-v2", "qa-nested-list-candidate-v2"):
     with open(trace_jsonl_path, "w", encoding="utf-8") as f:
         if fid == "qa-measure-release-v2":
             # No collector is executed by the Release fixture.
@@ -3021,6 +3045,13 @@ summary = {
     "postTestInspectionStatus": inspection_status,
     "acquisitionIncomplete": inspection_status in ("INCOMPLETE", "REJECTED"),
 }
+if assertions.get("targetFixtureId") in ("qa-nested-list-control-v2", "qa-nested-list-candidate-v2"):
+    observed = (assertions.get("runtimeObservationVerified") is True
+                and trace_requirement_met and gates["SHORTCUT_RUN_COMPLETED"] == "PASS")
+    readiness = "DIAGNOSTIC_OBSERVATION_COMPLETE" if observed else "DIAGNOSTIC_OBSERVATION_INCOMPLETE"
+    summary.update(runtimeContractMode="NESTED_LIST_OBSERVATION_ONLY", diagnosticOnly=True,
+                   runtimeObservationVerified=observed, semanticContractVerified=False,
+                   nativeListTypeProved=False, formalAcceptanceGranted=False, releaseReadiness=readiness)
 with open(os.path.join(artifact_dir, "summary.json"), "w", encoding="utf-8") as f:
     json.dump(summary, f, indent=2)
 

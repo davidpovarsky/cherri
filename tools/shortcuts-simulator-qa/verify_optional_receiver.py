@@ -60,6 +60,17 @@ struct Control: Decodable { let raw: String?; let sanitized: String?; let summar
     trace = '{"schemaVersion":"1.4","kind":"COLLECTOR_EVENT","stage":"collector_begin"}'
     raw = EXPECTED_OUTPUT + "\n" + trace
     add(raw, raw, EXPECTED_OUTPUT, trace)
+    # Exercise the actual receiver policy for the two exact public nested prefixes.
+    for prefix in ("CHERRI_NESTED_LIST_CONTROL_V1:", "CHERRI_NESTED_LIST_CANDIDATE_V1:"):
+        for value in ("OUTER_COUNT=0", "CONTRARY_PUBLIC_VALUE"):
+            raw = prefix + value
+            add(raw, raw, raw)
+            add(raw + "\n" + trace, raw + "\n" + trace, raw, trace)
+        raw = prefix.replace("_V1:", "_V2:") + "PUBLIC"
+        redacted = "[REDACTED_NON_ALLOWLISTED_LEN_" + str(len(raw)) + "]"
+        add(raw, redacted, redacted)
+        raw = prefix + "canary@example.invalid"
+        add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
     with tempfile.TemporaryDirectory(prefix="optional-receiver-policy-") as directory:
         temp = Path(directory)
         code, cases = temp / "ReceiverPolicy.swift", temp / "controls.json"

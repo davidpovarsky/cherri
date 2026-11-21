@@ -573,6 +573,13 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/nested_list_runtime.py",
+    "tools/shortcuts-simulator-qa/nested_list_probe.py",
+    "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-control-v2.cherri",
+    "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-control-v2.expected.json",
+    "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-candidate-v2.cherri",
+    "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-candidate-v2.expected.json",
+    "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift",
     "tools/shortcuts-simulator-qa/project_prerequisite.py",
     "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
     "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
