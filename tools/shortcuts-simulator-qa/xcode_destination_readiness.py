@@ -15,6 +15,7 @@ import re
 import time
 
 from simulator_session_recovery import integer, require, run_process
+import xcode_destination_diagnostic as diagnostic
 
 PROJECT = "tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj"
 SCHEME = "CherriSimulatorQAReceiver"
@@ -119,7 +120,8 @@ class DestinationTestPhase:
         self.udid, self.runner, self.now = udid, runner, now
         self.started = now()
         self.commands, self.queries = [], []
-        self.value = {"schemaVersion": "1.0", **identity,
+        self.launch_receipt = None
+        self.value = {"schemaVersion": "1.1", **identity,
                       "deviceIdSha256": sha(udid.upper().encode()),
                       "project": PROJECT, "scheme": SCHEME, "testIdentifier": TEST,
                       "phaseBudgetMs": PHASE_SECONDS * 1000,
@@ -137,8 +139,12 @@ class DestinationTestPhase:
         phase_limit = GATE_SECONDS if gate else PHASE_SECONDS
         before = self.elapsed()
         allowance = max(0, min(STAGES[stage], phase_limit - before))
-        result = (self.runner(args, allowance, output=output) if allowance else
-                  {"result": "DEADLINE_EXHAUSTED", "exitCode": None, "elapsedMs": 0})
+        if stage == "open":
+            result, self.launch_receipt = diagnostic.launch(self.artifacts, self.udid, allowance,
+                                                           runner=self.runner, now=self.now)
+        else:
+            result = (self.runner(args, allowance, output=output) if allowance else
+                      {"result": "DEADLINE_EXHAUSTED", "exitCode": None, "elapsedMs": 0})
         after = self.elapsed()
         if result["result"] == "PASS" and (after >= phase_limit or after - before > allowance):
             result = {**result, "result": "DEADLINE_EXHAUSTED"}
@@ -178,7 +184,8 @@ class DestinationTestPhase:
             # The same pre-issued import request remains untouched.
             self.value["refreshAttempted"] = True
             for stage, args in (
-                ("open", ["open", "-g", "-a", "Simulator", "--args", "-CurrentDeviceUDID", self.udid]),
+                # The launch helper binds Simulator.app to the active Xcode.
+                ("open", None),
                 ("bootstatus", ["xcrun", "simctl", "bootstatus", self.udid, "-b"]),
             ):
                 if self.command(stage, args)["result"] != "PASS":
@@ -216,6 +223,10 @@ class DestinationTestPhase:
         elapsed = self.elapsed()
         self.value["elapsedMs"] = min(MAX_OBSERVED_MS, round(elapsed * 1000)) if math.isfinite(elapsed) else MAX_OBSERVED_MS
         validate_receipt(self.value)
+        value = diagnostic.document(self.artifacts, self.value, self.launch_receipt)
+        diagnostic.validate(value, self.artifacts, self.value)
+        with (self.artifacts / "runtime/xcode-destination-command-diagnostic.json").open("xb") as stream:
+            stream.write(diagnostic.encoded(value))
         return code, self.value
 
 
@@ -224,7 +235,7 @@ def validate_receipt(value, source_sha=None, run_id=None, fixture_id=None, artif
               "project", "scheme", "testIdentifier", "phaseBudgetMs", "gateBudgetMs", "status",
               "elapsedMs", "gateElapsedMs", "refreshAttempted", "testStarted", "commands", "queries", "formalAcceptanceGranted"}
     require(isinstance(value, dict) and set(value) == fields, "DESTINATION_RECEIPT_FIELDS")
-    require(value["schemaVersion"] == "1.0" and value["formalAcceptanceGranted"] is False, "DESTINATION_RECEIPT_SCOPE")
+    require(value["schemaVersion"] in ("1.0", "1.1") and value["formalAcceptanceGranted"] is False, "DESTINATION_RECEIPT_SCOPE")
     require(isinstance(value["compilerCommitSha"], str) and re.fullmatch(r"[0-9a-f]{40}", value["compilerCommitSha"]), "DESTINATION_SOURCE")
     require(isinstance(value["deviceIdSha256"], str) and re.fullmatch(r"[0-9a-f]{64}", value["deviceIdSha256"]), "DESTINATION_DEVICE")
     for key, limit, expected in (("runId", 64, run_id), ("fixtureId", 96, fixture_id)):
@@ -293,6 +304,12 @@ def validate_receipt(value, source_sha=None, run_id=None, fixture_id=None, artif
         require(commands[-1]["result"] != "PASS" or value["elapsedMs"] <= 900001, "DESTINATION_PHASE_LATE_PASS")
     else:
         require(value["status"] == "BLOCKED_DESTINATION" and "test" not in stages, "DESTINATION_FALSE_BLOCK")
+    if artifact_root is not None and value["schemaVersion"] == "1.1":
+        path = Path(artifact_root) / "runtime/xcode-destination-command-diagnostic.json"
+        require(path.is_file() and not path.is_symlink() and not path.parent.is_symlink()
+                and path.stat().st_size <= MAX_OUTPUT, "DESTINATION_DIAGNOSTIC_REQUIRED")
+        from qa_terminal_receipts import unique_json
+        diagnostic.validate(unique_json(path.read_bytes()), artifact_root, value)
     return value
 
 
