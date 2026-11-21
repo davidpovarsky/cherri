@@ -1,0 +1,381 @@
+{
+  "schemaVersion": "1.0",
+  "scope": "APPLE_PREFLIGHT_REPAIR_ONLY",
+  "frozenAttemptSource": "2b84116ecf0395fbec73231b02f4aaca6963e30d",
+  "nativeAppExecution": false,
+  "signedShortcutExecution": false,
+  "formalAcceptanceGranted": false,
+  "acceptanceRecords": 0,
+  "runs": [
+    {
+      "label": "startup",
+      "runId": 44936763355,
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44936763355",
+      "headSha": "2b84116ecf0395fbec73231b02f4aaca6963e30d",
+      "runAttempt": 1,
+      "conclusion": "failure",
+      "artifactCount": 1,
+      "downloads": [
+        {
+          "id": 14719719375,
+          "name": "ios-build-evidence",
+          "size": 54479,
+          "sha256": "f5918f45c64952c70cf6abfa5ccae0e001f2acc7d2814bdacc5c77ce1547e409",
+          "advertisedDigest": "sha256:f5918f45c64952c70cf6abfa5ccae0e001f2acc7d2814bdacc5c77ce1547e409",
+          "advertisedDigestMatches": true
+        }
+      ],
+      "jobs": [
+        {
+          "id": 136944987374,
+          "name": "ios-build",
+          "conclusion": "failure",
+          "startedAt": "2026-11-21T18:40:06Z",
+          "completedAt": "2026-11-21T18:43:33Z",
+          "failedSteps": [
+            "Test existing Cherri compiler",
+            "Capture owned startup lifecycle observations"
+          ]
+        },
+        {
+          "id": 136944988663,
+          "name": "documentation-component",
+          "conclusion": "skipped",
+          "startedAt": "2026-11-21T18:40:04Z",
+          "completedAt": "2026-11-21T18:40:03Z",
+          "failedSteps": []
+        }
+      ],
+      "originals": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\startup\\intake\\run.original.json",
+          "bytes": 12441,
+          "sha256": "2b8b0fcc902751ce9b2c391582e2ebff1e473d189e05b947769457bfa38f6d6b"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\startup\\intake\\jobs.original.json",
+          "bytes": 8655,
+          "sha256": "3a530cc3b22b179b2c6d2bb32b56d4ef01fbdac394a6eb680f0dc4115eed6739"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\startup\\intake\\artifacts.original.json",
+          "bytes": 756,
+          "sha256": "32808d0f891bffb9e349ff6db757c742aeed120f670045a6320aefc9c53ce3f8"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\startup\\intake\\workflow-logs.original.zip",
+          "bytes": 44968,
+          "sha256": "810bad4029997ded5ed019e4fc3521e74a4f7f7e180f18021c68d360cbbd4b49"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\startup\\intake\\artifact-14719719375.original.zip",
+          "bytes": 54479,
+          "sha256": "f5918f45c64952c70cf6abfa5ccae0e001f2acc7d2814bdacc5c77ce1547e409"
+        }
+      ],
+      "originalFailedStepLog": {
+        "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\startup\\intake\\compiler-step.original.log",
+        "bytes": 73985,
+        "sha256": "b7699d036ff5b8227b0271081283b619c95808339042de56fa1790c68ea8a3e7"
+      }
+    },
+    {
+      "label": "file-utf8",
+      "runId": 44936768275,
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44936768275",
+      "headSha": "2b84116ecf0395fbec73231b02f4aaca6963e30d",
+      "runAttempt": 1,
+      "conclusion": "failure",
+      "artifactCount": 0,
+      "downloads": [],
+      "jobs": [
+        {
+          "id": 136945001057,
+          "name": "iPadOS 27 Simulator Shortcuts QA (selected)",
+          "conclusion": "failure",
+          "startedAt": "2026-11-21T18:40:08Z",
+          "completedAt": "2026-11-21T18:44:12Z",
+          "failedSteps": [
+            "Test AX Inspector and publication quarantine",
+            "Retain explicitly incomplete acquisition after interruption",
+            "Stage synthetic text artifacts; quarantine raster and raw inputs"
+          ]
+        }
+      ],
+      "originals": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\file-utf8\\intake\\run.original.json",
+          "bytes": 12535,
+          "sha256": "a861b54a980b2750f3c02183753dab11ceadf0089263ca0f81563812fc01d88a"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\file-utf8\\intake\\jobs.original.json",
+          "bytes": 3466,
+          "sha256": "dd7401afe56a098a61614ffb255c73ce7eb89835293f63d0ab62657a55a39afb"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\file-utf8\\intake\\artifacts.original.json",
+          "bytes": 32,
+          "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\file-utf8\\intake\\workflow-logs.original.zip",
+          "bytes": 59651,
+          "sha256": "9e664e1946ae59eacb18420a64df4b872650538a787d97f83a79c502169707f6"
+        }
+      ],
+      "originalFailedStepLog": {
+        "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\integrated-2b84116-20261121\\file-utf8\\intake\\python-step.original.log",
+        "bytes": 88409,
+        "sha256": "364c7df08970274a806423548355200c2b66b739e2033bb841594b78bcc27956"
+      }
+    }
+  ],
+  "repairs": {
+    "optionalControl": "95ffd4f1c6e9b123b1c1419a80c64eee3507d8f3",
+    "portableControlsAndDependency": "93b0711aa8eb100702092aca6671e4312517dcf1"
+  },
+  "sourceFixturesAndGoalsChanged": false,
+  "startup": {
+    "compilerTestCherriNoSign": "PASS",
+    "workflowCompilerCommand": "FAIL_HISTORICAL_EVIDENCE_GO_PACKAGES",
+    "appBuild": "NOT_RUN",
+    "uiTests": "NOT_RUN",
+    "startupCaptureError": "TEST_LOG_BOUNDS",
+    "startupTestLogPresent": false,
+    "startupCaptureArtifactCount": 0,
+    "startupObserverPythonControlsPassed": 19,
+    "startupObserverSwiftAssertionsPassed": 79,
+    "scopedReceipt": "PASS_LOCAL_OBSERVER_CONTROLS",
+    "nativeAppExecution": false
+  },
+  "fileUTF8": {
+    "pythonTestsDiscovered": 371,
+    "unittestFailures": 8,
+    "unittestErrors": 1,
+    "orchestrator": "NOT_RUN",
+    "signing": "NOT_RUN",
+    "runtime": "NOT_RUN",
+    "artifactCount": 0,
+    "failureCauses": [
+      "undeclared PyYAML dependency",
+      "paginate gate test inadvertently includes separate acquisition checkpoint",
+      "project generator control depends on mkdir outside isolated macOS PATH",
+      "Optional positive graph control retains obsolete399 action count"
+    ],
+    "finalizer": "REJECTED_MISSING_ACQUISITION",
+    "publication": "BLOCKED"
+  },
+  "originalNestedPreparationVerification": {
+    "checkedAt": "2026-11-21T18:42:53.258050+00:00",
+    "archiveHash": "d47cbd4004af446181a678c6f3b0dbd29110b73e5428eef7ec4235808e79cfc6",
+    "archiveMembersVerified": 46,
+    "exactExternalOriginalsMatched": 46,
+    "immutableGitBlobWitnessesVerified": 712,
+    "actualWitnessBlobBytes": 7718627,
+    "claimedAggregateBytes": 7755814,
+    "catFileBatchFramedBytes": 7755814,
+    "aggregateExactlyMatchesFramedBatch": true,
+    "sourceSha": "15c5d1af002117df1c803a32231b7a44a0e0dacd"
+  },
+  "verifiedRepairSource": "93b0711aa8eb100702092aca6671e4312517dcf1",
+  "fullPythonReplay": {
+    "sourceSha": "93b0711aa8eb100702092aca6671e4312517dcf1",
+    "sourceCleanBefore": true,
+    "records": [
+      {
+        "label": "create-venv",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "-m",
+          "venv",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\nested-review-20261121\\full-python-clean-93b0711\\python-venv"
+        ],
+        "budgetSeconds": 60,
+        "startedAt": "2026-11-21T18:49:46.158051+00:00",
+        "exitCode": 0,
+        "timedOut": false,
+        "finishedAt": "2026-11-21T18:50:08.988397+00:00",
+        "durationSeconds": 22.829,
+        "files": {
+          "stdout": {
+            "file": "create-venv.stdout.bin",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "file": "create-venv.stderr.bin",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "install-dependencies",
+        "command": [
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\nested-review-20261121\\full-python-clean-93b0711\\python-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "install",
+          "--disable-pip-version-check",
+          "--no-input",
+          "--require-virtualenv",
+          "-r",
+          "tools/shortcuts-simulator-qa/requirements-test.txt"
+        ],
+        "budgetSeconds": 90,
+        "startedAt": "2026-11-21T18:50:08.991959+00:00",
+        "exitCode": 0,
+        "timedOut": false,
+        "finishedAt": "2026-11-21T18:50:18.818311+00:00",
+        "durationSeconds": 9.828,
+        "files": {
+          "stdout": {
+            "file": "install-dependencies.stdout.bin",
+            "size": 305,
+            "sha256": "d188b4217d59676400690774eaad63a75be5ba478774991d2b718c02cdd94aa4"
+          },
+          "stderr": {
+            "file": "install-dependencies.stderr.bin",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "full-python-discovery",
+        "command": [
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\nested-review-20261121\\full-python-clean-93b0711\\python-venv\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/shortcuts-simulator-qa",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "budgetSeconds": 600,
+        "startedAt": "2026-11-21T18:50:18.832461+00:00",
+        "exitCode": 0,
+        "timedOut": false,
+        "finishedAt": "2026-11-21T18:58:04.663163+00:00",
+        "durationSeconds": 465.828,
+        "files": {
+          "stdout": {
+            "file": "full-python-discovery.stdout.bin",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "file": "full-python-discovery.stderr.bin",
+            "size": 68886,
+            "sha256": "bf6a54c82e90a44c28da948c4046d3a4013a80477b460dd1370f53c74be6ec97"
+          }
+        },
+        "stderrTail": "tarts_test) ... ok\r\ntest_receipt_rejects_false_metadata_identity_time_or_acceptance (test_xcode_destination_readiness.DestinationTests.test_receipt_rejects_false_metadata_identity_time_or_acceptance) ... ok\r\ntest_receipt_write_failure_after_test_cannot_enable_a_second_attempt (test_xcode_destination_readiness.DestinationTests.test_receipt_write_failure_after_test_cannot_enable_a_second_attempt) ... ok\r\ntest_refresh_timeout_stops_without_requery_or_test (test_xcode_destination_readiness.DestinationTests.test_refresh_timeout_stops_without_requery_or_test) ... ok\r\ntest_still_missing_never_tests_or_retries_import (test_xcode_destination_readiness.DestinationTests.test_still_missing_never_tests_or_retries_import) ... ok\r\ntest_validator_failure_after_test_cannot_enable_a_second_attempt (test_xcode_destination_readiness.DestinationTests.test_validator_failure_after_test_cannot_enable_a_second_attempt) ... ok\r\ntest_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation (test_xcode_destination_readiness.RealProcessAndShellTests.test_actual_shell_route_propagates_test_failure_and_refuses_duplicate_invocation) ... skipped 'actual shell route requires POSIX'\r\ntest_existing_process_runner_captures_actual_stdout_and_stderr (test_xcode_destination_readiness.RealProcessAndShellTests.test_existing_process_runner_captures_actual_stdout_and_stderr) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 386 tests in 462.281s\r\n\r\nOK (skipped=4)\r\n"
+      }
+    ],
+    "formalAcceptanceGranted": false,
+    "appleRuntime": "NOT_RUN",
+    "headAfter": "93b0711aa8eb100702092aca6671e4312517dcf1",
+    "sourceCleanAfter": true,
+    "sameSourceAfter": true,
+    "discovered": 386,
+    "passed": 382,
+    "skipped": 4,
+    "failed": 0,
+    "errors": 0
+  },
+  "optionalGraphReplay": {
+    "sourceSha": "93b0711aa8eb100702092aca6671e4312517dcf1",
+    "sourceCleanBefore": true,
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=3m",
+      "-run",
+      "^TestP15OptionalNativeDiagnostic",
+      "."
+    ],
+    "startedAt": "2026-11-21T18:53:11.633802+00:00",
+    "finishedAt": "2026-11-21T18:53:31.572293+00:00",
+    "durationSeconds": 19.938,
+    "exitCode": 0,
+    "headAfter": "93b0711aa8eb100702092aca6671e4312517dcf1",
+    "sourceCleanAfter": true,
+    "files": {
+      "stdout": {
+        "file": "stdout.bin",
+        "size": 61447,
+        "sha256": "4ed0e47f7e613a3a2d902256b65274e70775fe2f532415baaced81ca33d1fccb"
+      },
+      "stderr": {
+        "file": "stderr.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "goFail": [],
+    "namedGoPassCount": 66,
+    "formalAcceptanceGranted": false,
+    "appleRuntime": "NOT_RUN"
+  },
+  "originalOptionalRed": {
+    "sourceSha": "94c19d52da0fdc4515e377221b7a1b349522d2f2",
+    "command": [
+      "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "unittest",
+      "test_runtime_callback_contract.CallbackContractTests.test_optional_eleven_fields_require_exact_fresh_values_and_normal_trace",
+      "test_runtime_callback_contract.CallbackContractTests.test_optional_callback_requires_exact_prepared_graph_proof",
+      "-v"
+    ],
+    "exitCode": 1,
+    "durationSeconds": 5.594,
+    "finishedAt": "2026-11-21T18:45:46.322335+00:00",
+    "files": {
+      "stdout.bin": {
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr.bin": {
+        "size": 1397,
+        "sha256": "80a15b65f20fa96fcc7470ec967962ae51fa4970b42c8bee814781a9de339fbe"
+      }
+    }
+  },
+  "generatorFailureLimit": "Apple showed generate EXIT_NONZERO(1), not the private inner stderr. Source review found the test fake generator called mkdir outside its deliberately limited PATH. The repaired control uses its already pinned Python wrapper. Actual macOS replay remains required.",
+  "remaining": [
+    "Current-source Apple startup observation and original three UI tests",
+    "Signed FileUTF8 actual orchestrator and runtime proof",
+    "POSIX-only controls on Apple",
+    "Native nested-list wiring and separate control/candidate observations",
+    "Physical iPad and formal179 acceptance gates"
+  ],
+  "retainedPublicOriginalArtifact": {
+    "path": "docs/language-v2/evidence/p15-apple-preflight-recovery-20261121/ios-build-evidence-44936763355.original.zip",
+    "sha256": "f5918f45c64952c70cf6abfa5ccae0e001f2acc7d2814bdacc5c77ce1547e409",
+    "bytes": 54479,
+    "githubDigestVerified": true
+  },
+  "derivedFormattingAttempt": {
+    "issue": "Git whitespace check rejected generated CRLF JSON views; only derived views changed to LF.",
+    "originalsChanged": false,
+    "testsRerunForFormatting": false,
+    "retainedInitialViews": [
+      {
+        "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\nested-review-20261121\\derived-proof-crlf-attempt\\p15-apple-preflight-recovery-20261121.json",
+        "sha256": "7e8da571590267d8bcedafc4680b3c432db64488bd213cd7081c8abb0cabfde7"
+      },
+      {
+        "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\nested-review-20261121\\derived-proof-crlf-attempt\\original-artifact-manifest.json",
+        "sha256": "fc467f5eae93439d442a6e20e0e8a53768e7573281bd4b4ae3154eeedb277f7d"
+      }
+    ]
+  }
+}
