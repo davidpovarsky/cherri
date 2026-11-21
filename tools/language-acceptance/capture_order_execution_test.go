@@ -11,54 +11,64 @@ import (
 	"testing"
 )
 
-func captureOrderSelectedContracts(t *testing.T) (*ContractsSet, *ContractsSet) {
+func captureOrderSelectedContracts(t *testing.T, ids ...string) (*ContractsSet, *ContractsSet) {
 	t.Helper()
+	if len(ids) == 0 {
+		ids = []string{"RP12", "BRG10"}
+	}
+	wanted := map[string]bool{}
+	for _, id := range ids {
+		if wanted[id] {
+			t.Fatal("duplicate selected contract")
+		}
+		wanted[id] = true
+	}
 	all, err := LoadAllContracts("", "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	selected := &ContractsSet{Acceptance: &ContractFile{}, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
 	for _, row := range all.Repair.Cases {
-		if row.ID == "RP12" {
+		if wanted[row.ID] {
 			selected.Repair.Cases = append(selected.Repair.Cases, row)
 		}
 	}
 	for _, row := range all.Gates.Gates {
-		if row.ID == "BRG10" {
+		if wanted[row.ID] {
 			selected.Gates.Gates = append(selected.Gates.Gates, row)
 		}
 	}
 	selected.Repair.CaseCount = len(selected.Repair.Cases)
 	selected.Gates.GateCount = len(selected.Gates.Gates)
-	if selected.Repair.CaseCount != 1 || selected.Gates.GateCount != 1 {
+	if selected.Repair.CaseCount+selected.Gates.GateCount != len(ids) {
 		t.Fatal("missing distinct immutable contracts")
 	}
 	return all, selected
 }
 func TestCaptureOrderInventoryAndUnprovedRuntime(t *testing.T) {
-	_, selected := captureOrderSelectedContracts(t)
-	for _, id := range []string{"RP12", "BRG10"} {
+	_, selected := captureOrderSelectedContracts(t, "RP12", "RP14", "BRG10")
+	for _, id := range []string{"RP12", "RP14", "BRG10"} {
 		spec := captureOrderScenarios[id]
 		var title, group string
 		var tiers []string
-		if id == "RP12" {
-			row := selected.Repair.Cases[0]
-			title = row.Title
-			group = "repair"
-			tiers = row.RequiredTestLevels
-		} else {
-			row := selected.Gates.Gates[0]
-			title = row.Title
-			group = "recovery_gate"
-			tiers = row.MinimumEvidenceTiers
+		for _, row := range selected.Repair.Cases {
+			if row.ID == id {
+				title = row.Title
+				group = "repair"
+				tiers = row.RequiredTestLevels
+			}
+		}
+		for _, row := range selected.Gates.Gates {
+			if row.ID == id {
+				title = row.Title
+				group = "recovery_gate"
+				tiers = row.MinimumEvidenceTiers
+			}
 		}
 		if spec.Title != title || spec.Group != group || !reflect.DeepEqual(parseRequiredTiers(strings.Join(tiers, "+")), captureOrderRequiredTiers) {
 			t.Fatal("changed immutable combined requirement")
 		}
-		expected := 65
-		if id == "BRG10" {
-			expected = 129
-		}
+		expected := map[string]int{"RP12": 65, "RP14": 45, "BRG10": 129}[id]
 		events := captureOrderEvidence.Events[id]
 		if len(events) != expected || !sort.StringsAreSorted(events) {
 			t.Fatal("fixed causal child inventory changed")
@@ -91,12 +101,22 @@ func TestCaptureOrderInventoryAndUnprovedRuntime(t *testing.T) {
 	}
 }
 func TestCaptureOrderActualProductionEvidence(t *testing.T) {
-	all, selected := captureOrderSelectedContracts(t)
+	captureOrderActualProductionEvidence(t, []string{"RP12", "BRG10"})
+}
+func TestTypedCaptureActualProductionEvidence(t *testing.T) {
+	captureOrderActualProductionEvidence(t, []string{"RP14"})
+}
+func captureOrderActualProductionEvidence(t *testing.T, ids []string) {
+	t.Helper()
+	all, selected := captureOrderSelectedContracts(t, ids...)
 	runner := NewRunner()
 	runner.artifactDir = os.Getenv("CHERRI_CAPTURE_ORDER_EVIDENCE_OUTPUT")
+	if len(ids) == 1 && runner.artifactDir != "" {
+		runner.artifactDir = filepath.Join(runner.artifactDir, "typed-capture")
+	}
 	runner.runRepairCases(selected.Repair)
 	runner.runRecoveryGates(selected.Gates)
-	if len(runner.records) != 4 || len(runner.results) != 2 || len(runner.observations) != 0 {
+	if len(runner.records) != 2*len(ids) || len(runner.results) != len(ids) || len(runner.observations) != 0 {
 		t.Fatalf("incomplete independent producers: %+v records=%d", runner.results, len(runner.records))
 	}
 	for id, result := range runner.results {
@@ -106,7 +126,7 @@ func TestCaptureOrderActualProductionEvidence(t *testing.T) {
 	}
 	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	report, err := ValidateEvidenceManifest(manifest, selected, "local")
-	if err != nil || report == nil || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != 2 || report.ClosureComplete {
+	if err != nil || report == nil || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != len(ids) || report.ClosureComplete {
 		t.Fatalf("local combined proof expanded/rejected: %+v %v", report, err)
 	}
 	for _, original := range runner.records {
@@ -223,7 +243,7 @@ func TestCaptureOrderActualProductionEvidence(t *testing.T) {
 		if row.Status == "PASS" {
 			t.Fatal("unproved combined or related requirement received full acceptance", row.ID)
 		}
-		if row.ID == "RP12" || row.ID == "BRG10" {
+		if _, executed := runner.results[row.ID]; executed {
 			if !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, captureOrderScenarios[row.ID].tests()) {
 				t.Fatal("actual combined scope lost")
 			}
@@ -237,5 +257,5 @@ func TestCaptureOrderActualProductionEvidence(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	t.Logf("Distinct RP12 and BRG10 actual local execution on %s; 4 unit/native records, 0 full PASS, 2 pending Apple runtime; no related-ID inheritance", runner.implSHA)
+	t.Logf("Distinct %v actual local execution on %s; %d unit/native records, 0 full PASS, %d pending Apple runtime; no related-ID inheritance", ids, runner.implSHA, 2*len(ids), len(ids))
 }

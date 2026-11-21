@@ -16,6 +16,8 @@ type captureOrderScenario struct {
 }
 
 var captureOrderScenarios = map[string]captureOrderScenario{
+	"RP14": {"repair", "Binding capture and native types", "TestP15RP14TypedCaptureUnit", "TestP15RP14TypedCaptureNative", "Independent complete local typed-capture scenario: Number, Bool, Text, List, Map and Clipboard saved before later writes; semantic type checks, exact saved-producer consumers, numeric zero, false, empty Text and explicit empty array/dictionary fields, no generic Text conversion. Standalone Bool uses the established numeric carrier; actual Apple saved values and native runtime types remain unproved."},
+
 	"RP12": {"repair", "Named argument effect order",
 		"TestP15RP12NamedEffectsUnit", "TestP15RP12NamedEffectsNative",
 		"Independent complete local written-order scenario: reverse/mixed/positional/alias/native calls, producer ownership and once-only graphs, actual flow/duplicate/unknown-label rejection, default guards and scoped scalar/aggregate argument snapshots. Actual Apple evaluation effects remain unproved."},
