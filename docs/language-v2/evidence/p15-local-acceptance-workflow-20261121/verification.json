@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "workflow": ".github/workflows/p10r15-local-acceptance.yml",
+  "workflow_sha256": "c769d820f0f473f2a5163257c75e653d66a8550c32ca2a3540c1e71c6eb06e3c",
+  "validation": {
+    "yaml": "PASS",
+    "shell_scripts": 5,
+    "embedded_python_blocks": 4,
+    "bash_syntax": "PASS",
+    "python_compile": "PASS",
+    "actual_identity_verifier": "PASS",
+    "stale_codec_pin": "REJECTED",
+    "job_timeout_minutes": 90,
+    "runner_timeout_minutes": 80,
+    "permissions": "contents/actions read; unchanged"
+  },
+  "compiler_source": "c46902bbe6cf7d0d8a6f5acd2d776eb1f77c7262",
+  "compiler_binary_sha256": "6303d01498e52fc2fddda194bee0483a1cf69e492a9c3a11c16eb922302573c3",
+  "docs_expected": "56811d6bdf68238b8a213e38274d8ecad01abf70",
+  "scope": "Workflow syntax plus actual embedded identity verifier on a byte-identical compiler copy and read-only genuine S checkout. Hosted checkout/build/toolchain and full179 execution are not claimed; those remain actual CI obligations.",
+  "archive": {
+    "path": "original-checks.zip",
+    "bytes": 15994,
+    "sha256": "2f58d2050c1da3b187c9fea3a0e9b0cd7f326cc69da81af7cef6278cb68b7c12",
+    "files": [
+      {
+        "path": "syntax-review.json",
+        "bytes": 851,
+        "sha256": "f0091143b17acb32d9c4319f0df4a3d7beb48d745ee2a6c85f4ccf20811c700d"
+      },
+      {
+        "path": "actual-identity-verifier.log",
+        "bytes": 834,
+        "sha256": "7301d70ceefd7a20de0d4f2fe392dca6f0490448f23f64843473f81908823cf7"
+      },
+      {
+        "path": "actual-identity-verifier.json",
+        "bytes": 1512,
+        "sha256": "aee2713387fc6a816d33f425bf49c5bd73c23b34f5ab98038728c8e61b854863"
+      },
+      {
+        "path": "stale-pins-rejection/manifest.json",
+        "bytes": 597,
+        "sha256": "5eb45ce20578c87d997e4d0f3648c5a440c6f59141faab45e94a0da2e1ba4c39"
+      },
+      {
+        "path": "stale-pins-rejection/pinned-build-info.txt",
+        "bytes": 3518,
+        "sha256": "96c7066a1fa9af4fa3e24afe3f52c1a1cdf949fb6f1756363a30440ffe8de6a1"
+      },
+      {
+        "path": "stale-pins-rejection/pinned-capabilities.json",
+        "bytes": 26982,
+        "sha256": "01bf10f58fbb4e72b04c34a6c790a0572b109b0687a01bcd3f33e365b32de833"
+      },
+      {
+        "path": "stale-pins-rejection/result.json",
+        "bytes": 194,
+        "sha256": "aa45e64bffa7335267d90d06fe6ee30acf24fc10c70750d12f6c2214d11cbe57"
+      },
+      {
+        "path": "identity-fixture/toolchains/pinned-build-info.txt",
+        "bytes": 3518,
+        "sha256": "96c7066a1fa9af4fa3e24afe3f52c1a1cdf949fb6f1756363a30440ffe8de6a1"
+      },
+      {
+        "path": "identity-fixture/toolchains/pinned-capabilities.json",
+        "bytes": 26982,
+        "sha256": "01bf10f58fbb4e72b04c34a6c790a0572b109b0687a01bcd3f33e365b32de833"
+      },
+      {
+        "path": "identity-fixture/toolchains/swift-version.txt",
+        "bytes": 104,
+        "sha256": "a2aa2d7dcd61b2f3db2c0e6ff30a1f0ab2d45f58a9542e79f6b7fa7111b09dd5"
+      },
+      {
+        "path": "identity-fixture/toolchains/toolchain-identity.json",
+        "bytes": 834,
+        "sha256": "7301d70ceefd7a20de0d4f2fe392dca6f0490448f23f64843473f81908823cf7"
+      }
+    ]
+  }
+}

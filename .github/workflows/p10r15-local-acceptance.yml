@@ -40,6 +40,8 @@ jobs:
     env:
       CHERRI_DOCS_DIR: ${{ github.workspace }}/cherrilang.org
       CHERRI_D03_DOCS_REPO: ${{ github.workspace }}/cherrilang.org
+      CHERRI_DOCUMENTATION_SOURCE_ROOT: ${{ github.workspace }}/cherri-compiler-source
+      CHERRI_DOCUMENTATION_COMPILER: ${{ github.workspace }}/local-acceptance/toolchains/cherri-pinned
       CHERRI_LOCAL_ACCEPTANCE_OUT: ${{ github.workspace }}/local-acceptance
       CHERRI_K05_EVIDENCE_DIR: ${{ github.workspace }}/local-acceptance/k05
       CHERRI_K05_LIVE_SIGNING: ${{ inputs.allow_public_fixture_signing == true && '1' || '0' }}
@@ -60,7 +62,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Resolve the exact checked-in documentation pin
+      - name: Resolve the exact checked-in compiler and documentation pins
         id: pins
         run: |
           python3 - <<'PY'
@@ -68,9 +70,12 @@ jobs:
           from pathlib import Path
           manifest = json.loads(Path('skills/cherri-shortcuts/compatibility-manifest.json').read_text())
           assert manifest['docsRepo'] == 'https://github.com/davidpovarsky/cherrilang.org.git'
+          assert manifest['compilerRepo'] == 'https://github.com/davidpovarsky/cherri.git'
+          assert re.fullmatch(r'[0-9a-f]{40}', manifest['compilerCommit'])
           assert re.fullmatch(r'[0-9a-f]{40}', manifest['docsCommit'])
           with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
               stream.write('docs_sha=' + manifest['docsCommit'] + '\n')
+              stream.write('compiler_sha=' + manifest['compilerCommit'] + '\n')
           PY
 
       - uses: actions/checkout@v6
@@ -81,8 +86,19 @@ jobs:
           path: cherrilang.org
           persist-credentials: false
 
-      - name: Preserve the exact declared documentation origin
-        run: git -C "$CHERRI_D03_DOCS_REPO" remote set-url origin https://github.com/davidpovarsky/cherrilang.org.git
+      - uses: actions/checkout@v6
+        with:
+          repository: davidpovarsky/cherri
+          ref: ${{ steps.pins.outputs.compiler_sha }}
+          fetch-depth: 0
+          path: cherri-compiler-source
+          persist-credentials: false
+
+      - name: Preserve the exact declared repository origins
+        run: |
+          git remote set-url origin https://github.com/davidpovarsky/cherri.git
+          git -C "$CHERRI_DOCUMENTATION_SOURCE_ROOT" remote set-url origin https://github.com/davidpovarsky/cherri.git
+          git -C "$CHERRI_D03_DOCS_REPO" remote set-url origin https://github.com/davidpovarsky/cherrilang.org.git
 
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -91,6 +107,65 @@ jobs:
 
       - name: Build the current production compiler
         run: go build -o cherri .
+
+      - name: Build and verify the immutable documentation compiler
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$CHERRI_DOCUMENTATION_COMPILER")"
+          test "$(git --no-replace-objects -C "$CHERRI_DOCUMENTATION_SOURCE_ROOT" rev-parse HEAD)" = "${{ steps.pins.outputs.compiler_sha }}"
+          test -z "$(git --no-replace-objects -C "$CHERRI_DOCUMENTATION_SOURCE_ROOT" status --porcelain --untracked-files=all)"
+          timeout --signal=TERM --kill-after=10s 4m \
+            go -C "$CHERRI_DOCUMENTATION_SOURCE_ROOT" build -buildvcs=true -o "$CHERRI_DOCUMENTATION_COMPILER" . \
+            > "$CHERRI_LOCAL_ACCEPTANCE_OUT/toolchains/pinned-build.stdout" \
+            2> "$CHERRI_LOCAL_ACCEPTANCE_OUT/toolchains/pinned-build.stderr"
+          python3 - <<'PY'
+          import hashlib, json, os, re, shutil, subprocess
+          from pathlib import Path
+          pins = json.loads(Path('skills/cherri-shortcuts/compatibility-manifest.json').read_text())
+          source = Path(os.environ['CHERRI_DOCUMENTATION_SOURCE_ROOT'])
+          binary = Path(os.environ['CHERRI_DOCUMENTATION_COMPILER'])
+          out = binary.parent
+          def git(*args):
+              return subprocess.check_output(['git', '--no-replace-objects', '-C', str(source), *args], text=True).strip()
+          assert git('rev-parse', 'HEAD') == pins['compilerCommit']
+          assert git('remote', 'get-url', 'origin') == pins['compilerRepo']
+          assert not git('status', '--porcelain', '--untracked-files=all')
+          metadata = subprocess.check_output(['go', 'version', '-m', str(binary)], timeout=20)
+          (out / 'pinned-build-info.txt').write_bytes(metadata)
+          text = metadata.decode('utf-8', errors='strict')
+          assert re.findall(r'^\s*path\s+(\S+)\s*$', text, re.M) == ['github.com/electrikmilk/cherri']
+          builds = {}
+          for line in re.findall(r'^\s*build\s+(.+?)\s*$', text, re.M):
+              key, separator, value = line.partition('=')
+              assert separator and key not in builds
+              builds[key] = value
+          assert builds.get('vcs') == 'git' and builds.get('vcs.revision') == pins['compilerCommit']
+          assert builds.get('vcs.modified') == 'false'
+          raw = subprocess.check_output([str(binary), '--capabilities-json'], timeout=20)
+          (out / 'pinned-capabilities.json').write_bytes(raw)
+          caps = json.loads(raw)
+          assert caps.get('protocolVersion') == '1.0'
+          for key in ('languageVersion', 'catalogSchemaVersion', 'schemaFingerprint', 'codecFingerprint', 'macroFingerprint'):
+              assert caps.get(key) == pins[key], key
+          if 'compilerCommit' in caps:
+              assert caps['compilerCommit'] == pins['compilerCommit']
+          swift = shutil.which('swiftc')
+          swift_version = None
+          if swift:
+              observed = subprocess.run([swift, '--version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=20)
+              (out / 'swift-version.txt').write_bytes(observed.stdout)
+              swift_version = {'exitCode': observed.returncode, 'sha256': hashlib.sha256(observed.stdout).hexdigest()}
+          else:
+              print('::notice::swiftc unavailable; E05/E06 local Swift evidence remains NOT_RUN.')
+          receipt = {'compilerCommit': pins['compilerCommit'], 'docsCommit': pins['docsCommit'],
+                     'binary': str(binary), 'sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
+                     'sourceClean': True, 'vcsModified': False, 'capabilitiesMatchPins': True,
+                     'swiftCompiler': swift, 'swiftVersion': swift_version,
+                     'swiftScope': 'availability only; actual probes are required before any local editor pass'}
+          (out / 'toolchain-identity.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+          PY
 
       - name: Execute all 179 local obligations without inherited closure
         env:
@@ -102,9 +177,10 @@ jobs:
           import datetime, hashlib, json, os, subprocess
           from pathlib import Path
           root, docs = Path.cwd(), Path(os.environ['CHERRI_DOCS_DIR'])
+          compiler_source = Path(os.environ['CHERRI_DOCUMENTATION_SOURCE_ROOT'])
           out = Path(os.environ['CHERRI_LOCAL_ACCEPTANCE_OUT'])
           def git(path, *args):
-              return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()
+              return subprocess.check_output(['git', '--no-replace-objects', '-C', str(path), *args], text=True).strip()
           expected = {
               'acceptance-contract.json': '9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e',
               'repair-regression-plan.json': 'eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5',
@@ -116,6 +192,8 @@ jobs:
           manifest = json.loads(manifest_bytes)
           assert git(root, 'rev-parse', 'HEAD') == os.environ['GITHUB_SHA']
           assert git(docs, 'rev-parse', 'HEAD') == manifest['docsCommit']
+          assert git(compiler_source, 'rev-parse', 'HEAD') == manifest['compilerCommit']
+          assert not git(compiler_source, 'status', '--porcelain', '--untracked-files=all')
           assert git(docs, 'remote', 'get-url', 'origin') == manifest['docsRepo']
           assert not git(root, 'status', '--porcelain') and not git(docs, 'status', '--porcelain')
           assert not os.environ.get('CHERRI_P10R10_CORPUS') and not os.environ.get('CHERRI_P10R10_CORPUS_DIR')
@@ -124,6 +202,8 @@ jobs:
               'docsSha': manifest['docsCommit'], 'consumerCompilerPin': manifest['compilerCommit'],
               'manifestSha256': hashlib.sha256(manifest_bytes).hexdigest(), 'contractDigests': contracts,
               'compilerSha256': hashlib.sha256((root / 'cherri').read_bytes()).hexdigest(),
+              'documentationCompilerSha256': hashlib.sha256(Path(os.environ['CHERRI_DOCUMENTATION_COMPILER']).read_bytes()).hexdigest(),
+              'documentationCompilerSource': manifest['compilerCommit'],
               'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
               'startedUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),
               'sourceCleanBefore': True, 'docsCleanBefore': True,
@@ -147,12 +227,13 @@ jobs:
           out = Path(os.environ['CHERRI_LOCAL_ACCEPTANCE_OUT'])
           receipt = json.loads((out / 'process-start.json').read_text())
           def git(path, *args):
-              return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()
+              return subprocess.check_output(['git', '--no-replace-objects', '-C', str(path), *args], text=True).strip()
           receipt.update({
               'finishedUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),
               'exitCode': int(os.environ['CHERRI_LOCAL_RUNNER_EXIT']),
               'sourceUnchanged': git(Path.cwd(), 'rev-parse', 'HEAD') == receipt['implementationSha'] and not git(Path.cwd(), 'status', '--porcelain'),
               'docsUnchanged': git(os.environ['CHERRI_DOCS_DIR'], 'rev-parse', 'HEAD') == receipt['docsSha'] and not git(os.environ['CHERRI_DOCS_DIR'], 'status', '--porcelain'),
+              'documentationCompilerUnchanged': git(os.environ['CHERRI_DOCUMENTATION_SOURCE_ROOT'], 'rev-parse', 'HEAD') == receipt['documentationCompilerSource'] and not git(os.environ['CHERRI_DOCUMENTATION_SOURCE_ROOT'], 'status', '--porcelain', '--untracked-files=all') and hashlib.sha256(Path(os.environ['CHERRI_DOCUMENTATION_COMPILER']).read_bytes()).hexdigest() == receipt['documentationCompilerSha256'],
               'runnerLogSha256': hashlib.sha256((out / 'runner.log').read_bytes()).hexdigest(),
           })
           report_path = out / 'acceptance-report.json'
@@ -169,7 +250,7 @@ jobs:
               stream.write('## Actual local179 diagnostic run\n\n')
               stream.write('```json\n' + json.dumps(receipt, indent=2) + '\n```\n')
               stream.write('\nThis workflow does not grant iOS runtime, private corpus, deployment, AI quality, or final179 closure.\n')
-          assert receipt['sourceUnchanged'] and receipt['docsUnchanged']
+          assert receipt['sourceUnchanged'] and receipt['docsUnchanged'] and receipt['documentationCompilerUnchanged']
           assert receipt['all179Reported'], 'Runner ended before a complete 179-row report'
           PY
           # Preserve the real local-runner result. Pending local obligations remain

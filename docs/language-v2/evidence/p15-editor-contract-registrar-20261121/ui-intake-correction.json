@@ -1,0 +1,40 @@
+{
+  "source": "47c1aff5673ae908ba2f3a4b8741b535029207a3",
+  "started": "2026-11-21T18:59:09.385240+00:00",
+  "finished": "2026-11-21T18:59:13.926424+00:00",
+  "elapsed_seconds": 4.54700000000048,
+  "command": [
+    "go",
+    "test",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestEditorContract(Rejects|Inventory|Strict)",
+    "-json",
+    "-count=1",
+    "-timeout=60s"
+  ],
+  "exit_code": 0,
+  "clean_before": true,
+  "clean_after": true,
+  "pass_events": 104,
+  "failed_events": 0,
+  "skipped_events": 0,
+  "artifacts": [
+    {
+      "path": "stdout.jsonl",
+      "sha256": "f65fb0a0d3687f19770fe3311ef6ec0fdfd48b19f92f4565ce9628ec0ab2fd95",
+      "bytes": 116013
+    },
+    {
+      "path": "stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "scope": "Focused external/UI/cross-ID rejection and fixed inventory/event controls only. Earlier233Go+43Swift actual execution remains source4abccc70; no new local production/Apple run is claimed.",
+  "archive": {
+    "path": "ui-intake-correction.zip",
+    "bytes": 4950,
+    "sha256": "1b1754636179a956ae913eb53aba2c6ab39ff2e8cda7123449b14c795a0a8404"
+  }
+}
