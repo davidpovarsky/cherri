@@ -209,6 +209,7 @@ def evaluate(args):
         raise ValueError("external execution requires the explicit --allow-external switch")
     bundle = None
     if getattr(args, "sealed_bundle", None):
+        args.sealed_report_owned = False
         from evaluation_bundle import load_bundle, require, write_new, canonical, utc_now
         bundle = load_bundle(args.sealed_bundle)
         frozen = bundle["manifest"]
@@ -225,6 +226,10 @@ def evaluate(args):
         write_new(bundle["root"] / "runner-intent.json", canonical({"started_at": utc_now(),
                   "manifest_sha256": digest(canonical(frozen)), "anchor": bundle["anchor"],
                   "expected_outcomes": 12, "retry_limit": 0}))
+        # Only the invocation that claims both new files owns report updates.
+        # A failed repeated claim must never replace an earlier outcome report.
+        write_new(args.output, canonical(report))
+        args.sealed_report_owned = True
         report.update(manifest_sha256=digest(canonical(frozen)), anchor=bundle["anchor"],
                       provenance_scope=frozen["provenance_scope"],
                       unseen_pattern_provenance_proved=False, apple_runtime_proved=False)
@@ -391,7 +396,8 @@ def main(argv=None):
                       error_type=type(error).__name__, reason="invalid configuration, input, or adapter evidence; no score produced")
         report.pop("measured_results", None)
         code = 1
-    atomic_json(args.output, report)
+    if not args.sealed_bundle or getattr(args, "sealed_report_owned", False):
+        atomic_json(args.output, report)
     print(json.dumps({"status": report["status"], "ai_quality_measured": report["ai_quality_measured"]}))
     return code
 
