@@ -59,3 +59,45 @@ func TestOptionalPresenceDemandFollowsActualConsumers(t *testing.T) {
 		})
 	}
 }
+
+func TestImportedOptionalPresenceDemandRetainsRealConsumers(t *testing.T) {
+	cases := []struct {
+		name, text string
+		needed     bool
+	}{
+		{"ordinary_value", "target=parsed[\"key\"];target=parsed[\"key\"];show(target)", false},
+		{"literal_text", "target=\"return target == none\";show(target)", false},
+		{"none_comparison", "target=parsed[\"key\"];show(target==none)", true},
+		{"alias", "target=parsed[\"key\"];let alias=target;show(alias!=none)", true},
+		{"return", "target=parsed[\"key\"];return target", true},
+		{"argument", "function echo(value:AnyContent?)->AnyContent?{return value};target=parsed[\"key\"];echo(target)", true},
+		{"named_argument", "function echo(seed:Text,value:AnyContent?)->AnyContent?{return value};target=parsed[\"key\"];echo(\"seed\",value:target)", true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			parser := syntax.NewParser(source.NewFile("import-demand.cherri", "import-demand.cherri", 1, tc.text))
+			program := parser.ParseProgram()
+			if len(parser.Errors()) != 0 {
+				t.Fatal(parser.Errors())
+			}
+			before := syntax.Format(program)
+			lowerer := NewLowerer(nil)
+			if !lowerer.importedOptionalPresenceNeeded("target") {
+				t.Fatal("unanalyzed imported name lost tracking")
+			}
+			lowerer.prepareOptionalPresenceDemand(program)
+			if got := lowerer.importedOptionalPresenceNeeded("target"); got != tc.needed {
+				t.Fatalf("actual consumer demand %v want %v", got, tc.needed)
+			}
+			if !lowerer.importedOptionalPresenceNeeded("unknown_generated") {
+				t.Fatal("unregistered imported/generated name lost tracking")
+			}
+			if !lowerer.optionalPresenceNeeded(&syntax.BindingStmt{Name: "target"}) {
+				t.Fatal("name demand leaked into unregistered authored/generated binding")
+			}
+			if syntax.Format(program) != before {
+				t.Fatal("presence pass changed syntax")
+			}
+		})
+	}
+}
