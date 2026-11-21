@@ -1980,6 +1980,14 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	}
 
 	binding, isBound := l.bindings[a.Name]
+	// An imported native append may transport an opaque Optional reference
+	// without observing presence. It cannot establish the compiler-owned flag
+	// required by a later Optional consumer, including a previously tagged
+	// target: ordinary compound assignment would otherwise store literal "1".
+	if isBound && binding.AppendVariable && a.Op == syntax.TokenPlusAssign &&
+		!binding.OptionalPresenceUnused && !types.DefinitelyPresent(l.exprTypes[a.Value]) {
+		return fmt.Errorf("E_TARGET_VALUE_SHAPE: imported native append cannot establish compiler-owned optional presence at %s", a.Span)
+	}
 	if isBound {
 		presence, err := l.assignOptionalPresence(binding, a, val)
 		if err != nil {

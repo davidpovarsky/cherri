@@ -34,6 +34,7 @@ type Symbol struct {
 	knownAbsent           bool
 	dictionaryOrigin      *syntax.MapExpr
 	nativeReferenceTarget bool
+	nativeAppendVariable  bool
 	nativeListValue       bool
 }
 
@@ -602,8 +603,10 @@ func (a *Analyzer) predefineImportProvenanceSymbols(stmts []syntax.Statement, sc
 				name = symName
 			}
 			_, referenceError := ir.NormalizeNativeReferenceKind(kind, uuid, name)
+			appendVariable, _ := entry["AppendVariable"].(bool)
 			scope.Define(&Symbol{
 				nativeReferenceTarget: referenceError == nil && (kind == "Variable" || strings.TrimSpace(uuid) != ""),
+				nativeAppendVariable:  referenceError == nil && kind == "Variable" && appendVariable,
 				Name:                  symName,
 				Type:                  symType,
 				Mutable:               mutable,
@@ -859,7 +862,12 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		// Compound assignment reads both operands. A declared Optional target
 		// does not turn absence into a Number/List value; only a checked flow
 		// narrowing (or a known-present initializer) permits that read.
-		if s.Op != syntax.TokenAssign && (types.MayBeAbsent(sym.readType()) || types.MayBeAbsent(valType)) {
+		// Validated imported append metadata selects a native list mutation,
+		// rather than an arithmetic read of two present scalar operands.
+		// Lowering separately rejects any compiler Optional-presence demand
+		// that an opaque native append cannot satisfy.
+		nativeAppend := s.Op == syntax.TokenPlusAssign && sym.nativeAppendVariable
+		if s.Op != syntax.TokenAssign && !nativeAppend && (types.MayBeAbsent(sym.readType()) || types.MayBeAbsent(valType)) {
 			a.error(CodeArgumentType, s.Span, "compound assignment requires present operands; check Optional values against none before using them")
 		}
 		if valType != nil && sym.Type != nil {
