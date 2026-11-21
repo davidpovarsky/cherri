@@ -1,0 +1,72 @@
+{
+  "formatVersion": 1,
+  "source": "3a07885ca62db797250b31c43d30cb7c8cc670eb",
+  "rootIntegration": "ee12226783b65517aaef9cf0f5e880b08f5f5ee5",
+  "run": {
+    "source": "3a07885ca62db797250b31c43d30cb7c8cc670eb",
+    "sourceCleanBefore": true,
+    "sourceCleanAfter": true,
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=3m",
+      "-run",
+      "^TestP15(M02|MacroExplicitOutput)|^TestP15_(MacroRuntimeFixtures|Measure)",
+      "."
+    ],
+    "startedUTC": "2026-11-21T19:54:36.806857+00:00",
+    "finishedUTC": "2026-11-21T19:55:47.682462+00:00",
+    "durationSeconds": 70.875,
+    "exitCode": 0,
+    "timedOut": false,
+    "passed": 237,
+    "failed": [],
+    "skipped": [],
+    "stdoutSHA256": "f32c8018d5fc1ec01622f68db37a2aa40c70a5a493be5f46af0275b7749fbc8b",
+    "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalFailure": {
+    "workflow": 44938761076,
+    "head": "d90b69a92e83b5034728c22e062a3dd96153a2a8",
+    "linuxJob": 136951106499,
+    "linuxOriginalLogSHA256": "76bbb4be732160fee73892dfdb7b8a10281f02b63a5a2b90ebe46279675eac0e",
+    "macOriginalLogSHA256": "d0678188eff54024022ab0da333f5231ff6e12255ba8837574cc1f112fc9e457",
+    "cause": "All three public runtime fixtures explicitly output finalSummary, but two test parents incorrectly applied the implicit-Void M02 observer."
+  },
+  "peerReview": "docs_consumers read-only source review found no blocker; no independent duplicate execution.",
+  "scope": "Explicit output boundary and local macro/M02 regression only. No native Apple result or full179 acceptance.",
+  "preservedGuards": [
+    "p15MeasureActions",
+    "p15M02MainVoidDebugError"
+  ],
+  "productionCodeChanged": false,
+  "archive": {
+    "sha256": "d3e3fc0cc106da0db44a7b1219d1d39dd4be05477ee4c5f6a5efe19c74312c38",
+    "bytes": 11546,
+    "members": 4
+  },
+  "originals": [
+    {
+      "path": "receipt.json",
+      "bytes": 701,
+      "sha256": "2de06190fb1cda666fd281890bcdb4374ef0a821c2c58c4705effda5713179f0"
+    },
+    {
+      "path": "started.json",
+      "bytes": 259,
+      "sha256": "d08a1b802b4cf4008f36a5be03b3a4588791947cddb50184b9bed5f27dcd1a94"
+    },
+    {
+      "path": "stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stdout.jsonl",
+      "bytes": 219364,
+      "sha256": "f32c8018d5fc1ec01622f68db37a2aa40c70a5a493be5f46af0275b7749fbc8b"
+    }
+  ]
+}
