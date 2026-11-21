@@ -164,10 +164,10 @@ func p15SCReferences(actions []map[string]any) error {
 			if !ok || !p15SCCanonicalUUID(uuid) {
 				return fmt.Errorf("invalid native UUID at %d", i)
 			}
-			if _, duplicate := positions[uuid]; duplicate {
+			if _, duplicate := positions[strings.ToLower(uuid)]; duplicate {
 				return fmt.Errorf("duplicate native UUID at %d", i)
 			}
-			positions[uuid] = i
+			positions[strings.ToLower(uuid)] = i
 		}
 	}
 	var walk func(any, int) error
@@ -177,7 +177,7 @@ func p15SCReferences(actions []map[string]any) error {
 			for key, child := range v {
 				if key == "OutputUUID" {
 					uuid, ok := child.(string)
-					producer, found := positions[uuid]
+					producer, found := positions[strings.ToLower(uuid)]
 					if !ok || !found || producer >= consumer {
 						return fmt.Errorf("missing or late native producer at %d", consumer)
 					}
@@ -265,11 +265,11 @@ func (c *p15SCCursor) start(input map[string]any, code uint64, key string, right
 		c.err = fmt.Errorf("invalid native condition group")
 		return ""
 	}
-	if c.groups[group] {
+	if c.groups[strings.ToLower(group)] {
 		c.err = fmt.Errorf("missing or reused native condition group")
 		return ""
 	}
-	c.groups[group] = true
+	c.groups[strings.ToLower(group)] = true
 	c.take("conditional", "", map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": uint64(0), "WFCondition": code, "WFConditionalLegacyComparisonBehavior": true, "WFInput": map[string]any{"Type": "Variable", "Variable": p15SCAttachment(input)}, key: right}, false)
 	return group
 }
@@ -619,12 +619,43 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 			})
 		}
 	}
-	for _, fault := range []string{"initial_counter", "skipped_result", "bool_carrier", "eager_effect", "duplicate_effect", "mixed_outer_producer", "crosswired_store", "late_counter_producer", "count_observer", "order_observer", "hidden_output", "missing_output", "extra_effect", "foreign_action", "stale_group", "malformed_uuid", "zero_uuid", "malformed_group", "zero_group", "wrong_native_numeric_kind"} {
+	for _, fault := range []string{"initial_counter", "skipped_result", "bool_carrier", "eager_effect", "duplicate_effect", "mixed_outer_producer", "crosswired_store", "late_counter_producer", "count_observer", "order_observer", "hidden_output", "missing_output", "extra_effect", "foreign_action", "stale_group", "malformed_uuid", "zero_uuid", "malformed_group", "zero_group", "wrong_native_numeric_kind", "casefold_uuid_collision", "casefold_group_collision"} {
 		t.Run(fault, func(t *testing.T) {
 			broken := p15SCClone(t, actions)
 			first := view.effects["andFF"][0]
 			cause := ""
 			switch fault {
+			case "casefold_uuid_collision":
+				// First prove that a valid, reconciled identity rename is accepted.
+				// Then collide a second real producer with its case-only alias.
+				// Fixed letters avoid depending on the random UUID's hex digits.
+				base := "4fe62a08-dbd6-4f58-afd0-000000000002"
+				old := p15SCParams(broken[0])["UUID"].(string)
+				if p15SCReplaceIdentity(broken, old, base) != 2 {
+					t.Fatal("valid producer rename did not reconcile owner and consumer")
+				}
+				if _, err := p15SCGraph(broken, typed); err != nil {
+					t.Fatal("valid producer identity rename rejected", err)
+				}
+				old = p15SCParams(broken[first])["UUID"].(string)
+				if p15SCReplaceIdentity(broken, old, strings.ToUpper(base)) != 2 {
+					t.Fatal("case-only producer collision did not reconcile owner and consumer")
+				}
+				cause = "duplicate native UUID"
+			case "casefold_group_collision":
+				base := "5fe62a08-dbd6-4f58-afd0-000000000003"
+				old := p15SCParams(broken[2])["GroupingIdentifier"].(string)
+				if p15SCReplaceIdentity(broken, old, base) != 3 {
+					t.Fatal("valid group rename did not reconcile start/else/end")
+				}
+				if _, err := p15SCGraph(broken, typed); err != nil {
+					t.Fatal("valid group identity rename rejected", err)
+				}
+				old = p15SCParams(broken[view.guards["andFF"]])["GroupingIdentifier"].(string)
+				if p15SCReplaceIdentity(broken, old, strings.ToUpper(base)) != 3 {
+					t.Fatal("case-only group collision did not reconcile start/else/end")
+				}
+				cause = "missing or reused native condition group"
 			case "malformed_uuid", "zero_uuid":
 				old, _ := p15SCParams(broken[first])["UUID"].(string)
 				replacement := "not-a-native-uuid"
@@ -711,7 +742,7 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 				p15SCParams(broken[end-2])["GroupingIdentifier"] = "FOREIGN-GROUP"
 				cause = "native conditional action differs"
 			}
-			if fault != "late_counter_producer" && fault != "malformed_uuid" && fault != "zero_uuid" {
+			if fault != "late_counter_producer" && fault != "malformed_uuid" && fault != "zero_uuid" && fault != "casefold_uuid_collision" {
 				if err := p15SCReferences(broken); err != nil {
 					t.Fatal("mutation broke identity before intended causal gate", err)
 				}
