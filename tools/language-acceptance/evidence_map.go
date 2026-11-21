@@ -497,6 +497,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := documentationRecoveryScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if id == "RP52" {
 		return publicFrontendTestIDs()
 	}
@@ -570,6 +573,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := documentationRecoveryScenarios[id]; found {
+		return append([]string{}, documentationRecoveryProductionPaths...)
+	}
 	if id == "RP52" {
 		return append([]string{}, publicFrontendProductionPaths...)
 	}
@@ -598,6 +604,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := documentationRecoveryScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if id == "BRG30" {
 		return packagedSkillTestIDs()
 	}
@@ -690,6 +699,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if _, found := documentationRecoveryScenarios[id]; found {
+		return append([]string{}, documentationRecoveryProductionPaths...)
+	}
 	if id == "BRG30" {
 		return append([]string{}, packagedSkillProductionPaths...)
 	}

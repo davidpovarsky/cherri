@@ -971,6 +971,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateDocumentationRecoveryRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateNumberWireRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1940,6 +1944,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runDocumentationRecoveryRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runNumberWireRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1981,6 +1988,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runDocumentationRecoveryRequirement(g.ID, g.Title, g.MinimumEvidenceTiers) {
+			continue
+		}
 		if r.runPackagedSkillRequirement(g) {
 			continue
 		}
