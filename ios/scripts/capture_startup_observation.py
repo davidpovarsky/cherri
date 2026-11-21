@@ -25,6 +25,7 @@ TESTS = {
 PHASES = {"before-launch", "after-launch", "readiness-start", "teardown-start", "teardown-finished"}
 APP_PHASES = {
     "observer-opened", "heartbeat", "observer-expired", "observer-stopped", "event-limit-reached",
+    "main-queue-enqueued", "main-queue-executed",
     "app-initialized", "document-initialized", "document-read-started", "document-read-finished",
     "document-write-started", "document-write-finished", "workspace-body", "workspace-appeared",
     "editor-host-body", "editor-host-appeared", "editor-container-created",
@@ -238,6 +239,13 @@ def validate_app_events(data, test, nonce):
     require(all(row["documentId"] is None and row["mainThread"] is False for row in heartbeat_rows), "HEARTBEAT_IDENTITY")
     heartbeats = [row["observedUptimeMs"] for row in heartbeat_rows]
     require(all(b >= a for a, b in zip(heartbeats, heartbeats[1:])), "HEARTBEAT_CLOCK")
+    enqueued = [row for row in rows if row["phase"] == "main-queue-enqueued"]
+    executed = [row for row in rows if row["phase"] == "main-queue-executed"]
+    require(len(enqueued) <= 1 and len(executed) <= 1, "MAIN_QUEUE_SINGLE_PROBE")
+    require(all(row["documentId"] is None for row in enqueued + executed), "MAIN_QUEUE_DOCUMENT")
+    require(not enqueued or enqueued[0]["mainThread"] is False, "MAIN_QUEUE_ENQUEUE_THREAD")
+    require(not executed or (enqueued and enqueued[0]["sequence"] < executed[0]["sequence"]
+            and enqueued[0]["observedUptimeMs"] <= executed[0]["observedUptimeMs"]), "MAIN_QUEUE_ORDER")
     return rows, {
         "status": "HEARTBEATS_OBSERVED" if heartbeats else "NO_HEARTBEAT_OBSERVED",
         "heartbeatCount": len(heartbeats),
@@ -245,6 +253,11 @@ def validate_app_events(data, test, nonce):
         "largestObservedHeartbeatGapMs": max((b-a for a, b in zip(heartbeats, heartbeats[1:])), default=None),
         "terminatedBy": rows[-1]["phase"] if rows[-1]["phase"] in {"observer-expired", "observer-stopped", "event-limit-reached"} else "NO_TERMINAL_EVENT",
         "absenceProvesMissingLifecycle": False,
+        "mainQueueProbeEnqueued": bool(enqueued),
+        "mainQueueExecutionObserved": bool(executed),
+        "executionWasOnMainThread": executed[0]["mainThread"] if executed else None,
+        "mainQueueResponseMs": executed[0]["observedUptimeMs"] - enqueued[0]["observedUptimeMs"] if executed else None,
+        "absenceProvesMainThreadBlocked": False,
     }
 
 

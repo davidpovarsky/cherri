@@ -7,6 +7,8 @@ final class CherriStartupLifecycleObserver: @unchecked Sendable {
     enum Phase: String, Sendable {
         case observerOpened = "observer-opened"
         case heartbeat
+        case mainQueueEnqueued = "main-queue-enqueued"
+        case mainQueueExecuted = "main-queue-executed"
         case observerExpired = "observer-expired"
         case observerStopped = "observer-stopped"
         case eventLimitReached = "event-limit-reached"
@@ -61,6 +63,7 @@ final class CherriStartupLifecycleObserver: @unchecked Sendable {
             .appendingPathComponent(context.nonce + ".jsonl", isDirectory: false)
         let observer = CherriStartupLifecycleObserver(context: context, output: output)
         observer.start()
+        observer.observeMainQueueOnce()
         return observer
     }()
 
@@ -70,6 +73,8 @@ final class CherriStartupLifecycleObserver: @unchecked Sendable {
     private let lifetime: TimeInterval
     private let interval: TimeInterval
     private let maximum: Int
+    private let enqueueMain: @Sendable (@escaping @Sendable () -> Void) -> Void
+    private var mainQueueProbeRequested = false
     // Mutable writer state is confined to this queue; callers capture only fixed values.
     private let queue = DispatchQueue(label: "org.cherrilang.startup-observation", qos: .utility)
     private var file: FileHandle?
@@ -83,13 +88,17 @@ final class CherriStartupLifecycleObserver: @unchecked Sendable {
     init(context: Context, output: URL,
          now: @escaping @Sendable () -> TimeInterval = { ProcessInfo.processInfo.systemUptime },
          lifetime: TimeInterval = lifetimeSeconds, interval: TimeInterval = 2,
-         maximum: Int = maximumEvents) {
+         maximum: Int = maximumEvents,
+         enqueueMain: @escaping @Sendable (@escaping @Sendable () -> Void) -> Void = {
+             DispatchQueue.main.async(execute: $0)
+         }) {
         self.context = context
         self.output = output
         self.now = now
         self.lifetime = lifetime
         self.interval = interval
         self.maximum = maximum
+        self.enqueueMain = enqueueMain
     }
 
     static func newDocumentID() -> String {
@@ -146,12 +155,42 @@ final class CherriStartupLifecycleObserver: @unchecked Sendable {
         }
     }
 
+    /// One event-only request. A missing response is never a readiness verdict.
+    /// Only this observer's writer queue owns the one-shot reservation.
+    func observeMainQueueOnce() {
+        queue.async { [self] in
+            guard !closed, file != nil, !mainQueueProbeRequested,
+                  let start = startedAt, let timestamp = Self.milliseconds(now()),
+                  now() >= start, now() - start < lifetime else { return }
+            mainQueueProbeRequested = true
+            emit(.mainQueueEnqueued, documentID: nil, observed: timestamp, mainThread: false)
+            guard !closed else { return }
+            enqueueMain { [weak self] in
+                guard let self, let observed = Self.milliseconds(self.now()) else { return }
+                let main = Thread.isMainThread
+                self.queue.async { [self] in
+                    guard !self.closed, self.file != nil, let start = self.startedAt else { return }
+                    let decisionTime = self.now()
+                    guard decisionTime.isFinite, decisionTime >= start else { self.close(); return }
+                    guard decisionTime - start < self.lifetime else {
+                        if let expiredAt = Self.milliseconds(decisionTime) {
+                            self.emit(.observerExpired, documentID: nil, observed: expiredAt, mainThread: main)
+                        }
+                        self.close()
+                        return
+                    }
+                    self.emit(.mainQueueExecuted, documentID: nil, observed: observed, mainThread: main)
+                }
+            }
+        }
+    }
+
     func record(_ phase: Phase, documentID: String? = nil, once: Bool = true) {
         guard let observed = Self.milliseconds(now()) else { return }
         let main = Thread.isMainThread
         queue.async { [self] in
             guard !closed, file != nil, let start = startedAt else { return }
-            guard ![Phase.observerOpened, .heartbeat, .observerExpired, .observerStopped, .eventLimitReached].contains(phase) else { return }
+            guard ![Phase.observerOpened, .heartbeat, .observerExpired, .observerStopped, .eventLimitReached, .mainQueueEnqueued, .mainQueueExecuted].contains(phase) else { return }
             let decisionTime = now()
             let elapsed = decisionTime - start
             guard elapsed.isFinite, elapsed >= 0 else {
