@@ -135,140 +135,52 @@ func CherriAnalyzeVersioned(uri *C.char, version C.int, source *C.char) *C.char 
 }
 
 // CherriComplete computes contextual completions at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriComplete
 func CherriComplete(source *C.char, line C.int, column C.int) *C.char {
-	src := C.GoString(source)
-	svc := service.NewService(schema.DefaultRegistry())
-	uri := "file:///mobile.cherri"
-	svc.OpenDocument(uri, 1, src)
-	items := svc.Complete(uri, int(line), int(column))
-
-	wireItems := make([]protocol.CompletionItem, 0)
-	for _, it := range items {
-		wireItems = append(wireItems, protocol.CompletionItem{
-			Label:         it.Label,
-			Kind:          int(it.Kind),
-			Detail:        it.Detail,
-			Documentation: it.Documentation,
-			InsertText:    it.InsertText,
-		})
-	}
-
-	resp := protocol.CompleteResponse{
-		URI:               uri,
-		Version:           1,
-		LanguageVersion:   schema.LanguageVersion,
-		SchemaFingerprint: svc.SchemaFingerprint(),
-		Items:             wireItems,
-	}
-
+	resp := completeForMobile(C.GoString(source), int(line), int(column))
 	encoded, _ := json.Marshal(resp)
 	return C.CString(string(encoded))
 }
 
 // CherriHover returns hover documentation and range at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriHover
 func CherriHover(source *C.char, line C.int, column C.int) *C.char {
-	src := C.GoString(source)
-	svc := service.NewService(schema.DefaultRegistry())
-	uri := "file:///mobile.cherri"
-	svc.OpenDocument(uri, 1, src)
-	res := svc.Hover(uri, int(line), int(column))
-	if res == nil {
-		encoded, _ := json.Marshal(protocol.HoverResponse{OK: false})
-		return C.CString(string(encoded))
-	}
-	rng := protocol.Range{
-		Start: protocol.Position{Line: res.Span.Start.LSPLine(), Character: res.Span.Start.LSPCharacterColumn()},
-		End:   protocol.Position{Line: res.Span.End.LSPLine(), Character: res.Span.End.LSPCharacterColumn()},
-	}
-	encoded, _ := json.Marshal(protocol.HoverResponse{
-		OK:       true,
-		Contents: res.Contents,
-		Range:    &rng,
-	})
+	resp := hoverForMobile(C.GoString(source), int(line), int(column))
+	encoded, _ := json.Marshal(resp)
 	return C.CString(string(encoded))
 }
 
 // CherriDefinition returns the declaration span for the symbol at (line, column).
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriDefinition
 func CherriDefinition(source *C.char, line C.int, column C.int) *C.char {
-	src := C.GoString(source)
-	svc := service.NewService(schema.DefaultRegistry())
-	uri := "file:///mobile.cherri"
-	svc.OpenDocument(uri, 1, src)
-	span := svc.Definition(uri, int(line), int(column))
-	if span == nil {
-		encoded, _ := json.Marshal(protocol.DefinitionResponse{OK: false})
-		return C.CString(string(encoded))
-	}
-	rng := protocol.Range{
-		Start: protocol.Position{Line: span.Start.LSPLine(), Character: span.Start.LSPCharacterColumn()},
-		End:   protocol.Position{Line: span.End.LSPLine(), Character: span.End.LSPCharacterColumn()},
-	}
-	encoded, _ := json.Marshal(protocol.DefinitionResponse{
-		OK:    true,
-		URI:   uri,
-		Range: &rng,
-	})
+	resp := definitionForMobile(C.GoString(source), int(line), int(column))
+	encoded, _ := json.Marshal(resp)
 	return C.CString(string(encoded))
 }
 
 // CherriSignatureHelp returns signature help at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriSignatureHelp
 func CherriSignatureHelp(source *C.char, line C.int, column C.int) *C.char {
-	src := C.GoString(source)
-	svc := service.NewService(schema.DefaultRegistry())
-	uri := "file:///mobile.cherri"
-	svc.OpenDocument(uri, 1, src)
-	sig := svc.SignatureHelp(uri, int(line), int(column))
-	if sig == nil {
-		encoded, _ := json.Marshal(protocol.SignatureHelpResponse{OK: false})
-		return C.CString(string(encoded))
-	}
-	encoded, _ := json.Marshal(protocol.SignatureHelpResponse{
-		OK:              true,
-		Label:           sig.Label,
-		Documentation:   sig.Documentation,
-		Parameters:      sig.Parameters,
-		ActiveParameter: sig.ActiveParameter,
-	})
+	resp := signatureHelpForMobile(C.GoString(source), int(line), int(column))
+	encoded, _ := json.Marshal(resp)
 	return C.CString(string(encoded))
 }
 
 // CherriRename performs a scoped symbol rename at (line, column) in source.
+// Input coordinates are one-based line and UTF-16 column, matching Cocoa.
 //
 //export CherriRename
 func CherriRename(source *C.char, line C.int, column C.int, newName *C.char) *C.char {
-	src := C.GoString(source)
-	targetName := C.GoString(newName)
-	svc := service.NewService(schema.DefaultRegistry())
-	uri := "file:///mobile.cherri"
-	svc.OpenDocument(uri, 1, src)
-	updated, edits, err := svc.Rename(uri, int(line), int(column), targetName)
-	if err != nil {
-		encoded, _ := json.Marshal(protocol.RenameResponse{OK: false, Error: err.Error()})
-		return C.CString(string(encoded))
-	}
-	wireEdits := make([]protocol.TextEditItem, len(edits))
-	for i, ed := range edits {
-		wireEdits[i] = protocol.TextEditItem{
-			Range: protocol.Range{
-				Start: protocol.Position{Line: ed.Span.Start.LSPLine(), Character: ed.Span.Start.LSPCharacterColumn()},
-				End:   protocol.Position{Line: ed.Span.End.LSPLine(), Character: ed.Span.End.LSPCharacterColumn()},
-			},
-			NewText: ed.NewText,
-		}
-	}
-	encoded, _ := json.Marshal(protocol.RenameResponse{
-		OK:     true,
-		Source: updated,
-		Edits:  wireEdits,
-	})
+	resp := renameForMobile(C.GoString(source), int(line), int(column), C.GoString(newName))
+	encoded, _ := json.Marshal(resp)
 	return C.CString(string(encoded))
 }
 
