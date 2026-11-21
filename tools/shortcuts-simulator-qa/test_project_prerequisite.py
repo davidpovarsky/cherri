@@ -72,7 +72,12 @@ class OriginalGeneratorShellTests(unittest.TestCase):
 
 
     def success_program(self):
-        self.program("xcodegen","mkdir -p CherriSimulatorQA.xcodeproj\nprintf REVIEWED_PROJECT > CherriSimulatorQA.xcodeproj/project.pbxproj")
+        # The deliberately minimal PATH must not depend on host coreutils.
+        # Reuse the explicitly pinned Python wrapper installed by setUp.
+        self.program("xcodegen", "python3 - <<'PY'\nfrom pathlib import Path\n"
+                     "project = Path('CherriSimulatorQA.xcodeproj')\n"
+                     "project.mkdir()\n"
+                     "(project / 'project.pbxproj').write_bytes(b'REVIEWED_PROJECT')\nPY")
 
     def receipt(self):
         return json.loads((self.root/"builds/project-prerequisite/receipt.json").read_bytes())

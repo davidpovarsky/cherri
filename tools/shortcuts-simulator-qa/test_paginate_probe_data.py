@@ -102,8 +102,11 @@ class PaginateProbeDataTests(unittest.TestCase):
         if not bash:
             self.skipTest("bash unavailable")
         script = (ROOT/"scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
-        hook = script.split("# Verify only the explicitly selected paginate targets", 1)[1]
-        hook = "# Verify only the explicitly selected paginate targets" + hook.split("# Phase 1:", 1)[0]
+        start = script.index("# Verify only the explicitly selected paginate targets")
+        # Exercise the selected-target data gate, ending before the separately
+        # tested acquisition checkpoint and its owned Git/manifest context.
+        end = script.index("\nqa_acquisition_checkpoint COMPILED", start)
+        hook = script[start:end]
         for scenario in MODULE.SCENARIOS:
             sample = "qa-paginate-" + scenario
             for exit_code in (0, 17):
