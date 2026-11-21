@@ -1882,7 +1882,7 @@ func (r *Runner) runVerification() {
 // Group 21: Evaluation
 func (r *Runner) runEvaluation() {
 	// AI01: Held-out equal-budget model evaluation harness
-	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", nil, false, "AI_EVAL_NOT_RUN", "No authorized held-out model evaluation has executed in this run. Configure the adapter and validator described in tools/language-ai-eval/README.md and explicitly use --execute-external; RP50 harness controls do not measure AI quality")
+	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", nil, false, "AI_EVAL_NOT_RUN", "No authorized held-out model evaluation has executed in this run. Configure the adapter and validator described in tools/language-ai-eval/README.md and explicitly use --allow-external; RP50 harness controls do not measure AI quality")
 }
 
 // Group 22: Delivery
