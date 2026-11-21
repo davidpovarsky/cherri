@@ -210,3 +210,11 @@ The QA collector now anchors its three post-test02 metadata queries to the origi
 - Preserved the peer-review RED: four actual controls exposed 11 stale assertion/summary and publisher-continuation failures at 3c433277442cc3407e189b35d8b9b8e462ec1ac5.
 - Bind existing assertion source/run/fixture/profile/unsigned bytes and invocation nonce, including exclusive-write races and summary early returns. Persist the actual emitter nonce once so the existing storage reader transition remains explicit. Stop publication if finalization rejects identity.
 - Actual combined Windows replay: 98 discovered, 94 PASS, 4 explicitly POSIX-only skips, no failures (113.359 seconds). Original 900-second phase, 45-minute job, callback/trace/value oracles, and private raw originals are preserved. Peer review found no remaining concrete regression in the bounded delta. Clean-source replay and actual macOS execution are separate gates; no runtime or 179 completion granted.
+
+## P10R15 native nested-List observation preparation (2026-11-20)
+
+- Added separate public control and experimental native List-row diagnostics with explicit main returns; no production encoding or formal requirement promotion.
+- Local full graphs cover56/78actions;28/33 actual graph corruptions and15 bounded observation controls. Clean-source replay and native selector/callback/publication integration remain separate gates.
+- Preserve actual contradictions and type-name bytes. A shape match or Dictionary carrier does not establish native nested-List type. See docs/apple-runtime/p10r15/nested-list-native-observation.md.
+
+- Clean nested-List preparation proof sealed: source15c5d1af,4 Go named passes,15 actual observer controls,56/78 action graphs,61 actual graph corruptions,2 altered-output artifacts rejected; actual fresh CLI unsigned gates passed. Native execution and type evidence remain open. Proof: docs/language-v2/evidence/p15-nested-list-native-probe-20261120.

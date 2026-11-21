@@ -1,0 +1,334 @@
+{
+  "schema_version": 1,
+  "scope": "LOCAL_ACTION_GRAPH_AND_OBSERVER_PREPARATION_ONLY",
+  "source": "15c5d1af002117df1c803a32231b7a44a0e0dacd",
+  "branch": "agent/cherri-p10r15-nested-list-probe-20261120",
+  "actualCleanJob": "job_44a515acd911",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "cleanProcess": {
+    "source": "15c5d1af002117df1c803a32231b7a44a0e0dacd",
+    "sourceCleanBefore": true,
+    "sourceCleanAfter": true,
+    "allProcessesSucceeded": true,
+    "records": [
+      {
+        "phase": "go-version",
+        "command": [
+          "C:\\Program Files\\Go\\bin\\go.exe",
+          "version"
+        ],
+        "budgetSeconds": 30,
+        "startedAt": "2026-11-20T13:05:17.553122+00:00",
+        "finishedAt": "2026-11-20T13:05:17.636829+00:00",
+        "elapsedSeconds": 0.0779999999795109,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "a1ae6dc6b3b40081e3c80e6066e60c64af94a96582f26ceea875c8dd0807125b",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "root",
+        "command": [
+          "C:\\Program Files\\Go\\bin\\go.exe",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout=3m",
+          "-run",
+          "^TestP15NestedListProbe(ActualCompiledGraphs|ObservationControls)$",
+          "."
+        ],
+        "budgetSeconds": 210,
+        "startedAt": "2026-11-20T13:05:17.655257+00:00",
+        "finishedAt": "2026-11-20T13:05:23.219183+00:00",
+        "elapsedSeconds": 5.561999999976251,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "6339eca420ddac5ff84d3a9db24a316f9e07d0f9a1e2747c51caa2c6b447962b",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "build",
+        "command": [
+          "C:\\Program Files\\Go\\bin\\go.exe",
+          "build",
+          "-buildvcs=true",
+          "-o",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\compiler.exe",
+          "."
+        ],
+        "budgetSeconds": 150,
+        "startedAt": "2026-11-20T13:05:23.233480+00:00",
+        "finishedAt": "2026-11-20T13:05:26.201251+00:00",
+        "elapsedSeconds": 2.9679999999934807,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "qa-nested-list-control-v2-compile",
+        "command": [
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\compiler.exe",
+          "compile",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119\\tools\\shortcuts-simulator-qa\\fixtures\\qa-nested-list-control-v2.cherri",
+          "--unsigned",
+          "--output",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\qa-nested-list-control-v2.shortcut"
+        ],
+        "budgetSeconds": 60,
+        "startedAt": "2026-11-20T13:05:26.203487+00:00",
+        "finishedAt": "2026-11-20T13:05:26.670799+00:00",
+        "elapsedSeconds": 0.4690000000409782,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "qa-nested-list-control-v2-graph",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "-B",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119\\tools\\shortcuts-simulator-qa\\nested_list_probe.py",
+          "--root",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119",
+          "--fixture",
+          "qa-nested-list-control-v2",
+          "--unsigned",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\qa-nested-list-control-v2.shortcut"
+        ],
+        "budgetSeconds": 30,
+        "startedAt": "2026-11-20T13:05:26.673940+00:00",
+        "finishedAt": "2026-11-20T13:05:27.032658+00:00",
+        "elapsedSeconds": 0.35999999998603016,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "2bf7446deaee1e3836aabd16bbb09ec51ce4550c9d816426d14fd13c928d5765",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "qa-nested-list-candidate-v2-compile",
+        "command": [
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\compiler.exe",
+          "compile",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119\\tools\\shortcuts-simulator-qa\\fixtures\\qa-nested-list-candidate-v2.cherri",
+          "--unsigned",
+          "--output",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\qa-nested-list-candidate-v2.shortcut"
+        ],
+        "budgetSeconds": 60,
+        "startedAt": "2026-11-20T13:05:27.049533+00:00",
+        "finishedAt": "2026-11-20T13:05:27.140732+00:00",
+        "elapsedSeconds": 0.09399999998277053,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "qa-nested-list-candidate-v2-graph",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "-B",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119\\tools\\shortcuts-simulator-qa\\nested_list_probe.py",
+          "--root",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-20261119",
+          "--fixture",
+          "qa-nested-list-candidate-v2",
+          "--unsigned",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\qa-nested-list-candidate-v2.shortcut"
+        ],
+        "budgetSeconds": 30,
+        "startedAt": "2026-11-20T13:05:27.143524+00:00",
+        "finishedAt": "2026-11-20T13:05:27.773277+00:00",
+        "elapsedSeconds": 0.6410000000032596,
+        "exit": 0,
+        "timedOut": false,
+        "stdoutSha256": "67fb3c814a65ec132af1af9abe75fa595268bd9b9d2167bdbedcc9fb3d97b054",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "goPass": [
+      "TestP15NestedListProbeActualCompiledGraphs/qa-nested-list-control-v2",
+      "TestP15NestedListProbeActualCompiledGraphs/qa-nested-list-candidate-v2",
+      "TestP15NestedListProbeActualCompiledGraphs",
+      "TestP15NestedListProbeObservationControls"
+    ],
+    "goFail": [],
+    "goSkip": [],
+    "sourceWitnessCount": 712,
+    "compilerSha256": "0c42d0aae847185ed2875cda495af03041e005b2572a58cb51ad5813e83fb188",
+    "nativeListTypeProved": false,
+    "formalAcceptanceGranted": false,
+    "appleRuntime": "NOT_RUN"
+  },
+  "pythonObserverTests": 15,
+  "syntheticObserverSummariesAreNotNativeEvidence": true,
+  "compiledGraphs": [
+    {
+      "causalMutations": {
+        "appleRuntime": "NOT_RUN",
+        "fixtureId": "qa-nested-list-control-v2",
+        "formalAcceptanceGranted": false,
+        "nativeListTypeProved": false,
+        "rejected": [
+          "action-removed",
+          "extra-effect",
+          "duplicate-producer",
+          "missing-producer",
+          "clear-borrows-input",
+          "before-trace-time-lost",
+          "trace-store-replaced",
+          "after-trace-time-lost",
+          "summary-field-static",
+          "summary-range-shift",
+          "trace-envelope-replaced",
+          "final-output-replaced",
+          "extra-terminal-nothing",
+          "flat-order-swapped",
+          "empty-control-singleton",
+          "empty-clear-borrows-input",
+          "first-array-flattened-text",
+          "empty-array-value-omitted",
+          "empty-field-removed",
+          "dictionary-carriers-swapped",
+          "raw-map-in-list-row",
+          "outer-count-borrows-flat",
+          "first-tag-wrong-key",
+          "first-items-read-last-box",
+          "first-count-borrows-last",
+          "first-value-uses-last",
+          "dictionary-type-borrows-text",
+          "last-type-borrows-first-producer"
+        ],
+        "status": "PASS_LOCAL_CAUSAL_CORRUPTIONS_ONLY"
+      },
+      "fixtureId": "qa-nested-list-control-v2",
+      "formalAcceptanceGranted": false,
+      "graph": {
+        "appleRuntime": "NOT_RUN",
+        "fixtureId": "qa-nested-list-control-v2",
+        "formalAcceptanceGranted": false,
+        "nativeActionCount": 56,
+        "nativeListTypeProved": false,
+        "status": "PASS_LOCAL_COMPLETE_GRAPH_ONLY"
+      },
+      "nativeListTypeProved": false,
+      "source": {
+        "appleRuntime": "NOT_RUN",
+        "contractSha256": "c825bfff307008d032c08143de019a6125f825b138ed213c03ecae2e9c8f9feb",
+        "fixtureSha256": "5452ff03c5c09f8fa7c9c511e988f398059ea5a901f00da63314cfeef7ede121",
+        "formalAcceptanceGranted": false,
+        "nativeListTypeProved": false,
+        "scope": "PUBLIC_NESTED_LIST_OBSERVATION_ONLY"
+      },
+      "unsignedPlistSha256": "a8fe16fedfda2710cbb76fedfc314a6b85c8afd56e44c9a0774a7a68d2177b45"
+    },
+    {
+      "causalMutations": {
+        "appleRuntime": "NOT_RUN",
+        "fixtureId": "qa-nested-list-candidate-v2",
+        "formalAcceptanceGranted": false,
+        "nativeListTypeProved": false,
+        "rejected": [
+          "action-removed",
+          "extra-effect",
+          "duplicate-producer",
+          "missing-producer",
+          "clear-borrows-input",
+          "before-trace-time-lost",
+          "trace-store-replaced",
+          "after-trace-time-lost",
+          "summary-field-static",
+          "summary-range-shift",
+          "trace-envelope-replaced",
+          "final-output-replaced",
+          "extra-terminal-nothing",
+          "candidate-row-type-zero",
+          "candidate-rows-flattened",
+          "empty-row-removed",
+          "empty-row-becomes-text",
+          "inner-order-swapped",
+          "first-row-cleared",
+          "candidate-fixed-uuid-changed",
+          "outer-count-borrows-text",
+          "outer-guard-inverted",
+          "outer-guard-threshold-one",
+          "first-selector-last",
+          "first-count-borrows-outer",
+          "first-type-borrows-witness",
+          "first-guard-uses-last-count",
+          "inner-order-reads-last",
+          "last-guard-uses-first-count",
+          "last-inner-reads-first",
+          "control-group-reused",
+          "observed-flag-never-set",
+          "summary-borrows-initializer"
+        ],
+        "status": "PASS_LOCAL_CAUSAL_CORRUPTIONS_ONLY"
+      },
+      "fixtureId": "qa-nested-list-candidate-v2",
+      "formalAcceptanceGranted": false,
+      "graph": {
+        "appleRuntime": "NOT_RUN",
+        "fixtureId": "qa-nested-list-candidate-v2",
+        "formalAcceptanceGranted": false,
+        "nativeActionCount": 78,
+        "nativeListTypeProved": false,
+        "status": "PASS_LOCAL_COMPLETE_GRAPH_ONLY"
+      },
+      "nativeListTypeProved": false,
+      "source": {
+        "appleRuntime": "NOT_RUN",
+        "contractSha256": "5aa826dce959a4667a3f498a5b6c9fae4c91a3f71eeb6209c3772e405ff5c9a8",
+        "fixtureSha256": "b13ca17d1eb425e0b54854c922df46fc50cbcf1aff491f988191c774d2760299",
+        "formalAcceptanceGranted": false,
+        "nativeListTypeProved": false,
+        "scope": "PUBLIC_NESTED_LIST_OBSERVATION_ONLY"
+      },
+      "unsignedPlistSha256": "b2cc0a57a200d75be61c379db8e3a279f2601267671cd0ea4168bb43cd3e644f"
+    }
+  ],
+  "actualGraphCorruptions": 61,
+  "independentlyAlteredOutputArtifactsRejected": 2,
+  "completeWorkflowHeaderBehaviorProved": false,
+  "appleRuntime": "NOT_RUN",
+  "nativeListTypeProved": false,
+  "formalAcceptanceGranted": false,
+  "requirementsClosed": [],
+  "originalArchive": {
+    "path": "originals.zip",
+    "bytes": 111730,
+    "sha256": "d47cbd4004af446181a678c6f3b0dbd29110b73e5428eef7ec4235808e79cfc6",
+    "members": 46
+  },
+  "externalCompiler": {
+    "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-parity-evidence-20261119\\r4-consumer-refresh-20261120\\nested-list-native-probe-20261120\\clean-15c5d1af\\compiler.exe",
+    "bytes": 25474560,
+    "sha256": "0c42d0aae847185ed2875cda495af03041e005b2572a58cb51ad5813e83fb188",
+    "binding": "Actual clean source build process; no embedded VCS identity inferred"
+  },
+  "retainedEarlierAttempts": [
+    "Exploration uses an explicitly identified clean3852 compiler with same production code; not current-source execution credit",
+    "Dirty precommit4-event proof is retained separately from clean15c5 proof",
+    "A functions JavaScript quoting error occurred before the documentation commit script was submitted; no host mutation or test occurred",
+    "Initial archive reader required unindented LF-only unittest OK; actual indented CRLF output is preserved and reader corrected without test rerun",
+    "Malformed replacement-string retry was not used for this seal; fresh immutable HEAD/status confirmed no repository mutation",
+    "Initial proof git whitespace check flagged CRLF on derived documentation; only the derived report/manifest/witness view/README were rendered as LF. Original ZIP bytes and all raw execution files remain unchanged."
+  ],
+  "peerReview": {
+    "reviewer": "/root/acceptance",
+    "status": "READ_ONLY_REVIEW_NO_CONCRETE_DEFECT_FOUND",
+    "scope": "Both fixed sources/contracts, complete action graphs, summary parser, Go actual artifact gate and synthetic controls; no Apple execution by reviewer"
+  },
+  "remaining": [
+    "Review and integrate exact fixture/helper pins on current native source",
+    "Wire callback/trace/nonce/source/signing/publication gates through existing authorized route",
+    "Run separate native control and candidate; preserve contradictions and all terminal outcomes",
+    "Do not promote experimental List encoding or final acceptance from shape alone"
+  ],
+  "toolUploadPayloadIndependentlyRecovered": false,
+  "sourceWitnessView": "LF-normalized JSON view; exact original CRLF bytes remain in originals.zip at clean-15c5d1af/source-witnesses.json and the recorded external original path."
+}

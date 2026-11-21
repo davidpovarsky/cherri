@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "fixture_id": "qa-nested-list-candidate-v2",
+  "source_path": "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-candidate-v2.cherri",
+  "source_sha256": "b13ca17d1eb425e0b54854c922df46fc50cbcf1aff491f988191c774d2760299",
+  "diagnostic_prefix": "CHERRI_NESTED_LIST_CANDIDATE_V1:",
+  "field_order": [
+    "OUTER_COUNT",
+    "OBSERVED",
+    "FIRST_COUNT",
+    "LAST_COUNT",
+    "FIRST_FIRST64",
+    "FIRST_LAST64",
+    "LAST_FIRST64",
+    "LAST_LAST64",
+    "TEXT_TYPE64",
+    "DICT_TYPE64",
+    "FIRST_TYPE64",
+    "LAST_TYPE64"
+  ],
+  "goal_fields": {
+    "OUTER_COUNT": "2",
+    "OBSERVED": "Y",
+    "FIRST_COUNT": "2",
+    "LAST_COUNT": "0",
+    "FIRST_FIRST64": "SU5ORVJfQQ==",
+    "FIRST_LAST64": "SU5ORVJfQg==",
+    "LAST_FIRST64": "UNOBSERVED",
+    "LAST_LAST64": "UNOBSERVED"
+  },
+  "trace_run_id": "qa-nested-list-candidate-v2",
+  "trace_label": "nested-list-candidate",
+  "native_list_type_proved": false,
+  "formal_requirements_proved": [],
+  "runtime_status": "NOT_RUN",
+  "scope": "Experimental WFItems row type2 plus WFArrayParameterState transferred from known Dictionary array fields into the native List parameter. All actual count/order/type observations must be preserved even when the authored two-row goal fails. First/last reads are guarded by actual counts; -1/UNOBSERVED means no read occurred. Counts alone and Dictionary witnesses cannot establish a nested native List type. No compiler encoding, language support, Repeat Results, Optional transport or formal acceptance is promoted."
+}
