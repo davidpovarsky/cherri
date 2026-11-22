@@ -77,7 +77,7 @@ class CallbackContractTests(unittest.TestCase):
                            "schemaVersion": "1.0", "fixtureId": optional.FIXTURE_ID,
                            "status": "PASS_NATIVE_STRUCTURE_ONLY", "sourceSha256": optional.SOURCE_SHA256,
                            "expectedContractSha256": optional.CONTRACT_SHA256, "unsignedPlistSha256": "c" * 64,
-                           "nativeActionCount": 400, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
+                           "nativeActionCount": 402, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False,
                            "testStdoutSha256": "d" * 64, "testStderrSha256": "e" * 64})
         event = self.event()
         event.update(fixtureId=optional.FIXTURE_ID, expectedShortcutName=optional.FIXTURE_ID,
@@ -133,7 +133,7 @@ class CallbackContractTests(unittest.TestCase):
                 manifest = copy.deepcopy(original)
                 manifest["fixtures"][0][proof][key] = value
                 self.assertEqual(self.verify([event], optional.FIXTURE_ID, optional.EXPECTED_OUTPUT, manifest)["runGate"], "FAIL_RUNTIME")
-        for invalid_count in (399, 400.0):
+        for invalid_count in (399, 400, 400.0, 402.0):
             manifest = copy.deepcopy(original)
             manifest["fixtures"][0]["optionalForwardingGraph"]["nativeActionCount"] = invalid_count
             with self.subTest(invalid_count=invalid_count):
