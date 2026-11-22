@@ -1,0 +1,67 @@
+name: P10R15 Actions App Descriptor Transport
+
+on:
+  push:
+    branches:
+      - audit/cherri-p10r15-actionsapp-descriptor-ci-20261122
+    paths:
+      - .github/workflows/p10r15-actionsapp-descriptor.yml
+      - tools/p10r15/run_actionsapp_descriptor.py
+      - tools/p10r15/actionsapp_descriptor_inventory.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p10r15-actionsapp-descriptor-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actionsapp-descriptor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      GIT_NO_REPLACE_OBJECTS: "1"
+      CHERRI_COMPONENT_SOURCE: ${{ github.workspace }}/subject
+      CHERRI_COMPONENT_OUT: ${{ github.workspace }}/cherri-actionsapp-descriptor-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout exact workflow implementation
+        uses: actions/checkout@v6
+        with:
+          path: harness
+          persist-credentials: false
+
+      - name: Checkout exact reviewed descriptor source
+        uses: actions/checkout@v6
+        with:
+          ref: 5538c59dd1975b68547adf102146d68be70a0f67
+          path: subject
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Preserve declared source origin
+        run: git -C "$CHERRI_COMPONENT_SOURCE" remote set-url origin https://github.com/davidpovarsky/cherri.git
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.24.x"
+          cache-dependency-path: subject/go.sum
+
+      - name: Execute fixed descriptor transport and negative cases
+        timeout-minutes: 5
+        run: python3 -B harness/tools/p10r15/run_actionsapp_descriptor.py
+
+      - name: Retain all original outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p10r15-actionsapp-descriptor-${{ github.run_id }}
+          path: ${{ env.CHERRI_COMPONENT_OUT }}
+          if-no-files-found: warn
+          retention-days: 14
