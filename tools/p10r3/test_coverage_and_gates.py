@@ -12,11 +12,15 @@ Unit and negative mutation tests verifying P10R4 corrective audit invariants:
 """
 
 import copy
+import hashlib
 import json
+import os
 import pathlib
 import sys
+import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "p10r3"))
@@ -204,19 +208,113 @@ class TestP10CoverageAndGates(unittest.TestCase):
         self.assertEqual(res["exitCode"], 1)
 
     def test_c5_06_r23_protected_ios_file_modified_fails_closed(self):
-        defn = gates.GATE_DEFINITIONS["R23"]
-        # Clean state passes
-        clean_res = gates.execute_gate("R23", defn)
-        self.assertEqual(clean_res["status"], "PASS")
-        # Dirty working tree or diff fails closed
-        dirty_res = gates.evaluate_r23_protected_files(
-            "R23",
-            defn,
-            diff_stdout="diff --git a/ios/CherriApp/Views/CodeEditorView.swift ...",
-            status_stdout=" M ios/CherriApp/Views/CodeEditorView.swift",
-            returncodes=(0, 0),
-        )
-        self.assertEqual(dirty_res["status"], "FAIL")
+        # A clean current checkout may contain committed protected changes.
+        # Exercise the actual Git gate against an owned, explicit baseline.
+        production_definition = copy.deepcopy(gates.GATE_DEFINITIONS["R23"])
+        protected = production_definition["checkProtectedIOSFiles"]
+        self.assertEqual(production_definition["upstreamBase"],
+                         "76d722502e20db977e84a095444d0172442655b8")
+        self.assertEqual(protected, [
+            "ios/CherriUITests/CherriEditorUITests.swift",
+            "ios/CherriApp/Views/CodeEditorView.swift",
+        ])
+        environment = {key: value for key, value in os.environ.items()
+                       if not key.startswith("GIT_")}
+        environment.update({
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_AUTHOR_NAME": "R23 isolated fixture",
+            "GIT_AUTHOR_EMAIL": "r23-fixture@example.invalid",
+            "GIT_COMMITTER_NAME": "R23 isolated fixture",
+            "GIT_COMMITTER_EMAIL": "r23-fixture@example.invalid",
+            "GIT_AUTHOR_DATE": "2026-01-01T00:00:00+0000",
+            "GIT_COMMITTER_DATE": "2026-01-01T00:00:00+0000",
+        })
+        with tempfile.TemporaryDirectory(prefix="cherri-r23-git-") as directory:
+            fixture = pathlib.Path(directory)
+            root = fixture / "repository"
+            empty_template = fixture / "empty-template"
+            root.mkdir()
+            empty_template.mkdir()
+            with mock.patch.dict(os.environ, environment, clear=True), \
+                    mock.patch.object(gates, "REPO_ROOT", root):
+                def git(*arguments):
+                    result = subprocess.run(
+                        ["git", *arguments], cwd=root, capture_output=True,
+                        text=True, encoding="utf-8", timeout=10,
+                    )
+                    self.assertEqual(result.returncode, 0,
+                                     (arguments, result.stdout, result.stderr))
+                    return result.stdout
+
+                git("init", "--initial-branch=r23-fixture",
+                    "--template=" + str(empty_template))
+                git("config", "--local", "core.autocrlf", "false")
+                git("config", "--local", "commit.gpgsign", "false")
+                git("config", "--local", "core.hooksPath", str(empty_template))
+                originals = {}
+                for index, relative in enumerate(protected):
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    originals[relative] = f"// protected fixture {index}\n".encode()
+                    path.write_bytes(originals[relative])
+                git("add", "--", *protected)
+                git("commit", "-m", "R23 explicit fixture baseline")
+                baseline = git("rev-parse", "HEAD").strip()
+                self.assertEqual(len(baseline), 40)
+                fixture_definition = copy.deepcopy(production_definition)
+                fixture_definition["upstreamBase"] = baseline
+
+                def observe(expected, *, historical_changed, working_changed,
+                            changed_path=None):
+                    historical = git("diff", baseline + "..HEAD", "--", *protected)
+                    working = git("status", "--porcelain", "--", *protected)
+                    self.assertEqual(bool(historical.strip()), historical_changed)
+                    self.assertEqual(bool(working.strip()), working_changed)
+                    if changed_path is not None:
+                        self.assertIn(changed_path, historical + working)
+                    result = gates.execute_gate("R23", fixture_definition)
+                    self.assertEqual(result["status"], expected, result)
+                    self.assertIn(baseline + "..HEAD", result["command"])
+                    self.assertEqual(result["outputSha256"], hashlib.sha256(
+                        f"DIFF:\n{historical}\nSTATUS:\n{working}".encode("utf-8")
+                    ).hexdigest())
+
+                with self.subTest(state="explicit_baseline_clean"):
+                    observe("PASS", historical_changed=False, working_changed=False)
+                for relative in protected:
+                    path = root / relative
+                    with self.subTest(path=relative, state="unstaged_change"):
+                        path.write_bytes(originals[relative] + b"// mutation\n")
+                        observe("FAIL", historical_changed=False, working_changed=True,
+                                changed_path=relative)
+                    with self.subTest(path=relative, state="staged_change"):
+                        git("add", "--", relative)
+                        observe("FAIL", historical_changed=False, working_changed=True,
+                                changed_path=relative)
+                    with self.subTest(path=relative, state="committed_change_clean_tree"):
+                        git("commit", "-m", "Retain protected fixture change")
+                        self.assertEqual(git("status", "--porcelain"), "")
+                        observe("FAIL", historical_changed=True, working_changed=False,
+                                changed_path=relative)
+                    with self.subTest(path=relative, state="committed_exact_restoration"):
+                        path.write_bytes(originals[relative])
+                        git("add", "--", relative)
+                        git("commit", "-m", "Restore exact protected fixture bytes")
+                        self.assertEqual(path.read_bytes(), originals[relative])
+                        observe("PASS", historical_changed=False, working_changed=False)
+                with self.subTest(state="unprotected_committed_change"):
+                    (root / "outside-protected-scope.txt").write_bytes(b"unrelated\n")
+                    git("add", "--", "outside-protected-scope.txt")
+                    git("commit", "-m", "Unrelated fixture history")
+                    self.assertNotEqual(git("rev-parse", "HEAD").strip(), baseline)
+                    self.assertEqual(git("status", "--porcelain"), "")
+                    observe("PASS", historical_changed=False, working_changed=False)
+                with self.subTest(state="unavailable_baseline_fails_closed"):
+                    missing = copy.deepcopy(fixture_definition)
+                    missing["upstreamBase"] = "0" * 40
+                    self.assertEqual(gates.execute_gate("R23", missing)["status"], "FAIL")
+        self.assertEqual(gates.GATE_DEFINITIONS["R23"], production_definition)
 
     def test_c5_07_non_ancestor_source_commit_fails_closed(self):
         head_sha = gates.get_current_git_sha()
