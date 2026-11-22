@@ -173,25 +173,25 @@ func TestP15FN01ReturnAndContinuationNative(t *testing.T) {
 	}
 	actions := p15CompiledActions(t, p15FN01Source("7", "3"))
 	for name, mutate := range map[string]func([]map[string]any){
-		"return_becomes_global_exit": func(a []map[string]any) { a[24]["WFWorkflowActionIdentifier"] = "is.workflow.actions.exit" },
+		"return_becomes_global_exit": func(a []map[string]any) { a[26]["WFWorkflowActionIdentifier"] = "is.workflow.actions.exit" },
 		"wrong_return_edge": func(a []map[string]any) {
-			p15C01Params(a[24])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(a[20])["UUID"].(string))
+			p15C01Params(a[26])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(a[22])["UUID"].(string))
 		},
 		"wrong_function_target": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 28, "function")["WFValue"] = p15FunctionText("other")
+			p15FunctionPayloadRow(t, a, 30, "function")["WFValue"] = p15FunctionText("other")
 		},
-		"wrong_argument_type":  func(a []map[string]any) { p15FunctionPayloadRow(t, a, 28, "arg_1")["WFItemType"] = 0 },
-		"wrong_argument_value": func(a []map[string]any) { p15FunctionPayloadRow(t, a, 28, "arg_1")["WFValue"] = p15FunctionText("4") },
-		"call_is_not_self":     func(a []map[string]any) { p15C01Params(a[29])["WFWorkflow"].(map[string]any)["isSelf"] = false },
+		"wrong_argument_type":  func(a []map[string]any) { p15FunctionPayloadRow(t, a, 30, "arg_1")["WFItemType"] = 0 },
+		"wrong_argument_value": func(a []map[string]any) { p15FunctionPayloadRow(t, a, 30, "arg_1")["WFValue"] = p15FunctionText("4") },
+		"call_is_not_self":     func(a []map[string]any) { p15C01Params(a[31])["WFWorkflow"].(map[string]any)["isSelf"] = false },
 		"call_wrong_payload": func(a []map[string]any) {
-			p15C01Params(a[29])["WFInput"] = p15FunctionEdge(p15C01Params(a[23])["UUID"].(string))
+			p15C01Params(a[31])["WFInput"] = p15FunctionEdge(p15C01Params(a[25])["UUID"].(string))
 		},
-		"return_type_cast_lost":       func(a []map[string]any) { a[30]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext" },
-		"caller_continuation_wrong":   func(a []map[string]any) { p15C01Params(a[31])["WFMathOperation"] = "-" },
-		"caller_observation_detached": func(a []map[string]any) { p15C01Params(a[32])["WFInput"] = p15FunctionText("21:22") },
-		"caller_entered_as_function":  func(a []map[string]any) { p15C01Params(a[27])["WFControlFlowMode"] = 2 },
+		"return_type_cast_lost":       func(a []map[string]any) { a[32]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext" },
+		"caller_continuation_wrong":   func(a []map[string]any) { p15C01Params(a[33])["WFMathOperation"] = "-" },
+		"caller_observation_detached": func(a []map[string]any) { p15C01Params(a[34])["WFInput"] = p15FunctionText("21:22") },
+		"caller_entered_as_function":  func(a []map[string]any) { p15C01Params(a[29])["WFControlFlowMode"] = 2 },
 		"envelope_magic_wrong":        func(a []map[string]any) { p15C01Params(a[7])["WFConditionalActionString"] = "wrong" },
-		"duplicate_identity":          func(a []map[string]any) { p15C01Params(a[31])["UUID"] = p15C01Params(a[30])["UUID"] },
+		"duplicate_identity":          func(a []map[string]any) { p15C01Params(a[33])["UUID"] = p15C01Params(a[32])["UUID"] },
 	} {
 		t.Run(name, func(t *testing.T) {
 			changed := p15C01Clone(t, actions)
@@ -243,33 +243,33 @@ func TestP15FN02PresenceDefaultsNative(t *testing.T) {
 	}
 	for name, mutate := range map[string]func([]map[string]any){
 		"false_presence_lost": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 44, "has_arg_0")["WFValue"] = p15FunctionText("0")
+			p15FunctionPayloadRow(t, a, 46, "has_arg_0")["WFValue"] = p15FunctionText("0")
 		},
 		"zero_presence_lost": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 44, "has_arg_1")["WFValue"] = p15FunctionText("0")
+			p15FunctionPayloadRow(t, a, 46, "has_arg_1")["WFValue"] = p15FunctionText("0")
 		},
 		"empty_presence_lost": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 44, "has_arg_2")["WFValue"] = p15FunctionText("0")
+			p15FunctionPayloadRow(t, a, 46, "has_arg_2")["WFValue"] = p15FunctionText("0")
 		},
 		"omitted_argument_invented": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 46, "has_arg_0")["WFValue"] = p15FunctionText("1")
+			p15FunctionPayloadRow(t, a, 48, "has_arg_0")["WFValue"] = p15FunctionText("1")
 		},
-		"truthiness_instead_of_presence": func(a []map[string]any) { p15C01Params(a[20])["WFCondition"] = 100 },
-		"presence_gets_argument":         func(a []map[string]any) { p15C01Params(a[19])["WFDictionaryKey"] = "arg_0" },
+		"truthiness_instead_of_presence": func(a []map[string]any) { p15C01Params(a[22])["WFCondition"] = 100 },
+		"presence_gets_argument":         func(a []map[string]any) { p15C01Params(a[21])["WFDictionaryKey"] = "arg_0" },
 		"supplied_value_wrong_envelope": func(a []map[string]any) {
-			p15C01Params(a[21])["WFInput"] = p15FunctionEdge(p15C01Params(a[4])["UUID"].(string))
+			p15C01Params(a[23])["WFInput"] = p15FunctionEdge(p15C01Params(a[4])["UUID"].(string))
 		},
-		"fallback_branch_reversed": func(a []map[string]any) { p15C01Params(a[22])["WFControlFlowMode"] = 2 },
+		"fallback_branch_reversed": func(a []map[string]any) { p15C01Params(a[24])["WFControlFlowMode"] = 2 },
 		"false_cast_reads_fallback": func(a []map[string]any) {
-			p15C01Params(a[25])["WFInput"] = p15FunctionEdge(p15C01Params(a[23])["UUID"].(string))
+			p15C01Params(a[27])["WFInput"] = p15FunctionEdge(p15C01Params(a[25])["UUID"].(string))
 		},
-		"number_default_wrong": func(a []map[string]any) { p15C01Params(a[30])["WFNumberActionNumber"] = 8 },
-		"text_default_wrong":   func(a []map[string]any) { p15C01Params(a[37])["WFTextActionText"] = "wrong" },
+		"number_default_wrong": func(a []map[string]any) { p15C01Params(a[32])["WFNumberActionNumber"] = 8 },
+		"text_default_wrong":   func(a []map[string]any) { p15C01Params(a[39])["WFTextActionText"] = "wrong" },
 		"body_uses_raw_argument": func(a []map[string]any) {
-			p15C01Params(a[39])["WFTextActionText"] = p15FunctionText("\ufffc:\ufffc:\ufffc", p15C01Params(a[21])["UUID"].(string), p15C01Params(a[32])["UUID"].(string), p15C01Params(a[38])["UUID"].(string))
+			p15C01Params(a[41])["WFTextActionText"] = p15FunctionText("\ufffc:\ufffc:\ufffc", p15C01Params(a[23])["UUID"].(string), p15C01Params(a[34])["UUID"].(string), p15C01Params(a[40])["UUID"].(string))
 		},
 		"mixed_result_substituted": func(a []map[string]any) {
-			p15C01Params(a[50])["WFInput"] = p15FunctionText("\ufffc|\ufffc|\ufffc", p15C01Params(a[45])["UUID"].(string), p15C01Params(a[47])["UUID"].(string), p15C01Params(a[45])["UUID"].(string))
+			p15C01Params(a[52])["WFInput"] = p15FunctionText("\ufffc|\ufffc|\ufffc", p15C01Params(a[47])["UUID"].(string), p15C01Params(a[49])["UUID"].(string), p15C01Params(a[47])["UUID"].(string))
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -344,26 +344,26 @@ func TestP15FN03TerminatingRecursionNative(t *testing.T) {
 	}
 	actions := p15CompiledActions(t, p15FN03Source("3"))
 	for name, mutate := range map[string]func([]map[string]any){
-		"base_predicate_changed":     func(a []map[string]any) { p15C01Params(a[21])["WFCondition"] = 4 },
-		"base_threshold_changed":     func(a []map[string]any) { p15C01Params(a[21])["WFNumberValue"] = 0 },
-		"base_result_changed":        func(a []map[string]any) { p15C01Params(a[22])["WFNumberActionNumber"] = 0 },
-		"base_return_lost":           func(a []map[string]any) { a[23]["WFWorkflowActionIdentifier"] = "is.workflow.actions.exit" },
-		"argument_does_not_decrease": func(a []map[string]any) { p15C01Params(a[25])["WFMathOperation"] = "+" },
+		"base_predicate_changed":     func(a []map[string]any) { p15C01Params(a[23])["WFCondition"] = 4 },
+		"base_threshold_changed":     func(a []map[string]any) { p15C01Params(a[23])["WFNumberValue"] = 0 },
+		"base_result_changed":        func(a []map[string]any) { p15C01Params(a[24])["WFNumberActionNumber"] = 0 },
+		"base_return_lost":           func(a []map[string]any) { a[25]["WFWorkflowActionIdentifier"] = "is.workflow.actions.exit" },
+		"argument_does_not_decrease": func(a []map[string]any) { p15C01Params(a[27])["WFMathOperation"] = "+" },
 		"recursion_wrong_argument": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 26, "arg_0")["WFValue"] = p15FunctionEdge(p15C01Params(a[20])["UUID"].(string))
+			p15FunctionPayloadRow(t, a, 28, "arg_0")["WFValue"] = p15FunctionEdge(p15C01Params(a[22])["UUID"].(string))
 		},
 		"recursion_wrong_function": func(a []map[string]any) {
-			p15FunctionPayloadRow(t, a, 26, "function")["WFValue"] = p15FunctionText("other")
+			p15FunctionPayloadRow(t, a, 28, "function")["WFValue"] = p15FunctionText("other")
 		},
 		"recursive_result_not_typed": func(a []map[string]any) {
-			a[28]["WFWorkflowActionIdentifier"] = "is.workflow.actions.detect.dictionary"
+			a[30]["WFWorkflowActionIdentifier"] = "is.workflow.actions.detect.dictionary"
 		},
-		"recursive_product_changed": func(a []map[string]any) { p15C01Params(a[29])["WFMathOperation"] = "+" },
+		"recursive_product_changed": func(a []map[string]any) { p15C01Params(a[31])["WFMathOperation"] = "+" },
 		"return_bypasses_product": func(a []map[string]any) {
-			p15C01Params(a[30])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(a[28])["UUID"].(string))
+			p15C01Params(a[32])["WFOutput"] = p15FunctionText("\ufffc", p15C01Params(a[30])["UUID"].(string))
 		},
-		"initial_argument_changed": func(a []map[string]any) { p15FunctionPayloadRow(t, a, 34, "arg_0")["WFValue"] = p15FunctionText("4") },
-		"observed_result_literal":  func(a []map[string]any) { p15C01Params(a[37])["WFInput"] = p15FunctionText("6") },
+		"initial_argument_changed": func(a []map[string]any) { p15FunctionPayloadRow(t, a, 36, "arg_0")["WFValue"] = p15FunctionText("4") },
+		"observed_result_literal":  func(a []map[string]any) { p15C01Params(a[39])["WFInput"] = p15FunctionText("6") },
 	} {
 		t.Run(name, func(t *testing.T) {
 			changed := p15C01Clone(t, actions)

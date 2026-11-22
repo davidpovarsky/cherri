@@ -130,9 +130,9 @@ func TestP15FN04CallerInputCorruptions(t *testing.T) {
 					case "marker_truthiness":
 						p15C01Params(bad[7])["WFCondition"] = 100
 					case "restore_arguments":
-						p15C01Params(bad[10])["WFDictionaryKey"] = "arguments"
+						p15C01Params(bad[11])["WFDictionaryKey"] = "arguments"
 					case "restore_envelope":
-						p15C01Params(bad[11])["WFInput"] = p15FunctionEdge(p15C01Params(bad[4])["UUID"].(string))
+						p15C01Params(bad[12])["WFInput"] = p15FunctionEdge(p15C01Params(bad[4])["UUID"].(string))
 					case "body_reads_transport", "caller_reads_transport", "nested_body_reads_transport":
 						name := "body"
 						if fault == "caller_reads_transport" {

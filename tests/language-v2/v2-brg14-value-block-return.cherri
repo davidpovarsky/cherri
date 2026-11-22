@@ -1,0 +1,9 @@
+let seed = number(1)
+let branch = if seed == 1 { yield 0 } else { yield 7 }
+let choice = menu("BRG14") { case "A" { yield false } case "B" { yield true } }
+let empty = repeat 0 { yield "unexecuted" }
+let values = repeat 3 { yield "" }
+let each = for item in ["A", "B"] { yield item }
+let observed = f"{branch}|{choice}|{empty}|{values}|{each}"
+setClipboard(observed)
+text("BRG14_UNUSED")

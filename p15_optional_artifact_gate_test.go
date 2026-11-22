@@ -17,9 +17,10 @@ import (
 const p15OptionalUnsignedGraphMarker = "CHERRI_OPTIONAL_UNSIGNED_GRAPH_V1="
 const p15OptionalUnsignedMaximumBytes = 4 * 1024 * 1024
 
-// The independently checked M02 graph includes the authored main fallthrough
-// Nothing after the original 399 actions; the runtime fixture/expected fields do not change.
-const p15OptionalPreparedActionCount = 400
+// The independently checked current graph adds the exact marker start/end to
+// the prior 400-action M02 graph. Historical 399/400-action artifacts keep their
+// original compiler/source identities; this gate accepts only the new graph.
+const p15OptionalPreparedActionCount = 402
 
 // Reuse the independent complete graph oracle for the CLI artifact that will
 // actually be signed. Errors reveal neither supplied file contents nor paths.

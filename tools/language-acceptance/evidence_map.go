@@ -34,6 +34,15 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	if _, found := combinedValueBlockScenarios[id]; found {
+		return
+	}
+	if _, found := combinedIndexArithmeticScenarios[id]; found {
+		return
+	}
+	if _, found := combinedArithmeticScenarios[id]; found {
+		return
+	}
 	// The old short conditional trace does not observe the complete RP18/BRG13 scenarios.
 	if _, found := shortCircuitScenarios[id]; found {
 		return
@@ -275,6 +284,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if scenario, found := combinedValueBlockScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if id == "AI01" {
 		return []string{aiMeasurementTestID(id)}
 	}
@@ -480,6 +492,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if _, found := combinedValueBlockScenarios[id]; found {
+		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+	}
 	if id == "AI01" {
 		return append([]string{}, aiMeasurementSources...)
 	}
@@ -514,6 +529,15 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if scenario, found := combinedValueBlockScenarios[id]; found {
+		return scenario.testIDs()
+	}
+	if scenario, found := combinedIndexArithmeticScenarios[id]; found {
+		return scenario.testIDs()
+	}
+	if scenario, found := combinedArithmeticScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := combinedUnicodeScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -599,6 +623,15 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := combinedValueBlockScenarios[id]; found {
+		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+	}
+	if _, found := combinedIndexArithmeticScenarios[id]; found {
+		return append([]string{}, combinedIndexArithmeticEvidence.SourcePaths...)
+	}
+	if _, found := combinedArithmeticScenarios[id]; found {
+		return append([]string{}, combinedArithmeticEvidence.SourcePaths...)
+	}
 	if _, found := combinedUnicodeScenarios[id]; found {
 		return append([]string{}, combinedUnicodeEvidence.SourcePaths...)
 	}
@@ -639,6 +672,12 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := combinedValueBlockScenarios[id]; found {
+		return scenario.testIDs()
+	}
+	if scenario, found := combinedIndexArithmeticScenarios[id]; found {
+		return scenario.testIDs()
+	}
 	if scenario, found := combinedUnicodeScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -743,6 +782,12 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if _, found := combinedValueBlockScenarios[id]; found {
+		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+	}
+	if _, found := combinedIndexArithmeticScenarios[id]; found {
+		return append([]string{}, combinedIndexArithmeticEvidence.SourcePaths...)
+	}
 	if _, found := combinedUnicodeScenarios[id]; found {
 		return append([]string{}, combinedUnicodeEvidence.SourcePaths...)
 	}

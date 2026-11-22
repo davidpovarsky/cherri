@@ -1,0 +1,10 @@
+function inspect(value: Text) -> Text {
+    return f"{system.input}|{ShortcutInput}|{value}"
+}
+function outer(value: Text) -> Text {
+    let inner = inspect(value)
+    return f"{system.input}|{inner}|{ShortcutInput}"
+}
+let before = f"{system.input}|{ShortcutInput}"
+let result = outer("VALUE")
+return f"{before}|{result}|{system.input}|{ShortcutInput}"

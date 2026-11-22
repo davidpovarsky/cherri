@@ -212,6 +212,8 @@ jobs:
       - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
         id: native_qa
         env:
+          # Internal diagnostic component setting; no user-controlled skip input.
+          QA_OBSERVE_PROJECT_PREREQUISITE: "true"
           CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
           QA_PROBE_LEVEL: ${{ inputs.probe_level || 'full' }}
           QA_DEVICE_PROFILE: ${{ inputs.device_profile || 'ipad-default' }}
@@ -228,6 +230,17 @@ jobs:
             "$QA_CAPTURE_FULL_EDITOR" \
             "$QA_MAX_EDITOR_PAGES" \
             "$QA_REQUIRE_RUNTIME"
+
+      - name: Upload only sealed project prerequisite diagnostics
+        if: always() && steps.native_qa.outputs.prerequisite_publication_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-qa-project-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}${{ matrix.sample != 'selected' && format('-{0}', matrix.sample) || '' }}
+          path: |
+            ${{ runner.temp }}/cherri-qa-project-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}/public/project-prerequisite.zip.p7m
+            ${{ runner.temp }}/cherri-qa-project-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}/public/summary.json
+          retention-days: 3
+          if-no-files-found: error
 
       - name: Retain explicitly incomplete acquisition after interruption
         id: terminal_receipts

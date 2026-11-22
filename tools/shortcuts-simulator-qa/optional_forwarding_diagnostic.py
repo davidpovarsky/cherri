@@ -115,7 +115,7 @@ def verify_prepared_unsigned(repo, artifact_dir, fixture_id, artifact_path, expe
     expected = {"schemaVersion": "1.0", "fixtureId": FIXTURE_ID,
                 "status": "PASS_NATIVE_STRUCTURE_ONLY", "sourceSha256": SOURCE_SHA256,
                 "expectedContractSha256": CONTRACT_SHA256, "unsignedPlistSha256": expected_sha256,
-                "nativeActionCount": 400, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False}
+                "nativeActionCount": 402, "appleRuntime": "NOT_RUN", "formalAcceptanceGranted": False}
     same = (len(observed) == 1 and isinstance(observed[0], dict) and set(observed[0]) == set(expected)
             and all(type(observed[0][key]) is type(value) and observed[0][key] == value
                     for key, value in expected.items()))
