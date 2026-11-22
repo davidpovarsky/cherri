@@ -149,7 +149,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 		}
 		t.Logf("P15_EXTRACTED_COMPONENT_RECEIPT %s", data)
 	})
-	binary := p15ExtractedBuild(t, root, f.sourceSHA, ".")
+	binary := p15InstallActualTool(t, root, f.sourceSHA, ".", "")
 	out, stderr, err := p15RunCLI(t, binary, t.TempDir(), nil, "--capabilities-json")
 	if err != nil || len(stderr) != 0 {
 		t.Fatalf("actual source capabilities: %v %s", err, stderr)
