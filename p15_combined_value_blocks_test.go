@@ -253,7 +253,8 @@ func p15VBJoined(c *p15VBCursor, id string) {
 		c.mark("final_output")
 		c.output(result)
 	} else {
-		c.take("setclipboard", "", map[string]any{"WFInput": p15VBToken("\ufffc", result)}, false)
+		c.mark("clipboard")
+		c.take("setclipboard", "", map[string]any{"WFInput": p15VBAttachment(result)}, false)
 		c.mark("unused_final")
 		c.text("BRG14_UNUSED", "", false)
 		c.mark("void_boundary")
@@ -834,7 +835,7 @@ func p15VBCaseFaults(id, name string) []string {
 	if name == "joined_values" {
 		var faults = []string{"swapped_branch_values", "bool_integer_carrier", "wrong_menu_label", "zero_became_one", "wrong_multiple_count", "overwritten_loop_yield", "wrong_each_variable", "swapped_join_references", "bypassed_join_result"}
 		if id == "BRG14" {
-			faults = append(faults, "missing_void_boundary", "nonbare_void_boundary", "unused_value_leak")
+			faults = append(faults, "clipboard_token_string_envelope", "missing_void_boundary", "nonbare_void_boundary", "unused_value_leak")
 		}
 		return faults
 	}
@@ -858,6 +859,7 @@ func p15VBCaseFaults(id, name string) []string {
 func p15VBCaseFault(t *testing.T, id string, actions []map[string]any, view *p15VBCursor, spec p15VBCase, fault string) {
 	t.Helper()
 	var broken = p15SCClone(t, actions)
+	var intended string
 	var index = func(mark string) int {
 		i, ok := view.marks[mark]
 		if !ok {
@@ -908,11 +910,26 @@ func p15VBCaseFault(t *testing.T, id string, actions []map[string]any, view *p15
 	case "swapped_join_references":
 		var refs = p("joined_text")["WFTextActionText"].(map[string]any)["Value"].(map[string]any)["attachmentsByRange"].(map[string]any)
 		refs["{0, 1}"], refs["{2, 1}"] = refs["{2, 1}"], refs["{0, 1}"]
-	case "bypassed_join_result":
+	case "bypassed_join_result", "clipboard_token_string_envelope":
 		if id == "RP23" {
+			if fault != "bypassed_join_result" {
+				t.Fatal("Clipboard envelope control has no RP23 target")
+			}
 			p("final_output")["WFOutput"] = p15VBToken("\ufffc", view.refs["branch"])
 		} else {
-			p15SCParams(broken[index("joined_text")+1])["WFInput"] = p15VBToken("\ufffc", view.refs["branch"])
+			var input = p("clipboard")
+			if id != "BRG14" || spec.name != "joined_values" || !reflect.DeepEqual(input["WFInput"], p15VBAttachment(view.refs["joined"])) {
+				t.Fatal("actual Clipboard input is not the exact direct joined-result attachment")
+			}
+			if fault == "bypassed_join_result" {
+				input["WFInput"] = p15VBAttachment(view.refs["branch"])
+			} else {
+				input["WFInput"] = p15VBToken("\ufffc", view.refs["joined"])
+			}
+			if err := p15SCReferences(broken); err != nil {
+				t.Fatal("Clipboard control failed before exact native input gate", err)
+			}
+			intended = fmt.Sprintf("native setclipboard action differs at %d:", index("clipboard"))
 		}
 	case "missing_void_boundary":
 		var at = index("void_boundary")
@@ -958,14 +975,18 @@ func p15VBCaseFault(t *testing.T, id string, actions []map[string]any, view *p15
 	if reflect.DeepEqual(broken, actions) {
 		t.Fatal("value-block control did not mutate original")
 	}
-	if _, err := p15VBGraph(broken, spec); err == nil {
-		t.Fatal("value-block causal corruption accepted", fault)
+	if _, err := p15VBGraph(broken, spec); err == nil || intended != "" && !strings.Contains(err.Error(), intended) {
+		t.Fatalf("value-block causal corruption missed intended %q gate: %s: %v", intended, fault, err)
 	}
 }
 func p15VBNative(t *testing.T, id string) {
 	t.Helper()
 	var identityActions []map[string]any
 	var identitySpec p15VBCase
+	var identityName = "joined_values"
+	if id == "F04" {
+		identityName = "zero_iterations"
+	}
 	for _, spec := range p15VBCases(t, id) {
 		t.Run(spec.name, func(t *testing.T) {
 			var actions = p15VBCompile(t, spec, id)
@@ -979,14 +1000,14 @@ func p15VBNative(t *testing.T, id string) {
 			if _, err = p15VBGraph(actions, spec); err != nil {
 				t.Fatal("negative controls changed original", err)
 			}
-			if identityActions == nil {
+			if spec.name == identityName {
 				identityActions = actions
 				identitySpec = spec
 			}
 		})
 	}
 	if identityActions == nil {
-		t.Fatal("no actual value-block identity specimen")
+		t.Fatal("required actual value-block identity specimen did not pass", identityName)
 	}
 	p15VBIdentityControls(t, identityActions, identitySpec)
 	t.Logf("%s local typed semantic/native structure only. No Apple loop cardinality, menu selection, frame exit or rendered output was observed. F04 nested List/Optional one-element transport remains unsupported.", id)
