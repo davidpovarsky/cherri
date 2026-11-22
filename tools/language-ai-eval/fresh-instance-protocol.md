@@ -196,3 +196,33 @@ Decimal grammar was corrected from actual bytes. Python-only replay then
 adjudicated all twelve original S4 plists without recompilation. Both malformed
 S3 exponent originals remain unadjudicated; no text or numeric domain was repaired
 after generation, and no model generation took place during calibration.
+
+## Repeated signature verification in one process
+
+The canonical implementation may remember only successful mathematical
+verification facts about exact immutable input bytes. A signature entry binds
+the full message, public-key PEM and signature; public-key algorithm entries
+bind the full public-key PEM. Pathnames, key IDs and hashes alone are never
+cache keys. Failed verification and failed algorithm checks are not remembered.
+Changing any of those bytes requires the actual OpenSSL path again. No signing
+operation, private signing key, filesystem observation, source identity, Asana
+observation, chronology, outcome inventory, graph oracle or quality result is
+memoized.
+
+The signature memo holds at most 32 entries and 1 MiB of retained input bytes,
+with a 64 KiB cap on each complete message/key/signature tuple. The independent
+public-key algorithm memo holds at most 16 entries and 64 KiB, with an 8192-byte
+per-key cap. Thus the combined bounds are 48 entries and 1,114,112 input bytes.
+Oversized inputs bypass memoization and still run the unchanged verifier; these
+bounds do not relax or reduce the existing evidence input limits. Successful
+least-recently-used entries are evicted to satisfy both count and byte bounds.
+A fresh CLI process starts empty, and a changed process ID discards inherited
+memo entries before acquiring a process-local lock.
+
+Every caller still reads the current original bytes with the existing bounded
+regular-file identity checks. Every provenance, inventory, chronology and
+semantic check still runs. In particular, an independent canonical intake CLI
+must actually verify each distinct original it first encounters. The local
+controls distinguish actual OpenSSL signature/algorithm integration and
+subprocess counts from synthetic memo capacity/eviction bookkeeping; neither
+kind is a model-quality measurement.

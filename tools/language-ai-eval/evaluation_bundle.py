@@ -7,6 +7,7 @@ anchors that commitment in server time. Neither proves unseen task patterns.
 
 import argparse
 import base64
+from collections import OrderedDict
 import datetime as dt
 import hashlib
 import hmac
@@ -19,6 +20,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+from threading import Lock
 import random
 
 
@@ -153,18 +155,84 @@ def crypto(*args):
     return result.stdout
 
 
+class _SuccessMemo:
+    """Bounded, process-local facts about exact immutable public byte strings.
+
+    These entries contain neither signing keys nor filesystem identities.
+    They never replace callers' current file reads or provenance checks.
+    """
+    def __init__(self, max_entries, max_bytes, max_entry_bytes):
+        require(all(type(value) is int and value > 0 for value in (
+            max_entries, max_bytes, max_entry_bytes)), "SIGNATURE_MEMO_LIMITS")
+        self.max_entries, self.max_bytes, self.max_entry_bytes = max_entries, max_bytes, max_entry_bytes
+        self.entries, self.byte_count = OrderedDict(), 0
+        self.owner_pid, self.lock = os.getpid(), Lock()
+
+    def clear(self):
+        self._fresh_process()
+        with self.lock:
+            self.entries.clear(); self.byte_count = 0; self.owner_pid = os.getpid()
+
+    def _fresh_process(self):
+        if self.owner_pid != os.getpid():
+            # A fork must not acquire an inherited lock held by another thread.
+            self.entries, self.byte_count = OrderedDict(), 0
+            self.owner_pid, self.lock = os.getpid(), Lock()
+
+    def _size(self, parts):
+        require(type(parts) is tuple and all(type(part) is bytes for part in parts), "SIGNATURE_MEMO_BYTES")
+        return sum(len(part) for part in parts)
+
+    def contains(self, parts):
+        size = self._size(parts)
+        self._fresh_process()
+        with self.lock:
+            if size > min(self.max_entry_bytes, self.max_bytes) or parts not in self.entries:
+                return False
+            self.entries.move_to_end(parts)
+            return True
+
+    def remember_success(self, parts):
+        size = self._size(parts)
+        self._fresh_process()
+        with self.lock:
+            if size > min(self.max_entry_bytes, self.max_bytes):
+                return
+            if parts in self.entries:
+                self.byte_count -= self.entries.pop(parts)
+            while self.entries and (len(self.entries) >= self.max_entries or self.byte_count + size > self.max_bytes):
+                _, previous = self.entries.popitem(last=False)
+                self.byte_count -= previous
+            self.entries[parts] = size
+            self.byte_count += size
+
+
+# At most 48 entries and 1,114,112 retained input bytes in total. Oversized
+# inputs take the original OpenSSL path; failures are never remembered. A new
+# CLI process (or a fork observed by the memo) starts with no verified facts.
+_PUBLIC_KEY_MEMO = _SuccessMemo(16, 64 * 1024, 8192)
+_SIGNATURE_MEMO = _SuccessMemo(32, 1024 * 1024, 64 * 1024)
+
+
 def verify_signature(manifest_raw, public_raw, signature_raw):
+    require(all(type(value) is bytes for value in (manifest_raw, public_raw, signature_raw)), "SIGNATURE_BYTES_TYPE")
     require(len(signature_raw) == 64, "SIGNATURE_SIZE")
     require(public_raw.startswith(b"-----BEGIN PUBLIC KEY-----"), "PUBLIC_KEY_FORMAT")
+    exact = (manifest_raw, public_raw, signature_raw)
+    if _SIGNATURE_MEMO.contains(exact):
+        return
     with tempfile.TemporaryDirectory(prefix="cherri-eval-signature-") as temporary:
         root = Path(temporary)
         (root / "manifest.json").write_bytes(manifest_raw)
         (root / "public.pem").write_bytes(public_raw)
         (root / "signature.bin").write_bytes(signature_raw)
-        key = crypto("pkey", "-pubin", "-in", root / "public.pem", "-text", "-noout")
-        require(b"ED25519" in key.upper(), "SIGNATURE_ALGORITHM")
+        if not _PUBLIC_KEY_MEMO.contains((public_raw,)):
+            key = crypto("pkey", "-pubin", "-in", root / "public.pem", "-text", "-noout")
+            require(b"ED25519" in key.upper(), "SIGNATURE_ALGORITHM")
+            _PUBLIC_KEY_MEMO.remember_success((public_raw,))
         crypto("pkeyutl", "-verify", "-rawin", "-pubin", "-inkey", root / "public.pem",
                "-in", root / "manifest.json", "-sigfile", root / "signature.bin")
+    _SIGNATURE_MEMO.remember_success(exact)
 
 
 def derive(seed, label):

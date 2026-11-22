@@ -91,6 +91,8 @@ class ProvenanceControls(unittest.TestCase):
                 eb.validate_anchor(changed, self.bundle)
 
     def test_ed25519_signatures_reject_changed_manifest_signature_and_key(self):
+        eb._PUBLIC_KEY_MEMO.clear(); eb._SIGNATURE_MEMO.clear()
+        self.addCleanup(eb._PUBLIC_KEY_MEMO.clear); self.addCleanup(eb._SIGNATURE_MEMO.clear)
         key = self.root / "key.pem"
         public = self.root / "public.pem"
         manifest = self.root / "manifest.json"
@@ -100,15 +102,79 @@ class ProvenanceControls(unittest.TestCase):
         raw = eb.canonical({"synthetic_control": True, "caps": [12000, 2000]})
         manifest.write_bytes(raw)
         eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", key, "-in", manifest, "-out", signature)
-        eb.verify_signature(raw, public.read_bytes(), signature.read_bytes())
-        with self.assertRaises(eb.BundleError):
-            eb.verify_signature(raw.replace(b"12000", b"12001"), public.read_bytes(), signature.read_bytes())
-        with self.assertRaises(eb.BundleError):
-            eb.verify_signature(raw, public.read_bytes(), bytes(64))
         eb.crypto("genpkey", "-algorithm", "ED25519", "-out", self.root / "other-key.pem")
         eb.crypto("pkey", "-in", self.root / "other-key.pem", "-pubout", "-out", self.root / "other-public.pem")
-        with self.assertRaises(eb.BundleError):
-            eb.verify_signature(raw, (self.root / "other-public.pem").read_bytes(), signature.read_bytes())
+        eb.crypto("genpkey", "-algorithm", "X25519", "-out", self.root / "wrong-algorithm.pem")
+        eb.crypto("pkey", "-in", self.root / "wrong-algorithm.pem", "-pubout", "-out", self.root / "wrong-algorithm-public.pem")
+        public_raw, signature_raw = public.read_bytes(), signature.read_bytes()
+        actual_counts = {}
+        # Real OpenSSL integration: no cryptographic result is mocked. Wrapping
+        # counts the actual subprocess path while every rejection still runs it.
+        with mock.patch.object(eb, "crypto", wraps=eb.crypto) as calls:
+            eb.verify_signature(raw, public_raw, signature_raw)
+            self.assertEqual(calls.call_count, 2)
+            before = calls.call_count
+            eb.verify_signature(bytes(bytearray(raw)), bytes(bytearray(public_raw)), bytes(bytearray(signature_raw)))
+            actual_counts["exact_repeat"] = calls.call_count - before
+            self.assertEqual(actual_counts["exact_repeat"], 0)
+            changed = raw.replace(b"12000", b"12001")
+            for name, data, pub, sig, expected_calls, cause in (
+                ("message", changed, public_raw, signature_raw, 1, "SIGNATURE_VERIFICATION_FAILED"),
+                ("same_failed_message", changed, public_raw, signature_raw, 1, "SIGNATURE_VERIFICATION_FAILED"),
+                ("signature", raw, public_raw, bytes(64), 1, "SIGNATURE_VERIFICATION_FAILED"),
+                ("key", raw, (self.root / "other-public.pem").read_bytes(), signature_raw, 2, "SIGNATURE_VERIFICATION_FAILED"),
+                ("algorithm", raw, (self.root / "wrong-algorithm-public.pem").read_bytes(), signature_raw, 1, "SIGNATURE_ALGORITHM"),
+                ("same_failed_algorithm", raw, (self.root / "wrong-algorithm-public.pem").read_bytes(), signature_raw, 1, "SIGNATURE_ALGORITHM"),
+            ):
+                with self.subTest(crypto_input=name):
+                    before = calls.call_count
+                    with self.assertRaisesRegex(eb.BundleError, cause):
+                        eb.verify_signature(data, pub, sig)
+                    actual_counts[name] = calls.call_count - before
+                    self.assertEqual(actual_counts[name], expected_calls)
+            # Same mathematical key, different complete PEM bytes: both actual
+            # algorithm inspection and signature verification are required.
+            alternate_public = public_raw.replace(b"\n", b"\r\n")
+            before = calls.call_count
+            eb.verify_signature(raw, alternate_public, signature_raw)
+            actual_counts["changed_key_bytes"] = calls.call_count - before
+            self.assertEqual(actual_counts["changed_key_bytes"], 2)
+            with self.assertRaisesRegex(eb.BundleError, "SIGNATURE_BYTES_TYPE"):
+                eb.verify_signature(bytearray(raw), public_raw, signature_raw)
+        # An entry larger than the fixed production memo cap still receives
+        # real verification on every call; it is not rejected or remembered.
+        oversized = b"PUBLIC_SYNTHETIC_OVERSIZED_MESSAGE:" + b"x" * (64 * 1024)
+        manifest.write_bytes(oversized)
+        eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", key, "-in", manifest, "-out", signature)
+        big_signature = signature.read_bytes()
+        with mock.patch.object(eb, "crypto", wraps=eb.crypto) as calls:
+            eb.verify_signature(oversized, public_raw, big_signature)
+            eb.verify_signature(oversized, public_raw, big_signature)
+            actual_counts["oversized_two_actual_verifications"] = calls.call_count
+            self.assertEqual(calls.call_count, 2)
+            self.assertFalse(eb._SIGNATURE_MEMO.contains((oversized, public_raw, big_signature)))
+        print(json.dumps({"real_openssl_memo_controls": actual_counts}, sort_keys=True))
+        # Bookkeeping controls below are separate from the real crypto proof.
+        # They exercise simultaneous byte/entry bounds, eviction, duplicate
+        # insertion, oversized bypass and a new process's empty fact set.
+        memo = eb._SuccessMemo(2, 6, 4)
+        memo.remember_success((b"aa",)); memo.remember_success((b"bbb",))
+        self.assertEqual((len(memo.entries), memo.byte_count), (2, 5))
+        memo.remember_success((b"cccc",))
+        self.assertEqual((len(memo.entries), memo.byte_count), (1, 4))
+        self.assertFalse(memo.contains((b"aa",))); self.assertFalse(memo.contains((b"bbb",)))
+        memo.remember_success((b"cccc",))
+        self.assertEqual((len(memo.entries), memo.byte_count), (1, 4))
+        memo.remember_success((b"oversized",))
+        self.assertEqual((len(memo.entries), memo.byte_count), (1, 4))
+        memo.clear()
+        for value in (b"a", b"b", b"c"):
+            memo.remember_success((value,))
+        self.assertEqual((len(memo.entries), memo.byte_count), (2, 2))
+        self.assertFalse(memo.contains((b"a",)))
+        with mock.patch.object(eb.os, "getpid", return_value=memo.owner_pid + 1):
+            self.assertFalse(memo.contains((b"c",)))
+            self.assertEqual((len(memo.entries), memo.byte_count), (0, 0))
 
     def test_duplicate_json_and_nonfinite_values_are_not_reconciled(self):
         for raw in ('{"model":"a","model":"b"}', '{"tokens":NaN}', '{"tokens":Infinity}'):
