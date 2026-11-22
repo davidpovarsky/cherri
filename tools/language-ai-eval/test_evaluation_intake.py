@@ -5,6 +5,7 @@ from email.utils import format_datetime
 import json
 from pathlib import Path
 import plistlib
+import shutil
 import tempfile
 import unittest
 from unittest import mock
@@ -37,11 +38,76 @@ class FixtureAPI:
 
 
 class IntakeTamperControls(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # These are only offline test fixtures. No real evaluation/signing key,
+        # provider payload, verified result or production filesystem check is
+        # cached. The sequential unittest class has one isolated fixed path so
+        # original compiler argv and signed file inventories remain exact.
+        cls.fixture_temp = tempfile.TemporaryDirectory(prefix="cherri_ai_intake_control_")
+        cls.addClassCleanup(cls.fixture_temp.cleanup)
+        cls.fixture_parent = Path(cls.fixture_temp.name)
+        cls.key_material = None
+        cls.manifest_material = None
+        cls.complete_snapshot = None
+        cls.complete_snapshot_digest = None
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.key_material = cls.manifest_material = cls.complete_snapshot = None
+        cls.complete_snapshot_digest = None
+
+    def snapshot(self):
+        self.assertEqual(self.root, type(self).fixture_parent / "synthetic-bundle")
+        self.assertFalse(self.root.is_symlink())
+        paths = sorted(self.root.rglob("*"))
+        self.assertTrue(all(not path.is_symlink() for path in paths))
+        return tuple((path.relative_to(self.root).as_posix(), path.read_bytes())
+                     for path in paths if path.is_file())
+
+    @staticmethod
+    def snapshot_digest(snapshot):
+        return eb.digest(eb.canonical([
+            {"path": name, "bytes": len(raw), "sha256": eb.digest(raw)}
+            for name, raw in snapshot]))
+
+    def restore(self, snapshot):
+        self.assertIs(type(snapshot), tuple)
+        self.assertEqual(self.root, type(self).fixture_parent / "synthetic-bundle")
+        self.assertFalse(self.root.is_symlink())
+        if self.root.exists():
+            shutil.rmtree(self.root)
+        self.root.mkdir()
+        for name, raw in snapshot:
+            relative = Path(name)
+            self.assertFalse(relative.is_absolute())
+            self.assertNotIn("..", relative.parts)
+            self.assertIs(type(raw), bytes)
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+        # This independent byte comparison also rejects residual files from a
+        # preceding mutation. The actual intake still rereads every original.
+        self.assertEqual(self.snapshot(), snapshot)
+
+    def fixture_time(self, request, offset=0):
+        index = next(index for index, item in enumerate(self.requests)
+                     if item["request_id"] == request["request_id"])
+        return dt.datetime(2026, 11, 21, 20, tzinfo=dt.timezone.utc) + dt.timedelta(seconds=10*index+offset)
+
+    def fixture_timestamp(self, request, offset=0):
+        return self.fixture_time(request, offset).isoformat().replace("+00:00", "Z")
+
+    def seal_record(self, request, record):
+        with mock.patch.object(eb, "utc_now", return_value=self.fixture_timestamp(request, 3)):
+            return eb.seal_outcome(self.bundle, record)
+
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="cherri_ai_intake_control_")
-        self.addCleanup(self.temp.cleanup)
-        self.parent = Path(self.temp.name)
+        self.parent = type(self).fixture_parent
         self.root = self.parent / "synthetic-bundle"
+        self.assertFalse(self.root.is_symlink())
+        if self.root.exists():
+            shutil.rmtree(self.root)
         self.root.mkdir()
         (self.root / "private").mkdir()
         suite, parameters = eb.generate_suite(bytes(range(32)))
@@ -53,12 +119,25 @@ class IntakeTamperControls(unittest.TestCase):
             "oracle_sha256": eb.digest(eb.canonical({t["id"]: t["oracle"] for t in suite["tasks"]})),
             "seed_commitment_sha256": eb.digest(bytes(range(32))),
             "compiler": {"source_sha": eb.COMPILER_SOURCE, "binary_sha256": eb.COMPILER_SHA256}}
-        eb.crypto("genpkey", "-algorithm", "ED25519", "-out", self.root / "private" / "signing-key.pem")
-        eb.crypto("pkey", "-in", self.root / "private" / "signing-key.pem", "-pubout", "-out", self.root / "public-key.pem")
+        owner = type(self)
+        if owner.key_material is None:
+            eb.crypto("genpkey", "-algorithm", "ED25519", "-out", self.root / "private" / "signing-key.pem")
+            eb.crypto("pkey", "-in", self.root / "private" / "signing-key.pem", "-pubout", "-out", self.root / "public-key.pem")
+            owner.key_material = tuple((name, (self.root / name).read_bytes())
+                for name in ("private/signing-key.pem", "public-key.pem"))
+        else:
+            for name, raw in owner.key_material:
+                (self.root / name).write_bytes(raw)
         manifest["public_key_sha256"] = eb.digest((self.root / "public-key.pem").read_bytes())
         put(self.root / "manifest.json", manifest)
-        eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", self.root / "private" / "signing-key.pem",
-                  "-in", self.root / "manifest.json", "-out", self.root / "signature.bin")
+        if owner.manifest_material is None:
+            eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", self.root / "private" / "signing-key.pem",
+                      "-in", self.root / "manifest.json", "-out", self.root / "signature.bin")
+            owner.manifest_material = ((self.root / "manifest.json").read_bytes(),
+                                       (self.root / "signature.bin").read_bytes())
+        else:
+            self.assertEqual((self.root / "manifest.json").read_bytes(), owner.manifest_material[0])
+            (self.root / "signature.bin").write_bytes(owner.manifest_material[1])
         self.bundle = {"root": self.root, "manifest": manifest, "suite": suite, "parameters": parameters,
                        "guides": {"legacy": "synthetic legacy guide", "v2": "synthetic v2 guide"}, "anchor": {}}
         self.story = {"data": {"gid": eb.ASANA_TASK, "comments": [{"gid": "1220000000000001", "resource_subtype": "comment_added",
@@ -88,19 +167,22 @@ class IntakeTamperControls(unittest.TestCase):
                 request_id = "req_generation_"+request["request_id"]
             if partial_generation and path == adapter.MESSAGE_PATH:
                 return adapter.HTTPResult(200, request_id, b'{"type":"message",', False,
-                                          format_datetime(dt.datetime.now(dt.timezone.utc), usegmt=True))
+                                          format_datetime(self.fixture_time(request), usegmt=True))
             return adapter.HTTPResult(200, request_id, eb.canonical(response), True,
-                                      format_datetime(dt.datetime.now(dt.timezone.utc), usegmt=True))
-        reply, status = adapter.run_adapter(request, eb.canonical(request),
-            {"ANTHROPIC_API_KEY": "mock_credential_for_local_test_only", "CHERRI_AI_EVAL_ALLOW_GENERATION": "1",
-             "CHERRI_AI_EVAL_BUNDLE": str(self.root)}, transport=transport, bundle_api=self.api)
+                                      format_datetime(self.fixture_time(request), usegmt=True))
+        with mock.patch.object(adapter, "utc_now", return_value=self.fixture_timestamp(request)), \
+                mock.patch.object(eb, "utc_now", return_value=self.fixture_timestamp(request)):
+            reply, status = adapter.run_adapter(request, eb.canonical(request),
+                {"ANTHROPIC_API_KEY": "mock_credential_for_local_test_only", "CHERRI_AI_EVAL_ALLOW_GENERATION": "1",
+                 "CHERRI_AI_EVAL_BUNDLE": str(self.root)}, transport=transport, bundle_api=self.api)
         self.assertEqual(status, 0 if stop_reason == "end_turn" and not partial_generation else 1, reply)
         self.assertEqual(counter, [adapter.COUNT_PATH, adapter.MESSAGE_PATH])
         return reply
 
     def validator(self, request, reply):
         task = next(t for t in self.bundle["suite"]["tasks"] if t["id"] == request["task_id"])
-        directory = eb.claim_request(self.bundle, request, "validator")
+        with mock.patch.object(eb, "utc_now", return_value=self.fixture_timestamp(request, 1)):
+            directory = eb.claim_request(self.bundle, request, "validator")
         code = reply["code"].encode()
         validated = {key: request[key] for key in ("schema", "request_id", "task_id", "arm")}
         validated.update(source=reply["code"], source_sha256=eb.digest(code), oracle=task["oracle"],
@@ -116,7 +198,7 @@ class IntakeTamperControls(unittest.TestCase):
         answer = {key: validated[key] for key in ("schema", "request_id", "task_id", "arm", "source_sha256")}
         answer.update(synthetic=False, checks=checks)
         put(directory / "reply.json", answer)
-        now = eb.utc_now()
+        now = self.fixture_timestamp(request, 1)
         receipt = {"schema": "cherri-ai-graph-validation/v1", "request_id": request["request_id"],
             "task_id": task["id"], "arm": request["arm"], "source_sha256": eb.digest(code),
             "compiler": self.bundle["manifest"]["compiler"], "started_at": now, "finished_at": now,
@@ -130,47 +212,70 @@ class IntakeTamperControls(unittest.TestCase):
         put(directory / "validator-receipt.json", receipt)
         return answer
 
-    def complete(self, first_refusal=False, first_unfinished=False):
-        records = []
-        for index, request in enumerate(self.requests):
-            if first_unfinished and index == 0:
-                self.provider(request, partial_generation=True)
-                path = self.root / "attempts" / request["request_id"] / "provider" / "provider-receipt.json"
-                receipt = eb.unique_json(path.read_bytes())
-                receipt.update(status="GENERATION_STARTED", finished_at=None)
-                put(path, receipt)
-                record = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
-                          "status": "PROVIDER_ERROR", "finished_at": eb.utc_now()}
-                record.update(eb.seal_outcome(self.bundle, record))
-                records.append(record)
-                continue
-            if first_refusal and index == 0:
-                self.provider(request, "refusal")
-                provider = intake.verify_provider(self.root / "attempts" / request["request_id"] / "provider", request, self.bundle)
-                record = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
-                    "status": "MEASURED_PROVIDER_FAILURE", "provider_status": "REFUSED", "usage": provider["usage"], "passed": False,
-                    "provider_request_id_sha256": eb.digest(provider["provider_request_id"].encode()), "finished_at": eb.utc_now(),
-                    "source_sha256": provider["source_sha256"]}
-                record.update(eb.seal_outcome(self.bundle, record))
-                records.append(record)
-                continue
+    def outcome(self, request, *, refusal=False, unfinished=False):
+        if unfinished:
+            self.provider(request, partial_generation=True)
+            path = self.root / "attempts" / request["request_id"] / "provider" / "provider-receipt.json"
+            receipt = eb.unique_json(path.read_bytes())
+            receipt.update(status="GENERATION_STARTED", finished_at=None)
+            put(path, receipt)
+            record = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
+                      "status": "PROVIDER_ERROR", "finished_at": self.fixture_timestamp(request, 2)}
+        elif refusal:
+            self.provider(request, "refusal")
+            provider = intake.verify_provider(self.root / "attempts" / request["request_id"] / "provider", request, self.bundle)
+            record = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
+                "status": "MEASURED_PROVIDER_FAILURE", "provider_status": "REFUSED", "usage": provider["usage"], "passed": False,
+                "provider_request_id_sha256": eb.digest(provider["provider_request_id"].encode()),
+                "finished_at": self.fixture_timestamp(request, 2), "source_sha256": provider["source_sha256"]}
+        else:
             reply = self.provider(request)
             validation = self.validator(request, reply)
             record = {"task_id": request["task_id"], "arm": request["arm"], "request_id": request["request_id"],
                 "status": "MEASURED", "source_sha256": eb.digest(reply["code"].encode()), "usage": reply["usage"],
                 "provider_request_id_sha256": eb.digest(reply["provider_request_id"].encode()),
-                "checks": validation["checks"], "passed": True, "finished_at": eb.utc_now()}
-            record.update(eb.seal_outcome(self.bundle, record))
-            records.append(record)
+                "checks": validation["checks"], "passed": True, "finished_at": self.fixture_timestamp(request, 2)}
+        record.update(self.seal_record(request, record))
+        return record
+
+    def write_report(self, records, *, unfinished=False):
         report = {"schema": eb.SCHEMA, "mode": "external", "model": eb.MODEL,
                   "manifest_sha256": eb.digest(eb.canonical(self.bundle["manifest"])),
                   "suite_sha256": self.bundle["manifest"]["suite_sha256"], "budget": self.bundle["manifest"]["budget"],
                   "seed": self.bundle["manifest"]["order_seed"], "records": records,
-                  "status": "EVALUATION_INCOMPLETE" if first_unfinished else "EVALUATION_COMPLETED",
-                  "ai_quality_measured": not first_unfinished}
-        if not first_unfinished:
+                  "status": "EVALUATION_INCOMPLETE" if unfinished else "EVALUATION_COMPLETED",
+                  "ai_quality_measured": not unfinished}
+        if not unfinished:
             report["measured_results"] = {arm: {"passed": sum(r["passed"] for r in records if r["arm"] == arm), "total": 6} for arm in ("legacy", "v2")}
         put(self.root / "report.json", report)
+        return report
+
+    def complete(self, first_refusal=False, first_unfinished=False):
+        self.assertFalse(first_refusal and first_unfinished)
+        owner = type(self)
+        if owner.complete_snapshot is None:
+            # Construct all twelve originals and their actual Ed25519 seals once
+            # per isolated class, even when a variant is the first selected test.
+            self.write_report([self.outcome(request) for request in self.requests])
+            owner.complete_snapshot = self.snapshot()
+            owner.complete_snapshot_digest = self.snapshot_digest(owner.complete_snapshot)
+        self.assertEqual(self.snapshot_digest(owner.complete_snapshot), owner.complete_snapshot_digest)
+        self.restore(owner.complete_snapshot)
+        report = eb.unique_json((self.root / "report.json").read_bytes())
+        self.assertEqual([record["request_id"] for record in report["records"]],
+                         [request["request_id"] for request in self.requests])
+        if first_refusal or first_unfinished:
+            request = self.requests[0]
+            identity = request["request_id"]
+            # Only synthetic originals in this freshly restored test fixture
+            # are replaced. Production never deletes or retries an attempt.
+            shutil.rmtree(self.root / "attempts" / identity)
+            for suffix in (".json", ".sig"):
+                (self.root / "outcome-seals" / (identity+suffix)).unlink()
+            report["records"][0] = self.outcome(request,
+                refusal=first_refusal, unfinished=first_unfinished)
+            report = self.write_report(report["records"], unfinished=first_unfinished)
+        self.assertEqual(self.snapshot_digest(owner.complete_snapshot), owner.complete_snapshot_digest)
         return report
 
     def run_intake(self):
@@ -183,6 +288,18 @@ class IntakeTamperControls(unittest.TestCase):
 
     def test_mock_provider_and_graph_receipts_join_all_twelve_outcomes(self):
         self.complete()
+        # Deliberately dirty the restored working copy. Its immutable byte
+        # snapshot must survive, and a fresh restore must remove both mutations
+        # before the unchanged full twelve-row intake reads the originals.
+        owner = type(self)
+        before = owner.complete_snapshot_digest
+        first = self.root / "attempts" / self.requests[0]["request_id"] / "provider" / "provider-receipt.json"
+        first.write_bytes(b"SYNTHETIC_MUTATION_MUST_NOT_LEAK_TO_ANOTHER_CONTROL")
+        unexpected = self.root / "unexpected-from-prior-test"
+        unexpected.write_bytes(b"SYNTHETIC_EXTRA_FILE")
+        self.restore(owner.complete_snapshot)
+        self.assertFalse(unexpected.exists())
+        self.assertEqual(self.snapshot_digest(owner.complete_snapshot), before)
         result = self.run_intake()
         self.assertEqual(len(result["records"]), 12)
         self.assertEqual(result["status"], "VERIFIED_MEASUREMENT")
