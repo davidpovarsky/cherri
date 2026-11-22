@@ -1,0 +1,1327 @@
+{
+  "schema": "cherri-function-envelope-baseline-ci/v1",
+  "subject_sha": "62323bcf23a45a2d18e4e6415881d0e3c79868b0",
+  "subject_parent": "db222ea190b90e875290b76fea5c6a5925ad89e9",
+  "subject_tree": "be4e3ce5176adae3e7f020978f6a02af135d711a",
+  "scope": "Necessary dual-marker baseline and authentic native call/input controls only; no formal acceptance.",
+  "parents": [
+    "TestP15RP26DispatchGuardObserverControls",
+    "TestP15RP26IncompleteEnvelopeRequiresGuard",
+    "TestP15FunctionEnvelopeHealthyNativeControls"
+  ],
+  "expected_tests": [
+    "TestP15FunctionEnvelopeHealthyNativeControls",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/arg_wrong_slot",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/body_reads_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/call_uses_wrong_input",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/call_wrong_target",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/caller_consumes_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/caller_output_static",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/extra_action",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/initial_snapshot",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/main_before_reads_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/missing_action",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/payload_loses_caller",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/restore_arguments",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/restore_envelope",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/result_name_reconciled",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/static_observation",
+    "TestP15FunctionEnvelopeHealthyNativeControls/direct/wrong_field_kind",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/arg_wrong_slot",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/body_reads_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/call_uses_wrong_input",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/call_wrong_target",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/caller_consumes_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/caller_output_static",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/extra_action",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/initial_snapshot",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/main_before_reads_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/missing_action",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/nested_body_reads_transport",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/nested_payload_loses_caller",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/payload_loses_caller",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/restore_arguments",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/restore_envelope",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/result_name_reconciled",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/static_observation",
+    "TestP15FunctionEnvelopeHealthyNativeControls/nested/wrong_field_kind",
+    "TestP15FunctionEnvelopeHealthyNativeControls/without_functions",
+    "TestP15FunctionEnvelopeHealthyNativeControls/without_functions/extra_action",
+    "TestP15FunctionEnvelopeHealthyNativeControls/without_functions/input_alias_lost",
+    "TestP15FunctionEnvelopeHealthyNativeControls/without_functions/output_detached",
+    "TestP15FunctionEnvelopeHealthyNativeControls/without_functions/static_observation",
+    "TestP15RP26DispatchGuardObserverControls",
+    "TestP15RP26DispatchGuardObserverControls/foreign_dictionary",
+    "TestP15RP26DispatchGuardObserverControls/magic_else",
+    "TestP15RP26DispatchGuardObserverControls/magic_field",
+    "TestP15RP26DispatchGuardObserverControls/magic_value",
+    "TestP15RP26DispatchGuardObserverControls/marker_else",
+    "TestP15RP26DispatchGuardObserverControls/marker_field",
+    "TestP15RP26DispatchGuardObserverControls/marker_value",
+    "TestP15RP26DispatchGuardObserverControls/wrong_kind",
+    "TestP15RP26IncompleteEnvelopeRequiresGuard"
+  ],
+  "source_paths": [
+    "action.go",
+    "actions_catalog.go",
+    "actions_std.go",
+    "args.go",
+    "assets/cherri_icon.png",
+    "automations.go",
+    "build_profile.go",
+    "compiler_state.go",
+    "copy_paste.go",
+    "date_field_codec.go",
+    "debug_export.go",
+    "debug_labels.go",
+    "debug_stdlib.go",
+    "decompile.go",
+    "docs.go",
+    "edit_cli_adapter.go",
+    "embedded.go",
+    "embedded_assets.go",
+    "functions.go",
+    "glyphs.go",
+    "go.mod",
+    "go.sum",
+    "hybrid_import.go",
+    "import.go",
+    "import_fidelity.go",
+    "import_provenance.go",
+    "import_provenance_oracle_nopatch.go",
+    "import_provenance_restore.go",
+    "includes.go",
+    "internal/language/analysis/action_declarations.go",
+    "internal/language/analysis/analyzer.go",
+    "internal/language/analysis/assignment_evidence.go",
+    "internal/language/analysis/binding_flow.go",
+    "internal/language/analysis/cardinality.go",
+    "internal/language/analysis/control_presence.go",
+    "internal/language/analysis/control_results.go",
+    "internal/language/analysis/diagnostics.go",
+    "internal/language/analysis/dictionary_presence.go",
+    "internal/language/analysis/editor_context.go",
+    "internal/language/analysis/enums.go",
+    "internal/language/analysis/function_arguments.go",
+    "internal/language/analysis/list_shape.go",
+    "internal/language/analysis/literal_arguments.go",
+    "internal/language/analysis/loop_result_shape.go",
+    "internal/language/analysis/module_imports.go",
+    "internal/language/analysis/native_reference.go",
+    "internal/language/analysis/optional_presence.go",
+    "internal/language/analysis/optional_transport.go",
+    "internal/language/analysis/paginate.go",
+    "internal/language/analysis/platform_versions.go",
+    "internal/language/analysis/quantity_evidence.go",
+    "internal/language/analysis/registry_lifetime.go",
+    "internal/language/analysis/require.go",
+    "internal/language/analysis/resolved_actions.go",
+    "internal/language/analysis/scoped_blocks.go",
+    "internal/language/analysis/setup.go",
+    "internal/language/analysis/target_versions.go",
+    "internal/language/analysis/type_aliases.go",
+    "internal/language/analysis/value_yields.go",
+    "internal/language/analysis/variadic.go",
+    "internal/language/assets/cache.go",
+    "internal/language/backend/contracts.go",
+    "internal/language/backend/control.go",
+    "internal/language/backend/native_envelope.go",
+    "internal/language/backend/parameter_codecs.go",
+    "internal/language/backend/scoped_measure.go",
+    "internal/language/enums/catalog.go",
+    "internal/language/ir/ir.go",
+    "internal/language/ir/native_reference.go",
+    "internal/language/lower/argument_type.go",
+    "internal/language/lower/binding_capture.go",
+    "internal/language/lower/call_arguments.go",
+    "internal/language/lower/container_evaluation_order.go",
+    "internal/language/lower/container_keys.go",
+    "internal/language/lower/empty_list.go",
+    "internal/language/lower/enum_values.go",
+    "internal/language/lower/exhaustive_validation.go",
+    "internal/language/lower/function_argument_containers.go",
+    "internal/language/lower/function_defaults.go",
+    "internal/language/lower/function_optional_presence.go",
+    "internal/language/lower/index_bounds.go",
+    "internal/language/lower/lexical_scope.go",
+    "internal/language/lower/literal_container_carriers.go",
+    "internal/language/lower/literal_list.go",
+    "internal/language/lower/literal_text_carriers.go",
+    "internal/language/lower/loop_index.go",
+    "internal/language/lower/lower.go",
+    "internal/language/lower/main_output.go",
+    "internal/language/lower/module_scope.go",
+    "internal/language/lower/native_action_envelope.go",
+    "internal/language/lower/native_action_result.go",
+    "internal/language/lower/native_plist_value.go",
+    "internal/language/lower/optional_control_presence.go",
+    "internal/language/lower/optional_presence_demand.go",
+    "internal/language/lower/optional_transport.go",
+    "internal/language/lower/parameter_codecs.go",
+    "internal/language/lower/predicate_value.go",
+    "internal/language/lower/scoped_blocks.go",
+    "internal/language/lower/setup.go",
+    "internal/language/lower/short_circuit.go",
+    "internal/language/lsp/position_wire.go",
+    "internal/language/lsp/server.go",
+    "internal/language/migrate/lexical_source.go",
+    "internal/language/migrate/main_output.go",
+    "internal/language/migrate/migrate.go",
+    "internal/language/migrate/native_lists.go",
+    "internal/language/migrate/optional_bindings.go",
+    "internal/language/migrate/references.go",
+    "internal/language/migrate/setter_mode.go",
+    "internal/language/migrate/variadic.go",
+    "internal/language/modules/graph.go",
+    "internal/language/modules/standard_library.go",
+    "internal/language/modules/stdfunc_source_generated.go",
+    "internal/language/protocol/protocol.go",
+    "internal/language/schema/debug_export.go",
+    "internal/language/schema/generated_registry.go",
+    "internal/language/schema/macro_metadata.go",
+    "internal/language/schema/metadata.go",
+    "internal/language/schema/paginate.go",
+    "internal/language/schema/platform_versions.go",
+    "internal/language/schema/registry_clone.go",
+    "internal/language/schema/require.go",
+    "internal/language/schema/schema.go",
+    "internal/language/schema/scoped_blocks.go",
+    "internal/language/schema/semantic_metadata.go",
+    "internal/language/schema/variadic.go",
+    "internal/language/service/asset_analysis.go",
+    "internal/language/service/call_result.go",
+    "internal/language/service/context_position.go",
+    "internal/language/service/diagnostics.go",
+    "internal/language/service/enum_completion.go",
+    "internal/language/service/module_analysis.go",
+    "internal/language/service/registry_lifetime.go",
+    "internal/language/service/semantic_symbols.go",
+    "internal/language/service/service.go",
+    "internal/language/service/typed_completion.go",
+    "internal/language/source/span.go",
+    "internal/language/syntax/ast.go",
+    "internal/language/syntax/dictionary_presence.go",
+    "internal/language/syntax/format.go",
+    "internal/language/syntax/format_literals.go",
+    "internal/language/syntax/format_precedence.go",
+    "internal/language/syntax/identifier.go",
+    "internal/language/syntax/index_presence.go",
+    "internal/language/syntax/lexer.go",
+    "internal/language/syntax/main_output.go",
+    "internal/language/syntax/parser.go",
+    "internal/language/syntax/parser_predicates.go",
+    "internal/language/syntax/scoped_blocks.go",
+    "internal/language/syntax/token.go",
+    "internal/language/types/optional_presence.go",
+    "internal/language/types/record_evidence.go",
+    "internal/language/types/types.go",
+    "internal/language/workspace/resource.go",
+    "ios_bridge.go",
+    "language_backend_adapter.go",
+    "language_backend_session.go",
+    "language_cli_adapter.go",
+    "language_emit_adapter.go",
+    "language_filter_adapter.go",
+    "language_platform_version_adapter.go",
+    "language_registry_adapter.go",
+    "language_typed_literal_adapter.go",
+    "language_value_adapter.go",
+    "legacy_inline_arguments.go",
+    "legacy_output_transaction.go",
+    "literal_container_binding.go",
+    "literal_text_carrier_binding.go",
+    "main.go",
+    "mobile_compiler.go",
+    "mobile_language_service.go",
+    "native_action_envelope.go",
+    "native_action_result_binding.go",
+    "native_aggrandizement_fields.go",
+    "output.go",
+    "p15_combined_short_circuit_test.go",
+    "p15_container_shape_acceptance_test.go",
+    "p15_function_envelope_completeness_test.go",
+    "packages.go",
+    "paginate_macro.go",
+    "parser.go",
+    "python_cmd.go",
+    "raw_actions.go",
+    "references.go",
+    "require_macro.go",
+    "require_type_metadata.go",
+    "reverse_action_registry.go",
+    "scoped_blocks_legacy.go",
+    "search.go",
+    "semantic_import_native_loop_results.go",
+    "semantic_import_native_operands.go",
+    "semantic_import_planner.go",
+    "setup_question_binding.go",
+    "shared_codec.go",
+    "shared_control.go",
+    "shortcut.go",
+    "shortcutgen.go",
+    "signing.go",
+    "simulator_qa_oracle.go",
+    "tests/language-v2/acceptance-contract.json",
+    "tests/language-v2/backend-recovery-gates.json",
+    "tests/language-v2/repair-regression-plan.json",
+    "tests/language-v2/v2-rp26-envelope-regression.cherri",
+    "token.go",
+    "toolkit.go",
+    "typed_array_value.go",
+    "variables.go",
+    "version.go"
+  ],
+  "source_bindings": [
+    {
+      "path": "action.go",
+      "git_blob": "c51d8345b2fb156b311e05baf2c2fee155e1e39e",
+      "bytes": 53080
+    },
+    {
+      "path": "actions_catalog.go",
+      "git_blob": "3dbb4adc154642a1687c02b22e82f1d701c188bb",
+      "bytes": 12755
+    },
+    {
+      "path": "actions_std.go",
+      "git_blob": "56665de9b466e7b1d873970e22b289b3333cc336",
+      "bytes": 97516
+    },
+    {
+      "path": "args.go",
+      "git_blob": "8d474f7bdd32b59589f7f549f5760f05c8693e52",
+      "bytes": 7244
+    },
+    {
+      "path": "assets/cherri_icon.png",
+      "git_blob": "86ff6d848032a8a2a0d03069a449e41dae38c4eb",
+      "bytes": 66524
+    },
+    {
+      "path": "automations.go",
+      "git_blob": "305fa838e5980bb12958ae3e6de7f82898da6033",
+      "bytes": 3306
+    },
+    {
+      "path": "build_profile.go",
+      "git_blob": "f6636d666a999fef64d04c4bf34672f958f08413",
+      "bytes": 6151
+    },
+    {
+      "path": "compiler_state.go",
+      "git_blob": "5efd11724aa2945399334bb6691198fb971e32ae",
+      "bytes": 5763
+    },
+    {
+      "path": "copy_paste.go",
+      "git_blob": "8661ebadba887d49d34fd9794b8cb802540e8278",
+      "bytes": 2101
+    },
+    {
+      "path": "date_field_codec.go",
+      "git_blob": "5b632a06fd53c913952cc320b27dc9b964e01f10",
+      "bytes": 584
+    },
+    {
+      "path": "debug_export.go",
+      "git_blob": "64c00341d61d8fc914c7b065d0ee025f06975773",
+      "bytes": 8694
+    },
+    {
+      "path": "debug_labels.go",
+      "git_blob": "06ad647adb1ebb3d455d97aedce1eb63daf61b76",
+      "bytes": 17361
+    },
+    {
+      "path": "debug_stdlib.go",
+      "git_blob": "002ae36ce1cc2061007168068d07eefaae7c0906",
+      "bytes": 52742
+    },
+    {
+      "path": "decompile.go",
+      "git_blob": "16f4c5a95c225a518c3d7b283a553db9305a8bd0",
+      "bytes": 101040
+    },
+    {
+      "path": "docs.go",
+      "git_blob": "a4ed85443b45e4bb1be2d582768b20e6a91a59d0",
+      "bytes": 2668
+    },
+    {
+      "path": "edit_cli_adapter.go",
+      "git_blob": "9b1d02ded85f41c808cd935a5f6924dd3ed8cd19",
+      "bytes": 2071
+    },
+    {
+      "path": "embedded.go",
+      "git_blob": "a2f64a7154196453ca361d34015efd9333cc5d4d",
+      "bytes": 374
+    },
+    {
+      "path": "embedded_assets.go",
+      "git_blob": "920b3f8e51b0be0a23af14755ddf254d4c012a18",
+      "bytes": 1497
+    },
+    {
+      "path": "functions.go",
+      "git_blob": "223816c58118c47bc812ba042232aa6db741e127",
+      "bytes": 10637
+    },
+    {
+      "path": "glyphs.go",
+      "git_blob": "708d6307c64be35090ce342968be3290a3bfb80a",
+      "bytes": 381
+    },
+    {
+      "path": "go.mod",
+      "git_blob": "0bc0002815d1779cf4f094bbe141df03557d37ed",
+      "bytes": 1618
+    },
+    {
+      "path": "go.sum",
+      "git_blob": "00552c157626f542aee6906578955f7ded0ebf4c",
+      "bytes": 11884
+    },
+    {
+      "path": "hybrid_import.go",
+      "git_blob": "947fa6a863288819029586fde493c0bfcec4164c",
+      "bytes": 31124
+    },
+    {
+      "path": "import.go",
+      "git_blob": "a7e524124a2e0f1f933622fa41096d814d176914",
+      "bytes": 10095
+    },
+    {
+      "path": "import_fidelity.go",
+      "git_blob": "d3723cb7e4fe81de4b5816b563322fb5e8592f3c",
+      "bytes": 34991
+    },
+    {
+      "path": "import_provenance.go",
+      "git_blob": "ea96c0980f0f9a1869d28bb51635cdf15596a68d",
+      "bytes": 19422
+    },
+    {
+      "path": "import_provenance_oracle_nopatch.go",
+      "git_blob": "541b8d4bda774527668eb640891c08c64e10feef",
+      "bytes": 303
+    },
+    {
+      "path": "import_provenance_restore.go",
+      "git_blob": "2575ccac33ccef58bba38a566d1ebf46d8c78a5e",
+      "bytes": 195
+    },
+    {
+      "path": "includes.go",
+      "git_blob": "7ee2a55efc1272c05f63114beab6c4af9717212d",
+      "bytes": 5979
+    },
+    {
+      "path": "internal/language/analysis/action_declarations.go",
+      "git_blob": "8b5d1821e05afc1532736018ac3d748b2514762d",
+      "bytes": 2303
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "git_blob": "0bc1a2ab47282d149749e8f086768879adb7b76a",
+      "bytes": 71362
+    },
+    {
+      "path": "internal/language/analysis/assignment_evidence.go",
+      "git_blob": "7c2ba7b7bcb8f7dbc3b220b4ee0304d32cd50a6a",
+      "bytes": 1995
+    },
+    {
+      "path": "internal/language/analysis/binding_flow.go",
+      "git_blob": "2409e6fc8e171b3d7ca377ad949c1c656e3efaf6",
+      "bytes": 9328
+    },
+    {
+      "path": "internal/language/analysis/cardinality.go",
+      "git_blob": "a0fe0c9a7e4772ae4f40365999718c982b6f06f9",
+      "bytes": 2438
+    },
+    {
+      "path": "internal/language/analysis/control_presence.go",
+      "git_blob": "1a48df9d70af3c417e73ef11347a87e5a7fd16b7",
+      "bytes": 3395
+    },
+    {
+      "path": "internal/language/analysis/control_results.go",
+      "git_blob": "605a1b7be6a5801388b838614b31f681d9879ee8",
+      "bytes": 1937
+    },
+    {
+      "path": "internal/language/analysis/diagnostics.go",
+      "git_blob": "35788b2211644758aa86e052e0c2250763111409",
+      "bytes": 2675
+    },
+    {
+      "path": "internal/language/analysis/dictionary_presence.go",
+      "git_blob": "f6f460000760fa831c6dac989b47abd710436593",
+      "bytes": 2380
+    },
+    {
+      "path": "internal/language/analysis/editor_context.go",
+      "git_blob": "75de927c6fcc4515d0707cedc48cdd59ff79b052",
+      "bytes": 4632
+    },
+    {
+      "path": "internal/language/analysis/enums.go",
+      "git_blob": "502c3082dee2f6bde7efde08def8bf8cd313921d",
+      "bytes": 4757
+    },
+    {
+      "path": "internal/language/analysis/function_arguments.go",
+      "git_blob": "47982b3bf3bc923c78a0738c773afaab3500f741",
+      "bytes": 3819
+    },
+    {
+      "path": "internal/language/analysis/list_shape.go",
+      "git_blob": "58b1c706959af30a7605f55c52273ca6e529e3d8",
+      "bytes": 1304
+    },
+    {
+      "path": "internal/language/analysis/literal_arguments.go",
+      "git_blob": "2e4ec2b286113e70c0588af39f353212abf6e9ea",
+      "bytes": 4314
+    },
+    {
+      "path": "internal/language/analysis/loop_result_shape.go",
+      "git_blob": "c2db237079920fd6231e30b7a350b15b9f21a24b",
+      "bytes": 1073
+    },
+    {
+      "path": "internal/language/analysis/module_imports.go",
+      "git_blob": "c7ebd49c8538e9558bfe9310ab267161cbf28349",
+      "bytes": 5550
+    },
+    {
+      "path": "internal/language/analysis/native_reference.go",
+      "git_blob": "f249ad0ed1f9484bc1540c2b195f34fdd13fca77",
+      "bytes": 4294
+    },
+    {
+      "path": "internal/language/analysis/optional_presence.go",
+      "git_blob": "34eb63d77faead426fc0a257a5f039a30dab459b",
+      "bytes": 1919
+    },
+    {
+      "path": "internal/language/analysis/optional_transport.go",
+      "git_blob": "087d5d76919626e64f04b3f9bfbb6fc9091a8170",
+      "bytes": 796
+    },
+    {
+      "path": "internal/language/analysis/paginate.go",
+      "git_blob": "501ecd330d50ac2424ad4283da02568dfdaa0c1a",
+      "bytes": 1097
+    },
+    {
+      "path": "internal/language/analysis/platform_versions.go",
+      "git_blob": "98589a473d839c2d9fa410ced77c200043774450",
+      "bytes": 1062
+    },
+    {
+      "path": "internal/language/analysis/quantity_evidence.go",
+      "git_blob": "781cfb53b1d1fdbd485b192f6880e0cb35e7b58d",
+      "bytes": 2351
+    },
+    {
+      "path": "internal/language/analysis/registry_lifetime.go",
+      "git_blob": "8b6f1e7d07ee443f6bebe0570e5b0157f9657c8c",
+      "bytes": 1718
+    },
+    {
+      "path": "internal/language/analysis/require.go",
+      "git_blob": "ee715068152cc53613d1218f3f0c0f664bd0b074",
+      "bytes": 1923
+    },
+    {
+      "path": "internal/language/analysis/resolved_actions.go",
+      "git_blob": "a5be6214778929dfe591d18fbe5921e7fbda51f0",
+      "bytes": 682
+    },
+    {
+      "path": "internal/language/analysis/scoped_blocks.go",
+      "git_blob": "a47781e3dc3cb09341f3c8efa535ec174983294e",
+      "bytes": 5413
+    },
+    {
+      "path": "internal/language/analysis/setup.go",
+      "git_blob": "75e78f7d5f2b56382aa2b45fafc914940520526a",
+      "bytes": 1927
+    },
+    {
+      "path": "internal/language/analysis/target_versions.go",
+      "git_blob": "aac19edab11c7394f9c2995300a9fbefb92f31a5",
+      "bytes": 2765
+    },
+    {
+      "path": "internal/language/analysis/type_aliases.go",
+      "git_blob": "56aba7641d914defe034f74427e98019f954bbd6",
+      "bytes": 2629
+    },
+    {
+      "path": "internal/language/analysis/value_yields.go",
+      "git_blob": "0790a6eb6fb70995ab6639aa4c3b92616fb1b0e3",
+      "bytes": 1697
+    },
+    {
+      "path": "internal/language/analysis/variadic.go",
+      "git_blob": "21e598dfe59dc795c1ed1df496ccd067beae5d36",
+      "bytes": 1281
+    },
+    {
+      "path": "internal/language/assets/cache.go",
+      "git_blob": "86d73c4c14fa3e872ec5cd571a52bd8c79246e37",
+      "bytes": 6799
+    },
+    {
+      "path": "internal/language/backend/contracts.go",
+      "git_blob": "b277cd3229e424d0c48d81ad380b59fc934fb4b1",
+      "bytes": 6912
+    },
+    {
+      "path": "internal/language/backend/control.go",
+      "git_blob": "83a79a7baad5b15e9eec1bb249e10de06b94af45",
+      "bytes": 9938
+    },
+    {
+      "path": "internal/language/backend/native_envelope.go",
+      "git_blob": "7d2ac6a80651b0a9366d980f89b3e65913ffce66",
+      "bytes": 871
+    },
+    {
+      "path": "internal/language/backend/parameter_codecs.go",
+      "git_blob": "bf0327f897e06563909378df403c00ba72507b99",
+      "bytes": 700
+    },
+    {
+      "path": "internal/language/backend/scoped_measure.go",
+      "git_blob": "a4e577169114c90836f3ec7421d24a962ab1f68d",
+      "bytes": 1186
+    },
+    {
+      "path": "internal/language/enums/catalog.go",
+      "git_blob": "3c0b2e8ef12c0c006ca8ffe3c66ad072327f92db",
+      "bytes": 2868
+    },
+    {
+      "path": "internal/language/ir/ir.go",
+      "git_blob": "02bf65d59871da11c8f5400cde2869a2323d39dc",
+      "bytes": 3491
+    },
+    {
+      "path": "internal/language/ir/native_reference.go",
+      "git_blob": "1c0c5d467862b34892a9912c5bf334ba60f4df4b",
+      "bytes": 2167
+    },
+    {
+      "path": "internal/language/lower/argument_type.go",
+      "git_blob": "3a0f9f46b4967a560850f3e0983c85f3ee10e879",
+      "bytes": 643
+    },
+    {
+      "path": "internal/language/lower/binding_capture.go",
+      "git_blob": "32257e1dad75407ce963d97abf9e7dd80e1eed79",
+      "bytes": 883
+    },
+    {
+      "path": "internal/language/lower/call_arguments.go",
+      "git_blob": "d15694f0ffa1078972e7cdc338a558ba3e97e666",
+      "bytes": 7247
+    },
+    {
+      "path": "internal/language/lower/container_evaluation_order.go",
+      "git_blob": "c87b36b2037107f8430e1e2eada3fd7c2cc36ab1",
+      "bytes": 1042
+    },
+    {
+      "path": "internal/language/lower/container_keys.go",
+      "git_blob": "e2801fa52cdf7a2d1aab6ab15aaef28358d60777",
+      "bytes": 2408
+    },
+    {
+      "path": "internal/language/lower/empty_list.go",
+      "git_blob": "d22facb7d51ac75d73fa517a4409eff1efdef46e",
+      "bytes": 1945
+    },
+    {
+      "path": "internal/language/lower/enum_values.go",
+      "git_blob": "a0db553a8b732e98d81df72bb6bdf2ca80fef5c7",
+      "bytes": 939
+    },
+    {
+      "path": "internal/language/lower/exhaustive_validation.go",
+      "git_blob": "9a11f0077dd26ce0491724fbabb8f5e390bb9867",
+      "bytes": 7457
+    },
+    {
+      "path": "internal/language/lower/function_argument_containers.go",
+      "git_blob": "6b1b32b3da698bfd97d38d0589b309d555ca21b2",
+      "bytes": 2625
+    },
+    {
+      "path": "internal/language/lower/function_defaults.go",
+      "git_blob": "8c5068debecb466692acca640c7bce19e17a3362",
+      "bytes": 870
+    },
+    {
+      "path": "internal/language/lower/function_optional_presence.go",
+      "git_blob": "01005cae3f56bcb0b0656daecc32a66aafbeb45c",
+      "bytes": 11274
+    },
+    {
+      "path": "internal/language/lower/index_bounds.go",
+      "git_blob": "3132272d446a1d13ab75b9a3fc71570e49c4ac0c",
+      "bytes": 1563
+    },
+    {
+      "path": "internal/language/lower/lexical_scope.go",
+      "git_blob": "8e5267458532a3bc4c98b72e67b9080cf6950d93",
+      "bytes": 5338
+    },
+    {
+      "path": "internal/language/lower/literal_container_carriers.go",
+      "git_blob": "304c972c2f2262480312384c517b129f11a48bc6",
+      "bytes": 4761
+    },
+    {
+      "path": "internal/language/lower/literal_list.go",
+      "git_blob": "23d16b5713f6833f2293526fc6df9f65ddc10161",
+      "bytes": 4677
+    },
+    {
+      "path": "internal/language/lower/literal_text_carriers.go",
+      "git_blob": "fb11e1aff883ad1130c1066cb3748d2ee2c265cf",
+      "bytes": 5011
+    },
+    {
+      "path": "internal/language/lower/loop_index.go",
+      "git_blob": "a36dc97ec291110271b8494c994e8e92ce56f5f0",
+      "bytes": 842
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "git_blob": "05c7f264ee142cbb3fc20757d77ceacacbdf28c2",
+      "bytes": 189276
+    },
+    {
+      "path": "internal/language/lower/main_output.go",
+      "git_blob": "7b4029685e2cecf8317bd3bb70c0e8a001893349",
+      "bytes": 1917
+    },
+    {
+      "path": "internal/language/lower/module_scope.go",
+      "git_blob": "8aea1bc8d1f1466184d576633186d208cd80dc86",
+      "bytes": 4297
+    },
+    {
+      "path": "internal/language/lower/native_action_envelope.go",
+      "git_blob": "9317803968c1e62c8f432d03c972b71237c66114",
+      "bytes": 1059
+    },
+    {
+      "path": "internal/language/lower/native_action_result.go",
+      "git_blob": "42a149a9be7ddeafec3c22855ae6373a65a6dff1",
+      "bytes": 1210
+    },
+    {
+      "path": "internal/language/lower/native_plist_value.go",
+      "git_blob": "79dab40d831d7f9d7e3706fde879988e9dc9367c",
+      "bytes": 1240
+    },
+    {
+      "path": "internal/language/lower/optional_control_presence.go",
+      "git_blob": "09db3e4f67fb9a138268cc277284b7340ec262a2",
+      "bytes": 5621
+    },
+    {
+      "path": "internal/language/lower/optional_presence_demand.go",
+      "git_blob": "1bcb64739532645ad8a894d7f4a909dca20d76bc",
+      "bytes": 6293
+    },
+    {
+      "path": "internal/language/lower/optional_transport.go",
+      "git_blob": "dd5045904cc79d5b27ada9ec3b11078646af54fe",
+      "bytes": 980
+    },
+    {
+      "path": "internal/language/lower/parameter_codecs.go",
+      "git_blob": "2bf7fe94ba6a04988646ce45f7b28e95fac2153a",
+      "bytes": 2164
+    },
+    {
+      "path": "internal/language/lower/predicate_value.go",
+      "git_blob": "68b251053e8c13b3c97bce441cb24877a822a3da",
+      "bytes": 1200
+    },
+    {
+      "path": "internal/language/lower/scoped_blocks.go",
+      "git_blob": "7a1a6fbcd8852f0605c25a8fd61889783b725ee4",
+      "bytes": 13057
+    },
+    {
+      "path": "internal/language/lower/setup.go",
+      "git_blob": "1a76acd05b2f67fd439ce4ad9a6c66150c14bf9e",
+      "bytes": 2186
+    },
+    {
+      "path": "internal/language/lower/short_circuit.go",
+      "git_blob": "9e7d869ebe411698e6ad9d1416bd48e0ddcb5029",
+      "bytes": 6362
+    },
+    {
+      "path": "internal/language/lsp/position_wire.go",
+      "git_blob": "18e590fc9b41c4a53cd556d333ba6692cd358897",
+      "bytes": 1463
+    },
+    {
+      "path": "internal/language/lsp/server.go",
+      "git_blob": "9f0ff9d71d0193219219be4ff808e71cfbdb6ddc",
+      "bytes": 13504
+    },
+    {
+      "path": "internal/language/migrate/lexical_source.go",
+      "git_blob": "20a54c1a977cb8541c182ab397d26e0ff9530c06",
+      "bytes": 11882
+    },
+    {
+      "path": "internal/language/migrate/main_output.go",
+      "git_blob": "1413bfc639ded69a2a05f25a33b72810cf1c67a5",
+      "bytes": 1281
+    },
+    {
+      "path": "internal/language/migrate/migrate.go",
+      "git_blob": "5824a163aa10a4c385ca0220273f613d9438a631",
+      "bytes": 29877
+    },
+    {
+      "path": "internal/language/migrate/native_lists.go",
+      "git_blob": "c37381ce2696caed060670a8e2edb41003f5ff2f",
+      "bytes": 3257
+    },
+    {
+      "path": "internal/language/migrate/optional_bindings.go",
+      "git_blob": "5dd1e585d1b5498b258f7317abce5faf4686f5b8",
+      "bytes": 9588
+    },
+    {
+      "path": "internal/language/migrate/references.go",
+      "git_blob": "4c45e738cb5000f3cef575411be8247d6aae3898",
+      "bytes": 6722
+    },
+    {
+      "path": "internal/language/migrate/setter_mode.go",
+      "git_blob": "1faf3ed43bd53d075c25ed2c51f8153fb8ed5d69",
+      "bytes": 1348
+    },
+    {
+      "path": "internal/language/migrate/variadic.go",
+      "git_blob": "69048b648f6a492380b9837b96233979d1efb94a",
+      "bytes": 2273
+    },
+    {
+      "path": "internal/language/modules/graph.go",
+      "git_blob": "9b0ff747f62fe56d4b570e9f1ba00c94a17848a4",
+      "bytes": 9377
+    },
+    {
+      "path": "internal/language/modules/standard_library.go",
+      "git_blob": "f4bb9499fa84a4732b98876fdd0adfdc1fb94fda",
+      "bytes": 324
+    },
+    {
+      "path": "internal/language/modules/stdfunc_source_generated.go",
+      "git_blob": "7d1be13b7ab036250a2bd59fad01ca15cada4b29",
+      "bytes": 861
+    },
+    {
+      "path": "internal/language/protocol/protocol.go",
+      "git_blob": "4e009250b2b36c3796f504918667739d45d4d88d",
+      "bytes": 5731
+    },
+    {
+      "path": "internal/language/schema/debug_export.go",
+      "git_blob": "82bf548b6fc57496acbcf20c8a9f57ec0ac15cf0",
+      "bytes": 2380
+    },
+    {
+      "path": "internal/language/schema/generated_registry.go",
+      "git_blob": "242e062b6b65c1156b9dc632d57199a3dc294de2",
+      "bytes": 710514
+    },
+    {
+      "path": "internal/language/schema/macro_metadata.go",
+      "git_blob": "316b33de2b0a6deb23fcd93f01cc1261d086a845",
+      "bytes": 2236
+    },
+    {
+      "path": "internal/language/schema/metadata.go",
+      "git_blob": "191ad75419fe9b8510fd94faf9206ce14cac933c",
+      "bytes": 26470
+    },
+    {
+      "path": "internal/language/schema/paginate.go",
+      "git_blob": "24943c6bb236d732e8c9f81ce9a386034f021dd0",
+      "bytes": 5418
+    },
+    {
+      "path": "internal/language/schema/platform_versions.go",
+      "git_blob": "d4581984ebd086d972a116a9440ac6ad6f2d0711",
+      "bytes": 6097
+    },
+    {
+      "path": "internal/language/schema/registry_clone.go",
+      "git_blob": "a1cadccab28ea6637dfff434a8675ce73a9514ba",
+      "bytes": 4105
+    },
+    {
+      "path": "internal/language/schema/require.go",
+      "git_blob": "4d024124dea6df2fed721803a3ef557d66bafb3d",
+      "bytes": 1852
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "git_blob": "e87bad77aed204964e11bb103ac5beda1ec0e6ce",
+      "bytes": 27984
+    },
+    {
+      "path": "internal/language/schema/scoped_blocks.go",
+      "git_blob": "f6e729a91f64a8405e0d968145fe240c567f96dd",
+      "bytes": 1134
+    },
+    {
+      "path": "internal/language/schema/semantic_metadata.go",
+      "git_blob": "902fe4401e8f15c7ed7a0ae9ca9777c231a6c1e9",
+      "bytes": 3262
+    },
+    {
+      "path": "internal/language/schema/variadic.go",
+      "git_blob": "7f3dbc0b0b808732b4e279d309623a5ab09bd022",
+      "bytes": 3475
+    },
+    {
+      "path": "internal/language/service/asset_analysis.go",
+      "git_blob": "a940251e0df015a468091d7c7f9fde84c48e767e",
+      "bytes": 3590
+    },
+    {
+      "path": "internal/language/service/call_result.go",
+      "git_blob": "b04af5ca332b1caba4afe7796f87173c14f879d7",
+      "bytes": 963
+    },
+    {
+      "path": "internal/language/service/context_position.go",
+      "git_blob": "99c02a9ffa3e35a188d2f835e13cefc6223a2628",
+      "bytes": 1315
+    },
+    {
+      "path": "internal/language/service/diagnostics.go",
+      "git_blob": "849177677cd02cd3323d6609224fcc41d163fd7a",
+      "bytes": 660
+    },
+    {
+      "path": "internal/language/service/enum_completion.go",
+      "git_blob": "43662b80f933b52bf90aa7291656a653d29d7ae3",
+      "bytes": 7468
+    },
+    {
+      "path": "internal/language/service/module_analysis.go",
+      "git_blob": "22a21516e3abfb6bafb37da4db6b94c7234a0c34",
+      "bytes": 1846
+    },
+    {
+      "path": "internal/language/service/registry_lifetime.go",
+      "git_blob": "a151813ad07a22b0a773be5005df93bcc3a71885",
+      "bytes": 489
+    },
+    {
+      "path": "internal/language/service/semantic_symbols.go",
+      "git_blob": "9a8ff8265e656a5cdfc45ae314527e72bfe6b5a2",
+      "bytes": 5904
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "git_blob": "6cee8d00abf619d1e4d0b80e9b538ae4db8b3bff",
+      "bytes": 32221
+    },
+    {
+      "path": "internal/language/service/typed_completion.go",
+      "git_blob": "1b94db641e601ff4efc435496924252bca038bfb",
+      "bytes": 3001
+    },
+    {
+      "path": "internal/language/source/span.go",
+      "git_blob": "32b5745e64efa2b699c2e61a0c41930873ae257f",
+      "bytes": 7597
+    },
+    {
+      "path": "internal/language/syntax/ast.go",
+      "git_blob": "aec8fd6921022e65ad666fec8c2e551d6caea2c4",
+      "bytes": 11243
+    },
+    {
+      "path": "internal/language/syntax/dictionary_presence.go",
+      "git_blob": "032b7c1e8bea9ddeb954971b1989c0d0a5693e3e",
+      "bytes": 1083
+    },
+    {
+      "path": "internal/language/syntax/format.go",
+      "git_blob": "8c6621e358a5088a36465d2ce8de20686519b2b7",
+      "bytes": 16127
+    },
+    {
+      "path": "internal/language/syntax/format_literals.go",
+      "git_blob": "fbb971b84159110e0d8fc12f2de350f305891d98",
+      "bytes": 1263
+    },
+    {
+      "path": "internal/language/syntax/format_precedence.go",
+      "git_blob": "bd0af70a223a1daa75ff7563904509ed21b1bcbe",
+      "bytes": 1057
+    },
+    {
+      "path": "internal/language/syntax/identifier.go",
+      "git_blob": "b32295b347cb52a8855b52fbbd837122f9b78882",
+      "bytes": 455
+    },
+    {
+      "path": "internal/language/syntax/index_presence.go",
+      "git_blob": "83dff23c8def59ead000e679a8dcf46bb3329acb",
+      "bytes": 1038
+    },
+    {
+      "path": "internal/language/syntax/lexer.go",
+      "git_blob": "2fc6c948403a1f1218ea39ecd2419aa50061739d",
+      "bytes": 15082
+    },
+    {
+      "path": "internal/language/syntax/main_output.go",
+      "git_blob": "f24fa0337703150e928811b2cc84b0b1bc7764d1",
+      "bytes": 1988
+    },
+    {
+      "path": "internal/language/syntax/parser.go",
+      "git_blob": "3a0282d919d4984e62d34f694ca13e74529001ae",
+      "bytes": 42624
+    },
+    {
+      "path": "internal/language/syntax/parser_predicates.go",
+      "git_blob": "69a5f2987bf4a916066f2f58e0362b150616ead8",
+      "bytes": 585
+    },
+    {
+      "path": "internal/language/syntax/scoped_blocks.go",
+      "git_blob": "640528657296de18ce0ab236edc18d5b78d741ea",
+      "bytes": 1018
+    },
+    {
+      "path": "internal/language/syntax/token.go",
+      "git_blob": "c975f16389bcf307a36b68730cddeb3e584f3794",
+      "bytes": 3270
+    },
+    {
+      "path": "internal/language/types/optional_presence.go",
+      "git_blob": "b226a8537b206209fe30407d2bb5e856ace79527",
+      "bytes": 1133
+    },
+    {
+      "path": "internal/language/types/record_evidence.go",
+      "git_blob": "1932e5d07cc9f3c4a5ab8b7ca4d0894ba9507a98",
+      "bytes": 2849
+    },
+    {
+      "path": "internal/language/types/types.go",
+      "git_blob": "b1be2d24551fbf4907bb844ccb5834c96a40007b",
+      "bytes": 14524
+    },
+    {
+      "path": "internal/language/workspace/resource.go",
+      "git_blob": "b8078b788461768be52891cc4c9f4ea166e75743",
+      "bytes": 3081
+    },
+    {
+      "path": "ios_bridge.go",
+      "git_blob": "2d3ab2e4829c8a92ed08b8cef6662ef9865f4f96",
+      "bytes": 8701
+    },
+    {
+      "path": "language_backend_adapter.go",
+      "git_blob": "2e1f9aa8188e5be3e46fd1cc151f113bfd710cd1",
+      "bytes": 36831
+    },
+    {
+      "path": "language_backend_session.go",
+      "git_blob": "f447e66acdb03c8789f32d277f0d3a6e7a100235",
+      "bytes": 2609
+    },
+    {
+      "path": "language_cli_adapter.go",
+      "git_blob": "009a12db25e56901623278275446ad6cc9df5ed1",
+      "bytes": 15964
+    },
+    {
+      "path": "language_emit_adapter.go",
+      "git_blob": "87bc4ffd1d39ae3d4976bad3dd7a71ac37c83a17",
+      "bytes": 16621
+    },
+    {
+      "path": "language_filter_adapter.go",
+      "git_blob": "7138b6b970294e5f616d448f440bc9bc50ea9636",
+      "bytes": 842
+    },
+    {
+      "path": "language_platform_version_adapter.go",
+      "git_blob": "99e2bdbe1c39057fc4957bcb6ff3049067f5ba55",
+      "bytes": 2670
+    },
+    {
+      "path": "language_registry_adapter.go",
+      "git_blob": "a84fcf48739a604a542696240409650b4eeaab89",
+      "bytes": 1441
+    },
+    {
+      "path": "language_typed_literal_adapter.go",
+      "git_blob": "025e046707ccd04bca86d67c336e1937d98a710f",
+      "bytes": 2673
+    },
+    {
+      "path": "language_value_adapter.go",
+      "git_blob": "7922e3208de6f93a61507ac3df167a00f39a8426",
+      "bytes": 4298
+    },
+    {
+      "path": "legacy_inline_arguments.go",
+      "git_blob": "40fedff9016a10933425a3249e2ccbeebfdc4156",
+      "bytes": 6119
+    },
+    {
+      "path": "legacy_output_transaction.go",
+      "git_blob": "2ef41b785192bf6155a82c0d30c0e2e557b126eb",
+      "bytes": 1288
+    },
+    {
+      "path": "literal_container_binding.go",
+      "git_blob": "5ef2d2d43d693dbcf9dad1ecdbc3d97ed446df15",
+      "bytes": 737
+    },
+    {
+      "path": "literal_text_carrier_binding.go",
+      "git_blob": "2fe80ece09535b259620efeb955dc9d1ec7f62f1",
+      "bytes": 3813
+    },
+    {
+      "path": "main.go",
+      "git_blob": "88eb8c1600abed456788acd69e3c3fde427d8d33",
+      "bytes": 11687
+    },
+    {
+      "path": "mobile_compiler.go",
+      "git_blob": "26f5320d511ec33b249ec482bee6c8fb3be86f19",
+      "bytes": 15989
+    },
+    {
+      "path": "mobile_language_service.go",
+      "git_blob": "a2ab9b20b7ded0617c6917dfce028006609be2f1",
+      "bytes": 6210
+    },
+    {
+      "path": "native_action_envelope.go",
+      "git_blob": "85ad86e04264a738bfc96dc231a23988fc6d9df4",
+      "bytes": 3110
+    },
+    {
+      "path": "native_action_result_binding.go",
+      "git_blob": "3b6972e775c25cc47ed0ab8f744270b52a61f2f6",
+      "bytes": 11947
+    },
+    {
+      "path": "native_aggrandizement_fields.go",
+      "git_blob": "475a691678fdfbf35e4e76b7c55beb0c48e72af1",
+      "bytes": 666
+    },
+    {
+      "path": "output.go",
+      "git_blob": "a2940abd916c134fdd1a99c055b8958b902ac0f3",
+      "bytes": 4097
+    },
+    {
+      "path": "p15_combined_short_circuit_test.go",
+      "git_blob": "a920c516bda0575394b6d7a72f499f8cae9f21c3",
+      "bytes": 33915
+    },
+    {
+      "path": "p15_container_shape_acceptance_test.go",
+      "git_blob": "29e7b09f08182f33b3f089bd9efcb742f57a84bd",
+      "bytes": 14567
+    },
+    {
+      "path": "p15_function_envelope_completeness_test.go",
+      "git_blob": "16fdd64b29dd4e6c93f5ccfd83c62c96ce7c2c6b",
+      "bytes": 21490
+    },
+    {
+      "path": "packages.go",
+      "git_blob": "47c86739c8b8fd1fea832a0a7b9d2ce852b71a40",
+      "bytes": 11170
+    },
+    {
+      "path": "paginate_macro.go",
+      "git_blob": "751c22970f1c4c2d96b7bc386743505b5d06a053",
+      "bytes": 12322
+    },
+    {
+      "path": "parser.go",
+      "git_blob": "74b127561830cc6bc9b92dade7aad36f4606e214",
+      "bytes": 58691
+    },
+    {
+      "path": "python_cmd.go",
+      "git_blob": "fb38509f3dc1c0d65fb4e8da8f217c75914cc6d9",
+      "bytes": 357
+    },
+    {
+      "path": "raw_actions.go",
+      "git_blob": "e355904f66960c14469823919e364b9330d1dc06",
+      "bytes": 5003
+    },
+    {
+      "path": "references.go",
+      "git_blob": "3a8aecd29044aa7706fbb9fb4dfa9376e129f9e2",
+      "bytes": 5013
+    },
+    {
+      "path": "require_macro.go",
+      "git_blob": "5f957107590738fc40d5984d7ef58c9667a64b86",
+      "bytes": 10064
+    },
+    {
+      "path": "require_type_metadata.go",
+      "git_blob": "7ad81ed2d4d5f0a293e45d4ac7290143d4ca2360",
+      "bytes": 1575
+    },
+    {
+      "path": "reverse_action_registry.go",
+      "git_blob": "6b8b04de843381024a285c1a1da4673ddeaba3e3",
+      "bytes": 13823
+    },
+    {
+      "path": "scoped_blocks_legacy.go",
+      "git_blob": "660fdbf73562a0dccc0b1140200a16659ce518f6",
+      "bytes": 17359
+    },
+    {
+      "path": "search.go",
+      "git_blob": "e95f7ea7936675c9318da7ea4c66b40f1f457098",
+      "bytes": 3572
+    },
+    {
+      "path": "semantic_import_native_loop_results.go",
+      "git_blob": "ed862b94dad0c22969f9878ae43d9702b5ee4692",
+      "bytes": 1189
+    },
+    {
+      "path": "semantic_import_native_operands.go",
+      "git_blob": "e1645ca1f40b3ca4fca080b5206db2b97317df87",
+      "bytes": 687
+    },
+    {
+      "path": "semantic_import_planner.go",
+      "git_blob": "df83047c8688d2036167780654f173d513a28d06",
+      "bytes": 127878
+    },
+    {
+      "path": "setup_question_binding.go",
+      "git_blob": "07fc32283217edb59a7afffe96bd1cca48fbaeab",
+      "bytes": 3286
+    },
+    {
+      "path": "shared_codec.go",
+      "git_blob": "3b9e0e62505d7e4fc3c83d183db527124a1bb1d9",
+      "bytes": 5438
+    },
+    {
+      "path": "shared_control.go",
+      "git_blob": "2c2f59454fd35134b7c9b331b01c2c09d3fc8413",
+      "bytes": 4199
+    },
+    {
+      "path": "shortcut.go",
+      "git_blob": "613a4177e8d66ab7dd4e35986b9c12416842faf0",
+      "bytes": 9955
+    },
+    {
+      "path": "shortcutgen.go",
+      "git_blob": "a2572f5a269288d44c5d982ee6d1720967bf2e65",
+      "bytes": 50919
+    },
+    {
+      "path": "signing.go",
+      "git_blob": "477b36cf42bc31cb320578bb1f5647de374c9dde",
+      "bytes": 26810
+    },
+    {
+      "path": "simulator_qa_oracle.go",
+      "git_blob": "2d37a8790c912f8cc065f01b087132eb32b9e5e2",
+      "bytes": 19470
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "git_blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a",
+      "bytes": 31418
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "git_blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab",
+      "bytes": 29212
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "git_blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e",
+      "bytes": 35665
+    },
+    {
+      "path": "tests/language-v2/v2-rp26-envelope-regression.cherri",
+      "git_blob": "852ea8aea681b81a490729498a8cbb012bea8d4e",
+      "bytes": 353
+    },
+    {
+      "path": "token.go",
+      "git_blob": "36d2c23dba12e53fa46074766e3e31274309e6b3",
+      "bytes": 3591
+    },
+    {
+      "path": "toolkit.go",
+      "git_blob": "767bf2257580fb74c15b74062a4eaeb2be6f5dc2",
+      "bytes": 12120
+    },
+    {
+      "path": "typed_array_value.go",
+      "git_blob": "15259ade84347ec27a1103c9c69da2daee106d0d",
+      "bytes": 607
+    },
+    {
+      "path": "variables.go",
+      "git_blob": "cccbf55bad68c13377a98794cc0b9334c7e9d1a1",
+      "bytes": 6391
+    },
+    {
+      "path": "version.go",
+      "git_blob": "d3c733c3d910dce2e65132b30d0a477e6b029b76",
+      "bytes": 179
+    }
+  ],
+  "budgets_seconds": {
+    "go": 180,
+    "supervisor": 240,
+    "workflow_step": 300,
+    "cleanup_term": 5,
+    "cleanup_kill": 10
+  },
+  "formal_acceptance_granted": false,
+  "apple_runtime_proved": false
+}
