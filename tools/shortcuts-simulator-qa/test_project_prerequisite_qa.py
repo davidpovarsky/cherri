@@ -18,7 +18,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
+from unittest import mock
 import zipfile
 
 import project_prerequisite_observation as subject
@@ -51,6 +53,9 @@ def environment(shell,deadline):
             "physicalIdentity":identity},"python":{"executable":sys.executable,"version":sys.version}}
 subject.environment_binding=environment
 def capture(command,allowance,**kw):
+    if command==["git","--no-replace-objects","rev-parse","HEAD"] and cfg["mode"]=="source_capture_exception":
+        kw["output"].write(b"ORIGINAL_SOURCE_CAPTURE_PARTIAL_PRIVATE")
+        raise OSError("PRIVATE_EXCEPTION_TEXT_MUST_NOT_ESCAPE")
     if command==[cfg["bash"],"-c",subject.SCRIPTS[0][1]] and cfg["mode"]=="install_timeout":
         requested.append({"stage":"install","allowance":allowance,"injected":0.05})
         return real_capture(command,min(allowance,0.05),**kw)
@@ -75,6 +80,9 @@ def encrypt(*args,**kw):
     if cfg["mode"]=="context_changed_at_seal":
         path=Path(cfg["qa_root"])/"compiler-manifest.json"
         path.write_bytes(path.read_bytes()+b" ")
+    if cfg["mode"]=="source_changed_at_seal":
+        path=Path(cfg["observation"])/"private/source-head.stdout"
+        path.write_bytes(path.read_bytes()+b"CHANGED")
     return result
 subject.encrypt_archive=encrypt
 def archive(private,*args,**kw):
@@ -82,6 +90,21 @@ def archive(private,*args,**kw):
         (private/"builds/project-prerequisite/generate.stdout").write_bytes(b"CHANGED_ORIGINAL")
     if cfg["mode"]=="manifest_copy_changed":
         (private/subject.QA_MANIFEST).write_bytes(b'{"changed":true}')
+    if cfg["mode"]=="source_raw_changed":
+        (private/"source-head.stdout").write_bytes(b"CHANGED_ORIGINAL")
+    if cfg["mode"]=="source_process_retyped":
+        path=private/"source-head.process.json"
+        value=json.loads(path.read_bytes());value["captureReturned"]=1
+        path.write_bytes(subject.canonical(value))
+    if cfg["mode"]=="source_original_replaced":
+        path=private/"source-head.stdout";raw=path.read_bytes()
+        path.unlink();path.write_bytes(raw)
+    if cfg["mode"]=="source_original_deleted":
+        (private/"source-head.stderr").unlink()
+    if cfg["mode"]=="source_journal_changed":
+        path=private/subject.SOURCE_JOURNAL
+        value=json.loads(path.read_bytes());value["sourceMatched"]=1
+        path.write_bytes(subject.canonical(value))
     return real_archive(private,*args,**kw)
 subject.make_archive=archive
 result={"prepare_calls":calls,"requested_fault_allowances":requested,
@@ -224,6 +247,218 @@ class QAIntegrationTests(unittest.TestCase):
         self.assertFalse(Path(cfg["continuation"]).exists())
         self.assertLessEqual(len(result["prepare_calls"]), 1)
 
+    def source_packet(self, cfg, result, code, checkpoint):
+        self.assert_stopped(cfg, result)
+        self.assertEqual(result["prepare_calls"], [])
+        root = Path(cfg["observation"])
+        summary = subject.read_json(root / "public/summary.json")
+        subject.validate_public_summary(summary)
+        self.assertEqual((summary["reason"], summary["prerequisiteStatus"]),
+                         ("SOURCE_REJECTED", "NOT_STARTED"))
+        self.assertFalse(summary["sourceMatchedBefore"] or summary["sourceMatchedAfter"])
+        journal = subject.read_json(root / "private" / subject.SOURCE_JOURNAL)
+        self.assertEqual((journal["rejectionCode"], journal["checkpoint"]), (code, checkpoint))
+        self.assertIs(journal["sourceMatched"], False)
+        self.assertEqual(journal["sourceSha"], cfg["source"])
+        self.assertEqual(journal["sourcePaths"], list(subject.QA_SOURCE_FILES))
+        self.assertEqual([row["phase"] for row in journal["commands"]],
+                         list(subject.SOURCE_PHASES[:len(journal["commands"])]))
+        with zipfile.ZipFile(root / "private/project-prerequisite.zip") as archive:
+            manifest = subject.parse_json(archive.read("manifest.json"))
+            self.assertEqual(manifest["members"], summary["members"])
+            for member in summary["members"]:
+                raw = archive.read(member["name"])
+                self.assertEqual((len(raw), subject.sha(raw)), (member["bytes"], member["sha256"]))
+                self.assertEqual(raw, (root / "private" / member["name"]).read_bytes())
+        public = subject.canonical(summary)
+        for private in (str(root).encode(), str(cfg["repo"]).encode(), code.encode(),
+                        b"PRIVATE_SOURCE", b"PRIVATE_EXCEPTION", b"hardDeadlineMonotonic"):
+            self.assertNotIn(private, public)
+        self.assertEqual({p.name for p in (root / "public").iterdir()}, subject.PUBLIC_FILES)
+        self.assertEqual(Path(cfg["github_output"]).read_text(), "prerequisite_publication_ready=true\n")
+        return summary, journal
+
+    def test_dirty_source_keeps_original_git_output_without_preparing(self):
+        cfg, env = self.case()
+        canary = "PRIVATE_SOURCE_STATUS_CANARY"
+        (Path(cfg["repo"]) / canary).write_bytes(b"owned synthetic source control")
+        run, result = self.run_case(cfg, env)
+        summary, journal = self.source_packet(cfg, result, "SOURCE_DIRTY_BEFORE", "CLEAN_STATUS")
+        self.assertEqual(len(journal["commands"]), 2)
+        raw = (Path(cfg["observation"]) / "private/source-status.stdout").read_bytes()
+        self.assertEqual(raw, ("?? " + canary + "\n").encode())
+        self.assertEqual(journal["commands"][-1]["commandReceipt"]["result"], "PASS")
+        self.assertIs(summary["captureComplete"], True)
+        self.assertNotIn(canary.encode(), run.stdout + run.stderr)
+        self.assertEqual(len(summary["members"]), 10)
+
+    def test_source_head_tree_bytes_and_file_type_rejections_keep_the_boundary(self):
+        for fault, code, checkpoint in (
+            ("head", "SOURCE_HEAD", "HEAD_VALUE"),
+            ("tree", "SOURCE_INVENTORY", "TREE_INVENTORY"),
+            ("bytes", "SOURCE_BYTES", "FILE_BYTES"),
+            ("symlink", "FILE_NOT_REGULAR", "FILE_READ")):
+            with self.subTest(fault=fault):
+                cfg, env = self.case()
+                repo = Path(cfg["repo"])
+                name = subject.QA + "XcodeProject/project.yml"
+                if fault == "head":
+                    cfg["source"] = env["GITHUB_SHA"] = "b" * 40
+                elif fault == "tree":
+                    self.git(repo, "rm", subject.QA + "test_project_prerequisite_qa.py")
+                    self.git(repo, "-c", "user.name=Cherri_QA", "-c", "user.email=qa@example.invalid",
+                             "-c", "commit.gpgsign=false", "commit", "-qm", "owned missing inventory control")
+                    cfg["source"] = env["GITHUB_SHA"] = self.git(repo, "rev-parse", "HEAD")
+                else:
+                    # Real Git's index can hide a local mutation from status;
+                    # the independent Git blob and regular-file checks must hold.
+                    self.git(repo, "update-index", "--assume-unchanged", name)
+                    if fault == "bytes":
+                        (repo / name).write_bytes((repo / name).read_bytes() + b"\n# owned mutation\n")
+                    else:
+                        (repo / name).unlink()
+                        (repo / name).symlink_to("ReceiverApp/Info.plist")
+                    self.assertEqual(self.git(repo, "status", "--porcelain=v1"), "")
+                _, result = self.run_case(cfg, env)
+                _, journal = self.source_packet(cfg, result, code, checkpoint)
+                if fault in {"bytes", "symlink"}:
+                    self.assertEqual(journal["fileIndex"], list(subject.QA_SOURCE_FILES).index(name))
+                else:
+                    self.assertIsNone(journal["fileIndex"])
+
+    def test_failed_git_processes_keep_bounded_raw_streams_and_actual_receipts(self):
+        for fault, observed, complete in (("nonzero", "EXIT_NONZERO", True),
+                ("stderr", "PASS", True), ("timeout", "TIMEOUT", None),
+                ("overflow", "OUTPUT_OVERFLOW", False)):
+            with self.subTest(fault=fault):
+                cfg, env = self.case()
+                wrapper = Path(env["PATH"]) / "git"
+                program = (
+                    "import os,sys,time\n"
+                    "if sys.argv[1:]==['--no-replace-objects','rev-parse','HEAD']:\n"
+                    f" fault={fault!r}\n"
+                    " if fault=='nonzero':os.write(1,b'PRIVATE_SOURCE_PARTIAL');os.write(2,b'PRIVATE_SOURCE_ERROR');sys.exit(17)\n"
+                    f" if fault=='stderr':os.write(1,{(cfg['source'] + chr(10)).encode()!r});os.write(2,b'PRIVATE_SOURCE_WARNING');sys.exit(0)\n"
+                    " if fault=='timeout':os.write(1,b'PRIVATE_SOURCE_TIMEOUT');time.sleep(6)\n"
+                    " if fault=='overflow':os.write(1,b'PRIVATE_SOURCE_OVERFLOW'+b'x'*65537);sys.exit(0)\n"
+                    f"os.execv({self.git_executable!r},[{self.git_executable!r},*sys.argv[1:]])\n"
+                )
+                wrapper.write_text("#!" + sys.executable + "\n" + program)
+                run, result = self.run_case(cfg, env)
+                summary, journal = self.source_packet(cfg, result, "IDENTITY_COMMAND_FAILED", "HEAD_COMMAND")
+                row = journal["commands"][0]
+                self.assertEqual(len(journal["commands"]), 1)
+                self.assertEqual(row["commandReceipt"]["result"], observed)
+                self.assertEqual(row["maximumSeconds"], 3)
+                self.assertEqual(row["allowanceSeconds"], 3)
+                self.assertEqual(row["argv"], ["git", "--no-replace-objects", "rev-parse", "HEAD"])
+                self.assertEqual(row["cwd"], cfg["repo"])
+                if complete is not None:
+                    self.assertIs(summary["captureComplete"], complete)
+                else:
+                    # Cancellation may drain both pipes fully. Preserve that
+                    # observation without promoting the timed-out source check.
+                    self.assertEqual(summary["captureComplete"], all(
+                        stream["complete"] for stream in row["streams"].values()))
+                self.assertNotIn(b"PRIVATE_SOURCE", run.stdout + run.stderr)
+                for stream in ("stdout", "stderr"):
+                    raw = (Path(cfg["observation"]) / ("private/source-head." + stream)).read_bytes()
+                    captured = row["commandReceipt"]["capture"][stream]
+                    self.assertEqual((captured["bytes"], captured["sha256"]), (len(raw), subject.sha(raw)))
+                    self.assertLessEqual(len(raw), subject.METADATA_LIMIT + 1)
+                if fault == "nonzero":
+                    self.assertEqual(row["commandReceipt"]["exitCode"], 17)
+                if fault == "overflow":
+                    self.assertEqual(row["streams"]["stdout"]["bytes"], subject.METADATA_LIMIT + 1)
+                    self.assertTrue(row["commandReceipt"]["capture"]["stdout"]["overflow"])
+
+    def test_interrupted_capture_retains_partial_bytes_without_inventing_a_result(self):
+        cfg, env = self.case("source_capture_exception")
+        run, result = self.run_case(cfg, env)
+        summary, journal = self.source_packet(cfg, result, "OS_ERROR", "HEAD_COMMAND")
+        row = journal["commands"][0]
+        self.assertIs(row["captureReturned"], False)
+        self.assertIsNone(row["commandReceipt"])
+        self.assertFalse(summary["captureComplete"])
+        self.assertFalse(any(value["complete"] for value in row["streams"].values()))
+        raw = (Path(cfg["observation"]) / "private/source-head.stdout").read_bytes()
+        self.assertEqual(raw, b"ORIGINAL_SOURCE_CAPTURE_PARTIAL_PRIVATE")
+        self.assertNotIn(b"PRIVATE_EXCEPTION", run.stdout + run.stderr)
+
+    def test_source_original_tampering_blocks_archive_or_publication(self):
+        for mode in ("source_raw_changed", "source_process_retyped", "source_original_replaced",
+                     "source_original_deleted", "source_journal_changed", "source_changed_at_seal"):
+            with self.subTest(mode=mode):
+                cfg, env = self.case(mode)
+                _, result = self.run_case(cfg, env)
+                self.assert_stopped(cfg, result)
+                self.assertEqual(len(result["prepare_calls"]), 1)
+                self.assertFalse(Path(cfg["github_output"]).exists())
+                self.assertFalse((Path(cfg["observation"]) / "public/summary.json").exists())
+                if mode != "source_original_deleted":
+                    expected = "SOURCE_ORIGINAL_CHANGED" if mode == "source_changed_at_seal" else "ORIGINAL_CHANGED_BEFORE_ARCHIVE"
+                    self.assertEqual(result["exception"], expected)
+
+    def test_journal_cannot_change_command_order_directory_or_original_allowance(self):
+        cfg, _ = self.case()
+        repo, private = Path(cfg["repo"]), self.home / "journal-router"
+        private.mkdir()
+        deadline = time.monotonic() + 30
+        args = ["git", "--no-replace-objects", "rev-parse", "HEAD"]
+        before = Path.cwd()
+        try:
+            os.chdir(repo)
+            for command, maximum, cwd in ((args + ["extra"], 3, repo),
+                    (args, 4, repo), (args, 3.0, repo), (args, 3, self.home),
+                    (["git", "status"], 3, repo)):
+                with self.subTest(command=command, maximum=maximum, cwd=str(cwd)):
+                    os.chdir(cwd)
+                    journal = subject.SourcePreflight(private, repo, cfg["source"], deadline)
+                    with mock.patch.object(subject, "capture") as capture:
+                        with self.assertRaises(subject.Rejected):
+                            subject.small_command(command, deadline, maximum, journal=journal)
+                        capture.assert_not_called()
+            os.chdir(repo)
+            journal = subject.SourcePreflight(private, repo, cfg["source"], deadline)
+            sampled = time.monotonic()
+            with self.assertRaisesRegex(subject.Rejected, "SOURCE_COMMAND_ALLOWANCE"):
+                journal.begin(args, deadline, 3, 2, sampled)
+            subject.small_command(args, deadline, 3, journal=journal)
+            with mock.patch.object(subject, "capture") as capture:
+                with self.assertRaisesRegex(subject.Rejected, "SOURCE_COMMAND_CHANGED"):
+                    subject.small_command(args, deadline, 3, journal=journal)
+                capture.assert_not_called()
+            path = private / "source-head.process.json"
+            raw = path.read_bytes()
+            path.unlink()
+            path.write_bytes(raw)
+            with self.assertRaisesRegex(subject.Rejected, "SOURCE_JOURNAL_CHANGED"):
+                journal.finish(subject.Rejected("SOURCE_HEAD"))
+        finally:
+            os.chdir(before)
+
+    def test_source_member_prefix_and_capture_completeness_cannot_be_forged(self):
+        cfg, env = self.case()
+        (Path(cfg["repo"]) / "PRIVATE_SOURCE_STATUS_CANARY").write_bytes(b"owned")
+        _, result = self.run_case(cfg, env)
+        summary, _ = self.source_packet(cfg, result, "SOURCE_DIRTY_BEFORE", "CLEAN_STATUS")
+        for fault in ("missing_journal", "missing_stream", "nonprefix", "arbitrary", "matched", "complete", "type"):
+            with self.subTest(fault=fault):
+                broken = copy.deepcopy(summary)
+                if fault == "missing_journal":
+                    broken["members"] = [row for row in broken["members"] if row["name"] != subject.SOURCE_JOURNAL]
+                if fault == "missing_stream":
+                    broken["members"] = [row for row in broken["members"] if row["name"] != "source-head.stderr"]
+                if fault == "nonprefix":
+                    for row in broken["members"]:
+                        row["name"] = row["name"].replace("source-head.", "source-tree.")
+                if fault == "arbitrary": broken["members"][0]["name"] = "private-canary.stdout"
+                if fault == "matched": broken["sourceMatchedBefore"] = True
+                if fault == "complete": broken["captureComplete"] = False
+                if fault == "type": broken["members"][-1]["complete"] = 1
+                with self.assertRaises(subject.Rejected):
+                    subject.validate_public_summary(broken)
+
     def test_observed_prepare_runs_once_and_keeps_original_fixture_context(self):
         cfg, env = self.case()
         run, result = self.run_case(cfg, env)
@@ -246,13 +481,13 @@ class QAIntegrationTests(unittest.TestCase):
         self.assertEqual(summary["schema"], subject.QA_SCHEMA)
         self.assertEqual(summary["qaContextSha256"], subject.sha(subject.canonical(expected)))
         self.assertTrue(summary["qaContextMatchedBefore"] and summary["qaContextMatchedAfter"])
-        self.assertEqual(len(summary["members"]), 13)
+        self.assertEqual(len(summary["members"]), 23)
         original_manifest = (Path(cfg["qa_root"]) / "compiler-manifest.json").read_bytes()
         manifest_member = next(row for row in summary["members"] if row["name"] == subject.QA_MANIFEST)
         self.assertEqual(manifest_member["sha256"], expected["compilerManifestSha256"])
         self.assertEqual(manifest_member["bytes"], len(original_manifest))
         with zipfile.ZipFile(Path(cfg["observation"]) / "private/project-prerequisite.zip") as archive:
-            self.assertEqual(len(archive.namelist()), 14)
+            self.assertEqual(len(archive.namelist()), 24)
             self.assertEqual(archive.read(subject.QA_MANIFEST), original_manifest)
             self.assertEqual(json.loads(archive.read("manifest.json"))["schema"], subject.QA_SCHEMA + "/originals")
         self.assertEqual({p.name for p in (Path(cfg["observation"]) / "public").iterdir()},
@@ -370,7 +605,7 @@ class QAIntegrationTests(unittest.TestCase):
         empty = {"bytes": 0, "sha256": subject.sha(b"")}
         members = [{"name": name, **empty, "complete": True}
                    for name in ("source.json", "identity.json", "diagnostic.json")]
-        # Use the unchanged v1 shape, then explicitly construct the v2 scope.
+        # Use the unchanged v1 shape, then explicitly construct the v3 scope.
         summary = original.summary(self, members, empty, empty)
         subject.validate_public_summary(summary)
         legacy = copy.deepcopy(summary)
@@ -378,7 +613,9 @@ class QAIntegrationTests(unittest.TestCase):
         for name in ("simulatorStarted", "nativeTestStarted", "compilerStarted", "modelRequestStarted"):
             del summary[name]
         summary.update(executionScope=subject.QA_SCOPE, qaContextSha256=None,
-            qaContextMatchedBefore=False, qaContextMatchedAfter=False, **subject.execution_fields(qa=True))
+            qaContextMatchedBefore=False, qaContextMatchedAfter=False,
+            sourceMatchedBefore=False, sourceMatchedAfter=False, **subject.execution_fields(qa=True))
+        summary["members"].append({"name": subject.SOURCE_JOURNAL, **empty, "complete": True})
         subject.validate_public_summary(summary)
         for fault in ("global_false", "assessed_prior", "native_action", "context_boolean", "prepared_without_context"):
             with self.subTest(scope_fault=fault):

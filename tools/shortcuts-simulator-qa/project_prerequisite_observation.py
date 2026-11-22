@@ -25,7 +25,7 @@ import zipfile
 import project_prerequisite as prerequisite
 
 SCHEMA = "cherri-project-prerequisite-observation/1"
-QA_SCHEMA = "cherri-project-prerequisite-observation/2"
+QA_SCHEMA = "cherri-project-prerequisite-observation/3"
 QA_SCOPE = "CURRENT_PREREQUISITE_CALL_ONLY"
 QA_MANIFEST = "qa-compiler-manifest.original.json"
 QA_MANIFEST_LIMIT = 4 * prerequisite.terminal.MAX_PARSE_BYTES
@@ -70,6 +70,8 @@ PROCESS_RESULTS = {
     "OUTPUT_OVERFLOW", "CAPTURE_INCOMPLETE", "OWNED_GROUP_REMAINED",
 }
 PUBLIC_FILES = {"project-prerequisite.zip.p7m", "summary.json"}
+SOURCE_PHASES = ("head", "status", "tree")
+SOURCE_JOURNAL = "source-preflight.json"
 
 
 class Rejected(ValueError):
@@ -401,15 +403,155 @@ class StageAdapter:
         return observed
 
 
-def small_command(command, deadline, maximum):
+class SourcePreflight:
+    """Keep the first QA source check, including rejected captures, private.
+
+    This journal cannot run commands or relax a source predicate. The caller's
+    existing capture and checks still decide whether source binding succeeds.
+    """
+    def __init__(self, private, repo, source, deadline):
+        self.private, self.repo, self.source = Path(private), Path(repo), source
+        self.deadline, self.records, self.originals = deadline, [], {}
+        self.checkpoint, self.file_index, self.pending = "HEAD_COMMAND", None, None
+
+    def mark(self, checkpoint, file_index=None):
+        require(checkpoint in {"HEAD_COMMAND", "HEAD_VALUE", "STATUS_COMMAND", "CLEAN_STATUS",
+            "TREE_COMMAND", "TREE_PARSE", "TREE_INVENTORY", "FILE_READ", "FILE_BYTES",
+            "RECIPIENT", "MATCHED"}, "SOURCE_CHECKPOINT")
+        require((checkpoint in {"FILE_READ", "FILE_BYTES"} and type(file_index) is int
+                 and 0 <= file_index < len(QA_SOURCE_FILES)) or
+                (checkpoint not in {"FILE_READ", "FILE_BYTES"} and file_index is None),
+                "SOURCE_CHECKPOINT_INDEX")
+        self.checkpoint, self.file_index = checkpoint, file_index
+
+    def begin(self, command, deadline, maximum, allowance, sampled):
+        index = len(self.records)
+        require(index < 3 and self.pending is None, "SOURCE_COMMAND_REPEATED")
+        phase = SOURCE_PHASES[index]
+        argv = (["git", "--no-replace-objects", "rev-parse", "HEAD"],
+                ["git", "--no-replace-objects", "status", "--porcelain=v1"],
+                ["git", "--no-replace-objects", "ls-tree", "-rz", self.source,
+                 "--", *QA_SOURCE_FILES])[index]
+        require(command == argv and type(maximum) is int and maximum == (3, 3, 5)[index]
+                and deadline == self.deadline, "SOURCE_COMMAND_CHANGED")
+        require(Path.cwd() == self.repo, "SOURCE_COMMAND_CWD")
+        require(finite_number(sampled) and finite_number(allowance) and
+                allowance == max(0, min(maximum, deadline - sampled)),
+                "SOURCE_COMMAND_ALLOWANCE")
+        self.pending = {"phase": phase, "argv": command, "cwd": str(Path.cwd()),
+            "maximumSeconds": maximum, "allowanceSeconds": allowance,
+            "allowanceSampleMonotonic": sampled,
+            "hardDeadlineMonotonic": deadline, "startedAt": utc(), "stdin": "DEVNULL"}
+
+    def keep(self, out, err, record):
+        require(self.pending is not None, "SOURCE_COMMAND_NOT_STARTED")
+        intent, streams = self.pending, {}
+        for name, raw in (("stdout", out), ("stderr", err)):
+            require(type(raw) is bytes and len(raw) <= METADATA_LIMIT + 1, "SOURCE_STREAM_LIMIT")
+            complete = False
+            if record is not None:
+                captured = record["capture"][name]
+                require(type(captured["bytes"]) is int and captured["bytes"] == len(raw)
+                        and captured["sha256"] == sha(raw) and
+                        type(captured["eof"]) is bool and type(captured["overflow"]) is bool,
+                        "SOURCE_CAPTURE_STREAM")
+                complete = captured["eof"] and not captured["overflow"]
+            path = self.private / ("source-" + intent["phase"] + "." + name)
+            with path.open("xb") as output:
+                output.write(raw)
+            actual, identity = bound_read(path, METADATA_LIMIT + 1)
+            require(actual == raw, "SOURCE_STREAM_COPY")
+            self.originals[path.name] = {"bytes": len(raw), "sha256": sha(raw), "identity": identity}
+            streams[name] = {**self.originals[path.name], "complete": complete}
+        value = {**intent, "finishedAt": utc(), "captureReturned": record is not None,
+                 "commandReceipt": record, "streams": streams}
+        name = "source-" + intent["phase"] + ".process.json"
+        write_json(self.private / name, value)
+        raw, identity = bound_read(self.private / name, METADATA_LIMIT)
+        require(raw == canonical(value), "SOURCE_JOURNAL_CHANGED")
+        self.originals[name] = {"bytes": len(raw), "sha256": sha(raw), "identity": identity}
+        self.records.append(value)
+        self.pending = None
+
+    def finish(self, error=None):
+        codes = {"IDENTITY_COMMAND_FAILED", "SOURCE_HEAD", "SOURCE_DIRTY_BEFORE",
+            "SOURCE_TREE_ENTRY", "SOURCE_INVENTORY", "SOURCE_BYTES", "RECIPIENT_CHANGED",
+            "ANCESTOR_NOT_DIRECTORY", "FILE_NOT_REGULAR", "FILE_LIMIT", "FILE_CHANGED_AT_OPEN",
+            "FILE_LIMIT_OR_LENGTH", "FILE_CHANGED_DURING_READ", "ANCESTOR_CHANGED",
+            "BOUND_IDENTITY_CHANGED"}
+        code = None
+        if error is not None:
+            code = str(error) if isinstance(error, Rejected) and str(error) in codes else \
+                "OS_ERROR" if isinstance(error, OSError) else \
+                "UNICODE_ERROR" if isinstance(error, UnicodeError) else \
+                "TYPE_ERROR" if isinstance(error, TypeError) else \
+                "KEY_ERROR" if isinstance(error, KeyError) else "VALUE_ERROR"
+        require(self.pending is None, "SOURCE_COMMAND_UNFINISHED")
+        if error is None:
+            require(len(self.records) == 3 and self.checkpoint == "MATCHED", "SOURCE_JOURNAL_UNMATCHED")
+        self.value = {"schema": QA_SCHEMA + "/source-preflight", "sourceSha": self.source,
+            "sourcePaths": list(QA_SOURCE_FILES), "preflightSeconds": PREFLIGHT_SECONDS,
+            "hardDeadlineMonotonic": self.deadline, "checkpoint": self.checkpoint,
+            "fileIndex": self.file_index, "rejectionCode": code, "sourceMatched": error is None,
+            "commands": self.records}
+        write_json(self.private / SOURCE_JOURNAL, self.value)
+        self.expected = dict(self.originals)
+        for name, value in [(SOURCE_JOURNAL, self.value), *(
+                ("source-" + row["phase"] + ".process.json", row) for row in self.records)]:
+            raw, identity = bound_read(self.private / name, METADATA_LIMIT)
+            require(raw == canonical(value), "SOURCE_JOURNAL_CHANGED")
+            actual = {"bytes": len(raw), "sha256": sha(raw), "identity": identity}
+            require(name not in self.expected or self.expected[name] == actual, "SOURCE_JOURNAL_CHANGED")
+            self.expected[name] = actual
+
+    def validate(self):
+        for name, expected in self.expected.items():
+            raw, identity = bound_read(self.private / name, METADATA_LIMIT + 1
+                                       if name.endswith((".stdout", ".stderr")) else METADATA_LIMIT)
+            require({"bytes": len(raw), "sha256": sha(raw), "identity": identity} == expected,
+                    "SOURCE_ORIGINAL_CHANGED")
+        return self.expected
+
+    def complete(self):
+        return all(row["captureReturned"] and all(stream["complete"] for stream in row["streams"].values())
+                   for row in self.records)
+
+
+def source_members(names):
+    """An exact zero-to-three command prefix, never arbitrary archive names."""
+    result = [SOURCE_JOURNAL]
+    stopped = False
+    for phase in SOURCE_PHASES:
+        group = ["source-" + phase + suffix for suffix in (".process.json", ".stdout", ".stderr")]
+        present = set(group).intersection(names)
+        require(not present or not stopped and present == set(group), "SOURCE_MEMBER_PREFIX")
+        if present:
+            result.extend(group)
+        else:
+            stopped = True
+    require(SOURCE_JOURNAL in names, "SOURCE_JOURNAL_MISSING")
+    return result
+
+
+def small_command(command, deadline, maximum, *, journal=None):
     stdout, stderr = io.BytesIO(), io.BytesIO()
-    allowance = max(0, min(maximum, deadline - time.monotonic()))
-    observed, detail = capture(command, allowance, output=stdout, error_output=stderr,
-                              hard_deadline=deadline, stream_limit=METADATA_LIMIT)
+    sampled = time.monotonic()
+    allowance = max(0, min(maximum, deadline - sampled))
+    if journal is not None:
+        journal.begin(command, deadline, maximum, allowance, sampled)
+    try:
+        observed, detail = capture(command, allowance, output=stdout, error_output=stderr,
+                                  hard_deadline=deadline, stream_limit=METADATA_LIMIT)
+    except BaseException:
+        if journal is not None:
+            journal.keep(stdout.getvalue(), stderr.getvalue(), None)
+        raise
     out, err = stdout.getvalue(), stderr.getvalue()
     record = {"argv": command, **observed,
               "stdout": {"bytes": len(out), "sha256": sha(out)},
               "stderr": {"bytes": len(err), "sha256": sha(err)}, "capture": detail}
+    if journal is not None:
+        journal.keep(out, err, record)
     require(observed["result"] == "PASS" and not err, "IDENTITY_COMMAND_FAILED")
     return out, record
 
@@ -422,21 +564,31 @@ def source_limit(name, *, qa=False):
     return METADATA_LIMIT
 
 
-def source_binding(repo, expected, deadline, *, clean, qa=False):
+def source_binding(repo, expected, deadline, *, clean, qa=False, journal=None):
     names = QA_SOURCE_FILES if qa else SOURCE_FILES
+    require(journal is None or qa and clean, "SOURCE_JOURNAL_SCOPE")
+    def mark(checkpoint, index=None):
+        if journal is not None:
+            journal.mark(checkpoint, index)
+    mark("HEAD_COMMAND")
     head_raw, head_record = small_command(
-        ["git", "--no-replace-objects", "rev-parse", "HEAD"], deadline, 3)
+        ["git", "--no-replace-objects", "rev-parse", "HEAD"], deadline, 3, journal=journal)
+    mark("HEAD_VALUE")
     require(head_raw.decode("ascii").strip() == expected, "SOURCE_HEAD")
     commands = [head_record]
     if clean:
+        mark("STATUS_COMMAND")
         status, status_record = small_command(
-            ["git", "--no-replace-objects", "status", "--porcelain=v1"], deadline, 3)
+            ["git", "--no-replace-objects", "status", "--porcelain=v1"], deadline, 3, journal=journal)
         commands.append(status_record)
+        mark("CLEAN_STATUS")
         require(status == b"", "SOURCE_DIRTY_BEFORE")
+    mark("TREE_COMMAND")
     tree, tree_record = small_command(
         ["git", "--no-replace-objects", "ls-tree", "-rz", expected, "--", *names],
-        deadline, 5)
+        deadline, 5, journal=journal)
     commands.append(tree_record)
+    mark("TREE_PARSE")
     blobs = {}
     for line in tree.split(b"\0"):
         if not line:
@@ -447,16 +599,21 @@ def source_binding(repo, expected, deadline, *, clean, qa=False):
         require(name not in blobs and kind == "blob" and
                 mode in {"100644", "100755"}, "SOURCE_TREE_ENTRY")
         blobs[name] = digest
+    mark("TREE_INVENTORY")
     require(set(blobs) == set(names), "SOURCE_INVENTORY")
     rows = []
-    for name in names:
+    for index, name in enumerate(names):
+        mark("FILE_READ", index)
         raw, identity = bound_read(repo / name, source_limit(name, qa=qa))
         blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        mark("FILE_BYTES", index)
         require(blob == blobs[name], "SOURCE_BYTES")
         rows.append({"path": name, "gitBlob": blob, "sha256": sha(raw), "bytes": len(raw),
                      "identity": identity})
+    mark("RECIPIENT")
     require(sha(read_regular(repo / RECIPIENT, METADATA_LIMIT)) == RECIPIENT_SHA256,
             "RECIPIENT_CHANGED")
+    mark("MATCHED")
     return {"sourceSha": expected, "cleanRequiredBeforeOnly": clean,
             "files": rows, "commands": commands}
 
@@ -597,6 +754,8 @@ def stage_summary(private, records):
 
 def fixed_members(private, records, expected_bindings, *, qa=False):
     names = ["source.json", "identity.json", "diagnostic.json"]
+    if qa:
+        names.extend(source_members(expected_bindings))
     if qa and QA_MANIFEST in expected_bindings:
         names.append(QA_MANIFEST)
     receipt = private / "builds/project-prerequisite/receipt.json"
@@ -608,12 +767,14 @@ def fixed_members(private, records, expected_bindings, *, qa=False):
         names.extend([stage + ".intent.json", stage + ".process.json",
                       "builds/project-prerequisite/" + stage + ".stdout",
                       "builds/project-prerequisite/" + stage + ".stderr"])
-    require(len(names) == len(set(names)) and len(names) <= (13 if qa else 12), "MEMBER_INVENTORY")
+    require(len(names) == len(set(names)) and len(names) <= (23 if qa else 12), "MEMBER_INVENTORY")
     require(set(names) == set(expected_bindings), "MEMBER_INVENTORY")
     members, raw_members = [], {}
     for name in names:
         is_stream = name.endswith((".stdout", ".stderr"))
+        source_stream = is_stream and name.startswith("source-")
         limit = QA_MANIFEST_LIMIT if qa and name == QA_MANIFEST else \
+            METADATA_LIMIT + 1 if source_stream else \
             STREAM_LIMIT + 1 if is_stream else METADATA_LIMIT
         raw = read_regular(private / name, limit)
         require(name in expected_bindings and
@@ -621,7 +782,12 @@ def fixed_members(private, records, expected_bindings, *, qa=False):
                     "identity": list(file_identity((private / name).lstat()))},
                 "ORIGINAL_CHANGED_BEFORE_ARCHIVE")
         complete = True
-        if is_stream:
+        if source_stream:
+            phase, stream = name.removeprefix("source-").split(".")
+            row = read_json(private / ("source-" + phase + ".process.json"))
+            complete = row["streams"][stream]["complete"]
+            require(type(complete) is bool, "SOURCE_COMPLETE_TYPE")
+        elif is_stream:
             stage, stream = Path(name).name.split(".")
             row = next(item for item in records if item["stage"] == stage)
             captured = row["capture"][stream]
@@ -775,6 +941,12 @@ def validate_public_summary(value):
     digest(value["ciphertext"], CIPHER_LIMIT)
     require(type(value["stages"]) is list and len(value["stages"]) == 2, "PUBLIC_STAGES")
     names = {"source.json", "identity.json", "diagnostic.json"}
+    if qa:
+        require(type(value["members"]) is list and all(type(row) is dict and
+                type(row.get("name")) is str for row in value["members"]), "PUBLIC_MEMBERS")
+        retained = source_members({row["name"] for row in value["members"]})
+        require(not value["sourceMatchedBefore"] or len(retained) == 10, "PUBLIC_SOURCE_COMMANDS")
+        names.update(retained)
     if qa and value["qaContextMatchedBefore"]:
         names.add(QA_MANIFEST)
     any_started = False
@@ -801,17 +973,22 @@ def validate_public_summary(value):
                       "builds/project-prerequisite/" + name + ".stderr"})
     if any_started or value["prerequisiteStatus"] != "NOT_STARTED":
         names.add("builds/project-prerequisite/receipt.json")
-    require(type(value["members"]) is list and 3 <= len(value["members"]) <= (13 if qa else 12), "PUBLIC_MEMBERS")
+    require(type(value["members"]) is list and 3 <= len(value["members"]) <= (23 if qa else 12), "PUBLIC_MEMBERS")
     observed_names = []
     for member in value["members"]:
         require(type(member) is dict and set(member) == {"name", "bytes", "sha256", "complete"} and
                 member["name"] in names, "PUBLIC_MEMBER_NAME")
         digest({key: member[key] for key in ("bytes", "sha256", "complete")},
                QA_MANIFEST_LIMIT if qa and member["name"] == QA_MANIFEST else
+               METADATA_LIMIT + 1 if member["name"].startswith("source-") and
+                   member["name"].endswith((".stdout", ".stderr")) else
                STREAM_LIMIT + 1 if member["name"].endswith((".stdout", ".stderr")) else METADATA_LIMIT, True)
         observed_names.append(member["name"])
     require(len(set(observed_names)) == len(observed_names) and set(observed_names) == names,
             "PUBLIC_MEMBER_INVENTORY")
+    if qa:
+        require(value["captureComplete"] == all(row["complete"] for row in value["members"]),
+                "PUBLIC_CAPTURE_COMPLETE")
 
 
 def confirm_sources(repo, before, *, qa=False):
@@ -823,7 +1000,7 @@ def confirm_sources(repo, before, *, qa=False):
                 sha(raw) == row["sha256"], "SOURCE_CHANGED_AT_SEAL")
 
 
-def validate_private(private, metadata, records, receipt, *, qa_manifest=None):
+def validate_private(private, metadata, records, receipt, *, qa_manifest=None, source_preflight=None):
     expected = {}
     objects = dict(metadata)
     if receipt is not None:
@@ -852,6 +1029,8 @@ def validate_private(private, metadata, records, receipt, *, qa_manifest=None):
                 "QA_MANIFEST_COPY_CHANGED")
         parse_json(raw)
         expected[QA_MANIFEST] = qa_manifest
+    if source_preflight is not None:
+        expected.update(source_preflight.validate())
     # A partial started intent or unknown stream is never silently omitted.
     actual = {p.relative_to(private).as_posix() for p in private.rglob("*") if p.is_file()}
     require(actual == set(expected), "UNACCOUNTED_PRIVATE_MEMBER")
@@ -913,8 +1092,17 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
     identity = {"ci": observed_ci, "matched": False}
     receipt, records, generated = None, [], None
     returncode, reason = 70, "SOURCE_REJECTED"
+    preflight = SourcePreflight(private, repo, source, preflight_deadline) if qa_mode else None
     try:
-        before = source_binding(repo, source, preflight_deadline, clean=True, qa=qa_mode)
+        try:
+            before = source_binding(repo, source, preflight_deadline, clean=True, qa=qa_mode,
+                                    journal=preflight)
+        except (OSError, ValueError, UnicodeError, TypeError, KeyError) as error:
+            if preflight is not None:
+                preflight.finish(error)
+            raise
+        if preflight is not None:
+            preflight.finish()
         source_record.update(before=before, sourceMatchedBefore=True)
         if qa_mode:
             # Preserve the native CLI's complete source guard and actual
@@ -969,6 +1157,8 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
     complete = all(stage["status"] == "NOT_STARTED" or
                    all(stream["complete"] for stream in stage["streams"].values())
                    for stage in stages)
+    if preflight is not None:
+        complete = complete and preflight.complete()
     prerequisite_status = receipt["status"] if receipt is not None else "NOT_STARTED"
     require(prerequisite_status in {"PREPARED", "FAILED", "NOT_STARTED"}, "PREREQUISITE_STATUS")
     if prerequisite_status == "PREPARED":
@@ -993,7 +1183,7 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
     for name, value in metadata.items():
         write_json(private / name, value)
     expected_members = validate_private(private, metadata, records, receipt,
-                                        qa_manifest=qa_record["manifestOriginal"] if qa_mode else None)
+        qa_manifest=qa_record["manifestOriginal"] if qa_mode else None, source_preflight=preflight)
     archive, archive_record, members = make_archive(private, context, records, expected_members, qa=qa_mode)
     if source_record["before"] is not None:
         confirm_sources(repo, source_record["before"], qa=qa_mode)
@@ -1002,6 +1192,8 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
                 canonical(qa_record["before"]), "QA_CONTEXT_CHANGED_AT_SEAL")
     cipher = encrypt_archive(private, public, archive, archive_record,
                              repo / RECIPIENT, deadline)
+    if preflight is not None:
+        preflight.validate()
     if source_record["before"] is not None:
         confirm_sources(repo, source_record["before"], qa=qa_mode)
     if qa_mode and qa_record["before"] is not None:
