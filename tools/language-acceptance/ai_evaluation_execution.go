@@ -41,12 +41,17 @@ func (r *Runner) runAIEvaluationHarnessRequirement(id, title string, levels []st
 		return false
 	}
 	var scenario = aiEvaluationHarnessScenario
-	var passed, detail = executeNamedProductionTestsInPackage(scenario.PackagePath, scenario.TestNames)
-	detail += "; actual Python task runner control-flow suite only; fake adapters are not AI quality evidence; external evaluation remains AI_EVAL_NOT_RUN"
+	var artifacts, detail, harnessErr = r.executeAIBoundHarness()
+	var passed = harnessErr == nil
+	if harnessErr != nil {
+		detail = "Actual RP50 harness intake failed: " + harnessErr.Error()
+	}
+	detail += "; actual Python task runner control-flow suite only; fake adapters are not AI quality evidence; the separate sealed-original intake supplies any measured external tier"
 	var firstRecord = len(r.records)
 	r.Record(id, "repair", title, strings.Join(levels, "+"), scenario.Tiers, passed, "PASSED", detail)
 	for index := firstRecord; index < len(r.records); index++ {
 		r.records[index].TestID = scenario.testIDs()[0]
+		r.records[index].Artifacts = artifacts
 		r.records[index].Command = productionTestCommandInPackage(scenario.PackagePath, scenario.TestNames)
 		r.records[index].Assertions["required_production_tests"] = strings.Join(scenario.TestNames, "\n")
 		r.records[index].Assertions["required_python_tests"] = strings.Join(aiEvaluationPythonTests, "\n")
@@ -54,11 +59,27 @@ func (r *Runner) runAIEvaluationHarnessRequirement(id, title string, levels []st
 		r.records[index].Assertions["ai_quality_measured"] = "false"
 		r.records[index].Assertions["external_evaluation"] = "AI_EVAL_NOT_RUN"
 	}
+	var measurement = r.aiMeasurement()
+	if measurement.Configured {
+		r.appendAIMeasurementRecord(id, measurement)
+		var result = r.results[id]
+		result.Detail += "; " + r.records[len(r.records)-1].Detail
+		if measurement.Err != nil {
+			result.Passed, result.Status = false, "FAILED"
+		} else {
+			result.ExecutedLevels = append(result.ExecutedLevels, "external-eval")
+			result.Passed = passed
+			if passed {
+				result.Status = "PASSED"
+			}
+		}
+		r.results[id] = result
+	}
 	return true
 }
 
 func validateAIEvaluationHarnessRecord(id string, record EvidenceRecord) error {
-	if id != "RP50" {
+	if id != "RP50" || record.Tier == "external-eval" {
 		return nil
 	}
 	var scenario = aiEvaluationHarnessScenario
@@ -71,5 +92,5 @@ func validateAIEvaluationHarnessRecord(id string, record EvidenceRecord) error {
 		record.Assertions["external_evaluation"] != "AI_EVAL_NOT_RUN" {
 		return fmt.Errorf("record %s is detached from the complete RP50 harness controls or claims an unexecuted evaluation tier", record.EvidenceID)
 	}
-	return nil
+	return validateAIBoundHarnessArtifacts(record)
 }

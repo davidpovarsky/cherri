@@ -89,10 +89,18 @@ func TestP15BRG32InstalledAIHarness(t *testing.T) {
 		"tools/language-ai-eval/README.md",
 		"tools/language-ai-eval/anthropic-adapter.md",
 		"tools/language-ai-eval/anthropic_adapter.py",
+		"tools/language-ai-eval/evaluation_bundle.py",
+		"tools/language-ai-eval/evaluation_intake.py",
+		"tools/language-ai-eval/fresh-instance-protocol.md",
+		"tools/language-ai-eval/graph_validator.py",
 		"tools/language-ai-eval/runner.py",
 		"tools/language-ai-eval/tasks.json",
 		"tools/language-ai-eval/test_anthropic_adapter.py",
+		"tools/language-ai-eval/test_evaluation_bundle.py",
+		"tools/language-ai-eval/test_evaluation_intake.py",
+		"tools/language-ai-eval/test_graph_validator.py",
 		"tools/language-ai-eval/test_runner.py",
+		"tools/language-ai-eval/test_sealed_runner.py",
 	}
 	if !reflect.DeepEqual(paths, expected) {
 		t.Fatalf("installed harness selection is not the complete tracked package: %v", paths)

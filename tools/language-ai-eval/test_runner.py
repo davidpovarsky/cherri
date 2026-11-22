@@ -1,12 +1,15 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parent
@@ -44,7 +47,7 @@ class EvaluationHarnessTests(unittest.TestCase):
         self.assertEqual(report["status"], "HARNESS_CONTROL_PASS")
         self.assertFalse(report["ai_quality_measured"])
         self.assertNotIn("measured_results", report)
-        tasks, _ = runner.load_suite(ROOT / "tasks.json")
+        tasks, suite_sha = runner.load_suite(ROOT / "tasks.json")
         self.assertEqual({(r["task_id"], r["arm"]) for r in report["records"]},
                          {(t["id"], a) for t in tasks for a in runner.ARMS})
         self.assertTrue(all(r["process"]["exit_code"] == 0 and r["process"]["synthetic"] for r in report["records"]))
@@ -53,6 +56,20 @@ class EvaluationHarnessTests(unittest.TestCase):
             task = next(t for t in tasks if t["id"] == record["task_id"])
             self.assertEqual({c["name"] for c in record["control_checks"]}, set(runner.required_checks(task)))
             self.assertNotIn("passed", record)
+            request = runner.model_request(task, record["arm"], self.guide.read_text(),
+                "control-model", report["budget"], 0, suite_sha)
+            source = 'show("HARNESS_CONTROL_ONLY")\n'
+            generation = {"schema": runner.SCHEMA, "request_id": request["request_id"],
+                "model": "control-model", "synthetic": True, "code": source,
+                "usage": {"input_tokens": 1, "output_tokens": 1}}
+            validation = {"schema": runner.SCHEMA, "request_id": request["request_id"],
+                "task_id": task["id"], "arm": record["arm"], "source_sha256": runner.digest(source.encode())}
+            validation.update(synthetic=True, checks=[{"name": name, "passed": True}
+                for name in runner.required_checks(task)])
+            for key, reply in (("process", generation), ("validator_process", validation)):
+                raw = (json.dumps(reply) + os.linesep).encode()
+                self.assertEqual(record[key]["stdout_sha256"], runner.digest(raw))
+                self.assertEqual(record[key]["stdout_total_bytes"], len(raw))
 
     def test_duplicate_task_and_missing_arm_fail_closed(self):
         original = json.loads((ROOT / "tasks.json").read_text(encoding="utf-8"))
@@ -140,13 +157,152 @@ class EvaluationHarnessTests(unittest.TestCase):
         script = self.root / "parent.py"
         marker = self.root / "worker-finished"
         started = self.root / "worker-started"
-        worker = "from pathlib import Path; import time; Path(" + repr(str(started)) + ").write_text('started'); time.sleep(1.2); Path(" + repr(str(marker)) + ").write_text('escaped')"
-        script.write_text("import subprocess,sys,time\nsubprocess.Popen([sys.executable, '-c', " + repr(worker) + "])\ntime.sleep(4)\n", encoding="utf-8")
-        with self.assertRaises(subprocess.TimeoutExpired):
-            runner.run_process([sys.executable, str(script)], {}, 0.6)
-        self.assertTrue(started.exists(), "worker must be started before the timeout control is meaningful")
-        time.sleep(0.9)
-        self.assertFalse(marker.exists(), "timed-out worker survived cancellation")
+        release = self.root / "worker-release-after-return"
+        expired = self.root / "worker-expired"
+        lock_path = self.root / "worker.lock"
+        lock_path.write_bytes(b"x")
+        # Readiness comes from the actual descendant holding an OS lock. Its
+        # effect gate is released only after run_process has returned, so work
+        # during the existing cancellation allowance is not called a survivor.
+        # The bounded worker self-expiry is always an explicit test failure.
+        worker = ("import os,time\n"
+            "handle=open(" + repr(str(lock_path)) + ",'r+b')\n"
+            "if os.name=='nt':\n import msvcrt\n msvcrt.locking(handle.fileno(),msvcrt.LK_NBLCK,1)\n"
+            "else:\n import fcntl\n fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)\n"
+            "temporary=" + repr(str(started)+".tmp") + "\n"
+            "with open(temporary,'w') as stream: stream.write(str(os.getpid()))\n"
+            "os.replace(temporary," + repr(str(started)) + ")\n"
+            "deadline=time.monotonic()+12\n"
+            "while not os.path.exists(" + repr(str(release)) + "):\n"
+            " if time.monotonic()>=deadline:\n"
+            "  with open(" + repr(str(expired)) + ",'w') as stream: stream.write('worker self-expired')\n"
+            "  raise SystemExit(19)\n"
+            " time.sleep(0.01)\n"
+            "with open(" + repr(str(marker)) + ",'w') as stream: stream.write('escaped after return')\n"
+            "handle.close()\n")
+        script.write_text("import subprocess,sys\nchild=subprocess.Popen([sys.executable, '-c', "
+                          + repr(worker) + "])\nraise SystemExit(child.wait())\n", encoding="utf-8")
+
+        def lock_available():
+            with lock_path.open("r+b") as stream:
+                try:
+                    if os.name == "nt":
+                        import msvcrt
+                        msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                        stream.seek(0)
+                        msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+                    else:
+                        import fcntl
+                        fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        fcntl.flock(stream, fcntl.LOCK_UN)
+                    return True
+                except OSError:
+                    return False
+
+        def worker_process_state(pid):
+            if os.name == "nt":
+                # Windows os.kill(pid, 0) is not a read-only liveness probe.
+                import ctypes
+                from ctypes import wintypes
+                kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+                kernel.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+                kernel.OpenProcess.restype = wintypes.HANDLE
+                kernel.GetExitCodeProcess.argtypes = (wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD))
+                kernel.GetExitCodeProcess.restype = wintypes.BOOL
+                kernel.CloseHandle.argtypes = (wintypes.HANDLE,)
+                kernel.CloseHandle.restype = wintypes.BOOL
+                handle = kernel.OpenProcess(0x1000, False, pid)
+                if not handle:
+                    error = ctypes.get_last_error()
+                    if error in (87, 1168):
+                        return "absent"
+                    raise OSError(error, "cannot observe owned worker process")
+                try:
+                    code = wintypes.DWORD()
+                    if not kernel.GetExitCodeProcess(handle, ctypes.byref(code)):
+                        raise OSError(ctypes.get_last_error(), "cannot read owned worker exit code")
+                    return "running" if code.value == 259 else "exited"
+                finally:
+                    kernel.CloseHandle(handle)
+            # An exited POSIX grandchild can remain a zombie until reaped.
+            # Distinguish it from an executing descendant without signalling it.
+            observed = subprocess.run(["ps", "-p", str(pid), "-o", "stat="],
+                                      capture_output=True, text=True, timeout=1, check=False)
+            state = observed.stdout.strip()
+            if observed.returncode == 1 and not state:
+                return "absent"
+            if observed.returncode != 0 or not state:
+                raise AssertionError("cannot observe owned worker process state")
+            return "zombie" if state.startswith("Z") else "running"
+
+        self.assertTrue(lock_available(), "worker lock must be free before the actual descendant starts")
+        actual_popen = subprocess.Popen
+        owned = []
+        readiness = {"observed": False, "locked": False, "worker_pid": None}
+        command = [sys.executable, str(script)]
+
+        def started_process(argv, *args, **kwargs):
+            process = actual_popen(argv, *args, **kwargs)
+            if argv == command:
+                owned.append(process)
+                deadline = time.monotonic() + 2.0
+                while not started.exists() and process.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                if started.exists():
+                    readiness.update(observed=True, locked=not lock_available(),
+                                     worker_pid=int(started.read_text()))
+                # Fail while the owned parent still waits for the child. The
+                # finally block cleans the tree even without a received PID.
+                self.assertTrue(readiness["observed"], "actual worker readiness was not established within bounded setup")
+                self.assertTrue(readiness["locked"], "readiness must come from the live worker holding its OS lock")
+                self.assertIs(type(readiness["worker_pid"]), int)
+                self.assertGreater(readiness["worker_pid"], 0)
+                self.assertNotIn(readiness["worker_pid"], (os.getpid(), process.pid))
+            return process
+
+        try:
+            with patch.object(runner.subprocess, "Popen", side_effect=started_process):
+                with self.assertRaises(subprocess.TimeoutExpired) as failure:
+                    runner.run_process(command, {}, 0.6)
+            self.assertGreater(failure.exception.timeout, 0)
+            self.assertLessEqual(failure.exception.timeout, 0.6)
+            # Capture return-time state before releasing the worker. Assertions
+            # follow the observation window so a real survivor can demonstrate
+            # the forbidden effect in the parent-only cancellation contrary.
+            returned = {"monotonic_ns": time.monotonic_ns(), "parent_returncode": owned[0].poll(),
+                        "worker_pid": readiness["worker_pid"], "lock_released": lock_available(),
+                        "worker_state": worker_process_state(readiness["worker_pid"]),
+                        "expired": expired.exists(), "effect_before_gate": marker.exists()}
+            release.write_text("release only after run_process returned", encoding="utf-8")
+            time.sleep(0.9)
+            observed = {"readiness": dict(readiness), "at_return": returned,
+                        "effect_after_gate": marker.exists(), "expired_after_gate": expired.exists(),
+                        "lock_released_after_wait": lock_available()}
+            self._timeout_worker_observation = observed
+            self.assertIsNotNone(returned["parent_returncode"], f"timed-out parent remains active: {observed}")
+            self.assertTrue(returned["lock_released"], f"timed-out descendant retained its live-process lock at return: {observed}")
+            self.assertIn(returned["worker_state"], ("absent", "exited", "zombie"), f"timed-out descendant still executes: {observed}")
+            self.assertFalse(returned["expired"] or observed["expired_after_gate"], f"worker self-expiry cannot prove cancellation: {observed}")
+            self.assertFalse(returned["effect_before_gate"] or observed["effect_after_gate"], f"timed-out worker produced a post-return effect: {observed}")
+            self.assertTrue(observed["lock_released_after_wait"], f"worker lock was reacquired after return: {observed}")
+        finally:
+            # Also clean the actual owned tree if bounded readiness/setup fails.
+            # This cleanup cannot turn a missing precondition into a passing test.
+            for process in owned:
+                if process.poll() is None:
+                    if os.name == "nt":
+                        subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5, check=False)
+                        process.kill()
+                    else:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    process.wait(timeout=5)
+            if readiness["worker_pid"] is not None and not lock_available():
+                os.kill(readiness["worker_pid"], signal.SIGTERM)
+                deadline = time.monotonic() + 1.0
+                while not lock_available() and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertTrue(lock_available(), "owned worker cleanup did not release its process lock")
 
     def test_malformed_suite_replaces_stale_success_with_failure(self):
         for malformed in [[], {"schema": runner.SCHEMA, "tasks": [[]]}]:

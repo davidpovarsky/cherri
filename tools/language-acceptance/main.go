@@ -168,13 +168,14 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
-	artifactDir  string
-	reg          *schema.Registry
-	implSHA      string
-	results      map[string]CaseResult
-	records      []EvidenceRecord
-	observations []LocalSmokeObservation
-	stateRace    *stateRaceExecution
+	artifactDir         string
+	reg                 *schema.Registry
+	implSHA             string
+	results             map[string]CaseResult
+	records             []EvidenceRecord
+	observations        []LocalSmokeObservation
+	stateRace           *stateRaceExecution
+	aiMeasurementResult *aiMeasurementExecution
 }
 
 func resolveRepoRoot() string {
@@ -1036,6 +1037,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateAIMeasurementRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateAIEvaluationHarnessRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1888,8 +1892,7 @@ func (r *Runner) runVerification() {
 
 // Group 21: Evaluation
 func (r *Runner) runEvaluation() {
-	// AI01: Held-out equal-budget model evaluation harness
-	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", nil, false, "AI_EVAL_NOT_RUN", "No authorized held-out model evaluation has executed in this run. Configure the adapter and validator described in tools/language-ai-eval/README.md and explicitly use --allow-external; RP50 harness controls do not measure AI quality")
+	r.runMeasuredAIEvaluation()
 }
 
 // Group 22: Delivery
