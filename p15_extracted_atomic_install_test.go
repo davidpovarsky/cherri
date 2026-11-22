@@ -20,6 +20,7 @@ type p15AtomicToolState struct {
 
 func p15AtomicSnapshot(t *testing.T, f *p15ExtractedInstall) p15AtomicToolState {
 	t.Helper()
+	defer p15PhaseBegin(t, "actual_installed_byte_snapshot", nil).ScopeEnd(t)
 	s := p15AtomicToolState{files: map[string][]byte{}, docsCommit: p15ExtractedRevision(t, filepath.Join(f.home, "docs"))}
 	for _, name := range []string{"bin/cherri", "bin/cherri.commit", "bin/cherri.sha256", "bin/cherri-migrate", "bin/cherri-migrate.commit", "bin/cherri-migrate.sha256", "docs/fork-language/actions.md"} {
 		s.files[name] = p15InstallRead(t, filepath.Join(f.home, filepath.FromSlash(name)))
@@ -37,6 +38,7 @@ func p15AtomicStateReceipt(s p15AtomicToolState) map[string]any {
 
 func p15AtomicAssertRestored(t *testing.T, f *p15ExtractedInstall, before p15AtomicToolState) {
 	t.Helper()
+	defer p15PhaseBegin(t, "actual_rollback_restoration_verification", nil).ScopeEnd(t)
 	after := p15AtomicSnapshot(t, f)
 	if after.docsCommit != before.docsCommit {
 		t.Errorf("interrupted update changed docs pin: %s -> %s", before.docsCommit, after.docsCommit)
@@ -72,6 +74,7 @@ func p15AtomicUpdateEnv(t *testing.T, f *p15ExtractedInstall, compiler, migratio
 }
 
 func TestP15RP45ExtractedInstallAndRollback(t *testing.T) {
+	defer p15PhaseParent(t)()
 	f := p15ExtractedFixture(t, "RP45", false)
 	compilerCandidate := p15InstallRead(t, f.compiler)
 	migrationPath := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")

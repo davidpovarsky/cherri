@@ -18,6 +18,7 @@ type p15CanonicalRebuildResult map[string]map[string]map[string]any
 
 func p15CanonicalRebuildRead(t *testing.T, repo, phase string) p15CanonicalRebuildResult {
 	t.Helper()
+	defer p15PhaseBegin(t, "canonical_rebuilt_probe", map[string]any{"probe_phase": phase}).ScopeEnd(t)
 	output := filepath.Join(t.TempDir(), phase+".json")
 	raw, err := p15SchemaCommand(t, repo, []string{"P15_BRG24_OUTPUT=" + output}, "go", "test", "-buildvcs=false", "-count=1", "-json", "-timeout=90s", "-run", "^TestP15BRG24RebuiltNativeProbe$", ".")
 	if err != nil {
@@ -49,7 +50,9 @@ func p15CanonicalRebuildRead(t *testing.T, repo, phase string) p15CanonicalRebui
 	if runs != 1 || passes != 1 || packages != 1 {
 		t.Fatalf("missing actual selected probe execution: %d/%d/%d", runs, passes, packages)
 	}
+	nativePhase := p15PhaseBegin(t, "canonical_native_output_read", map[string]any{"probe_phase": phase})
 	native, err := os.ReadFile(output)
+	nativePhase.ValueEnd(t, err, map[string][]byte{"native": native})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,6 +113,7 @@ func p15CanonicalRebuildReferenceType(t *testing.T, params map[string]any, want 
 // effect. These deliberate invalid native markers are propagation controls,
 // never Apple runtime fixtures or changes to shipping compiler semantics.
 func TestP15CanonicalBehaviorSourcePropagation(t *testing.T) {
+	defer p15PhaseParent(t)()
 	repo := p15SchemaAcceptanceWorktree(t)
 	probe := filepath.Join(repo, "p15_brg24_rebuilt_probe_test.go")
 	p15SchemaWrite(t, probe, []byte(p15CanonicalRebuildProbe))

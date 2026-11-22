@@ -28,7 +28,7 @@ func p15PackageRun(t *testing.T, root string, args ...string) (string, error) {
 	}
 	cmd := exec.CommandContext(ctx, python, append(all, args...)...)
 	cmd.Dir = root
-	out, err := cmd.CombinedOutput()
+	out, err := p15PhaseCombinedOutput(t, "actual_package_command", cmd)
 	return string(out), err
 }
 

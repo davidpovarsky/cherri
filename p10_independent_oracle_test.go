@@ -618,6 +618,7 @@ if matches == [] {
 // mutations can be injected and verified without touching the working tree.
 func copyCompilerWorkspaceForMutation(t *testing.T) string {
 	t.Helper()
+	defer p15PhaseBegin(t, "p10_source_copy", nil).ScopeEnd(t)
 	dstRoot := t.TempDir()
 
 	copyFile := func(relPath string) {
@@ -679,12 +680,13 @@ func copyCompilerWorkspaceForMutation(t *testing.T) string {
 // injects each of the 4 original P10 compiler bugs into the actual source files
 // one at a time, asserting that `go test` fails on the mutated compiler.
 func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
+	defer p15PhaseParent(t)()
 	mutDir := copyCompilerWorkspaceForMutation(t)
 
 	runMutatedTests := func(testPattern string) (string, error) {
 		cmd := exec.Command("go", "test", "-trimpath", "-count=1", "-run", testPattern, ".")
 		cmd.Dir = mutDir
-		out, err := cmd.CombinedOutput()
+		out, err := p15PhaseCombinedOutput(t, "p10_actual_mutation_command", cmd)
 		return string(out), err
 	}
 
@@ -718,7 +720,9 @@ func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
 				t.Fatalf("write mutated %s: %v", filePath, err)
 			}
 			defer func() {
-				_ = os.WriteFile(filePath, origBytes, 0o600)
+				phase := p15PhaseBegin(t, "p10_source_restoration", map[string]any{"path": relFile, "bytes": len(origBytes)})
+				restoreErr := os.WriteFile(filePath, origBytes, 0o600)
+				phase.ValueEnd(t, restoreErr, nil) // Original ignored-write treatment is unchanged.
 			}()
 
 			out, testErr := runMutatedTests(testPattern)

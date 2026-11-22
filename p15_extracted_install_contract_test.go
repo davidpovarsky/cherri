@@ -36,7 +36,7 @@ func p15ExtractedGit(t *testing.T, root string, args ...string) []byte {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "git", append([]string{"--no-replace-objects", "-C", root}, args...)...)
-	out, err := cmd.CombinedOutput()
+	out, err := p15PhaseCombinedOutput(t, "extracted_fixture_git", cmd)
 	if err != nil {
 		t.Fatalf("immutable fixture git %v: %v (context %v)\n%s", args, err, ctx.Err(), out)
 	}
@@ -50,6 +50,7 @@ func p15ExtractedRevision(t *testing.T, root string) string {
 
 func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string, extraFlags ...string) string {
 	t.Helper()
+	defer p15PhaseBegin(t, "actual_clean_component_build", nil).ScopeEnd(t)
 	if p15ExtractedRevision(t, root) != sourceSHA || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 		t.Fatal("real component build requires the exact clean source")
 	}
@@ -66,6 +67,7 @@ func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string, extraF
 		buildRoot = filepath.Join(t.TempDir(), "source")
 		p15ExtractedGit(t, root, "clone", "--quiet", "--shared", "--no-checkout", root, buildRoot)
 		defer func() {
+			defer p15PhaseBegin(t, "actual_build_clone_cleanup", nil).ScopeEnd(t)
 			if err := os.RemoveAll(buildRoot); err != nil {
 				t.Error(err)
 			}
@@ -87,7 +89,7 @@ func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string, extraF
 	cmd := exec.CommandContext(ctx, "go", args...)
 	cmd.Dir = buildRoot
 	cmd.Env = append(p15InstallEnv(nil), "GOWORK=off", "GIT_NO_REPLACE_OBJECTS=1")
-	if out, err := cmd.CombinedOutput(); err != nil {
+	if out, err := p15PhaseCombinedOutput(t, "actual_component_go_build", cmd); err != nil {
 		t.Fatalf("actual clean %s build: %v (context %v)\n%s", packagePath, err, ctx.Err(), out)
 	}
 	p15ExtractedBuildIdentity(t, path, sourceSHA)
@@ -99,6 +101,7 @@ func p15ExtractedBuild(t *testing.T, root, sourceSHA, packagePath string, extraF
 
 func p15ExtractedBuildIdentity(t *testing.T, path, sourceSHA string) {
 	t.Helper()
+	defer p15PhaseBegin(t, "actual_component_provenance", nil).ScopeEnd(t)
 	info, err := buildinfo.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
@@ -128,6 +131,7 @@ func p15ExtractedCommit(t *testing.T, root, message string) string {
 
 func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15ExtractedInstall {
 	t.Helper()
+	defer p15PhaseBegin(t, "extracted_fixture_preparation", nil).ScopeEnd(t)
 	root, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)
@@ -139,6 +143,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 	manifestPath := filepath.Join(root, "skills", "cherri-shortcuts", "compatibility-manifest.json")
 	manifestBefore := p15InstallRead(t, manifestPath)
 	t.Cleanup(func() {
+		defer p15PhaseBegin(t, "fixture_source_preservation_cleanup", nil).ScopeEnd(t)
 		if !bytes.Equal(p15InstallRead(t, manifestPath), manifestBefore) || p15ExtractedRevision(t, root) != f.sourceSHA || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 			t.Error("component fixture changed the real source/consumer tuple")
 		}
@@ -150,7 +155,10 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 		t.Logf("P15_EXTRACTED_COMPONENT_RECEIPT %s", data)
 	})
 	binary := p15InstallActualTool(t, root, f.sourceSHA, ".", "")
-	out, stderr, err := p15RunCLI(t, binary, t.TempDir(), nil, "--capabilities-json")
+	capabilitiesDirectory := t.TempDir()
+	capabilitiesPhase := p15PhaseBegin(t, "actual_fixture_capabilities", map[string]any{"argv": []string{binary, "--capabilities-json"}, "cwd": capabilitiesDirectory})
+	out, stderr, err := p15RunCLI(t, binary, capabilitiesDirectory, nil, "--capabilities-json")
+	capabilitiesPhase.ValueEnd(t, err, map[string][]byte{"stdout": out, "stderr": stderr})
 	if err != nil || len(stderr) != 0 {
 		t.Fatalf("actual source capabilities: %v %s", err, stderr)
 	}
@@ -179,7 +187,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 	cmd := exec.CommandContext(ctx, "go", "run", "./tools/language-docs", docsPath)
 	cmd.Dir = root
 	cmd.Env = append(p15InstallEnv(nil), "GOWORK=off", "GIT_NO_REPLACE_OBJECTS=1")
-	docOutput, docErr := cmd.CombinedOutput()
+	docOutput, docErr := p15PhaseCombinedOutput(t, "actual_fixture_docs_generation", cmd)
 	cancel()
 	if docErr != nil {
 		t.Fatalf("actual reference generation: %v\n%s", docErr, docOutput)
@@ -190,6 +198,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 		t.Fatal(err)
 	}
 	archiveBytes := p15ExtractedGit(t, root, "archive", f.sourceSHA, "skills/cherri-shortcuts", "LICENSE")
+	unpackPhase := p15PhaseBegin(t, "fixture_archive_unpack", map[string]any{"archive_bytes": len(archiveBytes)})
 	reader := tar.NewReader(bytes.NewReader(archiveBytes))
 	for {
 		header, err := reader.Next()
@@ -221,6 +230,7 @@ func p15ExtractedFixture(t *testing.T, requirement string, install bool) *p15Ext
 			t.Fatal(err)
 		}
 	}
+	unpackPhase.ScopeEnd(t)
 	manifest["compilerCommit"], manifest["docsCommit"] = f.sourceSHA, f.docsSHA
 	manifest["compilerRepo"], manifest["docsRepo"] = filepath.ToSlash(root), filepath.ToSlash(docs)
 	derivedManifest, err := json.MarshalIndent(manifest, "", "  ")
@@ -281,7 +291,9 @@ func (f *p15ExtractedInstall) run(t *testing.T, binary, cwd string, args ...stri
 	cmd.Dir, cmd.Env = cwd, p15InstallEnv(nil)
 	var stdout, stderrBuffer bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &stdout, &stderrBuffer
+	commandPhase := p15PhaseCommand(t, "actual_installed_public_cli", cmd)
 	err := cmd.Run()
+	commandPhase.CommandEnd(t, cmd, err, map[string][]byte{"stdout": stdout.Bytes(), "stderr": stderrBuffer.Bytes()})
 	if ctx.Err() != nil {
 		t.Fatalf("installed public command timeout is not an accepted result: %v", ctx.Err())
 	}
@@ -308,6 +320,7 @@ func p15ExtractedNativeEqual(t *testing.T, first, second string) {
 }
 
 func TestP15RP42ExtractedInstallPublicCLI(t *testing.T) {
+	defer p15PhaseParent(t)()
 	f := p15ExtractedFixture(t, "RP42", true)
 	dir := t.TempDir()
 	sourcePath := filepath.Join(dir, "public.cherri")

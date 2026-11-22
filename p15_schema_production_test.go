@@ -85,7 +85,7 @@ func p15SchemaCommand(t *testing.T, dir string, extraEnv []string, command ...st
 		}
 	}
 	cmd.Env = append(cmd.Env, extraEnv...)
-	out, err := cmd.CombinedOutput()
+	out, err := p15PhaseCombinedOutput(t, "actual_schema_command", cmd)
 	if err != nil {
 		return out, fmt.Errorf("actual schema subprocess %q (context=%v): %w", command, ctx.Err(), err)
 	}

@@ -72,7 +72,7 @@ func p15InstallRun(t *testing.T, script string, env map[string]string, args ...s
 	}
 	cmd := exec.CommandContext(ctx, p15SkillBash(t), all...)
 	cmd.Env = p15InstallEnv(env)
-	output, err := cmd.CombinedOutput()
+	output, err := p15PhaseCombinedOutput(t, "actual_installer_command", cmd)
 	return string(output), err
 }
 

@@ -19,13 +19,18 @@ var p15InstallBuiltTools = struct {
 // Variants are distinct real builds, not edited or relabeled executables.
 func p15InstallActualTool(t *testing.T, root, source, packagePath, variant string) string {
 	t.Helper()
+	defer p15PhaseBegin(t, "actual_tool_request", map[string]any{"root": root, "source": source, "package": packagePath, "variant": variant}).ScopeEnd(t)
+	sourceBeforePhase := p15PhaseBegin(t, "actual_tool_source_before", nil)
 	if p15ExtractedRevision(t, root) != source || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 		t.Fatal("installed consumer requires the exact clean source")
 	}
+	sourceBeforePhase.ScopeEnd(t)
 	key := root + "\x00" + source + "\x00" + packagePath + "\x00" + variant
+	cachePhase := p15PhaseBegin(t, "actual_tool_cache_lookup", map[string]any{"root": root, "source": source, "package": packagePath, "variant": variant})
 	p15InstallBuiltTools.Lock()
 	defer p15InstallBuiltTools.Unlock()
 	data, exists := p15InstallBuiltTools.bytes[key]
+	cachePhase.End(t, map[string]any{"cache_hit": exists, "cached_bytes": len(data), "observed_under_existing_mutex": true}, nil)
 	if !exists {
 		var flags []string
 		if variant != "" {
@@ -39,15 +44,21 @@ func p15InstallActualTool(t *testing.T, root, source, packagePath, variant strin
 	if isWindowsRuntime() {
 		path += ".exe"
 	}
+	copyPhase := p15PhaseBegin(t, "actual_tool_owned_copy", map[string]any{"bytes": len(data)})
 	p15InstallWrite(t, path, data)
+	copyPhase.ScopeEnd(t)
 	role := "github.com/electrikmilk/cherri"
 	if packagePath == "./cmd/cherri-migrate" {
 		role += "/cmd/cherri-migrate"
 	}
+	rolePhase := p15PhaseBegin(t, "actual_tool_role_check", map[string]any{"role": role})
 	p15ExtractedRequireRole(t, path, source, role)
+	rolePhase.ScopeEnd(t)
+	sourceAfterPhase := p15PhaseBegin(t, "actual_tool_source_after", nil)
 	if p15ExtractedRevision(t, root) != source || strings.TrimSpace(string(p15ExtractedGit(t, root, "status", "--porcelain"))) != "" {
 		t.Fatal("installed consumer source changed during build reuse")
 	}
+	sourceAfterPhase.ScopeEnd(t)
 	return path
 }
 
