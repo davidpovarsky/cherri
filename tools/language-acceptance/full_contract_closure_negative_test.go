@@ -208,6 +208,12 @@ func TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure(t *testing
 					expectedAuthorizationErrors = append(expectedAuthorizationErrors,
 						fmt.Sprintf("test_id %q in record %s is not authorized for requirement %s",
 							record.TestID, record.EvidenceID, test.attacked))
+					if test.attacked == "RP24" {
+						// The distinct RP24 producer now also rejects a borrowed FN01
+						// record at its exact command/event/scope binding boundary.
+						expectedAuthorizationErrors = append(expectedAuthorizationErrors,
+							"RP24 record is detached from its complete return/recursion scenario; actual Apple producer is still required")
+					}
 				}
 			}
 			raw, err := json.MarshalIndent(records, "", "  ")

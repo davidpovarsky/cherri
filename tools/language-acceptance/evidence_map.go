@@ -34,6 +34,10 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	if id == "RP24" {
+		// The historical function trace does not execute this complete joined source.
+		return
+	}
 	if _, found := combinedValueBlockScenarios[id]; found {
 		return
 	}
@@ -98,7 +102,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "F02", "F04", "RP22", "BRG12", "BRG14":
 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
-	case "FN01", "FN02", "FN03", "RP24", "RP25", "RP26", "BRG11", "BRG15":
+	case "FN01", "FN02", "FN03", "RP25", "RP26", "BRG11", "BRG15":
 		reqAssertions["function_result"] = "21"
 		reqAssertions["caller_continuation"] = "22"
 		reqAssertions["defaults_explicit"] = "0:0::"
@@ -535,6 +539,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP24" {
+		return functionReturnTestIDs()
+	}
 	if scenario, found := combinedValueBlockScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -629,6 +636,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP24" {
+		return append([]string{}, functionReturnProductionPaths...)
+	}
 	if _, found := combinedValueBlockScenarios[id]; found {
 		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
 	}
