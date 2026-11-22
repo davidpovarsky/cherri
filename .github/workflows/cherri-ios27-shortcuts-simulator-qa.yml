@@ -1,265 +1,56 @@
 name: Cherri iOS/iPadOS 27 Shortcuts Simulator QA
 
+# Diagnostic branch only. This file does not replace the normal QA workflow
+# on the integration branch and cannot provide simulator or native acceptance.
 on:
-  push:
-    branches:
-      - "agent/cherri-p10r13-*"
-      - "agent/cherri-p10r14-*"
-    paths:
-      - ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml"
-      - "scripts/ios27_shortcuts_simulator_qa.sh"
-      - "tools/shortcuts-simulator-qa/**"
-      - "signing.go"
-      - "language_cli_adapter.go"
-      - "debug_stdlib.go"
-      - "simulator_qa_oracle.go"
-      - "p14_simulator_qa_runtime_trace_test.go"
   workflow_dispatch:
-    inputs:
-      verify_local_ocr:
-        description: "Run independent generated-image Vision acceptance (failure fails this run)"
-        required: false
-        default: false
-        type: boolean
-      probe_level:
-        description: "Probe level (preflight | import | editor | runtime | full)"
-        required: false
-        default: "full"
-        type: choice
-        options:
-          - preflight
-          - import
-          - editor
-          - runtime
-          - full
-      device_profile:
-        description: "Simulator device profile (ipad-default | iphone-fallback)"
-        required: false
-        default: "ipad-default"
-        type: choice
-        options:
-          - ipad-default
-          - iphone-fallback
-      sample_id:
-        description: "Synthetic fixture sample ID"
-        required: false
-        default: "all"
-        type: choice
-        options:
-          - all
-          - qa-collect-counts-v2
-          - qa-collect-counts-legacy
-          - qa-collect-dictionaries-v2
-          - qa-collect-dictionaries-legacy
-          - qa-functional
-          - qa-functional-legacy
-          - qa-bool-list
-          - qa-short-circuit
-          - qa-short-circuit-local
-          - qa-f01-diag-counter
-          - qa-f01-diag-predicate
-          - qa-f01-diag-control
-          - qa-f01-diag-logic
-          - qa-retry-control
-          - qa-json-body-diagnostic
-          - qa-json-body-control
-          - qa-json-body-null-candidate
-          - qa-json-body-file-utf8
-          - qa-retry-http500
-          - qa-retry-http404
-          - qa-retry-http429
-          - qa-retry-transport
-          - qa-require
-          - qa-require-zero-diag
-          - qa-label-file-controls
-          - qa-export-file-control
-          - qa-export-build-only
-          - qa-export-parse-only
-          - qa-nil-clear
-          - qa-collect-empty-split
-          - qa-export-file-bytes
-          - qa-file-name-binding
-          - qa-file-name-extension
-          - qa-f04-yield-list
-          - qa-f04-yield-empty-list
-          - qa-f04-record-empty
-          - qa-f01-ifresult-let
-          - qa-f01-ifresult-var
-          - qa-measure
-          - qa-measure-release
-          - qa-label-file-carrier
-          - qa-label-raw-empty
-          - qa-label-raw-grouping
-          - qa-binding-defaults
-          - qa-debug-label-six-modes
-          - qa-debug-label-plain-v2
-          - qa-debug-label-plain-legacy
-          - qa-debug-label-dated-v2
-          - qa-debug-label-dated-legacy
-          - qa-debug-label-typed-v2
-          - qa-debug-label-typed-legacy
-          - qa-debug-label-dated-typed-v2
-          - qa-debug-label-dated-typed-legacy
-          - qa-debug-label-text-v2
-          - qa-debug-label-text-legacy
-          - qa-debug-label-dated-text-v2
-          - qa-debug-label-dated-text-legacy
-          - qa-binding-capture
-          - qa-typed-defaults
-          - qa-native-boundary-diagnostic
-          - qa-file-materialization-diagnostic
-          - qa-n03-text-equality-diagnostic
-          - qa-optional-forwarding-diagnostic
-          - qa-nested-list-control
-          - qa-nested-list-candidate
-          - qa-export-unicode-diagnostic
-          - qa-export-unicode
-          - qa-export-empty
-          - qa-export-thousand
-          - qa-export-redacted
-          - qa-export-unsupported-file
-          - qa-export-text-file
-          - qa-paginate-ordered
-          - qa-paginate-cycle
-          - qa-paginate-page-cap
-          - qa-paginate-item-cap
-          - qa-paginate-empty
-          - qa-storage-text-same-run
-          - qa-storage-scope
-          - qa-storage-delete
-          - qa-storage-text-cross-run
-          - qa-http-json-control
-          - qa-http-json-fetch
-          - qa-number-comparison-diag
-          - qa-number-coercion-control
-          - qa-scroll-editor
-          - qa-rtl-hebrew
-      capture_full_editor:
-        description: "Capture multi-page editor screenshots and accessibility tree"
-        required: false
-        default: true
-        type: boolean
-      max_editor_pages:
-        description: "Maximum editor pages to scroll and snapshot (1..20)"
-        required: false
-        default: "20"
-        type: string
-      require_runtime:
-        description: "Require exact runtime proof and NDJSON trace, or verified trace absence for the explicit Release fixture"
-        required: false
-        default: false
-        type: boolean
-      upload_sanitized_artifacts:
-        description: "Upload sanitized QA artifacts (7-day retention)"
-        required: false
-        default: true
-        type: boolean
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.sample_id || 'all' }}
-  cancel-in-progress: true
+  group: cherri-project-prerequisite-observation-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  simulator-qa:
-    name: iPadOS 27 Simulator Shortcuts QA
+  project-prerequisite-observation:
+    name: Observe the original Xcode project prerequisite
     runs-on: xcode-27
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        sample: ${{ fromJSON(inputs.sample_id == 'qa-json-body-diagnostic' && '["qa-json-body-control","qa-json-body-null-candidate"]' || inputs.sample_id == 'qa-binding-defaults' && '["qa-binding-capture","qa-typed-defaults"]' || inputs.sample_id == 'qa-debug-label-six-modes' && '["qa-debug-label-plain-v2","qa-debug-label-plain-legacy","qa-debug-label-dated-v2","qa-debug-label-dated-legacy","qa-debug-label-typed-v2","qa-debug-label-typed-legacy","qa-debug-label-dated-typed-v2","qa-debug-label-dated-typed-legacy","qa-debug-label-text-v2","qa-debug-label-text-legacy","qa-debug-label-dated-text-v2","qa-debug-label-dated-text-legacy"]' || '["selected"]') }}
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
-      - name: Checkout repository
+      - name: Checkout exact diagnostic source
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-
-      - name: Install QA Python test dependencies
+      - name: Verify unchanged prerequisite and diagnostic controls
+        timeout-minutes: 5
+        shell: bash
         run: |
-          python3 -m venv "$RUNNER_TEMP/cherri-simulator-qa-python"
-          "$RUNNER_TEMP/cherri-simulator-qa-python/bin/python" -m pip install --disable-pip-version-check \
-            -r tools/shortcuts-simulator-qa/requirements-test.txt
-          echo "$RUNNER_TEMP/cherri-simulator-qa-python/bin" >> "$GITHUB_PATH"
+          python3 -B -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_project_prerequisite.py' -v
+          python3 -B -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_project_prerequisite_observation.py' -v
 
-      - name: Verify Swift evidence serialization contracts
-        run: bash tools/shortcuts-simulator-qa/verify_foundation_contracts.sh
-
-      - name: Verify optional local Apple Vision OCR
-        if: inputs.verify_local_ocr == true
+      - name: Capture only the original project prerequisite
+        id: prerequisite_observation
+        timeout-minutes: 6
+        shell: bash
         run: |
-          set +e
-          swift tools/shortcuts-simulator-qa/recognize_editor_text.swift --self-test
-          primary_status=$?
-          swift tools/shortcuts-simulator-qa/recognize_editor_text.swift --self-test-revision2
-          control_status=$?
-          printf 'Vision primary revision3 exit=%s; diagnostic revision2 exit=%s\n' "$primary_status" "$control_status"
-          exit "$primary_status"
+          python3 -B tools/shortcuts-simulator-qa/project_prerequisite_observation.py \
+            --repo "$GITHUB_WORKSPACE" \
+            --root "$RUNNER_TEMP/cherri-project-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}" \
+            --source-sha "${{ github.sha }}" \
+            --run-id "${{ github.run_id }}" \
+            --attempt "${{ github.run_attempt }}" \
+            --bash "$BASH" \
+            --github-output "$GITHUB_OUTPUT"
 
-      - name: Run Go Simulator QA & Trace Oracle Unit Tests
-        run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug|TestP15RuntimeDiagnostic" .
-
-      - name: Test AX Inspector and publication quarantine
-        run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_*.py' -v
-
-      - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
-        id: native_qa
-        env:
-          CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
-          QA_PROBE_LEVEL: ${{ inputs.probe_level || 'full' }}
-          QA_DEVICE_PROFILE: ${{ inputs.device_profile || 'ipad-default' }}
-          QA_SAMPLE_ID: ${{ matrix.sample == 'selected' && (inputs.sample_id || 'all') || matrix.sample }}
-          QA_CAPTURE_FULL_EDITOR: ${{ github.event_name == 'workflow_dispatch' && toJSON(inputs.capture_full_editor) || 'true' }}
-          QA_MAX_EDITOR_PAGES: ${{ inputs.max_editor_pages || '20' }}
-          QA_REQUIRE_RUNTIME: ${{ inputs.require_runtime == true && 'true' || 'false' }}
-        run: |
-          chmod +x scripts/ios27_shortcuts_simulator_qa.sh
-          ./scripts/ios27_shortcuts_simulator_qa.sh \
-            "$QA_PROBE_LEVEL" \
-            "$QA_DEVICE_PROFILE" \
-            "$QA_SAMPLE_ID" \
-            "$QA_CAPTURE_FULL_EDITOR" \
-            "$QA_MAX_EDITOR_PAGES" \
-            "$QA_REQUIRE_RUNTIME"
-
-      - name: Retain explicitly incomplete acquisition after interruption
-        id: terminal_receipts
-        if: always()
-        env:
-          CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
-        run: |
-          python3 tools/shortcuts-simulator-qa/qa_terminal_receipts.py finalize \
-            --repo . --root "artifacts/cherri-ios27-simulator-qa/${{ github.run_id }}" \
-            --source-sha "${{ github.sha }}" --run-id "${{ github.run_id }}" \
-            --step-outcome "${{ steps.native_qa.outcome }}"
-
-      - name: Stage synthetic text artifacts; quarantine raster and raw inputs
-        id: privacy_gate
-        if: always()
-        env:
-          QA_ACQUISITION_FINALIZER_OUTCOME: ${{ steps.terminal_receipts.outcome }}
-        run: |
-          if [ "$QA_ACQUISITION_FINALIZER_OUTCOME" != "success" ]; then
-            echo "Acquisition identity was not verified; original evidence remains quarantined."
-            exit 2
-          fi
-          python3 tools/shortcuts-simulator-qa/prepare_public_artifacts.py \
-            --root "artifacts/cherri-ios27-simulator-qa/${{ github.run_id }}" \
-            --output "artifacts/cherri-ios27-simulator-qa-public/${{ github.run_id }}" \
-            --fixtures-dir tools/shortcuts-simulator-qa/fixtures
-
-      - name: Upload Sanitized Simulator QA Artifacts
-        if: always() && steps.privacy_gate.outputs.passed == 'true' && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
+      - name: Upload only sealed prerequisite diagnostics
+        if: always() && steps.prerequisite_observation.outputs.publication_ready == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: cherri-ios27-simulator-qa-${{ github.run_id }}${{ matrix.sample != 'selected' && format('-{0}', matrix.sample) || '' }}
-          path: artifacts/cherri-ios27-simulator-qa-public/${{ github.run_id }}/
-          retention-days: 7
-          if-no-files-found: warn
+          name: cherri-project-prerequisite-observation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cherri-project-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}/public/project-prerequisite.zip.p7m
+            ${{ runner.temp }}/cherri-project-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}/public/summary.json
+          retention-days: 3
+          if-no-files-found: error
