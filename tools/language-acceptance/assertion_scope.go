@@ -18,12 +18,11 @@ type LocalSmokeObservation struct {
 // Historical probes are retained as observations, never converted into proof
 // of a larger contract. Remove an entry only with a reviewed scenario producer.
 var incompleteLocalAssertions = map[string]string{
-	"B01":  "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
-	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
-	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
-	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
-	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
-	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
+	"B01": "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
+	"T05": "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
+	"L01": "Nonempty lowering does not assert nested shape, cardinality, or order.",
+	"N03": "Nonempty IR does not prove case-sensitive equality or comparison migration.",
+	"F04": "A repeat-end UUID does not prove one semantic collected element per iteration.",
 
 	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",

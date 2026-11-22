@@ -981,6 +981,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateFunctionDefaultRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateFunctionTransportRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 
 			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
@@ -1763,11 +1766,7 @@ func (r *Runner) runFunctions() {
 
 	r.runFunctionDefaultRequirement("FN04")
 
-	// FN05: Structured argument transport
-	srcFN05 := "function info(name: Text, count: Number) -> Text {\n    return f\"{name}: {count}\"\n}\nlet s = info(\"items\", count: 10)"
-	wfFN05, errFN05 := lowerSrc(r.reg, srcFN05)
-	fn05Passed := errFN05 == nil && len(wfFN05.Actions) > 0
-	r.Record("FN05", "functions", "Structured argument/result transport", "unit+native", []string{"unit", "native"}, fn05Passed, "PASSED", "Function arguments and return values mapped cleanly through structured dictionary transport")
+	r.runFunctionTransportRequirement("FN05")
 }
 
 // Group 12: Metadata

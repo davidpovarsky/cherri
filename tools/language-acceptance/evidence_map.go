@@ -284,6 +284,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "FN05" {
+		return functionTransportTestIDs()
+	}
 	if scenario, found := combinedValueBlockScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -492,6 +495,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == "FN05" {
+		return append([]string{}, functionTransportProductionPaths...)
+	}
 	if _, found := combinedValueBlockScenarios[id]; found {
 		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
 	}
