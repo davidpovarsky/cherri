@@ -5,12 +5,14 @@ import argparse
 from collections import Counter
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import time
 
 ACCEPTANCE_PACKAGE = "github.com/electrikmilk/cherri/tools/language-acceptance"
+SUBPROCESS_PARALLEL_ENV = "CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL"
 
 def execution_plan(packages):
     if not packages or any(not p or p.strip() != p for p in packages):
@@ -21,18 +23,35 @@ def execution_plan(packages):
     if not ordinary:
         raise ValueError("ordinary Go package inventory is empty")
     plan = [{"packages": group, "timeout": budget,
-             "argv": ["go", "test", "-count=1", "-timeout=" + budget, "-v", *group]}
+             "argv": ["go", "test", "-count=1", "-timeout=" + budget,
+                      *(["-parallel=2"] if group == ordinary else []), "-v", *group]}
             for group, budget in [(ordinary, "15m"), ([ACCEPTANCE_PACKAGE], "35m")]]
     if Counter(p for group in plan for p in group["packages"]) != Counter(packages):
         raise ValueError("Go test plan lost or duplicated a package")
     return plan
+
+def execution_environment(group):
+    environment = os.environ.copy()
+    environment.pop(SUBPROCESS_PARALLEL_ENV, None)
+    limits = [arg for arg in group["argv"]
+              if arg in ("-parallel", "-test.parallel")
+              or arg.startswith(("-parallel=", "-test.parallel="))]
+    if group["packages"] == [ACCEPTANCE_PACKAGE]:
+        if limits:
+            raise ValueError("acceptance execution must retain sequential producer policy")
+    else:
+        if ACCEPTANCE_PACKAGE in group["packages"] or limits != ["-parallel=2"]:
+            raise ValueError("ordinary execution requires exactly -parallel=2")
+        environment[SUBPROCESS_PARALLEL_ENV] = "2"
+    return environment
 
 def execute_plan(plan, repo, invoke=subprocess.run):
     results = []
     for group in plan:
         print("GO_SUITE_EXECUTE " + json.dumps(group), flush=True)
         started = time.monotonic()
-        result = invoke(group["argv"], cwd=repo, check=False)
+        result = invoke(group["argv"], cwd=repo, check=False,
+                        env=execution_environment(group))
         results.append({**group, "exit_code": result.returncode,
                         "elapsed_seconds": round(time.monotonic() - started, 3)})
     return results
@@ -56,7 +75,7 @@ def main():
         "source_sha": source, "source_status_before": before, "source_status_after": after,
         "all_packages": packages, "invocations": results,
         "all_packages_executed_once": exact, "success": success,
-        "scope": "Actual complete Go package suite. Ordinary packages retain15m; only acceptance gets35m cumulative. Test selection, assertions and child budgets are unchanged.",
+        "scope": "Actual complete Go package suite. Ordinary packages retain15m and opt in only reviewed top-level subprocess tests with CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL=2 and -parallel=2. Acceptance removes that marker and retains35m cumulative; selected producers stay sequential. Test selection, assertions and child budgets are unchanged.",
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

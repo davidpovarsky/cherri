@@ -12,6 +12,7 @@ import (
 )
 
 func TestP15RP45ExtractedRuntimePair(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", false)
 	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
 	p15ExtractedRequireRole(t, migration, f.sourceSHA, "github.com/electrikmilk/cherri/cmd/cherri-migrate")

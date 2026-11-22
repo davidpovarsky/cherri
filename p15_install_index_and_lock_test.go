@@ -35,6 +35,7 @@ func p15InstallNoResidue(t *testing.T, home string) {
 }
 
 func TestP15RP44GitIndexDocsIntegrity(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP44", true)
 	docs := filepath.Join(f.home, "docs")
 	rel := "fork-language/actions.md"
@@ -80,6 +81,7 @@ func TestP15RP44GitIndexDocsIntegrity(t *testing.T) {
 }
 
 func TestP15RP45GitIndexSourceIntegrity(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", true)
 	source := filepath.Join(f.home, "src")
 	rel := "main.go"
@@ -127,6 +129,7 @@ func TestP15RP45GitIndexSourceIntegrity(t *testing.T) {
 }
 
 func TestP15RP45LockAcquisitionSignals(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", true)
 	before := p15AtomicSnapshot(t, f)
 	lock := filepath.Join(f.home, ".install-lock")

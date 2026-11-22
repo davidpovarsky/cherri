@@ -132,6 +132,7 @@ func p15PackageWriteZip(t *testing.T, path string, entries []p15ZipEntry) {
 }
 
 func TestP15K01UnpackedPackageContract(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	root, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)

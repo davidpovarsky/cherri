@@ -20,6 +20,7 @@ func p15InstallRealCommand(t *testing.T, name string) string {
 }
 
 func TestP15K03HandledSignalRestoresFiles(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	root, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)
@@ -96,6 +97,7 @@ func TestP15K03HandledSignalRestoresFiles(t *testing.T) {
 }
 
 func TestP15K03PromotedCacheCannotFallBack(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15NewInstallFixture(t)
 	f.seedActualPair(t, p15InstallActualCompiler(t))
 	old := p15InstallState(t, f)

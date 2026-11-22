@@ -984,6 +984,12 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateFunctionTransportRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateFunctionReturnRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+			if err := validateFunctionCombinedDefaultRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 
 			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
@@ -1915,6 +1921,12 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runFunctionReturnRequirement(c) {
+			continue
+		}
+		if r.runFunctionCombinedDefaultRequirement(c) {
+			continue
+		}
 		if r.runDocumentationRecoveryRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}

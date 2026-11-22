@@ -85,8 +85,11 @@ func functionTransportProducer(tier string) string {
 }
 
 func parseFunctionTransportOutput(raw []byte) error {
-	var names = functionTransportRequiredEvents()
-	if err := parseStrictNamedProductionOutput(names, productionTestTimeout(functionTransportTests)+time.Minute, raw); err != nil {
+	return parseFunctionScenarioOutput(functionTransportRequiredEvents(), productionTestTimeout(functionTransportTests)+time.Minute, raw)
+}
+
+func parseFunctionScenarioOutput(names []string, maximum time.Duration, raw []byte) error {
+	if err := parseStrictNamedProductionOutput(names, maximum, raw); err != nil {
 		return err
 	}
 	// A case parent owns its diagnostic or graph faults, as well as the outer

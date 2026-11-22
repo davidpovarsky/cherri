@@ -308,6 +308,7 @@ func p15ExtractedNativeEqual(t *testing.T, first, second string) {
 }
 
 func TestP15RP42ExtractedInstallPublicCLI(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP42", true)
 	dir := t.TempDir()
 	sourcePath := filepath.Join(dir, "public.cherri")
@@ -497,6 +498,7 @@ func p15ExtractedShellQuote(value string) string {
 }
 
 func TestP15RP44ExtractedCapabilitiesRejection(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP44", false)
 	healthyOut, stderr, err := f.run(t, f.compiler, t.TempDir(), "--capabilities-json")
 	if err != nil || len(stderr) != 0 {

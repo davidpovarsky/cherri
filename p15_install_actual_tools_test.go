@@ -2,7 +2,9 @@ package main
 
 import (
 	"crypto/sha256"
+	"flag"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -13,6 +15,60 @@ var p15InstallBuiltTools = struct {
 	sync.Mutex
 	bytes map[string][]byte
 }{bytes: map[string][]byte{}}
+
+// Only the complete ordinary suite opts reviewed subprocess parents into Go's
+// bounded scheduler. Selected acceptance producers must retain their strict
+// sequential JSON event stream, including when they inherit the suite marker.
+func p15FullSuiteSubprocessParallel(t *testing.T) {
+	t.Helper()
+	var enabled, err = p15FullSuiteSubprocessParallelPolicy(
+		os.Getenv("CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL"), t.Name(),
+		flag.Lookup("test.run").Value.String(), flag.Lookup("test.parallel").Value.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if enabled {
+		t.Parallel()
+	}
+}
+
+func p15FullSuiteSubprocessParallelPolicy(marker, name, selection, limit string) (bool, error) {
+	if marker != "2" || selection != "" || name == "" || strings.Contains(name, "/") {
+		return false, nil
+	}
+	if limit != "2" {
+		return false, fmt.Errorf("full-suite subprocess scheduling requires -parallel=2; got %q", limit)
+	}
+	return true, nil
+}
+
+func TestP15FullSuiteSubprocessParallelPolicy(t *testing.T) {
+	for _, tc := range []struct {
+		name, marker, test, selection, limit string
+		enabled, rejected                    bool
+	}{
+		{"ordinary", "2", "TestOwnedSubprocess", "", "2", true, false},
+		{"no_opt_in", "", "TestOwnedSubprocess", "", "2", false, false},
+		{"different_marker", "1", "TestOwnedSubprocess", "", "2", false, false},
+		{"padded_marker", "2 ", "TestOwnedSubprocess", "", "2", false, false},
+		{"selected_producer", "2", "TestOwnedSubprocess", "^TestOwnedSubprocess$", "2", false, false},
+		{"selected_all", "2", "TestOwnedSubprocess", ".*", "2", false, false},
+		{"nested_child", "2", "TestOwnedSubprocess/child", "", "2", false, false},
+		{"missing_test", "2", "", "", "2", false, false},
+		{"missing_limit", "2", "TestOwnedSubprocess", "", "", false, true},
+		{"serial_limit", "2", "TestOwnedSubprocess", "", "1", false, true},
+		{"excessive_limit", "2", "TestOwnedSubprocess", "", "3", false, true},
+		{"selected_producer_unchanged", "2", "TestOwnedSubprocess", "^TestOwnedSubprocess$", "8", false, false},
+		{"nested_child_unchanged", "2", "TestOwnedSubprocess/child", "", "8", false, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var enabled, err = p15FullSuiteSubprocessParallelPolicy(tc.marker, tc.test, tc.selection, tc.limit)
+			if enabled != tc.enabled || (err != nil) != tc.rejected {
+				t.Fatalf("parallel policy enabled=%t error=%v; want enabled=%t rejected=%t", enabled, err, tc.enabled, tc.rejected)
+			}
+		})
+	}
+}
 
 // Each Go test process builds the actual clean source. Repeated consumers of
 // that immutable build reuse bytes, never another test's temporary filename.

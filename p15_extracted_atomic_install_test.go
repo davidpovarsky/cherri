@@ -72,6 +72,7 @@ func p15AtomicUpdateEnv(t *testing.T, f *p15ExtractedInstall, compiler, migratio
 }
 
 func TestP15RP45ExtractedInstallAndRollback(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", false)
 	compilerCandidate := p15InstallRead(t, f.compiler)
 	migrationPath := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")

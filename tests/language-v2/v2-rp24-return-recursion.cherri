@@ -1,0 +1,13 @@
+function add(a: Number, b: Number) -> Number {
+    return a + b
+}
+function fact(n: Number) -> Number {
+    if n <= 1 { return 1 }
+    return n * fact(n - 1)
+}
+let sum = add(2, b: 3)
+let doubled = sum * 2
+let recursive = fact(3)
+let continued = recursive + 1
+return f"{doubled}|{recursive}|{continued}"
+

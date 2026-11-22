@@ -679,6 +679,7 @@ func copyCompilerWorkspaceForMutation(t *testing.T) string {
 // injects each of the 4 original P10 compiler bugs into the actual source files
 // one at a time, asserting that `go test` fails on the mutated compiler.
 func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	mutDir := copyCompilerWorkspaceForMutation(t)
 
 	runMutatedTests := func(testPattern string) (string, error) {

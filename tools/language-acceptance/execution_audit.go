@@ -270,6 +270,18 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = functionTransportScope
 		}
+		if row.ID == "RP24" {
+			row.TestNames = append([]string{}, functionReturnTests...)
+			row.ProductionPath = append([]string{}, functionReturnProductionPaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = functionReturnScope
+		}
+		if row.ID == "RP25" {
+			row.TestNames = append([]string{}, functionCombinedDefaultTests...)
+			row.ProductionPath = append([]string{}, functionCombinedDefaultProductionPaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = functionCombinedDefaultScope
+		}
 		if scenario, found := numberFunctionScenarios[row.ID]; found {
 			row.TestNames = scenario.tests()
 			row.ProductionPath = append([]string{}, scenario.ProductionPaths...)
