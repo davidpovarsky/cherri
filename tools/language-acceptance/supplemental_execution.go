@@ -91,6 +91,8 @@ var supplementalProductionScenarios = map[string]supplementalProductionScenario{
 			"tools/language-acceptance/ai_evaluation_execution.go", "tools/language-acceptance/ai_evaluation_execution_test.go",
 			"tools/language-ai-eval/runner.py", "tools/language-ai-eval/tasks.json",
 			"tools/language-ai-eval/test_runner.py", "tools/language-ai-eval/README.md",
+			"tools/language-ai-eval/anthropic-adapter.md", "tools/language-ai-eval/anthropic_adapter.py",
+			"tools/language-ai-eval/test_anthropic_adapter.py",
 		},
 	},
 	"RP27": {

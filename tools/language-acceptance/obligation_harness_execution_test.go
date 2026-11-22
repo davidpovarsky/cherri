@@ -87,8 +87,11 @@ func TestP15BRG32InstalledAIHarness(t *testing.T) {
 	sort.Strings(paths)
 	expected := []string{
 		"tools/language-ai-eval/README.md",
+		"tools/language-ai-eval/anthropic-adapter.md",
+		"tools/language-ai-eval/anthropic_adapter.py",
 		"tools/language-ai-eval/runner.py",
 		"tools/language-ai-eval/tasks.json",
+		"tools/language-ai-eval/test_anthropic_adapter.py",
 		"tools/language-ai-eval/test_runner.py",
 	}
 	if !reflect.DeepEqual(paths, expected) {
