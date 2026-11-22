@@ -216,8 +216,12 @@ per-key cap. Thus the combined bounds are 48 entries and 1,114,112 input bytes.
 Oversized inputs bypass memoization and still run the unchanged verifier; these
 bounds do not relax or reduce the existing evidence input limits. Successful
 least-recently-used entries are evicted to satisfy both count and byte bounds.
-A fresh CLI process starts empty, and a changed process ID discards inherited
-memo entries before acquiring a process-local lock.
+A fresh CLI process starts empty. Where register_at_fork is available, one
+after_in_child callback clears both production memos and replaces their locks
+before the child resumes user code. The sequential CLI also has a defensive
+process-ID guard; that lazy fallback is not a generic concurrent reinitialization
+API. A bounded actual POSIX fork control is separate from the deterministic
+memo bookkeeping controls and is not claimed as a Windows fork test.
 
 Every caller still reads the current original bytes with the existing bounded
 regular-file identity checks. Every provenance, inventory, chronology and

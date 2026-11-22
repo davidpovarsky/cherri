@@ -154,6 +154,41 @@ class ProvenanceControls(unittest.TestCase):
             self.assertEqual(calls.call_count, 2)
             self.assertFalse(eb._SIGNATURE_MEMO.contains((oversized, public_raw, big_signature)))
         print(json.dumps({"real_openssl_memo_controls": actual_counts}, sort_keys=True))
+        if hasattr(eb.os, "fork") and hasattr(eb.os, "register_at_fork"):
+            import os
+            import select
+            import signal
+            import time
+            parent_counts = [len(eb._PUBLIC_KEY_MEMO.entries), len(eb._SIGNATURE_MEMO.entries)]
+            self.assertTrue(all(parent_counts))
+            reader, writer = os.pipe()
+            child = os.fork()
+            if child == 0:
+                os.close(reader)
+                observed = {"entries": [len(eb._PUBLIC_KEY_MEMO.entries), len(eb._SIGNATURE_MEMO.entries)],
+                    "bytes": [eb._PUBLIC_KEY_MEMO.byte_count, eb._SIGNATURE_MEMO.byte_count],
+                    "owned_by_child": all(m.owner_pid == os.getpid() for m in (eb._PUBLIC_KEY_MEMO, eb._SIGNATURE_MEMO))}
+                os.write(writer, json.dumps(observed).encode())
+                os.close(writer); os._exit(0)
+            os.close(writer)
+            reaped = False
+            try:
+                self.assertTrue(select.select([reader], [], [], 3)[0], "fork control did not return its receipt")
+                observed = json.loads(os.read(reader, 4096))
+                deadline = time.monotonic() + 3
+                while time.monotonic() < deadline:
+                    pid, status = os.waitpid(child, os.WNOHANG)
+                    if pid == child:
+                        reaped = True; self.assertEqual(os.waitstatus_to_exitcode(status), 0); break
+                    time.sleep(0.01)
+                self.assertTrue(reaped, "fork control did not exit within its bound")
+                self.assertEqual(observed, {"entries": [0, 0], "bytes": [0, 0], "owned_by_child": True})
+                self.assertEqual([len(eb._PUBLIC_KEY_MEMO.entries), len(eb._SIGNATURE_MEMO.entries)], parent_counts)
+                print(json.dumps({"actual_posix_fork_empty_memos": observed}, sort_keys=True))
+            finally:
+                os.close(reader)
+                if not reaped:
+                    os.kill(child, signal.SIGKILL); os.waitpid(child, 0)
         # Bookkeeping controls below are separate from the real crypto proof.
         # They exercise simultaneous byte/entry bounds, eviction, duplicate
         # insertion, oversized bypass and a new process's empty fact set.

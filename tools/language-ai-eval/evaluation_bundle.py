@@ -175,9 +175,14 @@ class _SuccessMemo:
 
     def _fresh_process(self):
         if self.owner_pid != os.getpid():
-            # A fork must not acquire an inherited lock held by another thread.
-            self.entries, self.byte_count = OrderedDict(), 0
-            self.owner_pid, self.lock = os.getpid(), Lock()
+            # Defensive fallback for the sequential CLI. Real POSIX forks
+            # reset both production memos in after_in_child before user code.
+            self._reset_after_fork()
+
+    def _reset_after_fork(self):
+        self.entries, self.byte_count = OrderedDict(), 0
+        self.lock = Lock()
+        self.owner_pid = os.getpid()
 
     def _size(self, parts):
         require(type(parts) is tuple and all(type(part) is bytes for part in parts), "SIGNATURE_MEMO_BYTES")
@@ -212,6 +217,17 @@ class _SuccessMemo:
 # CLI process (or a fork observed by the memo) starts with no verified facts.
 _PUBLIC_KEY_MEMO = _SuccessMemo(16, 64 * 1024, 8192)
 _SIGNATURE_MEMO = _SuccessMemo(32, 1024 * 1024, 64 * 1024)
+
+
+def _reset_verification_memos_after_fork():
+    # No inherited lock is acquired. This runs before the child resumes code
+    # that could start threads or inspect a verification result from its parent.
+    _PUBLIC_KEY_MEMO._reset_after_fork()
+    _SIGNATURE_MEMO._reset_after_fork()
+
+
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=_reset_verification_memos_after_fork)
 
 
 def verify_signature(manifest_raw, public_raw, signature_raw):
