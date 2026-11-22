@@ -1,0 +1,837 @@
+{
+  "schema": "cherri.ai-acceptance-ci-inventory/v1",
+  "subject_sha": "824333e86b120e795ce44079e4cc45743e2668a9",
+  "outer_parents": [
+    "TestAIEvaluationHarnessCannotChangeRequiredTiers",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement",
+    "TestAIMeasurementAbsentAndRejectedConfigurationRemainDistinct",
+    "TestAIMeasurementCanonicalIntakeRejectsMissingOriginals",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary",
+    "TestAIMeasurementStandaloneRecordsCannotGrantFormalCredit",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives",
+    "TestP15BRG32InstalledAIHarness"
+  ],
+  "outer_events": [
+    "TestAIEvaluationHarnessCannotChangeRequiredTiers",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/borrowed_AI01",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/invented_evaluation",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/missing_harness_original",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/missing_harness_python_child",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/missing_python_tests",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/quality_claim",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/stale_sha",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/wrong_command",
+    "TestAIEvaluationHarnessEvidenceRetainsExternalRequirement/wrong_harness_source_digest",
+    "TestAIMeasurementAbsentAndRejectedConfigurationRemainDistinct",
+    "TestAIMeasurementCanonicalIntakeRejectsMissingOriginals",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary/caller_claim",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary/duplicate_status",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary/false_quality",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary/incomplete",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary/missing_quality",
+    "TestAIMeasurementOriginalAnnouncementCannotContradictSummary/string_quality",
+    "TestAIMeasurementStandaloneRecordsCannotGrantFormalCredit",
+    "TestAIMeasurementStandaloneRecordsCannotGrantFormalCredit/AI01",
+    "TestAIMeasurementStandaloneRecordsCannotGrantFormalCredit/RP50",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/after_inside_bundle",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/before_inside_bundle",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/bounded_file_hash_input",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/missing_independent_pin",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/missing_story_identity",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/relative_input",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/reversed_rereads",
+    "TestAIMeasurementTrustPinsRejectBundleAndChronologySubstitution/same_retained_path",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/after_read_before_validator",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/anchor_created_after_before_read",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/apple_claim",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/before_read_after_request",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/boolean_integer",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/changed_anchor_body",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/contradictory_semantic_pass",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/denominator_shrunk",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/duplicate_json_key",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/duplicate_provider_request",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/duplicate_request",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/duplicate_task_arm",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/excess_output_budget",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/exit_zero_incomplete",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/foreign_arm",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/foreign_task",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/future_authenticated_read",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/global_closure_claim",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/incomplete_claims_quality",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/inflated_score",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/measured_failure_refused",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/measured_failure_semantic_failure",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/measured_failure_truncated",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/missing_actual_usage",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/missing_check_inventory",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/missing_outcome",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/missing_scope_witness",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/network_is_not_measured_failure",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/refusal_cannot_pass",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/reversed_original_interval",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/self_asserted_authentication",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/stale_source",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/unbound_trusted_response",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/unknown_json_field",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/unseen_pattern_claim",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/unsupported_graph_is_incomplete",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/wrong_anchor_story",
+    "TestAIMeasurementTwelveOutcomeShapeAndCausalNegatives/wrong_anchor_task",
+    "TestP15BRG32InstalledAIHarness"
+  ],
+  "nested_rp50_events": [
+    "TestP15RP50AIHarnessControlFlow"
+  ],
+  "python_control_ids": [
+    "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+    "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+    "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+    "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+    "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+    "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+    "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+    "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+    "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+    "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+    "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+    "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+    "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+    "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+    "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+  ],
+  "production_source_witnesses": [
+    {
+      "path": "docs/agent-technical-reference.md",
+      "bytes": 25040,
+      "git_blob": "ee31185668598f3b26013957877c3e2753b1442e",
+      "sha256": "d0fc72289957f6f94eef37f21949b71befc363fa80bffb9c2e5bddab83b0d86e"
+    },
+    {
+      "path": "docs/language-v2/language-guide.md",
+      "bytes": 9694,
+      "git_blob": "aa9211ca102f3f9a822f072909cf94c07bcae119",
+      "sha256": "e2bda24b3431c62c6307cd4a817edd553e7c2efbbb69600c63d43cbaf5c028b3"
+    },
+    {
+      "path": "go.mod",
+      "bytes": 1618,
+      "git_blob": "0bc0002815d1779cf4f094bbe141df03557d37ed",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "bytes": 11884,
+      "git_blob": "00552c157626f542aee6906578955f7ded0ebf4c",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "git_blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "git_blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "git_blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tools/language-acceptance/ai_evaluation_execution.go",
+      "bytes": 4941,
+      "git_blob": "84922d3d3e9f945863dfed42dbef3baa01e53d05",
+      "sha256": "b1d032882189580966e9ca89791d4e9dfb9586bf252dacd17aadf6fe68d79bdd"
+    },
+    {
+      "path": "tools/language-acceptance/ai_evaluation_execution_test.go",
+      "bytes": 11525,
+      "git_blob": "2232d80f7386c1e25225b65badbb5b62f091b3c1",
+      "sha256": "d1b3d32985760e3a4d726d9938b9a8faecf31675b1f38859e5d6df444209e4c0"
+    },
+    {
+      "path": "tools/language-acceptance/ai_measurement_execution.go",
+      "bytes": 33575,
+      "git_blob": "485804d0e13fe2182f5d8fbb8fb71f904669a3e5",
+      "sha256": "11f18db4a2261dbb1fb5c48a1eeab1b16b67e21eeb7b16d3c75c5097aec1edda"
+    },
+    {
+      "path": "tools/language-acceptance/ai_measurement_execution_test.go",
+      "bytes": 23820,
+      "git_blob": "a66a2464dada29f7ecd87c1277a8f046c5eee614",
+      "sha256": "4797d3316fa0d976e35d1f88d752d7eb113aa03f543051d629fa0440e33366ac"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "bytes": 2986,
+      "git_blob": "d30739c1486e06cf85739acce23266b270ed412b",
+      "sha256": "d759bb79bd2b482f8c217a8679231b0274987a6da18e89e3fa80a923689c2b87"
+    },
+    {
+      "path": "tools/language-acceptance/documentation_intake.go",
+      "bytes": 21907,
+      "git_blob": "3179c41c81604e69e8fa9c000d1293c58f2aa654",
+      "sha256": "317908bc79bba2c41dc139788f69473e06e2a92736fdff584f09829487877ab4"
+    },
+    {
+      "path": "tools/language-acceptance/editor_contract_execution.go",
+      "bytes": 18053,
+      "git_blob": "d9d1d36aa777f6e723c0208ff009329fa07973aa",
+      "sha256": "b4acc3dd5068176b274de0560fa4672aeb195038da510a24807b0b361fc187f2"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "bytes": 21052,
+      "git_blob": "136fb414081aa69c422766b238cdb5e12a5bfcd9",
+      "sha256": "06780117f5d48890b020e08df56d9d8e18530b2cb5da01429a06ff2d4825ea71"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "bytes": 571,
+      "git_blob": "7bab8402ce91b609bd74f0ae5066b0b43039213d",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "bytes": 650,
+      "git_blob": "bd92d3acc1cf5eeeb7d9614b82f5ccd685670cb3",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "bytes": 3250,
+      "git_blob": "6b8e94c611d2bb6d85798b9ece13665103e23737",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "bytes": 29489,
+      "git_blob": "0be86b0a00dc387375ac8373d61bc78353c22538",
+      "sha256": "95fc2cccab95444cf7120f75ce87f2398fa4ef51b403863cb106a3ae0a469c03"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "bytes": 23683,
+      "git_blob": "23e37f16dd0a5cc3dc2145483c360bb8c3765dd6",
+      "sha256": "b9e989bdf3171e3bc874cde87dff30c720a6508f6b3d71b844c38e879dfcd6de"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding.go",
+      "bytes": 3652,
+      "git_blob": "d0442e7e547915b54b7e78cd8a800b67f9c1a06b",
+      "sha256": "fa655ca644934ec8e8cb3fb636694095eeb1cce14b261522b587e1d2cca1ad2e"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "bytes": 13859,
+      "git_blob": "4f415c3de47eedff9491e5317f093e82f4651af5",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "bytes": 72777,
+      "git_blob": "8d072a063180a37fcd7ff6813a35e784a63c1d2c",
+      "sha256": "c9119768fae02f7ea1c652badfde945b0278daf01e66d2b163f022a8d07b51ab"
+    },
+    {
+      "path": "tools/language-acceptance/manifest_generator.go",
+      "bytes": 5735,
+      "git_blob": "daa44c521ce0599ab0adb3ee4880c61b89417112",
+      "sha256": "48138b7112d0fc892a03bf299030af19b1fc2caba0637cc2e69a3b562ae7cfa8"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "bytes": 12308,
+      "git_blob": "73addf057e3d61e94a1f3388ddfbbe02f3ec7d81",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "bytes": 2131,
+      "git_blob": "04366f3a10bb86ee4259ed8ce239f65951b11730",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/python_interpreter.go",
+      "bytes": 2307,
+      "git_blob": "e6b33052a8e1b60fd6fe52d5d40b9f310644938d",
+      "sha256": "6aa51f5746f995bac3035e6f5e5cc44898031f8e9a5d4ffb3f2b289f29b1a845"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "bytes": 13578,
+      "git_blob": "d56012d6ce6061881283c161f69d8fe109722355",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "bytes": 4293,
+      "git_blob": "b56cfd75f6d88f24bdf91c52d1670e13bb09de47",
+      "sha256": "3ae85f353f686de9e1b19d6a407dc81db1a9f9ac183434a0204f1df2284ac598"
+    },
+    {
+      "path": "tools/language-acceptance/supplemental_execution.go",
+      "bytes": 25532,
+      "git_blob": "5641a6cca6c03189bd1bd10d7e89f74ab6c04e43",
+      "sha256": "34630927bcfc2452c1c11239a0e9bdadd6cdd0617c0546f58950b40fc43dc751"
+    },
+    {
+      "path": "tools/language-acceptance/verification_contract_test.go",
+      "bytes": 13886,
+      "git_blob": "ae81bad863b2bacf3bd84d42da3d04e44c01b02b",
+      "sha256": "1eb72b3eb3063d134d85114ba406dbbebd2be85d3b2ecc54032e6eaebce0e1e1"
+    },
+    {
+      "path": "tools/language-ai-eval/README.md",
+      "bytes": 4315,
+      "git_blob": "f77450b9c3358c211bcee080ffd7f9cfe4502350",
+      "sha256": "2d18a2419035443e376f987421b2ae7b930065103d0d1cdd573273a4a8287f88"
+    },
+    {
+      "path": "tools/language-ai-eval/anthropic-adapter.md",
+      "bytes": 5438,
+      "git_blob": "7029de791287f51978831bb8f1b292874fd45e16",
+      "sha256": "b7aa6264c9346262eb6752b3e39d1492abf12d287949bba836cdd37b29585c1e"
+    },
+    {
+      "path": "tools/language-ai-eval/anthropic_adapter.py",
+      "bytes": 22780,
+      "git_blob": "547a081634edac3a946b5a2fb3a9de688c63efc2",
+      "sha256": "0a5b4ce7719e7cc0a5ccd47c60b2bff5b169d79f9e9c8d1df7cd7fa3426f36cf"
+    },
+    {
+      "path": "tools/language-ai-eval/evaluation_bundle.py",
+      "bytes": 35206,
+      "git_blob": "82b6e7dd7d76c455c9b80299852174e2ff689c09",
+      "sha256": "254b9a8195edf28726269f2ece8f87a0cf0c9e4617739901b6c2b7c05ac7de48"
+    },
+    {
+      "path": "tools/language-ai-eval/evaluation_intake.py",
+      "bytes": 25278,
+      "git_blob": "26489ac2daee571117db0d6661b70512c7b95d3a",
+      "sha256": "2064f1106ce8e146356224e5ddfca8db86d08b0d6c26a8d375736a5d7aad219f"
+    },
+    {
+      "path": "tools/language-ai-eval/fresh-instance-protocol.md",
+      "bytes": 14652,
+      "git_blob": "e5e680ab4e8f94015296f4215b3151c2b59eb35e",
+      "sha256": "d84779ee193fd7f300b003fc4ec9bbabed343fd752f6ede4e49af617d314c557"
+    },
+    {
+      "path": "tools/language-ai-eval/graph_validator.py",
+      "bytes": 37851,
+      "git_blob": "bbd042ab762d8e10de77e242a82d6f5d86e27de8",
+      "sha256": "831abed51ea2f0888b3ecae9731bead434fa504d468e93f4bfae9f7c9f89ebc0"
+    },
+    {
+      "path": "tools/language-ai-eval/runner.py",
+      "bytes": 22964,
+      "git_blob": "b3330f94b2d003a9a8d9f867eb3486d6e27c5547",
+      "sha256": "5c3a888994bdc13ac36c672ca1100c3e4312ec67f7be8d67122c708e7cfcd2a0"
+    },
+    {
+      "path": "tools/language-ai-eval/tasks.json",
+      "bytes": 2568,
+      "git_blob": "fd48a8e1882a39544710072e4165cd7a7971bac4",
+      "sha256": "fcdb35966a50e2bd7daaa1311a552bde46136e5824109d71d8bf8918db6b4cb5"
+    },
+    {
+      "path": "tools/language-ai-eval/test_anthropic_adapter.py",
+      "bytes": 29318,
+      "git_blob": "75d802d0a8cd0bc5a7ac1be7d373ab02fc9eecba",
+      "sha256": "d959d7284dfea004771c98843f2fba8069a97cc34284dad33b13ef94747a869f"
+    },
+    {
+      "path": "tools/language-ai-eval/test_evaluation_bundle.py",
+      "bytes": 22626,
+      "git_blob": "6b2b2aba7829b824715f447c0fe6fbcb1a714b62",
+      "sha256": "57d6268762e5ed124136ee47bd6d53423670c9523e60dc280cc28803b719ad3d"
+    },
+    {
+      "path": "tools/language-ai-eval/test_evaluation_intake.py",
+      "bytes": 29742,
+      "git_blob": "398318259441b7404edc558b481edcc15a11e73e",
+      "sha256": "c9538c59ee26a7719de9532d7a0958fc2511f6655515ac9a2ead989e82da3140"
+    },
+    {
+      "path": "tools/language-ai-eval/test_graph_validator.py",
+      "bytes": 27248,
+      "git_blob": "50e7d130c25f762c783b043eabb12c99a0fb58c7",
+      "sha256": "b833069849d915069751f535ce30f739b84426c0d1acb6bcf7222fade30d6df9"
+    },
+    {
+      "path": "tools/language-ai-eval/test_runner.py",
+      "bytes": 21408,
+      "git_blob": "993658c8797244bd4892d836ed9625da217e764a",
+      "sha256": "7f740d3dd909a5fae02a624fdc44ad3300f0e02d36a814668dcc2dfa94593252"
+    },
+    {
+      "path": "tools/language-ai-eval/test_sealed_runner.py",
+      "bytes": 7630,
+      "git_blob": "b38579bb5b1704e1d83c8c5759e80ec6c55a9dc5",
+      "sha256": "93e6c6de68e32cb15044ae13af1782aa8ec9119b01cb73be2a17da41a2200d8e"
+    }
+  ],
+  "outer_source_witnesses": [
+    {
+      "path": "docs/agent-technical-reference.md",
+      "bytes": 25040,
+      "git_blob": "ee31185668598f3b26013957877c3e2753b1442e",
+      "sha256": "d0fc72289957f6f94eef37f21949b71befc363fa80bffb9c2e5bddab83b0d86e"
+    },
+    {
+      "path": "docs/language-v2/language-guide.md",
+      "bytes": 9694,
+      "git_blob": "aa9211ca102f3f9a822f072909cf94c07bcae119",
+      "sha256": "e2bda24b3431c62c6307cd4a817edd553e7c2efbbb69600c63d43cbaf5c028b3"
+    },
+    {
+      "path": "go.mod",
+      "bytes": 1618,
+      "git_blob": "0bc0002815d1779cf4f094bbe141df03557d37ed",
+      "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+    },
+    {
+      "path": "go.sum",
+      "bytes": 11884,
+      "git_blob": "00552c157626f542aee6906578955f7ded0ebf4c",
+      "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "git_blob": "51098946c66ec0b2f0dabf1ad9dabc80d7ed1d6a",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "git_blob": "5a13b690dc670f22843cee9f2329ce6d55dd8eab",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "git_blob": "3cec5954720a4ab14d1a262c5436e07bd98a794e",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "path": "tools/language-acceptance/ai_evaluation_execution.go",
+      "bytes": 4941,
+      "git_blob": "84922d3d3e9f945863dfed42dbef3baa01e53d05",
+      "sha256": "b1d032882189580966e9ca89791d4e9dfb9586bf252dacd17aadf6fe68d79bdd"
+    },
+    {
+      "path": "tools/language-acceptance/ai_evaluation_execution_test.go",
+      "bytes": 11525,
+      "git_blob": "2232d80f7386c1e25225b65badbb5b62f091b3c1",
+      "sha256": "d1b3d32985760e3a4d726d9938b9a8faecf31675b1f38859e5d6df444209e4c0"
+    },
+    {
+      "path": "tools/language-acceptance/ai_measurement_execution.go",
+      "bytes": 33575,
+      "git_blob": "485804d0e13fe2182f5d8fbb8fb71f904669a3e5",
+      "sha256": "11f18db4a2261dbb1fb5c48a1eeab1b16b67e21eeb7b16d3c75c5097aec1edda"
+    },
+    {
+      "path": "tools/language-acceptance/ai_measurement_execution_test.go",
+      "bytes": 23820,
+      "git_blob": "a66a2464dada29f7ecd87c1277a8f046c5eee614",
+      "sha256": "4797d3316fa0d976e35d1f88d752d7eb113aa03f543051d629fa0440e33366ac"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "bytes": 2986,
+      "git_blob": "d30739c1486e06cf85739acce23266b270ed412b",
+      "sha256": "d759bb79bd2b482f8c217a8679231b0274987a6da18e89e3fa80a923689c2b87"
+    },
+    {
+      "path": "tools/language-acceptance/documentation_intake.go",
+      "bytes": 21907,
+      "git_blob": "3179c41c81604e69e8fa9c000d1293c58f2aa654",
+      "sha256": "317908bc79bba2c41dc139788f69473e06e2a92736fdff584f09829487877ab4"
+    },
+    {
+      "path": "tools/language-acceptance/editor_contract_execution.go",
+      "bytes": 18053,
+      "git_blob": "d9d1d36aa777f6e723c0208ff009329fa07973aa",
+      "sha256": "b4acc3dd5068176b274de0560fa4672aeb195038da510a24807b0b361fc187f2"
+    },
+    {
+      "path": "tools/language-acceptance/editor_performance_execution.go",
+      "bytes": 21052,
+      "git_blob": "136fb414081aa69c422766b238cdb5e12a5bfcd9",
+      "sha256": "06780117f5d48890b020e08df56d9d8e18530b2cb5da01429a06ff2d4825ea71"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_other.go",
+      "bytes": 571,
+      "git_blob": "7bab8402ce91b609bd74f0ae5066b0b43039213d",
+      "sha256": "ac45cfa63de461eb059ae8d639c69368c4f3cb68205dd870eb07e9557fc3dead"
+    },
+    {
+      "path": "tools/language-acceptance/editor_process_windows.go",
+      "bytes": 650,
+      "git_blob": "bd92d3acc1cf5eeeb7d9614b82f5ccd685670cb3",
+      "sha256": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+    },
+    {
+      "path": "tools/language-acceptance/editor_source_binding.go",
+      "bytes": 3250,
+      "git_blob": "6b8e94c611d2bb6d85798b9ece13665103e23737",
+      "sha256": "6ce5da1efa3e3c0d2861e36cdda8a94c22eaf6f6cb6b958362344070ca9f7212"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "bytes": 29489,
+      "git_blob": "0be86b0a00dc387375ac8373d61bc78353c22538",
+      "sha256": "95fc2cccab95444cf7120f75ce87f2398fa4ef51b403863cb106a3ae0a469c03"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "bytes": 23683,
+      "git_blob": "23e37f16dd0a5cc3dc2145483c360bb8c3765dd6",
+      "sha256": "b9e989bdf3171e3bc874cde87dff30c720a6508f6b3d71b844c38e879dfcd6de"
+    },
+    {
+      "path": "tools/language-acceptance/local_gate_source_binding.go",
+      "bytes": 3652,
+      "git_blob": "d0442e7e547915b54b7e78cd8a800b67f9c1a06b",
+      "sha256": "fa655ca644934ec8e8cb3fb636694095eeb1cce14b261522b587e1d2cca1ad2e"
+    },
+    {
+      "path": "tools/language-acceptance/loop_execution.go",
+      "bytes": 13859,
+      "git_blob": "4f415c3de47eedff9491e5317f093e82f4651af5",
+      "sha256": "cbcabf1ffa09a927ee74c42a50694bb219f73fc66ede396c7e54ce6bb7008cf3"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "bytes": 72777,
+      "git_blob": "8d072a063180a37fcd7ff6813a35e784a63c1d2c",
+      "sha256": "c9119768fae02f7ea1c652badfde945b0278daf01e66d2b163f022a8d07b51ab"
+    },
+    {
+      "path": "tools/language-acceptance/manifest_generator.go",
+      "bytes": 5735,
+      "git_blob": "daa44c521ce0599ab0adb3ee4880c61b89417112",
+      "sha256": "48138b7112d0fc892a03bf299030af19b1fc2caba0637cc2e69a3b562ae7cfa8"
+    },
+    {
+      "path": "tools/language-acceptance/native_encoding_intake.go",
+      "bytes": 12308,
+      "git_blob": "73addf057e3d61e94a1f3388ddfbbe02f3ec7d81",
+      "sha256": "f2c0662cea4fec10d69c23822ffcee453fca291f43e8e5899e9aa56d7bd7c106"
+    },
+    {
+      "path": "tools/language-acceptance/obligation_harness_execution_test.go",
+      "bytes": 9022,
+      "git_blob": "7d0cbf3411d69dbe92f7ba061ad042af87558897",
+      "sha256": "03c3ad8599cc3670b1c7fe8881d3e075d522bb858d384ac1eecd6b0a37f9df06"
+    },
+    {
+      "path": "tools/language-acceptance/parser_execution.go",
+      "bytes": 2131,
+      "git_blob": "04366f3a10bb86ee4259ed8ce239f65951b11730",
+      "sha256": "cc6dc1e6d5e4ddf3cebdd7350373b4fc8df44d88392d30aa89e0d66691600676"
+    },
+    {
+      "path": "tools/language-acceptance/python_interpreter.go",
+      "bytes": 2307,
+      "git_blob": "e6b33052a8e1b60fd6fe52d5d40b9f310644938d",
+      "sha256": "6aa51f5746f995bac3035e6f5e5cc44898031f8e9a5d4ffb3f2b289f29b1a845"
+    },
+    {
+      "path": "tools/language-acceptance/state_acceptance_intake.go",
+      "bytes": 13578,
+      "git_blob": "d56012d6ce6061881283c161f69d8fe109722355",
+      "sha256": "ff7531e4aa3f61fb53e7fcd365424ee34bdcd0d6b1d9adcaa87191ee0a5d5591"
+    },
+    {
+      "path": "tools/language-acceptance/strict_go_events.go",
+      "bytes": 4293,
+      "git_blob": "b56cfd75f6d88f24bdf91c52d1670e13bb09de47",
+      "sha256": "3ae85f353f686de9e1b19d6a407dc81db1a9f9ac183434a0204f1df2284ac598"
+    },
+    {
+      "path": "tools/language-acceptance/supplemental_execution.go",
+      "bytes": 25532,
+      "git_blob": "5641a6cca6c03189bd1bd10d7e89f74ab6c04e43",
+      "sha256": "34630927bcfc2452c1c11239a0e9bdadd6cdd0617c0546f58950b40fc43dc751"
+    },
+    {
+      "path": "tools/language-acceptance/verification_contract_test.go",
+      "bytes": 13886,
+      "git_blob": "ae81bad863b2bacf3bd84d42da3d04e44c01b02b",
+      "sha256": "1eb72b3eb3063d134d85114ba406dbbebd2be85d3b2ecc54032e6eaebce0e1e1"
+    },
+    {
+      "path": "tools/language-ai-eval/README.md",
+      "bytes": 4315,
+      "git_blob": "f77450b9c3358c211bcee080ffd7f9cfe4502350",
+      "sha256": "2d18a2419035443e376f987421b2ae7b930065103d0d1cdd573273a4a8287f88"
+    },
+    {
+      "path": "tools/language-ai-eval/anthropic-adapter.md",
+      "bytes": 5438,
+      "git_blob": "7029de791287f51978831bb8f1b292874fd45e16",
+      "sha256": "b7aa6264c9346262eb6752b3e39d1492abf12d287949bba836cdd37b29585c1e"
+    },
+    {
+      "path": "tools/language-ai-eval/anthropic_adapter.py",
+      "bytes": 22780,
+      "git_blob": "547a081634edac3a946b5a2fb3a9de688c63efc2",
+      "sha256": "0a5b4ce7719e7cc0a5ccd47c60b2bff5b169d79f9e9c8d1df7cd7fa3426f36cf"
+    },
+    {
+      "path": "tools/language-ai-eval/evaluation_bundle.py",
+      "bytes": 35206,
+      "git_blob": "82b6e7dd7d76c455c9b80299852174e2ff689c09",
+      "sha256": "254b9a8195edf28726269f2ece8f87a0cf0c9e4617739901b6c2b7c05ac7de48"
+    },
+    {
+      "path": "tools/language-ai-eval/evaluation_intake.py",
+      "bytes": 25278,
+      "git_blob": "26489ac2daee571117db0d6661b70512c7b95d3a",
+      "sha256": "2064f1106ce8e146356224e5ddfca8db86d08b0d6c26a8d375736a5d7aad219f"
+    },
+    {
+      "path": "tools/language-ai-eval/fresh-instance-protocol.md",
+      "bytes": 14652,
+      "git_blob": "e5e680ab4e8f94015296f4215b3151c2b59eb35e",
+      "sha256": "d84779ee193fd7f300b003fc4ec9bbabed343fd752f6ede4e49af617d314c557"
+    },
+    {
+      "path": "tools/language-ai-eval/graph_validator.py",
+      "bytes": 37851,
+      "git_blob": "bbd042ab762d8e10de77e242a82d6f5d86e27de8",
+      "sha256": "831abed51ea2f0888b3ecae9731bead434fa504d468e93f4bfae9f7c9f89ebc0"
+    },
+    {
+      "path": "tools/language-ai-eval/runner.py",
+      "bytes": 22964,
+      "git_blob": "b3330f94b2d003a9a8d9f867eb3486d6e27c5547",
+      "sha256": "5c3a888994bdc13ac36c672ca1100c3e4312ec67f7be8d67122c708e7cfcd2a0"
+    },
+    {
+      "path": "tools/language-ai-eval/tasks.json",
+      "bytes": 2568,
+      "git_blob": "fd48a8e1882a39544710072e4165cd7a7971bac4",
+      "sha256": "fcdb35966a50e2bd7daaa1311a552bde46136e5824109d71d8bf8918db6b4cb5"
+    },
+    {
+      "path": "tools/language-ai-eval/test_anthropic_adapter.py",
+      "bytes": 29318,
+      "git_blob": "75d802d0a8cd0bc5a7ac1be7d373ab02fc9eecba",
+      "sha256": "d959d7284dfea004771c98843f2fba8069a97cc34284dad33b13ef94747a869f"
+    },
+    {
+      "path": "tools/language-ai-eval/test_evaluation_bundle.py",
+      "bytes": 22626,
+      "git_blob": "6b2b2aba7829b824715f447c0fe6fbcb1a714b62",
+      "sha256": "57d6268762e5ed124136ee47bd6d53423670c9523e60dc280cc28803b719ad3d"
+    },
+    {
+      "path": "tools/language-ai-eval/test_evaluation_intake.py",
+      "bytes": 29742,
+      "git_blob": "398318259441b7404edc558b481edcc15a11e73e",
+      "sha256": "c9538c59ee26a7719de9532d7a0958fc2511f6655515ac9a2ead989e82da3140"
+    },
+    {
+      "path": "tools/language-ai-eval/test_graph_validator.py",
+      "bytes": 27248,
+      "git_blob": "50e7d130c25f762c783b043eabb12c99a0fb58c7",
+      "sha256": "b833069849d915069751f535ce30f739b84426c0d1acb6bcf7222fade30d6df9"
+    },
+    {
+      "path": "tools/language-ai-eval/test_runner.py",
+      "bytes": 21408,
+      "git_blob": "993658c8797244bd4892d836ed9625da217e764a",
+      "sha256": "7f740d3dd909a5fae02a624fdc44ad3300f0e02d36a814668dcc2dfa94593252"
+    },
+    {
+      "path": "tools/language-ai-eval/test_sealed_runner.py",
+      "bytes": 7630,
+      "git_blob": "b38579bb5b1704e1d83c8c5759e80ec6c55a9dc5",
+      "sha256": "93e6c6de68e32cb15044ae13af1782aa8ec9119b01cb73be2a17da41a2200d8e"
+    }
+  ],
+  "python_package_paths": [
+    "tools/language-ai-eval/README.md",
+    "tools/language-ai-eval/anthropic-adapter.md",
+    "tools/language-ai-eval/anthropic_adapter.py",
+    "tools/language-ai-eval/evaluation_bundle.py",
+    "tools/language-ai-eval/evaluation_intake.py",
+    "tools/language-ai-eval/fresh-instance-protocol.md",
+    "tools/language-ai-eval/graph_validator.py",
+    "tools/language-ai-eval/runner.py",
+    "tools/language-ai-eval/tasks.json",
+    "tools/language-ai-eval/test_anthropic_adapter.py",
+    "tools/language-ai-eval/test_evaluation_bundle.py",
+    "tools/language-ai-eval/test_evaluation_intake.py",
+    "tools/language-ai-eval/test_graph_validator.py",
+    "tools/language-ai-eval/test_runner.py",
+    "tools/language-ai-eval/test_sealed_runner.py"
+  ],
+  "frozen_python_source_parent_ids": {
+    "test_anthropic_adapter.py": [
+      "test_anthropic_adapter.FixedTransportControls.test_https_origin_headers_single_request_no_redirect_follow",
+      "test_anthropic_adapter.FixedTransportControls.test_late_body_is_preserved_as_incomplete",
+      "test_anthropic_adapter.FixedTransportControls.test_late_eof_cannot_be_a_successful_http_response",
+      "test_anthropic_adapter.FixedTransportControls.test_other_endpoint_rejected_before_connection",
+      "test_anthropic_adapter.FixedTransportControls.test_transport_bounds_original_body_and_reports_incomplete",
+      "test_anthropic_adapter.FixedTransportControls.test_transport_exception_message_is_discarded",
+      "test_anthropic_adapter.OfflineProviderControls.test_actual_model_mismatch_preserves_original",
+      "test_anthropic_adapter.OfflineProviderControls.test_actual_usage_over_cap_is_rejected_after_preserving_source",
+      "test_anthropic_adapter.OfflineProviderControls.test_all_cache_components_counted_without_double_counting_breakdown",
+      "test_anthropic_adapter.OfflineProviderControls.test_arbitrary_public_input_rejected_by_sealed_bundle_before_claim",
+      "test_anthropic_adapter.OfflineProviderControls.test_bundle_missing_cannot_count",
+      "test_anthropic_adapter.OfflineProviderControls.test_cache_subtotal_must_reconcile",
+      "test_anthropic_adapter.OfflineProviderControls.test_cancelled_claim_remains_final_and_cannot_retry",
+      "test_anthropic_adapter.OfflineProviderControls.test_claimed_io_failure_reports_incomplete_instead_of_success",
+      "test_anthropic_adapter.OfflineProviderControls.test_context_rewrite_is_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_count_http_error_preserved_without_retry",
+      "test_anthropic_adapter.OfflineProviderControls.test_duplicate_count_key_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_exact_public_request_single_count_single_generation_and_unmodified_source",
+      "test_anthropic_adapter.OfflineProviderControls.test_generation_authorization_required_before_bundle_or_http",
+      "test_anthropic_adapter.OfflineProviderControls.test_generation_http_error_keeps_two_attempts_and_raw_body",
+      "test_anthropic_adapter.OfflineProviderControls.test_interior_credential_whitespace_is_not_rewritten",
+      "test_anthropic_adapter.OfflineProviderControls.test_invalid_count_json_is_original_and_fails",
+      "test_anthropic_adapter.OfflineProviderControls.test_invalid_http_status_cannot_become_sensitive_receipt_metadata",
+      "test_anthropic_adapter.OfflineProviderControls.test_main_bounded_input",
+      "test_anthropic_adapter.OfflineProviderControls.test_main_rejects_duplicate_input_key_without_network",
+      "test_anthropic_adapter.OfflineProviderControls.test_main_rejects_nonfinite_input",
+      "test_anthropic_adapter.OfflineProviderControls.test_malformed_server_date_is_not_serialized",
+      "test_anthropic_adapter.OfflineProviderControls.test_manifest_adapter_hash_mismatch_fails_before_http",
+      "test_anthropic_adapter.OfflineProviderControls.test_manifest_budget_override_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_manifest_process_timeout_override_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_manifest_provider_settings_cannot_enable_tools_or_thinking",
+      "test_anthropic_adapter.OfflineProviderControls.test_manifest_timeout_override_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_missing_count_request_id_fails_before_generation",
+      "test_anthropic_adapter.OfflineProviderControls.test_missing_credential_cannot_count",
+      "test_anthropic_adapter.OfflineProviderControls.test_multiple_text_blocks_are_concatenated_without_source_repair",
+      "test_anthropic_adapter.OfflineProviderControls.test_output_usage_over_cap_is_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_preflight_boolean_is_not_a_token_count",
+      "test_anthropic_adapter.OfflineProviderControls.test_preflight_input_budget_prevents_generation",
+      "test_anthropic_adapter.OfflineProviderControls.test_provider_iteration_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_raw_envelope_mismatch_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_redirect_is_failure_with_no_follow_or_generation",
+      "test_anthropic_adapter.OfflineProviderControls.test_reflected_credential_is_withheld_with_hash_and_never_printed",
+      "test_anthropic_adapter.OfflineProviderControls.test_refusal_preserves_real_usage_and_original_source",
+      "test_anthropic_adapter.OfflineProviderControls.test_server_http_date_retained_as_noncryptographic_receipt",
+      "test_anthropic_adapter.OfflineProviderControls.test_server_tool_usage_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_successful_claim_cannot_generate_a_second_time",
+      "test_anthropic_adapter.OfflineProviderControls.test_thinking_usage_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_tool_call_content_does_not_become_source",
+      "test_anthropic_adapter.OfflineProviderControls.test_transport_exception_text_never_reaches_receipt_or_stdout",
+      "test_anthropic_adapter.OfflineProviderControls.test_transport_timeout_retains_partial_generation_body_and_usage_unknown",
+      "test_anthropic_adapter.OfflineProviderControls.test_truncation_is_retained_not_repaired_or_retried",
+      "test_anthropic_adapter.OfflineProviderControls.test_unanchored_bundle_failure_is_safe_and_never_sent",
+      "test_anthropic_adapter.OfflineProviderControls.test_unknown_request_field_is_not_forwarded",
+      "test_anthropic_adapter.OfflineProviderControls.test_unknown_token_component_fails_closed",
+      "test_anthropic_adapter.OfflineProviderControls.test_unrequested_cache_usage_is_rejected_even_within_budget",
+      "test_anthropic_adapter.OfflineProviderControls.test_usage_boolean_is_rejected",
+      "test_anthropic_adapter.OfflineProviderControls.test_wrong_requested_model_rejected_before_claim"
+    ],
+    "test_evaluation_bundle.py": [
+      "test_evaluation_bundle.ProvenanceControls.test_asana_task_read_binds_exact_comment_and_server_time",
+      "test_evaluation_bundle.ProvenanceControls.test_atomic_attempt_claim_prevents_any_retry",
+      "test_evaluation_bundle.ProvenanceControls.test_duplicate_json_and_nonfinite_values_are_not_reconciled",
+      "test_evaluation_bundle.ProvenanceControls.test_ed25519_signatures_reject_changed_manifest_signature_and_key",
+      "test_evaluation_bundle.ProvenanceControls.test_exactly_twelve_distinct_paired_requests_without_oracle",
+      "test_evaluation_bundle.ProvenanceControls.test_extra_oracle_and_changed_model_guide_budget_or_source_identity_reject",
+      "test_evaluation_bundle.ProvenanceControls.test_generator_is_reproducible_and_retains_original_six_contracts",
+      "test_evaluation_bundle.ProvenanceControls.test_growing_file_is_read_with_a_bound_and_rejected",
+      "test_evaluation_bundle.ProvenanceControls.test_handle_and_path_time_semantics_do_not_confuse_file_identity",
+      "test_evaluation_bundle.ProvenanceControls.test_other_cross_api_mode_changes_are_not_normalized",
+      "test_evaluation_bundle.ProvenanceControls.test_replaced_path_is_rejected_before_reading_its_bytes",
+      "test_evaluation_bundle.ProvenanceControls.test_symlink_input_cannot_supply_an_original",
+      "test_evaluation_bundle.ProvenanceControls.test_windows_exe_execute_bits_do_not_confuse_file_identity",
+      "test_evaluation_bundle.ProvenanceControls.test_windows_same_handle_mode_change_still_rejects_after_read"
+    ],
+    "test_evaluation_intake.py": [
+      "test_evaluation_intake.IntakeTamperControls.test_budget_components_reject_booleans_extra_tokens_and_hidden_tools",
+      "test_evaluation_intake.IntakeTamperControls.test_changed_signed_record_and_repeated_outcome_seal_reject",
+      "test_evaluation_intake.IntakeTamperControls.test_complete_refusal_and_truncation_are_observed_failures_without_validator_claims",
+      "test_evaluation_intake.IntakeTamperControls.test_hash_reconciled_graph_change_fails_independent_oracle",
+      "test_evaluation_intake.IntakeTamperControls.test_mock_provider_and_graph_receipts_join_all_twelve_outcomes",
+      "test_evaluation_intake.IntakeTamperControls.test_one_complete_refusal_keeps_six_per_arm_denominator_and_zero_task_success",
+      "test_evaluation_intake.IntakeTamperControls.test_partial_adapter_response_retains_a_hash_bound_provider_failure",
+      "test_evaluation_intake.IntakeTamperControls.test_provider_identity_usage_public_context_and_chronology_are_recomputed",
+      "test_evaluation_intake.IntakeTamperControls.test_refusal_and_truncation_with_forbidden_blocks_are_not_measured",
+      "test_evaluation_intake.IntakeTamperControls.test_signed_original_inventory_rejects_reconciled_receipt_tampering",
+      "test_evaluation_intake.IntakeTamperControls.test_unfinished_provider_has_no_invented_interval_end_or_quality_measurement",
+      "test_evaluation_intake.IntakeTamperControls.test_validator_original_inventory_and_numeric_receipt_types_are_required"
+    ],
+    "test_graph_validator.py": [
+      "test_graph_validator.SixTaskGraphControls.test_all_six_contracts_in_both_graph_encodings",
+      "test_graph_validator.SixTaskGraphControls.test_binding_reference_cannot_be_hardcoded_duplicate",
+      "test_graph_validator.SixTaskGraphControls.test_compiler_environment_has_no_credentials_home_paths_or_feature_overrides",
+      "test_graph_validator.SixTaskGraphControls.test_complete_legacy_scientific_operands_preserve_exact_values",
+      "test_graph_validator.SixTaskGraphControls.test_extra_show_is_a_real_effect_failure",
+      "test_graph_validator.SixTaskGraphControls.test_forward_missing_zero_and_casefold_duplicate_uuid_rejected",
+      "test_graph_validator.SixTaskGraphControls.test_list_order_and_middle_selection_are_independent_obligations",
+      "test_graph_validator.SixTaskGraphControls.test_malformed_legacy_exponent_is_not_accepted_as_a_number",
+      "test_graph_validator.SixTaskGraphControls.test_numeric_literal_cannot_replace_required_computation",
+      "test_graph_validator.SixTaskGraphControls.test_oversized_original_remains_unadjudicated_and_is_not_read_or_deleted",
+      "test_graph_validator.SixTaskGraphControls.test_plist_scalar_types_are_preserved",
+      "test_graph_validator.SixTaskGraphControls.test_receipt_inventory_never_uses_unbounded_reads",
+      "test_graph_validator.SixTaskGraphControls.test_reference_name_and_external_inputs_fail_closed",
+      "test_graph_validator.SixTaskGraphControls.test_rejected_external_source_is_retained_before_any_compiler_read_or_process",
+      "test_graph_validator.SixTaskGraphControls.test_retained_number_binding_must_exist_once_and_be_unchanged",
+      "test_graph_validator.SixTaskGraphControls.test_same_numeric_boolean_and_list_control_type_are_not_interchangeable",
+      "test_graph_validator.SixTaskGraphControls.test_source_cannot_request_files_native_escapes_or_arbitrary_calls",
+      "test_graph_validator.SixTaskGraphControls.test_source_subset_cannot_hide_callees_or_unclosed_raw_literals",
+      "test_graph_validator.SixTaskGraphControls.test_unsupported_native_effect_is_unadjudicated",
+      "test_graph_validator.SixTaskGraphControls.test_unused_addition_does_not_supply_display_lineage",
+      "test_graph_validator.SixTaskGraphControls.test_unused_list_plus_literal_middle_is_not_selection",
+      "test_graph_validator.SixTaskGraphControls.test_utf16_attachment_ranges_are_not_codepoint_offsets",
+      "test_graph_validator.SixTaskGraphControls.test_v2_final_nothing_is_neutral_but_an_extra_effect_is_not",
+      "test_graph_validator.SixTaskGraphControls.test_v2_index_guard_cannot_borrow_unrelated_numeric_operand",
+      "test_graph_validator.SixTaskGraphControls.test_v2_index_guard_has_causal_count_bounds_and_selected_value",
+      "test_graph_validator.SixTaskGraphControls.test_v2_index_guard_inspects_untaken_branch_and_complete_identity_set",
+      "test_graph_validator.SixTaskGraphControls.test_v2_index_guard_rejects_casefold_group_alias_and_wrong_endpoint",
+      "test_graph_validator.SixTaskGraphControls.test_v2_index_guard_typed_integer_controls_and_real_rhs_are_exact",
+      "test_graph_validator.SixTaskGraphControls.test_wrong_operands_with_same_sum_are_rejected"
+    ],
+    "test_runner.py": [
+      "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+      "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+      "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+      "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+      "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+      "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+      "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+      "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+      "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+      "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+      "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+      "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+      "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+    ],
+    "test_sealed_runner.py": [
+      "test_sealed_runner.OutcomeRetentionControls.test_first_sealed_attempt_keeps_started_outcome_when_sealing_fails",
+      "test_sealed_runner.OutcomeRetentionControls.test_one_provider_error_retains_every_outcome_and_no_score",
+      "test_sealed_runner.OutcomeRetentionControls.test_per_process_failure_preserves_originals_and_secret_is_not_reported",
+      "test_sealed_runner.OutcomeRetentionControls.test_preexisting_report_without_intent_is_preserved_before_provider_call",
+      "test_sealed_runner.OutcomeRetentionControls.test_second_sealed_invocation_preserves_original_report_and_never_calls_provider"
+    ]
+  },
+  "source_package_132_selected_for_execution": false,
+  "real_model_selected": false,
+  "formal_acceptance_granted": false
+}
