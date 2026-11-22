@@ -18,7 +18,7 @@ import stat
 import subprocess
 import time
 
-EXPECTED_SHA = "1dcc7b3f97da992200fdf6b627f2c67090ea5298"
+EXPECTED_SHA = "06b2d2d5ee9c8ad33ee4fd77beb2a9c6af1b6b8b"
 ORIGIN = "https://github.com/davidpovarsky/cherri.git"
 PACKAGE = "github.com/electrikmilk/cherri/tools/language-acceptance"
 INVENTORY_PATH = "tools/language-acceptance/combined_index_arithmetic_inventory.json"
@@ -479,7 +479,7 @@ def main():
             require(isinstance(names, list) and len(names) == 109 and sorted(set(names)) == names,
                     "expected exactly 109 fixed source paths")
             require(sha(("\n".join(names) + "\n").encode()) == PATHS_SHA256, "wrong source witness inventory")
-            require(len(EXPECTED_EVENTS) == 26 and len(inventory["events"]["RP21"]) == 232 and
+            require(len(EXPECTED_EVENTS) == 26 and len(inventory["events"]["RP21"]) == 234 and
                     len(inventory["events"]["BRG16"]) == 213, "wrong fixed event inventory")
             before["subject"] = repository_state(metadata, "before", "subject", root, EXPECTED_SHA, names)
             before["workflow"] = repository_state(metadata, "before", "workflow", workflow_root, workflow_sha, HARNESS_PATHS)
