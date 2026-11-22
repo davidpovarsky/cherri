@@ -1,0 +1,1981 @@
+{
+  "schema": "cherri-ai-python-final-originals/1",
+  "tested_source_sha": "29f35c71d4932ac2ed135f977ac99ec43cddfe3d",
+  "current_full_suite": {
+    "source_sha": "29f35c71d4932ac2ed135f977ac99ec43cddfe3d",
+    "argv": [
+      "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\ai01-clean-29f35c71-20261122\\run-controls.py",
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-ai-evaluation-20261121",
+      "C:\\Users\\DAVID\\Code\\cherri-p10r15-apple-analysis-20261119\\ai01-clean-29f35c71-20261122",
+      "[\"test_runner\", \"test_evaluation_bundle\", \"test_graph_validator\", \"test_evaluation_intake\", \"test_sealed_runner\", \"test_anthropic_adapter\"]",
+      "132"
+    ],
+    "driver_sha256": "f12fc917ed3c1f1aefccdd0bc7eb5dc1d6a548290ef5105a9af36f26d351ecd0",
+    "outer_budget_seconds": 150,
+    "unchanged_test_cli_budget_seconds": 15,
+    "started_at": "2026-11-22T01:39:27.778727+00:00",
+    "pid": 26740,
+    "returncode": 0,
+    "timed_out": false,
+    "elapsed_seconds": 140.95300000000134,
+    "finished_at": "2026-11-22T01:41:49.425400+00:00",
+    "counts": {
+      "START": 132,
+      "PASS": 132,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0,
+      "SUBCASE_PASS": 78,
+      "SUBCASE_FAIL": 0
+    },
+    "stderr_sha256": "0438ab80a406cde48ba33587fab23265f26b904d73db5504b43d67396efa9490",
+    "stdout_sha256": "893190a2f75d035f879c4b8c65e865d481502997b4cb3074204f51b0d3a76990",
+    "source_clean_after": true
+  },
+  "current_inventory_original": {
+    "bytes": 14389,
+    "sha256": "4f93cc9f7c31cbb01010444aa2fce0b082570354b8fa16ca949decf0e26bbf0d",
+    "parsed_parent_count": 132,
+    "line_endings": "original Windows CRLF"
+  },
+  "source_files": [
+    {
+      "path": "tools/language-ai-eval/README.md",
+      "git_blob": "f77450b9c3358c211bcee080ffd7f9cfe4502350",
+      "sha256": "2d18a2419035443e376f987421b2ae7b930065103d0d1cdd573273a4a8287f88",
+      "bytes": 4315
+    },
+    {
+      "path": "tools/language-ai-eval/anthropic-adapter.md",
+      "git_blob": "7029de791287f51978831bb8f1b292874fd45e16",
+      "sha256": "b7aa6264c9346262eb6752b3e39d1492abf12d287949bba836cdd37b29585c1e",
+      "bytes": 5438
+    },
+    {
+      "path": "tools/language-ai-eval/anthropic_adapter.py",
+      "git_blob": "547a081634edac3a946b5a2fb3a9de688c63efc2",
+      "sha256": "0a5b4ce7719e7cc0a5ccd47c60b2bff5b169d79f9e9c8d1df7cd7fa3426f36cf",
+      "bytes": 22780
+    },
+    {
+      "path": "tools/language-ai-eval/evaluation_bundle.py",
+      "git_blob": "82b6e7dd7d76c455c9b80299852174e2ff689c09",
+      "sha256": "254b9a8195edf28726269f2ece8f87a0cf0c9e4617739901b6c2b7c05ac7de48",
+      "bytes": 35206
+    },
+    {
+      "path": "tools/language-ai-eval/evaluation_intake.py",
+      "git_blob": "26489ac2daee571117db0d6661b70512c7b95d3a",
+      "sha256": "2064f1106ce8e146356224e5ddfca8db86d08b0d6c26a8d375736a5d7aad219f",
+      "bytes": 25278
+    },
+    {
+      "path": "tools/language-ai-eval/fresh-instance-protocol.md",
+      "git_blob": "e5e680ab4e8f94015296f4215b3151c2b59eb35e",
+      "sha256": "d84779ee193fd7f300b003fc4ec9bbabed343fd752f6ede4e49af617d314c557",
+      "bytes": 14652
+    },
+    {
+      "path": "tools/language-ai-eval/graph_validator.py",
+      "git_blob": "bbd042ab762d8e10de77e242a82d6f5d86e27de8",
+      "sha256": "831abed51ea2f0888b3ecae9731bead434fa504d468e93f4bfae9f7c9f89ebc0",
+      "bytes": 37851
+    },
+    {
+      "path": "tools/language-ai-eval/runner.py",
+      "git_blob": "b3330f94b2d003a9a8d9f867eb3486d6e27c5547",
+      "sha256": "5c3a888994bdc13ac36c672ca1100c3e4312ec67f7be8d67122c708e7cfcd2a0",
+      "bytes": 22964
+    },
+    {
+      "path": "tools/language-ai-eval/tasks.json",
+      "git_blob": "fd48a8e1882a39544710072e4165cd7a7971bac4",
+      "sha256": "fcdb35966a50e2bd7daaa1311a552bde46136e5824109d71d8bf8918db6b4cb5",
+      "bytes": 2568
+    },
+    {
+      "path": "tools/language-ai-eval/test_anthropic_adapter.py",
+      "git_blob": "75d802d0a8cd0bc5a7ac1be7d373ab02fc9eecba",
+      "sha256": "d959d7284dfea004771c98843f2fba8069a97cc34284dad33b13ef94747a869f",
+      "bytes": 29318
+    },
+    {
+      "path": "tools/language-ai-eval/test_evaluation_bundle.py",
+      "git_blob": "6b2b2aba7829b824715f447c0fe6fbcb1a714b62",
+      "sha256": "57d6268762e5ed124136ee47bd6d53423670c9523e60dc280cc28803b719ad3d",
+      "bytes": 22626
+    },
+    {
+      "path": "tools/language-ai-eval/test_evaluation_intake.py",
+      "git_blob": "398318259441b7404edc558b481edcc15a11e73e",
+      "sha256": "c9538c59ee26a7719de9532d7a0958fc2511f6655515ac9a2ead989e82da3140",
+      "bytes": 29742
+    },
+    {
+      "path": "tools/language-ai-eval/test_graph_validator.py",
+      "git_blob": "50e7d130c25f762c783b043eabb12c99a0fb58c7",
+      "sha256": "b833069849d915069751f535ce30f739b84426c0d1acb6bcf7222fade30d6df9",
+      "bytes": 27248
+    },
+    {
+      "path": "tools/language-ai-eval/test_runner.py",
+      "git_blob": "993658c8797244bd4892d836ed9625da217e764a",
+      "sha256": "7f740d3dd909a5fae02a624fdc44ad3300f0e02d36a814668dcc2dfa94593252",
+      "bytes": 21408
+    },
+    {
+      "path": "tools/language-ai-eval/test_sealed_runner.py",
+      "git_blob": "b38579bb5b1704e1d83c8c5759e80ec6c55a9dc5",
+      "sha256": "93e6c6de68e32cb15044ae13af1782aa8ec9119b01cb73be2a17da41a2200d8e",
+      "bytes": 7630
+    }
+  ],
+  "historical_stage_accounting": [
+    {
+      "directory": "ai01-clean-29f35c71-20261122",
+      "event_counts": {
+        "START": 132,
+        "PASS": 132,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0,
+        "SUBCASE_PASS": 78,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": true
+    },
+    {
+      "directory": "ai01-clean-6858b2ba-20261121",
+      "event_counts": {
+        "START": 61,
+        "PASS": 57,
+        "FAIL": 1,
+        "ERROR": 2,
+        "SKIP": 0,
+        "SUBCASE_PASS": 61,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    },
+    {
+      "directory": "ai01-clean-7481060a-20261121",
+      "event_counts": {
+        "START": 64,
+        "PASS": 63,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0,
+        "SUBCASE_PASS": 63,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    },
+    {
+      "directory": "ai01-clean-8c85dbdb-20261121",
+      "event_counts": {
+        "START": 121,
+        "PASS": 121,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0,
+        "SUBCASE_PASS": 0,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    },
+    {
+      "directory": "ai01-clean-adb33c2a-20261121",
+      "event_counts": {
+        "START": 119,
+        "PASS": 107,
+        "FAIL": 1,
+        "ERROR": 11,
+        "SKIP": 0,
+        "SUBCASE_PASS": 0,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    },
+    {
+      "directory": "ai01-clean-d3b18dd5-20261122",
+      "event_counts": {
+        "START": 64,
+        "PASS": 62,
+        "FAIL": 1,
+        "ERROR": 0,
+        "SKIP": 0,
+        "SUBCASE_PASS": 69,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    },
+    {
+      "directory": "ai01-clean-f304492b-20261122",
+      "event_counts": {
+        "START": 69,
+        "PASS": 67,
+        "FAIL": 1,
+        "ERROR": 0,
+        "SKIP": 0,
+        "SUBCASE_PASS": 69,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    },
+    {
+      "directory": "ai01-fake-clean-7481060a-20261121",
+      "event_counts": {
+        "START": 1,
+        "PASS": 1,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0,
+        "SUBCASE_PASS": 0,
+        "SUBCASE_FAIL": 0
+      },
+      "current_132_suite": false
+    }
+  ],
+  "members": [
+    {
+      "name": "local/local-controls.originals.zip",
+      "bytes": 386555,
+      "sha256": "0b2e143da97669d6b87bf0a5a7dec3720ae6ae8b6fc18d98fddad02fad18ad8c"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/after-vcs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/after-vcs.stdout",
+      "bytes": 3491,
+      "sha256": "15f389c7af9b00dfdca25930b361607ed56387291f9238904e4422f3041eec85"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/before-vcs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/before-vcs.stdout",
+      "bytes": 3491,
+      "sha256": "15f389c7af9b00dfdca25930b361607ed56387291f9238904e4422f3041eec85"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--legacy/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--legacy/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--legacy/output.shortcut",
+      "bytes": 3248,
+      "sha256": "c637ab182149159e0ed34221e3c0fff0ca02b000bc99e936ffdafa7703cf3ece"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--legacy/source.cherri",
+      "bytes": 111,
+      "sha256": "6e0da67f30408974910a9b84be783d3da16c05c0ac7b2428e57b7faed8d6a8ed"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--v2/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--v2/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--v2/output.shortcut",
+      "bytes": 3375,
+      "sha256": "b26fd826681b5d150a595fb293ae671bd6d5d3b467b540bcaf10fb7adcdf49cc"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_arithmetic_operand--v2/source.cherri",
+      "bytes": 113,
+      "sha256": "55cd5a9e45290c73a06b0eee811ccdf18eb6de7c980b2824b31b23b8739e1386"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--legacy/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--legacy/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--legacy/output.shortcut",
+      "bytes": 3178,
+      "sha256": "a11c36deb94737fd4496e0f9bd496add099d83d32cc3f8a0a714567acaa72564"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--legacy/source.cherri",
+      "bytes": 130,
+      "sha256": "92efc069b5874db0c18ac4de1cc0c45c62700bb8adfbe2ec0129215c6fe94cae"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--v2/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--v2/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--v2/output.shortcut",
+      "bytes": 3294,
+      "sha256": "f2a8651e71362e3771bf374021d3872da36ba0e535bab8b1a1da5135e4e8ea62"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_binding_reference--v2/source.cherri",
+      "bytes": 132,
+      "sha256": "84da8fb69007704b7f623875800f6ad9d92671f03125c416c0ef78ae800ac37a"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--legacy/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--legacy/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--legacy/output.shortcut",
+      "bytes": 2879,
+      "sha256": "400dcd8ba44afb91d69b530a52ba748e3e9a3bc42ac818252ad0573d43cc5aa8"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--legacy/source.cherri",
+      "bytes": 99,
+      "sha256": "0e70df75b3d35da3be8ee80a8c46ee5720791a87a01e362dcb67b80b75dc874a"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--v2/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--v2/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--v2/output.shortcut",
+      "bytes": 2747,
+      "sha256": "f84b9ec9156f344842ec03e016e20316f83758ff384a0842d5f706df4220f892"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/edit_literal_only--v2/source.cherri",
+      "bytes": 102,
+      "sha256": "c2ef15cfca74981a3fb1143d0b196394048c3b3c9f47f4964b2d708214c2fe49"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/execution-intent.json",
+      "bytes": 191,
+      "sha256": "1bd70ce67480ff90841e36db68b2736ba52b8bfa7ab3561ad34bec79ca8a2fc0"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/execution-progress.json",
+      "bytes": 25524,
+      "sha256": "cb99fae5edcfcfd29a96ecf40d49a322692fd27246ca82cbf9443b276f652326"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/frozen-plan.json",
+      "bytes": 12402,
+      "sha256": "cc69c7fe7f915a7b0966fa5a8bc7daca4adc4454edeb6c7a12ca279bef066074"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--legacy/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--legacy/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--legacy/output.shortcut",
+      "bytes": 6138,
+      "sha256": "507cb11675f649b0203961997e110c4db387d313739e106002aa7723e06ff540"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--legacy/source.cherri",
+      "bytes": 184,
+      "sha256": "49f0981333ef24ead587340799e897d10c515182b582bb3becf928da45386565"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--v2/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--v2/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--v2/output.shortcut",
+      "bytes": 10539,
+      "sha256": "e5cca7797dd1a4e01b51c895fea2c38cf81954216c4257bfeb3b42a1e7f2c362"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_list_selection--v2/source.cherri",
+      "bytes": 175,
+      "sha256": "e0e5d837c0b043fa2a2cdae11ec33dc44b91825ccb1ba835b7a276461b3424fd"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--legacy/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--legacy/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--legacy/output.shortcut",
+      "bytes": 3243,
+      "sha256": "d4180c8118968ccd1aa2de419dc2800d938e95565403739780b24813404b6954"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--legacy/source.cherri",
+      "bytes": 106,
+      "sha256": "5a00bb6c55da5ca3fa55361184aad8b031f10bd168ab552ff92a73bcb71714fd"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--v2/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--v2/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--v2/output.shortcut",
+      "bytes": 3370,
+      "sha256": "15196bc20e9c9671882efdc9ea81fbf241f08df7389e9f95d4a9796244211759"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_sum--v2/source.cherri",
+      "bytes": 108,
+      "sha256": "8181c2a12c3057c5aebd6b895124aadc2ec81708707c2a78983476762e0b6090"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--legacy/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--legacy/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--legacy/output.shortcut",
+      "bytes": 2006,
+      "sha256": "e60f39a6a57ec5f79f29833380b281aa0eea84d81f2003874ce0d89028621c15"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--legacy/source.cherri",
+      "bytes": 72,
+      "sha256": "aba9c7b5ca3ffa4f11d2003dcca057fc703bbe7bf57c97626e75079407d320dc"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--v2/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--v2/compiler.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--v2/output.shortcut",
+      "bytes": 2359,
+      "sha256": "6fc18e1dc7fcd39bc73b56c47f57bed66aab02e7c492583c5e68cd055c8ad942"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/generate_unicode_literal--v2/source.cherri",
+      "bytes": 74,
+      "sha256": "0bbd252468a691eeb4d8cd08f58ea96d11e64021fe091c2972ddf4d0e2f2c151"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/original-evaluation_bundle.py.txt",
+      "bytes": 30754,
+      "sha256": "b36ec976ec72a233f3313f1db32fa1b2acafb28651ff446a39070196c067eeae"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/original-graph_validator.py.txt",
+      "bytes": 36503,
+      "sha256": "72f49b96f7b2415d8e8546ba8cc18cdfbff04fe331087cf72df0032e30a9af8c"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/python-replay-1.json",
+      "bytes": 7698,
+      "sha256": "0708a24d68b25d77741deea43c4f0e39f88446b2566b36cc60362d68cbe50c95"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/result.json",
+      "bytes": 28472,
+      "sha256": "0842bf0063d56148a5582ba7becaf54420f6fa4fe7f1d42687f185e942888e0c"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/s3-frozen-plan.original.json",
+      "bytes": 10328,
+      "sha256": "de4def871d3646d5137f607c7ccf0dedbf84f3e991b9c7e33950afe1ddbae29e"
+    },
+    {
+      "name": "windows/ai01-b791-calibration-20261121/synthetic-control-suite.json",
+      "bytes": 3320,
+      "sha256": "26e200fea20cc988f273e2c5b49cf50b5afd36074e08013d091f6d49024db956"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/git-after.json",
+      "bytes": 68,
+      "sha256": "8c4a924c693d9a06c8b757c93eeec46aa3004a404f61705d048d0fa8117d8ddc"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/git-before.json",
+      "bytes": 68,
+      "sha256": "8c4a924c693d9a06c8b757c93eeec46aa3004a404f61705d048d0fa8117d8ddc"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/intent.json",
+      "bytes": 822,
+      "sha256": "0135cda49db9892bc499c7377062d1b9af71fa6ee67157911e2f3a33fda9cb13"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/inventory.json",
+      "bytes": 14402,
+      "sha256": "4dc4ff645485497dd169ac570b48cd1bb1e299f3759713bc636c3662aa57485e"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/process-preflight.json",
+      "bytes": 129,
+      "sha256": "dac7149ad72334604a63fab67cab72112a402c4fd5cb0ac3a90f0eaa688ab8a9"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/process-reconciliation.json",
+      "bytes": 271,
+      "sha256": "e15252951d4a0e6ddb7bdb93a8b46adf1f2b8320f23a71c1d9d8be2918a3249d"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/process-start.json",
+      "bytes": 567,
+      "sha256": "d62c7c3f00897bec657cd5683740a52d697b59e12ef37e35538c441102427100"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/process.json",
+      "bytes": 1340,
+      "sha256": "48f048424f0a9e2a3e8c9a9c777cdd6a9acfb4e46fe000dbf28ce0a879307628"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/run-controls.py",
+      "bytes": 2138,
+      "sha256": "f12fc917ed3c1f1aefccdd0bc7eb5dc1d6a548290ef5105a9af36f26d351ecd0"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/source-bindings.json",
+      "bytes": 3774,
+      "sha256": "35471ae9208f2995f87cd7ba9044858b79c65e25ab155e0f267375bbc8dd61c7"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/stderr.original",
+      "bytes": 21897,
+      "sha256": "0438ab80a406cde48ba33587fab23265f26b904d73db5504b43d67396efa9490"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/stdout.original",
+      "bytes": 228,
+      "sha256": "893190a2f75d035f879c4b8c65e865d481502997b4cb3074204f51b0d3a76990"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/submitted-wrapper.original.py",
+      "bytes": 6462,
+      "sha256": "7997def4add5f397885b1ba8a2fbbdf5778382cdd35f1eef7dd296f2f86c74e2"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/test-events.jsonl",
+      "bytes": 73125,
+      "sha256": "8c11f559973ef3572eba393cd267d162c1bf90fba7b6681446e26975099c3cd0"
+    },
+    {
+      "name": "windows/ai01-clean-29f35c71-20261122/test-result.json",
+      "bytes": 100,
+      "sha256": "a2f2b142f37e005c2caecd909e5f4ba46568f07fd4c4f2f860cb471649dd0f65"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/git-after.json",
+      "bytes": 171,
+      "sha256": "9e6446583451ccbd0e58d83e9dd95192717ffedb9305d9309d2fdf989743125f"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/git-before.json",
+      "bytes": 171,
+      "sha256": "9e6446583451ccbd0e58d83e9dd95192717ffedb9305d9309d2fdf989743125f"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/inventory.json",
+      "bytes": 13934,
+      "sha256": "c65210fc8cd1bab2233d599e36776c333029895f182d2d296dc61020a1c0e467"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/process.json",
+      "bytes": 8271,
+      "sha256": "a5d40c232dcd1498eb8f4e896f901bf0d53f44debe63f5252272e15be197d2c0"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/run-controls.py",
+      "bytes": 1930,
+      "sha256": "a7cf41824b5caa36b2ff7c7398eae43c76ba768ebec25eab0532ed6c6c8f990e"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/source-bindings.json",
+      "bytes": 2748,
+      "sha256": "18aa074b025ce054e8570e677bb5d17c79017bac37eece3046eb739d486fb5b2"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/stderr.original",
+      "bytes": 10245,
+      "sha256": "678ff68ae1074a5af8288bbb269fd96799a92f17f9950984b5d88e3a6f2a5942"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-6858b2ba-20261121/test-events.jsonl",
+      "bytes": 42517,
+      "sha256": "215f8f3107bba89aea47fd1404b50370275cafed3b7d0d54d4e9e51c84829ea5"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/git-after.json",
+      "bytes": 68,
+      "sha256": "ac17a160192a05f4fcc77d09b9e4ec8e30e484030e9a76a5fa4c92f4619915d9"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/git-before.json",
+      "bytes": 68,
+      "sha256": "ac17a160192a05f4fcc77d09b9e4ec8e30e484030e9a76a5fa4c92f4619915d9"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/intent.json",
+      "bytes": 822,
+      "sha256": "75f3d6d66440505f9bebb2f9c140d0f794c9e8f57340cb1c23692493a951fa43"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/inventory.json",
+      "bytes": 14402,
+      "sha256": "4dc4ff645485497dd169ac570b48cd1bb1e299f3759713bc636c3662aa57485e"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/process-reconciliation.json",
+      "bytes": 485,
+      "sha256": "782a48cedd83c05751ef5051762f096afe918814fc3fdafb36703e86f0ed45a5"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/process.json",
+      "bytes": 1232,
+      "sha256": "0c3f14d3d487c171f3993e86a9ec0f344f0a8e26ac7b664a86a225b66ca15b9d"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/run-controls.py",
+      "bytes": 2138,
+      "sha256": "f12fc917ed3c1f1aefccdd0bc7eb5dc1d6a548290ef5105a9af36f26d351ecd0"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/source-bindings.json",
+      "bytes": 3774,
+      "sha256": "e8c65a88deec61554c9ffdc9186687df4c90f2963577703f049e858e816a57ec"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/stderr.original",
+      "bytes": 10741,
+      "sha256": "cbc8c45bd6db2deb862d4b8d7d398b1325c3291634a3ed8a955e693300febfd5"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/submitted-wrapper.original.py",
+      "bytes": 5404,
+      "sha256": "113f18762fb577fb6ce2caa5e0361593447dd96dba758a9d97214ecb8863b4ea"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/taskkill.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/taskkill.stdout",
+      "bytes": 173,
+      "sha256": "40efb70e80ca50c86fd73e1f48d19e7ed50bb6513e3d5a3a1b09d4c305393a4b"
+    },
+    {
+      "name": "windows/ai01-clean-7481060a-20261121/test-events.jsonl",
+      "bytes": 44201,
+      "sha256": "04535e122b2f09942bb7e356caca1bdeff66f45ca4a5c5e52881724cff7c0928"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/git-after.json",
+      "bytes": 77,
+      "sha256": "63ac343705ed19c1bc1e8e374ee085d97ef82a94a9c854500486cadcf325c470"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/git-before.json",
+      "bytes": 77,
+      "sha256": "63ac343705ed19c1bc1e8e374ee085d97ef82a94a9c854500486cadcf325c470"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/inventory.json",
+      "bytes": 13109,
+      "sha256": "a055f608173a2f28e9135e419e59598233f28985ff17da91c33e522767df0f67"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/process.json",
+      "bytes": 1754,
+      "sha256": "d7016be0ccabd4d37f6bc851b420c8f89c1622f489fe8aff1005db115552aae1"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/run-controls.py",
+      "bytes": 1779,
+      "sha256": "d3a827129e200582de3c6be736e4520815aeb1a27126311c0a21d3fd66056a8c"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/source-bindings.json",
+      "bytes": 2824,
+      "sha256": "321ee80d30a453e09612ee91360e758d8d46cea309a32367fc7d6ff49c61643f"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/stderr.original",
+      "bytes": 19852,
+      "sha256": "2fe2bf1dc76da947057c1c8678e4d134d2e3789e7f3aa278782a65aed03b04dc"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/test-events.jsonl",
+      "bytes": 40841,
+      "sha256": "c34b39f6837f08f4699433b5f4e934bbbba6a6ba841097c81dcf0d8c825a5271"
+    },
+    {
+      "name": "windows/ai01-clean-8c85dbdb-20261121/test-result.json",
+      "bytes": 100,
+      "sha256": "969001b65b0bee5699bcbba06ea6ad62bf3f23ac765da4e1e368ac63d5ec6e77"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/git-after.json",
+      "bytes": 77,
+      "sha256": "8482baa0681d225ca5084cc84e2bd8941cf4f37d940b63d23bcc594f87c5a2c9"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/git-before.json",
+      "bytes": 77,
+      "sha256": "8482baa0681d225ca5084cc84e2bd8941cf4f37d940b63d23bcc594f87c5a2c9"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/inventory.json",
+      "bytes": 12888,
+      "sha256": "a2c2ede1d32bbe545384ea41677b3ecc6d29a84dd9035b8e9c437d160f052d5e"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/process.json",
+      "bytes": 1617,
+      "sha256": "cf9b79f45d3eb88bfa8a08875e3197b7c2923e5d959f25eaa99e01e7485c5914"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/run-controls.py",
+      "bytes": 1779,
+      "sha256": "c77cbc518be2a1a5962739b51caaf863a6959d0abed8905f31b889e867b07439"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/stat-control.original.txt",
+      "bytes": 32,
+      "sha256": "104a584e8bde528d825ea620b27e52478fa8cd0fdcced696c4f1676e4ea26f15"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/stderr.original",
+      "bytes": 37144,
+      "sha256": "6beb15db94152bb448684e98c4947de20993a1ccb822a7e6f2bf0551740c718c"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/test-events.jsonl",
+      "bytes": 40165,
+      "sha256": "97cfbf66a8bfbf299c07808f05d84a2e9859cd54d938b64f16ed1c30aeab2095"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/test-result.json",
+      "bytes": 102,
+      "sha256": "4b86ca1bbcf395e912d4337bfe3e23088814012628397fc5c286b76972055382"
+    },
+    {
+      "name": "windows/ai01-clean-adb33c2a-20261121/windows-stat-probe.json",
+      "bytes": 1300,
+      "sha256": "b784dd7b08e3275be1d73a354b43584c62c956d1361ab6b7f18c9b93d126d040"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/git-after.json",
+      "bytes": 68,
+      "sha256": "7b3b18cea5ea33850446c9841a6947709fd554247856dc0685e68d28ecd0579c"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/git-before.json",
+      "bytes": 68,
+      "sha256": "7b3b18cea5ea33850446c9841a6947709fd554247856dc0685e68d28ecd0579c"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/intent.json",
+      "bytes": 822,
+      "sha256": "bb59d8e81fb2ba1c6af5dcf93add92e5e9cf9eeb2d31dc6acc695e9186df860e"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/inventory.json",
+      "bytes": 14402,
+      "sha256": "4dc4ff645485497dd169ac570b48cd1bb1e299f3759713bc636c3662aa57485e"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/process-reconciliation.json",
+      "bytes": 363,
+      "sha256": "fdf4e2c14194c84bebb6d6c6172730d0028d119c9a19f1b7a582801287e93928"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/process-start.json",
+      "bytes": 567,
+      "sha256": "55c9a5eae70768c7c2943f76477b014f1e246cd0e1d3c1f865ada6060c670d67"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/process.json",
+      "bytes": 1324,
+      "sha256": "f43d87a25c9ec3de2b76e1802ee24f73b74d383f7293e4273b6dcf61f777709a"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/run-controls.py",
+      "bytes": 2138,
+      "sha256": "f12fc917ed3c1f1aefccdd0bc7eb5dc1d6a548290ef5105a9af36f26d351ecd0"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/source-bindings.json",
+      "bytes": 3774,
+      "sha256": "47b8d9284f06211953d78f12036a80ba8d2ce0eac2c28f1481c70d5e6029a796"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/stderr.original",
+      "bytes": 11826,
+      "sha256": "1c125460a819caacd9410f6d3cd174d6498022413875a11b63dbbc40e3b66067"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/submitted-wrapper.original.py",
+      "bytes": 4941,
+      "sha256": "3df2b1518f540d8f80bdb35d83d6cf501ded0771ae3cf6a24c6f39294d63eb3b"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/taskkill.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/taskkill.stdout",
+      "bytes": 173,
+      "sha256": "7cc4957729fa8f08899b044366c76ab888bc9a37d26a22df4af3293f9d374d7d"
+    },
+    {
+      "name": "windows/ai01-clean-d3b18dd5-20261122/test-events.jsonl",
+      "bytes": 46540,
+      "sha256": "dd4c016f852d99b81ebe2819e63c36a65a44f33c044dc7257d5320b08bf294c8"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/git-after.json",
+      "bytes": 68,
+      "sha256": "7e9e551d3c68059da9f232667752908e4b67d3dca77c1ccffa0b18a37c3e6120"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/git-before.json",
+      "bytes": 68,
+      "sha256": "7e9e551d3c68059da9f232667752908e4b67d3dca77c1ccffa0b18a37c3e6120"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/intent.json",
+      "bytes": 822,
+      "sha256": "35321dffcf4b0971a49169cfcee656f7b17415f7ff0d5f6c580ed2693ae660bc"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/inventory.json",
+      "bytes": 14402,
+      "sha256": "4dc4ff645485497dd169ac570b48cd1bb1e299f3759713bc636c3662aa57485e"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/process-preflight.json",
+      "bytes": 129,
+      "sha256": "d68096005e23dbdb70f76ce9fa4823e43749365619d019abfec4f92106c57ca8"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/process-reconciliation.json",
+      "bytes": 363,
+      "sha256": "3abbef9d76af53aed6a6d329f08719a4f37bb5579226c62595ff665b36312c29"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/process-start.json",
+      "bytes": 567,
+      "sha256": "13ca0e3dd9069977ec3bbaec2fa703a05fd6f308e2126372c0b1adce5d45606c"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/process.json",
+      "bytes": 1337,
+      "sha256": "017677137fa2420c24cf0c33dd1876a4aebd53a70bf7c3b9ea69d6a554727cc2"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/run-controls.py",
+      "bytes": 2138,
+      "sha256": "f12fc917ed3c1f1aefccdd0bc7eb5dc1d6a548290ef5105a9af36f26d351ecd0"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/source-bindings.json",
+      "bytes": 3774,
+      "sha256": "65850e2bf50d0ab5bcb7b65fc5b6fba6114070bcf91e7f173d96274230828506"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/stderr.original",
+      "bytes": 12755,
+      "sha256": "495f39396d2cef8b1edaff857921f7d1824309ad62925ffe80865aa83a540109"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/submitted-wrapper.original.py",
+      "bytes": 6460,
+      "sha256": "c14e036defa1b84ff52b63674fa5d39a47f8bd4cd6ea82166f9e88d431099d1b"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/taskkill.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/taskkill.stdout",
+      "bytes": 174,
+      "sha256": "efc3ce78b8db1a13fae58aade61d2cb35dda2eff1f3236063f0791aa003a5df2"
+    },
+    {
+      "name": "windows/ai01-clean-f304492b-20261122/test-events.jsonl",
+      "bytes": 48405,
+      "sha256": "e3607cc06dc2e2b2b85382e7bceb8a422f4523af03d3edeb1feca32984668bfc"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/cost-events.jsonl",
+      "bytes": 211883,
+      "sha256": "8ff5b2e334834b21196de4e117d9b16e80d1355e08a93001b0ade4f960f6700e"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-01.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-01.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-02.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-02.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-03.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-03.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-04.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-04.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-05.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-05.stdout.original",
+      "bytes": 135,
+      "sha256": "1741f8fabc80d2d079e590a9d8281836190863824e27533d6a50324767e42541"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-06.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-06.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-07.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-07.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-08.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-08.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-09.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-09.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-10.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-10.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-11.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-11.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-12.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-12.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-13.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-13.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-14.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-14.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-15.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-15.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-16.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-16.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-17.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-17.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-18.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-18.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-19.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-19.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-20.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-20.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-21.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-21.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-22.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-22.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-23.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-23.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-24.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-24.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-25.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-25.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-26.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-26.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-27.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-27.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-28.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/crypto-28.stdout.original",
+      "bytes": 32,
+      "sha256": "0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/diagnostic-driver.py",
+      "bytes": 5007,
+      "sha256": "fc71f37c6d65a3741be7e8e81ecf8a03ba3b882a48e31e62b905cbe911858f86"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/intent.json",
+      "bytes": 643,
+      "sha256": "90f4fa46819fd51ba3a72343587f62fd32174d5d0da52459a69e9592b63f2267"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/process-reconciliation.json",
+      "bytes": 227,
+      "sha256": "a7052cacae15e781b3d5b7d3b2bcc409d60ead625fe8f4319df7a979c66bf282"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/process-start.json",
+      "bytes": 357,
+      "sha256": "31a8e9f4f952751d786233b05434e5bd1452228236d0b01496ae3e65874d0e1e"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/process.json",
+      "bytes": 1003,
+      "sha256": "dded8ec5fb1086cfeec93a6cf1120cfa644caf61e98b5d0629e389171bdad831"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/source-after.json",
+      "bytes": 75,
+      "sha256": "dd76a4cb8f061f33db49dce12f70e9ec18ed5b606a037cc1c556a69d1f76e4e3"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/source-before.json",
+      "bytes": 75,
+      "sha256": "dd76a4cb8f061f33db49dce12f70e9ec18ed5b606a037cc1c556a69d1f76e4e3"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/source-bindings.json",
+      "bytes": 3511,
+      "sha256": "0ad7497863c8be67bb13db7ec6830bb63df623f1feab3479fc342ebd139806fc"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/stderr.original",
+      "bytes": 283,
+      "sha256": "04f4f60130d05e49ce231800b842ab84c37da9ed68a7ab3c4e3d14b999342fe0"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-cost-d3b18dd5-20261122/submitted-wrapper.original.py",
+      "bytes": 9593,
+      "sha256": "8b0150a68450b77a26d44d3fdd075d35f3f87bb763cb5c87d3bb32b0154caacb"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/git-after.json",
+      "bytes": 68,
+      "sha256": "ac17a160192a05f4fcc77d09b9e4ec8e30e484030e9a76a5fa4c92f4619915d9"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/git-before.json",
+      "bytes": 68,
+      "sha256": "ac17a160192a05f4fcc77d09b9e4ec8e30e484030e9a76a5fa4c92f4619915d9"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/intent.json",
+      "bytes": 778,
+      "sha256": "009626fae2e272f007519e1db6e74266bf55aa6cd15371bcda58c6c37eb38c3f"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/inventory.json",
+      "bytes": 270,
+      "sha256": "5f9eb8ab8fccadbdcf4f4dcb54d77a4be416510ff719e042d39b05b635d96994"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/process.json",
+      "bytes": 1185,
+      "sha256": "428adce0e31af6c08a39e7f772596fd87e1055eb2657d68aff617756d6079fa7"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/run-controls.py",
+      "bytes": 2138,
+      "sha256": "f12fc917ed3c1f1aefccdd0bc7eb5dc1d6a548290ef5105a9af36f26d351ecd0"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/source-bindings.json",
+      "bytes": 3774,
+      "sha256": "e8c65a88deec61554c9ffdc9186687df4c90f2963577703f049e858e816a57ec"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/stderr.original",
+      "bytes": 268,
+      "sha256": "05c208fdbe9ad59790ee08f3b165e0c156cca6626302c76216834a1bda7aeacf"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/test-events.jsonl",
+      "bytes": 331,
+      "sha256": "982d8061096ddf607ca621df1f33193dd8c453d44f7151023291b1c6b32e9019"
+    },
+    {
+      "name": "windows/ai01-fake-clean-7481060a-20261121/test-result.json",
+      "bytes": 98,
+      "sha256": "ad16929bd194f5b8af953b53df522f7603814d052f7adf45be38e30ce761e7bb"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/guide.md",
+      "bytes": 30,
+      "sha256": "c9d1bcec6392b5f7ab2faa9c6884f419aaea521ad30f2317aa36d9b963741546"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/instrumented-diagnostic.py",
+      "bytes": 1678,
+      "sha256": "ef7fd94c896752c408f515d52f9bbd55607ba9da8c85ec42c541826776131378"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/intent.json",
+      "bytes": 879,
+      "sha256": "9a5df9d165b53d73402007bba6f2c5c3148038e6f128941985c9c6ace40b4eba"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/process.json",
+      "bytes": 1586,
+      "sha256": "9a26c279319a219e466e6141f3282881a44664c175b69b92572df5749170a414"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/report.json",
+      "bytes": 21572,
+      "sha256": "1cb620a965f4b3215f8d0b99aecdb1a17d04396ccf1ac2c2f22f9cfcf34ec5bd"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/stdout.original",
+      "bytes": 66,
+      "sha256": "9374eccb4eeb8acf344b51aea5e6c67528d56d245dccae0cffc6769ef7d63d1a"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/taskkill.stderr",
+      "bytes": 563,
+      "sha256": "eca99bd55ed0c6d237a95c04600d070d5fea14bb905ded14f7082a192f11997e"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/taskkill.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-fake-instrumented-858efe38-20261121/timings.jsonl",
+      "bytes": 17613,
+      "sha256": "fd8ec67777d2c60a28c948d86fbcd472ae0b741e5e13f62f97ed7f0b349f4810"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/after-head.stdout",
+      "bytes": 41,
+      "sha256": "bcc6dc7c9850457a258b8f75a0226c6ff5f5139c315032c66d4c3c8fdbc06758"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/after-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/before-head.stdout",
+      "bytes": 41,
+      "sha256": "bcc6dc7c9850457a258b8f75a0226c6ff5f5139c315032c66d4c3c8fdbc06758"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/diagnostic.py",
+      "bytes": 1091,
+      "sha256": "cab5fb0fc4dc34b59bd2f2e9ec1e1f41247fe9576a987c8beff91b3157734db7"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/events.jsonl",
+      "bytes": 2898,
+      "sha256": "8c5d2105cd1a1c62ece5107452c11f96a5628f57469d927239a9fd604f1ad842"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/host-resource-sample.json",
+      "bytes": 238,
+      "sha256": "23e1239aa7ba495ab06749a93f627037a39387644cc1762638753fecc7ab251a"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/process.json",
+      "bytes": 755,
+      "sha256": "326c78ecf0f67f11dd1218d5e6ab4da7890257229ce58bc8175a4537146c30a6"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/stderr.original",
+      "bytes": 4955,
+      "sha256": "046a3761eaae1b239bf9e64e47d466d2d578194b5db4d9e7f9655c7a347b9991"
+    },
+    {
+      "name": "windows/ai01-fake-one-diagnostic-6858-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/after-head.stdout",
+      "bytes": 41,
+      "sha256": "bcc6dc7c9850457a258b8f75a0226c6ff5f5139c315032c66d4c3c8fdbc06758"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/after-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/before-head.stdout",
+      "bytes": 41,
+      "sha256": "bcc6dc7c9850457a258b8f75a0226c6ff5f5139c315032c66d4c3c8fdbc06758"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/diagnostic.py",
+      "bytes": 1283,
+      "sha256": "12cdf735d4e193e893de695328608be135536e6508d048ab7d8cf72b70fd2aec"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/events.jsonl",
+      "bytes": 3755,
+      "sha256": "fa3f203a80ee6edae894b002b5d136c20e6f2ff04625e8aade4911cd21cf9d28"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/inventory.json",
+      "bytes": 220,
+      "sha256": "956618f5b2056738c7009980bc00393c1014938747f5e194c33a4acf83d61227"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/process.json",
+      "bytes": 724,
+      "sha256": "2708aede3f36ebb743ee538c9b6b7f4d1f8b2d12af04fd99616a24a992277fa1"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/stderr.original",
+      "bytes": 5710,
+      "sha256": "8f9f5c42c29183216bb1767fcc4bba57119bae1ba8bb1c260ba1f75856e5d5e7"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-graph-two-diagnostic-6858-20261121/windows-mode-probe.json",
+      "bytes": 2969,
+      "sha256": "e4d9c76b85e7a2c7ae041974a7de4e813970497330456290d67cb2870b1f7994"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/before-head.stdout",
+      "bytes": 41,
+      "sha256": "616853d166760b58dfe20bf5170c251aae76538a7fb523fcdf0ae72d6350cb6b"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/before-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/inventory.json",
+      "bytes": 1320,
+      "sha256": "af2ac03e1fd1f9878613cac9a3583da56819c80644a879130f72645672dd3897"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/retention-note.txt",
+      "bytes": 480,
+      "sha256": "abee74549bb4577ef1dfc0e4ca417a008d0bc9cdb0713b8432104e3769d60c34"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/run-controls.py",
+      "bytes": 1294,
+      "sha256": "3ab436dd3c95c64b19d24bd6b0914380600b7efa60b8ac7f00b13f8870769dc6"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/sentinel-timeout-original.json",
+      "bytes": 2049,
+      "sha256": "649f918845928a18dea4a156efbe06e4f021293a02b67fa7bcd3c1b42d437a79"
+    },
+    {
+      "name": "windows/ai01-interval-clean-316b1f42-20261121/source-bindings.json",
+      "bytes": 2826,
+      "sha256": "16b518f092d39ba2e7049ee5ea50def7a275b79500597f24c91ec4bc027f0f47"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/after-head.stdout",
+      "bytes": 41,
+      "sha256": "91db493c54160192c056641e749b135164f5bcc136cbb88f7bf06b48c152e329"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/after-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/before-head.stdout",
+      "bytes": 41,
+      "sha256": "91db493c54160192c056641e749b135164f5bcc136cbb88f7bf06b48c152e329"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/diagnostic.py",
+      "bytes": 1589,
+      "sha256": "f3da5f86b1b562a0447121123945ca051d9ce1e8b492b89a2ae6c8e7415f904e"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/events.jsonl",
+      "bytes": 2839,
+      "sha256": "a65596c46d7a8df2fd55f6d9581abe7f49d6af1a7c090f8688dc799fd2283529"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/inventory.json",
+      "bytes": 535,
+      "sha256": "dc31ec8ec6067f3bc4fc51edd5fa3d185cf339aca68d976ba0f0abec47057dde"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/process.json",
+      "bytes": 895,
+      "sha256": "fbe05e2de09f7aa3e21dd44617bf0cb57645939bb076575efa975c285628fff2"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/stderr.original",
+      "bytes": 3579,
+      "sha256": "e37862588de4c8d4fdcdd2e7687bc68a69e70e5314892a07ec216dfb3810771f"
+    },
+    {
+      "name": "windows/ai01-mode-causal-green-a0629734-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-mode-contrary-858efe38-20261121/process.json",
+      "bytes": 512,
+      "sha256": "14e97f0229042ef07723e843dacae78b02bfa3c7c9f3f3c0acf1cdcfdc8e6584"
+    },
+    {
+      "name": "windows/ai01-mode-contrary-858efe38-20261121/stderr.original",
+      "bytes": 260,
+      "sha256": "8443a886db343061c5109f68416fbdb4ae9098b4c1fb8f30ad0b7f36e1ac70e3"
+    },
+    {
+      "name": "windows/ai01-mode-contrary-858efe38-20261121/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/base-reconciliation.json",
+      "bytes": 3245,
+      "sha256": "a415af64b5788c4bd9f154c47186600574a164e743e28f9b3f5a430639b8c489"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/candidate-input.original.json",
+      "bytes": 124105,
+      "sha256": "f8e6efd4ec980be7a1289a0819941aecf7ce45c134bfc4926485c29ff8a04290"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-00.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-00.stdout.original",
+      "bytes": 41,
+      "sha256": "a395032cdf33681c4882290894d5f1249cc09d476593af88cf40e3e486a0b211"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-01.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-01.stdout.original",
+      "bytes": 43,
+      "sha256": "2d6d27734a09cef095116325a39d61df362839803e060a8ddb643b0b4d7bc1ff"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-02.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-02.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-03.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-03.stdout.original",
+      "bytes": 22964,
+      "sha256": "5c3a888994bdc13ac36c672ca1100c3e4312ec67f7be8d67122c708e7cfcd2a0"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-04.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-04.stdout.original",
+      "bytes": 34757,
+      "sha256": "ff14732264b489cf94ade5c50df455ca4ae82d34550274018b8cc28e259f44bf"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-05.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-05.stdout.original",
+      "bytes": 25278,
+      "sha256": "2064f1106ce8e146356224e5ddfca8db86d08b0d6c26a8d375736a5d7aad219f"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-06.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-06.stdout.original",
+      "bytes": 37851,
+      "sha256": "831abed51ea2f0888b3ecae9731bead434fa504d468e93f4bfae9f7c9f89ebc0"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-07.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-07.stdout.original",
+      "bytes": 22780,
+      "sha256": "0a5b4ce7719e7cc0a5ccd47c60b2bff5b169d79f9e9c8d1df7cd7fa3426f36cf"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-08.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-08.stdout.original",
+      "bytes": 2568,
+      "sha256": "fcdb35966a50e2bd7daaa1311a552bde46136e5824109d71d8bf8918db6b4cb5"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-09.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-09.stdout.original",
+      "bytes": 19404,
+      "sha256": "a866529ea90235fba4a1fac72a7ca60255356f5fd97bf69c26de64023f16ba3e"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-10.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-10.stdout.original",
+      "bytes": 27248,
+      "sha256": "b833069849d915069751f535ce30f739b84426c0d1acb6bcf7222fade30d6df9"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-11.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-11.stdout.original",
+      "bytes": 7630,
+      "sha256": "93e6c6de68e32cb15044ae13af1782aa8ec9119b01cb73be2a17da41a2200d8e"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-12.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-12.stdout.original",
+      "bytes": 29318,
+      "sha256": "d959d7284dfea004771c98843f2fba8069a97cc34284dad33b13ef94747a869f"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-13.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-13.stdout.original",
+      "bytes": 18019,
+      "sha256": "af8f86c048df1dd99e8659a17ba5e77e5d0f53ceeef2e88cee7a87007cbcaf70"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-14.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-14.stdout.original",
+      "bytes": 29742,
+      "sha256": "c9538c59ee26a7719de9532d7a0958fc2511f6655515ac9a2ead989e82da3140"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-15.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-15.stdout.original",
+      "bytes": 131,
+      "sha256": "e944136e109b8619a24773e922942f71b8b90301c3d0d3033c80c81955ebd13d"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-16.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-16.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-17.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-17.stdout.original",
+      "bytes": 16568,
+      "sha256": "85516ee52e191285419fb5fa6a5a4a6f899485834f6b11913911f3fca9159bfe"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-18.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-18.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-19.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-19.stdout.original",
+      "bytes": 131,
+      "sha256": "e944136e109b8619a24773e922942f71b8b90301c3d0d3033c80c81955ebd13d"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-20.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-20.stdout.original",
+      "bytes": 195,
+      "sha256": "9ffc6d5ae427f666d8123f2f703699b742d70fc3aac15fde61f4b80dbe8ea3a6"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-21.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-21.stdout.original",
+      "bytes": 41,
+      "sha256": "54e21194a2f9e705c5926b066c73c2f8f2adf590b11d6ed777228c356e166b85"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-22.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-22.stdout.original",
+      "bytes": 41,
+      "sha256": "a395032cdf33681c4882290894d5f1249cc09d476593af88cf40e3e486a0b211"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-23.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-23.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-24.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-24.stdout.original",
+      "bytes": 131,
+      "sha256": "e944136e109b8619a24773e922942f71b8b90301c3d0d3033c80c81955ebd13d"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/git-processes.json",
+      "bytes": 9978,
+      "sha256": "c165f83cf0adb54cb8dce77f1011266a332525a896326715d947738e1adada63"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/parent-inventory.json",
+      "bytes": 14389,
+      "sha256": "4f93cc9f7c31cbb01010444aa2fce0b082570354b8fa16ca949decf0e26bbf0d"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/source-commit.json",
+      "bytes": 721,
+      "sha256": "766e13436314b6a2fe52dea52002a2cb50b788493d2116e7d8403fcce8ab9ab9"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/source.original.diff",
+      "bytes": 16568,
+      "sha256": "85516ee52e191285419fb5fa6a5a4a6f899485834f6b11913911f3fca9159bfe"
+    },
+    {
+      "name": "windows/ai01-stat-worker-source-20261122/submitted-script.original.py",
+      "bytes": 170085,
+      "sha256": "ce68741d7daeac893b6e612ead49195f05f16e2576b829594ab408b553ef65bf"
+    },
+    {
+      "name": "windows/ai01-test-fixture-candidate-20261122/base-reconciliation.json",
+      "bytes": 3898,
+      "sha256": "0fabb09ea1d722d1c7b296fabb02b371f4ed27d347e5d2499ca2171af2d9c7ae"
+    },
+    {
+      "name": "windows/ai01-test-fixture-candidate-20261122/candidate-input.original.json",
+      "bytes": 53818,
+      "sha256": "000a70168c0de205fad2365ad0622778144267e4558b47efa11152f273c408c1"
+    },
+    {
+      "name": "windows/ai01-test-fixture-candidate-20261122/candidate-parent-inventory.json",
+      "bytes": 11596,
+      "sha256": "41c1dcbf658ef50b822d9fdefc4bba52d99404f82aacb1df9d94075b6bfd76b5"
+    },
+    {
+      "name": "windows/ai01-test-fixture-candidate-20261122/candidate.original.diff",
+      "bytes": 25219,
+      "sha256": "2a31e06465030f75ccdc36d7b25cd7a941729a2fe84531cc2838ede0a4dba953"
+    },
+    {
+      "name": "windows/ai01-test-fixture-candidate-20261122/source-commit.json",
+      "bytes": 3500,
+      "sha256": "4002617b1ceba90d1d5b3e4e0dceb0eec2e9dc98a6ccbcad083307b4b8d4822d"
+    },
+    {
+      "name": "windows/ai01-test-fixture-candidate-20261122/submitted-script.original.py",
+      "bytes": 62442,
+      "sha256": "1b92879b8a23131f7d6f216955228f2e9f9c563f98c9150affee203b15188c37"
+    }
+  ],
+  "model_generation_requests": 0,
+  "ai_quality_measured": false,
+  "formal_acceptance_granted": false,
+  "retention_note": "Earlier failed/incomplete batches and local diagnostics remain originals; only exact29 receives the new132-parent PASS. Provider probe quarantine, actual keys and private user inputs are excluded."
+}

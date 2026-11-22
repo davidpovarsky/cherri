@@ -1,0 +1,454 @@
+{
+  "schema": "cherri.p15.index-component-proof/v1",
+  "status": "READY_FOR_REVIEW_NOT_PUBLISHED",
+  "packaged_utc": "2026-11-22T02:41:24.322051+00:00",
+  "target_repository_directory": "docs/language-v2/evidence/p15-combined-index-20261122",
+  "proposed_proof_parent": "06b2d2d5ee9c8ad33ee4fd77beb2a9c6af1b6b8b",
+  "initial_preflight": {
+    "run_id": 44972886028,
+    "workflow_source": "02a359b21ba0a0f2cb196e8e8fcbd2129c60a86f",
+    "workflow_conclusion": "failure",
+    "jobs": 0,
+    "artifacts": 0,
+    "check_runs": 0,
+    "subject_executed": false,
+    "retrieval_scope": "fresh read during packaging, not contemporaneous",
+    "context_diagnosis": "source/specification inference, no observed server annotation"
+  },
+  "executions": [
+    {
+      "run_id": 44973222943,
+      "subject": "1dcc7b3f97da992200fdf6b627f2c67090ea5298",
+      "workflow": "5ef9d581b4ea09832c6b9bfd927a4a06cbbe9057",
+      "artifact": {
+        "path": "runs/44973222943/artifact.original.zip",
+        "bytes": 1974527,
+        "sha256": "7cb889a5d35d1324143acae426393e7a849e1fd32597e828d01e72a9547fc6c1",
+        "members": 110
+      },
+      "root_audit_sha256": "c9a09d2f2ffa40665c6ff4da13647e110d1d0cbab89c6deb460a1ed067e13147",
+      "outer": {
+        "expected": 26,
+        "started": 4,
+        "passed": 3,
+        "failed": 1,
+        "skipped": 0,
+        "unstarted": [
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/cross_tier_producer",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/dirty_source",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/foreign_package",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/missing_artifact",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/missing_child",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/missing_source_file",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/partial_command",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/skipped_child",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/wrong_requirement",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/wrong_source_digest",
+          "TestCombinedIndexArithmeticActualProductionEvidence/BRG16/wrong_tier",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/cross_tier_producer",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/dirty_source",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/foreign_package",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/missing_artifact",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/missing_child",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/missing_source_file",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/partial_command",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/skipped_child",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/wrong_requirement",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/wrong_source_digest",
+          "TestCombinedIndexArithmeticActualProductionEvidence/RP21/wrong_tier"
+        ],
+        "unterminated": [],
+        "failed_tests": [
+          "TestCombinedIndexArithmeticActualProductionEvidence"
+        ],
+        "package_terminal": "fail",
+        "raw_sha256": "9db078bb8c13297dd6852364f417db19a7791103149ed4b02a9bbec2971120a2"
+      },
+      "outer_elapsed_seconds": 52.98905,
+      "components": {
+        "BRG16": {
+          "expected": 213,
+          "started": 213,
+          "passed": 213,
+          "failed": 0,
+          "skipped": 0,
+          "unstarted": [],
+          "unterminated": [],
+          "failed_tests": [],
+          "package_terminal": "pass",
+          "raw_sha256": "f687fb2180bd272a33147372437627fd6dd16e73a8f8fe8bc2ba8d522e52218a",
+          "elapsed_seconds": 2.064824803,
+          "exit_code": 0,
+          "timed_out": false
+        },
+        "RP21": {
+          "expected": 232,
+          "started": 121,
+          "passed": 112,
+          "failed": 9,
+          "skipped": 0,
+          "unstarted": [
+            "TestP15RP21SafeIndexNative/dynamic_empty/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_empty/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_empty/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_empty/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_empty/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_empty/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_empty/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_empty/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_empty/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_empty/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_empty/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_empty/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_first/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_first/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_first/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_first/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_first/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_first/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_first/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_first/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_first/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_first/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_first/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_first/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_fraction/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_last/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_last/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_last/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_last/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_last/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_last/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_last/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_last/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_last/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_last/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_last/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_last/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_negative/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_negative/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_negative/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_negative/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_negative/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_negative/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_negative/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_negative/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_negative/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_negative/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_negative/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_negative/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction/wrong_one_based",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/collection_changed",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/fallback_not_none",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/integral_branch_reversed",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/integral_divisor",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/integral_input_diverged",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/lookup_before_bounds",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/lower_bound_threshold",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/output_bypasses_guarded_result",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/upper_bound_strict",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/wrong_collection",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/wrong_lookup_index",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range/wrong_one_based",
+            "TestP15RP21SafeIndexNative/identity/casefold_duplicate_uuid",
+            "TestP15RP21SafeIndexNative/identity/consistent_alpha_uuid",
+            "TestP15RP21SafeIndexNative/identity/duplicate_uuid",
+            "TestP15RP21SafeIndexNative/identity/extra_action",
+            "TestP15RP21SafeIndexNative/identity/guard_native_integer_kind",
+            "TestP15RP21SafeIndexNative/identity/integral_native_real_kind",
+            "TestP15RP21SafeIndexNative/identity/late_producer",
+            "TestP15RP21SafeIndexNative/identity/lookup_outside_integral",
+            "TestP15RP21SafeIndexNative/identity/missing_output",
+            "TestP15RP21SafeIndexNative/identity/reconciled_malformed_group",
+            "TestP15RP21SafeIndexNative/identity/reconciled_malformed_uuid",
+            "TestP15RP21SafeIndexNative/identity/reconciled_zero_group",
+            "TestP15RP21SafeIndexNative/identity/reconciled_zero_uuid",
+            "TestP15RP21SafeIndexNative/reject_bool_index",
+            "TestP15RP21SafeIndexNative/reject_text_index"
+          ],
+          "unterminated": [],
+          "failed_tests": [
+            "TestP15RP21SafeIndexNative",
+            "TestP15RP21SafeIndexNative/dynamic_empty",
+            "TestP15RP21SafeIndexNative/dynamic_empty_text",
+            "TestP15RP21SafeIndexNative/dynamic_first",
+            "TestP15RP21SafeIndexNative/dynamic_fraction",
+            "TestP15RP21SafeIndexNative/dynamic_last",
+            "TestP15RP21SafeIndexNative/dynamic_negative",
+            "TestP15RP21SafeIndexNative/dynamic_negative_fraction",
+            "TestP15RP21SafeIndexNative/dynamic_out_of_range"
+          ],
+          "package_terminal": "fail",
+          "raw_sha256": "b298020a6de4c7c428f936129cc3a40f971bba09415d44c050863d4836448220",
+          "elapsed_seconds": 35.626313412,
+          "exit_code": 1,
+          "timed_out": false
+        }
+      },
+      "source_witnesses": 109,
+      "source_and_workflow_unchanged": true,
+      "metadata_original_processes_verified": 33,
+      "outer_owned_process_group_active": false
+    },
+    {
+      "run_id": 44975916730,
+      "subject": "06b2d2d5ee9c8ad33ee4fd77beb2a9c6af1b6b8b",
+      "workflow": "d4c1f7972949040851adbb6d5c47b84be7ba0f56",
+      "artifact": {
+        "path": "runs/44975916730/artifact.original.zip",
+        "bytes": 1994570,
+        "sha256": "8b486bee29926399d24b0947b213d7e35bfe42808f3bf774983b8f4ea05a23b8",
+        "members": 111
+      },
+      "root_audit_sha256": "177d45016ae154c87451ce2ee0fc0758a110da792334b6015c75c88022d06494",
+      "outer": {
+        "expected": 26,
+        "started": 26,
+        "passed": 26,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": [],
+        "unterminated": [],
+        "failed_tests": [],
+        "package_terminal": "pass",
+        "raw_sha256": "c15411a19e11ef90ae7722a8746a2492100255259b811d7e555b138ca4ac7440"
+      },
+      "outer_elapsed_seconds": 47.967776,
+      "components": {
+        "BRG16": {
+          "expected": 213,
+          "started": 213,
+          "passed": 213,
+          "failed": 0,
+          "skipped": 0,
+          "unstarted": [],
+          "unterminated": [],
+          "failed_tests": [],
+          "package_terminal": "pass",
+          "raw_sha256": "b01e3ef52f29b222b5f8a5f2c54f98c39987dffeb8ed5e27d66e90ac3d65b223",
+          "elapsed_seconds": 1.8341177929999999,
+          "exit_code": 0,
+          "timed_out": false
+        },
+        "RP21": {
+          "expected": 234,
+          "started": 234,
+          "passed": 234,
+          "failed": 0,
+          "skipped": 0,
+          "unstarted": [],
+          "unterminated": [],
+          "failed_tests": [],
+          "package_terminal": "pass",
+          "raw_sha256": "5453027348514aef9948fb47f15263c90a874c602951c5b00c1c6df44cf4fc71",
+          "elapsed_seconds": 31.969016548,
+          "exit_code": 0,
+          "timed_out": false
+        }
+      },
+      "source_witnesses": 109,
+      "source_and_workflow_unchanged": true,
+      "metadata_original_processes_verified": 33,
+      "outer_owned_process_group_active": false
+    }
+  ],
+  "actual_local_report": {
+    "source": "06b2d2d5ee9c8ad33ee4fd77beb2a9c6af1b6b8b",
+    "record_count": 4,
+    "report_timestamp": "2026-11-22T02:25:16Z",
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "skipped_cases": 2,
+    "closure_complete": false,
+    "rows": {
+      "BRG16": {
+        "id": "BRG16",
+        "test_level": "unit+native-structure+ios-runtime",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": false,
+        "status": "PENDING_EXTERNAL"
+      },
+      "RP21": {
+        "id": "RP21",
+        "test_level": "unit+native+iOS",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": false,
+        "status": "PENDING_EXTERNAL"
+      }
+    }
+  },
+  "archive": {
+    "path": "originals.zip",
+    "bytes": 5141459,
+    "sha256": "38905715741f037b91c3b933fb515763d08aee9dd6b2f54ad5f09c7f54af88e4",
+    "members": 24,
+    "uncompressed_member_bytes": 12932034
+  },
+  "members": [
+    {
+      "path": "preflight-44972886028/fresh-api-readback.json",
+      "bytes": 32648,
+      "sha256": "3f7eb24de1965382acf4dabd9b3a59fdde6ea0411c631a139e16c4814fde6acd"
+    },
+    {
+      "path": "preflight-44972886028/one-line-context-correction.diff",
+      "bytes": 582,
+      "sha256": "ba0aa334e7178106c5a5136eb462bbfab04c6bfb2f070f228940aeb598888842"
+    },
+    {
+      "path": "preflight-44972886028/primary-context-source-note.json",
+      "bytes": 550,
+      "sha256": "5c040e3ffe44fd8eb3f3633a9703cc78bb83ba618e1e820a07259ef60f8422b4"
+    },
+    {
+      "path": "preflight-44972886028/workflow02a.original.yml",
+      "bytes": 1968,
+      "sha256": "3d34df94457eb3ae8f9dfce06c9c0db3b33055965d40fab295c9df675c15abd6"
+    },
+    {
+      "path": "preflight-44972886028/workflow5ef9.original.yml",
+      "bytes": 1973,
+      "sha256": "c1430417de0d2271893810b12f670603d9b5d1ffd842d636c74d8267bd1b7a5f"
+    },
+    {
+      "path": "retrievals/two-executions.fresh-api-originals.json",
+      "bytes": 75961,
+      "sha256": "9e964cb9f123fe40aacf341d29fa1420e7d24348a52cdae89c2ee82eb4f6ce00"
+    },
+    {
+      "path": "runs/44973222943/artifact-members.hashes.json",
+      "bytes": 18621,
+      "sha256": "4fc31bbbab3b802004e951f95f0e654db15bba2f86d5a264d4586ed11f60443b"
+    },
+    {
+      "path": "runs/44973222943/artifact.original.zip",
+      "bytes": 1974527,
+      "sha256": "7cb889a5d35d1324143acae426393e7a849e1fd32597e828d01e72a9547fc6c1"
+    },
+    {
+      "path": "runs/44973222943/job-log.decoded.original.txt",
+      "bytes": 74070,
+      "sha256": "ab4194d3cd1305d773e1fa95c09c7ee4b1ce0aaf60ab1e8c38847f1e26fe78a3"
+    },
+    {
+      "path": "runs/44973222943/root-independent-intake.json",
+      "bytes": 12490,
+      "sha256": "c9a09d2f2ffa40665c6ff4da13647e110d1d0cbab89c6deb460a1ed067e13147"
+    },
+    {
+      "path": "runs/44973222943/root_verify_originals.py",
+      "bytes": 12040,
+      "sha256": "c1d30bf252045a65a6a0e0a488fd53eb05d014337842e408cae81b80c6849c65"
+    },
+    {
+      "path": "runs/44973222943/subject-tree.github.original.json",
+      "bytes": 2167796,
+      "sha256": "1d99d15a861fd820c5a3c4c7a282a6fce03aacd0e91252c776616d2dafe2ba30"
+    },
+    {
+      "path": "runs/44973222943/workflow-tree.github.original.json",
+      "bytes": 2174355,
+      "sha256": "e5c3245410e8fa1971173e5123ed6baae207e02634cfd2005031434335d1afb9"
+    },
+    {
+      "path": "runs/44975916730/artifact-members.hashes.json",
+      "bytes": 18796,
+      "sha256": "8279fbd3959b5cac783eda57d366adf4171669c643670c542cd98262650af12c"
+    },
+    {
+      "path": "runs/44975916730/artifact.original.zip",
+      "bytes": 1994570,
+      "sha256": "8b486bee29926399d24b0947b213d7e35bfe42808f3bf774983b8f4ea05a23b8"
+    },
+    {
+      "path": "runs/44975916730/root-independent-intake.json",
+      "bytes": 1793,
+      "sha256": "177d45016ae154c87451ce2ee0fc0758a110da792334b6015c75c88022d06494"
+    },
+    {
+      "path": "runs/44975916730/root_verify_originals.py",
+      "bytes": 12162,
+      "sha256": "c412e0f63c9fb26d811e97b4ffe426b4ef2b4b926a78a71ce1edd0c5f5aa82a4"
+    },
+    {
+      "path": "runs/44975916730/subject-tree.github.original.json",
+      "bytes": 2167795,
+      "sha256": "b05360579dc3dc7b202cf35162be87b55d06229baa7e479c0beed812abf6b143"
+    },
+    {
+      "path": "runs/44975916730/workflow-tree.github.original.json",
+      "bytes": 2174354,
+      "sha256": "4fb7b5bb1ca0d2c751224772166133bb74206510ae0c134e4c3ffca69f8676c0"
+    },
+    {
+      "path": "source-correction/ci-pin-manifest.json",
+      "bytes": 1131,
+      "sha256": "bc682f7cd1528b1c56ecd8a2477b2314d267eacf8bb53caceb30796836857018"
+    },
+    {
+      "path": "source-correction/ci-three-line-pin-update.diff",
+      "bytes": 1719,
+      "sha256": "e52d0d35c7df7a8778ea3d4831c1a68ca0b5f27322e971ddd05a2123e68a1adb"
+    },
+    {
+      "path": "source-correction/eight-original-name-pairs.json",
+      "bytes": 4542,
+      "sha256": "56f5c148f6341d9f54fefff7c55c42b728e11d772af9d738ebee676748d9ba98"
+    },
+    {
+      "path": "source-correction/source-proposal.original.json",
+      "bytes": 3133,
+      "sha256": "bd26529e271a8f1b5bc87d35e6355ca6fdf0bad9cb6a5158169e2a5a63fb9235"
+    },
+    {
+      "path": "source-correction/three-file-original-patch.diff",
+      "bytes": 4458,
+      "sha256": "9214e899d62653deec8a5c85c02c22901dd639a61f0054c9b78406f68785c32e"
+    }
+  ],
+  "new_tests_or_compiler_execution_during_packaging": false,
+  "compiler_source_changed_by_correction": false,
+  "formal_acceptance_granted": false,
+  "apple_runtime_proved": false,
+  "whole_179_executed": false
+}
