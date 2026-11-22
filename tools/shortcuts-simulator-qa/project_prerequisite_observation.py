@@ -25,6 +25,10 @@ import zipfile
 import project_prerequisite as prerequisite
 
 SCHEMA = "cherri-project-prerequisite-observation/1"
+QA_SCHEMA = "cherri-project-prerequisite-observation/2"
+QA_SCOPE = "CURRENT_PREREQUISITE_CALL_ONLY"
+QA_MANIFEST = "qa-compiler-manifest.original.json"
+QA_MANIFEST_LIMIT = 4 * prerequisite.terminal.MAX_PARSE_BYTES
 STREAM_LIMIT = 2 * 1024 * 1024
 METADATA_LIMIT = 64 * 1024
 ARCHIVE_LIMIT = 9 * 1024 * 1024
@@ -47,6 +51,8 @@ SOURCE_FILES = (
     QA + "XcodeProject/project.yml",
     QA + "XcodeProject/ReceiverApp/Info.plist",
 )
+QA_SOURCE_FILES = tuple(dict.fromkeys((*SOURCE_FILES,
+    *prerequisite.terminal.SOURCE_FILES, QA + "test_project_prerequisite_qa.py")))
 SCRIPTS = (
     ("install", 'if ! command -v xcodegen >/dev/null 2>&1; then HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 brew install xcodegen; fi'),
     ("generate", "xcodegen generate"),
@@ -408,7 +414,16 @@ def small_command(command, deadline, maximum):
     return out, record
 
 
-def source_binding(repo, expected, deadline, *, clean):
+def source_limit(name, *, qa=False):
+    # The original native CLI already bounds these larger script/Swift inputs
+    # to 4 MiB. Standalone observation and metadata retain their 64 KiB limit.
+    if qa and name in prerequisite.terminal.SOURCE_FILES:
+        return 4 * prerequisite.terminal.MAX_PARSE_BYTES
+    return METADATA_LIMIT
+
+
+def source_binding(repo, expected, deadline, *, clean, qa=False):
+    names = QA_SOURCE_FILES if qa else SOURCE_FILES
     head_raw, head_record = small_command(
         ["git", "--no-replace-objects", "rev-parse", "HEAD"], deadline, 3)
     require(head_raw.decode("ascii").strip() == expected, "SOURCE_HEAD")
@@ -419,7 +434,7 @@ def source_binding(repo, expected, deadline, *, clean):
         commands.append(status_record)
         require(status == b"", "SOURCE_DIRTY_BEFORE")
     tree, tree_record = small_command(
-        ["git", "--no-replace-objects", "ls-tree", "-rz", expected, "--", *SOURCE_FILES],
+        ["git", "--no-replace-objects", "ls-tree", "-rz", expected, "--", *names],
         deadline, 5)
     commands.append(tree_record)
     blobs = {}
@@ -432,10 +447,10 @@ def source_binding(repo, expected, deadline, *, clean):
         require(name not in blobs and kind == "blob" and
                 mode in {"100644", "100755"}, "SOURCE_TREE_ENTRY")
         blobs[name] = digest
-    require(set(blobs) == set(SOURCE_FILES), "SOURCE_INVENTORY")
+    require(set(blobs) == set(names), "SOURCE_INVENTORY")
     rows = []
-    for name in SOURCE_FILES:
-        raw, identity = bound_read(repo / name, METADATA_LIMIT)
+    for name in names:
+        raw, identity = bound_read(repo / name, source_limit(name, qa=qa))
         blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
         require(blob == blobs[name], "SOURCE_BYTES")
         rows.append({"path": name, "gitBlob": blob, "sha256": sha(raw), "bytes": len(raw),
@@ -493,6 +508,54 @@ def validate_context(source, run_id, attempt):
             "formalAcceptanceGranted": False}
 
 
+def qa_context_binding(repo, root, source, run_id, fixture):
+    """Retain the original native CLI context; never trust a PREPARED token."""
+    repo, root = Path(repo).absolute(), Path(root).absolute()
+    require(root == repo / "artifacts/cherri-ios27-simulator-qa" / run_id,
+            "QA_ARTIFACT_ROOT")
+    fresh_ancestors(root / "probe")
+    manifest = prerequisite.terminal.contained(root, "compiler-manifest.json")
+    raw, identity = bound_read(manifest, 4 * prerequisite.terminal.MAX_PARSE_BYTES)
+    expected = prerequisite.terminal.context(root, source, run_id, fixture)
+    require(expected["compilerManifestSha256"] == sha(raw), "QA_MANIFEST_CONTEXT_CHANGED")
+    after, after_identity = bound_read(manifest, 4 * prerequisite.terminal.MAX_PARSE_BYTES)
+    require(after == raw and after_identity == identity, "QA_MANIFEST_CONTEXT_CHANGED")
+    return {"context": expected, "compilerManifest": {
+        "bytes": len(raw), "sha256": sha(raw), "identity": identity}}
+
+
+def retain_qa_manifest(private, root, observed):
+    original = prerequisite.terminal.contained(root, "compiler-manifest.json")
+    raw, identity = bound_read(original, QA_MANIFEST_LIMIT)
+    require({"bytes": len(raw), "sha256": sha(raw), "identity": identity} ==
+            observed["compilerManifest"], "QA_MANIFEST_CHANGED_BEFORE_COPY")
+    target = private / QA_MANIFEST
+    with target.open("xb") as stream:
+        stream.write(raw)
+    copied, copied_identity = bound_read(target, QA_MANIFEST_LIMIT)
+    require(copied == raw, "QA_MANIFEST_COPY_CHANGED")
+    return {"bytes": len(raw), "sha256": sha(raw), "identity": copied_identity}
+
+
+def qa_packet_context(context, observation):
+    before = observation["before"]
+    return {**context, "executionScope": QA_SCOPE,
+            "qaContextSha256": sha(canonical(before["context"])) if before else None,
+            "qaContextMatchedBefore": observation["matchedBefore"],
+            "qaContextMatchedAfter": observation["matchedAfter"]}
+
+
+def execution_fields(*, qa=False):
+    if qa:
+        # These fields describe only this collector. The surrounding QA run
+        # has already compiled a fixture and may have started its simulator.
+        return {"collectorActionsStarted": {
+            "compiler": False, "simulator": False, "nativeTest": False,
+            "modelRequest": False}, "priorWorkflowPhasesAssessed": False}
+    return {"simulatorStarted": False, "nativeTestStarted": False,
+            "compilerStarted": False, "modelRequestStarted": False}
+
+
 def stage_summary(private, records):
     result = []
     for index, (name, _) in enumerate(SCRIPTS):
@@ -532,8 +595,10 @@ def stage_summary(private, records):
     return result
 
 
-def fixed_members(private, records, expected_bindings):
+def fixed_members(private, records, expected_bindings, *, qa=False):
     names = ["source.json", "identity.json", "diagnostic.json"]
+    if qa and QA_MANIFEST in expected_bindings:
+        names.append(QA_MANIFEST)
     receipt = private / "builds/project-prerequisite/receipt.json"
     if receipt.exists():
         names.append("builds/project-prerequisite/receipt.json")
@@ -543,12 +608,13 @@ def fixed_members(private, records, expected_bindings):
         names.extend([stage + ".intent.json", stage + ".process.json",
                       "builds/project-prerequisite/" + stage + ".stdout",
                       "builds/project-prerequisite/" + stage + ".stderr"])
-    require(len(names) == len(set(names)) and len(names) <= 12, "MEMBER_INVENTORY")
+    require(len(names) == len(set(names)) and len(names) <= (13 if qa else 12), "MEMBER_INVENTORY")
     require(set(names) == set(expected_bindings), "MEMBER_INVENTORY")
     members, raw_members = [], {}
     for name in names:
         is_stream = name.endswith((".stdout", ".stderr"))
-        limit = STREAM_LIMIT + 1 if is_stream else METADATA_LIMIT
+        limit = QA_MANIFEST_LIMIT if qa and name == QA_MANIFEST else \
+            STREAM_LIMIT + 1 if is_stream else METADATA_LIMIT
         raw = read_regular(private / name, limit)
         require(name in expected_bindings and
                 expected_bindings[name] == {"bytes": len(raw), "sha256": sha(raw),
@@ -568,9 +634,10 @@ def fixed_members(private, records, expected_bindings):
     return members, raw_members
 
 
-def make_archive(private, context, records, expected_bindings):
-    members, originals = fixed_members(private, records, expected_bindings)
-    manifest = canonical({"schema": SCHEMA + "/originals", **context, "members": members})
+def make_archive(private, context, records, expected_bindings, *, qa=False):
+    members, originals = fixed_members(private, records, expected_bindings, qa=qa)
+    manifest = canonical({"schema": (QA_SCHEMA if qa else SCHEMA) + "/originals",
+                          **context, "members": members})
     require(len(manifest) <= METADATA_LIMIT and
             sum(len(value) for value in originals.values()) + len(manifest) + 8192 <= ARCHIVE_LIMIT,
             "ARCHIVE_LIMIT")
@@ -640,18 +707,47 @@ def verify_public(public, summary):
 
 
 def validate_public_summary(value):
+    require(type(value) is dict, "PUBLIC_SUMMARY_FIELDS")
+    qa = value.get("schema") == QA_SCHEMA
     fields = {"schema", "diagnosticSourceSha", "workflowRunId", "workflowRunAttempt",
               "prerequisiteOnly", "formalAcceptanceGranted", "sourceMatchedBefore",
               "sourceMatchedAfter", "environmentMatched", "reason", "prerequisiteStatus",
               "captureComplete", "stages", "members", "plaintextArchive", "ciphertext",
               "recipientSha256", "elapsedMs", "budgetsSeconds", "simulatorStarted",
               "nativeTestStarted", "compilerStarted", "modelRequestStarted"}
+    if qa:
+        fields.difference_update({"simulatorStarted", "nativeTestStarted",
+                                  "compilerStarted", "modelRequestStarted"})
+        fields.update({"executionScope", "qaContextSha256", "qaContextMatchedBefore",
+                       "qaContextMatchedAfter", "collectorActionsStarted",
+                       "priorWorkflowPhasesAssessed"})
     require(type(value) is dict and set(value) == fields, "PUBLIC_SUMMARY_FIELDS")
-    require(value["schema"] == SCHEMA, "PUBLIC_SCHEMA")
+    require(value["schema"] == (QA_SCHEMA if qa else SCHEMA), "PUBLIC_SCHEMA")
     validate_context(value["diagnosticSourceSha"], value["workflowRunId"], value["workflowRunAttempt"])
-    require(value["prerequisiteOnly"] is True and all(value[key] is False for key in
-        ("formalAcceptanceGranted", "simulatorStarted", "nativeTestStarted",
-         "compilerStarted", "modelRequestStarted")), "PUBLIC_ACCEPTANCE")
+    require(value["prerequisiteOnly"] is True and value["formalAcceptanceGranted"] is False,
+            "PUBLIC_ACCEPTANCE")
+    if qa:
+        require(value["executionScope"] == QA_SCOPE and
+                value["priorWorkflowPhasesAssessed"] is False and
+                type(value["collectorActionsStarted"]) is dict and
+                set(value["collectorActionsStarted"]) == {"compiler", "simulator", "nativeTest", "modelRequest"} and
+                all(item is False for item in value["collectorActionsStarted"].values()),
+                "PUBLIC_QA_EXECUTION_SCOPE")
+        require(type(value["qaContextMatchedBefore"]) is bool and
+                type(value["qaContextMatchedAfter"]) is bool and
+                (not value["qaContextMatchedAfter"] or value["qaContextMatchedBefore"]),
+                "PUBLIC_QA_CONTEXT_STATE")
+        context_sha = value["qaContextSha256"]
+        require((value["qaContextMatchedBefore"] and type(context_sha) is str and
+                 re.fullmatch(r"[0-9a-f]{64}", context_sha)) or
+                (not value["qaContextMatchedBefore"] and context_sha is None),
+                "PUBLIC_QA_CONTEXT_DIGEST")
+        require(value["prerequisiteStatus"] != "PREPARED" or value["qaContextMatchedAfter"],
+                "PUBLIC_QA_CONTEXT_UNCONFIRMED")
+    else:
+        require(all(value[key] is False for key in
+            ("simulatorStarted", "nativeTestStarted", "compilerStarted", "modelRequestStarted")),
+            "PUBLIC_ACCEPTANCE")
     require(all(type(value[key]) is bool for key in
         ("sourceMatchedBefore", "sourceMatchedAfter", "environmentMatched", "captureComplete")),
         "PUBLIC_BOOLEAN_TYPE")
@@ -679,6 +775,8 @@ def validate_public_summary(value):
     digest(value["ciphertext"], CIPHER_LIMIT)
     require(type(value["stages"]) is list and len(value["stages"]) == 2, "PUBLIC_STAGES")
     names = {"source.json", "identity.json", "diagnostic.json"}
+    if qa and value["qaContextMatchedBefore"]:
+        names.add(QA_MANIFEST)
     any_started = False
     for index, item in enumerate(value["stages"]):
         name = SCRIPTS[index][0]
@@ -703,26 +801,29 @@ def validate_public_summary(value):
                       "builds/project-prerequisite/" + name + ".stderr"})
     if any_started or value["prerequisiteStatus"] != "NOT_STARTED":
         names.add("builds/project-prerequisite/receipt.json")
-    require(type(value["members"]) is list and 3 <= len(value["members"]) <= 12, "PUBLIC_MEMBERS")
+    require(type(value["members"]) is list and 3 <= len(value["members"]) <= (13 if qa else 12), "PUBLIC_MEMBERS")
     observed_names = []
     for member in value["members"]:
         require(type(member) is dict and set(member) == {"name", "bytes", "sha256", "complete"} and
                 member["name"] in names, "PUBLIC_MEMBER_NAME")
         digest({key: member[key] for key in ("bytes", "sha256", "complete")},
+               QA_MANIFEST_LIMIT if qa and member["name"] == QA_MANIFEST else
                STREAM_LIMIT + 1 if member["name"].endswith((".stdout", ".stderr")) else METADATA_LIMIT, True)
         observed_names.append(member["name"])
     require(len(set(observed_names)) == len(observed_names) and set(observed_names) == names,
             "PUBLIC_MEMBER_INVENTORY")
 
 
-def confirm_sources(repo, before):
+def confirm_sources(repo, before, *, qa=False):
+    names = QA_SOURCE_FILES if qa else SOURCE_FILES
+    require({row["path"] for row in before["files"]} == set(names), "SOURCE_INVENTORY")
     for row in before["files"]:
-        raw, identity = bound_read(repo / row["path"], METADATA_LIMIT)
+        raw, identity = bound_read(repo / row["path"], source_limit(row["path"], qa=qa))
         require(identity == row["identity"] and len(raw) == row["bytes"] and
                 sha(raw) == row["sha256"], "SOURCE_CHANGED_AT_SEAL")
 
 
-def validate_private(private, metadata, records, receipt):
+def validate_private(private, metadata, records, receipt, *, qa_manifest=None):
     expected = {}
     objects = dict(metadata)
     if receipt is not None:
@@ -745,6 +846,12 @@ def validate_private(private, metadata, records, receipt):
                     len(raw) == capture_record["bytes"] and
                     sha(raw) == capture_record["sha256"], "STREAM_IDENTITY_OR_BYTES_CHANGED")
             expected[name] = {"bytes": len(raw), "sha256": sha(raw), "identity": identity}
+    if qa_manifest is not None:
+        raw, identity = bound_read(private / QA_MANIFEST, QA_MANIFEST_LIMIT)
+        require({"bytes": len(raw), "sha256": sha(raw), "identity": identity} == qa_manifest,
+                "QA_MANIFEST_COPY_CHANGED")
+        parse_json(raw)
+        expected[QA_MANIFEST] = qa_manifest
     # A partial started intent or unknown stream is never silently omitted.
     actual = {p.relative_to(private).as_posix() for p in private.rglob("*") if p.is_file()}
     require(actual == set(expected), "UNACCOUNTED_PRIVATE_MEMBER")
@@ -760,8 +867,12 @@ def ci_context(source, run_id, attempt):
     return expected
 
 
-def collect(repo, root, source, run_id, attempt, shell, github_output, *, started=None):
+def collect(repo, root, source, run_id, attempt, shell, github_output, *, started=None,
+            qa_root=None, fixture_id=None):
     require(sys.platform == "darwin", "APPLE_DIAGNOSTIC_ONLY")
+    qa_mode = qa_root is not None or fixture_id is not None
+    require(not qa_mode or isinstance(qa_root, (str, Path)) and type(fixture_id) is str,
+            "QA_ARGUMENT_PAIR")
     start = time.monotonic() if started is None else started
     started_at = utc()
     deadline = start + OUTER_SECONDS
@@ -774,6 +885,11 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
     require(repo != root and repo not in root.parents, "OUTPUT_INSIDE_SOURCE")
     require(stat.S_ISDIR(repo.lstat().st_mode), "REPO_DIRECTORY")
     fresh_ancestors(repo / "probe")
+    if qa_mode:
+        runner_temp = Path(os.environ["RUNNER_TEMP"]).absolute()
+        require(root == runner_temp / ("cherri-qa-project-prerequisite-" + run_id + "-" + attempt),
+                "QA_OBSERVATION_ROOT")
+        fresh_ancestors(root)
     root.mkdir(mode=0o700, exist_ok=False)
     private, public = root / "private", root / "public"
     private.mkdir(mode=0o700)
@@ -790,12 +906,24 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
     preflight_deadline = min(deadline, start + PREFLIGHT_SECONDS)
     source_record = {"before": None, "after": None, "sourceMatchedBefore": False,
                      "sourceMatchedAfter": False}
+    qa_record = {"before": None, "after": None, "matchedBefore": False, "matchedAfter": False,
+                 "manifestOriginal": None}
+    if qa_mode:
+        source_record["qaContext"] = qa_record
     identity = {"ci": observed_ci, "matched": False}
     receipt, records, generated = None, [], None
     returncode, reason = 70, "SOURCE_REJECTED"
     try:
-        before = source_binding(repo, source, preflight_deadline, clean=True)
+        before = source_binding(repo, source, preflight_deadline, clean=True, qa=qa_mode)
         source_record.update(before=before, sourceMatchedBefore=True)
+        if qa_mode:
+            # Preserve the native CLI's complete source guard and actual
+            # compiler/fixture context. No public summary can replace them.
+            prerequisite.terminal.verify_checkout(repo, source)
+            require(time.monotonic() < preflight_deadline, "PREFLIGHT_DEADLINE")
+            qa_record["before"] = qa_context_binding(repo, qa_root, source, run_id, fixture_id)
+            qa_record["manifestOriginal"] = retain_qa_manifest(private, qa_root, qa_record["before"])
+            qa_record["matchedBefore"] = True
         identity = {"ci": observed_ci, **environment_binding(shell, preflight_deadline)}
         if not identity["matched"]:
             reason = "ENVIRONMENT_CHANGED"
@@ -804,7 +932,8 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
             clock = MonotonicClock()
             adapter = StageAdapter(repo, private, shell, clock, deadline, identity["bash"])
             returncode, receipt = prerequisite.prepare(
-                repo, private, context, shell, runner=adapter, now=clock)
+                repo, private, qa_record["before"]["context"] if qa_mode else context,
+                shell, runner=adapter, now=clock)
             records = adapter.records
             # This records expected generated output; it does not call the
             # mutated checkout clean, reset it, or accept unrelated changes.
@@ -814,7 +943,7 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
                 generated = {"path": prerequisite.PROJECT + "/" + prerequisite.GENERATED,
                              "bytes": len(raw), "sha256": sha(raw), "identity": generated_identity}
             metadata_deadline = min(deadline - ENCRYPT_SECONDS, time.monotonic() + 15)
-            after = source_binding(repo, source, metadata_deadline, clean=False)
+            after = source_binding(repo, source, metadata_deadline, clean=False, qa=qa_mode)
             source_record["after"] = after
             require(after["files"] == before["files"], "SOURCE_CHANGED_AFTER_STAGE")
             status, status_receipt = small_command(
@@ -825,6 +954,11 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
                     "UNEXPECTED_CHECKOUT_CHANGE")
             source_record["postStatus"] = status_receipt
             source_record["sourceMatchedAfter"] = True
+            if qa_mode:
+                qa_record["after"] = qa_context_binding(repo, qa_root, source, run_id, fixture_id)
+                require(canonical(qa_record["after"]) == canonical(qa_record["before"]),
+                        "QA_CONTEXT_CHANGED_AFTER_STAGE")
+                qa_record["matchedAfter"] = True
             reason = "NONE" if returncode == 0 else "PREREQUISITE_FAILED"
     except (OSError, ValueError, UnicodeError, TypeError, KeyError):
         # Raw exception messages may contain paths or service output; only this
@@ -843,38 +977,47 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
                 type(receipt["elapsedMs"]) is int and receipt["elapsedMs"] < 240000 and
                 source_record["sourceMatchedAfter"] and generated is not None and
                 generated["sha256"] == receipt["projectSha256"], "LATE_OR_UNBOUND_PREPARED")
-    diagnostic = {"schema": SCHEMA, **context, "startedAt": started_at,
+        require(not qa_mode or qa_record["matchedAfter"], "QA_CONTEXT_NOT_CONFIRMED")
+    if qa_mode:
+        context = qa_packet_context(context, qa_record)
+    packet_schema = QA_SCHEMA if qa_mode else SCHEMA
+    diagnostic = {"schema": packet_schema, **context, "startedAt": started_at,
                   "prerequisiteReturnCode": returncode, "reason": reason,
                   "generatedProject": generated, "captureComplete": complete,
                   "prerequisiteStatus": prerequisite_status,
                   "budgets": {"install": 180, "generate": 60, "aggregate": 240,
                               "preflight": 30, "encryption": 20, "outer": 310},
-                  "simulatorStarted": False, "nativeTestStarted": False,
-                  "compilerStarted": False, "modelRequestStarted": False}
+                  **execution_fields(qa=qa_mode)}
     metadata = {"source.json": source_record, "identity.json": identity,
                 "diagnostic.json": diagnostic}
     for name, value in metadata.items():
         write_json(private / name, value)
-    expected_members = validate_private(private, metadata, records, receipt)
-    archive, archive_record, members = make_archive(private, context, records, expected_members)
+    expected_members = validate_private(private, metadata, records, receipt,
+                                        qa_manifest=qa_record["manifestOriginal"] if qa_mode else None)
+    archive, archive_record, members = make_archive(private, context, records, expected_members, qa=qa_mode)
     if source_record["before"] is not None:
-        confirm_sources(repo, source_record["before"])
+        confirm_sources(repo, source_record["before"], qa=qa_mode)
+    if qa_mode and qa_record["before"] is not None:
+        require(canonical(qa_context_binding(repo, qa_root, source, run_id, fixture_id)) ==
+                canonical(qa_record["before"]), "QA_CONTEXT_CHANGED_AT_SEAL")
     cipher = encrypt_archive(private, public, archive, archive_record,
                              repo / RECIPIENT, deadline)
     if source_record["before"] is not None:
-        confirm_sources(repo, source_record["before"])
+        confirm_sources(repo, source_record["before"], qa=qa_mode)
+    if qa_mode and qa_record["before"] is not None:
+        require(canonical(qa_context_binding(repo, qa_root, source, run_id, fixture_id)) ==
+                canonical(qa_record["before"]), "QA_CONTEXT_CHANGED_AT_SEAL")
     elapsed = round((time.monotonic() - start) * 1000)
     require(elapsed < OUTER_SECONDS * 1000, "DIAGNOSTIC_DEADLINE")
     summary = {
-        "schema": SCHEMA, **context,
+        "schema": packet_schema, **context,
         "sourceMatchedBefore": source_record["sourceMatchedBefore"],
         "sourceMatchedAfter": source_record["sourceMatchedAfter"],
         "environmentMatched": identity["matched"], "reason": reason,
         "prerequisiteStatus": prerequisite_status, "captureComplete": complete,
         "stages": stages, "members": members, "plaintextArchive": archive_record,
         "ciphertext": cipher, "recipientSha256": RECIPIENT_SHA256, "elapsedMs": elapsed,
-        "budgetsSeconds": diagnostic["budgets"], "simulatorStarted": False,
-        "nativeTestStarted": False, "compilerStarted": False, "modelRequestStarted": False,
+        "budgetsSeconds": diagnostic["budgets"], **execution_fields(qa=qa_mode),
     }
     write_json(public / "summary.json", summary)
     verify_public(public, summary)
@@ -883,7 +1026,7 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
     print(json.dumps({"diagnosticPacket": "SEALED", "prerequisiteStatus": prerequisite_status,
                       "captureComplete": complete, "formalAcceptanceGranted": False}))
     with Path(github_output).open("a", encoding="ascii") as stream:
-        stream.write("publication_ready=true\n")
+        stream.write("prerequisite_publication_ready=true\n" if qa_mode else "publication_ready=true\n")
     return returncode if complete else 70
 
 
@@ -892,6 +1035,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("repo", "root", "source-sha", "run-id", "attempt", "bash", "github-output"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--qa-root")
+    parser.add_argument("--fixture-id")
     args = parser.parse_args()
     require(sys.platform == "darwin", "APPLE_DIAGNOSTIC_ONLY")
     def interrupted(signum, frame):
@@ -901,7 +1046,8 @@ def main():
     signal.setitimer(signal.ITIMER_REAL, max(0.001, OUTER_SECONDS - (time.monotonic() - started)))
     try:
         return collect(args.repo, args.root, args.source_sha, args.run_id,
-                       args.attempt, args.bash, args.github_output, started=started)
+                       args.attempt, args.bash, args.github_output, started=started,
+                       qa_root=args.qa_root, fixture_id=args.fixture_id)
     finally:
         signal.setitimer(signal.ITIMER_REAL, 0)
         for kind, handler in previous.items():

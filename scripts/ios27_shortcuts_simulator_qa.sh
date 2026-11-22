@@ -1677,9 +1677,24 @@ fi
 if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_LEVEL" = "full" ]; then
   if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
     echo "=== Phase 3 & 4: Running XCTest UI Automation & Callback Receiver ==="
-    python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/project_prerequisite.py" \
-      --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
-      --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --bash "$BASH" || exit 2
+    case "${QA_OBSERVE_PROJECT_PREREQUISITE:-false}" in
+      true)
+        # One original prepare call with bounded encrypted observations. A
+        # failed observed call cannot fall back, repeat or consume a skip token.
+        python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/project_prerequisite_observation.py" \
+          --repo "$ROOT_DIR" \
+          --root "$RUNNER_TEMP/cherri-qa-project-prerequisite-${RUN_ID}-${GITHUB_RUN_ATTEMPT:-1}" \
+          --qa-root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" \
+          --attempt "${GITHUB_RUN_ATTEMPT:-1}" --fixture-id "$TARGET_FIXTURE_ID" \
+          --bash "$BASH" --github-output "$GITHUB_OUTPUT" || exit 2
+        ;;
+      false)
+        python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/project_prerequisite.py" \
+          --repo "$ROOT_DIR" --root "$ARTIFACT_DIR" --source-sha "$SOURCE_SHA" \
+          --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID" --bash "$BASH" || exit 2
+        ;;
+      *) echo "ERROR: invalid project prerequisite observation mode" >&2; exit 2 ;;
+    esac
 
     # A GitHub rerun reuses RUN_ID. A fresh random suffix prevents old callbacks
     # from a previous attempt or a retained simulator container satisfying this run.
