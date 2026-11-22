@@ -92,7 +92,7 @@ func TestCombinedIndexArithmeticInventoryAndUnprovedRuntime(t *testing.T) {
 		if spec.Title != title || spec.Group != group || !reflect.DeepEqual(parseRequiredTiers(strings.Join(tiers, "+")), combinedIndexArithmeticRequiredTiers) {
 			t.Fatal("changed immutable combined requirement")
 		}
-		expected := map[string]int{"RP21": 232, "BRG16": 213}[id]
+		expected := map[string]int{"RP21": 234, "BRG16": 213}[id]
 		events := combinedIndexArithmeticEvidence.Events[id]
 		if len(events) != expected || !sort.StringsAreSorted(events) {
 			t.Fatal("fixed causal child inventory changed")

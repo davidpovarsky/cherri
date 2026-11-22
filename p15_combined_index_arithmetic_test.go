@@ -313,7 +313,12 @@ func p15IXGraph(actions []map[string]any, id string, spec p15IXCase) (p15AMView,
 	switch spec.Mode {
 	case "var":
 		c.mark("index_number")
-		value := c.number(spec.Value, "Number", true)
+		// A mutable binding leaves the action itself unnamed. Its resolved
+		// reference still carries the Number schema's fallback display title.
+		value := c.number(spec.Value, "", true)
+		if value != nil {
+			value["OutputName"] = "Number"
+		}
 		c.mark("index_store")
 		c.store("index", value)
 		index = p15AMAttachment(p15AMVariable("index"))
@@ -515,10 +520,40 @@ func p15IXCaseFault(t *testing.T, actions []map[string]any, view p15AMView, id s
 var p15IXIdentityFaults = []string{"consistent_alpha_uuid", "reconciled_malformed_uuid", "reconciled_zero_uuid", "reconciled_malformed_group", "reconciled_zero_group", "duplicate_uuid", "casefold_duplicate_uuid", "late_producer", "guard_native_integer_kind", "integral_native_real_kind", "extra_action", "missing_output", "lookup_outside_integral"}
 
 func p15IXIdentityControls(t *testing.T, actions []map[string]any, view p15AMView, id string, spec p15IXCase) {
-	for _, fault := range p15IXIdentityFaults {
+	faults := append([]string(nil), p15IXIdentityFaults...)
+	if id == "RP21" {
+		faults = append(faults, "mutable_number_producer_name", "mutable_number_reference_name")
+	}
+	for _, fault := range faults {
 		t.Run("identity/"+fault, func(t *testing.T) {
 			changed := p15AMClone(t, actions)
 			switch fault {
+			case "mutable_number_producer_name", "mutable_number_reference_name":
+				producer := p15AMParams(changed[view.marks["index_number"]])
+				consumer := p15AMParams(changed[view.marks["index_store"]])
+				input, inputOK := consumer["WFInput"].(map[string]any)
+				reference, referenceOK := input["Value"].(map[string]any)
+				_, producerNamed := producer["CustomOutputName"]
+				if id != "RP21" || spec.Mode != "var" || producerNamed || !inputOK || !referenceOK || reference["OutputName"] != "Number" || reference["OutputUUID"] != producer["UUID"] {
+					t.Fatal("mutable Number name control lacks the exact actual producer/reference pair")
+				}
+				gate := "native number action differs"
+				if fault == "mutable_number_producer_name" {
+					producer["CustomOutputName"] = "Number"
+				} else {
+					delete(reference, "OutputName")
+					gate = "native setvariable action differs"
+				}
+				if reflect.DeepEqual(changed, actions) {
+					t.Fatal("mutable Number name control did not change the actual graph")
+				}
+				if err := p15AMReferences(changed); err != nil {
+					t.Fatal("mutable Number name control failed at identity instead of the native name gate", err)
+				}
+				if _, err := p15IXGraph(changed, id, spec); err == nil || !strings.Contains(err.Error(), gate) {
+					t.Fatal("mutable Number name control missed its exact native field gate", gate, err)
+				}
+				return
 			case "consistent_alpha_uuid", "reconciled_malformed_uuid", "reconciled_zero_uuid":
 				old := p15AMParams(changed[view.marks["collection_output"]])["UUID"].(string)
 				replacement := "12345678-1234-4234-8234-123456789abc"
