@@ -34,7 +34,7 @@ successful implementation of that transport.
 ## Evidence boundary
 
 Each distinct process must run the exact clean implementation SHA. The fixed
-event inventories are 46 F04, 57 RP23 and 96 BRG14 events, including parents.
+event inventories are 47 F04, 58 RP23 and 97 BRG14 events, including parents.
 The reviewed source witness list has 111 paths; the shared caps remain 128 paths,
 4 MiB per blob, 16 MiB total and 15 seconds. Fixed source-list digest, original
 Go JSON events, stderr, process timestamps, command, exit status and every source
@@ -51,3 +51,21 @@ The default nested Go budget is the existing three minutes plus one minute of
 process overhead per scenario. This source change does not increase a process,
 source, output or aggregate budget. An actual replay and independent proof packet
 are required before any execution or acceptance claim.
+
+## Source-review correction before execution
+
+The unexecuted source `96732a053d96d047c1e9fd5077c69be0e6c146e8` modeled
+let-bound control results as unnamed. A subsequent independent source review
+found that lowerBinding/RenameOutput gives the exact end producer and its
+consumers the authored binding name. The oracle now requires branch, choice,
+empty, values and each in the joined sources, and values in the standalone
+repeat/for sources. Statement-only and child-return boundaries remain unnamed.
+No compiler, immutable clause or runtime expectation was changed.
+
+One new causal control per requirement consistently changes both the bound
+producer name and its sole consumer name while retaining UUID ownership, order,
+scalar types and control ancestry. It first validates references, then requires
+rejection at that exact producer's native-field comparison. The original
+46/57/96 inventories remain historical declarations of unexecuted 967 source;
+the corrected source declares 47/58/97. Neither declaration is execution proof.
+F04 remains unexecuted as a complete requirement and receives no formal credit.

@@ -90,6 +90,9 @@ func (c *p15VBCursor) condition(ref map[string]any, code uint64, key string, val
 func (c *p15VBCursor) boundary(kind, group string, mode uint64, output bool) map[string]any {
 	return c.take(kind, "", map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": mode}, output)
 }
+func (c *p15VBCursor) boundResult(kind, group, name string) map[string]any {
+	return c.take(kind, name, map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": uint64(2)}, true)
+}
 func (c *p15VBCursor) literal(kind, name, key string, value any, output bool) map[string]any {
 	return c.take(kind, name, map[string]any{key: value}, output)
 }
@@ -210,7 +213,7 @@ func p15VBJoined(c *p15VBCursor, id string) {
 	c.mark("else_yield")
 	c.literal("number", "Number1", "WFNumberActionNumber", uint64(7), true)
 	c.mark("if_result")
-	var branchRef = c.boundary("conditional", branch, 2, true)
+	var branchRef = c.boundResult("conditional", branch, "branch")
 	c.refs["branch"] = branchRef
 	c.mark("menu_start")
 	var menu = c.menu(id, "A", "B")
@@ -221,27 +224,27 @@ func p15VBJoined(c *p15VBCursor, id string) {
 	c.mark("true_yield")
 	c.literal("number", "", "WFNumberActionNumber", float64(1), true)
 	c.mark("menu_result")
-	var menuRef = c.boundary("choosefrommenu", menu, 2, true)
+	var menuRef = c.boundResult("choosefrommenu", menu, "choice")
 	c.refs["menu"] = menuRef
 	c.mark("zero_start")
 	var zero = c.repeat(0)
 	c.text("unexecuted", "Text", true)
 	c.mark("zero_result")
-	var zeroRef = c.boundary("repeat.count", zero, 2, true)
+	var zeroRef = c.boundResult("repeat.count", zero, "empty")
 	c.refs["zero"] = zeroRef
 	c.mark("many_start")
 	var many = c.repeat(3)
 	c.mark("empty_yield")
 	c.text("", "Text", true)
 	c.mark("many_result")
-	var manyRef = c.boundary("repeat.count", many, 2, true)
+	var manyRef = c.boundResult("repeat.count", many, "values")
 	c.refs["many"] = manyRef
 	c.mark("each_list")
 	var each = c.each([]string{"A", "B"})
 	c.mark("each_yield")
 	c.take("getvariable", "", map[string]any{"WFVariable": p15VBAttachment(p15VBVariable("item"))}, true)
 	c.mark("each_result")
-	var eachRef = c.boundary("repeat.each", each, 2, true)
+	var eachRef = c.boundResult("repeat.each", each, "each")
 	c.refs["each"] = eachRef
 	c.mark("joined_text")
 	var result = c.take("gettext", "observed", map[string]any{"WFTextActionText": p15VBToken("\ufffc|\ufffc|\ufffc|\ufffc|\ufffc", branchRef, menuRef, zeroRef, manyRef, eachRef)}, true)
@@ -276,7 +279,7 @@ func p15VBLoopCases() []p15VBCase {
 			c.mark("yield")
 			c.literal(spec.kind, spec.outputName, spec.key, spec.value, true)
 			c.mark("loop_result")
-			var result = c.boundary("repeat.count", group, 2, true)
+			var result = c.boundResult("repeat.count", group, "values")
 			c.refs["loop"] = result
 			c.mark("final_output")
 			c.output(result)
@@ -288,7 +291,7 @@ func p15VBLoopCases() []p15VBCase {
 		c.mark("yield")
 		c.take("getvariable", "", map[string]any{"WFVariable": p15VBAttachment(p15VBVariable("item"))}, true)
 		c.mark("loop_result")
-		var result = c.boundary("repeat.each", group, 2, true)
+		var result = c.boundResult("repeat.each", group, "values")
 		c.refs["loop"] = result
 		c.mark("final_output")
 		c.output(result)
@@ -635,7 +638,7 @@ func p15VBReferenceAt(actions []map[string]any, index int) map[string]any {
 	return ref
 }
 
-var p15VBIdentityFaults = []string{"canonical_alpha", "malformed_uuid", "zero_uuid", "casefold_uuid_collision", "malformed_group", "zero_group", "wrong_integer_kind", "late_producer", "extra_action", "missing_final_action", "unexpected_native_parameter"}
+var p15VBIdentityFaults = []string{"canonical_alpha", "malformed_uuid", "zero_uuid", "casefold_uuid_collision", "malformed_group", "zero_group", "wrong_integer_kind", "late_producer", "extra_action", "missing_final_action", "unexpected_native_parameter", "reconciled_bound_output_name"}
 
 func p15VBIdentityControls(t *testing.T, actions []map[string]any, spec p15VBCase) {
 	t.Helper()
@@ -746,6 +749,63 @@ func p15VBIdentityControls(t *testing.T, actions []map[string]any, spec p15VBCas
 			case "unexpected_native_parameter":
 				p15SCParams(broken[producers[0]])["UnexpectedValueBlockField"] = true
 				intended = "native"
+			case "reconciled_bound_output_name":
+				var name, kind string
+				switch spec.name {
+				case "zero_iterations":
+					name, kind = "values", "repeat.count"
+				case "joined_values":
+					name, kind = "branch", "conditional"
+				default:
+					t.Fatal("unexpected fixed bound-name specimen", spec.name)
+				}
+				var target = -1
+				for _, producer := range producers {
+					var params = p15SCParams(broken[producer])
+					if params["CustomOutputName"] == name && params["WFControlFlowMode"] == uint64(2) && broken[producer]["WFWorkflowActionIdentifier"] == "is.workflow.actions."+kind {
+						if target != -1 {
+							t.Fatal("ambiguous authored bound output", name)
+						}
+						target = producer
+					}
+				}
+				if target < 0 {
+					t.Fatal("missing actual authored bound output", name)
+				}
+				var uuid = p15SCParams(broken[target])["UUID"].(string)
+				var replacement = "__wrong_bound_result__"
+				p15SCParams(broken[target])["CustomOutputName"] = replacement
+				var renamed = 0
+				var rewrite func(any)
+				rewrite = func(value any) {
+					switch value := value.(type) {
+					case map[string]any:
+						if reference, ok := value["OutputUUID"].(string); ok && value["Type"] == "ActionOutput" && strings.EqualFold(reference, uuid) {
+							if value["OutputName"] != name {
+								t.Fatal("actual bound consumer name differs before mutation", value)
+							}
+							value["OutputName"] = replacement
+							renamed++
+						}
+						for _, child := range value {
+							rewrite(child)
+						}
+					case []any:
+						for _, child := range value {
+							rewrite(child)
+						}
+					}
+				}
+				for _, action := range broken {
+					rewrite(action)
+				}
+				if renamed != 1 {
+					t.Fatalf("fixed bound-name control reconciled %d consumers, want one", renamed)
+				}
+				if err := p15SCReferences(broken); err != nil {
+					t.Fatal("bound-name control failed before exact native fields gate", err)
+				}
+				intended = fmt.Sprintf("native %s action differs at %d:", kind, target)
 			}
 			if reflect.DeepEqual(broken, actions) {
 				t.Fatal("identity control did not change actual graph")

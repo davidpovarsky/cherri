@@ -92,7 +92,7 @@ func TestCombinedValueBlockInventoryAndUnprovedRuntime(t *testing.T) {
 		if spec.Title != title || spec.Group != group || !reflect.DeepEqual(parseRequiredTiers(strings.Join(tiers, "+")), spec.Required) {
 			t.Fatal("changed immutable combined requirement")
 		}
-		expected := map[string]int{"RP23": 57, "BRG14": 96}[id]
+		expected := map[string]int{"RP23": 58, "BRG14": 97}[id]
 		events := combinedValueBlockEvidence.Events[id]
 		if len(events) != expected || !sort.StringsAreSorted(events) {
 			t.Fatal("fixed causal child inventory changed")
@@ -335,7 +335,7 @@ func TestCombinedValueBlockIncompleteF04Scope(t *testing.T) {
 		t.Fatal("missing F04 contract")
 	}
 	var events = combinedValueBlockEvidence.Events["F04"]
-	if len(events) != 46 || !sort.StringsAreSorted(events) {
+	if len(events) != 47 || !sort.StringsAreSorted(events) {
 		t.Fatal("changed fixed F04 observation inventory")
 	}
 	var seen = map[string]bool{}
