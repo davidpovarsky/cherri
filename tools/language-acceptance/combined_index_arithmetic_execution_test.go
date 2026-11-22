@@ -147,7 +147,7 @@ func combinedIndexArithmeticActualProductionEvidence(t *testing.T, ids []string)
 	t.Helper()
 	all, selected := combinedIndexArithmeticSelectedContracts(t, ids...)
 	runner := NewRunner()
-	runner.artifactDir = os.Getenv("CHERRI_COMBINED_ARITHMETIC_EVIDENCE_OUTPUT")
+	runner.artifactDir = os.Getenv("CHERRI_COMBINED_INDEX_ARITHMETIC_EVIDENCE_OUTPUT")
 	runner.runRepairCases(selected.Repair)
 	runner.runRecoveryGates(selected.Gates)
 	if len(runner.records) != 2*len(ids) || len(runner.results) != len(ids) || len(runner.observations) != 0 {
