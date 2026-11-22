@@ -24,7 +24,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       GIT_NO_REPLACE_OBJECTS: "1"
       CHERRI_COMPONENT_SOURCE: ${{ github.workspace }}/subject
-      CHERRI_COMPONENT_OUT: ${{ runner.temp }}/cherri-index-${{ github.run_id }}-${{ github.run_attempt }}
+      CHERRI_COMPONENT_OUT: ${{ github.workspace }}/cherri-index-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout exact workflow implementation
         uses: actions/checkout@v6
