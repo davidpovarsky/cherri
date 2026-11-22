@@ -129,6 +129,7 @@ func (f p15InstallFixture) seedActualPair(t *testing.T, binary string) {
 }
 
 func TestP15K03LateDocsFailurePreservesWorkingPair(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15NewInstallFixture(t)
 	f.seedActualPair(t, p15InstallActualCompiler(t))
 	oldPath := filepath.Join(f.home, "bin", "cherri")
@@ -309,6 +310,7 @@ func (f p15InstallFixture) advanceGoodDocs(t *testing.T) string {
 }
 
 func TestP15K03DownloadedChecksumBeforeExecution(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	for _, tc := range []struct {
 		name, checksum, diagnostic string
 		downloads                  int32
@@ -343,6 +345,7 @@ func TestP15K03DownloadedChecksumBeforeExecution(t *testing.T) {
 }
 
 func TestP15K03PromotionFailuresRestoreActualPair(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	root, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)
@@ -413,6 +416,7 @@ func TestP15K03PromotionFailuresRestoreActualPair(t *testing.T) {
 }
 
 func TestP15K03SuccessfulUpdateCommitsValidatedPair(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15NewInstallFixture(t)
 	f.seedActualPair(t, p15InstallActualCompiler(t))
 	old := p15InstallState(t, f)
@@ -456,6 +460,7 @@ func TestP15K03SuccessfulUpdateCommitsValidatedPair(t *testing.T) {
 }
 
 func TestP15SkillFreshPinnedInstall(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15NewInstallFixture(t)
 	compilerRepo := filepath.Join(t.TempDir(), "compiler")
 	p15InstallGit(t, f.root, "clone", "--quiet", "--shared", f.root, compilerRepo)
@@ -504,6 +509,7 @@ func TestP15SkillFreshPinnedInstall(t *testing.T) {
 }
 
 func TestP15K02ActualCacheAndBundleSelection(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	actual := p15InstallRead(t, p15InstallActualCompiler(t))
 	for _, name := range []string{"cache_preferred_without_executing_bad_bundle", "bad_cache_uses_verified_bundle", "tampered_cache_not_executed", "both_incompatible_fail", "explicit_incompatible_never_falls_back"} {
 		t.Run(name, func(t *testing.T) {
@@ -617,6 +623,7 @@ func p15AssertDoctorBinary(t *testing.T, output, expected string) {
 }
 
 func TestP15K03ImmutableInstallRefsRequired(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	for _, key := range []string{"CHERRI_REF", "CHERRI_DOCS_REF"} {
 		t.Run(key, func(t *testing.T) {
 			f := p15NewInstallFixture(t)
@@ -639,6 +646,7 @@ func TestP15K03ImmutableInstallRefsRequired(t *testing.T) {
 }
 
 func TestP15K03LocalStateIsPreserved(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	for _, name := range []string{"dirty_docs", "invalid_docs_git", "dirty_source"} {
 		t.Run(name, func(t *testing.T) {
 			f := p15NewInstallFixture(t)

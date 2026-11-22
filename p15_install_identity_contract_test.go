@@ -33,6 +33,7 @@ func p15ExtractedRequireRole(t *testing.T, binary, sourceSHA, module string) {
 // These controls use two real clean builds with identical language contracts.
 // Reconciled sidecars cannot turn the distinct same-tree build into the pinned source.
 func TestP15RP45InstalledBinaryOwnership(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", false)
 	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
 	p15ExtractedRequireRole(t, f.compiler, f.sourceSHA, "github.com/electrikmilk/cherri")
@@ -126,6 +127,7 @@ func TestP15RP45InstalledBinaryOwnership(t *testing.T) {
 }
 
 func TestP15RP45RuntimePackageOwnership(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", false)
 	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
 	p15ExtractedRequireRole(t, migration, f.sourceSHA, "github.com/electrikmilk/cherri/cmd/cherri-migrate")
@@ -152,6 +154,7 @@ func TestP15RP45RuntimePackageOwnership(t *testing.T) {
 // request must produce the original committed bytes even when Git's convenience
 // replacement refs would make ordinary tree/blob reads return another object.
 func TestP15RP45PackageIgnoresGitReplacements(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", false)
 	want := f.receipt["archive_sha256"].(string)
 	for _, kind := range []string{"commit", "tree", "blob"} {

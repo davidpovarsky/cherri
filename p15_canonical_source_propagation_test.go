@@ -110,6 +110,7 @@ func p15CanonicalRebuildReferenceType(t *testing.T, params map[string]any, want 
 // effect. These deliberate invalid native markers are propagation controls,
 // never Apple runtime fixtures or changes to shipping compiler semantics.
 func TestP15CanonicalBehaviorSourcePropagation(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	repo := p15SchemaAcceptanceWorktree(t)
 	probe := filepath.Join(repo, "p15_brg24_rebuilt_probe_test.go")
 	p15SchemaWrite(t, probe, []byte(p15CanonicalRebuildProbe))

@@ -11,6 +11,7 @@ import (
 )
 
 func TestP15RP44ExtractedCacheAndBundleSelection(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP44", false)
 	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
 	p15ExtractedRequireRole(t, migration, f.sourceSHA, "github.com/electrikmilk/cherri/cmd/cherri-migrate")
@@ -144,6 +145,7 @@ func TestP15RP44ExtractedCacheAndBundleSelection(t *testing.T) {
 // tuple derived from the real compiler and real generated reference. The final
 // published K04 tuple is independently verified without this fixture override.
 func TestP15RP44ExtractedCompatibilityConsumer(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP44", false)
 	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
 	consumer := p15CopySkillOracle(t)
