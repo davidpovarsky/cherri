@@ -18,12 +18,12 @@ import stat
 import subprocess
 import time
 
-EXPECTED_SHA = "ed4f8985b5088ae13155e737c1d3eca632f17b34"
+EXPECTED_SHA = "17bf9cbc5c418ebeb049f9e037279fb3e0150968"
 ORIGIN = "https://github.com/davidpovarsky/cherri.git"
 PACKAGE = "github.com/electrikmilk/cherri/tools/language-acceptance"
 NESTED_PACKAGE = "github.com/electrikmilk/cherri"
 INVENTORY_PATH = "tools/language-acceptance/combined_value_block_inventory.json"
-INVENTORY_SHA256 = "d511f208929960f97998c8c2a62478d1840b73b01051b19ce3a61a0c1d67d70c"
+INVENTORY_SHA256 = "6e72a9c8f934ad9b0923e941232630d5f8bdb121823f7e50983dfc683edcb94d"
 PATHS_SHA256 = "8815479e1809972ff46ad19856b708a6cef1f994137b1250e1914d18bb096f6c"
 HARNESS_PATHS = ("tools/p10r15/run_valueblock_component_ci.py",
                  ".github/workflows/p10r15-valueblock-component.yml")
@@ -564,7 +564,7 @@ def fixed_inventory(raw):
     require(len(EXPECTED_EVENTS) == len(set(EXPECTED_EVENTS)) == 30 and
             isinstance(data["events"], dict) and set(data["events"]) == set(SCENARIOS),
             "changed fixed outer or nested scenario set")
-    for identity, count in (("F04", 47), ("RP23", 58), ("BRG14", 97)):
+    for identity, count in (("F04", 47), ("RP23", 58), ("BRG14", 98)):
         events = data["events"][identity]
         require(isinstance(events, list) and len(events) == count and events == sorted(set(events)),
                 "changed fixed nested event inventory: " + identity)
@@ -789,6 +789,8 @@ def main():
                 try:
                     raw, raw_receipt = read_original(destination / "outer-go.stdout.original", MAX_LOG)
                     _, stderr_receipt = read_original(destination / "outer-go.stderr.original", MAX_LOG)
+                    require(raw_receipt == process.get("stdout") and stderr_receipt == process.get("stderr"),
+                            "Original outer streams changed after process receipt")
                     parsed = parse_go_events(raw, process["started_at"], process["finished_at"])
                     summary.update(parsed, started_at=process["started_at"], finished_at=process["finished_at"],
                         elapsed_seconds=process["elapsed_seconds"], exit_code=process["exit_code"],
