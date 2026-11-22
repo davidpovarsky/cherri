@@ -1188,6 +1188,11 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	chkGroupUUID := l.GenerateUUID()
 	l.emitIfStart(chkGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: magicUUID}, 4, "__cherri_fn_envelope_v2__", true)
 
+	// Both generated markers must match before activating dispatch or
+	// replacing the saved caller input. Reuse the existing marker lookup.
+	markerGroupUUID := l.GenerateUUID()
+	l.emitIfStart(markerGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: chkUUID}, 4, "1", true)
+
 	setOneNumUUID := l.GenerateUUID()
 	l.emitAction(&ir.NativeActionNode{
 		NodeID:          setOneNumUUID,
@@ -1226,6 +1231,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		},
 	})
 
+	l.emitIfEnd(markerGroupUUID, "", "")
 	l.emitIfEnd(chkGroupUUID, "", "")
 	l.emitIfEnd(hasInputGroupUUID, "", "")
 

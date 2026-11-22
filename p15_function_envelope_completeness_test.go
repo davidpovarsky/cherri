@@ -262,10 +262,9 @@ func p15FEHealthySource(t *testing.T, kind string) string {
 	}
 }
 
-// The baseline healthy graph pins today's complete native action sequence for
-// authentic generated calls. Its exact historical magic-only header is not a
-// malformed-envelope acceptance policy: the separate necessary-guard test is
-// deliberately expected to expose that omission on the current source.
+// The healthy graph requires both exact generated markers before dispatch
+// activation and caller-input restoration. This is the explicit repaired wire
+// shape, not an old/new variant switch or complete-envelope acceptance policy.
 func p15FEHealthyGraph(actions []map[string]any, kind string) (*p15FEHealthyCursor, error) {
 	c := &p15FEHealthyCursor{
 		p15SCCursor: p15SCCursor{actions: actions, groups: map[string]bool{}},
@@ -283,14 +282,15 @@ func p15FEHealthyGraph(actions []map[string]any, kind string) (*p15FEHealthyCurs
 		c.mark("snapshot"); c.store("_cherri_caller_input", input)
 		provided := c.hasInput(input)
 		possible := c.take("detect.dictionary", "", map[string]any{"WFInput": p15SCAttachment(input)}, true)
-		c.field("cherri_functions", possible, "")
+		marker := c.field("cherri_functions", possible, "")
 		magic := c.field("_cherri_magic", possible, "")
 		valid := c.start(magic, 4, "WFConditionalActionString", "__cherri_fn_envelope_v2__")
+		marked := c.start(marker, 4, "WFConditionalActionString", "1")
 		one := c.take("gettext", "", map[string]any{"WFTextActionText": "1"}, true)
 		c.store("_cherri_is_fn", one)
 		c.mark("restore_read"); callerValue := c.field("_cherri_caller_input", possible, "")
 		c.mark("restore"); c.store("_cherri_caller_input", callerValue)
-		c.end(valid, "", false); c.end(provided, "", false)
+		c.end(marked, "", false); c.end(valid, "", false); c.end(provided, "", false)
 		outer := c.start(p15SCVariable("_cherri_is_fn"), 4, "WFConditionalActionString", "1")
 		envelope := c.take("detect.dictionary", "", map[string]any{"WFInput": p15SCAttachment(input)}, true)
 		function := c.field("function", envelope, "")
