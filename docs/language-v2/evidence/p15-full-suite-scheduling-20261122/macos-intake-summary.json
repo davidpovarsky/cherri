@@ -1,0 +1,319 @@
+{
+  "source": "db59215024e4a95985d756f459bbc87c97d48a61",
+  "success": true,
+  "process": {
+    "result": "PASS",
+    "exitCode": 0,
+    "elapsedMs": 262720
+  },
+  "tests": 29,
+  "phases": 235,
+  "parents": {
+    "TestP15RP42ExtractedInstallPublicCLI": 10.164,
+    "TestP10_IsolatedCompilerMutationGate": 86.698,
+    "TestP15CanonicalBehaviorSourcePropagation": 48.425,
+    "TestP15RP45ExtractedInstallAndRollback": 62.904
+  },
+  "costliest_commands": [
+    {
+      "phase": "p10_actual_mutation_command",
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "seconds": 35.423,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-count=1",
+        "-run",
+        "^(TestP10_RunActionPreservesWFInput|TestP10_StatisticActionEmitsWFInputNotInput|TestP10_ArrayEqualityComparison_FailsClosed|TestP10_RegexQuantifiersPreserved|TestP10_JSONBracesInStringNotParsedAsInlineVars)$",
+        "."
+      ]
+    },
+    {
+      "phase": "actual_schema_command",
+      "test": "TestP15CanonicalBehaviorSourcePropagation/static",
+      "seconds": 10.842,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-buildvcs=false",
+        "-count=1",
+        "-json",
+        "-timeout=90s",
+        "-run",
+        "^TestP15BRG24RebuiltNativeProbe$",
+        "."
+      ]
+    },
+    {
+      "phase": "p10_actual_mutation_command",
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "seconds": 10.839,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-count=1",
+        "-run",
+        "^TestP10_ArrayEqualityComparison_FailsClosed$",
+        "."
+      ]
+    },
+    {
+      "phase": "p10_actual_mutation_command",
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "seconds": 10.563,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-count=1",
+        "-run",
+        "^TestP10_JSONBracesInStringNotParsedAsInlineVars$",
+        "."
+      ]
+    },
+    {
+      "phase": "actual_schema_command",
+      "test": "TestP15CanonicalBehaviorSourcePropagation",
+      "seconds": 10.395,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-buildvcs=false",
+        "-count=1",
+        "-json",
+        "-timeout=90s",
+        "-run",
+        "^TestP15BRG24RebuiltNativeProbe$",
+        "."
+      ]
+    },
+    {
+      "phase": "p10_actual_mutation_command",
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "seconds": 10.068,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-count=1",
+        "-run",
+        "^TestP10_StatisticActionEmitsWFInputNotInput$",
+        "."
+      ]
+    },
+    {
+      "phase": "p10_actual_mutation_command",
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "seconds": 9.937,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-count=1",
+        "-run",
+        "^TestP10_RunActionPreservesWFInput$",
+        "."
+      ]
+    },
+    {
+      "phase": "actual_schema_command",
+      "test": "TestP15CanonicalBehaviorSourcePropagation/callback",
+      "seconds": 9.934,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-buildvcs=false",
+        "-count=1",
+        "-json",
+        "-timeout=90s",
+        "-run",
+        "^TestP15BRG24RebuiltNativeProbe$",
+        "."
+      ]
+    },
+    {
+      "phase": "p10_actual_mutation_command",
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "seconds": 9.655,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-count=1",
+        "-run",
+        "^TestP10_RegexQuantifiersPreserved$",
+        "."
+      ]
+    },
+    {
+      "phase": "actual_schema_command",
+      "test": "TestP15CanonicalBehaviorSourcePropagation/codec",
+      "seconds": 9.633,
+      "command": [
+        "go",
+        "test",
+        "-trimpath",
+        "-buildvcs=false",
+        "-count=1",
+        "-json",
+        "-timeout=90s",
+        "-run",
+        "^TestP15BRG24RebuiltNativeProbe$",
+        "."
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback",
+      "seconds": 8.293,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/setup.sh"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP42ExtractedInstallPublicCLI",
+      "seconds": 7.034,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP42ExtractedInstallPublicCLI3891246197/003/extracted/cherri-shortcuts/scripts/setup.sh"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/explicit_migration_override_wrong_role",
+      "seconds": 4.449,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/setup.sh",
+        "--update"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/explicit_migration_override_missing",
+      "seconds": 3.721,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/setup.sh",
+        "--update"
+      ]
+    },
+    {
+      "phase": "actual_component_go_build",
+      "test": "TestP15RP45ExtractedInstallAndRollback",
+      "seconds": 3.266,
+      "command": [
+        "go",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/001/tool",
+        "."
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/successful_complete_update",
+      "seconds": 3.059,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/setup.sh",
+        "--update"
+      ]
+    },
+    {
+      "phase": "actual_schema_command",
+      "test": "TestP15CanonicalBehaviorSourcePropagation",
+      "seconds": 2.421,
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15CanonicalBehaviorSourcePropagation1849113723/001/worktree",
+        "db59215024e4a95985d756f459bbc87c97d48a61"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/explicit_migration_override_missing",
+      "seconds": 2.222,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/doctor.sh"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/interrupt_documentation",
+      "seconds": 2.209,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/doctor.sh"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/successful_complete_update",
+      "seconds": 2.186,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/doctor.sh"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/interrupt_migration_checksum_receipt",
+      "seconds": 2.145,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/doctor.sh"
+      ]
+    },
+    {
+      "phase": "actual_installer_command",
+      "test": "TestP15RP45ExtractedInstallAndRollback/interrupt_migration_checksum_receipt",
+      "seconds": 2.124,
+      "command": [
+        "/bin/bash",
+        "--noprofile",
+        "--norc",
+        "-c",
+        "if [ -n \"$P15_INSTALL_SHIM_DIR\" ]; then\n  _p15_shim=$P15_INSTALL_SHIM_DIR\n  if command -v cygpath >/dev/null 2>&1; then _p15_shim=$(cygpath -u \"$_p15_shim\"); fi\n  PATH=\"$_p15_shim:$PATH\"\n  export PATH\n  if [ \"$(command -v \"$P15_INSTALL_SHIM_COMMAND\")\" != \"$_p15_shim/$P15_INSTALL_SHIM_COMMAND\" ]; then\n    echo '[P15_SHIM_NOT_SELECTED]' >&2\n    exit 89\n  fi\nfi\n. \"$0\"",
+        "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/TestP15RP45ExtractedInstallAndRollback710295912/004/extracted/cherri-shortcuts/scripts/setup.sh",
+        "--update"
+      ]
+    }
+  ],
+  "archive": {
+    "bytes": 782660,
+    "sha256": "ca832afc29078da4176a85be19129feb310e8ef16d3459ca0bce967c1adc57af",
+    "members": 668
+  }
+}

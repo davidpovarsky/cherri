@@ -1,0 +1,75 @@
+{
+  "schema": "cherri.p15.full-suite-scheduling-proof/v1",
+  "observation_source": "db59215024e4a95985d756f459bbc87c97d48a61",
+  "observation_tree": "9799b35d3d4799a30efade932f591428e5443e3e",
+  "wrapper_commit": "1e624c89645b6b974f47c9bc7b483dbfa9242cd2",
+  "macos_run_id": 45029497251,
+  "implementation_component": "080b5552218460c44005ce643a12a6869b5c4be3",
+  "integration_focused_source": "3921e26ef0e1e5282f369bf22f6d1e3fd160ecff",
+  "integration_focused_tree": "f0e70be03d3bcce0d84e3826211002a5b08bfd2b",
+  "original_failed_full_ci_run": 44971815217,
+  "source_contract_digests": {
+    "acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "archives": [
+    {
+      "file": "macos-artifact.original.zip",
+      "bytes": 782660,
+      "sha256": "ca832afc29078da4176a85be19129feb310e8ef16d3459ca0bce967c1adc57af",
+      "members": 668,
+      "run_id": 45029497251,
+      "artifact_id": 14757124343
+    },
+    {
+      "file": "linux-originals.zip",
+      "bytes": 759002,
+      "sha256": "8c2bf642194ae96b28be2a66716e01f55b08b2812bd96f12475f0e1232d16f1d",
+      "members": 668
+    },
+    {
+      "file": "integration-focused-originals.zip",
+      "bytes": 8037,
+      "sha256": "0b06e7e9dfa10113e6dc9a82e144a4220fd3ae06f6d72d0ab2e14d7397fc3b3f",
+      "members": 12
+    },
+    {
+      "file": "component-development-controls.zip",
+      "bytes": 11290,
+      "sha256": "4eec4e386ed1e5c0285a9cbfa063979e231a83bd817966ed8915fcaffbdc5f92",
+      "members": 8
+    }
+  ],
+  "files": {
+    "component-development-controls.zip": {
+      "bytes": 11290,
+      "sha256": "4eec4e386ed1e5c0285a9cbfa063979e231a83bd817966ed8915fcaffbdc5f92"
+    },
+    "integration-focused-originals.zip": {
+      "bytes": 8037,
+      "sha256": "0b06e7e9dfa10113e6dc9a82e144a4220fd3ae06f6d72d0ab2e14d7397fc3b3f"
+    },
+    "linux-originals.zip": {
+      "bytes": 759002,
+      "sha256": "8c2bf642194ae96b28be2a66716e01f55b08b2812bd96f12475f0e1232d16f1d"
+    },
+    "macos-artifact.original.zip": {
+      "bytes": 782660,
+      "sha256": "ca832afc29078da4176a85be19129feb310e8ef16d3459ca0bce967c1adc57af"
+    },
+    "macos-intake-summary.json": {
+      "bytes": 9546,
+      "sha256": "512991a9c05a6eb667f3ea618b2ec0ec1af6aa1ea5d9ff95965f332a7149b698"
+    },
+    "observation-runner.py": {
+      "bytes": 7057,
+      "sha256": "d46974a9a918e0eb5cf5d4d645e022017542255ce8c4c627e6bc27f4e680e03b"
+    },
+    "observation-workflow.yml": {
+      "bytes": 1489,
+      "sha256": "14f1afd19b68be550c5eea6a3f71f234e8cadfbef64c7bf42a8852deaa428448"
+    }
+  },
+  "scope": "Actual selected four-parent observations plus focused scheduling/producer integration controls. No final combined full-suite, full179, Apple-runtime or release acceptance. Component development controls were run before their component commit; clean integration receipts are separately bound."
+}
