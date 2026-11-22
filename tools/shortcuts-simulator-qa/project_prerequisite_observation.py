@@ -165,21 +165,30 @@ def binding(path, limit, *, complete=True):
     return {"bytes": len(raw), "sha256": sha(raw), "complete": complete}
 
 
-def group_present(pid):
+def group_observation(pid):
+    """Only ESRCH establishes absence; denied/failed probes remain unknown."""
     try:
         os.killpg(pid, 0)
-        return True
+        return {"state": "PRESENT", "present": True, "errno": None}
     except ProcessLookupError:
-        return False
+        return {"state": "ABSENT", "present": False, "errno": None}
+    except PermissionError as error:
+        return {"state": "PERMISSION_DENIED", "present": None, "errno": error.errno}
+    except OSError as error:
+        return {"state": "QUERY_FAILED", "present": None, "errno": error.errno}
 
 
 def kill_group(process):
-    """Always target the owned session, including after the parent has exited."""
+    """Always attempt the owned group; denial cannot bypass final pipe cleanup."""
     try:
         os.killpg(process.pid, signal.SIGKILL)
-        return True
+        return {"state": "SENT", "signalSent": True, "errno": None}
     except ProcessLookupError:
-        return False
+        return {"state": "ABSENT", "signalSent": False, "errno": None}
+    except PermissionError as error:
+        return {"state": "PERMISSION_DENIED", "signalSent": False, "errno": error.errno}
+    except OSError as error:
+        return {"state": "SIGNAL_FAILED", "signalSent": False, "errno": error.errno}
 
 
 def capture(command, allowance, *, output, error_output, hard_deadline,
@@ -200,6 +209,8 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
         "startedAt": utc(), "stdin": "DEVNULL", "pid": None,
         "returnCodeObserved": None, "cleanupGroupSignalSent": False,
         "cleanupParentReaped": True, "groupPresentAfterCleanup": None,
+        "groupBeforeCleanup": None, "groupAfterCleanup": None,
+        "cleanupGroupSignal": None,
         "stdout": {"bytes": 0, "overflow": False, "eof": False, "sha256": sha(b"")},
         "stderr": {"bytes": 0, "overflow": False, "eof": False, "sha256": sha(b"")},
     }
@@ -256,24 +267,29 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
                 result = "TIMEOUT"
         if result == "PASS" and time.monotonic() >= deadline:
             result = "DEADLINE_EXHAUSTED"
-        if result == "PASS" and group_present(process.pid):
-            result = "OWNED_GROUP_REMAINED"
+        if result == "PASS":
+            details["groupBeforeCleanup"] = group_observation(process.pid)
+            present = details["groupBeforeCleanup"]["present"]
+            if present is not False:
+                result = "OWNED_GROUP_REMAINED" if present is True else "CAPTURE_INCOMPLETE"
     finally:
         if process is not None:
             # No poll()!=None shortcut: descendants may outlive the parent.
-            details["cleanupGroupSignalSent"] = kill_group(process)
+            details["cleanupGroupSignal"] = kill_group(process)
+            details["cleanupGroupSignalSent"] = details["cleanupGroupSignal"]["signalSent"]
             try:
                 process.wait(timeout=max(0, min(2, hard_deadline - time.monotonic())))
                 details["cleanupParentReaped"] = True
             except subprocess.TimeoutExpired:
                 details["cleanupParentReaped"] = False
             details["returnCodeObserved"] = process.returncode
-            details["groupPresentAfterCleanup"] = group_present(process.pid)
+            details["groupAfterCleanup"] = group_observation(process.pid)
+            details["groupPresentAfterCleanup"] = details["groupAfterCleanup"]["present"]
             # Retain only already available bytes after cancellation, bounded by
             # the same stream cap. Never block waiting for a surviving writer.
             for key in list(selector.get_map().values()):
                 name, record = key.data, details[key.data]
-                while record["bytes"] <= stream_limit:
+                while record["bytes"] <= stream_limit and time.monotonic() < hard_deadline:
                     try:
                         chunk = os.read(key.fileobj.fileno(),
                                         min(65536, stream_limit + 1 - record["bytes"]))
@@ -298,6 +314,7 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
             details[name]["sha256"] = hashes[name].hexdigest()
         details["finishedAt"] = utc()
     if result == "PASS" and (not details["cleanupParentReaped"] or
+            details["cleanupGroupSignal"]["state"] not in {"SENT", "ABSENT"} or
             details["groupPresentAfterCleanup"] is not False or
             any(not details[name]["eof"] or details[name]["overflow"]
                 for name in ("stdout", "stderr"))):

@@ -1,5 +1,6 @@
 """Offline controls only: no Homebrew, Apple command, simulator or provider."""
 import contextlib
+import errno
 import copy
 import hashlib
 import io
@@ -143,6 +144,101 @@ class ObservationTests(unittest.TestCase):
         pid = int(out.split(b"CHILD:")[1].splitlines()[0])
         self.assertNotEqual(pid, detail["pid"])
         self.assertIn(self.owned_worker_state(pid), ("ABSENT", "ZOMBIE"))
+
+    def test_group_probe_classifies_absence_and_unknown_separately(self):
+        for error, state, present in (
+            (None, "PRESENT", True),
+            (ProcessLookupError(errno.ESRCH, "synthetic missing group"), "ABSENT", False),
+            (PermissionError(errno.EPERM, "synthetic denied query"), "PERMISSION_DENIED", None),
+            (OSError(errno.EIO, "synthetic query error"), "QUERY_FAILED", None),
+        ):
+            with self.subTest(state=state), mock.patch.object(subject.os, "killpg", side_effect=error):
+                observation = subject.group_observation(123)
+                self.assertEqual(observation["state"], state)
+                self.assertIs(observation["present"], present)
+                self.assertEqual(observation["errno"], error.errno if present is None else None)
+
+    def test_permission_denied_probe_cannot_promote_zero_exit(self):
+        actual_killpg = os.killpg
+        for error, state in (
+            (PermissionError(errno.EPERM, "synthetic denied query"), "PERMISSION_DENIED"),
+            (OSError(errno.EIO, "synthetic query error"), "QUERY_FAILED"),
+        ):
+            def query_denied(pid, sig):
+                if sig == 0:
+                    raise error
+                return actual_killpg(pid, sig)
+            with self.subTest(state=state), mock.patch.object(subject.os, "killpg", side_effect=query_denied):
+                result, detail, out, err = self.actual_capture("import os;os.write(1,b'EXACT-OUT');os.write(2,b'EXACT-ERR')")
+            self.assertEqual(result["result"], "CAPTURE_INCOMPLETE")
+            self.assertEqual(result["exitCode"], 0)
+            self.assertEqual((out, err), (b"EXACT-OUT", b"EXACT-ERR"))
+            self.assertIsNone(detail["groupPresentAfterCleanup"])
+            self.assertEqual(detail["groupBeforeCleanup"]["state"], state)
+            self.assertEqual(detail["groupAfterCleanup"]["state"], state)
+            self.assertTrue(detail["stdout"]["eof"] and detail["stderr"]["eof"])
+            self.assertTrue(detail["cleanupParentReaped"])
+            self.assertIn("finishedAt", detail)
+
+    def test_permission_denied_probe_preserves_held_pipe_timeout(self):
+        actual_killpg = os.killpg
+        def query_denied(pid, sig):
+            if sig == 0:
+                raise PermissionError(errno.EPERM, "synthetic denied post-cleanup query")
+            return actual_killpg(pid, sig)
+        worker = "import os,time;os.write(1,('CHILD:'+str(os.getpid())+'\\n').encode());time.sleep(12)"
+        code = "import subprocess,sys;subprocess.Popen([sys.executable,'-c'," + repr(worker) + "])"
+        started = time.monotonic()
+        with mock.patch.object(subject.os, "killpg", side_effect=query_denied):
+            result, detail, out, _ = self.actual_capture(code, 0.5)
+        self.assertLess(time.monotonic() - started, 2.5)
+        self.assertEqual(result["result"], "TIMEOUT")
+        self.assertEqual(detail["returnCodeObserved"], 0)
+        self.assertTrue(detail["cleanupGroupSignalSent"])
+        self.assertEqual(detail["cleanupGroupSignal"]["state"], "SENT")
+        self.assertIsNone(detail["groupPresentAfterCleanup"])
+        self.assertEqual(detail["groupAfterCleanup"]["state"], "PERMISSION_DENIED")
+        pid = int(out.split(b"CHILD:")[1].splitlines()[0])
+        self.assertNotEqual(pid, detail["pid"])
+        self.assertIn(self.owned_worker_state(pid), ("ABSENT", "ZOMBIE"))
+
+    def test_permission_denied_signal_keeps_cleanup_incomplete(self):
+        actual_killpg = os.killpg
+        owned = []
+        def signal_denied(pid, sig):
+            if sig == subject.signal.SIGKILL:
+                owned.append(pid)
+                raise PermissionError(errno.EPERM, "synthetic denied cleanup signal")
+            return actual_killpg(pid, sig)
+        worker = "import os,time;os.write(1,('CHILD:'+str(os.getpid())+'\\n').encode());time.sleep(12)"
+        code = "import subprocess,sys;subprocess.Popen([sys.executable,'-c'," + repr(worker) + "])"
+        pid = None
+        try:
+            started = time.monotonic()
+            with mock.patch.object(subject.os, "killpg", side_effect=signal_denied):
+                result, detail, out, _ = self.actual_capture(code, 0.5)
+            self.assertLess(time.monotonic() - started, 2.5)
+            self.assertEqual(result["result"], "TIMEOUT")
+            self.assertEqual(detail["returnCodeObserved"], 0)
+            self.assertFalse(detail["cleanupGroupSignalSent"])
+            self.assertEqual(detail["cleanupGroupSignal"]["state"], "PERMISSION_DENIED")
+            self.assertIsNot(detail["groupPresentAfterCleanup"], False)
+            pid = int(out.split(b"CHILD:")[1].splitlines()[0])
+            self.assertEqual(self.owned_worker_state(pid), "RUNNING")
+            self.assertIn("finishedAt", detail)
+        finally:
+            # The contrary deliberately denied the production signal. Only this
+            # observed owned group is cleaned with the captured real operation.
+            for group in owned:
+                try:
+                    actual_killpg(group, subject.signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            if pid is not None:
+                deadline = time.monotonic() + 1
+                while self.owned_worker_state(pid) == "RUNNING" and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertIn(self.owned_worker_state(pid), ("ABSENT", "ZOMBIE"))
 
     def test_stdout_overflow_keeps_only_the_bounded_prefix(self):
         result, detail, out, _ = self.actual_capture("import os;os.write(1,b'x'*10000)", stream_limit=64)
