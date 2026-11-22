@@ -143,15 +143,21 @@ if __name__ == "__main__":
 '''.replace("PYTHON_IDS_LITERAL", repr(tuple(support.PYTHON_PARENTS)))
 
 
+def typed_canonical_json(value):
+    """Compare JSON object values without reordering arrays or erasing scalar kinds."""
+    return json.dumps(value, sort_keys=True, ensure_ascii=True, allow_nan=False,
+                      separators=(",", ":")).encode("utf-8")
+
+
 def verify_python_inventory(inventory):
     support.verify_fixed_inventory(inventory)
     expected = list(EXPECTED_SUBTESTS)
     support.require(len(expected) == 36 and len(support.PYTHON_PARENTS) == 9,
                     "Fixed synthetic source inventory is incomplete")
     # Canonical encoded bytes retain JSON scalar types, including int vs float.
-    support.require(support.encoded(inventory.get("python_subtests")) == support.encoded(expected),
+    support.require(typed_canonical_json(inventory.get("python_subtests")) == typed_canonical_json(expected),
                     "Synthetic fixed subcase parameters changed")
-    support.require(support.encoded(inventory.get("python_budgets_seconds")) == support.encoded(
+    support.require(typed_canonical_json(inventory.get("python_budgets_seconds")) == typed_canonical_json(
         {"process": PROCESS_SECONDS, "workflow_step": STEP_SECONDS, "workflow_job": JOB_SECONDS,
          "cleanup_term": 5, "cleanup_kill": 10}), "Synthetic process budget changed")
 
@@ -183,7 +189,7 @@ def parse_python_events(raw, process):
         except Exception as error:
             errors.append({"line": number, "error": type(error).__name__ + ": " + str(error)})
     without_result = [{key: row[key] for key in ("parent", "ordinal", "params")} for row in observed]
-    complete = support.encoded(without_result) == support.encoded(list(EXPECTED_SUBTESTS))
+    complete = typed_canonical_json(without_result) == typed_canonical_json(list(EXPECTED_SUBTESTS))
     passed = complete and not errors and all(row["outcome"] == "pass" for row in observed)
     parsed.update(synthetic_subcases=observed, synthetic_subcase_errors=errors,
                   synthetic_subcase_inventory_complete=complete, synthetic_subcases_passed=passed)
@@ -224,6 +230,15 @@ def main():
                "unstarted": list(support.PYTHON_PARENTS), "unterminated": [], "errors": [],
                "formal_acceptance_granted": False, "apple_runtime_proved": False,
                "complete_envelope_proved": False, "native_execution_proved": False}
+    summary["separate_go_evidence_reference"] = {
+        "run_id": 44981694269, "job_id": 137083366399,
+        "workflow_sha": "4c84ed1753e370cee43b087caec5cb0bc400b574",
+        "subject_sha": "a490b0e1fb947216b5d0e0e0892ff554e6039d4e",
+        "artifact_id": 14737967843,
+        "artifact_sha256": "e0d2ef661590dbf10e33cda906ee7276f4557966f4f281138b192c1051ab455a",
+        "raw_sha256": "3c12c431722c7e0fb428f07dd792ac48b8cfbb4ccdc4c10430cb23066b981fdf",
+        "reexecuted_or_revalidated_by_this_job": False,
+        "original_combined_workflow_conclusion": "failure"}
     before, after, process, inventory, names = {}, {}, None, None, None
     child_created = False
     with support.cancellation_signals():

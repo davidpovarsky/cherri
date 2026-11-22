@@ -1,9 +1,9 @@
-name: P10R15 Function Envelope Focused Repair
+name: P10R15 Function Envelope Python Correction
 
 on:
   push:
     branches:
-      - audit/cherri-p10r15-function-envelope-focused-ci-20261122
+      - audit/cherri-p10r15-function-envelope-python-correction-20261122
     paths:
       - .github/workflows/p10r15-function-envelope-focused.yml
       - tools/p10r15/run_function_envelope_focused.py
@@ -15,58 +15,10 @@ permissions:
   contents: read
 
 concurrency:
-  group: p10r15-function-envelope-focused-${{ github.ref }}
+  group: p10r15-function-envelope-python-correction-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  affected-go-oracles:
-    runs-on: ubuntu-latest
-    timeout-minutes: 7
-    env:
-      PYTHONDONTWRITEBYTECODE: "1"
-      GIT_NO_REPLACE_OBJECTS: "1"
-      CHERRI_COMPONENT_SOURCE: ${{ github.workspace }}/subject
-      CHERRI_COMPONENT_OUT: ${{ github.workspace }}/cherri-function-envelope-go-${{ github.run_id }}-${{ github.run_attempt }}
-    steps:
-      - name: Checkout exact workflow implementation
-        uses: actions/checkout@v6
-        with:
-          path: harness
-          persist-credentials: false
-
-      - name: Checkout exact reviewed repair source
-        uses: actions/checkout@v6
-        with:
-          ref: a490b0e1fb947216b5d0e0e0892ff554e6039d4e
-          path: subject
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Preserve declared source origin
-        run: git -C "$CHERRI_COMPONENT_SOURCE" remote set-url origin https://github.com/davidpovarsky/cherri.git
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - uses: actions/setup-go@v6
-        with:
-          go-version: "1.24.x"
-          cache-dependency-path: subject/go.sum
-
-      - name: Execute all 68 parents with unchanged bounds
-        timeout-minutes: 5
-        run: python3 -B harness/tools/p10r15/run_function_envelope_focused.py
-
-      - name: Retain all original Go outcomes
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: p10r15-function-envelope-focused-go-${{ github.run_id }}
-          path: ${{ env.CHERRI_COMPONENT_OUT }}
-          if-no-files-found: warn
-          retention-days: 14
-
   python-synthetic-receipt-controls:
     runs-on: ubuntu-latest
     timeout-minutes: 4
