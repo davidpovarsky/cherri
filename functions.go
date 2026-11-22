@@ -117,20 +117,31 @@ func collectFunctionDefinition() {
 	}
 }
 
-var actionUsageRegex = regexp.MustCompile(`([a-zA-Z0-9]+)\(`)
-
 func checkFunctionUsage(content string) {
-	var matches = actionUsageRegex.FindAllStringSubmatch(content, -1)
-	if len(matches) == 0 {
-		return
-	}
-	for _, match := range matches {
-		var ref = strings.TrimSpace(match[1])
-		if function, found := functions[ref]; found {
-			if !function.used {
+	// Preserve ([a-zA-Z0-9]+)\( exactly, including matches inside text and
+	// comments, without running the regexp machine over large embedded payloads
+	// or allocating a submatch slice for every possible call.
+	for offset := 0; offset < len(content); {
+		var open = strings.IndexByte(content[offset:], '(')
+		if open < 0 {
+			return
+		}
+		open += offset
+		var start = open
+		for start > offset {
+			var character = content[start-1]
+			if !(character >= 'a' && character <= 'z' || character >= 'A' && character <= 'Z' || character >= '0' && character <= '9') {
+				break
+			}
+			start--
+		}
+		if start < open {
+			var ref = content[start:open]
+			if function, found := functions[ref]; found && !function.used {
 				functions[ref].used = true
 			}
 		}
+		offset = open + 1
 	}
 }
 

@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "scope": "Public bounded function-usage scan comparison only; original S4 failure preserved, no private corpus replay or final acceptance",
+  "implementation_source": "0f50e542a20a580db1f62d99dbb96a90149762a8",
+  "test_only_baseline": "5dbfd07a4931c031dfe50e66984b9c025d3d21ef",
+  "base_source": "b697d12ab68696e7860decaab8381515397dcbc7",
+  "source_files": [
+    {
+      "path": "functions.go",
+      "git_blob": "fd732fb387c6bda3ee51e3be59b532c732e3d25f",
+      "sha256": "e8473d0fac595f107563c5d2f524630f1d407791aea0f24f986ab73635760d28",
+      "bytes": 11058
+    },
+    {
+      "path": "function_usage_scan_test.go",
+      "git_blob": "e8d14f76f48ef28de30704e81b845de07371e1d6",
+      "sha256": "83c2f0c5d2d4f161fc18186f826c5730c59c8e915ba7ccb7454f5f4fb706794e",
+      "bytes": 6635
+    }
+  ],
+  "archive": {
+    "path": "originals.zip",
+    "bytes": 20382,
+    "sha256": "797f15937b178940698340b42fd0586ab4065ea6e4617a3aaa523746b99fca0f",
+    "members": [
+      {
+        "path": "baseline-go.jsonl",
+        "bytes": 78523,
+        "sha256": "67695d304b8864edc21fe82f0187b1d9f5d5a3cf5ac4b4ff8abebdf01099107d"
+      },
+      {
+        "path": "baseline-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "baseline-process.json",
+        "bytes": 1027,
+        "sha256": "88603f4d0e9a1cbc83b434d2ad1d7c14755c449cd76846e6da82f35e728d154b"
+      },
+      {
+        "path": "scanner-go.jsonl",
+        "bytes": 78074,
+        "sha256": "7799870de02aff352eb886ae71d7c371fd5a7084c61154b052e539fa55ac2620"
+      },
+      {
+        "path": "scanner-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "scanner-process.json",
+        "bytes": 1034,
+        "sha256": "99d0c7404e29e4da1b80acc174161bddaca961208713d2fa24e7e5735a0af27e"
+      },
+      {
+        "path": "native-regression-go.jsonl",
+        "bytes": 7605,
+        "sha256": "fdc3f1d3b50370eec4f6e5f86e6b8254433161af4784a3fbf9f6bcab7526c9ed"
+      },
+      {
+        "path": "native-regression-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "native-regression-process.json",
+        "bytes": 862,
+        "sha256": "bdb8d781fc17fa770401c5dae0ac58b051a9f354d490e52657bc79e591b85b8d"
+      },
+      {
+        "path": "ordinary-native-go.jsonl",
+        "bytes": 8749,
+        "sha256": "c01e144fe8b7dfa16229addd5a71a105b9754099c5b8ace9ee20abe1bbf85464"
+      },
+      {
+        "path": "ordinary-native-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "ordinary-native-process.json",
+        "bytes": 918,
+        "sha256": "2cb220e00894e39e8927ff738efc5bdd5084535d225e3fa895952f7e7e23616f"
+      },
+      {
+        "path": "benchmark-comparison.json",
+        "bytes": 12697,
+        "sha256": "c9559306c110972c0c2d3ce5deaff36a98b6f3fc0ea413da265eb5b135940b1f"
+      },
+      {
+        "path": "source-binding.json",
+        "bytes": 1777,
+        "sha256": "8020764b846cb1b6f584ed4014b2380bc983e7e0d8f4efc0ac0944d7c4bae655"
+      },
+      {
+        "path": "prior-s4-safe-reconciliation.json",
+        "bytes": 4350,
+        "sha256": "8b50a1f705cd449690358e536c006113f006428c4a8fb73d1e3cf1575add0fd9"
+      }
+    ]
+  },
+  "verified_results": {
+    "baseline_named_passes": 72,
+    "scanner_named_passes": 72,
+    "differential_byte_strings_per_repetition": 20120,
+    "repetitions": 3,
+    "existing_ordinary_clone_regression_passes": 10,
+    "private_s4_reexecuted": false,
+    "private_s4_gate_passed": false,
+    "private_raw_inputs_published": false,
+    "formal_acceptance_records": 0
+  },
+  "retained_failures": {
+    "original_s4": "Go15m timeout on source b791ce0616d1821cebfc57909a6bc50a195ca68c; first corpus case incomplete; original private streams remain on Windows",
+    "linked_worktree_regression": "Actual selected regression process failed before Legacy CLI execution because default go build could not read linked-worktree VCS status; same exact source/command passed from ordinary clone"
+  }
+}

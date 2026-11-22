@@ -258,3 +258,9 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 - Reassembled fragmented Go output and decoded all 18 retained XML specimens: two actual compiled originals plus 16 actual import/recompile results. Per-requirement bytes and typed trees are exact; original binary inputs are not claimed retained.
 - Four local unit/native-roundtrip records; RP19 and BRG08 remain pending Apple runtime. Original 24cada failure remains unchanged. No full requirement or CI inheritance.
 - Integration preserves documentation recovery, short-circuit and Unicode mappings and both independent intake guards. Root review SHA256: 9395ccf788c7819145c9abd5d5c49cf2b11583111c376b917800412f8a8dbe0e.
+
+## 2026-11-22 — bounded function-usage scan component
+
+- Clean source `0f50e542` replaces the original ASCII usage regex with equivalent parenthesis/prefix discovery. Baseline and fixed sources each passed72 named events across three repetitions, including20,120 differential byte strings per repetition. Existing Legacy CLI/native/state controls passed10 named events from an ordinary clone; the initial linked-worktree VCS build failure remains retained.
+- Public64KiB–4MiB payload and256KiB call-dense body measurements show lower scan cost and zero scanner allocations. These measurements do not establish private S4 causality or completion. Original S4 source/file/timeout metadata is unchanged; no private corpus replay, deadline change, formal record or release promotion occurred.
+- Source-bound originals and limits: [function-usage scan proof](docs/language-v2/p15-function-usage-scan-20261122.md). Final integrated and private gates remain separate.
