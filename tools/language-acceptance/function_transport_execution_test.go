@@ -205,8 +205,11 @@ func TestFunctionTransportActualProductionEvidence(t *testing.T) {
 }
 
 func functionTransportBrokenEvents(t *testing.T, raw []byte, fault string) []byte {
+	return functionScenarioBrokenEvents(t, raw, fault, functionTransportTests[1]+"/map_reserved_nested")
+}
+
+func functionScenarioBrokenEvents(t *testing.T, raw []byte, fault, parent string) []byte {
 	t.Helper()
-	var parent = functionTransportTests[1] + "/map_reserved_nested"
 	var target = parent + "/oracle/missing_action"
 	var events []map[string]any
 	var parentPass map[string]any
