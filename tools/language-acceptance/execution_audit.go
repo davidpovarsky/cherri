@@ -348,6 +348,16 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
 			row.Scope = scenario.Scope
 		}
+		if scenario, found := combinedValueBlockScenarios[row.ID]; found {
+			row.TestNames = scenario.tests()
+			row.ProductionPath = append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+			row.Scope = scenario.Scope
+			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
+			if row.ID == "F04" {
+				row.PositiveAndNegative = false
+				row.Scope = combinedValueBlockF04Gap + " " + scenario.Scope
+			}
+		}
 		if scenario, found := combinedUnicodeScenarios[row.ID]; found {
 			row.TestNames = scenario.tests()
 			row.ProductionPath = append([]string{}, combinedUnicodeEvidence.SourcePaths...)

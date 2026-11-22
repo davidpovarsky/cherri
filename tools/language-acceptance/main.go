@@ -939,6 +939,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateShortCircuitRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateCombinedValueBlockRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateCombinedUnicodeRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1737,20 +1740,7 @@ func (r *Runner) runControl() {
 
 	r.runValueBranchRequirement()
 
-	// F04: Value loop collects one element per iteration
-	srcF04 := "let collected = repeat 3 as i {\n    yield i\n}"
-	wfF04, errF04 := lowerSrc(r.reg, srcF04)
-	hasLoopResult := false
-	if wfF04 != nil {
-		for _, a := range wfF04.Actions {
-			if a.AppleIdentifier == "is.workflow.actions.repeat.count" && a.ControlFlowMode == 2 && a.OutputUUID != "" {
-				hasLoopResult = true
-				break
-			}
-		}
-	}
-	f04Passed := errF04 == nil && hasLoopResult
-	r.Record("F04", "control", "Value loop collects one semantic element per iteration", "unit+native", []string{"unit", "native"}, f04Passed, "PASSED", "Value-producing repeat/for loops collect yielded elements via repeat end action OutputUUID")
+	r.runCombinedValueBlockRequirement("F04", "control", "Value loop collects one semantic element per iteration", []string{"unit", "native"})
 
 	r.runLoopControlRequirement()
 }
@@ -1941,6 +1931,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		if r.runShortCircuitRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}
+		if r.runCombinedValueBlockRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runCombinedUnicodeRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1986,6 +1979,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 			continue
 		}
 		if r.runShortCircuitRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
+			continue
+		}
+		if r.runCombinedValueBlockRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
 			continue
 		}
 		if r.runCombinedUnicodeRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
