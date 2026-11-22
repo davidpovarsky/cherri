@@ -8,13 +8,18 @@ execution or broader project completion.
 
 ## Required inputs
 
-Use the exact inactive stage created by `stage_remote_release.py`. The complete
-37-row entrypoint report must have no failed, missing, duplicate or `NOT_RUN`
+Use the exact inactive stage created by `stage_remote_release.py`. Supply both
+`--compiler /absolute/cherri` and `--migrator /absolute/cherri-migrate`, built
+from the same clean pinned source for the same platform. Staging verifies their
+different Go main-package roles, copies both binaries and their commit/hash
+sidecars, and binds both binary hashes in the active tuple.
+
+The complete 39-row entrypoint report must have no failed, missing, duplicate or `NOT_RUN`
 check. The 58-row signing matrix must contain five unsigned controls, 53
 nonzero/no-artifact rejections, all three timeout cases and all 22 exact-preflight
 requests across the two Remote Builder routes. The source/runtime/unpacked
-integrity receipts must agree with their actual 20/23-file ZIP inventories and
-the same S/D/K tuple and compiler hash. The real candidate smoke must have eight
+integrity receipts must agree with their actual 23/29-file ZIP inventories and
+the same S/D/K tuple, compiler hash and migration-tool hash. The real candidate smoke must have eight
 successful operations, including both canonical external signing commands.
 
 Create a JSON evidence manifest outside source and live trees:
@@ -38,15 +43,18 @@ Create a JSON evidence manifest outside source and live trees:
 ```
 
 The illustrative tuple above is deliberately incomplete. Copy the **entire exact
-nine-field tuple** from the staging receipt: label, compilerCommit, docsCommit,
+ten-field tuple** from the staging receipt: label, compilerCommit, docsCommit,
 schemaFingerprint, codecFingerprint, macroFingerprint, compilerSHA256,
-sourceBranch and skillSourceHead. Paths resolve relative to the manifest. Each
+migrationSHA256, sourceBranch and skillSourceHead. Paths resolve relative to the manifest. Each
 digest must be computed from the actual file bytes. Hash binding and strict
 receipt validation preserve reviewed evidence; they are not independent
 attestation of arbitrary self-authored JSON.
 
 The historical intermediate archive containing 36 passed entrypoint checks and
 one `NOT_RUN` is a deliberate rejection control. It cannot authorize promotion.
+Historical compiler-only tuples and 20/23-file package receipts also remain
+ineligible for the current paired runtime. The 39 checks consist of 29 distinct
+route/integrity checks and ten exact tuple-field corruption checks.
 
 ## Execution
 
