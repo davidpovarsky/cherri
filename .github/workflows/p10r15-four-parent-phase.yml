@@ -1,0 +1,48 @@
+name: P10R15 Four Parent Phase Observation
+on:
+  push:
+    branches:
+      - audit/cherri-p10r15-mac-phase-run-20261122
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cherri-p10r15-four-parent-phase-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  observe:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: control
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: db59215024e4a95985d756f459bbc87c97d48a61
+          fetch-depth: 0
+          path: subject
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: subject/go.sum
+      - name: Observe four exact original parents under unchanged deadlines
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: >-
+          python3 -B control/tools/p10r15/run_phase_observation.py
+          --repo "$GITHUB_WORKSPACE/subject"
+          --source db59215024e4a95985d756f459bbc87c97d48a61
+          --output "$RUNNER_TEMP/four-parent-phase-evidence"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p10r15-four-parent-phase-originals
+          path: ${{ runner.temp }}/four-parent-phase-evidence
+          if-no-files-found: error
+          retention-days: 14
