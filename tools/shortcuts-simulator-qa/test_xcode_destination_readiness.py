@@ -229,11 +229,18 @@ class DestinationTests(unittest.TestCase):
                     self.tool.write_bytes(b"SYNTHETIC_ACTIVE_TOOL"); self.tool.chmod(0o700)
                 def resolve(path, *args, **kwargs):
                     return foreign if name == "foreign-resolved-tool" and path == self.tool else original_resolve(path, *args, **kwargs)
+                physical_tool = original_resolve(self.tool)
+                intercepted_access = []
                 actual_access = os.access
                 def access(path, mode):
-                    return False if name == "not-executable" and Path(path) == self.tool else actual_access(path, mode)
+                    if name == "not-executable" and Path(path) == physical_tool:
+                        intercepted_access.append((Path(path), mode))
+                        return False
+                    return actual_access(path, mode)
                 with patch.object(Path, "resolve", resolve), patch.object(diagnostic.os, "access", access):
                     code, receipt = self.phase().run()
+                if name == "not-executable":
+                    self.assertEqual(intercepted_access, [(physical_tool, os.X_OK)])
                 self.assertEqual((code, len(self.calls)), (70, 2))
                 self.assertFalse(receipt["testStarted"])
                 self.assertEqual(self.diagnostic()["launch"]["selectionStatus"], "RESOLUTION_REJECTED")
