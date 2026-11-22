@@ -1,0 +1,126 @@
+name: Cherri P10R15 one File source guard dispatch
+
+on:
+  push:
+    branches:
+      - audit/cherri-p10r15-file-source-guard-dispatch-20261122
+    paths:
+      - .github/workflows/cherri-p10r15-file-source-guard-dispatch.yml
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: cherri-file-source-guard-dispatch-73e243e21f34
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: github.event_name == 'push' && github.run_attempt == 1 && github.ref == 'refs/heads/audit/cherri-p10r15-file-source-guard-dispatch-20261122'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read the exact reviewed native source
+        uses: actions/checkout@v4
+        with:
+          ref: 73e243e21f34d29c1ebca1c564e69f1ef52c62c9
+          persist-credentials: false
+
+      - name: Dispatch once and bind the authentic native run
+        id: dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: ""
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, subprocess, time, urllib.parse
+          SOURCE = "73e243e21f34d29c1ebca1c564e69f1ef52c62c9"
+          BRANCH = "audit/cherri-p10r15-apple-source-guard-20261122"
+          REPOSITORY = "davidpovarsky/cherri"
+          WORKFLOW_ID = 419263697
+          WORKFLOW_PATH = ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml"
+          WORKFLOW_SHA256 = "71f806bfa314ae4a3041ad14ba9f8c93f9d744db81b12434af006e2810a3962b"
+          INPUTS = {"verify_local_ocr": "false", "probe_level": "full",
+              "device_profile": "ipad-default", "sample_id": "qa-json-body-file-utf8",
+              "capture_full_editor": "false", "max_editor_pages": "1",
+              "require_runtime": "true", "upload_sanitized_artifacts": "true"}
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / ("cherri-file-source-guard-dispatch-" + os.environ["GITHUB_RUN_ID"])
+          root.mkdir(exist_ok=False)
+          def write(name, value):
+              (root / name).write_text(json.dumps(value, sort_keys=True, indent=2) + "\n")
+          def command(argv, timeout=20):
+              result = subprocess.run(argv, capture_output=True, timeout=timeout, check=False)
+              if len(result.stdout) > 2 * 1024 * 1024 or len(result.stderr) > 65536:
+                  raise RuntimeError("DISPATCH_RESPONSE_LIMIT")
+              return result
+          def get(path, timeout=20):
+              result = command(["gh", "api", "--method", "GET", path], timeout)
+              if result.returncode:
+                  raise RuntimeError("DISPATCH_READ_FAILED")
+              return json.loads(result.stdout)
+          assert os.environ["GITHUB_REPOSITORY"] == REPOSITORY
+          assert os.environ["GITHUB_EVENT_NAME"] == "push" and os.environ["GITHUB_RUN_ATTEMPT"] == "1"
+          actual = command(["git", "--no-replace-objects", "rev-parse", "HEAD"])
+          assert actual.returncode == 0 and actual.stdout.decode().strip() == SOURCE
+          assert hashlib.sha256(pathlib.Path(WORKFLOW_PATH).read_bytes()).hexdigest() == WORKFLOW_SHA256
+          ref = get("repos/" + REPOSITORY + "/git/ref/heads/" + BRANCH)
+          assert ref["object"]["sha"] == SOURCE
+          workflow = get("repos/" + REPOSITORY + "/actions/workflows/" + str(WORKFLOW_ID))
+          assert workflow["id"] == WORKFLOW_ID and workflow["path"] == WORKFLOW_PATH and workflow["state"] == "active"
+          runs_path = "repos/" + REPOSITORY + "/actions/workflows/" + str(WORKFLOW_ID) + "/runs?" + urllib.parse.urlencode({"branch": BRANCH, "event": "workflow_dispatch", "per_page": 100})
+          before = get(runs_path)
+          assert not [run for run in before["workflow_runs"] if run["head_sha"] == SOURCE], "SOURCE_ALREADY_DISPATCHED"
+          request = {"ref": BRANCH, "inputs": INPUTS}
+          write("dispatch.request.json", request)
+          write("dispatch.intent.json", {"schema": "cherri-file-source-guard-dispatch/1",
+              "sourceSha": SOURCE, "sourceBranch": BRANCH, "workflowId": WORKFLOW_ID,
+              "workflowPath": WORKFLOW_PATH, "workflowSha256": WORKFLOW_SHA256,
+              "inputs": INPUTS, "maximumDispatches": 1,
+              "controllerRunId": os.environ["GITHUB_RUN_ID"], "controllerSourceSha": os.environ["GITHUB_SHA"],
+              "controllerEvent": "push", "nativeEventRequired": "workflow_dispatch",
+              "nativeEnvironmentOverrides": False, "formalAcceptanceGranted": False,
+              "createdAt": datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          # Exactly one POST. A failed/ambiguous response never permits a retry.
+          try:
+              posted = command(["gh", "api", "--method", "POST", "repos/" + REPOSITORY +
+                  "/actions/workflows/" + str(WORKFLOW_ID) + "/dispatches", "--input",
+                  str(root / "dispatch.request.json")], 30)
+              (root / "dispatch.stdout.original").write_bytes(posted.stdout)
+              (root / "dispatch.stderr.original").write_bytes(posted.stderr)
+              write("dispatch.response.json", {"returncode": posted.returncode, "timedOut": False})
+          except subprocess.TimeoutExpired as error:
+              (root / "dispatch.stdout.original").write_bytes(error.stdout or b"")
+              (root / "dispatch.stderr.original").write_bytes(error.stderr or b"")
+              write("dispatch.response.json", {"returncode": None, "timedOut": True})
+          deadline, selected = time.monotonic() + 45, None
+          while time.monotonic() < deadline:
+              value = get(runs_path, min(10, max(0.1, deadline - time.monotonic())))
+              found = [run for run in value["workflow_runs"] if run["head_sha"] == SOURCE]
+              assert len(found) <= 1, "AMBIGUOUS_NATIVE_RUN"
+              if found:
+                  selected = found[0]
+                  break
+              time.sleep(min(2, max(0, deadline - time.monotonic())))
+          assert selected is not None, "NATIVE_RUN_NOT_OBSERVED_NO_RETRY"
+          assert selected["head_branch"] == BRANCH and selected["event"] == "workflow_dispatch"
+          assert selected["run_attempt"] == 1 and selected["workflow_id"] == WORKFLOW_ID
+          assert selected["path"] == WORKFLOW_PATH
+          binding = {key: selected[key] for key in ("id", "run_attempt", "workflow_id", "path",
+              "head_sha", "head_branch", "event", "created_at", "status", "conclusion", "html_url")}
+          write("native-run.binding.json", binding)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("native_run_id=" + str(selected["id"]) + "\n")
+          print(json.dumps({"native_run_id": selected["id"], "source_sha": SOURCE,
+                            "native_event": selected["event"], "formalAcceptanceGranted": False}))
+          PY
+
+      - name: Retain only dispatch and run binding receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-file-source-guard-dispatch-${{ github.run_id }}
+          path: ${{ runner.temp }}/cherri-file-source-guard-dispatch-${{ github.run_id }}/
+          if-no-files-found: error
+          retention-days: 7
