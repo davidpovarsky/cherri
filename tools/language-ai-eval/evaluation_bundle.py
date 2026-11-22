@@ -81,12 +81,21 @@ def unique_json(raw):
                       parse_constant=lambda _: (_ for _ in ()).throw(BundleError("NONFINITE_JSON")))
 
 
+def _stat_is_link(info):
+    # CPython 3.12 Path.is_symlink and ntpath.isjunction both use lstat.
+    # Use the same fresh result for their two predicates. The mount-point tag
+    # is defined by Windows; it is absent from stat on POSIX Python builds.
+    junction_tag = getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", 0xA0000003)
+    return stat.S_ISLNK(info.st_mode) or getattr(info, "st_reparse_tag", None) == junction_tag
+
+
 def read_regular(path, limit=4 * 1024 * 1024):
     path = Path(path)
     require(type(limit) is int and limit >= 0, "INPUT_SIZE_LIMIT")
     before = path.lstat()
-    require(stat.S_ISREG(before.st_mode) and not path.is_symlink() and not getattr(path, "is_junction", lambda: False)(), "INPUT_NOT_REGULAR")
-    require(all(not p.is_symlink() and not getattr(p, "is_junction", lambda: False)() for p in path.parents), "INPUT_PARENT_SYMLINK")
+    require(stat.S_ISREG(before.st_mode) and not _stat_is_link(before), "INPUT_NOT_REGULAR")
+    parents = tuple(path.parents)
+    require(all(not _stat_is_link(p.lstat()) for p in parents), "INPUT_PARENT_SYMLINK")
     require(before.st_size <= limit, "INPUT_SIZE_LIMIT")
     # Python 3.12 on Windows exposes creation time through path.lstat().ctime
     # but change time through fstat().ctime. Compare that field within each
@@ -110,8 +119,10 @@ def read_regular(path, limit=4 * 1024 * 1024):
             "INPUT_CHANGED_DURING_READ")
     require(before.st_mode == path_after.st_mode and opened.st_mode == after.st_mode,
             "INPUT_CHANGED_DURING_READ")
-    require(not getattr(path, "is_junction", lambda: False)() and all(
-            not p.is_symlink() and not getattr(p, "is_junction", lambda: False)() for p in path.parents), "INPUT_PARENT_SYMLINK")
+    # Recheck every lexical ancestor after the bounded read. No stat result,
+    # parent identity or original bytes are cached between phases or calls.
+    require(not _stat_is_link(path_after) and all(
+            not _stat_is_link(p.lstat()) for p in parents), "INPUT_PARENT_SYMLINK")
     return raw
 
 

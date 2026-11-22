@@ -2,6 +2,7 @@
 import copy
 import json
 from pathlib import Path
+import stat
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -219,6 +220,48 @@ class ProvenanceControls(unittest.TestCase):
     def test_symlink_input_cannot_supply_an_original(self):
         actual = self.root / "real.json"
         actual.write_text("{}")
+        original_lstat = Path.lstat
+        visits = {}
+        def counted(path):
+            visits[path] = visits.get(path, 0) + 1
+            return original_lstat(path)
+        # Each phase observes every path anew, with one no-follow stat serving
+        # both link predicates. No second pathname query supplies its tag.
+        with mock.patch.object(Path, "lstat", counted), \
+                mock.patch.object(Path, "is_symlink", side_effect=AssertionError("duplicate path query")), \
+                mock.patch.object(Path, "is_junction", side_effect=AssertionError("duplicate path query"), create=True):
+            self.assertEqual(eb.read_regular(actual, 8), b"{}")
+            self.assertEqual(visits, {path: 2 for path in (actual, *actual.parents)})
+            self.assertEqual(eb.read_regular(actual, 8), b"{}")
+            self.assertEqual(visits, {path: 4 for path in (actual, *actual.parents)})
+        # Model the exact stat fields returned for a Windows junction, even on
+        # POSIX. Every late mutation is applied only to the fresh second scan.
+        for location, kind, occurrence, error in (
+            (actual, "junction", 1, "INPUT_NOT_REGULAR"),
+            (actual, "junction", 2, "INPUT_PARENT_SYMLINK"),
+            (self.root, "junction", 1, "INPUT_PARENT_SYMLINK"),
+            (self.root, "junction", 2, "INPUT_PARENT_SYMLINK"),
+            (self.root, "symlink", 1, "INPUT_PARENT_SYMLINK"),
+            (self.root, "symlink", 2, "INPUT_PARENT_SYMLINK"),
+        ):
+            seen = {}
+            def changed(path):
+                observed = original_lstat(path)
+                seen[path] = seen.get(path, 0) + 1
+                if path == location and seen[path] == occurrence:
+                    fields = {key: getattr(observed, key) for key in (
+                        "st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")}
+                    if kind == "junction":
+                        fields["st_reparse_tag"] = 0xA0000003
+                    else:
+                        fields["st_mode"] = stat.S_IFLNK | stat.S_IMODE(observed.st_mode)
+                    return SimpleNamespace(**fields)
+                return observed
+            with self.subTest(location="file" if location == actual else "parent", kind=kind, phase=occurrence), \
+                    mock.patch.object(Path, "lstat", changed):
+                with self.assertRaisesRegex(eb.BundleError, error):
+                    eb.read_regular(actual, 8)
+            self.assertEqual(seen[location], occurrence)
         link = self.root / "link.json"
         try:
             link.symlink_to(actual)
@@ -226,6 +269,16 @@ class ProvenanceControls(unittest.TestCase):
             self.skipTest("Host does not permit symlink creation")
         with self.assertRaisesRegex(eb.BundleError, "INPUT_NOT_REGULAR"):
             eb.read_regular(link)
+        physical_parent = self.root / "physical-parent"
+        physical_parent.mkdir()
+        (physical_parent / "original.json").write_bytes(b"{}")
+        alias_parent = self.root / "alias-parent"
+        alias_parent.symlink_to(physical_parent, target_is_directory=True)
+        # This real ancestor alias must fail even immediately after a valid
+        # physical-path read; success on one path cannot be reused for another.
+        self.assertEqual(eb.read_regular(physical_parent / "original.json", 8), b"{}")
+        with self.assertRaisesRegex(eb.BundleError, "INPUT_PARENT_SYMLINK"):
+            eb.read_regular(alias_parent / "original.json", 8)
 
     def test_growing_file_is_read_with_a_bound_and_rejected(self):
         actual = self.root / "growing.json"
