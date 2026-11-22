@@ -682,7 +682,7 @@ func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
 	mutDir := copyCompilerWorkspaceForMutation(t)
 
 	runMutatedTests := func(testPattern string) (string, error) {
-		cmd := exec.Command("go", "test", "-run", testPattern, ".")
+		cmd := exec.Command("go", "test", "-trimpath", "-count=1", "-run", testPattern, ".")
 		cmd.Dir = mutDir
 		out, err := cmd.CombinedOutput()
 		return string(out), err

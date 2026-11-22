@@ -63,6 +63,20 @@ func p15SchemaCommand(t *testing.T, dir string, extraEnv []string, command ...st
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
+	// These rehearsals rebuild real source in fresh, isolated directories.
+	// Trim only filesystem paths from build identities so unchanged packages
+	// can share Go's content-addressed compilation cache across those roots.
+	// Source/dependency edits still invalidate that cache; test callers keep
+	// -count=1 and every real child process and mutation assertion remains.
+	if len(command) > 1 && command[0] == "go" {
+		switch command[1] {
+		case "build", "run", "test":
+			args := make([]string, 0, len(command)+1)
+			args = append(args, command[:2]...)
+			args = append(args, "-trimpath")
+			command = append(args, command[2:]...)
+		}
+	}
 	cmd := exec.CommandContext(ctx, command[0], command[1:]...)
 	cmd.Dir = dir
 	for _, item := range os.Environ() {
