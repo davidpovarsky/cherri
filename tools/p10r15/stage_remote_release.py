@@ -42,9 +42,57 @@ def checked_clone(source, destination, revision, canonical_origin):
         raise ValueError("Clone revision mismatch")
 
 
+def inspect_runtime_pair(compiler, migrator, revision, go):
+    """Inspect both exact snapshots with the package verifier's source/role rules."""
+    from package_skill import inspect_binary
+    compiler_data, provenance = inspect_binary(compiler, revision, go)
+    migration_data, migration = inspect_binary(
+        migrator, revision, go, "github.com/electrikmilk/cherri/cmd/cherri-migrate")
+    if any(provenance[key] != migration[key] for key in ("goos", "goarch")):
+        raise ValueError("Compiler and migration tool platforms differ")
+    provenance["migration"] = migration
+    return compiler_data, migration_data, provenance
+
+
+def write_runtime_pair(runtime, compiler_data, migration_data, revision, provenance):
+    for name, data, identity in (("cherri", compiler_data, provenance),
+                                 ("cherri-migrate", migration_data, provenance["migration"])):
+        if hashlib.sha256(data).hexdigest() != identity["sha256"]:
+            raise ValueError("Verified runtime snapshot differs: " + name)
+        tool = runtime / "bin" / name
+        tool.write_bytes(data)
+        tool.chmod(0o700)
+        (runtime / "bin" / (name + ".commit")).write_text(revision + "\n")
+        (runtime / "bin" / (name + ".sha256")).write_text(identity["sha256"] + "\n")
+
+
+def immutable_release_reader(expected_tuple, tool_hashes):
+    return "\n".join([
+        "from pathlib import Path",
+        "import hashlib,subprocess",
+        "x=json.load(open(sys.argv[1]))",
+        "expected=" + json.dumps(expected_tuple, sort_keys=True),
+        "if any(x.get(key)!=value for key,value in expected.items()): raise SystemExit('IMMUTABLE_RELEASE_MISMATCH')",
+        "base=Path(sys.argv[1]).parent",
+        "runtime=base/expected['label']/'runtime'",
+        "tool_hashes=" + json.dumps(tool_hashes, sort_keys=True),
+        "for path,expected_hash in tool_hashes.items():",
+        "    if hashlib.sha256((base/path).read_bytes()).hexdigest()!=expected_hash: raise SystemExit('TOOLCHAIN_DEPENDENCY_MISMATCH')",
+        "for repo,revision in [(base/'source'/expected['label'],expected['skillSourceHead']),(runtime/'src',expected['compilerCommit']),(runtime/'docs',expected['docsCommit'])]:",
+        "    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip()",
+        "    dirty=subprocess.check_output(['git','status','--porcelain'],cwd=repo,text=True).strip()",
+        "    if head!=revision or dirty: raise SystemExit('IMMUTABLE_SOURCE_MISMATCH')",
+        "actual=hashlib.sha256((runtime/'bin/cherri').read_bytes()).hexdigest()",
+        "if actual!=expected['compilerSHA256']: raise SystemExit('IMMUTABLE_COMPILER_MISMATCH')",
+        "actual=hashlib.sha256((runtime/'bin/cherri-migrate').read_bytes()).hexdigest()",
+        "if actual!=expected['migrationSHA256']: raise SystemExit('IMMUTABLE_MIGRATION_MISMATCH')",
+        "print('|'.join(x[k] for k in ('label','compilerCommit','docsCommit','schemaFingerprint','sourceBranch','skillSourceHead')))",
+    ])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("repo", "compiler-source", "compiler", "docs", "live-home", "stage"):
+    for name in ("repo", "compiler-source", "compiler", "migrator", "docs", "live-home", "stage"):
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--go", required=True)
     parser.add_argument("--label", required=True)
@@ -76,8 +124,8 @@ def main():
     if manifest["compilerCommit"] != source_sha or manifest["docsCommit"] != docs_sha:
         raise ValueError("Committed Skill/compiler/docs tuple does not agree")
     # Reuse the package verifier's real embedded VCS provenance contract.
-    from package_skill import inspect_binary
-    binary_data, provenance = inspect_binary(args.compiler, source_sha, args.go)
+    binary_data, migration_data, provenance = inspect_runtime_pair(
+        args.compiler, args.migrator, source_sha, args.go)
     capabilities = json.loads(run([args.compiler, "--capabilities-json"]))
     for field in ("languageVersion", "catalogSchemaVersion", "schemaFingerprint",
                   "codecFingerprint", "macroFingerprint"):
@@ -117,10 +165,7 @@ def main():
     checked_clone(args.repo, source, skill_sha, manifest["compilerRepo"])
     checked_clone(args.compiler_source, runtime / "src", source_sha, manifest["compilerRepo"])
     checked_clone(args.docs, runtime / "docs", docs_sha, manifest["docsRepo"])
-    (runtime / "bin/cherri").write_bytes(binary_data)
-    (runtime / "bin/cherri").chmod(0o700)
-    (runtime / "bin/cherri.commit").write_text(source_sha + "\n")
-    (runtime / "bin/cherri.sha256").write_text(provenance["sha256"] + "\n")
+    write_runtime_pair(runtime, binary_data, migration_data, source_sha, provenance)
     (candidate / "tools").symlink_to(args.live_home / "tools", target_is_directory=True)
     (candidate / "config/default-language-mode").write_bytes(mode)
     runner_text = (args.live_home / "bin/cherri-remote-runner.sh").read_text()
@@ -149,27 +194,10 @@ def main():
                           codecFingerprint=manifest["codecFingerprint"],
                           macroFingerprint=manifest["macroFingerprint"],
                           compilerSHA256=provenance["sha256"],
+                          migrationSHA256=provenance["migration"]["sha256"],
                           sourceBranch=args.branch, skillSourceHead=skill_sha)
     old_reader = "x=json.load(open(sys.argv[1])); print('|'.join(x[k] for k in ('label','compilerCommit','docsCommit','schemaFingerprint','sourceBranch','skillSourceHead')))"
-    validator = "\n".join([
-        "from pathlib import Path",
-        "import hashlib,subprocess",
-        "x=json.load(open(sys.argv[1]))",
-        "expected=" + json.dumps(expected_tuple, sort_keys=True),
-        "if any(x.get(key)!=value for key,value in expected.items()): raise SystemExit('IMMUTABLE_RELEASE_MISMATCH')",
-        "base=Path(sys.argv[1]).parent",
-        "runtime=base/expected['label']/'runtime'",
-        "tool_hashes=" + json.dumps(tool_hashes, sort_keys=True),
-        "for path,expected_hash in tool_hashes.items():",
-        "    if hashlib.sha256((base/path).read_bytes()).hexdigest()!=expected_hash: raise SystemExit('TOOLCHAIN_DEPENDENCY_MISMATCH')",
-        "for repo,revision in [(base/'source'/expected['label'],expected['skillSourceHead']),(runtime/'src',expected['compilerCommit']),(runtime/'docs',expected['docsCommit'])]:",
-        "    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip()",
-        "    dirty=subprocess.check_output(['git','status','--porcelain'],cwd=repo,text=True).strip()",
-        "    if head!=revision or dirty: raise SystemExit('IMMUTABLE_SOURCE_MISMATCH')",
-        "actual=hashlib.sha256((runtime/'bin/cherri').read_bytes()).hexdigest()",
-        "if actual!=" + repr(provenance["sha256"]) + ": raise SystemExit('IMMUTABLE_COMPILER_MISMATCH')",
-        "print('|'.join(x[k] for k in ('label','compilerCommit','docsCommit','schemaFingerprint','sourceBranch','skillSourceHead')))",
-    ])
+    validator = immutable_release_reader(expected_tuple, tool_hashes)
     if runner_text.count(old_reader) != 1:
         raise ValueError("Observed runner active-release reader changed")
     runner_text = runner_text.replace(old_reader, validator)
@@ -224,7 +252,8 @@ trap 'rm -f -- "__DOLLAR__preflight"' EXIT
                   codecFingerprint=manifest["codecFingerprint"],
                   macroFingerprint=manifest["macroFingerprint"],
                   sourceBranch=args.branch, skillSourceHead=skill_sha,
-                  compilerSHA256=provenance["sha256"])
+                  compilerSHA256=provenance["sha256"],
+                  migrationSHA256=provenance["migration"]["sha256"])
     (candidate / "active.json").write_text(json.dumps(active, indent=2, sort_keys=True) + "\n")
     for script in (runner, legacy):
         run(["bash", "-n", script])

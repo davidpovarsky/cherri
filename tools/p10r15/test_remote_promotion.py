@@ -57,17 +57,37 @@ def reports_model():
              "faults": "candidate-signing-faults.json", "sourceIntegrity": "source-create.json",
              "runtimeIntegrity": "runtime-create.json", "unpackedIntegrity": "runtime-verify.json"}
     records = {key: json.loads((ARCHIVE / name).read_bytes()) for key, name in names.items()}
-    # The committed historical receipt is incomplete. Only this in-memory unit
-    # fixture models a successful runner test; the historical file is untouched.
+    # Historical files remain unchanged and are not new release evidence. This
+    # in-memory model supplies the paired runtime and new causal cases solely to
+    # exercise the current gate's rejection logic.
+    stage = records["stage"]
+    stage["tuple"]["migrationSHA256"] = "8" * 64
+    records["entrypoints"]["tuple"] = copy.deepcopy(stage["tuple"])
+    records["faults"]["provenance"]["installedTuple"] = copy.deepcopy(stage["tuple"])
+    provenance = stage["binaryProvenance"]
+    provenance["modulePath"] = "github.com/electrikmilk/cherri"
+    provenance["migration"] = {
+        "compilerCommit": stage["tuple"]["compilerCommit"], "goarch": "arm64", "goos": "linux",
+        "sha256": stage["tuple"]["migrationSHA256"], "vcsModified": False,
+        "modulePath": "github.com/electrikmilk/cherri/cmd/cherri-migrate"}
+    records["sourceIntegrity"]["verifiedFiles"] = 23
+    for key in ("runtimeIntegrity", "unpackedIntegrity"):
+        records[key]["verifiedFiles"] = 29
+        records[key]["runtime"] = copy.deepcopy(provenance)
     entry = records["entrypoints"]
     for row in entry["results"]:
         if row["check"] == "runner_existing_tests":
             row.update(verdict="PASS", exitCode=0, nativeArtifacts=[], seconds=0.1,
                        stdoutSha256=gates.sha(b"unit model pass"), stdoutBytes=15,
                        diagnosticTail="Synthetic unit model, not acceptance evidence")
-    entry["summary"] = {"checks": 37, "passed": 37, "failed": 0, "notRun": 0}
+    for name, diagnostic in (("reject_tuple_migrationSHA256", "IMMUTABLE_RELEASE_MISMATCH"),
+                             ("reject_migration_drift", "IMMUTABLE_MIGRATION_MISMATCH")):
+        entry["results"].append({"check": name, "kind": "CAUSAL_REJECTION", "verdict": "PASS",
+                                 "exitCode": 1, "nativeArtifacts": [], "seconds": 0.1,
+                                 "stdoutSha256": gates.sha(b""), "stdoutBytes": 0,
+                                 "diagnosticTail": "Synthetic unit model: " + diagnostic})
+    entry["summary"] = {"checks": 39, "passed": 39, "failed": 0, "notRun": 0}
     entry["activationGatePassed"] = True
-    stage = records["stage"]
     hashes = {name: stage["candidateHashes"][name] for name in gates.PROTECTED}
     modes = {name: 0o700 if name in promotion.SWITCH_ORDER[:2] else 0o600 for name in gates.PROTECTED}
     records["candidateSmoke"] = smoke_model(stage["candidateHome"], stage["tuple"], hashes, modes)
@@ -108,6 +128,14 @@ class EvidenceGates(unittest.TestCase):
             "missing_exact_preflight": lambda r: next(x for x in r["faults"]["results"] if x["surface"] == "remote_v2_copy" and x["case"] == "xml").update(exactPreflightBytesObserved=False),
             "wrong_uploaded_bytes": lambda r: next(x for x in r["faults"]["results"] if x["surface"] == "remote_legacy_copy" and x["case"] == "xml")["requestEvidence"][0].update(preflightSha256="0" * 64),
             "source_inventory_missing": lambda r: r["sourceIntegrity"].update(verifiedFiles=19),
+            "old_source_inventory": lambda r: r["sourceIntegrity"].update(verifiedFiles=20),
+            "old_runtime_inventory": lambda r: r["runtimeIntegrity"].update(verifiedFiles=23),
+            "migration_tuple_missing": lambda r: r["stage"]["tuple"].pop("migrationSHA256"),
+            "migration_provenance_missing": lambda r: r["stage"]["binaryProvenance"].pop("migration"),
+            "migration_wrong_role": lambda r: r["stage"]["binaryProvenance"]["migration"].update(modulePath="github.com/electrikmilk/cherri"),
+            "migration_wrong_source": lambda r: r["stage"]["binaryProvenance"]["migration"].update(compilerCommit="0" * 40),
+            "migration_wrong_platform": lambda r: r["stage"]["binaryProvenance"]["migration"].update(goarch="amd64"),
+            "migration_package_drift": lambda r: r["runtimeIntegrity"]["runtime"]["migration"].update(sha256="0" * 64),
             "unpack_missing": lambda r: r["unpackedIntegrity"].update(unpacked=False),
             "package_wrong_S": lambda r: r["runtimeIntegrity"].update(compilerCommit="0" * 40),
             "package_wrong_K": lambda r: r["sourceIntegrity"].update(skillCommit="0" * 40),
@@ -178,7 +206,8 @@ class TransactionFixture:
         self.release = {"label": "p15-unit-fixture", "sourceBranch": "agent/unit-fixture",
                         "compilerCommit": "1" * 40, "docsCommit": "2" * 40, "skillSourceHead": "3" * 40,
                         "schemaFingerprint": "4" * 64, "codecFingerprint": "5" * 64,
-                        "macroFingerprint": "6" * 64, "compilerSHA256": "7" * 64}
+                        "macroFingerprint": "6" * 64, "compilerSHA256": "7" * 64,
+                        "migrationSHA256": "8" * 64}
         self.old = {**self.release, "label": "p10", "sourceBranch": "agent/old-unit-fixture"}
         for home, release in ((self.live, self.old), (self.candidate, self.release)):
             for directory in ("bin", "config", "source", "jobs", "outputs", "tmp", "tools/go"):

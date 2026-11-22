@@ -39,6 +39,8 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Repair Remote Builder staging/promotion for the current paired runtime (2026-11-22). Clean published source 607691de now stages and binds both compiler and migrator, enforces exact 23/29-file packages and 39 entrypoint obligations, and rejects changed migration bytes/sidecars. Eighteen focused controls passed; an actual clean Linux amd64 Cherri pair passed packaging, extraction, doctor and eight wrapper operations plus ten controlled install scenarios. Historical failures remain; final tuple and live ARM64 activation are still separate. [Scoped proof](docs/language-v2/p15-remote-paired-runtime-20261122.md).
+
 - [x] Execute and independently intake OpenMinis candidate258/fd/D6 (2026-11-20). Single run44731965480 passed signing34, source/runtime packages, actual ARM64 Alpine and scoped package acceptance. All8 original ZIPs,22 members,25 immutable source blobs and four published binary identities were checked. Original486 failure remains; newM02 tuple, Apple and final179 remain open. [Exact scope](docs/language-v2/p15-openminis-source-selection-44731965480-20261120.md).
 
 
