@@ -264,7 +264,7 @@ func p15AMGraph(actions []map[string]any, id string) (p15AMView, error) {
 				c.mark(prefix + "_order_store")
 				c.store("order", order)
 				c.mark(prefix + "_yield")
-				c.number(step.value, "", true)
+				c.number(step.value, fmt.Sprintf("Number%d", 3+2*i+branch), true)
 			}
 			rhs := c.end(group, "", true)
 			value := c.math(step.name+"_compound", "", step.operation, p15AMAttachment(p15AMVariable("accumulator")), p15AMAttachment(rhs))
