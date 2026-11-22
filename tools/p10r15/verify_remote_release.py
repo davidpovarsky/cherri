@@ -114,7 +114,7 @@ def main():
     if initial_candidate != receipt["candidateHashes"]:
         parser.error("candidate differs from its staging receipt")
     env = os.environ.copy()
-    for key in ("CHERRI_BIN", "CHERRI_HOME", "CHERRI_DOCS_DIR", "CHERRI_REF",
+    for key in ("CHERRI_BIN", "CHERRI_MIGRATE_BIN", "CHERRI_HOME", "CHERRI_DOCS_DIR", "CHERRI_REF",
                 "CHERRI_DOCS_REF", "SKILL_DIR", "CHERRI_REPO", "CHERRI_DOCS_REPO"):
         env.pop(key, None)
     env.update(CHERRI_REMOTE_HOME=str(candidate), CHERRI_OFFLINE="1",
@@ -204,7 +204,8 @@ def main():
         v2.write_text('let message = "P10R15 staged V2 verification"\nshow(message)\n')
         legacy.write_text('@message = "P10R15 staged Legacy verification"\nshow("{@message}")\n')
         skill_env = env.copy()
-        skill_env.update(CHERRI_BIN=str(runtime / "bin/cherri"), CHERRI_HOME=str(runtime),
+        skill_env.update(CHERRI_BIN=str(runtime / "bin/cherri"),
+                         CHERRI_MIGRATE_BIN=str(runtime / "bin/cherri-migrate"), CHERRI_HOME=str(runtime),
                          CHERRI_DOCS_DIR=str(runtime / "docs"), SKILL_DIR=str(skill))
         cases = [
             ("runner_status", [runner, "status"]),
@@ -262,6 +263,9 @@ def main():
         binary = runtime / "bin/cherri"
         file_mutation("reject_binary_drift", binary, binary.read_bytes() + b"\nP15_CAUSAL_CONTROL\n",
                       [runner, "status"], "IMMUTABLE_COMPILER_MISMATCH")
+        migration = runtime / "bin/cherri-migrate"
+        file_mutation("reject_migration_drift", migration, migration.read_bytes() + b"\nP15_CAUSAL_CONTROL\n",
+                      [runner, "status"], "IMMUTABLE_MIGRATION_MISMATCH")
         tools_link = candidate / "tools"
         original_link = os.readlink(tools_link)
         with tempfile.TemporaryDirectory(prefix="p15-tool-causal-", dir=stage) as temp:

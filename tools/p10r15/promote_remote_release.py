@@ -159,9 +159,13 @@ def verify_runtime(home, release):
     runtime = home / label / "runtime"
     verify_checkout(runtime / "src", release["compilerCommit"], CANONICAL)
     verify_checkout(runtime / "docs", release["docsCommit"], DOCS)
-    require(sha((runtime / "bin/cherri").read_bytes()) == release["compilerSHA256"], "Installed compiler bytes differ")
-    require((runtime / "bin/cherri.commit").read_text().strip() == release["compilerCommit"], "Compiler commit sidecar differs")
-    require((runtime / "bin/cherri.sha256").read_text().strip() == release["compilerSHA256"], "Compiler hash sidecar differs")
+    for name, key, label in (("cherri", "compilerSHA256", "compiler"),
+                             ("cherri-migrate", "migrationSHA256", "migration")):
+        require(sha((runtime / "bin" / name).read_bytes()) == release[key], "Installed " + label + " bytes differ")
+        require((runtime / "bin" / (name + ".commit")).read_text().strip() == release["compilerCommit"],
+                "Installed " + label + " commit sidecar differs")
+        require((runtime / "bin" / (name + ".sha256")).read_text().strip() == release[key],
+                "Installed " + label + " hash sidecar differs")
 
 
 def preflight(stage, live, evidence_path):
@@ -185,11 +189,12 @@ def preflight(stage, live, evidence_path):
                            (candidate, reports["stage"]["candidateHashes"])):
         require(all(sha((home / name).read_bytes()) == value for name, value in expected.items()), "Live/candidate evidence is stale")
     verify_runtime(candidate, release)
-    for kind, archive_key, report_key, count in (("source", "sourceArchive", "sourceIntegrity", 20),
-                                               ("runtime", "runtimeArchive", "runtimeIntegrity", 23)):
+    for kind, archive_key, report_key, count in (("source", "sourceArchive", "sourceIntegrity", 23),
+                                               ("runtime", "runtimeArchive", "runtimeIntegrity", 29)):
         compiler = candidate / release["label"] / "runtime/bin/cherri" if kind == "runtime" else None
+        migrator = candidate / release["label"] / "runtime/bin/cherri-migrate" if kind == "runtime" else None
         files, receipt = expected_package(skill, release["skillSourceHead"], kind,
-                                          compiler, str(live / "tools/go/bin/go"))
+                                          compiler=compiler, go=str(live / "tools/go/bin/go"), migrator=migrator)
         require(len(files) == count, "Unexpected committed package inventory")
         verify_archive(paths[archive_key], files)
         require(sha(paths[archive_key].read_bytes()) == reports[report_key]["archiveSha256"], "Archive receipt differs")

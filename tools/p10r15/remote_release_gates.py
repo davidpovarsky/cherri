@@ -7,7 +7,7 @@ import math
 
 TUPLE_KEYS = frozenset(("label", "compilerCommit", "docsCommit", "schemaFingerprint",
                         "codecFingerprint", "macroFingerprint", "compilerSHA256",
-                        "sourceBranch", "skillSourceHead"))
+                        "migrationSHA256", "sourceBranch", "skillSourceHead"))
 BASE_CHECKS = (
     "runner_status", "legacy_status", "registered_status", "runner_check",
     "legacy_check", "registered_check", "runner_compile_unsigned",
@@ -15,7 +15,7 @@ BASE_CHECKS = (
     "runner_actions", "runner_docs", "immutable_sync", "immutable_sync_p15",
     "immutable_sync_p10_compatibility", "skill_full_catalog", "runner_existing_tests",
     "reject_dirty_skill", "reject_dirty_compiler", "reject_dirty_docs",
-    "reject_binary_drift", "reject_toolchain_dependency_drift",
+    "reject_binary_drift", "reject_migration_drift", "reject_toolchain_dependency_drift",
     "reject_implicit_language_switch", "reject_validator_drift_legacy",
     "reject_validator_drift_v2", "reject_registered_runner_drift",
     "restored_registered_status", "restored_runner_status")
@@ -119,8 +119,13 @@ def validate_reports(records, candidate, skill_manifest, skill_build_hash):
     require(all(is_hash(value) for key in ("candidateHashes", "liveHashesBefore") for value in stage[key].values()),
             "Invalid staged file hash")
     provenance = stage["binaryProvenance"]
+    migration = {"compilerCommit": release["compilerCommit"], "goarch": "arm64", "goos": "linux",
+                 "sha256": release["migrationSHA256"], "vcsModified": False,
+                 "modulePath": "github.com/electrikmilk/cherri/cmd/cherri-migrate"}
     require(provenance == {"compilerCommit": release["compilerCommit"], "goarch": "arm64", "goos": "linux",
-                           "sha256": release["compilerSHA256"], "vcsModified": False}, "Staged compiler provenance mismatch")
+                           "sha256": release["compilerSHA256"], "vcsModified": False,
+                           "modulePath": "github.com/electrikmilk/cherri", "migration": migration},
+            "Staged runtime pair provenance mismatch")
     require(stage["registeredEntrypoint"] == "bin/cherri-remote-builder -> cherri-remote-legacy.sh",
             "Registered route mismatch")
     for key in ("compilerCommit", "docsCommit", "schemaFingerprint", "codecFingerprint", "macroFingerprint"):
@@ -138,7 +143,7 @@ def validate_reports(records, candidate, skill_manifest, skill_build_hash):
     require(entry["liveUnchanged"] is True and entry["candidateRestored"] is True, "Entrypoint restoration missing")
     expected_checks = {(name,) for name in BASE_CHECKS} | {("reject_tuple_" + key,) for key in TUPLE_KEYS}
     rows = exact_rows(entry["results"], ("check",), expected_checks, "Entrypoint")
-    exact_summary(entry["summary"], {"checks": 37, "passed": 37, "failed": 0, "notRun": 0}, "entrypoint")
+    exact_summary(entry["summary"], {"checks": 39, "passed": 39, "failed": 0, "notRun": 0}, "entrypoint")
     for row in rows:
         negative = row["check"].startswith("reject_")
         require(row["verdict"] == "PASS" and type(row["exitCode"]) is int, "Entrypoint did not pass")
@@ -154,6 +159,7 @@ def validate_reports(records, candidate, skill_manifest, skill_build_hash):
                 marker = "IMMUTABLE_SOURCE_MISMATCH"
             else:
                 marker = {"reject_binary_drift": "IMMUTABLE_COMPILER_MISMATCH",
+                          "reject_migration_drift": "IMMUTABLE_MIGRATION_MISMATCH",
                           "reject_toolchain_dependency_drift": "TOOLCHAIN_DEPENDENCY_MISMATCH",
                           "reject_implicit_language_switch": "default language mode is not Legacy",
                           "reject_validator_drift_legacy": "checksum", "reject_validator_drift_v2": "checksum",
@@ -213,9 +219,9 @@ def validate_reports(records, candidate, skill_manifest, skill_build_hash):
             remote_requests += 1
     require(remote_requests == 22, "Both remote signing routes must have 22 exact requests")
 
-    for name, kind, count, unpacked in (("sourceIntegrity", "source", 20, False),
-                                       ("runtimeIntegrity", "runtime", 23, False),
-                                       ("unpackedIntegrity", "runtime", 23, True)):
+    for name, kind, count, unpacked in (("sourceIntegrity", "source", 23, False),
+                                       ("runtimeIntegrity", "runtime", 29, False),
+                                       ("unpackedIntegrity", "runtime", 29, True)):
         r = records[name]
         require(r["status"] == "PASS_PACKAGE_INTEGRITY" and r["kind"] == kind
                 and type(r["verifiedFiles"]) is int and r["verifiedFiles"] == count
