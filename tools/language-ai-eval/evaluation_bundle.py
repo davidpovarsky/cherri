@@ -56,7 +56,7 @@ PROVIDER = {"model": MODEL, "api_version": API_VERSION,
 # cannot seal or load a real bundle until the exact native compiler is reviewed.
 V2_PROFILE = "fresh-six-exact-instances/v2"
 V2_COMPILER_SOURCE = "ca316a3dee252456c4bec751594cf249c709b331"
-V2_COMPILER_SHA256 = None
+V2_COMPILER_SHA256 = "42f6e42e7b6a8ea6f523a752fd2f06b96265e733fa00ad808190e062d1266301"
 V2_PROVIDER = {"model": MODEL, "api_version": API_VERSION,
                "settings": {"thinking": {"type": "between_tools"},
                             "output_config": {"effort": "high"}, "stream": False}}

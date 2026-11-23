@@ -1,9 +1,10 @@
 # AI01 profile v2: Sonnet 5.5 transport and native compiler calibration
 
-Status: implemented for independent review; real bundle admission is disabled
-until the exact reviewed R7 Linux ARM64 compiler SHA256 is pinned. No fresh
-evaluation seed, provider request or measured quality outcome is part of this
-change. The historical v1 protocol and receipts remain unchanged.
+Status: the exact reviewed R7 Linux ARM64 compiler is pinned. Actual twelve-case
+baseline calibration and final independent review remain required before any
+real evaluation bundle. No fresh evaluation seed, provider request or measured
+quality outcome is part of this change. The historical v1 protocol and receipts
+remain unchanged.
 
 ## Why this is a new profile
 
@@ -66,10 +67,14 @@ or adjudication cannot produce a complete quality score.
 Evaluation implementation source and compiler source are distinct identities.
 The new profile fixes compiler source to R7
 `ca316a3dee252456c4bec751594cf249c709b331`.
-The exact native binary hash is deliberately unconfigured pending an actual
-clean-source build/artifact receipt and calibration. Both preparation and bundle
-loading reject an unconfigured pin with `UNREVIEWED_PROFILE_COMPILER`; no
-environment variable or CLI argument can bypass that reviewed constant.
+The exact native binary SHA256 is
+`42f6e42e7b6a8ea6f523a752fd2f06b96265e733fa00ad808190e062d1266301`.
+It was built from a clean canonical R7 clone with Go1.24.13, CGO disabled,
+Linux/ARM64 and embedded unmodified R7 VCS identity. The actual pair receipt
+has SHA256 `d3bae0c50203bf0237289f8d18b242db1997d95feac5ebcbb2f2beee721fdcfc`.
+This pins identity; actual twelve-case calibration is still required before a
+real seed. Preparation and loading continue to reject an absent compiler pin
+with `UNREVIEWED_PROFILE_COMPILER`; no environment or CLI override bypasses it.
 
 The bundle retains the existing `compiler.exe` filename as its envelope.
 For v2 it contains the exact Linux ARM64 binary and receives owner-only mode
