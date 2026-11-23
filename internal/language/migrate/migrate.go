@@ -145,6 +145,8 @@ func migrateSourceWithDiagnostics(input, includeRoot string, isEntry bool) (stri
 		}
 		return "", lexicalDiags, fmt.Errorf("migration produced invalid V2 syntax (Legacy lexical input)")
 	}
+	var comparisonModes []bool
+	lexical.text, comparisonModes = prepareMigrationComparisonModes(lexical.text, migrationComparisonCanonicalSource(input))
 	reg := schema.DefaultRegistry()
 	lines := strings.Split(lexical.text, "\n")
 	var diags []MigrationDiagnostic
@@ -460,12 +462,6 @@ func migrateSourceWithDiagnostics(input, includeRoot string, isEntry bool) (stri
 			trimmed = strings.TrimSpace(line)
 		}
 
-		// 7. Convert legacy if legacy ... -> if ...
-		if strings.HasPrefix(trimmed, "if legacy ") {
-			line = strings.Replace(line, "if legacy ", "if ", 1)
-			trimmed = strings.TrimSpace(line)
-		}
-
 		// 7b. Convert legacy negation conditions: if A !contains B -> if !(A contains B)
 		if strings.Contains(line, " !contains ") {
 			re := regexp.MustCompile(`(\s*if\s+)(.+?)\s+!contains\s+(.+?)(\s*\{)`)
@@ -626,6 +622,12 @@ func migrateSourceWithDiagnostics(input, includeRoot string, isEntry bool) (stri
 	}
 
 	body := strings.Join(outLines, "\n")
+	var comparisonErr error
+	body, comparisonErr = restoreMigrationComparisonModes(body, comparisonModes)
+	if comparisonErr != nil {
+		addDiag(1, 1, "generated V2 source is not representable: "+comparisonErr.Error())
+		return "", diags, fmt.Errorf("migration produced invalid V2 syntax (comparison mode)")
+	}
 	origins := make(map[int]string, len(legacyBindingLines))
 	for line, name := range legacyBindingLines {
 		prefix := strings.Join(outLines[:line-1], "\n")

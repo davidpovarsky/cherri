@@ -160,4 +160,101 @@ func TestP15L01NestedDictionaryOracleRejectsCorruption(t *testing.T) {
 			}
 		})
 	}
+	for _, tc := range []struct {
+		route  string
+		faults []string
+	}{
+		{"dictionary_in_list_ordered", []string{
+			"drop_outer_element", "reorder_outer_elements", "repeat_wrong_producer",
+			"inline_dictionary_row", "dangling_row_reference", "duplicate_producer_identity",
+			"consumer_reads_element", "unmodeled_action",
+		}},
+		{"dictionary_in_list_aliases", []string{"change_repeated_alias"}},
+		{"dictionary_in_list_mutable", []string{"store_reads_element", "consumer_reads_other_variable"}},
+		{"dictionary_in_list_assignment", []string{"replacement_reads_stale_list"}},
+	} {
+		t.Run(tc.route, func(t *testing.T) {
+			original := p15CompiledActions(t, p15L01DictionaryListSource(t, tc.route))
+			if err := p15L01DictionaryListGraphError(original, tc.route); err != nil {
+				t.Fatal(err)
+			}
+			for _, fault := range tc.faults {
+				t.Run(fault, func(t *testing.T) {
+					actions := make([]map[string]any, len(original))
+					for i, action := range original {
+						actions[i] = p15LiteralClone(t, action).(map[string]any)
+					}
+					if err := p15L01DictionaryListGraphError(actions, tc.route); err != nil {
+						t.Fatal("unchanged actual clone rejected", err)
+					}
+					var dictionaries, lists, stores []int
+					consumer := -1
+					for i, action := range actions {
+						switch action["WFWorkflowActionIdentifier"] {
+						case "is.workflow.actions.dictionary":
+							dictionaries = append(dictionaries, i)
+						case "is.workflow.actions.list":
+							lists = append(lists, i)
+						case "is.workflow.actions.setvariable":
+							stores = append(stores, i)
+						case "is.workflow.actions.getvariable":
+							consumer = i
+						}
+					}
+					if len(dictionaries) < 2 || len(lists) == 0 || consumer < 0 {
+						t.Fatal("actual graph is missing the fixture's producer or consumer")
+					}
+					list := p15Param(actions[lists[len(lists)-1]])
+					rows := list["WFItems"].([]any)
+					first := p15Param(actions[dictionaries[0]])["UUID"].(string)
+					wantError := "complete action/parameter/edge mismatch"
+					switch fault {
+					case "drop_outer_element":
+						list["WFItems"] = rows[:len(rows)-1]
+					case "reorder_outer_elements":
+						rows[0], rows[1] = rows[1], rows[0]
+					case "repeat_wrong_producer":
+						rows[1] = p15LiteralClone(t, rows[0])
+					case "inline_dictionary_row":
+						rows[0].(map[string]any)["WFValue"] = p15Param(actions[dictionaries[0]])["WFItems"]
+					case "dangling_row_reference":
+						rows[0].(map[string]any)["WFValue"] = p15FunctionEdge("missing-L01-producer")
+					case "duplicate_producer_identity":
+						// Repin the second row coherently: payload and edge
+						// comparisons still match, so identity uniqueness is
+						// the only failing graph predicate.
+						p15Param(actions[dictionaries[1]])["UUID"] = first
+						rows[1].(map[string]any)["WFValue"] = p15FunctionEdge(first)
+						wantError = "duplicate producer identity"
+					case "consumer_reads_element":
+						p15Param(actions[consumer])["WFVariable"] = p15FunctionEdge(first)
+					case "unmodeled_action":
+						actions = append(actions, map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.nothing"})
+						wantError = "complete graph length"
+					case "change_repeated_alias":
+						rows[2] = p15LiteralClone(t, rows[1])
+					case "store_reads_element":
+						if len(stores) != 1 {
+							t.Fatal("mutable fixture must have exactly one store")
+						}
+						p15Param(actions[stores[0]])["WFInput"] = p15FunctionEdge(first)
+					case "consumer_reads_other_variable":
+						p15Param(actions[consumer])["WFVariable"] = p15FunctionVariable("other")
+					case "replacement_reads_stale_list":
+						if len(stores) != 2 || len(lists) != 2 {
+							t.Fatal("replacement fixture must have exactly two stores and Lists")
+						}
+						stale := p15Param(actions[lists[0]])["UUID"].(string)
+						p15Param(actions[stores[1]])["WFInput"] = p15FunctionEdge(stale)
+					default:
+						t.Fatal("unknown graph mutation", fault)
+					}
+					err := p15L01DictionaryListGraphError(actions, tc.route)
+					if err == nil || !strings.Contains(err.Error(), wantError) {
+						t.Fatalf("graph mutation %s: got %v, want %q", fault, err, wantError)
+					}
+				})
+			}
+		})
+	}
 }

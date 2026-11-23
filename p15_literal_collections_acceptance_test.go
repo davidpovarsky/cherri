@@ -218,6 +218,95 @@ func p15L01ExpectedNestedDictionary() map[string]any {
 
 const p15L01NestedDictionarySource = `{"outer":[{"row":[false,0,"",[],{}]},{"row":[1,2,3]}],"emptyList":[],"emptyMap":{}}`
 
+// The payload reader independently checks typed Dictionary values. The complete
+// graph then checks the authored outer List rows, producer references, stores
+// and final consumer. Repeated aliases may share a producer; producer
+// definitions themselves must remain unique. This is native-structure evidence,
+// not Apple execution or a claim about unverified native List<List> shapes.
+const p15L01DictionaryListTailSource = `{"tail":[3,2,1],"empty":[]}`
+
+func p15L01DictionaryListSource(t *testing.T, route string) string {
+	t.Helper()
+	pair := "[" + p15L01NestedDictionarySource + "," + p15L01DictionaryListTailSource + "]"
+	switch route {
+	case "dictionary_in_list":
+		return "let data=[" + p15L01NestedDictionarySource + "]\ngetVariable(data)"
+	case "dictionary_in_list_ordered":
+		return "let data=" + pair + "\ngetVariable(data)"
+	case "dictionary_in_list_mutable":
+		return "var data=" + pair + "\ngetVariable(data)"
+	case "dictionary_in_list_assignment":
+		return "var data=[" + p15L01DictionaryListTailSource + "," + p15L01NestedDictionarySource + "]\ndata=" + pair + "\ngetVariable(data)"
+	case "dictionary_in_list_aliases":
+		return "let first=" + p15L01NestedDictionarySource + "\nlet second=" + p15L01DictionaryListTailSource +
+			"\nlet data=[first,second,first]\ngetVariable(data)"
+	default:
+		t.Fatalf("unknown Dictionary-in-List fixture %q", route)
+		return ""
+	}
+}
+
+func p15L01DictionaryListGraphError(actions []map[string]any, route string) error {
+	switch route {
+	case "dictionary_in_list", "dictionary_in_list_ordered", "dictionary_in_list_mutable",
+		"dictionary_in_list_assignment", "dictionary_in_list_aliases":
+	default:
+		return fmt.Errorf("unknown Dictionary-in-List graph %q", route)
+	}
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	dictionary := func(want map[string]any) string {
+		index := len(g.expected)
+		var items any
+		if index < len(actions) {
+			items = p15Param(actions[index])["WFItems"]
+		}
+		got, err := p15ReadDictionaryLiteral(items)
+		if err != nil || !reflect.DeepEqual(got, want) {
+			g.err = fmt.Errorf("Dictionary payload at %d changed: got %#v want %#v: %v", index, got, want, err)
+		}
+		// Map field order is not used as an oracle. Only the payload already
+		// checked above is carried into the independent action/edge graph.
+		return g.value("dictionary", map[string]any{"WFItems": items})
+	}
+	list := func(ids ...string) string {
+		rows := make([]any, len(ids))
+		for i, id := range ids {
+			rows[i] = map[string]any{"WFItemType": 0, "WFValue": p15FunctionEdge(id)}
+		}
+		return g.value("list", map[string]any{"WFItems": rows})
+	}
+	store := func(id string) {
+		g.emit("setvariable", map[string]any{"WFVariableName": "data", "WFInput": p15FunctionEdge(id)})
+	}
+	tail := map[string]any{
+		"tail":  []any{p15LiteralNumber("3"), p15LiteralNumber("2"), p15LiteralNumber("1")},
+		"empty": []any{},
+	}
+	if route == "dictionary_in_list_assignment" {
+		store(list(dictionary(tail), dictionary(p15L01ExpectedNestedDictionary())))
+	}
+	first := dictionary(p15L01ExpectedNestedDictionary())
+	ids := []string{first}
+	if route != "dictionary_in_list" {
+		ids = append(ids, dictionary(tail))
+	}
+	if route == "dictionary_in_list_aliases" {
+		ids = append(ids, first)
+	}
+	value := list(ids...)
+	if route == "dictionary_in_list_mutable" || route == "dictionary_in_list_assignment" {
+		store(value)
+		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionVariable("data")})
+	} else {
+		g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(value)})
+	}
+	g.emit("nothing", nil)
+	if err := p15S01CompleteGraph(g); err != nil {
+		return err
+	}
+	return p15M02MainVoidBoundaryError(actions)
+}
+
 func TestP15L01NestedDictionaryShape(t *testing.T) {
 	for _, route := range []string{"immutable", "mutable", "assignment", "dictionary_in_list"} {
 		t.Run(route, func(t *testing.T) {
@@ -245,6 +334,22 @@ func TestP15L01NestedDictionaryShape(t *testing.T) {
 			}
 			if !reflect.DeepEqual(found, p15L01ExpectedNestedDictionary()) {
 				t.Fatalf("nested shape/cardinality/type/order changed:\n got %#v\nwant %#v", found, p15L01ExpectedNestedDictionary())
+			}
+			if route == "dictionary_in_list" {
+				if err := p15L01DictionaryListGraphError(actions, route); err != nil {
+					t.Fatal(err)
+				}
+			}
+		})
+	}
+	for _, route := range []string{
+		"dictionary_in_list_ordered", "dictionary_in_list_mutable",
+		"dictionary_in_list_assignment", "dictionary_in_list_aliases",
+	} {
+		t.Run(route, func(t *testing.T) {
+			actions := p15CompiledActions(t, p15L01DictionaryListSource(t, route))
+			if err := p15L01DictionaryListGraphError(actions, route); err != nil {
+				t.Fatal(err)
 			}
 		})
 	}
