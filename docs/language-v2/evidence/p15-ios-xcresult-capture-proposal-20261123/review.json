@@ -1,0 +1,172 @@
+{
+  "constraints": {
+    "noPrivateCorpusExpansion": true,
+    "noPrivatePlaintextPublished": true,
+    "noRawBundleOrActivitiesOrAttachmentsPublished": true,
+    "noSameSourceDiagnosticRerun": true,
+    "noScreenshotsOrHierarchyPublished": true,
+    "originalAssertionsAndDeadlinesPreserved": true,
+    "originalProcessExitPreserved": true
+  },
+  "encryptedRoute": {
+    "exactPublishedMembers": [
+      "project-prerequisite.zip.p7m",
+      "summary.json"
+    ],
+    "existingConsumerSha256": "c74295fffc41212ec85b2c2b2b9485094bd0234e85e0396e36e61bf81fea3401",
+    "existingPublicRecipientPinned": true,
+    "existingVerifierContractChanged": false,
+    "fixedArchiveScope": "CURRENT_PREREQUISITE_CALL_ONLY",
+    "fixedQaArchiveMemberMaximum": 23,
+    "iosBuildEncryptedPublicationPresent": false,
+    "keyOrPrivateLocatorValuesQueried": false,
+    "newCredentialFlowProposed": false,
+    "reviewedConsumerAcceptsXcresultArchive": false,
+    "reviewedEncryptionPrimitivePresent": true,
+    "status": "UNSUPPORTED_WITH_CURRENT_ROUTE"
+  },
+  "existingCommandReference": {
+    "line": 272,
+    "path": "tools/shortcuts-simulator-qa/qa_terminal_receipts.py"
+  },
+  "existingObservedCommand": [
+    "xcrun",
+    "xcresulttool",
+    "get",
+    "test-results",
+    "summary",
+    "--path",
+    "RUN_OWNED_RESULT_BUNDLE"
+  ],
+  "existingStructuredIssueTests": [
+    "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+    "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+    "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"
+  ],
+  "formalAcceptanceGranted": false,
+  "implementationProposedButNotApplied": true,
+  "inspectedSource": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "missingBoundary": {
+    "associatedNSErrorDomainCodeGuaranteedInSummary": false,
+    "newClassifierRequested": false,
+    "observedXcode164FailureSummarySchema": false,
+    "retainedFullIosXcresultBundle": false,
+    "unknownFieldsMustRemain": "UNOBSERVED"
+  },
+  "nativeRerunAuthorizedByThisDocument": false,
+  "officialReferences": [
+    {
+      "supports": "Xcode16 summary/tests/test-details command availability and use of command help for exact output format",
+      "url": "https://developer.apple.com/documentation/xcode-release-notes/xcode-16_3-release-notes.md"
+    },
+    {
+      "supports": "Result-bundle creation and structured xcresulttool extraction; not an observed16.4 failure schema",
+      "url": "https://help.apple.com/xcode/mac/current/en.lproj/devc38fc7392.html"
+    },
+    {
+      "supports": "Structured result bundle failures and tool-provided schema; historical capability only",
+      "url": "https://developer.apple.com/videos/play/wwdc2019/413/"
+    }
+  ],
+  "originalConclusion": "failure",
+  "originalPlatform": {
+    "actualSimulatorModel": "iPhone 16 Pro",
+    "actualXcode": "16.4",
+    "runnerLabel": "macos-15",
+    "simulatorOSVersion": "UNOBSERVED"
+  },
+  "originalRunAttempt": 1,
+  "originalRunId": 45108352089,
+  "originalTestCounts": {
+    "failed": 4,
+    "passed": 53,
+    "total": 57
+  },
+  "originalXcodebuildExitCode": 65,
+  "productionOrWorkflowChanged": false,
+  "protectedSwiftChanged": false,
+  "reviewedSourceFiles": {
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": {
+      "bytes": 11417,
+      "sha256": "71f806bfa314ae4a3041ad14ba9f8c93f9d744db81b12434af006e2810a3962b"
+    },
+    ".github/workflows/ios-build.yml": {
+      "bytes": 18378,
+      "sha256": "d5f8198a880df816e05b041960c5189d9ebed1f844dd4ccb2f4a9e968b0417e2"
+    },
+    "ios/CherriTests/CherriEditorInputTests.swift": {
+      "bytes": 15443,
+      "sha256": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b"
+    },
+    "ios/CherriUITests/CherriEditorUITests.swift": {
+      "bytes": 54532,
+      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8"
+    },
+    "ios/scripts/capture_startup_observation.py": {
+      "bytes": 20180,
+      "sha256": "94fdda26072d439b8686e559fd62e4aac39278b137682c321ad08a0dafd014bd"
+    },
+    "ios/scripts/collect_ios_test_evidence.py": {
+      "bytes": 38537,
+      "sha256": "86fcaeb12bc762a33eb4664a241c6735681bb0ac1eaf0e4c359aafd33d750265"
+    },
+    "ios/scripts/test_capture_startup_observation.py": {
+      "bytes": 22600,
+      "sha256": "b3a5389a7772bfee07fe18b3a489ce4b7c13685b9f6479703acd730b05487ed6"
+    },
+    "ios/scripts/test_collect_ios_test_evidence.py": {
+      "bytes": 50050,
+      "sha256": "6f4d1d51467ae96d3e1afb77841749440b83679d29d5dc6ecdf1bd2e57f38a9a"
+    },
+    "tools/shortcuts-simulator-qa/project_prerequisite_observation.py": {
+      "bytes": 64651,
+      "sha256": "5f5bb8e4064934d291c35b9f8b8871c696ee2c56316850e9e71ba130c9e1dfec"
+    },
+    "tools/shortcuts-simulator-qa/qa_terminal_receipts.py": {
+      "bytes": 38502,
+      "sha256": "fd5c2c227a86479f20cfb315f6df6251a8d2a176eeb94c78f919ea28a3bcf188"
+    },
+    "tools/shortcuts-simulator-qa/test_terminal_receipts.py": {
+      "bytes": 46562,
+      "sha256": "2f56a910e5998778d536a4a1b409bbd55e30f8e2b4c95c572e67f5a77a964cf8"
+    }
+  },
+  "schemaAssumed": false,
+  "schemaVersion": 1,
+  "separateProtocolCandidate": {
+    "changesOldPrerequisiteProtocol": false,
+    "consumerIssueSchemaStillRequiresObservedReview": true,
+    "existingKeyOrLocatorReadForProposal": false,
+    "newPrivateKeyRequired": false,
+    "proposalFile": "extension-proposal.md",
+    "proposedBounds": {
+      "archiveBytes": 3145728,
+      "cipherBytes": 3211264,
+      "encryptionSeconds": 20,
+      "metadataMemberBytes": 32768,
+      "outerSeconds": 60,
+      "preflightSeconds": 15,
+      "streamBytes": 1048576,
+      "summarySeconds": 20
+    },
+    "proposedPrivateMemberCount": 6,
+    "proposedPublicFiles": [
+      "ios-xcresult-summary.zip.p7m",
+      "receipt.json"
+    ],
+    "schema": "cherri-ios-xcresult-summary/1",
+    "status": "PROPOSED_NOT_IMPLEMENTED"
+  },
+  "status": "INACTIVE_INVESTIGATION_ONLY",
+  "testsRun": false,
+  "unknownIssueTests": [
+    {
+      "sourceLine": 210,
+      "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
+    },
+    {
+      "sourceLine": 215,
+      "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard"
+    }
+  ]
+}
