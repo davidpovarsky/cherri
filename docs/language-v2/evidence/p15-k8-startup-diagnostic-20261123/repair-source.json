@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "preparedUtc": "2026-11-23T02:25:47.030672+00:00",
+  "status": "BOUNDED_PRODUCTION_LAYOUT_REPAIR_NATIVE_VALIDATION_PENDING",
+  "parentCommit": "93f1d0d925ab431757cee80aba0ab083623241da",
+  "observedSource": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+  "observedRunId": 45096540454,
+  "changedProductionPath": "ios/CherriApp/Documentation/DocumentationSearchView.swift",
+  "before": {
+    "bytes": 6141,
+    "sha256": "dbb4163e9dbc340b53b335011c4e1777e458b0d672b54f2fcbe5ed423b7d7125"
+  },
+  "after": {
+    "bytes": 6546,
+    "sha256": "5a24cea9406209d434fd95731f53d2be8f4a515ab2ec915901c3b6f12228a98e"
+  },
+  "rationale": "The original tap left the existing accessible switch OFF while query state remained intact. Separate the visible row label and padding from the intrinsic native switch target.",
+  "causalStatus": "Hit-target explanation is an evidence-supported hypothesis, not a proven platform bug or a verified state-reset mechanism.",
+  "preserved": [
+    "local includeMigration State and direct Boolean binding",
+    "initial OFF state and explicit opt-in",
+    "visible descriptive label and native Toggle accessibility label",
+    "docsMigrationToggle identifier and native switch role",
+    "query/keyboard/search/index/presentation behavior",
+    "all original protected UI test bytes and 5-second toggle wait",
+    "28-second startup and 3-second paste budgets"
+  ],
+  "excludedChanges": [
+    "No test-specific runtime branch",
+    "No extra gesture or duplicate toggle action",
+    "No manual accessibility value override",
+    "No test assertion/deadline/observer change",
+    "No compiler or acceptance-policy change"
+  ],
+  "protectedSource": {
+    "ios/CherriUITests/CherriEditorUITests.swift": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+    "ios/CherriApp/Views/CodeEditorView.swift": "ABSENT"
+  },
+  "validation": {
+    "sourcePreimageEqualsObservedK8": true,
+    "gitDiffCheck": "PASS",
+    "nativeBuild": "PENDING_FINAL_K10",
+    "originalD03UI": "PENDING_FINAL_K10_FULL_IOS",
+    "newUnitTests": 0,
+    "newCIExecutions": 0
+  },
+  "officialApiReferences": [
+    "https://developer.apple.com/documentation/swiftui/view/labelshidden()",
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielement/tap()"
+  ],
+  "formalAcceptanceGranted": false
+}

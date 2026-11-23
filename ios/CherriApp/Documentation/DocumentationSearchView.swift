@@ -16,11 +16,19 @@ struct DocumentationSearchView: View {
             Group {
                 if let index {
                     VStack(spacing: 0) {
-                        Toggle("Include migration reference", isOn: $includeMigration)
-                            .font(.subheadline)
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .accessibilityIdentifier("docsMigrationToggle")
+                        HStack {
+                            Text("Include migration reference")
+                            Spacer()
+                            // Keep the native switch's interaction area separate from the row label.
+                            Toggle("Include migration reference", isOn: $includeMigration)
+                                .labelsHidden()
+                                .toggleStyle(.switch)
+                                .fixedSize()
+                                .accessibilityIdentifier("docsMigrationToggle")
+                        }
+                        .font(.subheadline)
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
                         List {
                             Section {
                                 ForEach(results) { section in
