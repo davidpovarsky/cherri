@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "DERIVED_OBSERVER_COUNT_CORRECTION_NO_EXECUTION",
+  "observedUtc": "2026-11-23T05:10:08.891502+00:00",
+  "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "runId": "45108200176",
+  "jobId": "137474256318",
+  "originalLogSha256": "053d63d6166885c2d2904024bc3963aa0f4d270f3c022c213fdc534528ac7010",
+  "initialIntakeSha256": "8478f0848c01a5a3f34e23621c48882d2f268702a6f0362dd377e769df978a3b",
+  "initialAuditCodeSha256": "6f406e02534f3e5a090157f049d2ceada36fcfd8c984c2a94b88b661add2610c",
+  "cause": "Initial parser removed timestamp before stripping a boundary BOM, so two BOM-prefixed timestamp lines retained their timestamp and did not match the anchored PASS pattern. This is an intake observer defect, not an execution failure.",
+  "correction": "Strip a leading BOM before timestamp removal and again at the message boundary; retain the same anchored PASS/SKIP/FAIL regex and original section bounds.",
+  "omittedOriginalPassParents": [
+    {
+      "line": 21089,
+      "originalLine": "﻿2026-11-23T04:08:13.1482796Z --- PASS: TestP15RP08SchemaIdentityProduction (36.80s)",
+      "originalLineUtf8Sha256": "c8117070a7fb8448189fd0286216a818d13388aa3d1c4009dc516a72c3ce0dd9",
+      "normalizedText": "--- PASS: TestP15RP08SchemaIdentityProduction (36.80s)"
+    },
+    {
+      "line": 25570,
+      "originalLine": "﻿2026-11-23T04:48:12.2398642Z --- PASS: TestCatalogAccountingProductionEvidence (15.86s)",
+      "originalLineUtf8Sha256": "26fe25c8e47b12167929de05870bfde69963d5c1e6680f48343f33e0457d6f72",
+      "normalizedText": "--- PASS: TestCatalogAccountingProductionEvidence (15.86s)"
+    }
+  ],
+  "phases": [
+    {
+      "name": "ordinary",
+      "logLinesInclusive": [
+        1158,
+        25146
+      ],
+      "counts": {
+        "PASS": 10837,
+        "SKIP": 8
+      },
+      "parentCounts": {
+        "PASS": 1426,
+        "SKIP": 8
+      },
+      "subcaseCounts": {
+        "PASS": 9411
+      },
+      "uniqueNamedEvents": 10845
+    },
+    {
+      "name": "acceptance",
+      "logLinesInclusive": [
+        25147,
+        37375
+      ],
+      "counts": {
+        "PASS": 6026,
+        "SKIP": 3
+      },
+      "parentCounts": {
+        "PASS": 243,
+        "SKIP": 3
+      },
+      "subcaseCounts": {
+        "PASS": 5783
+      },
+      "uniqueNamedEvents": 6029
+    }
+  ],
+  "correctedTotals": {
+    "PASS": 16863,
+    "SKIP": 11,
+    "FAIL": 0,
+    "parentPASS": 1669,
+    "parentSKIP": 11,
+    "subcasePASS": 15194
+  },
+  "unchangedFindings": [
+    "All30 packages executed once",
+    "No actual Go failure in Linux suite",
+    "Exact11 skip identities and reasons",
+    "Original process durations/source identities",
+    "Actual job failed --verify-commit before --run-all/R23",
+    "WorkflowKit component evidence remains formally ineligible"
+  ],
+  "originalExecutionOrIntakeFilesModified": false,
+  "newProducerExecutions": 0
+}

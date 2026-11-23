@@ -9,8 +9,8 @@ Linux job137474256318. This is an intake of the original execution; no test was 
 All30 discovered Go packages executed once under the original15-minute ordinary
 and35-minute acceptance bounds:29 ordinary packages and one acceptance package.
 Twenty-five packages tested successfully; five had no test files. The original
-JSON stream contains16,861 PASS events,11 SKIP events and zero FAIL events:
-10,836/8/0 ordinary and6,025/3/0 acceptance. These comprise1,667 parent PASS
+named-result stream contains16,863 PASS events,11 SKIP events and zero FAIL events:
+10,837/8/0 ordinary and6,026/3/0 acceptance. These comprise1,669 parent PASS
 events and15,194 subcase PASS events. Exact skipped identities and reasons are
 retained in the intake; they are not promoted to PASS.
 
@@ -50,3 +50,19 @@ bindings, process receipts, metadata, complete artifacts and skip detail remain
 available in this packet. Root verified every complete-manifest member before
 copying. No source repair, policy approval, formal179 status change or additional
 producer execution is represented by this documentation.
+
+
+## Explicit count correction
+
+The initial derived intake omitted two original PASS parents because a BOM
+preceded each GitHub timestamp. The corrected observer strips the boundary BOM
+before timestamp removal, while retaining the same section boundaries and
+anchored PASS/FAIL/SKIP pattern. Original lines21089 and25570 contain
+TestP15RP08SchemaIdentityProduction and TestCatalogAccountingProductionEvidence.
+The correct total is16,863 PASS events, including1,669 parent PASS and15,194
+subcase PASS;11 skips and zero failures are unchanged. No producer was rerun.
+
+The initial intake/audit remain byte-identical in `originals/`; the additive
+`count-correction/` packet retains the exact corrected audit, reconciliation,
+corrected intake and root's independent section-scoped recount. Original source,
+durations, failure stage, skip identities and acceptance limitations are unchanged.
