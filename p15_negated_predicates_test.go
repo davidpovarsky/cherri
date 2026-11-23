@@ -1,16 +1,28 @@
 package main
 
 import (
-	"howett.net/plist"
+	"os"
 	"testing"
+
+	"howett.net/plist"
 )
 
 func p15AssertNoComputedPresence(t *testing.T, value any) {
 	t.Helper()
 	switch v := value.(type) {
 	case map[string]any:
-		if code, ok := v["WFCondition"]; ok && (p15Int(code) == 100 || p15Int(code) == 101) {
-			t.Errorf("computed Boolean was lowered as native presence predicate %v", code)
+		if code, ok := v["WFCondition"]; ok {
+			switch p15Int(code) {
+			case 100, 101:
+				t.Errorf("computed Boolean was lowered as native presence predicate %v", code)
+			case 4, 5:
+				_, number := v["WFNumberValue"]
+				_, text := v["WFConditionalActionString"]
+				_, enumeration := v["WFEnumeration"]
+				if !number && !text && !enumeration {
+					t.Errorf("authored comparison %v omitted its value operand", code)
+				}
+			}
 		}
 		for _, child := range v {
 			p15AssertNoComputedPresence(t, child)
@@ -24,6 +36,12 @@ func p15AssertNoComputedPresence(t *testing.T, value any) {
 
 func TestP15F01NegatedComputedPredicatesUseBooleanValues(t *testing.T) {
 	for _, condition := range []string{
+		`isTrue(flag)`,
+		`isFalse(flag)`,
+		`!isTrue(truth)`,
+		`!isFalse(flag)`,
+		`isTrue(flag) && isFalse(truth)`,
+		`isFalse(flag) || isTrue(truth)`,
 		`left == "left" && !(right beginsWith "x")`,
 		`left == "left" || !(right endsWith "x")`,
 		`left == "left" && !isTrue(flag)`,
@@ -33,7 +51,7 @@ func TestP15F01NegatedComputedPredicatesUseBooleanValues(t *testing.T) {
 	} {
 		for _, mode := range []string{"", "modern: "} {
 			t.Run(mode+condition, func(t *testing.T) {
-				source := "let left = text(\"left\")\nlet right = text(\"right\")\nvar flag = false\nlet n = number(2)\nif " + mode + condition + " { comment(\"THEN\") }"
+				source := "let left = text(\"left\")\nlet right = text(\"right\")\nvar flag = false\nvar truth = true\nlet n = number(2)\nif " + mode + condition + " { comment(\"THEN\") }"
 				acts := p15CompiledActions(t, source)
 				for _, act := range acts {
 					p15AssertNoComputedPresence(t, p15Param(act))
@@ -92,5 +110,17 @@ func TestP15F01NegatedAuthoredPredicatesInImportedWorkflow(t *testing.T) {
 		for _, act := range acts {
 			p15AssertNoComputedPresence(t, p15Param(act))
 		}
+	}
+}
+
+// The unchanged original native fixture must retain an explicit comparison
+// operand inside each computed Boolean helper, as well as its outer negation.
+func TestP15F01FullRuntimeFixtureBooleanComparisons(t *testing.T) {
+	body, err := os.ReadFile("tests/language-v2/v2-short-circuit-runtime.cherri")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, action := range p15CompiledActions(t, string(body)) {
+		p15AssertNoComputedPresence(t, p15Param(action))
 	}
 }

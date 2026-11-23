@@ -2819,13 +2819,19 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression, allowUnaryAnyValu
 				} else if id.Name == "isFalse" {
 					cCode = 5
 				}
-				return map[string]any{
+				inputTok := l.materializeToAttachment(argVal)
+				tmpl := map[string]any{
 					"WFCondition": cCode,
 					"WFInput": map[string]any{
 						"Type":     "Variable",
-						"Variable": l.materializeToAttachment(argVal),
+						"Variable": inputTok,
 					},
-				}, nil
+				}
+				if id.Name != "isToday" && l.authoredBooleanPredicateValue(call.PrimaryArg, inputTok) {
+					tmpl["WFInput"].(map[string]any)["Variable"] = l.ensureConditionalInputCoercion(call.PrimaryArg, inputTok, backend.OperandNumber)
+					tmpl["WFNumberValue"] = 1
+				}
+				return tmpl, nil
 			case "isBetween", "between":
 				targetVal, err := l.lowerExpression(call.PrimaryArg)
 				if err != nil {
@@ -3188,7 +3194,8 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			if err != nil {
 				return nil, err
 			}
-			input = l.materializeToAttachment(argVal)
+			inputTok := l.materializeToAttachment(argVal)
+			input = inputTok
 			if id.Name == "isTrue" {
 				condCode = 4
 			} else {
@@ -3196,6 +3203,11 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			}
 			compareVal = nil
 			opType = backend.OperandDefault
+			if l.authoredBooleanPredicateValue(call.PrimaryArg, inputTok) {
+				compareVal = 1.0
+				opType = backend.OperandNumber
+				input = l.ensureConditionalInputCoercion(call.PrimaryArg, inputTok, opType)
+			}
 		} else if id, ok := call.Callee.(*syntax.IdentExpr); ok && (id.Name == "isBetween" || id.Name == "between") {
 			targetVal, err := l.lowerExpression(call.PrimaryArg)
 			if err != nil {

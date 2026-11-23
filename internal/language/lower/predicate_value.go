@@ -34,3 +34,18 @@ func (l *Lowerer) lowerNativePredicateValue(call *syntax.CallExpr) (*ir.Attachme
 		Span: call.Span, Condition: call, ThenBlock: yield(true), ElseBlock: yield(false),
 	}, true)
 }
+
+// Authored Bool helpers have the same value comparison as == true / != true.
+// Imported predicates and explicit native Boolean coercions retain their unary
+// native representation; neither is a compiler-owned numeric Bool carrier.
+func (l *Lowerer) authoredBooleanPredicateValue(expr syntax.Expression, input *ir.AttachmentToken) bool {
+	if input == nil || !l.isBooleanCondition(expr) || l.importedPresenceOperand(expr) {
+		return false
+	}
+	for _, ag := range input.Aggrandizements {
+		if ag["Type"] == "WFCoercionVariableAggrandizement" && ag["CoercionItemClass"] == "WFBooleanContentItem" {
+			return false
+		}
+	}
+	return true
+}
