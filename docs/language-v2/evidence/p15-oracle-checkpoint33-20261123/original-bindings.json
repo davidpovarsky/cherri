@@ -1,0 +1,245 @@
+{
+  "APIRequests": 0,
+  "GoOrTestExecutions": 0,
+  "boundedOriginalLogObservation": {
+    "attempt": 1,
+    "e05PassLine": 26712,
+    "goReportedElapsedSeconds": 4.79,
+    "inspectedOriginalLineRange": [
+      26702,
+      26716
+    ],
+    "interpretation": "Separate canonical-path local PASS in the same failed job. It does not erase the earlier E05 failure, prove actual iOS UI, or classify the failed inner process. Provider log timestamps are not substituted for process timestamps.",
+    "log": {
+      "bytes": 10684254,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-acquisition-01/linux-failed-job-log.stdout.original",
+      "sha256": "8002d3cd80a93eaeb67c496d2bf600f0449e9182590dfd623ce339ef39b5f642"
+    },
+    "parentGoReportedElapsedSeconds": 9.37,
+    "parentPassLine": 26711,
+    "providerLogTimestamp": "2026-11-23T18:09:47.2220496Z",
+    "rawLogCopied": false,
+    "runId": 45226682617,
+    "source": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a",
+    "sourceFile": {
+      "bytes": 20437,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/language-acceptance/editor_contract_execution_test.go",
+      "sha256": "cad0e157c3bdb738acd84d26c30aea26133fef84370595f8e51bee962cca9098"
+    },
+    "sourceFunction": "TestEditorContractCanonicalSwiftExecutionPaths",
+    "sourceRule": "Calls runEditorContract(E05), requires PENDING_EXTERNAL with one real local record, validates the retained Swift record and exact canonical repository/output command tuple.",
+    "test": "TestEditorContractCanonicalSwiftExecutionPaths/E05"
+  },
+  "canonicalValidatorExecutions": 0,
+  "cutoff": {
+    "initialRootHandoff": "2026-11-23 approximately 18:27 UTC",
+    "preparedAtUtc": "2026-11-23T18:34:03.491823+00:00",
+    "rootDiagnosisAddendumAtUtc": "2026-11-23T18:28:05.081023+00:00",
+    "selectedSameJobObservation": "Original job lines26702-26716 inspected after the root requested the bounded observation; no new workflow or producer."
+  },
+  "files": {
+    "board_base": {
+      "bytes": 36049,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k16-local-contract-coverage-20261123/PROJECT_BOARD.md",
+      "sha256": "793bacceafd4aadf15f0fd21d23eed86a870c38f3a9a7007f52c3d654a9c65b6"
+    },
+    "chapter32_full179_projection": {
+      "bytes": 14980,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k16-local-contract-coverage-20261123/docs/language-v2/evidence/p15-oracle-checkpoint32-20261123/full179.public-projection.json",
+      "sha256": "cb400a6c616c5f9c25884386e28902959ad047573efed9edc1283b0baf3f6583"
+    },
+    "chapter32_manifest": {
+      "bytes": 2000,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k16-local-contract-coverage-20261123/docs/language-v2/evidence/p15-oracle-checkpoint32-20261123/MANIFEST.json",
+      "sha256": "ba373563ef8e088f2a44eb0d52ee47a694db2dced7dc866fee218b5d45d76422"
+    },
+    "chapter32_next_work": {
+      "bytes": 17472,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k16-local-contract-coverage-20261123/docs/language-v2/evidence/p15-oracle-checkpoint32-20261123/next-work.public-projection.json",
+      "sha256": "dd6d9934b05e9deafde757cca12188889453fb5e4e117689774b9003226a27b3"
+    },
+    "core_commit": {
+      "bytes": 28949,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/core-implementation-commit-01/result.original.json",
+      "sha256": "951b3393d2dc2a8c2edd9e1db51db8b285c4fd913d0dcd48678e4ed49e369781"
+    },
+    "core_root_intake": {
+      "bytes": 1194,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/core-commit-root-intake-01/intake.original.json",
+      "sha256": "89e8d3c6a23d0d0fe14af70155696985cc022ceabec763786eb1ff8e9e7aaa6c"
+    },
+    "editor_commit": {
+      "bytes": 30726,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-producers-commit-01/result.original.json",
+      "sha256": "74cf55a5f833675b9c96abcdef4958fe0773c77df31dd4919521c21430827db7"
+    },
+    "editor_commit_root": {
+      "bytes": 840,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-commit-root-intake-01/intake.original.json",
+      "sha256": "9f0e40d322595f4e7d7575ac7ed2b29bafef292777ebf31b868c4fb68ad1a830"
+    },
+    "editor_independent": {
+      "bytes": 37488,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-clean-qualification-independent-intake-01/review.original.json",
+      "sha256": "94df6827955acc3c8e0230fa434abc64ec42e6541b6dcf66f7f0f45e5498edf5"
+    },
+    "editor_precommit_root": {
+      "bytes": 3216,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-precommit-root-intake-01/intake.original.json",
+      "sha256": "1664b9f0bb3017421d6db4db7157b7e8d469657e2d75348938e7262777b1fa1b"
+    },
+    "editor_root": {
+      "bytes": 13953,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-clean-qualification-root-intake-01/intake.original.json",
+      "sha256": "345e72e6b4253fdbe7977d3c424a4c1343d64d1fd6df10cb870d06be235fb3f9"
+    },
+    "k15_build_acquisition": {
+      "bytes": 8142,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-acquisition-01/result.original.json",
+      "sha256": "9e5960326d0aedb998a42f8c264c39c5648a2f7c94f2fe13d52d7064e204aa84"
+    },
+    "k15_build_diagnosis": {
+      "bytes": 11899,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-diagnosis-01/review.original.json",
+      "sha256": "fd431c7f148dd91ba50f7cb155b069aaed7b519dc6aee84a49cd68b9b919bfe2"
+    },
+    "k15_build_root": {
+      "bytes": 2104,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-root-intake-01/intake.original.json",
+      "sha256": "fff67e43ec03faa0ad7f82bde1f9839ef822313d007a898db4126642545bc762"
+    },
+    "k15_canonical_e05_test_source": {
+      "bytes": 20437,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/language-acceptance/editor_contract_execution_test.go",
+      "sha256": "cad0e157c3bdb738acd84d26c30aea26133fef84370595f8e51bee962cca9098"
+    },
+    "k15_full_suite_receipt": {
+      "bytes": 6869,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-diagnosis-01/full-suite-receipt.original.json",
+      "sha256": "0e230d5e64a69b806f7ade02755a66589d83ba01de272dd3394da12944d5b24d"
+    },
+    "k15_publication_independent": {
+      "bytes": 11650,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/windows-publication-independent-intake-01/review.original.json",
+      "sha256": "7066c5d6c1eeb678441a096d6b037774cc1c691c0a447e7a47cda8b567dec557"
+    },
+    "k15_publication_result": {
+      "bytes": 23754,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/windows-publication-01/windows-originals/publication.result.json",
+      "sha256": "0869f0eb9c0c3c1a77093fab85fa7e8bbab0e6ae15ee9106c4228dff8a086e6e"
+    },
+    "k15_publication_root": {
+      "bytes": 3747,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/windows-publication-01/root-publication-intake.original.json",
+      "sha256": "77bba4bbfd2dd5bccd16e61076f4db7cedefacde60c006834f1f6b6b86101c7b"
+    },
+    "l01_root": {
+      "bytes": 5791,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/l01-root-intake-01/intake.original.json",
+      "sha256": "a47b0f6a1270b1f27175c502026ba2241810379f53d4b13e1e01fcfaf313cfb7"
+    },
+    "master_base": {
+      "bytes": 238013,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k16-local-contract-coverage-20261123/docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md",
+      "sha256": "345d732c133c336675adabd6527521be03bdab590092624f4552ffd5a7da1ed3"
+    },
+    "migration_family_first_read_only_intake": {
+      "bytes": 727,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-root-intake-01/first-read-only-intake-failure.original.json",
+      "sha256": "ad44e355bc3f02f7992b3c009f30e32a706157976901d27239c0718c894752e7"
+    },
+    "migration_family_independent": {
+      "bytes": 21288,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-independent-intake-01/review.original.json",
+      "sha256": "78d68d8d33cc0de0e3e906ef75e6c0a578e6c601ac88df4335ca42095c9d0006"
+    },
+    "migration_family_root": {
+      "bytes": 8078,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-root-intake-01/intake.original.json",
+      "sha256": "5c6adf20904be58f824e5274a15401e4f5e1554acb57b93d536d226433c2327a"
+    },
+    "n03_dynamic_preparation": {
+      "bytes": 3299,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/n03-exact-text-candidate-01/PREPARATION-STATUS.original.json",
+      "sha256": "96b2755dcdfe31f70969601dd7711d7ab6bb06b88617a1b5774da8965942ca1f"
+    },
+    "n03_dynamic_tests_first_manifest": {
+      "bytes": 619,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/n03-exact-text-candidate-01/tests-first-01/MANIFEST.json",
+      "sha256": "725a04ae3cf9cd496ab1c62c5327c4496e5170448e36aba1a87d87e87539c6e7"
+    },
+    "n03_dynamic_tests_first_plan": {
+      "bytes": 2631,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/n03-exact-text-candidate-01/tests-first-01/PLAN.md",
+      "sha256": "f7a682b764af7e8565a188fe3ede8ef7c3e40ecf7cb0c4deec13bd69bf1790c2"
+    },
+    "n03_green_root": {
+      "bytes": 3564,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-green-root-intake-01/intake.original.json",
+      "sha256": "4cd88d486c79d273b12b9b3195a787a8b988040bdd1a5dc1b678410a3b32962a"
+    },
+    "n03_red_root": {
+      "bytes": 3101,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-red-root-intake-01/intake.original.json",
+      "sha256": "9d7ea2be00d3990b2334b907c0f897216d3634d6c74f0e501671b81c91b2d5a0"
+    },
+    "native_inactive_manifest": {
+      "bytes": 4104,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/public-carrier-native-owner-proposal-01/MANIFEST.json",
+      "sha256": "707cf0e675644264941702f41cdbb033d02f92d4740c30a28d2eb2e746a2728c"
+    },
+    "native_inactive_plan": {
+      "bytes": 10074,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/public-carrier-native-owner-proposal-01/PLAN.md",
+      "sha256": "c459a7966ac45316789cde54c6daa489deaf7181bf70911dc043cb805aa6eee7"
+    },
+    "rp39_correction02_root": {
+      "bytes": 1635,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/rp39-correction02-test-root-intake-01/intake.original.json",
+      "sha256": "65d0f6ad1bdbefb7ac7168e84343b4232ee9f5642b1d89690ed0b32a00828d14"
+    }
+  },
+  "indirectOriginalResults": {
+    "editorClean": {
+      "bytes": 16495,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-clean-qualification-01/result.original.json",
+      "sha256": "caf56dab9d7bec82b42653e587230e3bd05d5142d5a5100c725a0efebbb8cbc0"
+    },
+    "editorPrecommit": {
+      "bytes": 17025,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/editor-precommit-01/result.original.json",
+      "sha256": "836ccd54057894a235e5c5ce8d5071e1872025d7e89b78cccd11e606433041aa"
+    },
+    "l01": {
+      "bytes": 14213,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/l01-supported-qualification-01/result.original.json",
+      "sha256": "ec6772c6c22d99e454a8e86a303c897720e9b7486094e0a02813f06ed59900ee"
+    },
+    "migrationFamily": {
+      "bytes": 15632,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-01/result.original.json",
+      "sha256": "17c06bb8269f561da3803d12cac49e7febe00568383d3273c66903bc8a7db3b9"
+    },
+    "n03Green": {
+      "bytes": 13655,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-green-01/result.original.json",
+      "sha256": "d599997bab62b3c808fd531ef93095eae7e50b9ed99bcfaa537258a13c0a52a5"
+    },
+    "n03Red": {
+      "bytes": 13614,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-red-01/result.original.json",
+      "sha256": "be09beafb2315cbbccd0226e9350e75c2b2b725b3337aab29e04e87ae6c82ef7"
+    },
+    "rp39Correction02": {
+      "bytes": 14113,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/rp39-correction02-test-01/result.original.json",
+      "sha256": "fc138bfa1791596d716fd1ce78ef88ddac71b78b7498e50e3339a57d26bacf20"
+    }
+  },
+  "originalsAltered": false,
+  "privateInputsRead": false,
+  "projectionOnly": true,
+  "rawLogsOrArchivesCopied": false,
+  "schema": "cherri-checkpoint33-original-metadata-bindings/1",
+  "sourceCheckoutWritten": false
+}

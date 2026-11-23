@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.11 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution: **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**; **closure_complete=false**. Chapter 32 records continuation implementation **08dab62c1dd838a4a45f4d6bfcea2ad5e0817402** and its clean **242-event scoped qualification**. Publication was pending at the checkpoint cutoff; this is not a new final K or release. Earlier chapters and original reports retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.12 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter33 records core **1079e9bff6c5f2c2eea3002095840e23e9bd3719** and clean editor **133eac3b752248a5e5e03887c77951f1ef6a83ea** scoped evidence. Earlier K15 daf5d84 is published, but automatic Build45226682617 **FAILED**; K16 remains unpublished. This is a continuation checkpoint, not a new final K/S or release. Earlier chapters and original reports retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2511,3 +2511,101 @@ This qualification did not rerun full179, execute actual END01 delivery, publish
 [Exact next-evidence categories and IDs](evidence/p15-oracle-checkpoint32-20261123/next-work.public-projection.json)
 
 Project status remains **IN_PROGRESS**, with **closure_complete=false**. Assembling these evidence projections ran no additional producer or canonical validator and copied no raw log, archive or private input.
+
+## 33. Migration fidelity, supported List oracles and combined editor producers — 2026-11-23
+
+> **Continuation checkpoint, 2026-11-23, approximately 18:27 UTC**, with the root's retained 18:28:05 UTC K15 Build diagnosis included below. The accepted local implementation is **133eac3b752248a5e5e03887c77951f1ef6a83ea**, tree **a407b703da04dcf2045437fcc0349d30c3e7dc68**. K16 remains unpublished at this cutoff. This chapter records bounded local work and a failed earlier-source CI run; it is not a new final K, compiler S or release.
+
+### Current source and milestone board
+
+K15's proof tip **daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a**, tree **0c31a4ad9a2ea5a262196a5338f7a7c7aff5d90d**, was published once to its continuation branch and independently accepted. Its automatic Build **45226682617, attempt 1**, subsequently failed. Publication acceptance and workflow success are separate observations.
+
+K16 continues from that published tip. The six-file core commit **1079e9bff6c5f2c2eea3002095840e23e9bd3719**, tree **1897eb0acf8dd467fb8e39527a88c6e5eb5833e9**, adopts the migration comparison-mode repair and supported Dictionary-in-List checks. The nine-file editor commit **133eac3b752248a5e5e03887c77951f1ef6a83ea** follows it and adds the distinct RP39/RP41 local producers. Their actual execution attribution is retained: the core checks ran on stable reviewed precommit bytes, and the final editor qualification ran on clean 133eac3.
+
+| Milestone | Observed result and boundary |
+|---|---|
+| N03 migration comparison RED | Four ordinary/mixed-mode children and their parent failed; two explicit-Legacy children passed. The original source and nonzero exit remain retained. |
+| Focused migration repair GREEN | 2 parents + 23 children = 25 named PASS on the stable precommit repair candidate; no native execution or full N03 acceptance. |
+| Supported L01 oracle | 4 parents + 45 children = 49 named PASS; four new healthy Dictionary-in-List routes and 12 causal mutations. Unverified nested-List guards and full L01 NOT_RUN remain. |
+| Affected migration/module families | 19 migrate + 63 root named PASS = 82; modules produced the explicit no-test-files package result and supplies build-only coverage. |
+| Editor precommit checks | 20 named PASS across three bounded commands. The original RP39 equal-length-token control defect remained explicit at that stage. |
+| RP39 correction02 delta | The healthy scenario plus the exact diagnostic-substitution child passed: 2 parents + 1 child = 3 named PASS. |
+| Clean editor qualification | RP41 outer 30 / nested 40 and RP39 outer 17 / nested 24 named PASS at clean 133eac3. The two accounting layers are not added as independent coverage. |
+| K15 automatic Build | Nix success; Linux failure in the E05 acceptance child/parent; macOS cancelled before runner acquisition, with no steps. |
+| K16 publication and native execution | Not performed at this cutoff. Prepared native owners remain inactive. |
+
+The [bounded public metadata capsule](evidence/p15-oracle-checkpoint33-20261123/README.md) binds these claims to the retained original results and root/independent intakes. It contains no raw log, archive or private input.
+
+### Acceptance matrix and evidence log
+
+#### Comparison-mode preservation is a migration repair
+
+The genuine RED showed migration adding the Legacy comparison marker to originally ordinary comparisons, including mixed nested cases. The repair preserves each original comparison mode through entry conversion. Focused GREEN retained the six original regression cases and passed 17 additional interaction cases, for 25 named events in total. The affected-family follow-up passed all 82 named events without a named skip; its original three-minute Go and four-minute command envelopes remain unchanged.
+
+The modules package's terminal skip has the explicit reason **no test files** and zero named tests. It is recorded as build-only coverage, not a skipped named test or an executed module test suite. Root's first read-only intake used an overly strict all-package-PASS assertion; that diagnostic remains preserved. The Go producer was not retried to correct the intake.
+
+Core commit 1079e9b is the later exact source adoption of these tested bytes. It does not retroactively make the precommit executions clean-source runs. The independent family receipt is **78d68d8d33cc0de0e3e906ef75e6c0a578e6c601ac88df4335ca42095c9d0006**.
+
+This work does not close the separate dynamic exact-Text equality clause of N03. A tests-first exact-Text packet is externally ready for root review but remains unapplied and unexecuted. The separate production candidate and its source-cursor/typed-expression interaction remain unfinished. No N03 guard or Apple evidence requirement is waived.
+
+[Core source and qualification projection](evidence/p15-oracle-checkpoint33-20261123/core.public-projection.json)
+
+#### L01 improves the supported oracle without declaring unsupported shapes safe
+
+The new supported checks use real production compilation and existing native-structure helpers. They cover outer List order and cardinality, exact Dictionary producer references, repeated aliases, the final consumer, and already-supported mutable storage/reassignment. Twelve causal corruptions target those same boundaries.
+
+The four selected parents passed 49 named events. Existing rejection of unverified native nested-List shapes remains intact. These results do not prove general List-in-List transport, dynamic collection representation, raw JsonNull semantics, F04 loop carriers or Apple runtime behavior. Full L01 remains NOT_RUN.
+
+#### RP39 and RP41 now have distinct local production evidence
+
+RP39 executes format twice, shadowed Unicode rename with exact authored edits/spans and untouched comments/strings, and newer/stale/recovery analysis on the **same document and production Service**. The corrected fixture uses different old/new diagnostic-token spans, so the old-diagnostic substitution reaches its intended oracle. Proposal01, its independent static finding and its earlier healthy-only checks remain preserved.
+
+RP41 executes the real unsigned mobile compiler, same-compile native source mapping and JSON edit path on one expanded source. It joins generated-action read-only rejection, an exact mapped edit, recompilation, stale-witness rejection, a fresh edit and invalid-expression rejection. Its origin/corruption controls remain part of the actual local producer.
+
+| Clean 133eac3 execution | Outer qualification | Nested actual producer | Local tiers established |
+|---|---:|---:|---|
+| RP41 | 3 parents + 27 children = 30 PASS | 5 parents + 35 children = 40 PASS | integration |
+| RP39 | 2 parents + 15 children = 17 PASS | 2 parents + 22 children = 24 PASS | unit, service |
+
+Both commands exited 0 with no timeout, failure, skip or source drift. Root joined 75 unique nested source blobs; the independent intake checked all 14 retained artifacts, 92 execution-source file pins and all 476 original JSON events. Original inner limits remain RP41 Go60/process300 seconds and RP39 Go180/process240 seconds.
+
+The actual **Runner rows remain PENDING_EXTERNAL** for ios-ui. The separate standalone local manifest projections are **NOT_RUN**, each with passed 0, failed 0 and skipped 1. Each execution audit retains the full 94/52/33 obligation inventory and marks only its own RP row **BLOCKED_EXTERNAL** with local positive-and-negative evidence; the other 178 rows remain **UNVERIFIED**. These original status schemas are preserved without normalization.
+
+No combined iOS editor behavior, ios&&cgo export, Swift transaction, rendered WebView or actual UI result is inferred. Related E03/E04/E05/E07/BRG28 requirements receive no inherited credit. This qualification did not execute full179.
+
+Root intake: **345e72e6b4253fdbe7977d3c424a4c1343d64d1fd6df10cb870d06be235fb3f9**. Independent intake: **94df6827955acc3c8e0230fa434abc64ec42e6541b6dcf66f7f0f45e5498edf5**.
+
+[Editor source, process and scope projection](evidence/p15-oracle-checkpoint33-20261123/editor.public-projection.json)
+
+#### Published K15 remains CI-failed
+
+The create-only Windows publication of daf5d84 completed one push, exact remote ref/tree readback and primary-checkout preservation. Root and independent publication intakes accepted its originals. That result does not imply a green Build.
+
+| Build 45226682617 job | Actual terminal |
+|---|---|
+| build-test-nix, 137874933924 | success |
+| build-test-linux, 137874934618 | failure |
+| build-test-macos, 137874934393 | cancelled; runner_id 0; zero steps |
+
+Root's retained Linux diagnosis finds exactly 30 package terminals: **24 ok, one FAIL in tools/language-acceptance, and five no-test-files packages**. The ordinary 29-package command exited 0; the acceptance package command exited 1 under the original 15-minute/35-minute limits. The only named failed child is **TestEditorContractActualProductionEvidence/E05**, together with its parent. The parent reports a child process exit 1, timeout false and clean source afterward.
+
+The same original job also contains a later **TestEditorContractCanonicalSwiftExecutionPaths/E05 PASS**, with Go-reported elapsed **4.79 seconds** (retained log lines 26702–26716; provider timestamp on the PASS line 18:09:47.2220496Z). The source-defined canonical-path test calls the real editor contract, requires PENDING_EXTERNAL, validates its actual Swift record and checks the canonical repository/output tuple. This is a separate local path within the same failed job; it does not erase the earlier failure or establish iOS UI.
+
+The exact inner E05 failure cause remains **UNOBSERVED**. The earlier 92.83-second subcase duration alone does not distinguish a Swift, Go, assertion or timeout cause, and the later same-job PASS does not support calling the fixture deterministically broken. Provider log timestamps and Go-reported durations retain their distinct meanings. The retained macOS annotation reports failed runner acquisition and arm64 capacity constraints; there was no checkout or test execution in that job. Nix success does not replace either missing macOS evidence or the Linux failure. No workflow retry, cancellation or redispatch is implied by this checkpoint.
+
+The 18:28:05 root diagnosis is **fd431c7f148dd91ba50f7cb155b069aaed7b519dc6aee84a49cd68b9b919bfe2**. Its full-suite receipt is **0e230d5e64a69b806f7ade02755a66589d83ba01de272dd3394da12944d5b24d**. Only bounded metadata and original locators are included here; the 10 MB log remains in its original evidence directory.
+
+[K15 publication and failed-CI projection](evidence/p15-oracle-checkpoint33-20261123/k15-publication-ci.public-projection.json)
+
+### Decisions, open defects and next work
+
+1. **Resolve the actual E05 CI failure from its retained originals.** Keep the inner cause unclassified until evidence supports a specific diagnosis. Earlier local harness success and later RP39/RP41 success do not replace this daf5d84 CI result.
+2. **Continue concrete local semantic work.** N03 migration-mode preservation is qualified; dynamic exact Text remains an external candidate. T05, full L01 and F04 retain their explicit unproved representation/semantic clauses and current guards.
+3. **Retain distinct producer obligations.** RP39/RP41 now have their own local evidence and still need their actual combined iOS UI scenarios. The other thirteen gaps from Chapter32 remain independently scoped: RP20, RP26, RP40, RP47, RP48, RP49, BRG01, BRG15, BRG25, BRG26, BRG27, BRG28 and BRG31. B01's repository observation, CI01/CI02's real Apple evidence, D03's exact consumer mix and other unmapped requirements are not closed by this work.
+4. **Treat native preparation as inactive preparation.** The existing public nested-list control followed by a conditional candidate has an external owner proposal, preserving the 45-minute job and 5,100-second observer. It awaits actual qualified/published source bindings and root's execution handoff; the candidate also requires the original control evidence and reviewed controlGoalsMatched admission. No new user-permission issue, runner availability, signing/runtime result or T05/L01 closure is asserted.
+5. **Keep historical formal outcomes intact.** K476 full179 remains 111 PASSED / 4 FAILED / 28 NOT_RUN / 36 PENDING_EXTERNAL, closure false. Its 36 original report/audit detail contradictions and unexecuted END01 delivery remain unchanged. No full179 rerun, new CI03/CI04 context, race-import route or final source is supplied by this documentation.
+6. **Preserve policy and AI boundaries.** R23 v1 stays active; the v2 proposal remains unapproved. R22 remains platform-bound. The consumed historical provider cohort, incomplete outcomes and no-reseed/no-retry boundaries are unchanged.
+
+[Scoped next-work projection](evidence/p15-oracle-checkpoint33-20261123/next-work.public-projection.json)
+
+Project status remains **IN_PROGRESS** and **closure_complete=false**. The checkpoint's own proof commit is intentionally null before adoption; K16 publication is pending. Prior chapters 0–32 and every original report retain their exact historical content and attribution.

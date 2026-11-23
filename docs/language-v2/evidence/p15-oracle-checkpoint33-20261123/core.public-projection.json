@@ -1,0 +1,232 @@
+{
+  "closureComplete": false,
+  "component": "Core continuation and stable precommit qualifications",
+  "coreCommit": {
+    "branch": "agent/cherri-p10r15-k16-local-contract-coverage-20261123",
+    "clean": true,
+    "commitAttempts": 1,
+    "files": [
+      "internal/language/migrate/comparison_modes.go",
+      "internal/language/migrate/migrate.go",
+      "p15_literal_codec_controls_test.go",
+      "p15_literal_collections_acceptance_test.go",
+      "p15_n03_migration_comparison_test.go",
+      "p15_n03_migration_interactions_test.go"
+    ],
+    "head": "1079e9bff6c5f2c2eea3002095840e23e9bd3719",
+    "parent": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a",
+    "sourceRole": "QUALIFIED_CONTINUATION_IMPLEMENTATION",
+    "tree": "1897eb0acf8dd467fb8e39527a88c6e5eb5833e9"
+  },
+  "coreCommitReceipt": {
+    "bytes": 28949,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/core-implementation-commit-01/result.original.json",
+    "sha256": "951b3393d2dc2a8c2edd9e1db51db8b285c4fd913d0dcd48678e4ed49e369781"
+  },
+  "coreRootIntake": {
+    "bytes": 1194,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/core-commit-root-intake-01/intake.original.json",
+    "sha256": "89e8d3c6a23d0d0fe14af70155696985cc022ceabec763786eb1ff8e9e7aaa6c"
+  },
+  "cutoff": {
+    "initialRootHandoff": "2026-11-23 approximately 18:27 UTC",
+    "preparedAtUtc": "2026-11-23T18:34:03.491823+00:00",
+    "rootDiagnosisAddendumAtUtc": "2026-11-23T18:28:05.081023+00:00",
+    "selectedSameJobObservation": "Original job lines26702-26716 inspected after the root requested the bounded observation; no new workflow or producer."
+  },
+  "executionAttribution": "Qualification rows below retain their actual stable precommit source descriptions; the later core commit is exact adoption, not a retroactive clean-source run.",
+  "formalAcceptanceGranted": false,
+  "l01": {
+    "childCount": 45,
+    "events": 200,
+    "formalL01Status": "NOT_RUN remains; unverified dynamic nested-list representation not proved",
+    "goSeconds": 180,
+    "namedFailCount": 0,
+    "namedPassCount": 49,
+    "namedSkipCount": 0,
+    "nativeRuntimeExecuted": false,
+    "newCausalMutations": {
+      "dictionary_in_list_aliases": [
+        "change_repeated_alias"
+      ],
+      "dictionary_in_list_assignment": [
+        "replacement_reads_stale_list"
+      ],
+      "dictionary_in_list_mutable": [
+        "store_reads_element",
+        "consumer_reads_other_variable"
+      ],
+      "dictionary_in_list_ordered": [
+        "drop_outer_element",
+        "reorder_outer_elements",
+        "repeat_wrong_producer",
+        "inline_dictionary_row",
+        "dangling_row_reference",
+        "duplicate_producer_identity",
+        "consumer_reads_element",
+        "unmodeled_action"
+      ]
+    },
+    "newHealthyRoutes": [
+      "dictionary_in_list_ordered",
+      "dictionary_in_list_mutable",
+      "dictionary_in_list_assignment",
+      "dictionary_in_list_aliases"
+    ],
+    "outerSeconds": 240,
+    "packageElapsed": 0.787,
+    "parentCount": 4,
+    "processSeconds": 21.201764124445617,
+    "rawGoExit": 0,
+    "result": {
+      "bytes": 14213,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/l01-supported-qualification-01/result.original.json",
+      "sha256": "ec6772c6c22d99e454a8e86a303c897720e9b7486094e0a02813f06ed59900ee"
+    },
+    "rootIntake": {
+      "bytes": 5791,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/l01-root-intake-01/intake.original.json",
+      "sha256": "a47b0f6a1270b1f27175c502026ba2241810379f53d4b13e1e01fcfaf313cfb7"
+    },
+    "sourceAtExecution": "daf5d84 base plus two reviewed L01 test-file changes and unchanged new N03 regression; no production edits"
+  },
+  "migrationFamily": {
+    "commandExits": {
+      "migration-family": 0,
+      "migration-packages": 0
+    },
+    "commandSeconds": {
+      "migration-family": 9.63858602475375,
+      "migration-packages": 0.7060892628505826
+    },
+    "diagnosticScope": "Initial intake rejected the valid no-test-files package terminal before writing acceptance; producer was not retried.",
+    "fullContractCredit": false,
+    "goSecondsEach": 180,
+    "independentIntake": {
+      "bytes": 21288,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-independent-intake-01/review.original.json",
+      "sha256": "78d68d8d33cc0de0e3e906ef75e6c0a578e6c601ac88df4335ca42095c9d0006"
+    },
+    "initialReadOnlyIntakeDiagnostic": {
+      "bytes": 727,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-root-intake-01/first-read-only-intake-failure.original.json",
+      "sha256": "ad44e355bc3f02f7992b3c009f30e32a706157976901d27239c0718c894752e7"
+    },
+    "namedFail": 0,
+    "namedPass": 82,
+    "namedSkip": 0,
+    "outerCommandSecondsEach": 240,
+    "packageRows": [
+      {
+        "childCount": 6,
+        "coverage": "NAMED_TESTS",
+        "namedPass": 19,
+        "package": "github.com/electrikmilk/cherri/internal/language/migrate",
+        "packageElapsed": 0.018,
+        "packageOutcome": "pass",
+        "parentCount": 13
+      },
+      {
+        "childCount": 0,
+        "coverage": "BUILD_ONLY_NO_TEST_FILES",
+        "namedPass": 0,
+        "package": "github.com/electrikmilk/cherri/internal/language/modules",
+        "packageElapsed": 0,
+        "packageOutcome": "skip",
+        "parentCount": 0
+      },
+      {
+        "childCount": 56,
+        "coverage": "NAMED_TESTS",
+        "namedPass": 63,
+        "package": "github.com/electrikmilk/cherri",
+        "packageElapsed": 7.111,
+        "packageOutcome": "pass",
+        "parentCount": 7
+      }
+    ],
+    "result": {
+      "bytes": 15632,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-01/result.original.json",
+      "sha256": "17c06bb8269f561da3803d12cac49e7febe00568383d3273c66903bc8a7db3b9"
+    },
+    "rootIntake": {
+      "bytes": 8078,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/migration-family-root-intake-01/intake.original.json",
+      "sha256": "5c6adf20904be58f824e5274a15401e4f5e1554acb57b93d536d226433c2327a"
+    },
+    "sourceAtExecution": "daf5 plus exactly reviewed N03 production/helper/tests and L01 test additions"
+  },
+  "n03": {
+    "green": {
+      "actualLegacyDifferentialInteractionCases": 8,
+      "children": 23,
+      "converterOrV2OnlyInteractionCases": 9,
+      "events": 104,
+      "formalN03Acceptance": false,
+      "goSeconds": 180,
+      "limits": [
+        "Comparison wire preservation in entry conversion; not a claim of actual Apple case-sensitive text behavior.",
+        "Direct common-syntax module re-entry is not guaranteed idempotent by this entry-focused test; real module resolver parses canonical V2 first.",
+        "Affected migration/module families remain selected next before finalizing source."
+      ],
+      "namedFail": 0,
+      "namedPass": 25,
+      "namedSkip": 0,
+      "nativeRuntimeExecuted": false,
+      "outerSeconds": 240,
+      "packageElapsed": 0.374,
+      "parents": 2,
+      "processSeconds": 22.160121756605804,
+      "rawGoExit": 0,
+      "result": {
+        "bytes": 13655,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-green-01/result.original.json",
+        "sha256": "d599997bab62b3c808fd531ef93095eae7e50b9ed99bcfaa537258a13c0a52a5"
+      },
+      "rootIntake": {
+        "bytes": 3564,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-green-root-intake-01/intake.original.json",
+        "sha256": "4cd88d486c79d273b12b9b3195a787a8b988040bdd1a5dc1b678410a3b32962a"
+      },
+      "sourceAtExecution": "daf5 base plus reviewed N03 migration repair/additive tests and already-qualified L01 test additions",
+      "sourceUnchanged": true
+    },
+    "red": {
+      "events": 80,
+      "formalN03Acceptance": false,
+      "goSeconds": 180,
+      "namedResults": {
+        "TestP15N03MigrationPreservesComparisonMode": "fail",
+        "TestP15N03MigrationPreservesComparisonMode/explicit_legacy_equal": "pass",
+        "TestP15N03MigrationPreservesComparisonMode/explicit_legacy_not_equal": "pass",
+        "TestP15N03MigrationPreservesComparisonMode/nested_legacy_outer": "fail",
+        "TestP15N03MigrationPreservesComparisonMode/nested_ordinary_outer": "fail",
+        "TestP15N03MigrationPreservesComparisonMode/ordinary_equal": "fail",
+        "TestP15N03MigrationPreservesComparisonMode/ordinary_not_equal": "fail"
+      },
+      "nativeRuntimeExecuted": false,
+      "outerSeconds": 240,
+      "packageElapsed": 0.128,
+      "processSeconds": 75.79701990820467,
+      "rawGoExit": 1,
+      "result": {
+        "bytes": 13614,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-red-01/result.original.json",
+        "sha256": "be09beafb2315cbbccd0226e9350e75c2b2b725b3337aab29e04e87ae6c82ef7"
+      },
+      "rootIntake": {
+        "bytes": 3101,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k16-local-contract-coverage-20261123/n03-red-root-intake-01/intake.original.json",
+        "sha256": "9d7ea2be00d3990b2334b907c0f897216d3634d6c74f0e501671b81c91b2d5a0"
+      },
+      "source": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a plus one exact new test file; all production source unchanged",
+      "sourceUnchanged": true
+    }
+  },
+  "producerRerunForProjection": false,
+  "projectionOnly": true,
+  "schema": "cherri-checkpoint33-public-projection/1",
+  "sourceImplementation": "133eac3b752248a5e5e03887c77951f1ef6a83ea",
+  "sourceTree": "a407b703da04dcf2045437fcc0349d30c3e7dc68"
+}

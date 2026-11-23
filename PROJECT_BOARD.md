@@ -25,6 +25,14 @@ Potential improvements, features, optimizations, or architectural ideas.
 
 ## Discoveries & Tips
 
+### 2026-11-23 — Migration fidelity and combined editor evidence at K16
+
+The accepted continuation chain is published K15 daf5d84 → core1079e9b → editor133eac3. Core checks preserve comparison modes through migration (genuine RED, focused25 PASS), strengthen only the supported Dictionary-in-List oracle (49 PASS), and verify affected families (82 named PASS; modules build-only, zero named skips). Their precommit attribution remains explicit.
+
+Clean133eac3 qualification passed RP41 outer30/nested40 and RP39 outer17/nested24. These are distinct local integration/service producers; actual Runner rows remain PENDING_EXTERNAL for ios-ui. Standalone manifest NOT_RUN and 179-row audit BLOCKED_EXTERNAL remain their separate original schemas. The outer and nested counts are not added.
+
+K15 publication is accepted, but automatic Build45226682617 failed: Linux E05 child/parent failed, Nix passed, and macOS never acquired a runner. A separate canonical E05 path passed in that same job; the earlier inner failure cause remains unobserved. K16 is unpublished; dynamic N03 Text and public native control/candidate work remain external/inactive. T05/fullL01/F04, original K476111/4/28/36, END contradiction and policy/AI boundaries remain open and unchanged. [Bounded Chapter33 evidence](docs/language-v2/evidence/p15-oracle-checkpoint33-20261123/README.md).
+
 ### 2026-11-23 — Acceptance detail fidelity and verified continuation
 
 K476's original full179 remains 111 PASSED / 4 FAILED / 28 NOT_RUN / 36 PENDING_EXTERNAL. The report discarded detailed pending diagnostics while the audit preserved them; unchanged END01 correctly rejects those original pairs. The minimal repair preserves the authoritative detail. Genuine causal RED and focused six-parent/ten-event GREEN remain retained separately.

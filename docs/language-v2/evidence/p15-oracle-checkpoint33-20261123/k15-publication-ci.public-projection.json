@@ -1,0 +1,200 @@
+{
+  "automaticBuild": {
+    "acceptancePackageCommandExit": 1,
+    "artifactCount": 2,
+    "attempt": 1,
+    "conclusion": "failure",
+    "diagnosis": {
+      "bytes": 11899,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-diagnosis-01/review.original.json",
+      "sha256": "fd431c7f148dd91ba50f7cb155b069aaed7b519dc6aee84a49cd68b9b919bfe2"
+    },
+    "failedInnerProcessKnownFields": {
+      "exitCode": 1,
+      "sourceCleanAfter": true,
+      "timedOut": false
+    },
+    "failedPackage": "github.com/electrikmilk/cherri/tools/language-acceptance",
+    "failureAcquisition": {
+      "bytes": 8142,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-acquisition-01/result.original.json",
+      "sha256": "9e5960326d0aedb998a42f8c264c39c5648a2f7c94f2fe13d52d7064e204aa84"
+    },
+    "innerFailureCause": "UNOBSERVED; parent error reports nonzero child process, not a classified Swift/Go/assertion/timeout cause. Elapsed92.83seconds alone does not resolve it.",
+    "innerOriginalsAdvertised": false,
+    "jobs": [
+      {
+        "conclusion": "success",
+        "id": 137874933924,
+        "name": "build-test-nix",
+        "runnerId": 1000024803,
+        "stepCount": 9
+      },
+      {
+        "conclusion": "cancelled",
+        "id": 137874934393,
+        "name": "build-test-macos",
+        "runnerId": 0,
+        "stepCount": 0
+      },
+      {
+        "conclusion": "failure",
+        "id": 137874934618,
+        "name": "build-test-linux",
+        "runnerId": 1000024804,
+        "stepCount": 25
+      }
+    ],
+    "macOS": {
+      "conclusion": "cancelled",
+      "providerMessages": [
+        "The job was not acquired by Runner of type hosted even after multiple attempts",
+        "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+      ],
+      "runnerId": 0,
+      "stepCount": 0
+    },
+    "namedFailures": [
+      {
+        "line": 26586,
+        "name": "TestEditorContractActualProductionEvidence",
+        "seconds": 121.06
+      },
+      {
+        "line": 26614,
+        "name": "TestEditorContractActualProductionEvidence/E05",
+        "seconds": 92.83
+      }
+    ],
+    "newDispatch": false,
+    "newWorkflowRetry": false,
+    "ordinary29PackageCommandExit": 0,
+    "originalGoTimeouts": [
+      "15m",
+      "35m"
+    ],
+    "packageCounts": {
+      "?": 5,
+      "FAIL": 1,
+      "ok": 24
+    },
+    "packageTerminalCount": 30,
+    "rawLogCopied": false,
+    "rootTerminalIntake": {
+      "bytes": 2104,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-root-intake-01/intake.original.json",
+      "sha256": "fff67e43ec03faa0ad7f82bde1f9839ef822313d007a898db4126642545bc762"
+    },
+    "runId": 45226682617,
+    "sameJobCanonicalE05Pass": {
+      "attempt": 1,
+      "e05PassLine": 26712,
+      "goReportedElapsedSeconds": 4.79,
+      "inspectedOriginalLineRange": [
+        26702,
+        26716
+      ],
+      "interpretation": "Separate canonical-path local PASS in the same failed job. It does not erase the earlier E05 failure, prove actual iOS UI, or classify the failed inner process. Provider log timestamps are not substituted for process timestamps.",
+      "log": {
+        "bytes": 10684254,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-acquisition-01/linux-failed-job-log.stdout.original",
+        "sha256": "8002d3cd80a93eaeb67c496d2bf600f0449e9182590dfd623ce339ef39b5f642"
+      },
+      "parentGoReportedElapsedSeconds": 9.37,
+      "parentPassLine": 26711,
+      "providerLogTimestamp": "2026-11-23T18:09:47.2220496Z",
+      "rawLogCopied": false,
+      "runId": 45226682617,
+      "source": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a",
+      "sourceFile": {
+        "bytes": 20437,
+        "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/language-acceptance/editor_contract_execution_test.go",
+        "sha256": "cad0e157c3bdb738acd84d26c30aea26133fef84370595f8e51bee962cca9098"
+      },
+      "sourceFunction": "TestEditorContractCanonicalSwiftExecutionPaths",
+      "sourceRule": "Calls runEditorContract(E05), requires PENDING_EXTERNAL with one real local record, validates the retained Swift record and exact canonical repository/output command tuple.",
+      "test": "TestEditorContractCanonicalSwiftExecutionPaths/E05"
+    },
+    "suiteReceipt": {
+      "bytes": 6869,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-failure-diagnosis-01/full-suite-receipt.original.json",
+      "sha256": "0e230d5e64a69b806f7ade02755a66589d83ba01de272dd3394da12944d5b24d"
+    },
+    "terminalOriginals": {
+      "terminalArtifacts": {
+        "bytes": 1535,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-status-01/terminal/artifacts.original.json",
+        "sha256": "ae216905e18474c919c7ffdc2bb91cfb6579e64150af41822102c7c29447e87e"
+      },
+      "terminalJobs": {
+        "bytes": 8681,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-status-01/terminal/jobs.original.json",
+        "sha256": "ce3b33df283a8e359bfe08c997ff075c0e2c30013a1387950999ea5c74ca95ca"
+      },
+      "terminalRun": {
+        "bytes": 12487,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/automatic-build-status-01/terminal/run.original.json",
+        "sha256": "8516d953ca9cb461293f0b11ae97967dcfbbef829c4bc72108562c4d7c4b4080"
+      }
+    },
+    "twoActualCheckoutLogWitnesses": [
+      {
+        "line": 365,
+        "observedSHA": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a"
+      },
+      {
+        "line": 377,
+        "observedSHA": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a"
+      }
+    ],
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/45226682617",
+    "workflow": 337107928
+  },
+  "closureComplete": false,
+  "component": "K15 publication accepted; automatic Build failed",
+  "currentCIResultNotReclassified": true,
+  "cutoff": {
+    "initialRootHandoff": "2026-11-23 approximately 18:27 UTC",
+    "preparedAtUtc": "2026-11-23T18:34:03.491823+00:00",
+    "rootDiagnosisAddendumAtUtc": "2026-11-23T18:28:05.081023+00:00",
+    "selectedSameJobObservation": "Original job lines26702-26716 inspected after the root requested the bounded observation; no new workflow or producer."
+  },
+  "formalAcceptanceGranted": false,
+  "k16Publication": null,
+  "producerRerunForProjection": false,
+  "projectionOnly": true,
+  "publication": {
+    "independentIntake": {
+      "bytes": 11650,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/windows-publication-independent-intake-01/review.original.json",
+      "sha256": "7066c5d6c1eeb678441a096d6b037774cc1c691c0a447e7a47cda8b567dec557"
+    },
+    "manualDispatches": 0,
+    "original": {
+      "bytes": 23754,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/windows-publication-01/windows-originals/publication.result.json",
+      "sha256": "0869f0eb9c0c3c1a77093fab85fa7e8bbab0e6ae15ee9106c4228dff8a086e6e"
+    },
+    "primaryUnchanged": true,
+    "privateFixtureReadByThisProjection": false,
+    "pushAttempts": 1,
+    "pushExit": 0,
+    "releasePromotion": false,
+    "remoteRefAndTreeVerified": true,
+    "rootIntake": {
+      "bytes": 3747,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/windows-publication-01/root-publication-intake.original.json",
+      "sha256": "77bba4bbfd2dd5bccd16e61076f4db7cedefacde60c006834f1f6b6b86101c7b"
+    },
+    "status": "ACCEPTED_QUALIFIED_CONTINUATION_PUBLICATION",
+    "stepCount": 21,
+    "streamCount": 42
+  },
+  "publishedRef": "refs/heads/agent/cherri-p10r15-k15-verification-repair-20261123",
+  "publishedSource": "daf5d84afc6dbc54f9a32cee7a8e28ceba494e0a",
+  "publishedTree": "0c31a4ad9a2ea5a262196a5338f7a7c7aff5d90d",
+  "publishedURL": "https://github.com/davidpovarsky/cherri/tree/agent/cherri-p10r15-k15-verification-repair-20261123",
+  "schema": "cherri-checkpoint33-public-projection/1",
+  "sourceImplementation": "133eac3b752248a5e5e03887c77951f1ef6a83ea",
+  "sourceTree": "a407b703da04dcf2045437fcc0349d30c3e7dc68"
+}
