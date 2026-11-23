@@ -13313,7 +13313,7 @@
         "testName": "MissingRequiredRejected_getType",
         "testInput": "#define name ParamContractTest\ngetType()",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 1st argument 'input'.\n\n### Get Type\n\nGet the type of input.\n\n```\ngetType(variable input, ...): text\n```",
+        "actualBehavior": "rejected with error: Missing required 1st argument 'input'.\n\n### Get File of Type\n\nReturn file content of the requested UTI from input. May return multiple items; use typeOf to inspect content types.\n\n```\ngetType(variable input, ...): variable\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
@@ -19406,7 +19406,7 @@
         "testName": "MissingRequiredRejected_rawAction",
         "testInput": "#define name ParamContractTest\nrawAction()",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 1st argument 'identifier'.\n\n### `rawAction()`\n\n```\nrawAction(text identifier, ...): variable\n```",
+        "actualBehavior": "rejected with error: Missing required 1st argument 'identifier'.\n\n### `rawAction()`\n\n```\nrawAction(text identifier, ..., ...): variable\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
@@ -27854,7 +27854,7 @@
         "subKind": "DYNAMIC_VARIABLE_ACCEPTED",
         "testName": "DynamicReference_streetAddress",
         "testInput": "#define name ParamContractTest\n#include 'actions/location'\n@dynVar = \"sample\"\nstreetAddress(@dynVar, \"sample\", \"sample\", \"sample\", \"sample\", 1)",
-        "expectedBehavior": "parameter addressLine2 accepts @dynVar and serializes dynamic reference token",
+        "expectedBehavior": "parameter addressLine1 accepts @dynVar and serializes dynamic reference token",
         "actualBehavior": "verified dynamic variable token in emitted plist",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#DynamicReference"
       },
