@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0",
-  "sourceCommit": "92f834e1878e02d6357021e97c491c55437c038b",
-  "inputDependencyFingerprint": "40ecf0bfbda0e3cf4bd3ff4227494abaf3f3354fdec4aa607fd0c0ea2fcae865",
+  "sourceCommit": "aa4ce3838b51669326b153262331b88b0c4b8e79",
+  "inputDependencyFingerprint": "e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0",
   "totalCatalogEntries": 505,
   "summary": {
     "totalEntries": 505,
@@ -229,7 +229,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[DNDOff]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[DNDOff]; p15_supplemental_local_contracts_test.go",
       "emittedParameterKeys": [
         "Enabled",
         "FocusModes"
@@ -294,7 +294,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[DNDOn]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[DNDOn]; p15_supplemental_local_contracts_test.go",
       "emittedParameterKeys": [
         "Enabled",
         "FocusModes"
@@ -1215,7 +1215,7 @@
       "compilerConstruct": false,
       "category": "web",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1347,
+      "sourceLine": 1327,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -1273,7 +1273,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[addToReadingList]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[addToReadingList]; p15_variadic_migration_test.go",
       "emittedParameterKeys": [
         "Show-WFURLActionURL",
         "WFURL"
@@ -1436,7 +1436,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[adjustDate]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[adjustDate]; p15_schema_generation_recovery_test.go; p15_schema_optional_propagation_test.go; p15_schema_production_test.go",
       "emittedParameterKeys": [
         "WFAdjustOperation",
         "WFDate"
@@ -1673,7 +1673,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[alert]; action_parity_test.go; build_profile_test.go; debug_stdlib_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[alert]; action_parity_test.go; build_profile_test.go; debug_labels_test.go",
       "emittedParameterKeys": [
         "WFAlertActionCancelButtonShown",
         "WFAlertActionMessage"
@@ -2297,7 +2297,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[askLLM]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[askLLM]; p15_version_comparison_test.go",
       "emittedParameterKeys": [
         "WFLLMPrompt"
       ],
@@ -3161,7 +3161,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[chooseFromList]; p11_wire_fidelity_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[chooseFromList]; p11_wire_fidelity_test.go; p15_cardinality_acceptance_test.go; p15_computed_map_keys_recovery_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -3385,7 +3385,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[comment]; architecture_cutover_test.go; compiler_isolation_test.go; docs_examples_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[comment]; architecture_cutover_test.go; compiler_isolation_test.go; ios_bridge_matrix_test.go",
       "emittedParameterKeys": [
         "WFCommentActionText"
       ],
@@ -3619,7 +3619,7 @@
       "compilerConstruct": false,
       "category": "text",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1145,
+      "sourceLine": 1125,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -3880,7 +3880,7 @@
       "compilerConstruct": false,
       "category": "math",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2065,
+      "sourceLine": 2045,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -4137,7 +4137,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[convertToJPEG]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[convertToJPEG]; p15_supplemental_local_contracts_test.go",
       "emittedParameterKeys": [
         "WFImageFormat",
         "WFInput"
@@ -4814,7 +4814,7 @@
       "compilerConstruct": false,
       "category": "shortcuts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1973,
+      "sourceLine": 1953,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -5055,7 +5055,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[currentDate]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[currentDate]; debug_labels_test.go; p15_content_conversion_acceptance_test.go",
       "emittedParameterKeys": [
         "WFDateActionMode"
       ],
@@ -5405,7 +5405,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[darkMode]; p10r9_hybrid_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[darkMode]; p10r9_hybrid_test.go; p15_native_paths_gate_test.go",
       "emittedParameterKeys": [
         "operation",
         "style"
@@ -5479,7 +5479,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[date]; codec_matrix_test.go; control_flow_matrix_test.go; debug_stdlib_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[date]; codec_matrix_test.go; control_flow_matrix_test.go; debug_labels_test.go",
       "emittedParameterKeys": [
         "WFDateActionDate",
         "WFDateActionMode"
@@ -6169,7 +6169,7 @@
       "compilerConstruct": false,
       "category": "calendar",
       "sourceFile": "actions_std.go",
-      "sourceLine": 709,
+      "sourceLine": 689,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -6281,7 +6281,7 @@
       "compilerConstruct": false,
       "category": "calendar",
       "sourceFile": "actions_std.go",
-      "sourceLine": 869,
+      "sourceLine": 849,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -6526,7 +6526,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[emailAddress]; action_parity_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[emailAddress]; action_parity_test.go; p15_legacy_inline_test.go; p15_module_canonical_alias_test.go",
       "emittedParameterKeys": [
         "WFEmailAddress"
       ],
@@ -6541,7 +6541,7 @@
       "compilerConstruct": false,
       "category": "builtin",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2358,
+      "sourceLine": 2338,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -6599,7 +6599,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[embedFile]; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[embedFile]; p10_structural_roundtrip_test.go; p15_asset_authorization_repair_test.go; p15_asset_dependency_baseline_test.go",
       "emittedParameterKeys": [
         "WFTextActionText"
       ],
@@ -7888,7 +7888,7 @@
       "compilerConstruct": false,
       "category": "documents",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1037,
+      "sourceLine": 1017,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -8497,7 +8497,7 @@
       "packSupportKind": "PACK_DECLARATIVE_MODULE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[filterReminders]; p10_structural_roundtrip_test.go; p10r_acceptance_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[filterReminders]; p10_structural_roundtrip_test.go; p10r_acceptance_test.go; p15_filter_metadata_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -9403,7 +9403,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[formatNumber]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[formatNumber]; p15_optional_presence_acceptance_test.go",
       "emittedParameterKeys": [
         "WFNumber"
       ],
@@ -9606,7 +9606,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[formatTimestamp]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[formatTimestamp]; p15_date_field_codec_test.go",
       "emittedParameterKeys": [
         "WFDate"
       ],
@@ -9621,7 +9621,7 @@
       "compilerConstruct": false,
       "category": "intelligence",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2597,
+      "sourceLine": 2583,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -11647,7 +11647,7 @@
           "literalOnly": false
         },
         {
-          "name": "startTime",
+          "name": "endTime",
           "key": "endTime",
           "type": "text",
           "optional": true,
@@ -11694,7 +11694,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getDeviceUsage]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getDeviceUsage]; p15_catalog_acceptance_test.go; p15_schema_labels_recovery_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -11765,7 +11765,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getDictionary]; codec_matrix_test.go; p10_http_json_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getDictionary]; codec_matrix_test.go; p10_http_json_test.go; p15_content_conversion_acceptance_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -11942,7 +11942,7 @@
           "literalOnly": false
         }
       ],
-      "outputType": "None",
+      "outputType": "number",
       "appIntent": null,
       "legacySupported": true,
       "v2Supported": true,
@@ -11981,7 +11981,7 @@
       "packSupportKind": "PACK_DECLARATIVE_MODULE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getDistance]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getDistance]; p15_distance_output_evidence_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -12606,7 +12606,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getFile]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getFile]; p15_nil_migration_test.go",
       "emittedParameterKeys": [
         "WFGetFilePath"
       ],
@@ -12703,7 +12703,7 @@
       "compilerConstruct": false,
       "category": "documents",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1184,
+      "sourceLine": 1164,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -12924,7 +12924,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getFirstItem]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getFirstItem]; p15_dictionary_list_reserved_test.go; p15_dictionary_list_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFItemSpecifier"
@@ -15281,7 +15281,7 @@
       "compilerConstruct": false,
       "category": "pdf",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1087,
+      "sourceLine": 1067,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -15371,7 +15371,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getPDFText]; action_parity_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getPDFText]; action_parity_test.go; p15_canonical_source_propagation_test.go; p15_supplemental_local_contracts_test.go",
       "emittedParameterKeys": [
         "WFGetTextFromPDFTextType",
         "WFInput"
@@ -16858,7 +16858,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getStoredValue]; p10_compiler_serialization_test.go; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getStoredValue]; p10_compiler_serialization_test.go; p10_structural_roundtrip_test.go; p15_storage_probe_test.go",
       "emittedParameterKeys": [
         "WFStoredContentKey"
       ],
@@ -16931,7 +16931,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getText]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getText]; p15_combined_parameter_forms_test.go; p15_custom_codec_acceptance_test.go; p15_loop_control_acceptance_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -17093,7 +17093,7 @@
       "packSupportKind": "PACK_DECLARATIVE_MODULE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getTimeBetweenDates]; p12_complex_params_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getTimeBetweenDates]; p12_complex_params_test.go; p15_date_field_codec_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -17236,7 +17236,7 @@
           "literalOnly": false
         }
       ],
-      "outputType": "text",
+      "outputType": "variable",
       "appIntent": null,
       "legacySupported": true,
       "v2Supported": true,
@@ -17275,7 +17275,7 @@
       "packSupportKind": "PACK_DECLARATIVE_MODULE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getType]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getType]; p15_gettype_contract_test.go; p15_legacy_inline_test.go; p15_runtime_diagnostic_graph_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -17968,7 +17968,7 @@
       "packSupportKind": "PACK_DECLARATIVE_MODULE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getVariable]; fork_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getVariable]; fork_roundtrip_test.go; p15_collect_native_test.go; p15_combined_unicode_text_test.go",
       "emittedParameterKeys": [
         "WFVariable"
       ],
@@ -18445,7 +18445,7 @@
       "compilerConstruct": false,
       "category": "mac",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1989,
+      "sourceLine": 1969,
       "osAvailability": {
         "macOnly": true,
         "nonMacOnly": false,
@@ -18617,7 +18617,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[hash]; p10r10_semantic_hybrid_test.go; p11_wire_fidelity_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[hash]; p10r10_semantic_hybrid_test.go; p11_wire_fidelity_test.go; p15_editor_performance_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -18632,7 +18632,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1558,
+      "sourceLine": 1538,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -18690,7 +18690,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[hideAllApps]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[hideAllApps]; p15_variadic_migration_test.go; p15_variadic_structure_test.go",
       "emittedParameterKeys": [
         "WFAppsExcept",
         "WFHideAppMode"
@@ -18706,7 +18706,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1522,
+      "sourceLine": 1502,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -18909,7 +18909,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[isCharging]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[isCharging]; p15_call_acceptance_test.go; p15_platform_version_acceptance_test.go; p15_version_comparison_test.go",
       "emittedParameterKeys": [
         "Subject"
       ],
@@ -18989,7 +18989,7 @@
       "compilerConstruct": false,
       "category": "text",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1294,
+      "sourceLine": 1274,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -19179,7 +19179,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1686,
+      "sourceLine": 1666,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -19237,7 +19237,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[killAllApps]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[killAllApps]; p15_variadic_migration_test.go; p15_variadic_structure_test.go",
       "emittedParameterKeys": [
         "WFAppsExcept",
         "WFAskToSaveChanges",
@@ -19254,7 +19254,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1646,
+      "sourceLine": 1626,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -19328,7 +19328,7 @@
       "compilerConstruct": false,
       "category": "documents",
       "sourceFile": "actions_std.go",
-      "sourceLine": 662,
+      "sourceLine": 642,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -19475,7 +19475,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1876,
+      "sourceLine": 1856,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -19685,7 +19685,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[location]; fork_provenance_test.go; fork_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[location]; fork_provenance_test.go; fork_roundtrip_test.go; p15_actions_app_descriptor_test.go",
       "emittedParameterKeys": [
         "WFLocation"
       ],
@@ -19963,7 +19963,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[lowercase]; fork_provenance_test.go; p13_fidelity_promotion_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[lowercase]; fork_provenance_test.go; p13_fidelity_promotion_test.go; p15_raw_native_result_test.go",
       "emittedParameterKeys": [
         "Show-text",
         "WFCaseType",
@@ -21306,7 +21306,7 @@
       "compilerConstruct": false,
       "category": "builtin",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2198,
+      "sourceLine": 2178,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -21380,7 +21380,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[makeVCard]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[makeVCard]; p15_legacy_inline_test.go; p15_types_acceptance_test.go; p15_vcard_tokenstring_test.go",
       "emittedParameterKeys": [
         "WFTextActionText"
       ],
@@ -21729,7 +21729,7 @@
       "compilerConstruct": false,
       "category": "math",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2132,
+      "sourceLine": 2112,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -21803,7 +21803,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[measurement]; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[measurement]; p10_structural_roundtrip_test.go; p15_editor_performance_test.go",
       "emittedParameterKeys": [
         "WFMeasurementUnit",
         "WFMeasurementUnitType"
@@ -22179,7 +22179,7 @@
       "compilerConstruct": false,
       "category": "contacts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 561,
+      "sourceLine": 541,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -22362,7 +22362,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[nothing]; app_intent_test.go; compiler_isolation_test.go; fork_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[nothing]; app_intent_test.go; compiler_isolation_test.go; debug_labels_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -22448,7 +22448,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1466,
+      "sourceLine": 1446,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -22612,7 +22612,7 @@
       "compilerConstruct": false,
       "category": "web",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1916,
+      "sourceLine": 1896,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -23043,7 +23043,7 @@
       "compilerConstruct": false,
       "category": "shortcuts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1804,
+      "sourceLine": 1784,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -23174,7 +23174,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[openURL]; upstream_rehearsal_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[openURL]; p15_pure_public_gate_test.go; p15_schema_identity_recovery_test.go; p15_schema_production_test.go",
       "emittedParameterKeys": [
         "Show-WFInput",
         "WFInput"
@@ -23881,7 +23881,7 @@
       "compilerConstruct": false,
       "category": "contacts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 526,
+      "sourceLine": 516,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -23939,7 +23939,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[phoneNumber]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[phoneNumber]; p15_variadic_migration_test.go; p15_variadic_structure_test.go",
       "emittedParameterKeys": [
         "WFPhoneNumber"
       ],
@@ -24483,7 +24483,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[playSound]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[playSound]; p15_native_paths_gate_test.go; p15_optional_presence_acceptance_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -24742,7 +24742,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[print]; p10r2_adversarial_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[print]; p10_ssot_propagation_test.go; p10r2_adversarial_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -24757,7 +24757,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1376,
+      "sourceLine": 1356,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -24957,7 +24957,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1620,
+      "sourceLine": 1600,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -25015,7 +25015,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[quitAllApps]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[quitAllApps]; p15_legacy_inline_test.go; p15_variadic_migration_test.go; p15_variadic_structure_test.go",
       "emittedParameterKeys": [
         "WFAppsExcept",
         "WFQuitAppMode"
@@ -25031,7 +25031,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1584,
+      "sourceLine": 1564,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -25186,7 +25186,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "raw_actions.go",
-      "sourceLine": 11,
+      "sourceLine": 13,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -25194,7 +25194,7 @@
         "maxVersion": 0.0,
         "targetSummary": "UNIVERSAL_DECLARED"
       },
-      "parameterCount": 2,
+      "parameterCount": 3,
       "parameters": [
         {
           "name": "identifier",
@@ -25206,6 +25206,14 @@
         },
         {
           "name": "parameters",
+          "key": "",
+          "type": "dictionary",
+          "optional": true,
+          "enum": "",
+          "literalOnly": false
+        },
+        {
+          "name": "envelope",
           "key": "",
           "type": "dictionary",
           "optional": true,
@@ -26044,7 +26052,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[rename]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[rename]; p15_binding_service_test.go; p15_catalog_acceptance_test.go; p15_combined_arithmetic_test.go",
       "emittedParameterKeys": [
         "WFFile",
         "WFNewFilename"
@@ -26323,7 +26331,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[resizeImage]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[resizeImage]; p15_call_acceptance_test.go; p15_call_order_test.go; p15_documentation_recovery_test.go",
       "emittedParameterKeys": [
         "WFImage",
         "WFImageResizeWidth"
@@ -26731,7 +26739,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[reveal]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[reveal]; p15_optional_artifact_gate_test.go",
       "emittedParameterKeys": [
         "WFFile"
       ],
@@ -26918,7 +26926,7 @@
       "compilerConstruct": false,
       "category": "shortcuts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2682,
+      "sourceLine": 2668,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -27377,7 +27385,7 @@
       "compilerConstruct": false,
       "category": "shortcuts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1839,
+      "sourceLine": 1819,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -28144,7 +28152,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[search]; p10_structural_roundtrip_test.go; p10r2_adversarial_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[search]; p10_structural_roundtrip_test.go; p10r2_adversarial_test.go; p15_documentation_test.go",
       "emittedParameterKeys": [
         "WFInputText"
       ],
@@ -30250,7 +30258,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setBackgroundSound]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setBackgroundSound]; p15_combined_parameter_forms_test.go; p15_enum_acceptance_test.go; p15_metadata_acceptance_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -30775,7 +30783,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setClipboard]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setClipboard]; p15_combined_arithmetic_test.go; p15_combined_index_arithmetic_test.go; p15_function_acceptance_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -31009,7 +31017,7 @@
       "compilerConstruct": false,
       "category": "settings",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2513,
+      "sourceLine": 2499,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -32841,7 +32849,7 @@
       "compilerConstruct": false,
       "category": "settings",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2483,
+      "sourceLine": 2469,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -33748,7 +33756,7 @@
       "compilerConstruct": false,
       "category": "settings",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2458,
+      "sourceLine": 2444,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -34336,7 +34344,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[showNotification]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[showNotification]; p15_native_paths_gate_test.go; p15_optional_presence_acceptance_test.go",
       "emittedParameterKeys": [
         "WFNotificationActionBody"
       ],
@@ -34875,7 +34883,7 @@
       "compilerConstruct": false,
       "category": "device",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1714,
+      "sourceLine": 1694,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -35038,7 +35046,7 @@
       "compilerConstruct": false,
       "category": "text",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1269,
+      "sourceLine": 1249,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -35104,7 +35112,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[splitText]; p13_fidelity_promotion_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[splitText]; p13_fidelity_promotion_test.go; p15_module_canonical_alias_test.go",
       "emittedParameterKeys": [
         "Show-text",
         "WFTextCustomSeparator",
@@ -35832,7 +35840,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[storeValue]; p10_compiler_serialization_test.go; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[storeValue]; p10_compiler_serialization_test.go; p10_structural_roundtrip_test.go; p15_storage_probe_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFStoredContentKey"
@@ -35859,7 +35867,7 @@
       "parameterCount": 6,
       "parameters": [
         {
-          "name": "addressLine2",
+          "name": "addressLine1",
           "key": "WFAddressLine1",
           "type": "text",
           "optional": false,
@@ -35946,7 +35954,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[streetAddress]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[streetAddress]; p15_schema_labels_recovery_test.go",
       "emittedParameterKeys": [
         "WFAddressLine1",
         "WFAddressLine2",
@@ -37513,7 +37521,7 @@
       "compilerConstruct": false,
       "category": "settings",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2564,
+      "sourceLine": 2550,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -39516,7 +39524,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[typeOf]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[typeOf]; p15_gettype_contract_test.go; p15_legacy_inline_test.go; p15_storage_probe_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -39531,7 +39539,7 @@
       "compilerConstruct": false,
       "category": "contacts",
       "sourceFile": "actions_std.go",
-      "sourceLine": 2392,
+      "sourceLine": 2378,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -39681,7 +39689,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[uppercase]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[uppercase]; p15_module_alias_case_test.go",
       "emittedParameterKeys": [
         "Show-text",
         "WFCaseType",
@@ -39698,7 +39706,7 @@
       "compilerConstruct": false,
       "category": "web",
       "sourceFile": "actions_std.go",
-      "sourceLine": 1319,
+      "sourceLine": 1299,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40049,7 +40057,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[wait]; debug_stdlib_test.go; p10r9_hybrid_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[wait]; debug_stdlib_test.go; p10r9_hybrid_test.go; p15_combined_parameter_forms_test.go",
       "emittedParameterKeys": [
         "WFDelayTime"
       ],
@@ -40126,7 +40134,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 220,
+      "sourceLine": 225,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40201,7 +40209,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 230,
+      "sourceLine": 235,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40271,7 +40279,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 240,
+      "sourceLine": 245,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40320,7 +40328,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[repeat]; action_parity_test.go; control_flow_matrix_test.go; debug_stdlib_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[repeat]; action_parity_test.go; control_flow_matrix_test.go; debug_labels_test.go",
       "emittedParameterKeys": [
         "GroupingIdentifier",
         "UUID",
@@ -40338,7 +40346,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 250,
+      "sourceLine": 255,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40387,7 +40395,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[repeat.each]; control_flow_matrix_test.go; debug_stdlib_test.go; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[repeat.each]; control_flow_matrix_test.go; debug_labels_test.go; debug_stdlib_test.go",
       "emittedParameterKeys": [
         "GroupingIdentifier",
         "UUID",
@@ -40405,7 +40413,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 260,
+      "sourceLine": 265,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40471,7 +40479,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 270,
+      "sourceLine": 275,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40520,7 +40528,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[appendVariable]; ios_bridge_matrix_test.go; p11_wire_fidelity_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[appendVariable]; ios_bridge_matrix_test.go; p11_wire_fidelity_test.go; p15_catalog_acceptance_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFSerializationType",
@@ -40537,7 +40545,7 @@
       "compilerConstruct": true,
       "category": "controlflow",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 280,
+      "sourceLine": 285,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40586,7 +40594,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[dictionaryValue]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[dictionaryValue]; p15_inferred_list_shape_test.go",
       "emittedParameterKeys": [
         "CustomOutputName",
         "UUID",
@@ -40603,7 +40611,7 @@
       "compilerConstruct": true,
       "category": "math",
       "sourceFile": "actions_catalog.go",
-      "sourceLine": 290,
+      "sourceLine": 295,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -40652,7 +40660,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[calculateExpression]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[calculateExpression]; p15_catalog_acceptance_test.go",
       "emittedParameterKeys": [
         "CustomOutputName",
         "Input",

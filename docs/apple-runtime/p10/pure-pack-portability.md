@@ -1,10 +1,10 @@
 # Pure Original (`bcc0095`) vs Pure+Pack (`141b9cc`) vs P10 Native Portability Report
 
-- **Source Commit**: `92f834e1878e02d6357021e97c491c55437c038b`
-- **Input Dependency Fingerprint**: `40ecf0bfbda0e3cf4bd3ff4227494abaf3f3354fdec4aa607fd0c0ea2fcae865`
+- **Source Commit**: `aa4ce3838b51669326b153262331b88b0c4b8e79`
+- **Input Dependency Fingerprint**: `e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0`
 - **Upstream Pure Baseline Commit**: `bcc0095754e2cc0baaeb4d93dae172b8153b4716` (`441` catalog entries: `433` callable actions + `8` compiler constructs)
 - **Pure+Pack Overlay Commit**: `141b9cc96cf1df3f9d1593548dc49ae8a46a256a` (`441` Pure Original names + `102` declarative Pack entries [`48` new actions + `54` `*Advanced` aliases]; `487` of the `505` P10 catalog entries are supported in Pure+Pack)
-- **P10 Native Branch Commit**: `92f834e1878e02d6357021e97c491c55437c038b` (`505` catalog entries: `441` Pure Original [with `editEvent` and `transcribeText` upgraded to Go] + `48` Pack new declarative actions + `4` declarative `toggleSet` actions in `actions/settings.cherri` + `12` net-new Go-only actions in `actions_std.go`)
+- **P10 Native Branch Commit**: `aa4ce3838b51669326b153262331b88b0c4b8e79` (`505` catalog entries: `441` Pure Original [with `editEvent` and `transcribeText` upgraded to Go] + `48` Pack new declarative actions + `4` declarative `toggleSet` actions in `actions/settings.cherri` + `12` net-new Go-only actions in `actions_std.go`)
 
 ## Exact Classification of the 15 Go-Only Actions Evaluated Between Pack and P10
 
