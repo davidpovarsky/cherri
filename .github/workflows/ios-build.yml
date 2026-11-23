@@ -347,7 +347,8 @@ jobs:
 
       - name: Capture owned startup lifecycle observations
         id: startup_observation
-        if: always() && inputs.startup_observation_only == true
+        # The same three nonce-owned observations also exist in a full run.
+        if: always()
         working-directory: ios
         env:
           IOS_EVIDENCE_SHA: ${{ github.sha }}
