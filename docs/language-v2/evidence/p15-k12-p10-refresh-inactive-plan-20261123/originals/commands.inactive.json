@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "1.0",
+  "status": "INACTIVE_READ_ONLY_PLAN",
+  "launchAuthorized": false,
+  "finalInputSourceSha": null,
+  "finalInputFingerprint": null,
+  "rootExecutionHandoff": null,
+  "r23OwnerDisposition": null,
+  "preparedAgainstSource": "12f3884e97b4fdcfc86c43fd50fb418700fb9099",
+  "observedSource": "4443b3ab847528b8408ca29fedd1254113df2a96",
+  "environment": {
+    "GOTOOLCHAIN": "go1.24.13",
+    "GOMODCACHE": "/mnt/development/tooling/cherri-go/mod",
+    "GOCACHE": "/mnt/development/tooling/cherri-go/runtime-persistent-20261123/build-cache",
+    "GOTMPDIR": "/mnt/development/tooling/cherri-go/runtime-persistent-20261123/tmp-ubuntu",
+    "TMPDIR": "/mnt/development/tooling/cherri-go/runtime-persistent-20261123/tmp-ubuntu",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "GIT_NO_REPLACE_OBJECTS": "1"
+  },
+  "environmentNote": "Root-approved future persistent paths. Access checked only. Old drivers hard-code superseded paths; preserve originals and adapt only task supervisor source/output/runtime parameters.",
+  "commits": {
+    "C0": "Final code, chosen policy and all fingerprint inputs committed before generation.",
+    "C1": "C0 plus actual seven generated outputs and non-input proof only.",
+    "C2": "C1 plus byte-identical actual gate result and non-input proof only."
+  },
+  "steps": [
+    {
+      "id": "preflight",
+      "execute": false,
+      "requires": [
+        "Exact root source and CPU handoff",
+        "R23 disposition settled or explicit truthful retain-v1 failure path; no inferred v2 approval",
+        "Clean named branch, historical Git objects and source witnesses",
+        "Original raw hashes and final selected-producer/compiler dependency comparison",
+        "Prepared persistent UID1001 runtime paths and capacity",
+        "No provider credential, live AI config or private corpus in child environment"
+      ],
+      "gitObjectsRequired": [
+        "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+        "141b9cc96cf1df3f9d1593548dc49ae8a46a256a",
+        "76d722502e20db977e84a095444d0172442655b8",
+        "11f3c80ca261dd59f198cb3693f893c22e6c340f",
+        "9ce44842761ec4bb639e1f2c80c08d86c022b778"
+      ],
+      "rawProducerRunByDefault": false
+    },
+    {
+      "id": "derive-once",
+      "execute": false,
+      "cwd": "<clean C0 checkout>",
+      "argv": [
+        "python3",
+        "-B",
+        "tools/p10r3/generate_catalog_and_pack_ledgers.py"
+      ],
+      "outerWallLimitSeconds": 600,
+      "originalTerminationGraceSeconds": 5,
+      "originalKillReapWaitSeconds": 5,
+      "childCommand": [
+        "go",
+        "run",
+        ".",
+        "--actions-json",
+        "--no-ansi"
+      ],
+      "allowedTrackedOutputs": [
+        "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+        "docs/apple-runtime/p10/p10-pack-15-go-only-audit.json",
+        "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+        "docs/apple-runtime/p10/catalog-supported-by-compiler.md",
+        "docs/apple-runtime/p10/apple-discovered-not-supported.md",
+        "docs/apple-runtime/p10/pure-pack-portability.md",
+        "docs/apple-runtime/p10/baseline-state.json"
+      ],
+      "evidence": "<new persistent evidence>/derive-attempt-01",
+      "checks": [
+        "Exit0 without timeout",
+        "Unchanged HEAD/tree/branch",
+        "Only seven outputs changed",
+        "Identical complete dependency witness before/after",
+        "Raw hashes unchanged",
+        "Three JSON and three Markdown source/fingerprint bindings equal C0/current fingerprint",
+        "Original measured/native scope and schema/denominators preserved"
+      ],
+      "next": "Commit actual outputs/proof as C1; never restamp C0 to C1."
+    },
+    {
+      "id": "gates-once",
+      "execute": false,
+      "cwd": "<clean C1 checkout>",
+      "argv": [
+        "python3",
+        "-B",
+        "tools/p10r3/run_release_gates.py",
+        "--run-all",
+        "--out-results",
+        "<new persistent evidence>/gates-attempt-01/gate-results.original.json"
+      ],
+      "optionalSameRunOnlyArguments": [
+        "--ci-attestation",
+        "<new persistent evidence>/gates-attempt-01/ci-attestation.original.json"
+      ],
+      "outerWallLimitSeconds": 1800,
+      "individualCommands": "All existing 56 definitions unchanged; ordinary subprocesses have no explicit runner timeout. No injected child flags or selectors.",
+      "registry": "--run-all already validates it; no duplicate standalone registry run needed.",
+      "checks": [
+        "Retain true exit/duration/streams and 56 exact original IDs/order",
+        "Source and dependencies unchanged",
+        "Report source=C1 and fingerprint=current unchanged value",
+        "Any failed gate gives exit1; retain it. Oracle R22 is platform-blocked; original R23 remains FAIL.",
+        "Synthetic R23 parent PASS is not approval or production credit"
+      ],
+      "next": "Copy completed original bytes to tracked p10r3-gate-results.json without JSON rewriting."
+    },
+    {
+      "id": "metadata-once",
+      "execute": false,
+      "cwd": "<C1 with only actual report/proof added>",
+      "argv": [
+        "python3",
+        "-B",
+        "tools/p10r3/run_release_gates.py",
+        "--verify-commit"
+      ],
+      "explicitCliTimeout": null,
+      "scope": "Only ancestry/fingerprint verification; early exit before gates and tool-version calls.",
+      "checks": [
+        "Four headers are actual C0/C1 ancestors",
+        "Four fingerprints=current fingerprint",
+        "Tracked gate report hash equals original",
+        "No unexpected source delta"
+      ],
+      "next": "Commit exact report/proof as C2 and recheck fingerprint/read guards; no producer rerun merely for advanced HEAD."
+    }
+  ],
+  "conditionalRawProducerFallback": {
+    "execute": false,
+    "condition": "Only a final substantive compiler/fixture/selected-producer change invalidates old evidence and root provides a separate handoff. Present scheduling hooks do not.",
+    "argv": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=15m",
+      "-parallel=2",
+      "-run",
+      "^(TestP10_VerifyAndRecord505CatalogExecution|TestP10_ParameterContractMatrix_AllCatalogActions)$",
+      "."
+    ],
+    "additionalEnvironment": {
+      "CHERRI_CATALOG_EVIDENCE_DIR": "<new persistent raw evidence>/artifacts"
+    },
+    "goTestTimeoutSeconds": 900,
+    "outerWallLimitSeconds": 1200,
+    "originalTerminationGraceSeconds": 5,
+    "originalKillReapWaitSeconds": 5,
+    "outputs": [
+      "docs/apple-runtime/p10/p10-505-execution-evidence.json",
+      "docs/apple-runtime/p10/p10-505-parameter-contract-evidence.json"
+    ],
+    "next": "Commit actual raw bytes before defining C0. No unchanged observer-control rerun without concrete affected scope."
+  },
+  "excluded": [
+    "Policy activation/authorization",
+    "Manual report restamping",
+    "Full Go or duplicated CI suites",
+    "Live AI/RemoteBuilder/formal179",
+    "Freeze/publish/workflow dispatch/Asana"
+  ]
+}

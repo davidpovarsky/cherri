@@ -1,0 +1,44 @@
+diff --git a/p15_schema_identity_recovery_test.go b/p15_schema_identity_recovery_test.go
+index 4651bfc8..1382fd6b 100644
+--- a/p15_schema_identity_recovery_test.go
++++ b/p15_schema_identity_recovery_test.go
+@@ -127,6 +127,7 @@ func p15RP08Default(t *testing.T, parameter map[string]any, present bool, value
+ }
+ 
+ func TestP15RP08SchemaIdentityProduction(t *testing.T) {
++	p15FullSuiteSubprocessParallel(t)
+ 	var repo = p15SchemaReplica(t)
+ 	var binaries = t.TempDir()
+ 	var compiler = filepath.Join(binaries, "compiler.exe")
+diff --git a/p15_schema_optional_propagation_test.go b/p15_schema_optional_propagation_test.go
+index 67098680..18203ba5 100644
+--- a/p15_schema_optional_propagation_test.go
++++ b/p15_schema_optional_propagation_test.go
+@@ -31,6 +31,7 @@ func p15SchemaIsNumericZero(value any) bool {
+ // worktree. The Number replacement is an intentional temporary mutation, not a
+ // claim that Apple accepts a Number for Quick Look's ordinary Bool parameter.
+ func TestP15SchemaOptionalDeclarationPropagation(t *testing.T) {
++	p15FullSuiteSubprocessParallel(t)
+ 	repo := p15SchemaAcceptanceWorktree(t)
+ 	actionPath := filepath.Join(repo, "actions/basic.cherri")
+ 	original, err := os.ReadFile(actionPath)
+diff --git a/p15_skill_acceptance_test.go b/p15_skill_acceptance_test.go
+index fd766f5f..6c1ef79f 100644
+--- a/p15_skill_acceptance_test.go
++++ b/p15_skill_acceptance_test.go
+@@ -72,6 +72,7 @@ func p15AssertSkillCases(t *testing.T, output string) {
+ }
+ 
+ func TestP15K04OfflineCacheProduction(t *testing.T) {
++	p15FullSuiteSubprocessParallel(t)
+ 	root, err := filepath.Abs(".")
+ 	if err != nil {
+ 		t.Fatal(err)
+@@ -112,6 +113,7 @@ func p15CopySkillOracle(t *testing.T) string {
+ }
+ 
+ func TestP15K04OfflineOracleRejectsBypasses(t *testing.T) {
++	p15FullSuiteSubprocessParallel(t)
+ 	binary := p15InstallActualCompiler(t)
+ 	root := p15CopySkillOracle(t)
+ 	healthy, err := p15RunSkillIsolation(t, root, binary)
