@@ -18,8 +18,9 @@ def extract_export_graph(actions, *, legacy):
     boundary = "LEGACY_UNCHANGED"
     if not legacy:
         terminal = actions[-1]
+        # Native plist encoding omits the empty parameter dictionary.
         if (terminal.get("WFWorkflowActionIdentifier") != PREFIX + "nothing"
-                or terminal.get("WFWorkflowActionParameters") != {}):
+                or terminal.get("WFWorkflowActionParameters", {}) != {}):
             raise ValueError("V2 main fallthrough must end with parameter-free Nothing")
         end -= 1
         boundary = "V2_EXPLICIT_VOID_VERIFIED"

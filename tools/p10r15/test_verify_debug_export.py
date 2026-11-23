@@ -52,14 +52,31 @@ class ExportBoundaryTests(unittest.TestCase):
             "value_terminal": original[:-1] + [action("gettext")],
             "input_on_nothing": original[:-1] + [action("nothing", {"WFInput": "value"})],
             "uuid_on_nothing": original[:-1] + [action("nothing", {"UUID": "unexpected"})],
-            "missing_parameters": original[:-1] + [{
-                "WFWorkflowActionIdentifier": subject.PREFIX + "nothing"}],
+            "null_parameters": original[:-1] + [{
+                "WFWorkflowActionIdentifier": subject.PREFIX + "nothing",
+                "WFWorkflowActionParameters": None}],
+            "list_parameters": original[:-1] + [{
+                "WFWorkflowActionIdentifier": subject.PREFIX + "nothing",
+                "WFWorkflowActionParameters": []}],
+            "string_parameters": original[:-1] + [{
+                "WFWorkflowActionIdentifier": subject.PREFIX + "nothing",
+                "WFWorkflowActionParameters": ""}],
         }
         for name, actions in mutations.items():
             with self.subTest(name=name):
                 with self.assertRaises(ValueError):
                     subject.extract_export_graph(actions, legacy=False)
         subject.extract_export_graph(original, legacy=False)
+
+    def test_v2_native_omitted_parameters_preserves_the_exact_original_action(self):
+        actions = fixture(False)
+        del actions[-1]["WFWorkflowActionParameters"]
+        original = copy.deepcopy(actions)
+        graph, boundary = subject.extract_export_graph(actions, legacy=False)
+        self.assertEqual(boundary, "V2_EXPLICIT_VOID_VERIFIED")
+        self.assertEqual(graph, original[4:-1])
+        self.assertEqual(actions, original)
+        self.assertNotIn("WFWorkflowActionParameters", actions[-1])
 
     def test_no_interior_action_is_hidden_by_the_terminal_split(self):
         for legacy in (False, True):
