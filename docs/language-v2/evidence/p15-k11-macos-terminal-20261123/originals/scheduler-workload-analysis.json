@@ -1,0 +1,442 @@
+{
+  "rootParentsStarted": 1180,
+  "rootParentResults": {
+    "PASS": 1169,
+    "SKIP": 10
+  },
+  "pausedParents": 29,
+  "continuedParents": 29,
+  "completedParallelParents": 28,
+  "remainingNamedParent": [
+    "TestP15CanonicalBehaviorSourcePropagation"
+  ],
+  "remainingQueuedParallelParents": [],
+  "serialRoundedParentSecondsSum": 474.85,
+  "completedParallelRoundedParentSecondsSum": 781.14,
+  "activeCanonicalDurationText": "59s",
+  "activeCodecDurationText": "2s",
+  "approximateWorkloadLowerBoundBeforeRemainingTailSeconds": 894.92,
+  "qualification": "Rounded parent durations are workload evidence, not precise scheduling timestamps. The arithmetic is a lower bound under ideal two-slot packing and excludes the missing canonical tail; it does not predict a guaranteed successful schedule.",
+  "parallelParentDurations": [
+    {
+      "test": "TestP15RP44InstalledDocsIdentity",
+      "status": "PASS",
+      "seconds": 26.43,
+      "line": 23359
+    },
+    {
+      "test": "TestP15RP45InstalledBinaryOwnership",
+      "status": "PASS",
+      "seconds": 23.79,
+      "line": 23379
+    },
+    {
+      "test": "TestP15RP45LockAcquisitionSignals",
+      "status": "PASS",
+      "seconds": 23.01,
+      "line": 23396
+    },
+    {
+      "test": "TestP10_IsolatedCompilerMutationGate",
+      "status": "PASS",
+      "seconds": 86.82,
+      "line": 23406
+    },
+    {
+      "test": "TestP15RP45GitIndexSourceIntegrity",
+      "status": "PASS",
+      "seconds": 16.46,
+      "line": 23415
+    },
+    {
+      "test": "TestP15RP45IdentityValidationOrder",
+      "status": "PASS",
+      "seconds": 7.47,
+      "line": 23427
+    },
+    {
+      "test": "TestP15RP45PackageIgnoresGitReplacements",
+      "status": "PASS",
+      "seconds": 4.16,
+      "line": 23436
+    },
+    {
+      "test": "TestP15RP44GitIndexDocsIntegrity",
+      "status": "PASS",
+      "seconds": 15.24,
+      "line": 23443
+    },
+    {
+      "test": "TestP15RP45RuntimePackageOwnership",
+      "status": "PASS",
+      "seconds": 3.33,
+      "line": 23451
+    },
+    {
+      "test": "TestP15K03PromotedCacheCannotFallBack",
+      "status": "PASS",
+      "seconds": 9.25,
+      "line": 23459
+    },
+    {
+      "test": "TestP15SkillFreshPinnedInstall",
+      "status": "PASS",
+      "seconds": 13.04,
+      "line": 23462
+    },
+    {
+      "test": "TestP15K03HandledSignalRestoresFiles",
+      "status": "PASS",
+      "seconds": 58.79,
+      "line": 23501
+    },
+    {
+      "test": "TestP15K01UnpackedPackageContract",
+      "status": "PASS",
+      "seconds": 65.6,
+      "line": 23519
+    },
+    {
+      "test": "TestP15K03LocalStateIsPreserved",
+      "status": "PASS",
+      "seconds": 13.92,
+      "line": 23540
+    },
+    {
+      "test": "TestP15K03ImmutableInstallRefsRequired",
+      "status": "PASS",
+      "seconds": 9.07,
+      "line": 23546
+    },
+    {
+      "test": "TestP15RP44ExtractedCapabilitiesRejection",
+      "status": "PASS",
+      "seconds": 13.94,
+      "line": 23599
+    },
+    {
+      "test": "TestP15K02ActualCacheAndBundleSelection",
+      "status": "PASS",
+      "seconds": 26.44,
+      "line": 23627
+    },
+    {
+      "test": "TestP15RP44ExtractedCompatibilityConsumer",
+      "status": "PASS",
+      "seconds": 32.39,
+      "line": 23641
+    },
+    {
+      "test": "TestP15RP44ExtractedCacheAndBundleSelection",
+      "status": "PASS",
+      "seconds": 39.44,
+      "line": 23661
+    },
+    {
+      "test": "TestP15K03DownloadedChecksumBeforeExecution",
+      "status": "PASS",
+      "seconds": 13.24,
+      "line": 23676
+    },
+    {
+      "test": "TestP15K03SuccessfulUpdateCommitsValidatedPair",
+      "status": "PASS",
+      "seconds": 7.59,
+      "line": 23682
+    },
+    {
+      "test": "TestP15RP45ExtractedRuntimePair",
+      "status": "PASS",
+      "seconds": 41.56,
+      "line": 23687
+    },
+    {
+      "test": "TestP15K03PromotionFailuresRestoreActualPair",
+      "status": "PASS",
+      "seconds": 24.43,
+      "line": 23701
+    },
+    {
+      "test": "TestP15K03LateDocsFailurePreservesWorkingPair",
+      "status": "PASS",
+      "seconds": 6.53,
+      "line": 23708
+    },
+    {
+      "test": "TestP15RP45ExtractedInstallAndRollback",
+      "status": "PASS",
+      "seconds": 52.51,
+      "line": 23732
+    },
+    {
+      "test": "TestP15RP42ExtractedInstallPublicCLI",
+      "status": "PASS",
+      "seconds": 8.87,
+      "line": 23753
+    },
+    {
+      "test": "TestP15K04OfflineOracleRejectsBypasses",
+      "status": "PASS",
+      "seconds": 92.55,
+      "line": 23761
+    },
+    {
+      "test": "TestP15K04OfflineCacheProduction",
+      "status": "PASS",
+      "seconds": 45.27,
+      "line": 23774
+    }
+  ],
+  "largestSerialParentDurations": [
+    {
+      "test": "TestP10_RealSSoTSourceToConsumersPropagation",
+      "status": "PASS",
+      "seconds": 42.05,
+      "line": 2942
+    },
+    {
+      "test": "TestP15RP08SchemaIdentityProduction",
+      "status": "PASS",
+      "seconds": 30.62,
+      "line": 21146
+    },
+    {
+      "test": "TestSEM33_Sequential1000MixedPlansAndCompilesNoStateLeak",
+      "status": "PASS",
+      "seconds": 27.76,
+      "line": 3149
+    },
+    {
+      "test": "TestP10_SSoTNegativeDriftDetection",
+      "status": "PASS",
+      "seconds": 23.02,
+      "line": 2955
+    },
+    {
+      "test": "TestP15SchemaOptionalDeclarationPropagation",
+      "status": "PASS",
+      "seconds": 21.07,
+      "line": 21165
+    },
+    {
+      "test": "TestP15RP34ActualWriteFailurePreservesOriginal",
+      "status": "PASS",
+      "seconds": 20.96,
+      "line": 15085
+    },
+    {
+      "test": "TestUpstreamPropagationRehearsal",
+      "status": "PASS",
+      "seconds": 16.62,
+      "line": 23348
+    },
+    {
+      "test": "TestP15B02AC01CatalogMigrationAndNativeOutputs",
+      "status": "PASS",
+      "seconds": 12.14,
+      "line": 4841
+    },
+    {
+      "test": "TestForkActionProvenanceRegistry",
+      "status": "PASS",
+      "seconds": 11.66,
+      "line": 2207
+    },
+    {
+      "test": "TestHYB26_SSoTPropagationDeclarativeAndGoHandler",
+      "status": "PASS",
+      "seconds": 11.17,
+      "line": 3300
+    },
+    {
+      "test": "TestP15SchemaGenerationFailureControls",
+      "status": "PASS",
+      "seconds": 10.4,
+      "line": 21125
+    },
+    {
+      "test": "TestP10_VerifyAndRecord505CatalogExecution",
+      "status": "PASS",
+      "seconds": 9.66,
+      "line": 2633
+    },
+    {
+      "test": "TestP10R9_SSoTPropagation_DeclarativeAndGoHandler",
+      "status": "PASS",
+      "seconds": 9.4,
+      "line": 3312
+    },
+    {
+      "test": "TestP15E08EditorPerformanceFixtures",
+      "status": "PASS",
+      "seconds": 9.22,
+      "line": 9830
+    },
+    {
+      "test": "TestP15RP42MigrationDocumentedFlags",
+      "status": "PASS",
+      "seconds": 6.69,
+      "line": 10361
+    },
+    {
+      "test": "TestP15K05CopiedImportRequiresPolicy",
+      "status": "PASS",
+      "seconds": 6.48,
+      "line": 21581
+    },
+    {
+      "test": "TestP15K05SigningGateAndExactInput",
+      "status": "PASS",
+      "seconds": 4.91,
+      "line": 21562
+    },
+    {
+      "test": "TestForkActionRoundTrips",
+      "status": "PASS",
+      "seconds": 4.61,
+      "line": 2257
+    },
+    {
+      "test": "TestP10R9_SequentialMixedCompilesIsolation",
+      "status": "PASS",
+      "seconds": 4.31,
+      "line": 3310
+    },
+    {
+      "test": "TestActionParityMatrix",
+      "status": "PASS",
+      "seconds": 3.79,
+      "line": 1266
+    }
+  ],
+  "criticalOriginalEvents": [
+    {
+      "line": 4700,
+      "text": "=== RUN   TestP15CanonicalBehaviorSourcePropagation"
+    },
+    {
+      "line": 4701,
+      "text": "=== PAUSE TestP15CanonicalBehaviorSourcePropagation"
+    },
+    {
+      "line": 21489,
+      "text": "=== RUN   TestP15K04OfflineCacheProduction"
+    },
+    {
+      "line": 21490,
+      "text": "=== PAUSE TestP15K04OfflineCacheProduction"
+    },
+    {
+      "line": 21491,
+      "text": "=== RUN   TestP15K04OfflineOracleRejectsBypasses"
+    },
+    {
+      "line": 21492,
+      "text": "=== PAUSE TestP15K04OfflineOracleRejectsBypasses"
+    },
+    {
+      "line": 23692,
+      "text": "=== CONT  TestP15K04OfflineOracleRejectsBypasses"
+    },
+    {
+      "line": 23710,
+      "text": "=== RUN   TestP15K04OfflineOracleRejectsBypasses/docs_schema_bypass"
+    },
+    {
+      "line": 23711,
+      "text": "=== RUN   TestP15K04OfflineOracleRejectsBypasses/missing_docs_bypass"
+    },
+    {
+      "line": 23722,
+      "text": "=== RUN   TestP15K04OfflineOracleRejectsBypasses/unexpected_offline_network"
+    },
+    {
+      "line": 23760,
+      "text": "=== CONT  TestP15CanonicalBehaviorSourcePropagation"
+    },
+    {
+      "line": 23761,
+      "text": "--- PASS: TestP15K04OfflineOracleRejectsBypasses (92.55s)"
+    },
+    {
+      "line": 23762,
+      "text": "    --- PASS: TestP15K04OfflineOracleRejectsBypasses/docs_schema_bypass (5.66s)"
+    },
+    {
+      "line": 23763,
+      "text": "    --- PASS: TestP15K04OfflineOracleRejectsBypasses/missing_docs_bypass (30.14s)"
+    },
+    {
+      "line": 23764,
+      "text": "    --- PASS: TestP15K04OfflineOracleRejectsBypasses/unexpected_offline_network (28.20s)"
+    },
+    {
+      "line": 23765,
+      "text": "=== CONT  TestP15K04OfflineCacheProduction"
+    },
+    {
+      "line": 23766,
+      "text": "=== NAME  TestP15CanonicalBehaviorSourcePropagation"
+    },
+    {
+      "line": 23768,
+      "text": "=== RUN   TestP15CanonicalBehaviorSourcePropagation/static"
+    },
+    {
+      "line": 23772,
+      "text": "=== RUN   TestP15CanonicalBehaviorSourcePropagation/callback"
+    },
+    {
+      "line": 23774,
+      "text": "--- PASS: TestP15K04OfflineCacheProduction (45.27s)"
+    },
+    {
+      "line": 23775,
+      "text": "=== NAME  TestP15CanonicalBehaviorSourcePropagation/callback"
+    },
+    {
+      "line": 23778,
+      "text": "=== RUN   TestP15CanonicalBehaviorSourcePropagation/codec"
+    },
+    {
+      "line": 23782,
+      "text": "\t\tTestP15CanonicalBehaviorSourcePropagation (59s)"
+    },
+    {
+      "line": 23783,
+      "text": "\t\tTestP15CanonicalBehaviorSourcePropagation/codec (2s)"
+    }
+  ],
+  "canonicalCompletedPhaseHashReceipts": [
+    {
+      "line": 23767,
+      "phase": "baseline",
+      "childGoJSONSha256": "c90e82faac53a0f43a1f678080cc41679b0bc9f71de606100e2f6763edb76194",
+      "nativeTreeSha256": "fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95"
+    },
+    {
+      "line": 23770,
+      "phase": "static",
+      "childGoJSONSha256": "1d3b66f7ed3d6a61ae0b27ac9d92b053664281531338a20dac8d0cc2380ffee5",
+      "nativeTreeSha256": "0547a19e6220811eecec4fb8fb6996577f116e1b9b7bec2f8d3a33f4ad06ea87"
+    },
+    {
+      "line": 23771,
+      "phase": "static-restored",
+      "childGoJSONSha256": "ccab023f36b10584a99604be8b238cd19efb70a42ff79da6e37f36c35058b612",
+      "nativeTreeSha256": "fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95"
+    },
+    {
+      "line": 23776,
+      "phase": "callback",
+      "childGoJSONSha256": "559d87bd8387715f479a1267227d2648b13caf1e2d820d5c7164659e832ccc88",
+      "nativeTreeSha256": "3b126933d07bbd2c8899aa213114f203f8230994e29476c36f329ae0c69999f4"
+    },
+    {
+      "line": 23777,
+      "phase": "callback-restored",
+      "childGoJSONSha256": "efe5c8cbb223688bd0e0709cf87fcd03e02e25619cd62ddb8ad47c3875d47614",
+      "nativeTreeSha256": "fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95"
+    }
+  ]
+}

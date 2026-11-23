@@ -1,0 +1,31 @@
+{
+  "kind": "HISTORICAL_ORIGINAL_COMPARISON_NO_NEW_EXECUTION",
+  "k10Log": "/mnt/development/projects/evidence/cherri-p10r15-k10-frozen-ci-20261123/build-test-failure-intake/macos-attempt-01/job-137450662143.original.log",
+  "k10LogBytes": 10441353,
+  "k10LogSha256": "70bd9d3aff3f1c6108dea802893f0a174042dcf7eb5ce02cee1383c08c41f827",
+  "k10TimeoutHeader": {
+    "line": 23811,
+    "text": [
+      "panic: test timed out after 15m0s",
+      "\trunning tests:",
+      "\t\tTestP15CanonicalBehaviorSourcePropagation (52s)",
+      "\t\tTestP15CanonicalBehaviorSourcePropagation/codec (2s)",
+      ""
+    ]
+  },
+  "k10K04PassEvents": [
+    {
+      "line": 21517,
+      "text": "--- PASS: TestP15K04OfflineCacheProduction (31.67s)"
+    },
+    {
+      "line": 21522,
+      "text": "--- PASS: TestP15K04OfflineOracleRejectsBypasses (90.30s)"
+    }
+  ],
+  "k11TimeoutHeader": {
+    "parent": "TestP15CanonicalBehaviorSourcePropagation (59s)",
+    "subcase": "TestP15CanonicalBehaviorSourcePropagation/codec (2s)"
+  },
+  "finding": "Both original K10 and K11 timed out in canonical /codec under the same cumulative15m bound. K11 directly demonstrates K04 scheduler PAUSE/CONT and completion, but these separate uncontrolled runs do not establish a causal global speedup."
+}
