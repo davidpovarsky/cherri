@@ -51,8 +51,33 @@ jobs:
         go build -v ./...
         go build -o cherri .
 
+    - name: Reserve current-run state race evidence
+      env:
+        CHERRI_STATE_TEST_EVIDENCE_DIR: ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+      run: |
+        set -euo pipefail
+        test ! -e "$CHERRI_STATE_TEST_EVIDENCE_DIR"
+        test ! -L "$CHERRI_STATE_TEST_EVIDENCE_DIR"
+        mkdir -m 700 -- "$CHERRI_STATE_TEST_EVIDENCE_DIR"
+
     - name: Full Go Test Suite
+      env:
+        CHERRI_STATE_TEST_EVIDENCE_DIR: ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       run: python3 -B tools/p10r15/run_full_go_suite.py --report "$RUNNER_TEMP/cherri-full-go-suite.json"
+
+    - name: Upload original Linux state race evidence
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cherri-state-race-linux-${{ github.run_id }}-${{ github.run_attempt }}
+        path: |
+          ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/state-race-*/race-receipt.json
+          ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/state-race-*/environment.json
+          ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/state-race-*/source-files.json
+          ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/state-race-*/go-test.jsonl
+          ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/state-race-*/go-test.stderr
+        if-no-files-found: error
+        retention-days: 14
 
     - name: Upload complete Go suite execution receipt
       if: always()

@@ -26,6 +26,26 @@ GENERATOR = Path(__file__).resolve()
 MASTER = "1220544599390563"
 NATIVE_PREFIX = "is.workflow.actions."
 MARKER = "P15 ledger original \u05e9\u05dc\u05d5\u05dd \U0001f352"
+LABEL_HELPER = "tools/shortcuts-simulator-qa/debug_label_acceptance.py"
+# Reviewed fixture/control inventory, not callable signatures or an action registry.
+LABEL_ACTION_COUNTS = {"plain": 171, "dated": 177, "typed": 203,
+                       "dated-typed": 212, "text": 204, "dated-text": 212}
+LABEL_BASE_MUTATIONS = (
+    "raw_object_redirected", "original_output_name_lost", "boxed_raw_metadata",
+    "metadata_label_replaced", "cardinality_from_other_object", "range_subtraction_reversed",
+    "range_start_zero", "metadata_append_uses_raw_object", "restore_previous_output_redirected",
+    "clear_has_input", "metadata_clear_has_input", "constant_success_text", "raw_list_item_shifted",
+    "file_bytes_borrow_source", "file_name_borrow_source", "empty_label_key_observation_changed",
+    "wrong_fixed_date", "arbitrary_unowned_nothing", "network_effect",
+)
+LABEL_DATE_MUTATIONS = ("late_creation_date_capture", "different_date_property")
+LABEL_PREVIEW_MUTATIONS = (
+    "outer_item_not_snapshotted", "outer_index_not_snapshotted", "range_first_reads_last",
+    "range_comparison_inverted", "metadata_loop_owner_changed", "preview_row_name_is_constant",
+    "preview_reads_raw_buffer_directly",
+)
+LABEL_LEGACY_MUTATIONS = ("authored_legacy_list_clear_has_input", "authored_legacy_list_order_changed",
+                          "authored_legacy_list_append_redirected")
 
 # Requirements and evidence links only. Callable signatures are never defined here.
 REQUIREMENTS = (
@@ -93,6 +113,99 @@ def write_json(path, value):
     path.write_bytes((json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
 
 
+def label_helper(repo):
+    spec = importlib.util.spec_from_file_location("cherri_macro_label_controls", repo / LABEL_HELPER)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    expected = {"qa-debug-label-" + mode + "-" + dialect
+                for mode in LABEL_ACTION_COUNTS for dialect in ("v2", "legacy")}
+    if set(module.MODES) != set(LABEL_ACTION_COUNTS) or set(module.SOURCE_HASHES) != expected:
+        raise ValueError("MACRO_LABEL_HELPER_INVENTORY_MISMATCH")
+    return module
+
+
+def label_source_inputs(repo, helper):
+    # Exact bytes: the helper itself and its twelve independently pinned sources.
+    inputs = {LABEL_HELPER: sha((repo / LABEL_HELPER).read_bytes())}
+    for fixture, expected in helper.SOURCE_HASHES.items():
+        path = "tools/shortcuts-simulator-qa/fixtures/" + fixture + ".cherri"
+        observed = sha((repo / path).read_bytes())
+        if observed != expected:
+            raise ValueError("MACRO_LABEL_REVIEWED_SOURCE_CHANGED")
+        inputs[path] = observed
+    return inputs
+
+
+def verify_label_controls(report, repo):
+    controls = report.get("labelControls")
+    if not isinstance(controls, dict):
+        raise ValueError("MACRO_LABEL_COMPONENT_MISSING")
+    if set(controls) != {"schemaVersion", "implementationSha", "cleanCheckout", "compilerSha256",
+                         "helperSha256", "fixtures", "actualCompileCount", "rejectedMutationCount",
+                         "nativeExecution", "formalAcceptanceGranted", "sourceInputs"} or controls["schemaVersion"] != "1":
+        raise ValueError("MACRO_LABEL_COMPONENT_SCHEMA_MISMATCH")
+    helper = label_helper(repo)
+    inputs = label_source_inputs(repo, helper)
+    if (controls["implementationSha"] != report["sourceSha"] or
+        type(report["worktreeDirtyBeforeExecution"]) is not bool or
+        controls["cleanCheckout"] is not (not report["worktreeDirtyBeforeExecution"])):
+        raise ValueError("MACRO_LABEL_SOURCE_JOIN_MISMATCH")
+    if controls["compilerSha256"] != report["compilerSHA256"] or not re.fullmatch(r"[0-9a-f]{64}", controls["compilerSha256"]):
+        raise ValueError("MACRO_LABEL_COMPILER_JOIN_MISMATCH")
+    if controls["helperSha256"] != inputs[LABEL_HELPER]:
+        raise ValueError("MACRO_LABEL_HELPER_JOIN_MISMATCH")
+    if controls["sourceInputs"] != inputs:
+        raise ValueError("MACRO_LABEL_SOURCE_INPUT_MISMATCH")
+    if controls["nativeExecution"] != "NOT_RUN" or controls["formalAcceptanceGranted"] is not False:
+        raise ValueError("MACRO_LABEL_SCOPE_MISMATCH")
+    fixtures = controls["fixtures"]
+    if (not isinstance(fixtures, list) or any(not isinstance(r, dict) for r in fixtures) or
+        [r.get("fixtureId") for r in fixtures] != list(helper.SOURCE_HASHES)):
+        raise ValueError("MACRO_LABEL_CASE_INVENTORY_MISMATCH")
+    total_mutations = 0
+    for row in fixtures:
+        if set(row) != {"fixtureId", "source", "unsignedPlistSha256", "nativeActionCount", "graph", "causalMutations"}:
+            raise ValueError("MACRO_LABEL_CASE_SCHEMA_MISMATCH")
+        fixture = row["fixtureId"]
+        mode = helper.fixture_mode(fixture)
+        source = {"sourceSha256": helper.SOURCE_HASHES[fixture], "mode": mode,
+                  "syntheticOnly": True, "nativeExecution": "NOT_RUN", "formalAcceptanceGranted": False}
+        if canonical(row["source"]) != canonical(source):
+            raise ValueError("MACRO_LABEL_SOURCE_MISMATCH")
+        if not re.fullmatch(r"[0-9a-f]{64}", row["unsignedPlistSha256"]):
+            raise ValueError("MACRO_LABEL_UNSIGNED_HASH_MISSING")
+        count = LABEL_ACTION_COUNTS[mode] + (7 if fixture.endswith("-legacy") else 0)
+        graph = row["graph"]
+        expected_graph = {"mode": mode, "sourceSha256": helper.SOURCE_HASHES[fixture], "labels": 6,
+                          "rawBufferExpectedItems": 7, "metadataContainsRawObjects": False,
+                          "originalUUIDAndOutputNamesPreserved": True, "nativeValueAndCardinality": "NOT_RUN",
+                          "datePrecision": "Seconds", "scopedToReviewedSource": True,
+                          "arbitraryUserActionClassification": False}
+        if (type(row["nativeActionCount"]) is not int or row["nativeActionCount"] != count or
+            not isinstance(graph, dict) or
+            canonical({k: v for k, v in graph.items() if k != "instrumentation"}) != canonical(expected_graph)):
+            raise ValueError("MACRO_LABEL_GRAPH_CONTRACT_MISMATCH")
+        partition = graph.get("instrumentation", {})
+        if (not isinstance(partition, dict) or set(partition) != {"inlineIndices", "collectorIndices", "sourceIndices"} or
+            any(not isinstance(indices, list) or not indices or
+                any(type(i) is not int for i in indices) or indices != sorted(set(indices))
+                for indices in partition.values()) or
+            sorted(i for indices in partition.values() for i in indices) != list(range(count))):
+            raise ValueError("MACRO_LABEL_GRAPH_CONTRACT_MISMATCH")
+        dates, typed, as_text = helper.MODES[mode]
+        mutations = (LABEL_BASE_MUTATIONS + (LABEL_DATE_MUTATIONS if dates else ()) +
+                     (LABEL_PREVIEW_MUTATIONS if typed or as_text else ()) +
+                     (LABEL_LEGACY_MUTATIONS if fixture.endswith("-legacy") else ()))
+        expected_mutations = {"rejected": list(mutations), "count": len(mutations), "nativeExecution": "NOT_RUN"}
+        if canonical(row["causalMutations"]) != canonical(expected_mutations):
+            raise ValueError("MACRO_LABEL_MUTATION_INVENTORY_MISMATCH")
+        total_mutations += len(mutations)
+    if (type(controls["actualCompileCount"]) is not int or controls["actualCompileCount"] != 12 or
+        type(controls["rejectedMutationCount"]) is not int or controls["rejectedMutationCount"] != total_mutations or
+        total_mutations != 314):
+        raise ValueError("MACRO_LABEL_EXECUTION_COUNT_MISMATCH")
+
+
 def input_fingerprint(repo):
     # Reuse the existing catalog coverage source scope, including all root Go,
     # internal Go, actions and compiler test fixtures. Add this producer and the
@@ -114,6 +227,7 @@ def input_fingerprint(repo):
     native = repo / "docs/apple-runtime/macos-27/builtin-actions.json"
     extra[native.relative_to(repo).as_posix()] = sha(native.read_bytes().replace(b"\r\n", b"\n"))
     extra["generator"] = sha(GENERATOR.read_bytes().replace(b"\r\n", b"\n"))
+    extra.update(label_source_inputs(repo, label_helper(repo)))
     return sha(canonical({"existingSourceFingerprint": base, "additionalInputs": extra}))
 
 
@@ -388,28 +502,34 @@ def check_mutations(outputs):
 
 
 def observations_digest(report):
-    return sha(canonical({k: report[k] for k in ("compilerMacros", "canonicalDocs", "nativeMetadata",
-                                                "compiles", "causalMutations", "crossCaseChecks", "requirements")}))
+    observations = {k: report[k] for k in ("compilerMacros", "canonicalDocs", "nativeMetadata",
+                                         "compiles", "causalMutations", "crossCaseChecks", "requirements")}
+    observations["labelControls"] = report.get("labelControls")
+    return sha(canonical(observations))
 
 
-def build_rows(macros, cases):
+def build_rows(macros, cases, label_controls=None):
     names = {m["callableName"]: m for m in macros}
     rows = []
+    label_cases = [r["fixtureId"] for r in label_controls["fixtures"]] if label_controls is not None else []
     links = {
         "require": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release"],
+        "label": label_cases,
         "blocks": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release", "measure_legacy_empty_rejected", "measure_legacy_control_value_rejected", "measure_v2_empty_rejected"],
         "measure": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release"],
         "collect": ["collect_v2_0", "collect_v2_1", "collect_v2_100", "collect_v2_dictionary"],
         "paginate": ["paginate_v2", "paginate_legacy", "paginate-zero_v2", "paginate-zero_legacy"],
         "profiles": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release", "measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release"],
-        "qa": [c["id"] for c in cases],
+        "qa": [c["id"] for c in cases] + label_cases,
     }
     for key, task, title, wanted, requirement, state, external, limitations in REQUIREMENTS:
         descriptors = [name for name in wanted if name in names]
         if key == "label":
             exists = any(p.get("id") == "label" for p in names.get("debugLog", {}).get("parameters", []))
             contract = "LABEL_PARAMETER_PRESENT_REQUIRES_NEW_ACCEPTANCE" if exists else "LABEL_PARAMETER_ABSENT"
-            if exists:
+            if exists and label_cases:
+                contract = "LABEL_PARAMETER_PRESENT_WITH_SOURCE_BOUND_CLI_CONTROLS"
+            elif exists:
                 state = "DECLARED_BUT_NOT_EXERCISED"
         elif key == "collect":
             contract = "EXISTING_FOR_YIELD_CONSTRUCT_NO_COLLECT_ALIAS"
@@ -441,6 +561,7 @@ def refresh(repo):
         env["CGO_ENABLED"] = "0"
         build_command = ["go", "build", "-trimpath", "-o", str(binary), "."]
         run(build_command, repo, timeout=300, env=env)
+        compiler_sha = sha(binary.read_bytes())
         caps = json.loads(run([binary, "--capabilities-json"], repo).stdout)
         macros = caps.get("compilerMacros")
         if not isinstance(macros, list) or not macros or not re.fullmatch(r"[0-9a-f]{64}", caps.get("macroFingerprint", "")):
@@ -484,13 +605,24 @@ def refresh(repo):
                  "collectionLoopActionCounts": loop_counts, "collectionTotalActionCounts": totals,
                  "numericInputActionCounts": numeric_inputs, "typedNumericInputCountsMatch": numeric_inputs == [0, 1, 100],
                  "requireGuardCountsDebugRelease": profile_counts}
-        requirements = build_rows(macros, compiles)
+        # Reuse the owning fresh compiler and the existing twelve-source producer.
+        # Its sixty-second CLI bounds, real graph checks and 314 causal mutations
+        # are unchanged. These cases are separate from the original 19/14 ledger.
+        helper = label_helper(repo)
+        label_controls = helper.compile_controls(repo, binary)
+        label_controls["sourceInputs"] = label_source_inputs(repo, helper)
+        if sha(binary.read_bytes()) != compiler_sha:
+            raise ValueError("MACRO_LABEL_COMPILER_CHANGED_DURING_EXECUTION")
+        print(json.dumps({"component": "label", "actualCompileCount": label_controls["actualCompileCount"],
+                          "rejectedMutationCount": label_controls["rejectedMutationCount"],
+                          "nativeExecution": label_controls["nativeExecution"]}), flush=True)
+        requirements = build_rows(macros, compiles, label_controls)
         report = {"formatVersion": 1, "observedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   "masterAsanaTask": MASTER, "sourceSha": source_sha, "worktreeDirtyBeforeExecution": dirty,
                   "sourceFingerprint": fingerprint, "generatorSHA256": sha(GENERATOR.read_bytes().replace(b"\r\n", b"\n")),
                   "buildCommand": ["go", "build", "-trimpath", "-o", "<temporary-compiler>", "."],
                   "goVersion": run(["go", "version"], repo).stdout.strip(),
-                  "compilerSHA256": sha(binary.read_bytes()), "languageVersion": caps.get("languageVersion"),
+                  "compilerSHA256": compiler_sha, "languageVersion": caps.get("languageVersion"),
                   "schemaFingerprint": caps.get("schemaFingerprint"), "macroFingerprint": caps["macroFingerprint"],
                   "nativeCatalogCount": caps.get("actionCount"), "compilerMacroCount": len(macros),
                   "compilerMacros": macros, "scope": "SYNTHETIC_CLI_STRUCTURAL_AND_LOSSLESS_NATIVE_ONLY",
@@ -499,6 +631,7 @@ def refresh(repo):
                                      "sha256": sha(native_path.read_bytes().replace(b"\r\n", b"\n")),
                                      "canonicalTypeWitness": "is.workflow.actions.getitemtype", "contractMatches": native_ok},
                   "compiles": compiles, "causalMutations": mutations, "crossCaseChecks": cross,
+                  "labelControls": label_controls,
                   "requirements": requirements,
                   "privacy": {"privateCorpusRead": False, "signerUsed": False, "networkFixtureExecuted": False, "liveConsumerChanged": False}}
     if input_fingerprint(repo) != fingerprint:
@@ -509,6 +642,8 @@ def refresh(repo):
                          "compilerMacros": len(macros), "compileChecks": len(compiles),
                          "compilePassed": sum(c["verdict"] == "PASS" for c in compiles),
                          "causalMutationChecks": len(mutations), "structuralExecutionVerdict": "PASS" if passed else "FAIL",
+                         "labelCompileChecks": label_controls["actualCompileCount"],
+                         "labelMutationChecks": label_controls["rejectedMutationCount"],
                          "releaseCompletion": "OPEN"}
     report["observationsSHA256"] = observations_digest(report)
     return report
@@ -523,7 +658,9 @@ def markdown(report):
              "- Canonical compiler macros: " + str(report["compilerMacroCount"]),
              "- Structural execution: " + report["summary"]["structuralExecutionVerdict"],
              "- Compile checks: " + str(report["summary"]["compilePassed"]) + "/" + str(report["summary"]["compileChecks"]),
-             "- Causal mutation checks: " + str(report["summary"]["causalMutationChecks"]), "",
+             "- Causal mutation checks: " + str(report["summary"]["causalMutationChecks"]),
+             "- Separate label compile checks: " + str(report["summary"]["labelCompileChecks"]),
+             "- Separate label causal mutation checks: " + str(report["summary"]["labelMutationChecks"]), "",
              "| Requirement | Asana child | Implementation observation | Executed cases | Status |",
              "|---|---|---|---:|---|"]
     for row in report["requirements"]:
@@ -535,6 +672,13 @@ def markdown(report):
         roundtrip = row.get("decompile", {}).get("nativeActionsExact")
         detail = str(roundtrip) if roundtrip is not None else "expected unavailable/invalid diagnostic"
         lines.append("| " + row["id"] + " | " + row["dialect"] + "/" + row["profile"] + " | " + str(row.get("nativeActionCount", "-")) + " | " + detail + " | " + row["verdict"] + " |")
+    lines.extend(["", "## Separate label CLI component", "",
+                  "These twelve reviewed fixtures use the same freshly built compiler. Their existing helper verifies real graphs and 314 causal mutations. They are separate from the nineteen cases and fourteen mutations above; no label roundtrip, signed execution or native value/cardinality result is claimed. Native execution remains NOT_RUN and formal acceptance remains false.", "",
+                  "| Reviewed fixture | Native actions in unsigned graph | Rejected causal mutations | Native execution |",
+                  "|---|---:|---:|---|"])
+    for row in report["labelControls"]["fixtures"]:
+        lines.append("| " + row["fixtureId"] + " | " + str(row["nativeActionCount"]) + " | " +
+                     str(row["causalMutations"]["count"]) + " | NOT_RUN |")
     lines.extend(["", "## Limits and next prerequisites", ""])
     for row in report["requirements"]:
         lines.append("- " + row["name"] + ": " + " ".join(row["limitations"]) +
@@ -591,6 +735,12 @@ def verify(report, repo):
     summary = report["summary"]
     if summary["open"] != 11 or summary["closed"] != 0 or summary["compileChecks"] != len(report["compiles"]) or summary["compilePassed"] != len(report["compiles"]) or summary["causalMutationChecks"] != len(MUTATION_SCENARIOS):
         raise ValueError("MACRO_SUMMARY_MISMATCH")
+    verify_label_controls(report, repo)
+    expected_rows = build_rows(report["compilerMacros"], report["compiles"], report["labelControls"])
+    if canonical(report["requirements"]) != canonical(expected_rows):
+        raise ValueError("MACRO_LABEL_REQUIREMENT_LINK_MISMATCH")
+    if summary.get("labelCompileChecks") != 12 or summary.get("labelMutationChecks") != 314:
+        raise ValueError("MACRO_LABEL_SUMMARY_MISMATCH")
 
 
 def main():

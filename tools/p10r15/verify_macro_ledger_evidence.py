@@ -83,6 +83,61 @@ def main():
             check(name, expected)
             store(original)
             check("restore_after_" + name)
+        # The original nineteen actual-process controls above remain intact.
+        # Each new fault changes copied real label evidence, rehashes that
+        # observation, and must reach its specific guard before markdown checks.
+        label_faults = (
+            ("label_missing_component", "MACRO_LABEL_COMPONENT_MISSING",
+             lambda e: e.pop("labelControls")),
+            ("label_wrong_source_revision", "MACRO_LABEL_SOURCE_JOIN_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("implementationSha", "0" * 40)),
+            ("label_wrong_clean_status", "MACRO_LABEL_SOURCE_JOIN_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("cleanCheckout", not e["labelControls"]["cleanCheckout"])),
+            ("label_wrong_compiler", "MACRO_LABEL_COMPILER_JOIN_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("compilerSha256", "0" * 64)),
+            ("label_wrong_helper", "MACRO_LABEL_HELPER_JOIN_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("helperSha256", "0" * 64)),
+            ("label_missing_input_binding", "MACRO_LABEL_SOURCE_INPUT_MISMATCH",
+             lambda e: e["labelControls"]["sourceInputs"].pop(module.LABEL_HELPER)),
+            ("label_missing_compile", "MACRO_LABEL_CASE_INVENTORY_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"].pop()),
+            ("label_duplicate_compile", "MACRO_LABEL_CASE_INVENTORY_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"].__setitem__(1, copy.deepcopy(e["labelControls"]["fixtures"][0]))),
+            ("label_wrong_fixture_source", "MACRO_LABEL_SOURCE_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"][0]["source"].__setitem__("sourceSha256", "0" * 64)),
+            ("label_missing_unsigned_hash", "MACRO_LABEL_UNSIGNED_HASH_MISSING",
+             lambda e: e["labelControls"]["fixtures"][0].__setitem__("unsignedPlistSha256", "")),
+            ("label_wrong_graph_source", "MACRO_LABEL_GRAPH_CONTRACT_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"][0]["graph"].__setitem__("sourceSha256", "0" * 64)),
+            ("label_false_action_count", "MACRO_LABEL_GRAPH_CONTRACT_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"][0].__setitem__("nativeActionCount", e["labelControls"]["fixtures"][0]["nativeActionCount"] + 1)),
+            ("label_missing_partition_index", "MACRO_LABEL_GRAPH_CONTRACT_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"][0]["graph"]["instrumentation"]["sourceIndices"].pop()),
+            ("label_missing_mutation", "MACRO_LABEL_MUTATION_INVENTORY_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"][0]["causalMutations"]["rejected"].pop()),
+            ("label_renamed_mutation", "MACRO_LABEL_MUTATION_INVENTORY_MISMATCH",
+             lambda e: e["labelControls"]["fixtures"][0]["causalMutations"]["rejected"].__setitem__(0, "unexecuted_replacement")),
+            ("label_false_total", "MACRO_LABEL_EXECUTION_COUNT_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("rejectedMutationCount", 313)),
+            ("label_false_native_credit", "MACRO_LABEL_SCOPE_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("nativeExecution", "PASS")),
+            ("label_false_formal_credit", "MACRO_LABEL_SCOPE_MISMATCH",
+             lambda e: e["labelControls"].__setitem__("formalAcceptanceGranted", True)),
+            ("label_orphan_case_link", "MACRO_LABEL_REQUIREMENT_LINK_MISMATCH",
+             lambda e: next(r for r in e["requirements"] if r["feature"] == "label")["executedCases"].__setitem__(0, "TestDebugLabelsPublicLiteralOmissionContract")),
+            ("label_stale_implementation_state", "MACRO_LABEL_REQUIREMENT_LINK_MISMATCH",
+             lambda e: next(r for r in e["requirements"] if r["feature"] == "label").__setitem__("implementationState", "DECLARED_BUT_NOT_EXERCISED")),
+            ("label_wrong_summary", "MACRO_LABEL_SUMMARY_MISMATCH",
+             lambda e: e["summary"].__setitem__("labelCompileChecks", 11)),
+        )
+        for name, expected, mutate in label_faults:
+            altered = copy.deepcopy(original)
+            mutate(altered)
+            altered["observationsSHA256"] = module.observations_digest(altered)
+            store(altered)
+            check(name, expected)
+            store(original)
+            check("restore_after_" + name)
     summary = {"checks":len(rows), "passed":sum(r["verdict"]=="PASS" for r in rows),
                "failed":sum(r["verdict"]=="FAIL" for r in rows)}
     report = {"sourceSha":original["sourceSha"], "sourceFingerprint":original["sourceFingerprint"],
