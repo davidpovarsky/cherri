@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.1 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 23 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.2 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 24 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1392,3 +1392,244 @@ boundaries are ready, perform the fresh final-source AI cohort and one combined
 Oracle full179/canonical intake. Reconcile the remaining requirements from
 their actual contracts; do not classify every unexecuted requirement as a
 platform blocker. No main merge, live activation or R23 waiver occurred.
+
+
+## 24. K12 integration, original K11 failures and bounded native successes — 2026-11-23
+
+Checkpoint: 2026-11-23T05:20:53.245662+00:00. The source immediately before this documentation
+checkpoint is `12f3884e97b4fdcfc86c43fd50fb418700fb9099`, on
+`agent/cherri-p10r15-k12-integration-20261123`. K12 is an integration branch:
+it is **not frozen, not published, not a completed release and not a new formal
+179 report**. Earlier source-specific results retain their original identities.
+
+### Current HEAD and preserved source identities
+
+| Item | Current verified identity |
+|---|---|
+| Compiler S | R7 `ca316a3dee252456c4bec751594cf249c709b331` |
+| Published Docs D | D11 `365b08c5b4c71c6d22b591babb8d1ab852e5a3b9` |
+| Frozen K11 | `9b4135e705b08f765b7304e01212d3b9658806fb`, tree `d3688f219f7454e80778cbcb3013967b6d339aad` |
+| Active K12 before this checkpoint | `12f3884e97b4fdcfc86c43fd50fb418700fb9099` |
+| Active persistent checkout | `/mnt/development/projects/worktrees/cherri-p10r15-k12-integration-20261123` |
+| Protected UITest bytes | SHA256 `9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8`, unchanged |
+| Compatibility tuple | Existing R7/D11 manifest unchanged; no later-source receipts substituted |
+| Last authenticated main observation | `a35312a7435e5648989234c45ed6f478e3ded6e6`, ancestor of K12 at04:41UTC; no merge performed |
+
+Windows primary `3fdf58c53f9a5acbe09cfbc58ad5770701d5bb3b` was verified as an
+ancestor of K12. Its existing untracked `tests/decomp-me.cherri` remained
+unchanged and excluded. Publication used an isolated bare repository and the
+existing workflow-capable Windows credential. No token was exported and Oracle's
+repo-only credential was not used to bypass workflow-scope restrictions.
+
+### Milestone board
+
+| Stage | Actual evidence and current status |
+|---|---|
+| K11 publication | Exact new verification ref, commit/tree and original Windows receipts independently reconciled; public/source preparation complete |
+| K11 Linux | All30 package invocations completed once; actual Go suite PASS; mandatory P10 metadata verification FAIL |
+| K11 macOS | Actual root-package cumulative900s timeout; acceptance package PASS; original failures and clock boundaries retained |
+| K11 Nix | PASS in the same Build & Test run |
+| Storage observer | One-character fixture-observer repair and complete original local qualification PASS; native/provider/signing calls zero |
+| K11 full iOS | 53/57 PASS, four original failures; unchanged D03 test and both documentation-index tests PASS |
+| K10 Legacy runtime | Four original XTests and exact correlated Legacy result PASS; bounded simulator proof |
+| K11 Bool/List runtime | Four original XTests and exact Bool/first/last List result PASS; no nested-container coverage inferred |
+| K10 typed defaults | Four original XTests and exact explicit/omitted/mixed value matrix PASS; bounded simulator proof |
+| K10 required Runtime PoC | Run45101192445 terminal SUCCESS; original artifact acquired, detailed facet/formal intake still in progress at this checkpoint |
+| Other native lanes | Original K10 F01 QA and K11 required Runtime PoC retain their sole observers; no extra dispatch |
+| Remaining179 map | All64 non-AI open rows reconciled against immutable contracts and actual producer/intake boundaries; AI01 is a separate65th gap |
+| R23 revision | Complete inactive patch and isolated synthetic controls PASS; no owner policy approval and no production v2 gate execution |
+| Oracle source recovery | Exact committed K12 restored to persistent storage; originals and compiler pair reverified |
+
+### Acceptance matrix and original CI conclusions
+
+The latest complete formal local report remains **K8:114 PASSED,0 FAILED,
+26 NOT_RUN,38 PENDING_EXTERNAL,1 AI_EVAL_NOT_RUN; closure_complete=false**.
+None of this chapter's component or historical-source results is a replacement
+for a new exact-source combined report.
+
+[The K11 Linux packet](evidence/p15-k11-linux-terminal-20261123/README.md)
+preserves run45108200176/job137474256318. Corrected original counts are
+**16,863 named PASS events,11 SKIP and zero FAIL**, comprising1,669 parent PASS
+and15,194 subcase PASS. Two BOM-before-timestamp lines were omitted by the initial
+observer; the original log, initial intake and initial audit remain unchanged,
+and the explicit correction and root's independent recount are retained.
+The original ordinary/acceptance invocation durations are674.641s/1,346.726s.
+
+The actual failed command was `--verify-commit`: gate-results, the505 matrix,
+the crosswalk and baseline-state contained stale dependency fingerprints.
+**The subsequent `--run-all` and actual R23 did not execute in this Linux job.**
+The original required-encoding artifact verifies23 positive, one exact intended
+negative and23 restored WorkflowKit observations. The failed overall run remains
+ineligible for formal CI01/RP47 acceptance; component success is not BRG31 or
+Shortcut-runtime evidence.
+
+[The K11 macOS packet](evidence/p15-k11-macos-terminal-20261123/README.md)
+preserves job137474256647. The root package failed at900.153s; its only active
+parent was CanonicalBehaviorSourcePropagation at59s, then codec at2s. The
+observed child had not exhausted its90s/120s bounds. No child deadlock or
+individual assertion failure was established. All1,180 root parents started;
+1,169 passed,10 skipped and one remained incomplete. All29 opted-in parents
+continued and28 passed; there was no unstarted parallel-parent queue.
+
+Both K04 hooks actually activated and their parents passed in92.55s/45.27s.
+The whole ordinary invocation still exited1 after918.709s. Acceptance exited0
+after1,711.823s, within the original35-minute budget. Total named events are
+16,665 PASS/14 SKIP; absence of a named FAIL event does not negate the actual
+package timeout. Wall, monotonic and late log-delivery clocks are recorded
+separately without an invented explanation.
+
+### Repairs integrated and their practical limits
+
+The storage observer used the final parameter-free Nothing action as its
+mutation target. The exact fix changes only `damaged[-1]` to `damaged[-2]`;
+the original strict full-graph validator and terminal Nothing requirement remain.
+[Its original qualification](evidence/p15-storage-observer-20261123/README.md)
+passed in99.227s, including original storage build, dispatcher controls and the
+four-fixture continuation. The raw212-member artifact archive remains persistent
+and every logical member was rehashed. No production compiler behavior changed.
+
+The new [schema scheduling change](p15-macos-schema-scheduling-20261123.md)
+adds only the existing first-line hook to RP08SchemaIdentityProduction and
+SchemaOptionalDeclarationPropagation. Root and an independent agent reviewed
+their private replicas/worktrees, child environments, serial mutation order,
+restoration and cleanup. Removing the two statements restores both complete
+original files byte-for-byte. The same two root-package slots, selected-producer
+guard and original deadlines remain. No selected test was replayed, because
+selection intentionally disables this scheduling path. **Actual performance
+benefit remains unverified until the next complete final-source macOS CI.**
+
+### Native evidence and unresolved app failures
+
+[The full iOS packet](evidence/p15-k11-ios-full-20261123/README.md) retains
+run45108352089/job137474736594, all57 original conclusions and both complete
+published artifacts. D03 passed its unchanged complete97.277s test, including
+Done/dismissal and exact28-UTF16-unit editor-source preservation. That verifies
+the K11 toolbar repair in its actual original test. The entire workflow still
+failed with exit65 and its formal evidence file contains zero records.
+
+The single-character paste test failed at the original expectation wait.
+Its native-change observation arrived after9,685ms with exactly the intended
+text and caret; the final equality assertion is not reported as failed.
+The warm stock UITextView diagnostic ran afterward and cannot identify a cold
+causal layer. The generated-closer UI case failed during startup accessibility
+lookup before typing; it supplies no failed closer-semantic observation.
+
+BRG27 issued no document-creation tap after its original readiness check failed.
+E01 issued one tap but retained no subsequent document/workspace transition.
+The exact two113-byte startup messages match their recorded digests. The other
+two original issue texts remain UNCLASSIFIED, without a claimed cause or timeout.
+All11 captured startup source bindings match K11 and are unchanged from K10.
+The source uses a standard DocumentGroup and private document binding; no
+evidence-supported production state/actor/creation correction was identified.
+An additional capture-only investigation is allowed to improve missing bounded
+diagnostics; it is not a behavior fix, test waiver or native PASS.
+
+This full-iOS run used macOS15.8.2, Xcode16.4 and an iPhone16Pro Simulator.
+Its exact Simulator OS version was not retained. It must not be relabeled as
+the separate xcode-27 Shortcuts QA environment.
+
+Bounded successes are separately source-bound:
+
+| Packet | Actual result | Limits retained |
+|---|---|---|
+| [K10 Legacy](evidence/p15-k10-qa-legacy-20261123/README.md) | Exact Legacy count2/mode result; four XTests, one fresh correlated SUCCESS | Simulator only; typed trace unknown; editor partial |
+| [K11 Bool/List](evidence/p15-k11-qa-bool-list-20261123/README.md) | Both Bool branches and exact first/last dictionary-name outputs; four XTests | Nested flag/list values were not read; no N03 or general nested-container closure |
+| [K10 typed defaults](evidence/p15-k10-qa-typed-defaults-20261123/README.md) | Explicit0:0::0:0; omitted1:9:def:1:1; mixed0:9:def:0:1 | Exact three-case fixture only; generic typed trace/per-action/physical coverage remains absent |
+
+Private capture verification ran in place on Windows against the exact sealed
+artifacts and fixed verifier tuples. Keys and private plaintext were not moved
+to Git. Source, signing, callback and package joins were independently checked;
+historical K10 results are not restamped as K11/K12 results.
+
+### Remaining179 implementation/evidence map
+
+[The complete gap map](evidence/p15-remaining179-gap-map-20261123/README.md)
+accounts for26 NOT_RUN and38 PENDING_EXTERNAL rows with65 source bindings and
+all three unchanged contracts. Ten external-pending rows have existing RuntimePoC
+exporters. Twenty-one lack a complete qualified Apple producer/intake path;
+five editor rows have local functionality but lack strict native intake, E07
+awaits its existing qualified producer, and RP50 still lacks actual quality
+measurement. These are distinct implementation and evidence problems.
+
+Raw JSON null, general optional containers, nested List carrier and optional
+loop transport have actual current compiler boundaries. Existing rejection is
+not proof of Apple impossibility. Dynamic exact-text/N03 and Legacy migration,
+joined signing/runtime, repository/artifact provenance and historical unpublished
+backup evidence retain their exact missing obligations. No broad generic
+validator mapping or blanket platform-blocked label was added.
+
+### R23 decision record
+
+[The inactive R23 v2 proposal](evidence/p15-r23-policy-proposal-20261123/README.md)
+is complete and reviewable. Patch SHA256:
+`65b4faad9bfdafd5b0bea4383c38f010f8098845e4eafff1e92593f5c309fbca`.
+The proposal explicitly pins the R7 protected state, preserves all13 current UI
+methods, retains the original absent second path and adds exact approval/state/
+ancestry guards. It changes neither protected Swift source nor any original
+test deadline,56-gate identity or179 contract.
+
+One existing R23 control parent ran once on a private qualification copy:
+exit0,1.118164637s, original60s bound. Root independently rehashed all13 files,
+the four proposed source files, streams and actual result. Only synthetic Git
+fixtures received synthetic approvals. The production record remains DRAFT
+and fail-closed, and active K12 gate files remain unchanged.
+
+AGENTS.md16–19 and the explicit old R23 acceptance condition require a genuine
+policy decision for baseline supersession. The presented decision request
+returned no selection; this is neither approval nor a rejection. No approval
+text, owner signature or production v2 PASS was fabricated. Ordinary coding,
+testing, transfer, commit and publication authorization remains in force.
+Unchanged R23 remains a mandatory future CI blocker once prior steps pass.
+
+### Persistence, capacity and evidence retention
+
+Four separately reviewed redundant source copies were retired, releasing an
+observed1,115,103,232 bytes. Exact protected inventories were byte-identical
+before and after; private originals, unique stage outputs, live RemoteBuilder,
+Legacy route and retained independent compiler/docs sources were preserved.
+
+Later, three Ubuntu source copies and Ubuntu temporary directories disappeared
+from the dedicated tmpfs. The cause remains NOT_ESTABLISHED. The prior retirement
+used distinct persistent paths, and no causal relationship is asserted.
+[Recovery](evidence/p15-persistent-source-recovery-20261123/README.md) restored
+all6,837 tracked K12 files at the exact saved773ea562 commit into the persistent
+checkout without force, prune, reset, replay or ref changes. Other worktree
+metadata, original evidence, R7 binaries and retained sources were verified.
+
+A fresh empty persistent build cache and two owner-specific temporary paths
+are ready under `/mnt/development/tooling/cherri-go/runtime-persistent-20261123`.
+No questionable tmpfs cache was copied. Historical clone/cache receipts remain
+true at their original timestamps, not promises that missing directories exist.
+The inactive K11 AI/RemoteBuilder/full179 plans still contain old paths and
+must be explicitly revised for the final source before launch.
+
+### Next work and release boundary
+
+1. Finish the original K10 F01, K10 PoC detailed intake and K11 PoC observations
+   under sole ownership. Preserve source/platform/required-tier distinctions.
+2. Resolve the concrete R23 owner policy decision. Until then, leave its
+   production definition and draft approval untouched.
+3. Complete any evidence-supported capture-only changes. Preserve the four
+   original iOS failures and require actual final-source full-iOS qualification.
+4. After code and policy inputs settle, regenerate the real source-bound P10
+   ledgers/reports through their existing producers. Do not manually restamp
+   stale fingerprints or historical gate outcomes.
+5. Freeze/publish one exact next source through the Windows workflow-capable
+   route. Qualify the actual Linux/macOS/Nix/OpenMinis/native consumer paths,
+   including the original macOS15m and acceptance35m limits.
+6. Revise inactive plans to persistent exact-source paths, recheck capacity,
+   then perform the required new RemoteBuilder tuple with original package,
+   complete39-row entrypoint,58-row fault and8-operation smoke boundaries.
+   The original K10 live stage was never promoted; two canonical smoke signing
+   attempts and the separate K05 attempt retain their own scopes and no retries.
+7. Run actual final-source public AI calibration, prepare a fresh private cohort,
+   obtain authenticated BEFORE/AFTER commitment observations, execute the twelve
+   original outcomes and perform one combined full179/canonical intake.
+   K10 remains retired without generation; no K11/K12 live cohort exists.
+8. Keep physical-device and historical-original requirements open until actual
+   required evidence becomes available. Bluetooth/audio iPad presence does not
+   supply developer transport; a present-day snapshot cannot recreate missing
+   historical unpublished payloads.
+
+No main merge, live RemoteBuilder activation, new AI quality result, completed
+179 acceptance or project closure is claimed at this checkpoint.
