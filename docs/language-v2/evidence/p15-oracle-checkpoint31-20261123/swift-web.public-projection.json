@@ -1,0 +1,301 @@
+{
+  "schema": "cherri-checkpoint31-public-projection/1",
+  "component": "Swift atomic preview source integration and isolated WebPreview build",
+  "cutoffUTC": "2026-11-23T11:26:00Z",
+  "projectionCreatedFromRetainedOriginals": true,
+  "producerRerunForProjection": false,
+  "formalAcceptanceGranted": false,
+  "proposal02": {
+    "original": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-swift-integration-01/integration.original.json",
+      "bytes": 8908,
+      "sha256": "d9698522551a60d769dc8361c990afca20e8a6892c23359046ca8bdb4cfa5ab6"
+    },
+    "observed": {
+      "schema": "cherri-rp41-swift-source-integration/1",
+      "startedAt": "2026-11-23T10:48:29.353459+00:00",
+      "finishedAt": "2026-11-23T10:48:29.523867+00:00",
+      "sourceBefore": {
+        "head": "8a5e62b945fbe7b2fce97a226a796e2e997ba75b",
+        "tree": "9bb97401942196b1baaa445efe1e29111d6161a5",
+        "status": ""
+      },
+      "sourceAfter": {
+        "head": "70e98ce8eb14442a6d2cb79ed27477172c93c38b",
+        "tree": "c429a18c2410bc256565935c2961102717405d3a",
+        "status": ""
+      },
+      "verifiedFiles": [
+        {
+          "path": "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+          "bytes": 1368,
+          "sha256": "cc3b0a8a685dcf54d5ca7fd4afc2cdb4589ff35050e7cffa6aa2b3d4bcbebe92"
+        },
+        {
+          "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+          "bytes": 26028,
+          "sha256": "9c3fbd47281261e605c53412c88aa716768a12ad4e95c723c30594ef9fa545cf"
+        },
+        {
+          "path": "ios/CherriApp/Preview/CherriPreviewEditTransaction.swift",
+          "bytes": 4867,
+          "sha256": "4835d9a3d439c43553e14d92651fb851477a754e9ab6046e12ac31553d62a58b"
+        },
+        {
+          "path": "ios/CherriApp/App/WorkspaceView.swift",
+          "bytes": 22181,
+          "sha256": "c2613a16d371d725e1d238f568d2b39b243b2146b8ad1baf70594839f88acddd"
+        },
+        {
+          "path": "ios/CherriApp/Preview/ShortcutPreviewView.swift",
+          "bytes": 10327,
+          "sha256": "402272a41ea87ee36078b644517dc735acf0c404a2aa25cf8b497683655eee59"
+        },
+        {
+          "path": "ios/CherriApp/Preview/CherriPreviewRenderState.swift",
+          "bytes": 1199,
+          "sha256": "a468242d6caf3248a8c61e3d093c734567c1caa224eccb559dc4694290b474b7"
+        },
+        {
+          "path": "ios/WebPreview/src/main.ts",
+          "bytes": 9728,
+          "sha256": "146fd99f5c0ff9f0a38cc7253d5458119dd3e462f65d17d9acbdd4452d9fd6fe"
+        },
+        {
+          "path": "ios/CherriTests/CherriPreviewEditTransactionTests.swift",
+          "bytes": 21184,
+          "sha256": "336eb3460243d76f72edc9b9ec985914062a9cdd600eddeaab8e2e364841c171"
+        }
+      ],
+      "status": "INTEGRATED_PENDING_NATIVE_QUALIFICATION",
+      "nativeExecuted": false,
+      "swiftCompiled": false,
+      "testsExecuted": false,
+      "formalAcceptanceGranted": false
+    }
+  },
+  "proposal03": {
+    "original": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-swift-auto-legacy-integration-01/integration.original.json",
+      "bytes": 5625,
+      "sha256": "a5310f2621c22729b8d00bcf58b93aa88442c90b20551d0a26b5c95bc35358cf"
+    },
+    "observed": {
+      "schema": "cherri-rp41-auto-legacy-integration/1",
+      "startedAt": "2026-11-23T10:53:37.217590+00:00",
+      "finishedAt": "2026-11-23T10:53:37.368702+00:00",
+      "sourceBefore": {
+        "head": "70e98ce8eb14442a6d2cb79ed27477172c93c38b",
+        "tree": "c429a18c2410bc256565935c2961102717405d3a",
+        "status": ""
+      },
+      "sourceAfter": {
+        "head": "88b41d68cfe429bf4dcdb1c73fa5e4276b33851d",
+        "tree": "382f0c85966d5b3ac00fed7bc4f926cc1ccba5a8",
+        "status": ""
+      },
+      "verifiedFiles": [
+        {
+          "path": "ios/CherriApp/Preview/CherriPreviewEditTransaction.swift",
+          "bytes": 5169,
+          "sha256": "c8e9db70583b5a730af55f31d945037719ec6d4de505ee3df1254b509471a957"
+        },
+        {
+          "path": "ios/CherriTests/CherriPreviewEditTransactionTests.swift",
+          "bytes": 22195,
+          "sha256": "01bfaf1fdd7d39e6f02706e59456340e89613e0e37957eb6325172d3a59a635f"
+        }
+      ],
+      "status": "INTEGRATED_PENDING_NATIVE_QUALIFICATION",
+      "nativeExecuted": false,
+      "swiftCompiled": false,
+      "testsExecuted": false,
+      "formalAcceptanceGranted": false
+    }
+  },
+  "webAttempts": [
+    {
+      "attempt": 1,
+      "original": {
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/webpreview-build-execution-01/process.result.original.json",
+        "bytes": 379,
+        "sha256": "054a561d4e7c32014fca00bdcd17d6ec7baf781f26149be83feb97d4647e00a1"
+      },
+      "observed": {
+        "sourceCommit": "70e98ce8eb14442a6d2cb79ed27477172c93c38b",
+        "startedAt": "2026-11-23T10:50:33.011451+00:00",
+        "finishedAt": "2026-11-23T10:50:33.043858+00:00",
+        "status": "STOPPED",
+        "swiftCompiled": false,
+        "nativeExecuted": false,
+        "formalAcceptanceGranted": false
+      },
+      "commands": []
+    },
+    {
+      "attempt": 2,
+      "original": {
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/webpreview-build-execution-02/process.result.original.json",
+        "bytes": 4020,
+        "sha256": "0ba4925f92d5c09c98c73fec694a355711e3e47749d26b4162250010d861a5e7"
+      },
+      "observed": {
+        "sourceCommit": "88b41d68cfe429bf4dcdb1c73fa5e4276b33851d",
+        "sourceTree": "382f0c85966d5b3ac00fed7bc4f926cc1ccba5a8",
+        "startedAt": "2026-11-23T10:54:42.314360+00:00",
+        "finishedAt": "2026-11-23T10:55:18.290603+00:00",
+        "status": "STOPPED",
+        "swiftCompiled": false,
+        "nativeExecuted": false,
+        "formalAcceptanceGranted": false
+      },
+      "commands": [
+        {
+          "name": "node-version",
+          "exitCode": 0,
+          "elapsedSeconds": 0.12451755814254284,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 20
+        },
+        {
+          "name": "npm-version",
+          "exitCode": 0,
+          "elapsedSeconds": 0.37669577077031136,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 20
+        },
+        {
+          "name": "npm-ci",
+          "exitCode": 254,
+          "elapsedSeconds": 35.41116910520941,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 240
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "original": {
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/webpreview-build-execution-03/process.result.original.json",
+        "bytes": 4744,
+        "sha256": "22f18153662633600757e22c7023bd9d4e1b01300aa55fde6dec2b3c8253c0e0"
+      },
+      "observed": {
+        "sourceCommit": "88b41d68cfe429bf4dcdb1c73fa5e4276b33851d",
+        "sourceTree": "382f0c85966d5b3ac00fed7bc4f926cc1ccba5a8",
+        "startedAt": "2026-11-23T11:02:43.710343+00:00",
+        "finishedAt": "2026-11-23T11:03:45.467981+00:00",
+        "status": "BUILD_PASSED",
+        "sourceCopiesUnchanged": true,
+        "swiftCompiled": false,
+        "nativeExecuted": false,
+        "formalAcceptanceGranted": false
+      },
+      "commands": [
+        {
+          "name": "node-version",
+          "exitCode": 0,
+          "elapsedSeconds": 0.016553936526179314,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 20
+        },
+        {
+          "name": "npm-version",
+          "exitCode": 0,
+          "elapsedSeconds": 0.16718472633510828,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 20
+        },
+        {
+          "name": "npm-ci",
+          "exitCode": 0,
+          "elapsedSeconds": 60.40094194188714,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 240
+        },
+        {
+          "name": "npm-build",
+          "exitCode": 0,
+          "elapsedSeconds": 1.070657235570252,
+          "timedOut": false,
+          "signals": [],
+          "timeoutSeconds": 120
+        }
+      ]
+    }
+  ],
+  "stoppedAttempt01": {
+    "status": "capacity admission stopped before commands",
+    "producerCommands": 0,
+    "originalStopSHA256": "054a561d4e7c32014fca00bdcd17d6ec7baf781f26149be83feb97d4647e00a1",
+    "preparationReceipt": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/webpreview-build-execution-02/preparation.original.json",
+      "bytes": 491,
+      "sha256": "628a899cba618ff80481eb8e10e7a08c04468763d964381287f6914ce9373cf7"
+    }
+  },
+  "failedAttempt02": {
+    "npmCIExitCode": 254,
+    "viteExecuted": false,
+    "temporaryCacheDirectoryObservedMissing": true,
+    "preparationReceipt": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/webpreview-build-execution-03/preparation.original.json",
+      "bytes": 707,
+      "sha256": "414dfbe594506c4342c232ca6bb22e2a7f5e48c68dc704ef47fa2db8484fcced"
+    }
+  },
+  "successfulWebRootIntake": {
+    "original": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/webpreview-build-execution-03/root-intake.original.json",
+      "bytes": 1567,
+      "sha256": "86f10c45ec7e9f77ec1ee16407b5983521d3d0907ffb3d3284266114b8e29dc9"
+    },
+    "observed": {
+      "sourceCommit": "88b41d68cfe429bf4dcdb1c73fa5e4276b33851d",
+      "sourceTree": "382f0c85966d5b3ac00fed7bc4f926cc1ccba5a8",
+      "sourceFilesVerified": 5,
+      "assets": [
+        {
+          "path": "assets/index-C5uQBavo.css",
+          "bytes": 2773745,
+          "sha256": "574ba8631fc8015f753ad43997258dc3db2bb6fe698675d285387c6db5733a9c"
+        },
+        {
+          "path": "assets/index-DyRnKoTl.js",
+          "bytes": 810347,
+          "sha256": "116107a40b5e90725e47313ac41ad0c14eb6a08530525123dc0635920e4ca58f"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1018,
+          "sha256": "98a524cb7690802098c824fe84c8865c4d9ec0c91187e91358acc8d191edd7a9"
+        }
+      ],
+      "nodeVersion": "v24.22.0",
+      "npmVersion": "11.19.1",
+      "buildPassed": true,
+      "sourceCopiesUnchanged": true,
+      "originalFailedAttemptsPreserved": [
+        "webpreview-build-execution-01",
+        "webpreview-build-execution-02"
+      ],
+      "nativeExecuted": false,
+      "swiftCompiled": false,
+      "wkWebViewExecuted": false,
+      "sameAppleToolchainClaim": false,
+      "formalAcceptanceGranted": false
+    },
+    "lockedDependency": {
+      "version": "1.3.4",
+      "commit": "42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd"
+    }
+  },
+  "protectedUITestModified": false,
+  "newAppleRuntimeQualification": "PENDING"
+}

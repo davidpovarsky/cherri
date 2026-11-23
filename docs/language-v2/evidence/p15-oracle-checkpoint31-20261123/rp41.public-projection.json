@@ -1,0 +1,122 @@
+{
+  "schema": "cherri-checkpoint31-public-projection/1",
+  "component": "RP41",
+  "cutoffUTC": "2026-11-23T11:26:00Z",
+  "projectionCreatedFromRetainedOriginals": true,
+  "producerRerunForProjection": false,
+  "formalAcceptanceGranted": false,
+  "originalRED": {
+    "receipt": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-red-execution-01/process.result.original.json",
+      "bytes": 1776,
+      "sha256": "cc8162e473b0a9dd7059dbbaf30df4f49af23e2fcf3e2be44d1c648bc597332f"
+    },
+    "observed": {
+      "schema": "cherri-rp41-red-process/1",
+      "startedAt": "2026-11-23T10:00:45.919026+00:00",
+      "finishedAt": "2026-11-23T10:01:08.532977+00:00",
+      "elapsedSeconds": 22.61394389346242,
+      "exitCode": 1,
+      "timedOut": false,
+      "signals": [],
+      "sourceBefore": {
+        "head": "90d92eef2017216f79df0cecfe7f934abd174290",
+        "tree": "91bcdd20ce3b5b04b645fb79910320d8d6611c67",
+        "status": "",
+        "testSHA256": "d0abd754ca884ae54c2cd19ce45677e053608178134b06d7c0590eb7952cd8b1"
+      },
+      "sourceAfter": {
+        "head": "90d92eef2017216f79df0cecfe7f934abd174290",
+        "tree": "91bcdd20ce3b5b04b645fb79910320d8d6611c67",
+        "status": "",
+        "testSHA256": "d0abd754ca884ae54c2cd19ce45677e053608178134b06d7c0590eb7952cd8b1"
+      },
+      "sourceUnchanged": true,
+      "nativeExecuted": false,
+      "formalAcceptanceGranted": false,
+      "stdoutSHA256": "eabea718d48d1b9fe26bdebfb176faffd04e443cc0d18b78b3677491dbc2cf92",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reportedCause": "actual emitted Wait index4 edits unrelated wait(5), leaving authored wait(2) unchanged",
+    "preservedTestSHA256": "d0abd754ca884ae54c2cd19ce45677e053608178134b06d7c0590eb7952cd8b1"
+  },
+  "firstGreen": {
+    "process": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-green-execution-02/process.result.original.json",
+      "bytes": 6799,
+      "sha256": "2be1241676cffd866dd0ef157483436d49f9c9af50c7a9df318ddf85ebc93999"
+    },
+    "rootIntake": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-green-execution-02/root-intake.original.json",
+      "bytes": 1286,
+      "sha256": "33505b0c82ccb1670ea531c466c259770e65b0e66174d372dfd38a5ea219dccd"
+    },
+    "observed": {
+      "additionalEligibilityReview": "Canonical callbacks may transform direct native scalar values before writing; fail-closed follow-up under source review",
+      "controllerParseStopsBeforeGoRetained": true,
+      "createdAt": "2026-11-23T10:30:57.726248+00:00",
+      "elapsedSeconds": 22.997214598581195,
+      "formalAcceptanceGranted": false,
+      "namedPassEvents": 38,
+      "nativeABIExecution": "NOT_RUN",
+      "originalExecutionExitCode": 0,
+      "originalProcessSHA256": "2be1241676cffd866dd0ef157483436d49f9c9af50c7a9df318ddf85ebc93999",
+      "originalREDProcessSHA256": "cc8162e473b0a9dd7059dbbaf30df4f49af23e2fcf3e2be44d1c648bc597332f",
+      "originalREDThreeSubcasesPassedThroughNewNativeRoute": true,
+      "originalStdoutSHA256": "b63bd1921609ee3c82c4bb0c5a9cdc2ff81aac7b57e4953143c786cc9c384577",
+      "outerDeadlineSeconds": 300,
+      "packagePasses": 1,
+      "parentCount": 4,
+      "redAPIPlumbingDisclosed": true,
+      "schema": "cherri-rp41-focused-root-intake/1",
+      "sourceCommit": "659a4b4e13bbdada34bbc26e071f558e941311f5",
+      "sourceFilesVerified": 14,
+      "sourceTree": "7d229d8b9b80e5b8c58498f7606b66a37ea8682a",
+      "sourceUnchanged": true,
+      "status": "PASS_FOUR_PARENT_COMPONENT",
+      "subcaseCount": 34,
+      "swiftAtomicPublicationVerification": "PENDING",
+      "testDeadlineSeconds": 60,
+      "timeoutOrSignals": false
+    }
+  },
+  "callbackFollowup": {
+    "process": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-callback-execution-01/process.result.original.json",
+      "bytes": 6963,
+      "sha256": "c83f3aedfdc98275e1d00544231a9f58ce6baf272b5f9072ddcdcf9505c7692d"
+    },
+    "rootIntake": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/rp41-callback-execution-01/root-intake.original.json",
+      "bytes": 1083,
+      "sha256": "6a5f963f3bb9bb6a7f25e2cfe8700db0ec66cae296239ec18ad08bb00193ea02"
+    },
+    "observed": {
+      "allPrior38TestIdentitiesRetained": true,
+      "createdAt": "2026-11-23T10:38:06.297127+00:00",
+      "elapsedSeconds": 21.800059917382896,
+      "formalAcceptanceGranted": false,
+      "namedPassEvents": 39,
+      "nativeABIAndSwiftVerification": "PENDING",
+      "newCausalSubcase": "TestP15RP41PreviewSourceMapOriginBoundaries/callback_transformed_scalar_read_only",
+      "originalProcessSHA256": "c83f3aedfdc98275e1d00544231a9f58ce6baf272b5f9072ddcdcf9505c7692d",
+      "originalREDPreserved": true,
+      "originalStdoutSHA256": "dc806e81cdd644de5a772718a9da0967b7e0debe1a6567861ae0d951da67aef5",
+      "outerSeconds": 300,
+      "parents": 4,
+      "prior659ActualPassPreserved": true,
+      "realExitCode": 0,
+      "redAPIPlumbingSHA256": "ab6ac2ed058d4e903d512c9631765e33148e84f10d330b9b178e93125796a3e6",
+      "schema": "cherri-rp41-callback-root-intake/1",
+      "sourceCommit": "26f3f29e432f475fc385e2163021d2e7ba66d556",
+      "sourceTree": "2f76d795ff4053b08e31d09d81957aa56ba01561",
+      "sourceUnchanged": true,
+      "status": "PASS_FOUR_PARENT_COMPONENT_WITH_CONSERVATIVE_SCALAR_ELIGIBILITY",
+      "subcases": 35,
+      "testSeconds": 60
+    }
+  },
+  "nativeAndSwiftQualification": "PENDING",
+  "redToGreenTestBytesIdentical": false,
+  "originalThreeFixturesOraclesAndBoundsPreservedWithDisclosedNewAPIPlumbing": true
+}

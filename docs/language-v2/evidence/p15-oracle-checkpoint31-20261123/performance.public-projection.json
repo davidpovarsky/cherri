@@ -1,0 +1,142 @@
+{
+  "schema": "cherri-checkpoint31-public-projection/1",
+  "component": "build-setup reuse",
+  "cutoffUTC": "2026-11-23T11:26:00Z",
+  "projectionCreatedFromRetainedOriginals": true,
+  "producerRerunForProjection": false,
+  "formalAcceptanceGranted": false,
+  "integration": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/performance-reuse-integration-01/integration.original.json",
+    "bytes": 2302,
+    "sha256": "26b66257a9d01d7408362e1786fd2b6130e50e34c8801d1e0aeb4e98635fa975"
+  },
+  "implementation": {
+    "commit": "8a5e62b945fbe7b2fce97a226a796e2e997ba75b",
+    "tree": "9bb97401942196b1baaa445efe1e29111d6161a5",
+    "parent": "26f3f29e432f475fc385e2163021d2e7ba66d556",
+    "clean": true,
+    "exactSetupReplacements": 10,
+    "originalCLIParentTailUnchanged": true,
+    "unmodifiedBoundariesVerified": 7,
+    "files": {
+      "p15_cli_acceptance_test.go": "c34248379656256459388d1f6bbcce3fe81fed6b9af751d75ed45bcdb7d56c10",
+      "p15_cli_build_reuse_test.go": "49f1fd227d1f5a5ebfaf86cfc3b29a8873db7b7072db9b62a7e8a28aaf52eda2",
+      "p15_extracted_atomic_install_test.go": "4f9b2e0cecc8296c8fdaf0436c7a848609ded8f9736474266df2c1afd0176d5e",
+      "p15_extracted_install_contract_test.go": "790f7b789369f0bbf794c35c59911df67e4810cdf3b6f22f31bbc288715abfb1",
+      "p15_extracted_runtime_pair_test.go": "3258eb59dd8e2035ecdb563584041b8f4237263c01dde867331b1825c8d4a05f",
+      "p15_extracted_selection_test.go": "3b863caf408c3a09b17eb124ee1f9f447026880d2970a2917dfb524050c893c2",
+      "p15_install_actual_tools_test.go": "f643c0ec301bd8bae257e0f0d0ff71cef2fb8b6fb0847f6fda0597ec9803ab58",
+      "p15_install_identity_contract_test.go": "724f8377607fd3370872c1f8ec42aade5465885630e8ea36bb2146897708bd66",
+      "p15_install_identity_order_test.go": "96746a9bec6f94120277deedfe8f0ee8834500a47de4467e529f450beb0ee7f3",
+      "p15_installed_docs_identity_test.go": "197585c3d0a2188b1f092e9474fb8dde48b19d048bd0598db868cb363ddc2175"
+    },
+    "measuredTimeSaving": false,
+    "macOS900SecondGuarantee": false
+  },
+  "process": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/performance-reuse-execution-01/process.result.original.json",
+    "bytes": 8025,
+    "sha256": "10bf0bb0c3d746c746d4272f2c745fa271022c596073f41707b0acf393b10c65"
+  },
+  "observedProcess": {
+    "startedAt": "2026-11-23T10:40:09.629149+00:00",
+    "finishedAt": "2026-11-23T10:41:35.923947+00:00",
+    "elapsedSeconds": 86.29479094687849,
+    "exitCode": 0,
+    "timedOut": false,
+    "signals": [],
+    "sourceBefore": {
+      "head": "8a5e62b945fbe7b2fce97a226a796e2e997ba75b",
+      "tree": "9bb97401942196b1baaa445efe1e29111d6161a5",
+      "status": ""
+    },
+    "sourceAfter": {
+      "head": "8a5e62b945fbe7b2fce97a226a796e2e997ba75b",
+      "tree": "9bb97401942196b1baaa445efe1e29111d6161a5",
+      "status": ""
+    },
+    "sourceUnchanged": true,
+    "completeSelection": true,
+    "originalGoTimeoutSeconds": 900,
+    "outerSupervisionSeconds": 1200,
+    "nativeExecuted": false,
+    "formalAcceptanceGranted": false,
+    "measuredSaving": false,
+    "macOS900SecondGuarantee": false,
+    "stdoutSHA256": "f6f2e89b7436d2130d7d6a2c3e9404ea25eabb4a8ca6196ab377d0851579e681",
+    "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "rootIntake": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/performance-reuse-execution-01/root-intake.original.json",
+    "bytes": 1780,
+    "sha256": "1e130a490715465181184945dd613a204b4b1e2eef48dc17b9af81355be2b887"
+  },
+  "observedIntake": {
+    "schema": "cherri-build-reuse-root-intake/1",
+    "reviewedAt": "2026-11-23T10:48:05.079583+00:00",
+    "source": {
+      "head": "8a5e62b945fbe7b2fce97a226a796e2e997ba75b",
+      "tree": "9bb97401942196b1baaa445efe1e29111d6161a5",
+      "status": ""
+    },
+    "process": {
+      "bytes": 8025,
+      "sha256": "10bf0bb0c3d746c746d4272f2c745fa271022c596073f41707b0acf393b10c65"
+    },
+    "stdout": {
+      "bytes": 71854,
+      "sha256": "f6f2e89b7436d2130d7d6a2c3e9404ea25eabb4a8ca6196ab377d0851579e681"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "supervisor": {
+      "bytes": 6190,
+      "sha256": "9f6e1a38dd7abe562797e143ca83b06e05f790d5580ac93cb9ffa8bd37f47443"
+    },
+    "namedTests": 49,
+    "parents": 6,
+    "subtests": 43,
+    "packagePassed": true,
+    "everyNamedRunCompletedExactlyOnce": true,
+    "selectedParents": [
+      {
+        "Test": "TestP15CLIJSONCommandsAndExitStatus",
+        "Action": "pass",
+        "Elapsed": 5.32
+      },
+      {
+        "Test": "TestP15CLIDefaultRejectsLegacyWithGuidance",
+        "Action": "pass",
+        "Elapsed": 1.32
+      },
+      {
+        "Test": "TestP15AcceptanceCLIImmutableReuseControls",
+        "Action": "pass",
+        "Elapsed": 2.07
+      },
+      {
+        "Test": "TestP15RP45ExtractedInstallAndRollback",
+        "Action": "pass",
+        "Elapsed": 41.76
+      },
+      {
+        "Test": "TestP15RP45ExtractedRuntimePair",
+        "Action": "pass",
+        "Elapsed": 14.35
+      },
+      {
+        "Test": "TestP15FullSuiteSubprocessParallelPolicy",
+        "Action": "pass",
+        "Elapsed": 0
+      }
+    ],
+    "original900SecondTimeoutRetained": true,
+    "nativeExecuted": false,
+    "measuredSaving": false,
+    "macOS900SecondGuarantee": false,
+    "formalAcceptanceGranted": false,
+    "producerReexecutedForIntake": false
+  }
+}

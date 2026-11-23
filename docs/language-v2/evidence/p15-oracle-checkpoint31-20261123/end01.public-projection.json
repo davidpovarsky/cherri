@@ -1,0 +1,152 @@
+{
+  "schema": "cherri-checkpoint31-public-projection/1",
+  "component": "END01 dedicated final-delivery producer",
+  "cutoffUTC": "2026-11-23T11:26:00Z",
+  "projectionCreatedFromRetainedOriginals": true,
+  "producerRerunForProjection": false,
+  "formalAcceptanceGranted": false,
+  "integration": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/end01-integration-01/integration.original.json",
+    "bytes": 5610,
+    "sha256": "7e4378621386bf5e133f2a1f62d8b00f0511f7fb33095340848b01c548342650"
+  },
+  "observedIntegration": {
+    "schema": "cherri-end01-root-integration/1",
+    "startedAt": "2026-11-23T11:23:24.206271+00:00",
+    "finishedAt": "2026-11-23T11:23:24.383846+00:00",
+    "base": "88b41d68cfe429bf4dcdb1c73fa5e4276b33851d",
+    "head": "89adefbd913c82a3e138255a86cf4a43e5dcb72e",
+    "tree": "f341369c055d9ed48a3a7be7cc2cbfb8c1014c61",
+    "sourceCleanAfter": true,
+    "genericSmokeGuardPreserved": true,
+    "dedicatedAuditAppliedAfterGenericGuard": true,
+    "contractsUnchanged": true,
+    "denominator": {
+      "acceptance": 94,
+      "repair": 52,
+      "recovery": 33,
+      "total": 179
+    },
+    "producerExecuted": false,
+    "formalAcceptanceGranted": false,
+    "files": [
+      {
+        "path": "tools/language-acceptance/evidence_map.go",
+        "bytes": 32315,
+        "sha256": "c89f8c87f90631e1dfcc89d098e11542f6e1f3e53d7fb68132c8722c60897c6a"
+      },
+      {
+        "path": "tools/language-acceptance/execution_audit.go",
+        "bytes": 26087,
+        "sha256": "f18f63800fc6a47aa22ee9136aa5a8e5ebb920413c4b53d0537b8f9dc9b8bad7"
+      },
+      {
+        "path": "tools/language-acceptance/final_provenance_execution.go",
+        "bytes": 68969,
+        "sha256": "65d124dc66832efc0e48c3a636c6ebab5e86e91e9519ab95a8f79f534ee34d99"
+      },
+      {
+        "path": "tools/language-acceptance/final_provenance_execution_test.go",
+        "bytes": 33905,
+        "sha256": "450a59beed19bed70619c30b1e2737370c673c1d9755caa53db2cc2b41773291"
+      },
+      {
+        "path": "tools/language-acceptance/main.go",
+        "bytes": 73311,
+        "sha256": "719432c9ad4da233d8cc81a56f44255386a611ffbe831340700fa2df9f62935f"
+      }
+    ]
+  },
+  "process": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/end01-qualification-01/process.original.json",
+    "bytes": 2210,
+    "sha256": "271f98f60024c89202c8573ba2ffb4a9e55a5e975c78dc426b663691b9f30357"
+  },
+  "observedProcess": {
+    "schema": "cherri-end01-qualification-process/1",
+    "startedAt": "2026-11-23T11:24:17.158459+00:00",
+    "finishedAt": "2026-11-23T11:24:31.299103+00:00",
+    "durationSeconds": 14.06173144094646,
+    "exitCode": 0,
+    "timeout": false,
+    "signals": [],
+    "sourceBefore": {
+      "head": "89adefbd913c82a3e138255a86cf4a43e5dcb72e",
+      "tree": "f341369c055d9ed48a3a7be7cc2cbfb8c1014c61",
+      "status": ""
+    },
+    "sourceAfter": {
+      "head": "89adefbd913c82a3e138255a86cf4a43e5dcb72e",
+      "tree": "f341369c055d9ed48a3a7be7cc2cbfb8c1014c61",
+      "status": ""
+    },
+    "sourceCleanUnchanged": true,
+    "summary": {
+      "runNames": 51,
+      "parents": 4,
+      "subcases": 47,
+      "passed": 51,
+      "failed": [],
+      "skipped": [],
+      "duplicateRuns": [],
+      "orphanOrMultipleTerminal": [],
+      "parseErrors": [],
+      "packageTerminal": [
+        {
+          "package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+          "action": "pass"
+        }
+      ]
+    },
+    "syntheticControlsOnly": true,
+    "formalAcceptanceGranted": false,
+    "qualificationPassed": true
+  },
+  "rootIntake": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k14-closure-20261123/end01-qualification-01/root-intake.original.json",
+    "bytes": 1121,
+    "sha256": "abe786683307b23121cee5f0ecaf409f45c0d39ba6249ce38f06de46b223a14c"
+  },
+  "observedIntake": {
+    "schema": "cherri-end01-qualification-root-intake/1",
+    "checkedAt": "2026-11-23T11:25:33.715917+00:00",
+    "processSHA256": "271f98f60024c89202c8573ba2ffb4a9e55a5e975c78dc426b663691b9f30357",
+    "originalJSONLSHA256": "90a4eb0fcd51653fff96992d4484bcc80c81bca0e2a6db8334534f3486de6ba0",
+    "source": {
+      "head": "89adefbd913c82a3e138255a86cf4a43e5dcb72e",
+      "tree": "f341369c055d9ed48a3a7be7cc2cbfb8c1014c61",
+      "status": ""
+    },
+    "parents": [
+      "TestFinalProvenanceDedicatedEntryAndScope",
+      "TestFinalProvenanceIndependentPinsAndSources",
+      "TestFinalProvenanceRejectsOriginalContradictions",
+      "TestFinalProvenanceTruthfulFailedDelivery"
+    ],
+    "parentCount": 4,
+    "subcaseCount": 47,
+    "namedPassCount": 51,
+    "allRunsExactlyOnce": true,
+    "allTerminalPassExactlyOnce": true,
+    "failed": 0,
+    "skipped": 0,
+    "sourceCleanBeforeAfter": true,
+    "exitCode": 0,
+    "durationSeconds": 14.06173144094646,
+    "originalLimitsPreserved": {
+      "go": 90,
+      "outer": 300,
+      "TERM": 5,
+      "KILL": 5
+    },
+    "qualificationOnly": true,
+    "actualFinalDeliveryAccepted": false,
+    "formalAcceptanceGranted": false
+  },
+  "currentSourceFinalizedLedgerRequired": true,
+  "missingLedger": "NOT_RUN",
+  "configuredHistoricalOrWrongSourceLedger": "FAILED",
+  "actualFinalDeliveryAccepted": false,
+  "CI0304ImplementationAtCutoff": "EXTERNAL_PROPOSAL_PENDING",
+  "inheritedRP49BRG31Credit": false
+}

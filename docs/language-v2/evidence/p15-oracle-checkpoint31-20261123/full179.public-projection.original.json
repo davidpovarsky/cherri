@@ -1,0 +1,2210 @@
+{
+  "closureComplete": false,
+  "denominator": {
+    "acceptance": 94,
+    "repair": 52,
+    "supplemental": 33,
+    "total": 179
+  },
+  "differentAggregatorStatusSemantics": true,
+  "failedAIRequirements": [
+    "AI01",
+    "RP50"
+  ],
+  "newlySatisfiedRequirementIDs": [
+    "F01",
+    "FN01",
+    "FN02",
+    "FN03",
+    "L02",
+    "L04",
+    "N01",
+    "S01",
+    "V01",
+    "V03"
+  ],
+  "priorPassedRequirementsLost": [],
+  "producerReplay": false,
+  "projectionOnly": true,
+  "reports": [
+    {
+      "closureComplete": false,
+      "originalBytes": 84969,
+      "originalRelativePath": "attempt-01/acceptance-report.json",
+      "originalSHA256": "a162757bd6d9d6495b1bab9d77d1de9bdc0c49ec7ed105e95bcde180ee45b06b",
+      "rowsInOriginalOrder": [
+        {
+          "group": "baseline",
+          "id": "B01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "baseline",
+          "id": "B02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "binding",
+          "id": "V01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "binding",
+          "id": "V02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "binding",
+          "id": "V03",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "binding",
+          "id": "V04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "types",
+          "id": "T02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T05",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "types",
+          "id": "T06",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T08",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T09",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "text",
+          "id": "S01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "text",
+          "id": "S02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "text",
+          "id": "S03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "collections",
+          "id": "L01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "collections",
+          "id": "L02",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "collections",
+          "id": "L03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "collections",
+          "id": "L04",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "numbers",
+          "id": "N01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "numbers",
+          "id": "N02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "numbers",
+          "id": "N03",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "control",
+          "id": "F01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "control",
+          "id": "F02",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "control",
+          "id": "F03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "control",
+          "id": "F04",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "control",
+          "id": "F05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "functions",
+          "id": "FN01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "functions",
+          "id": "FN02",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "functions",
+          "id": "FN03",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "functions",
+          "id": "FN04",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "functions",
+          "id": "FN05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M02",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "metadata",
+          "id": "M03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "schema",
+          "id": "AC01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "schema",
+          "id": "AC02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "schema",
+          "id": "AC03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R06",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "editor",
+          "id": "E01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "editor",
+          "id": "E02",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "editor",
+          "id": "E03",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "editor",
+          "id": "E04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "editor",
+          "id": "E05",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "editor",
+          "id": "E06",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "editor",
+          "id": "E07",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "editor",
+          "id": "E08",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "cli",
+          "id": "CL01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "cli",
+          "id": "CL02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "cli",
+          "id": "CL03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "docs",
+          "id": "D01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "docs",
+          "id": "D02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "docs",
+          "id": "D03",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "skill",
+          "id": "K01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "verification",
+          "id": "CI01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "verification",
+          "id": "CI02",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "verification",
+          "id": "CI03",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "verification",
+          "id": "CI04",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "evaluation",
+          "id": "AI01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "delivery",
+          "id": "END01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP06",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP08",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP09",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP10",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP11",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP12",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP13",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP14",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP15",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP16",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP17",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP18",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP19",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP20",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP21",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP22",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP23",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP24",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP25",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "repair",
+          "id": "RP26",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP27",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP28",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP29",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP30",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP31",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP32",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP33",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP34",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP35",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP36",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP37",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP38",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP39",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP40",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP41",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP42",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP43",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP44",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP45",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP46",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP47",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP48",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP49",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP50",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP51",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP52",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG06",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG08",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG09",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG10",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG11",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG12",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG13",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG14",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG15",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG16",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG17",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG18",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG19",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG20",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG21",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG22",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG23",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG24",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG25",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG26",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG27",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG28",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG29",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG30",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG31",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG32",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "recovery_gate",
+          "id": "BRG33",
+          "passed": true,
+          "status": "PASSED"
+        }
+      ],
+      "statusCounts": {
+        "FAILED": 2,
+        "NOT_RUN": 28,
+        "PASSED": 112,
+        "PENDING_EXTERNAL": 37
+      },
+      "timestamp": "2026-11-23T09:29:31Z"
+    },
+    {
+      "closureComplete": false,
+      "originalBytes": 64140,
+      "originalRelativePath": "reconciliation-execution-02/acceptance-report.json",
+      "originalSHA256": "30740ff97a0a90079f3b745811d40964c1af996e8ea67d21e72be5da9bf0af18",
+      "rowsInOriginalOrder": [
+        {
+          "group": "schema",
+          "id": "AC01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "schema",
+          "id": "AC02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "schema",
+          "id": "AC03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "evaluation",
+          "id": "AI01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "baseline",
+          "id": "B01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "baseline",
+          "id": "B02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG06",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG08",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG09",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG10",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG11",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG12",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG13",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG14",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG15",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG16",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "gate",
+          "id": "BRG17",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG18",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG19",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG20",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG21",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG22",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG23",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG24",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG25",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG26",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG27",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG28",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG29",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG30",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG31",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG32",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "gate",
+          "id": "BRG33",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "calls",
+          "id": "C05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "verification",
+          "id": "CI01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "verification",
+          "id": "CI02",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "verification",
+          "id": "CI03",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "verification",
+          "id": "CI04",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "cli",
+          "id": "CL01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "cli",
+          "id": "CL02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "cli",
+          "id": "CL03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "docs",
+          "id": "D01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "docs",
+          "id": "D02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "docs",
+          "id": "D03",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "editor",
+          "id": "E01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "editor",
+          "id": "E02",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "editor",
+          "id": "E03",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "editor",
+          "id": "E04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "editor",
+          "id": "E05",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "editor",
+          "id": "E06",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "editor",
+          "id": "E07",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "editor",
+          "id": "E08",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "delivery",
+          "id": "END01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "control",
+          "id": "F01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "control",
+          "id": "F02",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "control",
+          "id": "F03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "control",
+          "id": "F04",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "control",
+          "id": "F05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "functions",
+          "id": "FN01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "functions",
+          "id": "FN02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "functions",
+          "id": "FN03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "functions",
+          "id": "FN04",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "functions",
+          "id": "FN05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "modules",
+          "id": "IM05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "skill",
+          "id": "K05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "collections",
+          "id": "L01",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "collections",
+          "id": "L02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "collections",
+          "id": "L03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "collections",
+          "id": "L04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M02",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "metadata",
+          "id": "M03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "metadata",
+          "id": "M05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "numbers",
+          "id": "N01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "numbers",
+          "id": "N02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "numbers",
+          "id": "N03",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "parser",
+          "id": "P01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "parser",
+          "id": "P05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R06",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "native",
+          "id": "R07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP05",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP06",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP08",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP09",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP10",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP11",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP12",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP13",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP14",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP15",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP16",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP17",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP18",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP19",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP20",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP21",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP22",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP23",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP24",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP25",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP26",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP27",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP28",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP29",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP30",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP31",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP32",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP33",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP34",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP35",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP36",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP37",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP38",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP39",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP40",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP41",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP42",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP43",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP44",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP45",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP46",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "repair",
+          "id": "RP47",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP48",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "repair",
+          "id": "RP49",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP50",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP51",
+          "passed": false,
+          "status": "FAILED"
+        },
+        {
+          "group": "repair",
+          "id": "RP52",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "text",
+          "id": "S01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "text",
+          "id": "S02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "text",
+          "id": "S03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T01",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "types",
+          "id": "T02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T05",
+          "passed": false,
+          "status": "NOT_RUN"
+        },
+        {
+          "group": "types",
+          "id": "T06",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T07",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T08",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "types",
+          "id": "T09",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "upstream",
+          "id": "U04",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "binding",
+          "id": "V01",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "binding",
+          "id": "V02",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "binding",
+          "id": "V03",
+          "passed": true,
+          "status": "PASSED"
+        },
+        {
+          "group": "binding",
+          "id": "V04",
+          "passed": true,
+          "status": "PASSED"
+        }
+      ],
+      "statusCounts": {
+        "FAILED": 27,
+        "NOT_RUN": 30,
+        "PASSED": 122
+      },
+      "timestamp": "2026-11-23T09:59:25Z"
+    }
+  ],
+  "schema": "cherri-k12-public-status-projection/1",
+  "sourceCommit": "7e0c7b0425fd43bab231de76dd35484668ad9e73"
+}

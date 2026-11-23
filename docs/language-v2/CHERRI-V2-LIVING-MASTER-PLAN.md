@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.9 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete K12 local execution: **112/179 PASSED, 2 FAILED, 28 NOT_RUN, 37 PENDING_EXTERNAL**. Separate retained-native reconciliation: **122/179 PASSED, 27 FAILED, 30 NOT_RUN** under different aggregator status semantics; **closure_complete=false**. Chapter 30 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.10 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete K12 local execution: **112/179 PASSED, 2 FAILED, 28 NOT_RUN, 37 PENDING_EXTERNAL**. Separate retained-native reconciliation: **122/179 PASSED, 27 FAILED, 30 NOT_RUN** under different aggregator status semantics; **closure_complete=false**. Chapter 31 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2181,3 +2181,242 @@ Project health remains off track and `closure_complete=false`. No mainline merge
 or global release is claimed. Preserve all 179 IDs, original policies,
 thresholds, time limits and stopped attempts. Complete the genuine internal
 repairs and their evidence before treating the remaining work as blocked.
+
+
+## 31. Preview-source repair, bounded build reuse and final-delivery producer — 2026-11-23, 11:26 UTC
+
+### Current source and milestone board
+
+This checkpoint records work completed after Chapter 30 at its stated cutoff.
+Chapters 1–30 and their original sources, failed attempts and reports remain
+historical. The [bounded public proof packet](evidence/p15-oracle-checkpoint31-20261123/README.md)
+contains source-bound metadata projections and the previously approved, unchanged
+full179 projection. It was prepared without rerunning a producer.
+
+| Role or milestone | Exact source and accepted scope |
+|---|---|
+| Continuation source at cutoff | `89adefbd913c82a3e138255a86cf4a43e5dcb72e`, tree `f341369c055d9ed48a3a7be7cc2cbfb8c1014c61`; clean isolated branch `agent/cherri-p10r15-k14-closure-persistent-20261123`. This is not a newly frozen final K or compiler S. |
+| First RP41 mapping qualification | `659a4b4e13bbdada34bbc26e071f558e941311f5`: four parents and 34 subcases, 38 named passes. |
+| Conservative RP41 eligibility follow-up | `26f3f29e432f475fc385e2163021d2e7ba66d556`: the same four parents plus 35 subcases, 39 named passes. |
+| Build-setup reuse qualification | `8a5e62b945fbe7b2fce97a226a796e2e997ba75b`: six parents and 43 subcases, 49 named passes. |
+| Swift atomic preview publication, proposal02 | `70e98ce8eb14442a6d2cb79ed27477172c93c38b`: source integrated; Swift/native qualification remains pending. |
+| Auto-Legacy rebuild correction, proposal03 | `88b41d68cfe429bf4dcdb1c73fa5e4276b33851d`: source integrated; the isolated WebPreview build passed, while Swift and WKWebView execution remain pending. |
+| END01 strict final-provenance producer | `89adefbd913c82a3e138255a86cf4a43e5dcb72e`: four parents and 47 synthetic control subcases, 51 named passes. Actual final-delivery intake remains pending. |
+| Historical dated-label native result | K13 `d81e232241e257ca1126be76ebf4fe95239fb170`, run `45153254005`, attempt 1: the original 51-field native contract passed. No result is transferred to a future source. |
+
+New compiler S, Docs D and final verification K have not been selected. The
+installed RemoteBuilder tuple remains the previously completed S57b6/D12/K13
+milestone described in Chapter 30. No promotion of these new source changes,
+mainline merge or global closure is claimed.
+
+### Acceptance matrix and evidence log
+
+#### RP41: wrong native-index edit reproduced, repaired and bounded
+
+The original RED remains at `90d92eef2017216f79df0cecfe7f934abd174290`.
+It selected the real emitted Wait action at native index 4, corresponding to the
+authored `wait(2)`, but the old service changed the unrelated later
+`wait(5)` to `wait(9)`. The simple direct-action and explanatory read-only
+subcases passed. The original test, JSONL, process receipt and failing source
+commit are preserved; its actual exit was 1 with no timeout.
+
+The repair adds an explicit native-preview editing route while preserving the
+existing AST-index API. The same mobile compile owns the source map, emitted
+action identity and final native index. The request binds the original compiled
+source, plist, normalized name, actual mode and profile. A plain matching digest
+is an integrity check, not authentication. Generated, ambiguous, unmapped and
+unsupported parameter bindings remain explanatory and read-only.
+
+The first focused qualification at `659a4b4e…` passed all 38 named events in
+22.9972146 seconds. The previously failing regression was moved to the actual new
+native API with disclosed compile-response witness plumbing. Its three input
+fixtures, native index derivation, exact source assertions, compile count and
+original deadlines were retained. This is not represented as a byte-identical
+RED-to-GREEN test. Controller parsing stops before Go startup are retained
+separately from the single actual qualification invocation.
+
+Further source review identified a real safety boundary: action callbacks can
+transform a scalar before it reaches the native plist. The follow-up admits only
+direct primitive authored arguments on callback-free definitions. It excludes
+custom parameter builders and check/append callbacks rather than trying to
+reverse their transformations. The actual transformed `containsText` case now
+remains read-only; the healthy Wait/show/Bool controls remain. At `26f3f29e…`,
+all previous 38 identities plus that new causal subcase passed: **39 named
+passes**, 21.8000599 seconds, actual exit 0, no timeout/signals and no source
+drift. Both focused selections retained the 60-second Go test limit and
+300-second outer supervision.
+
+These results qualify the Go production service and same-compile map controls.
+They do not establish the Swift C ABI, real WebView transaction or Apple UI
+outcome. The original RP41 requirement remains open for those required tiers.
+[RP41 originals and source bindings](evidence/p15-oracle-checkpoint31-20261123/rp41.public-projection.json)
+
+#### Swift transaction and WebPreview: source integrated, native result pending
+
+Proposal02 was integrated at `70e98ce8…`. It keeps the compiler-owned witness
+inside the immutable compiled result and commits rebuilt source/preview state
+only after the guarded edit and recompilation succeed. Stale, unmapped, rejected
+or failed edits retain the committed state. The rendered publication identity is
+echoed through the WebView callback so queued DOM messages cannot acquire a
+newer compiled context. The protected UI test file is unchanged.
+
+Proposal03, at `88b41d68…`, preserves the actual Legacy/v2 dialect separately
+from the user's selected Auto setting. It retains the original request context
+for stale checks and routes an Auto-selected Legacy result through the existing
+Legacy rebuild path. This source integration has not yet been compiled or tested
+with Swift on Apple.
+
+The isolated WebPreview build has three distinct retained attempts:
+
+| Attempt | Actual observation |
+|---|---|
+| 01 | Capacity admission stopped before producer commands; zero commands ran. The original stop is retained. |
+| 02 | `npm ci` exited 254; Vite was not run. The owned transient cache directory was subsequently observed missing. This failed attempt is retained. |
+| 03 | With the reviewed cache/temp location correction, the same locked inputs completed `npm ci` and `npm run build` successfully. Node v24.22.0 and npm 11.19.1 were recorded; all source copies were unchanged. |
+
+Attempt03 produced three retained assets and the root verified their hashes.
+Its original process receipt is
+`22f18153662633600757e22c7023bd9d4e1b01300aa55fde6dec2b3c8253c0e0`.
+This is an Oracle JavaScript build result, with **Swift compiled=false,
+WKWebView executed=false and same Apple toolchain claim=false**.
+No failed attempt or source identity has been replaced.
+[Swift/WebPreview projections](evidence/p15-oracle-checkpoint31-20261123/swift-web.public-projection.json)
+
+#### Build reuse: bounded correctness controls passed; hosted timing unmeasured
+
+The build-setup change at `8a5e62b9…` seeds fresh private CLI outputs from
+verified immutable bytes while retaining the original `go build -o … .`
+command and its 90-second command bound. Go still validates the build action.
+Cache ownership, copied bytes, SHA256, source/role/VCS identity and inherited
+environment binding are checked; dirty, linked or unverified sources retain the
+uncached fallback. Ten exact default-migrator setup sites use the established
+tool cache. The documentation generator was left unchanged.
+
+The original six-parent qualification passed **49 named events** in
+86.2947909 seconds, actual exit 0, with all selected identities terminating once,
+no timeout/signals and an unchanged clean source. Its 900-second test and
+1,200-second outer limits were retained. The process receipt is
+`10bf0bb0c3d746c746d4272f2c745fa271022c596073f41707b0acf393b10c65`.
+
+This establishes the reviewed reuse behavior and controls. It does not measure
+a before/after time saving or guarantee that a future full macOS suite completes
+within 900 seconds. The next required CI run on the genuinely changed frozen
+source owns that performance qualification.
+[Build-reuse originals](evidence/p15-oracle-checkpoint31-20261123/performance.public-projection.json)
+
+#### Historical K13 dated native contract: 51 fields matched
+
+The existing `qa-debug-label-dated-v2` run `45153254005`, attempt 1 on exact
+K13, completed successfully. Its original 177-action fixture matched all
+**51 expected output fields**; both DateDelta values were exactly zero. The
+published merged XCTest summary reports four passes and no failures or skips.
+Those are not 51 XCTest cases, and the four individual merged names were not
+observed in the retained summary.
+
+The existing owner-held Windows route verified the private prerequisite
+originals in place: 23 members, three source commands and 21 source files. The
+public source/run/artifact joins and private fixed result were independently
+reviewed. The approved component manifest is
+`30d36f73baa330b40e21b1218333fcc371a480e2163466dfbbf417a3474a0014`;
+the root intake is
+`d8581e3b13b5754f3ab65b6b71572cc3a9250b288df014f9bde3465bfb76a3a8`.
+
+Visible-label comparison, the visible Creation Date suffix, the Legacy dated
+counterpart, all twelve label cases, per-action coverage, physical-device
+evidence and formal acceptance remain unverified. Editor capture remains
+partial. This component result stays bound to K13 and does not certify the
+new RP41 compiler or a future final K.
+[Dated-native scope](evidence/p15-oracle-checkpoint31-20261123/dated-native.public-projection.json)
+
+#### END01: strict producer implemented and qualified, actual delivery pending
+
+The new dedicated END01 producer was integrated at `89adefbd…`. It requires
+independent expected context and pinned source, publication, workflow and
+artifact originals. A candidate receipt's own digest cannot establish its
+authority. The finalized ledger must belong to the exact current implementation
+source; an absent ledger stays NOT_RUN, while an explicitly historical or
+wrong-source ledger fails. An intake cannot predate completion of the original
+179 producer. Real source/output containment is checked through aliases.
+
+A separate post-ledger entry avoids a circular claim about the acceptance run
+that is still being produced. The shared CI binding loader is ledger-independent;
+it does not grant END01 final-delivery acceptance to CI03 or CI04. The original
+generic guards remain, and RP49/BRG31 receive no inherited pass.
+
+At exact `89adefbd…`, **four parents and 47 subcases passed: 51 named events**,
+14.0617314 seconds, actual exit 0, no timeout/signals, clean source before/after.
+The original 90-second Go test limit and 300-second outer limit were retained.
+The process receipt is
+`271f98f60024c89202c8573ba2ffb4a9e55a5e975c78dc426b663691b9f30357`;
+the root intake is
+`abe786683307b23121cee5f0ecaf409f45c0d39ba6249ce38f06de46b223a14c`.
+
+These are synthetic intake/contradiction controls for the producer, not a real
+execution of the requirements represented by their fixture ledgers. A truthful
+failed/pending current-source delivery can satisfy the integrity predicate, but
+no actual final delivery has yet been accepted.
+[END01 qualification](evidence/p15-oracle-checkpoint31-20261123/end01.public-projection.json)
+
+#### The formal179 reports remain unchanged
+
+The latest complete original execution still belongs to K12:
+
+- **112 PASSED, 2 FAILED, 28 NOT_RUN, 37 PENDING_EXTERNAL**; the two failures are
+  AI01/RP50. Original report SHA256
+  `a162757bd6d9d6495b1bab9d77d1de9bdc0c49ec7ed105e95bcde180ee45b06b`.
+- Its distinct retained-native reconciliation remains **122 PASSED,
+  27 FAILED, 30 NOT_RUN**, SHA256
+  `30740ff97a0a90079f3b745811d40964c1af996e8ea67d21e72be5da9bf0af18`.
+  Its strict aggregator categories are different; those 27 FAILED rows are not
+  27 new failed producer executions.
+
+The packet preserves all 179 original ordered ID/status rows in each report,
+the **94/52/33** denominator and both `closure_complete=false` values. No new
+component count is inserted into either report, and neither ledger is relabeled
+with the continuation source.
+[Unchanged public projection](evidence/p15-oracle-checkpoint31-20261123/full179.public-projection.original.json)
+
+### Decisions, open defects and next work
+
+1. **Select genuine new sources only after the reviewed code is complete.**
+   CI03/CI04 implementation and schemas are still external proposals at this
+   cutoff. New compiler S, Docs D and final K remain unselected. The planned
+   sequence is reviewed code integration, a real clean S pair and affected
+   private S4/raw505 evidence, actual derived/Docs refresh, then final K and its
+   required CI/native/full179 producers. Historical proof is reused only where
+   exact source/dependency rules permit it.
+2. **Finish RP41 at its actual integration tiers.** The Go defect and
+   conservative mapping controls now pass. The new Swift/C ABI/transaction
+   controls and otherwise-required full iOS run remain pending. The earlier
+   K12 E01/E06 startup failures still have no established app-production cause;
+   their protected tests, deadlines and success criteria remain unchanged.
+3. **Keep required CI and release policy truthful.** Full macOS timing on the
+   changed source, race-artifact retention, current source/artifact identities
+   and publication privacy require their original producers and real outputs.
+   R23v1 remains active and failed; the R23v2 proposal remains unapproved. R22 remains
+   platform-bound. This chapter grants no policy waiver.
+4. **Finish actual final-delivery proof without a report cycle.** CI03/CI04
+   must establish their own predicates. END01 needs a finalized same-source
+   179 report and independently pinned original publication/run/artifact
+   inputs. Historical K12 rows remain historical; missing proof is not a pass.
+5. **Preserve the consumed AI cohort and its real failure.** It recorded twelve
+   count-token HTTP400 credit failures, zero generations and no retry.
+   No replacement cohort, provider call, account/billing action or outcome-driven
+   reseed is authorized here. The inactive next-179 handoff keeps those originals
+   configured. Its exact rejection path must be bound to the final offline
+   implementation before execution. Historical identities must not be restamped,
+   and an inferred inner cause must not be presented as an executed branch or
+   broadened into an allowed success.
+6. **Retain the other open coverage work.** The eleven macro children remain
+   OPEN. One dated V2 result does not close all label modes or visible labels.
+   Optional nested/value-loop transport, dynamic Text runtime coverage,
+   combined editor/function producers and other required computed/native
+   behaviors remain open at their own tiers. The 64 historical gap rows remain
+   a separate historical inventory. Physical-device evidence remains absent;
+   missing access does not prove that no device exists.
+
+No producer was rerun for this checkpoint. No source or existing evidence file
+was changed while assembling it. Project status remains **IN_PROGRESS** and
+**closure_complete=false**. The next full179 proposal is inactive, with final
+source/context/workflow/capacity inputs still subject to the explicit root
+handoff.
