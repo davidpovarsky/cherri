@@ -74,6 +74,8 @@ struct DocumentationSearchView: View {
                         .accessibilityIdentifier("docsDoneButton")
                 }
             }
+            // Keep the sheet's dismissal action available while search is active.
+            .modifier(DocumentationSearchToolbarVisibility())
             .task {
                 guard index == nil && loadError == nil else { return }
                 do {
@@ -88,6 +90,17 @@ struct DocumentationSearchView: View {
                     loadError = error.localizedDescription
                 }
             }
+        }
+    }
+}
+
+private struct DocumentationSearchToolbarVisibility: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 17.1, *) {
+            content.searchPresentationToolbarBehavior(.avoidHidingContent)
+        } else {
+            content
         }
     }
 }
