@@ -149,7 +149,7 @@ for fid in BINDING_CASES:
             damaged.append({"WFWorkflowActionIdentifier":"is.workflow.actions.gettext",
                             "WFWorkflowActionParameters":{"WFTextActionText":"wrong output"}})
         if mutation == "wrong-dispatch-closure":
-            damaged[-1]["WFWorkflowActionParameters"]["GroupingIdentifier"] = "00000000-0000-0000-0000-000000000000"
+            damaged[-2]["WFWorkflowActionParameters"]["GroupingIdentifier"] = "00000000-0000-0000-0000-000000000000"
         try:
             verify_adapter_graph(fid, damaged)
         except ValueError as exc:
