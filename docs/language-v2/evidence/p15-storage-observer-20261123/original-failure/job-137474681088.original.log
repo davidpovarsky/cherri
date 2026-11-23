@@ -1,0 +1,1347 @@
+﻿2026-11-23T03:50:44.5922314Z Current runner version: '2.338.2'
+2026-11-23T03:50:44.5940811Z ##[group]Runner Image Provisioner
+2026-11-23T03:50:44.5941436Z Hosted Compute Agent
+2026-11-23T03:50:44.5941784Z Version: 20261111.635
+2026-11-23T03:50:44.5942204Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-23T03:50:44.5942634Z Build Date: 2026-11-11T01:49:01Z
+2026-11-23T03:50:44.5943067Z Worker ID: {85028117-3a20-4b32-938c-f74eb536e553}
+2026-11-23T03:50:44.5943516Z Region: centralus
+2026-11-23T03:50:44.5943849Z Cloud: Azure
+2026-11-23T03:50:44.5944220Z ##[endgroup]
+2026-11-23T03:50:44.5945077Z ##[group]Operating System
+2026-11-23T03:50:44.5945433Z Ubuntu
+2026-11-23T03:50:44.5945786Z 26.04.1
+2026-11-23T03:50:44.5946115Z LTS
+2026-11-23T03:50:44.5946443Z ##[endgroup]
+2026-11-23T03:50:44.5946808Z ##[group]Runner Image
+2026-11-23T03:50:44.5947156Z Image: ubuntu-26.04
+2026-11-23T03:50:44.5947528Z Version: 20261116.202.1
+2026-11-23T03:50:44.5948284Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-23T03:50:44.5949212Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-23T03:50:44.5949754Z ##[endgroup]
+2026-11-23T03:50:44.5950736Z ##[group]GITHUB_TOKEN Permissions
+2026-11-23T03:50:44.5951955Z Actions: read
+2026-11-23T03:50:44.5952386Z Contents: read
+2026-11-23T03:50:44.5952736Z Metadata: read
+2026-11-23T03:50:44.5953096Z ##[endgroup]
+2026-11-23T03:50:44.5954435Z Secret source: Actions
+2026-11-23T03:50:44.5955050Z Cache mode: write
+2026-11-23T03:50:44.5955458Z Prepare workflow directory
+2026-11-23T03:50:44.6172919Z Prepare all required actions
+2026-11-23T03:50:44.6206005Z Getting action download info
+2026-11-23T03:50:44.8754661Z Download action repository 'davidpovarsky/github-automation@main' (SHA:61b34ae6d31e94afb6ceb8a836742275c495b0e2)
+2026-11-23T03:50:45.1360278Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-23T03:50:45.1798793Z Download action repository 'actions/setup-go@v6' (SHA:924ae3a1cded613372ab5595356fb5720e22ba16)
+2026-11-23T03:50:45.6071828Z Download action repository 'docker/setup-qemu-action@v3' (SHA:c7c53464625b32c7a7e944ae62b3e17d2b600130)
+2026-11-23T03:50:46.0366895Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-23T03:50:46.3209013Z Complete job name: build-test-package
+2026-11-23T03:50:46.3948573Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-23T03:50:46.3949439Z with:
+2026-11-23T03:50:46.3949891Z   event: refresh
+2026-11-23T03:50:46.3950736Z   device_id: ***
+2026-11-23T03:50:46.3951234Z   token: ***
+2026-11-23T03:50:46.3955473Z   github_token: ***
+2026-11-23T03:50:46.3956029Z ##[endgroup]
+2026-11-23T03:50:47.4395423Z ##[group]Run actions/checkout@v6
+2026-11-23T03:50:47.4395631Z with:
+2026-11-23T03:50:47.4395789Z   fetch-depth: 0
+2026-11-23T03:50:47.4395956Z   repository: davidpovarsky/cherri
+2026-11-23T03:50:47.4397325Z   token: ***
+2026-11-23T03:50:47.4397510Z   ssh-strict: true
+2026-11-23T03:50:47.4397666Z   ssh-user: git
+2026-11-23T03:50:47.4397818Z   persist-credentials: true
+2026-11-23T03:50:47.4397981Z   clean: true
+2026-11-23T03:50:47.4398146Z   sparse-checkout-cone-mode: true
+2026-11-23T03:50:47.4398326Z   fetch-tags: false
+2026-11-23T03:50:47.4398478Z   show-progress: true
+2026-11-23T03:50:47.4398630Z   lfs: false
+2026-11-23T03:50:47.4398774Z   submodules: false
+2026-11-23T03:50:47.4398935Z   set-safe-directory: true
+2026-11-23T03:50:47.4399111Z   allow-unsafe-pr-checkout: false
+2026-11-23T03:50:47.4399289Z ##[endgroup]
+2026-11-23T03:50:47.5018530Z Syncing repository: davidpovarsky/cherri
+2026-11-23T03:50:47.5019835Z ##[group]Getting Git version info
+2026-11-23T03:50:47.5020326Z Working directory is '/home/runner/work/cherri/cherri'
+2026-11-23T03:50:47.5021066Z [command]/usr/bin/git version
+2026-11-23T03:50:47.5021347Z git version 2.56.1
+2026-11-23T03:50:47.5024597Z ##[endgroup]
+2026-11-23T03:50:47.5034665Z Temporarily overriding HOME='/home/runner/work/_temp/e84b6eb2-3613-49d8-91b9-d2734576fca3' before making global git config changes
+2026-11-23T03:50:47.5035792Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T03:50:47.5038510Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri
+2026-11-23T03:50:47.5099091Z Deleting the contents of '/home/runner/work/cherri/cherri'
+2026-11-23T03:50:47.5101688Z ##[group]Determining repository object format
+2026-11-23T03:50:47.5103088Z ##[endgroup]
+2026-11-23T03:50:47.5107447Z ##[group]Initializing the repository
+2026-11-23T03:50:47.5115520Z [command]/usr/bin/git init /home/runner/work/cherri/cherri
+2026-11-23T03:50:47.5192421Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-23T03:50:47.5193210Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-23T03:50:47.5193865Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-23T03:50:47.5194138Z hint: call:
+2026-11-23T03:50:47.5194281Z hint:
+2026-11-23T03:50:47.5194519Z hint: 	git config --global init.defaultBranch <name>
+2026-11-23T03:50:47.5194833Z hint:
+2026-11-23T03:50:47.5195068Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-23T03:50:47.5195398Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-23T03:50:47.5195640Z hint:
+2026-11-23T03:50:47.5195798Z hint: 	git branch -m <name>
+2026-11-23T03:50:47.5195963Z hint:
+2026-11-23T03:50:47.5196200Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-23T03:50:47.5198476Z Initialized empty Git repository in /home/runner/work/cherri/cherri/.git/
+2026-11-23T03:50:47.5209080Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherri
+2026-11-23T03:50:47.5258689Z ##[endgroup]
+2026-11-23T03:50:47.5259169Z ##[group]Disabling automatic garbage collection
+2026-11-23T03:50:47.5261774Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-23T03:50:47.5301404Z ##[endgroup]
+2026-11-23T03:50:47.5301804Z ##[group]Setting up auth
+2026-11-23T03:50:47.5302231Z Removing SSH command configuration
+2026-11-23T03:50:47.5302933Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T03:50:47.5340559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T03:50:47.5676460Z Removing HTTP extra header
+2026-11-23T03:50:47.5682237Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T03:50:47.5711317Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T03:50:47.5922140Z Removing includeIf entries pointing to credentials config files
+2026-11-23T03:50:47.5928234Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T03:50:47.5956530Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T03:50:47.6173571Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-23T03:50:47.6206279Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:50:47.6234830Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:50:47.6263301Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:50:47.6290283Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:50:47.6313476Z ##[endgroup]
+2026-11-23T03:50:47.6313792Z ##[group]Fetching the repository
+2026-11-23T03:50:47.6319537Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-11-23T03:50:50.3878314Z From https://github.com/davidpovarsky/cherri
+2026-11-23T03:50:50.3879007Z  * [new branch]        addon/pure-apple-actions-pack-20261022 -> origin/addon/pure-apple-actions-pack-20261022
+2026-11-23T03:50:50.3879727Z  * [new branch]        agent/actions-app-external-shortcutkit-builder -> origin/agent/actions-app-external-shortcutkit-builder
+2026-11-23T03:50:50.3880553Z  * [new branch]        agent/actions-app-extract-20261022 -> origin/agent/actions-app-extract-20261022
+2026-11-23T03:50:50.3881120Z  * [new branch]        agent/apple-runtime-extraction-v2 -> origin/agent/apple-runtime-extraction-v2
+2026-11-23T03:50:50.3881693Z  * [new branch]        agent/canonical-backend-production-cutover -> origin/agent/canonical-backend-production-cutover
+2026-11-23T03:50:50.3882269Z  * [new branch]        agent/canonical-backend-recovery -> origin/agent/canonical-backend-recovery
+2026-11-23T03:50:50.3882903Z  * [new branch]        agent/cherri-p10-apple-actions-coverage -> origin/agent/cherri-p10-apple-actions-coverage
+2026-11-23T03:50:50.3883379Z  * [new branch]        agent/cherri-p10-parity-integration-20261020 -> origin/agent/cherri-p10-parity-integration-20261020
+2026-11-23T03:50:50.3883892Z  * [new branch]        agent/cherri-p10r10-semantic-import-unification-20261111 -> origin/agent/cherri-p10r10-semantic-import-unification-20261111
+2026-11-23T03:50:50.3884418Z  * [new branch]        agent/cherri-p10r11-action-wire-semantic-truth-20261112 -> origin/agent/cherri-p10r11-action-wire-semantic-truth-20261112
+2026-11-23T03:50:50.3884990Z  * [new branch]        agent/cherri-p10r12-control-regions-complex-params-20261113 -> origin/agent/cherri-p10r12-control-regions-complex-params-20261113
+2026-11-23T03:50:50.3885516Z  * [new branch]        agent/cherri-p10r13-simulator-debug-fidelity-20261115 -> origin/agent/cherri-p10r13-simulator-debug-fidelity-20261115
+2026-11-23T03:50:50.3886004Z  * [new branch]        agent/cherri-p10r14-signed-shortcut-runtime-20261115 -> origin/agent/cherri-p10r14-signed-shortcut-runtime-20261115
+2026-11-23T03:50:50.3886659Z  * [new branch]        agent/cherri-p10r15-apple-20261119 -> origin/agent/cherri-p10r15-apple-20261119
+2026-11-23T03:50:50.3887851Z  * [new branch]        agent/cherri-p10r15-ax-publication-20261118 -> origin/agent/cherri-p10r15-ax-publication-20261118
+2026-11-23T03:50:50.3888502Z  * [new branch]        agent/cherri-p10r15-chatgpt-gates-20261118 -> origin/agent/cherri-p10r15-chatgpt-gates-20261118
+2026-11-23T03:50:50.3889111Z  * [new branch]        agent/cherri-p10r15-completion-20261119 -> origin/agent/cherri-p10r15-completion-20261119
+2026-11-23T03:50:50.3889704Z  * [new branch]        agent/cherri-p10r15-completion-r2-20261119 -> origin/agent/cherri-p10r15-completion-r2-20261119
+2026-11-23T03:50:50.3890295Z  * [new branch]        agent/cherri-p10r15-completion-r3-20261119 -> origin/agent/cherri-p10r15-completion-r3-20261119
+2026-11-23T03:50:50.3891048Z  * [new branch]        agent/cherri-p10r15-completion-r4-20261120 -> origin/agent/cherri-p10r15-completion-r4-20261120
+2026-11-23T03:50:50.3891930Z  * [new branch]        agent/cherri-p10r15-consumer-k4-20261119 -> origin/agent/cherri-p10r15-consumer-k4-20261119
+2026-11-23T03:50:50.3892673Z  * [new branch]        agent/cherri-p10r15-continuation-20261119 -> origin/agent/cherri-p10r15-continuation-20261119
+2026-11-23T03:50:50.3893369Z  * [new branch]        agent/cherri-p10r15-date-diagnostic-20261120 -> origin/agent/cherri-p10r15-date-diagnostic-20261120
+2026-11-23T03:50:50.3894324Z  * [new branch]        agent/cherri-p10r15-editor-evidence-20261120 -> origin/agent/cherri-p10r15-editor-evidence-20261120
+2026-11-23T03:50:50.3895023Z  * [new branch]        agent/cherri-p10r15-file-carrier-20261120 -> origin/agent/cherri-p10r15-file-carrier-20261120
+2026-11-23T03:50:50.3895792Z  * [new branch]        agent/cherri-p10r15-full179-negative-20261121 -> origin/agent/cherri-p10r15-full179-negative-20261121
+2026-11-23T03:50:50.3896507Z  * [new branch]        agent/cherri-p10r15-import-native-append-20261121 -> origin/agent/cherri-p10r15-import-native-append-20261121
+2026-11-23T03:50:50.3897255Z  * [new branch]        agent/cherri-p10r15-integration-gates-20261118 -> origin/agent/cherri-p10r15-integration-gates-20261118
+2026-11-23T03:50:50.3897872Z  * [new branch]        agent/cherri-p10r15-ios-ui-20261118 -> origin/agent/cherri-p10r15-ios-ui-20261118
+2026-11-23T03:50:50.3898521Z  * [new branch]        agent/cherri-p10r15-k10-verification-20261123 -> origin/agent/cherri-p10r15-k10-verification-20261123
+2026-11-23T03:50:50.3899199Z  * [new branch]        agent/cherri-p10r15-k11-verification-20261123 -> origin/agent/cherri-p10r15-k11-verification-20261123
+2026-11-23T03:50:50.3899828Z  * [new branch]        agent/cherri-p10r15-label-native-20261120 -> origin/agent/cherri-p10r15-label-native-20261120
+2026-11-23T03:50:50.3902021Z  * [new branch]        agent/cherri-p10r15-legacy-math-operands-20261121 -> origin/agent/cherri-p10r15-legacy-math-operands-20261121
+2026-11-23T03:50:50.3902789Z  * [new branch]        agent/cherri-p10r15-local-ocr-20261118 -> origin/agent/cherri-p10r15-local-ocr-20261118
+2026-11-23T03:50:50.3903241Z  * [new branch]        agent/cherri-p10r15-native-collection-r5-20261118 -> origin/agent/cherri-p10r15-native-collection-r5-20261118
+2026-11-23T03:50:50.3903689Z  * [new branch]        agent/cherri-p10r15-native-diagnostics-r2-20261118 -> origin/agent/cherri-p10r15-native-diagnostics-r2-20261118
+2026-11-23T03:50:50.3904129Z  * [new branch]        agent/cherri-p10r15-native-macros-r4-20261118 -> origin/agent/cherri-p10r15-native-macros-r4-20261118
+2026-11-23T03:50:50.3904545Z  * [new branch]        agent/cherri-p10r15-native-pilots-r3-20261118 -> origin/agent/cherri-p10r15-native-pilots-r3-20261118
+2026-11-23T03:50:50.3904950Z  * [new branch]        agent/cherri-p10r15-native-resume-20261119 -> origin/agent/cherri-p10r15-native-resume-20261119
+2026-11-23T03:50:50.3905354Z  * [new branch]        agent/cherri-p10r15-numeric-combined-20261121 -> origin/agent/cherri-p10r15-numeric-combined-20261121
+2026-11-23T03:50:50.3905776Z  * [new branch]        agent/cherri-p10r15-paginate-native-r1-20261118 -> origin/agent/cherri-p10r15-paginate-native-r1-20261118
+2026-11-23T03:50:50.3906354Z  * [new branch]        agent/cherri-p10r15-project-closure-20261118 -> origin/agent/cherri-p10r15-project-closure-20261118
+2026-11-23T03:50:50.3906753Z  * [new branch]        agent/cherri-p10r15-r6-fixture-ci-20261122 -> origin/agent/cherri-p10r15-r6-fixture-ci-20261122
+2026-11-23T03:50:50.3907141Z  * [new branch]        agent/cherri-p10r15-retry-probes-20261118 -> origin/agent/cherri-p10r15-retry-probes-20261118
+2026-11-23T03:50:50.3907546Z  * [new branch]        agent/cherri-p10r15-s01-literal-token-20261120 -> origin/agent/cherri-p10r15-s01-literal-token-20261120
+2026-11-23T03:50:50.3907984Z  * [new branch]        agent/cherri-p10r15-signed-evidence-fix-20261118 -> origin/agent/cherri-p10r15-signed-evidence-fix-20261118
+2026-11-23T03:50:50.3908415Z  * [new branch]        agent/cherri-p10r15-startup-controls-20261120 -> origin/agent/cherri-p10r15-startup-controls-20261120
+2026-11-23T03:50:50.3908837Z  * [new branch]        agent/cherri-p10r15-startup-k-replay-20261120 -> origin/agent/cherri-p10r15-startup-k-replay-20261120
+2026-11-23T03:50:50.3909287Z  * [new branch]        agent/cherri-p10r15-startup-timing-20261120 -> origin/agent/cherri-p10r15-startup-timing-20261120
+2026-11-23T03:50:50.3909669Z  * [new branch]        agent/cherri-p10r15-stat-fix-20261118 -> origin/agent/cherri-p10r15-stat-fix-20261118
+2026-11-23T03:50:50.3910153Z  * [new branch]        agent/cherri-p10r15-storage-cross-run-20261118 -> origin/agent/cherri-p10r15-storage-cross-run-20261118
+2026-11-23T03:50:50.3910751Z  * [new branch]        agent/cherri-p10r15-storage-native-r1-20261118 -> origin/agent/cherri-p10r15-storage-native-r1-20261118
+2026-11-23T03:50:50.3911179Z  * [new branch]        agent/cherri-p10r15-unicode-combined-20261121 -> origin/agent/cherri-p10r15-unicode-combined-20261121
+2026-11-23T03:50:50.3911842Z  * [new branch]        agent/cherri-p10r15-validation-r1-20261118 -> origin/agent/cherri-p10r15-validation-r1-20261118
+2026-11-23T03:50:50.3912497Z  * [new branch]        agent/cherri-p10r6-real-shortcuts-20261110 -> origin/agent/cherri-p10r6-real-shortcuts-20261110
+2026-11-23T03:50:50.3913248Z  * [new branch]        agent/cherri-p10r7-verified-semantic-fidelity-20261110 -> origin/agent/cherri-p10r7-verified-semantic-fidelity-20261110
+2026-11-23T03:50:50.3914041Z  * [new branch]        agent/cherri-p10r8-complete-native-fidelity-20261111 -> origin/agent/cherri-p10r8-complete-native-fidelity-20261111
+2026-11-23T03:50:50.3914837Z  * [new branch]        agent/cherri-p10r9-unified-engine-hybrid-import-20261111 -> origin/agent/cherri-p10r9-unified-engine-hybrid-import-20261111
+2026-11-23T03:50:50.3915571Z  * [new branch]        agent/cherri-v2-legacy-parity -> origin/agent/cherri-v2-legacy-parity
+2026-11-23T03:50:50.3916095Z  * [new branch]        agent/cherri-v2-product-completion -> origin/agent/cherri-v2-product-completion
+2026-11-23T03:50:50.3916615Z  * [new branch]        agent/ios-app-foundation -> origin/agent/ios-app-foundation
+2026-11-23T03:50:50.3917106Z  * [new branch]        agent/ios27-shortcuts-runtime-poc -> origin/agent/ios27-shortcuts-runtime-poc
+2026-11-23T03:50:50.3917832Z  * [new branch]        agent/language-redesign -> origin/agent/language-redesign
+2026-11-23T03:50:50.3918326Z  * [new branch]        agent/lumen-ios27-storage-20261025 -> origin/agent/lumen-ios27-storage-20261025
+2026-11-23T03:50:50.3918946Z  * [new branch]        agent/lumen-main-text-fix-20261025 -> origin/agent/lumen-main-text-fix-20261025
+2026-11-23T03:50:50.3919724Z  * [new branch]        agent/lumen-runtime-validation-20261024 -> origin/agent/lumen-runtime-validation-20261024
+2026-11-23T03:50:50.3920238Z  * [new branch]        agent/shared-shortcuts-engine-v2-repair -> origin/agent/shared-shortcuts-engine-v2-repair
+2026-11-23T03:50:50.3920834Z  * [new branch]        agent/shared-shortcuts-engine-v2-round3 -> origin/agent/shared-shortcuts-engine-v2-round3
+2026-11-23T03:50:50.3921255Z  * [new branch]        agent/shared-shortcuts-engine-v2-round3-closure -> origin/agent/shared-shortcuts-engine-v2-round3-closure
+2026-11-23T03:50:50.3921785Z  * [new branch]        agent/shortcut-corpus-acquisition -> origin/agent/shortcut-corpus-acquisition
+2026-11-23T03:50:50.3922123Z  * [new branch]        agent/shortcut-corpus-platform -> origin/agent/shortcut-corpus-platform
+2026-11-23T03:50:50.3922493Z  * [new branch]        agent/shortcut-corpus-roundtrip-hardening -> origin/agent/shortcut-corpus-roundtrip-hardening
+2026-11-23T03:50:50.3922903Z  * [new branch]        agent/sign-mot-getroutes-shortcut-20261017 -> origin/agent/sign-mot-getroutes-shortcut-20261017
+2026-11-23T03:50:50.3923273Z  * [new branch]        agent/team-orchestration-20261018 -> origin/agent/team-orchestration-20261018
+2026-11-23T03:50:50.3923631Z  * [new branch]        agent/transit-18-case-simulator-20261101 -> origin/agent/transit-18-case-simulator-20261101
+2026-11-23T03:50:50.3924024Z  * [new branch]        apple-actions-pack-pure-core-20261022 -> origin/apple-actions-pack-pure-core-20261022
+2026-11-23T03:50:50.3924435Z  * [new branch]        audit/cherri-consumer-pair-proof-20261122 -> origin/audit/cherri-consumer-pair-proof-20261122
+2026-11-23T03:50:50.3924835Z  * [new branch]        audit/cherri-consumer-repairs-20261122 -> origin/audit/cherri-consumer-repairs-20261122
+2026-11-23T03:50:50.3925227Z  * [new branch]        audit/cherri-full-suite-parallel-20261122 -> origin/audit/cherri-full-suite-parallel-20261122
+2026-11-23T03:50:50.3925700Z  * [new branch]        audit/cherri-function-usage-20261122 -> origin/audit/cherri-function-usage-20261122
+2026-11-23T03:50:50.3926121Z  * [new branch]        audit/cherri-p10r15-actions-app-negatives-20261121 -> origin/audit/cherri-p10r15-actions-app-negatives-20261121
+2026-11-23T03:50:50.3926613Z  * [new branch]        audit/cherri-p10r15-actionsapp-descriptor-ci-20261122 -> origin/audit/cherri-p10r15-actionsapp-descriptor-ci-20261122
+2026-11-23T03:50:50.3927067Z  * [new branch]        audit/cherri-p10r15-ai-acceptance-20261122 -> origin/audit/cherri-p10r15-ai-acceptance-20261122
+2026-11-23T03:50:50.3927483Z  * [new branch]        audit/cherri-p10r15-ai-acceptance-ci-20261122 -> origin/audit/cherri-p10r15-ai-acceptance-ci-20261122
+2026-11-23T03:50:50.3927945Z  * [new branch]        audit/cherri-p10r15-ai-acceptance-combined-20261122 -> origin/audit/cherri-p10r15-ai-acceptance-combined-20261122
+2026-11-23T03:50:50.3928413Z  * [new branch]        audit/cherri-p10r15-ai-acceptance-proof-20261122 -> origin/audit/cherri-p10r15-ai-acceptance-proof-20261122
+2026-11-23T03:50:50.3928849Z  * [new branch]        audit/cherri-p10r15-ai-evaluation-20261121 -> origin/audit/cherri-p10r15-ai-evaluation-20261121
+2026-11-23T03:50:50.3929447Z  * [new branch]        audit/cherri-p10r15-ai-provider-20261121 -> origin/audit/cherri-p10r15-ai-provider-20261121
+2026-11-23T03:50:50.3930110Z  * [new branch]        audit/cherri-p10r15-ai-python-root-proof-20261122 -> origin/audit/cherri-p10r15-ai-python-root-proof-20261122
+2026-11-23T03:50:50.3930912Z  * [new branch]        audit/cherri-p10r15-apple-headless-20261121 -> origin/audit/cherri-p10r15-apple-headless-20261121
+2026-11-23T03:50:50.3931469Z  * [new branch]        audit/cherri-p10r15-apple-inventory-20261121 -> origin/audit/cherri-p10r15-apple-inventory-20261121
+2026-11-23T03:50:50.3931899Z  * [new branch]        audit/cherri-p10r15-apple-k2-c543d900-20261121 -> origin/audit/cherri-p10r15-apple-k2-c543d900-20261121
+2026-11-23T03:50:50.3932334Z  * [new branch]        audit/cherri-p10r15-apple-k2-evidence-20261121 -> origin/audit/cherri-p10r15-apple-k2-evidence-20261121
+2026-11-23T03:50:50.3932773Z  * [new branch]        audit/cherri-p10r15-apple-source-guard-20261122 -> origin/audit/cherri-p10r15-apple-source-guard-20261122
+2026-11-23T03:50:50.3933202Z  * [new branch]        audit/cherri-p10r15-arithmetic-ci-20261122 -> origin/audit/cherri-p10r15-arithmetic-ci-20261122
+2026-11-23T03:50:50.3933630Z  * [new branch]        audit/cherri-p10r15-arithmetic-combined-20261121 -> origin/audit/cherri-p10r15-arithmetic-combined-20261121
+2026-11-23T03:50:50.3934134Z  * [new branch]        audit/cherri-p10r15-brg11-20261122 -> origin/audit/cherri-p10r15-brg11-20261122
+2026-11-23T03:50:50.3934516Z  * [new branch]        audit/cherri-p10r15-date-field-native-20261120 -> origin/audit/cherri-p10r15-date-field-native-20261120
+2026-11-23T03:50:50.3934971Z  * [new branch]        audit/cherri-p10r15-date-runtime-fixed-20261120 -> origin/audit/cherri-p10r15-date-runtime-fixed-20261120
+2026-11-23T03:50:50.3935437Z  * [new branch]        audit/cherri-p10r15-docs-producers-r5-20261120 -> origin/audit/cherri-p10r15-docs-producers-r5-20261120
+2026-11-23T03:50:50.3935879Z  * [new branch]        audit/cherri-p10r15-editor-mac094-proof-20261122 -> origin/audit/cherri-p10r15-editor-mac094-proof-20261122
+2026-11-23T03:50:50.3936343Z  * [new branch]        audit/cherri-p10r15-file-observed-prepare-20261122 -> origin/audit/cherri-p10r15-file-observed-prepare-20261122
+2026-11-23T03:50:50.3936840Z  * [new branch]        audit/cherri-p10r15-file-source-guard-dispatch-20261122 -> origin/audit/cherri-p10r15-file-source-guard-dispatch-20261122
+2026-11-23T03:50:50.3937301Z  * [new branch]        audit/cherri-p10r15-fn05-proof-20261122 -> origin/audit/cherri-p10r15-fn05-proof-20261122
+2026-11-23T03:50:50.3937727Z  * [new branch]        audit/cherri-p10r15-function-envelope-ci-20261122 -> origin/audit/cherri-p10r15-function-envelope-ci-20261122
+2026-11-23T03:50:50.3938415Z  * [new branch]        audit/cherri-p10r15-function-envelope-dual-marker-source-20261122 -> origin/audit/cherri-p10r15-function-envelope-dual-marker-source-20261122
+2026-11-23T03:50:50.3938996Z  * [new branch]        audit/cherri-p10r15-function-envelope-focused-ci-20261122 -> origin/audit/cherri-p10r15-function-envelope-focused-ci-20261122
+2026-11-23T03:50:50.3939572Z  * [new branch]        audit/cherri-p10r15-function-envelope-python-correction-20261122 -> origin/audit/cherri-p10r15-function-envelope-python-correction-20261122
+2026-11-23T03:50:50.3940124Z  * [new branch]        audit/cherri-p10r15-function-envelope-source-20261122 -> origin/audit/cherri-p10r15-function-envelope-source-20261122
+2026-11-23T03:50:50.3940720Z  * [new branch]        audit/cherri-p10r15-index-arithmetic-20261122 -> origin/audit/cherri-p10r15-index-arithmetic-20261122
+2026-11-23T03:50:50.3941162Z  * [new branch]        audit/cherri-p10r15-index-arithmetic-fix-20261122 -> origin/audit/cherri-p10r15-index-arithmetic-fix-20261122
+2026-11-23T03:50:50.3941581Z  * [new branch]        audit/cherri-p10r15-index-ci-20261122 -> origin/audit/cherri-p10r15-index-ci-20261122
+2026-11-23T03:50:50.3941955Z  * [new branch]        audit/cherri-p10r15-index-proof-20261122 -> origin/audit/cherri-p10r15-index-proof-20261122
+2026-11-23T03:50:50.3942366Z  * [new branch]        audit/cherri-p10r15-json-body-runtime-20261120 -> origin/audit/cherri-p10r15-json-body-runtime-20261120
+2026-11-23T03:50:50.3942791Z  * [new branch]        audit/cherri-p10r15-json-file-body-20261120 -> origin/audit/cherri-p10r15-json-file-body-20261120
+2026-11-23T03:50:50.3943217Z  * [new branch]        audit/cherri-p10r15-json-null-native-20261120 -> origin/audit/cherri-p10r15-json-null-native-20261120
+2026-11-23T03:50:50.3943662Z  * [new branch]        audit/cherri-p10r15-k05-native-observer-20261121 -> origin/audit/cherri-p10r15-k05-native-observer-20261121
+2026-11-23T03:50:50.3944072Z  * [new branch]        audit/cherri-p10r15-m02-proof-20261120 -> origin/audit/cherri-p10r15-m02-proof-20261120
+2026-11-23T03:50:50.3944456Z  * [new branch]        audit/cherri-p10r15-m02-source-20261120 -> origin/audit/cherri-p10r15-m02-source-20261120
+2026-11-23T03:50:50.3944845Z  * [new branch]        audit/cherri-p10r15-mac-phase-run-20261122 -> origin/audit/cherri-p10r15-mac-phase-run-20261122
+2026-11-23T03:50:50.3945259Z  * [new branch]        audit/cherri-p10r15-mac-phase-source-20261122 -> origin/audit/cherri-p10r15-mac-phase-source-20261122
+2026-11-23T03:50:50.3945728Z  * [new branch]        audit/cherri-p10r15-optional-callback-control-20261122 -> origin/audit/cherri-p10r15-optional-callback-control-20261122
+2026-11-23T03:50:50.3946353Z  * [new branch]        audit/cherri-p10r15-optional-destination-readiness-20261120 -> origin/audit/cherri-p10r15-optional-destination-readiness-20261120
+2026-11-23T03:50:50.3946825Z  * [new branch]        audit/cherri-p10r15-optional-qa-20261120 -> origin/audit/cherri-p10r15-optional-qa-20261120
+2026-11-23T03:50:50.3947265Z  * [new branch]        audit/cherri-p10r15-oracle-source-inventory-20261121 -> origin/audit/cherri-p10r15-oracle-source-inventory-20261121
+2026-11-23T03:50:50.3947714Z  * [new branch]        audit/cherri-p10r15-packaging-r2-20261120 -> origin/audit/cherri-p10r15-packaging-r2-20261120
+2026-11-23T03:50:50.3948173Z  * [new branch]        audit/cherri-p10r15-prerequisite-observer-4932-20261122 -> origin/audit/cherri-p10r15-prerequisite-observer-4932-20261122
+2026-11-23T03:50:50.3948646Z  * [new branch]        audit/cherri-p10r15-private-s3-proof-20261121 -> origin/audit/cherri-p10r15-private-s3-proof-20261121
+2026-11-23T03:50:50.3949047Z  * [new branch]        audit/cherri-p10r15-r23-fixture-20261122 -> origin/audit/cherri-p10r15-r23-fixture-20261122
+2026-11-23T03:50:50.3949465Z  * [new branch]        audit/cherri-p10r15-r23-fixture-proof-20261122 -> origin/audit/cherri-p10r15-r23-fixture-proof-20261122
+2026-11-23T03:50:50.3949869Z  * [new branch]        audit/cherri-p10r15-r3-results-20261120 -> origin/audit/cherri-p10r15-r3-results-20261120
+2026-11-23T03:50:50.3950330Z  * [new branch]        audit/cherri-p10r15-r4-consumers-20261120 -> origin/audit/cherri-p10r15-r4-consumers-20261120
+2026-11-23T03:50:50.3950967Z  * [new branch]        audit/cherri-p10r15-r4-integrated-core-20261120 -> origin/audit/cherri-p10r15-r4-integrated-core-20261120
+2026-11-23T03:50:50.3951404Z  * [new branch]        audit/cherri-p10r15-r4-legacy-parity-20261120 -> origin/audit/cherri-p10r15-r4-legacy-parity-20261120
+2026-11-23T03:50:50.3951833Z  * [new branch]        audit/cherri-p10r15-r4-local179-results-20261120 -> origin/audit/cherri-p10r15-r4-local179-results-20261120
+2026-11-23T03:50:50.3952313Z  * [new branch]        audit/cherri-p10r15-r4-macro-consumer-harness-20261120 -> origin/audit/cherri-p10r15-r4-macro-consumer-harness-20261120
+2026-11-23T03:50:50.3952781Z  * [new branch]        audit/cherri-p10r15-r4-s01-container-20261120 -> origin/audit/cherri-p10r15-r4-s01-container-20261120
+2026-11-23T03:50:50.3953188Z  * [new branch]        audit/cherri-p10r15-r4-setter-nil-20261120 -> origin/audit/cherri-p10r15-r4-setter-nil-20261120
+2026-11-23T03:50:50.3953660Z  * [new branch]        audit/cherri-p10r15-r4-signing-consumer-harness-20261120 -> origin/audit/cherri-p10r15-r4-signing-consumer-harness-20261120
+2026-11-23T03:50:50.3954193Z  * [new branch]        audit/cherri-p10r15-r4-signing-source-selection-20261120 -> origin/audit/cherri-p10r15-r4-signing-source-selection-20261120
+2026-11-23T03:50:50.3954639Z  * [new branch]        audit/cherri-p10r15-r4-source-20261120 -> origin/audit/cherri-p10r15-r4-source-20261120
+2026-11-23T03:50:50.3955028Z  * [new branch]        audit/cherri-p10r15-r5-integration-20261120 -> origin/audit/cherri-p10r15-r5-integration-20261120
+2026-11-23T03:50:50.3955441Z  * [new branch]        audit/cherri-p10r15-r6-integration-20261121 -> origin/audit/cherri-p10r15-r6-integration-20261121
+2026-11-23T03:50:50.3955847Z  * [new branch]        audit/cherri-p10r15-r7-integration-20261122 -> origin/audit/cherri-p10r15-r7-integration-20261122
+2026-11-23T03:50:50.3956249Z  * [new branch]        audit/cherri-p10r15-r8-integration-20261123 -> origin/audit/cherri-p10r15-r8-integration-20261123
+2026-11-23T03:50:50.3956612Z  * [new branch]        audit/cherri-p10r15-rp24-20261122 -> origin/audit/cherri-p10r15-rp24-20261122
+2026-11-23T03:50:50.3956944Z  * [new branch]        audit/cherri-p10r15-rp25-20261122 -> origin/audit/cherri-p10r15-rp25-20261122
+2026-11-23T03:50:50.3957347Z  * [new branch]        audit/cherri-p10r15-s01-absent-range-intel-20261120 -> origin/audit/cherri-p10r15-s01-absent-range-intel-20261120
+2026-11-23T03:50:50.3957822Z  * [new branch]        audit/cherri-p10r15-s01-absent-range-probe-20261120 -> origin/audit/cherri-p10r15-s01-absent-range-probe-20261120
+2026-11-23T03:50:50.3958362Z  * [new branch]        audit/cherri-p10r15-s01-field-probe-20261120 -> origin/audit/cherri-p10r15-s01-field-probe-20261120
+2026-11-23T03:50:50.3958788Z  * [new branch]        audit/cherri-p10r15-s01-native-probe-20261120 -> origin/audit/cherri-p10r15-s01-native-probe-20261120
+2026-11-23T03:50:50.3959245Z  * [new branch]        audit/cherri-p10r15-startup-completed-wait-20261120 -> origin/audit/cherri-p10r15-startup-completed-wait-20261120
+2026-11-23T03:50:50.3959716Z  * [new branch]        audit/cherri-p10r15-startup-lazy-preview-20261120 -> origin/audit/cherri-p10r15-startup-lazy-preview-20261120
+2026-11-23T03:50:50.3960231Z  * [new branch]        audit/cherri-p10r15-startup-lifecycle-observation-20261120 -> origin/audit/cherri-p10r15-startup-lifecycle-observation-20261120
+2026-11-23T03:50:50.3960896Z  * [new branch]        audit/cherri-p10r15-startup-typed-query-20261120 -> origin/audit/cherri-p10r15-startup-typed-query-20261120
+2026-11-23T03:50:50.3961358Z  * [new branch]        audit/cherri-p10r15-value-block-combined-20261121 -> origin/audit/cherri-p10r15-value-block-combined-20261121
+2026-11-23T03:50:50.3961798Z  * [new branch]        audit/cherri-p10r15-valueblock-ci-20261122 -> origin/audit/cherri-p10r15-valueblock-ci-20261122
+2026-11-23T03:50:50.3962328Z  * [new branch]        audit/cherri-p10r15-valueblock-clipboard-fix-20261122 -> origin/audit/cherri-p10r15-valueblock-clipboard-fix-20261122
+2026-11-23T03:50:50.3962843Z  * [new branch]        audit/cherri-p10r15-xcode-destination-readiness-20261120 -> origin/audit/cherri-p10r15-xcode-destination-readiness-20261120
+2026-11-23T03:50:50.3963265Z  * [new branch]        chatgpt/mozilla-reader-build -> origin/chatgpt/mozilla-reader-build
+2026-11-23T03:50:50.3963548Z  * [new branch]        cloud-cherri-relay      -> origin/cloud-cherri-relay
+2026-11-23T03:50:50.3963925Z  * [new branch]        cloud-cherri-request/compile-20261014-maplookup-a8c2f9 -> origin/cloud-cherri-request/compile-20261014-maplookup-a8c2f9
+2026-11-23T03:50:50.3964425Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-maps-4ca89d -> origin/cloud-cherri-request/compile-20261014-zip-maps-4ca89d
+2026-11-23T03:50:50.3964916Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-maps-84de72 -> origin/cloud-cherri-request/compile-20261014-zip-maps-84de72
+2026-11-23T03:50:50.3965384Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v1 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v1
+2026-11-23T03:50:50.3965826Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v2 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v2
+2026-11-23T03:50:50.3966267Z  * [new branch]        cloud-cherri-request/compile-20261014-zip-menu-v3 -> origin/cloud-cherri-request/compile-20261014-zip-menu-v3
+2026-11-23T03:50:50.3966714Z  * [new branch]        cloud-cherri-request/compile-smoketest-20261014 -> origin/cloud-cherri-request/compile-smoketest-20261014
+2026-11-23T03:50:50.3967219Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-map168-d7b820 -> origin/cloud-cherri-request/sign-20261014-zip-map168-d7b820
+2026-11-23T03:50:50.3967956Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-navigator-icons -> origin/cloud-cherri-request/sign-20261014-zip-navigator-icons
+2026-11-23T03:50:50.3968705Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-navigator-v1 -> origin/cloud-cherri-request/sign-20261014-zip-navigator-v1
+2026-11-23T03:50:50.3969390Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-share -> origin/cloud-cherri-request/sign-20261014-zip-share
+2026-11-23T03:50:50.3970080Z  * [new branch]        cloud-cherri-request/sign-20261014-zip-share-headless -> origin/cloud-cherri-request/sign-20261014-zip-share-headless
+2026-11-23T03:50:50.3970909Z  * [new branch]        cloud-cherri-request/sign-mactest-20261014 -> origin/cloud-cherri-request/sign-mactest-20261014
+2026-11-23T03:50:50.3971719Z  * [new branch]        cloud-cherri-request/sign-smoketest-20261014 -> origin/cloud-cherri-request/sign-smoketest-20261014
+2026-11-23T03:50:50.3972402Z  * [new branch]        cloud-cherri-request/simulate-smoketest-20261014 -> origin/cloud-cherri-request/simulate-smoketest-20261014
+2026-11-23T03:50:50.3972965Z  * [new branch]        cloud-cherri-requests   -> origin/cloud-cherri-requests
+2026-11-23T03:50:50.3973597Z  * [new branch]        codex/local-backup-20261109/agent/lumen-ios27-storage-20261025 -> origin/codex/local-backup-20261109/agent/lumen-ios27-storage-20261025
+2026-11-23T03:50:50.3974350Z  * [new branch]        experiment/macos-shortcuts-engine-probe -> origin/experiment/macos-shortcuts-engine-probe
+2026-11-23T03:50:50.3974925Z  * [new branch]        handoff/cherri-p10r15-20261119 -> origin/handoff/cherri-p10r15-20261119
+2026-11-23T03:50:50.3975526Z  * [new branch]        handoff/cherri-p10r15-recovery-20261120-1436 -> origin/handoff/cherri-p10r15-recovery-20261120-1436
+2026-11-23T03:50:50.3976035Z  * [new branch]        main                    -> origin/main
+2026-11-23T03:50:50.3976558Z  * [new branch]        probe/cherri-p10r15-cli-output-evidence-20261120 -> origin/probe/cherri-p10r15-cli-output-evidence-20261120
+2026-11-23T03:50:50.3977272Z  * [new branch]        probe/cherri-p10r15-packaging-evidence-20261120 -> origin/probe/cherri-p10r15-packaging-evidence-20261120
+2026-11-23T03:50:50.3978082Z  * [new branch]        probe/cherri-p10r15-state-race-20261119 -> origin/probe/cherri-p10r15-state-race-20261119
+2026-11-23T03:50:50.3978715Z  * [new branch]        staging/cherri-p10r15-asset-service-20261119 -> origin/staging/cherri-p10r15-asset-service-20261119
+2026-11-23T03:50:50.3979413Z  * [new branch]        staging/cherri-p10r15-binding-defaults-20261119 -> origin/staging/cherri-p10r15-binding-defaults-20261119
+2026-11-23T03:50:50.3980123Z  * [new branch]        staging/cherri-p10r15-binding-native-20261119 -> origin/staging/cherri-p10r15-binding-native-20261119
+2026-11-23T03:50:50.3980966Z  * [new branch]        staging/cherri-p10r15-binding-producers-20261119 -> origin/staging/cherri-p10r15-binding-producers-20261119
+2026-11-23T03:50:50.3981508Z  * [new branch]        staging/cherri-p10r15-ci-consumers-20261119 -> origin/staging/cherri-p10r15-ci-consumers-20261119
+2026-11-23T03:50:50.3981955Z  * [new branch]        staging/cherri-p10r15-collect-count-proof-20261118 -> origin/staging/cherri-p10r15-collect-count-proof-20261118
+2026-11-23T03:50:50.3982440Z  * [new branch]        staging/cherri-p10r15-compiler-7b0100a-20261119 -> origin/staging/cherri-p10r15-compiler-7b0100a-20261119
+2026-11-23T03:50:50.3982934Z  * [new branch]        staging/cherri-p10r15-compiler-8b3fcf7-20261119 -> origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-23T03:50:50.3983375Z  * [new branch]        staging/cherri-p10r15-compiler-b34ae47-20261119 -> origin/staging/cherri-p10r15-compiler-b34ae47-20261119
+2026-11-23T03:50:50.3983817Z  * [new branch]        staging/cherri-p10r15-compiler-b97ae75-20261119 -> origin/staging/cherri-p10r15-compiler-b97ae75-20261119
+2026-11-23T03:50:50.3984256Z  * [new branch]        staging/cherri-p10r15-consumer-28bc5fa-20261119 -> origin/staging/cherri-p10r15-consumer-28bc5fa-20261119
+2026-11-23T03:50:50.3984695Z  * [new branch]        staging/cherri-p10r15-consumer-7546d02-20261119 -> origin/staging/cherri-p10r15-consumer-7546d02-20261119
+2026-11-23T03:50:50.3985125Z  * [new branch]        staging/cherri-p10r15-custom-codec-20261119 -> origin/staging/cherri-p10r15-custom-codec-20261119
+2026-11-23T03:50:50.3985625Z  * [new branch]        staging/cherri-p10r15-custom-codec-contracts-20261119 -> origin/staging/cherri-p10r15-custom-codec-contracts-20261119
+2026-11-23T03:50:50.3986541Z  * [new branch]        staging/cherri-p10r15-debug-export-file-20261119 -> origin/staging/cherri-p10r15-debug-export-file-20261119
+2026-11-23T03:50:50.3987284Z  * [new branch]        staging/cherri-p10r15-declaration-trigger-20261119 -> origin/staging/cherri-p10r15-declaration-trigger-20261119
+2026-11-23T03:50:50.3988173Z  * [new branch]        staging/cherri-p10r15-distance-native-proof-20261118 -> origin/staging/cherri-p10r15-distance-native-proof-20261118
+2026-11-23T03:50:50.3988831Z  * [new branch]        staging/cherri-p10r15-docs-intake-20261119 -> origin/staging/cherri-p10r15-docs-intake-20261119
+2026-11-23T03:50:50.3989487Z  * [new branch]        staging/cherri-p10r15-evidence-go-isolation-20261119 -> origin/staging/cherri-p10r15-evidence-go-isolation-20261119
+2026-11-23T03:50:50.3990171Z  * [new branch]        staging/cherri-p10r15-evidence-r11-20261118 -> origin/staging/cherri-p10r15-evidence-r11-20261118
+2026-11-23T03:50:50.3990890Z  * [new branch]        staging/cherri-p10r15-f04-native-20261119 -> origin/staging/cherri-p10r15-f04-native-20261119
+2026-11-23T03:50:50.3991563Z  * [new branch]        staging/cherri-p10r15-f04-native-boundary-20261119 -> origin/staging/cherri-p10r15-f04-native-boundary-20261119
+2026-11-23T03:50:50.3992265Z  * [new branch]        staging/cherri-p10r15-f04-record-empty-20261119 -> origin/staging/cherri-p10r15-f04-record-empty-20261119
+2026-11-23T03:50:50.3992959Z  * [new branch]        staging/cherri-p10r15-file-extension-20261119 -> origin/staging/cherri-p10r15-file-extension-20261119
+2026-11-23T03:50:50.3993662Z  * [new branch]        staging/cherri-p10r15-import-foreground-20261119 -> origin/staging/cherri-p10r15-import-foreground-20261119
+2026-11-23T03:50:50.3994569Z  * [new branch]        staging/cherri-p10r15-import-foreground-25599d4-20261119 -> origin/staging/cherri-p10r15-import-foreground-25599d4-20261119
+2026-11-23T03:50:50.3995656Z  * [new branch]        staging/cherri-p10r15-index-proof-20261118 -> origin/staging/cherri-p10r15-index-proof-20261118
+2026-11-23T03:50:50.3996490Z  * [new branch]        staging/cherri-p10r15-integration-20261119 -> origin/staging/cherri-p10r15-integration-20261119
+2026-11-23T03:50:50.4015245Z  * [new branch]        staging/cherri-p10r15-ios-docs-canonical-20261119 -> origin/staging/cherri-p10r15-ios-docs-canonical-20261119
+2026-11-23T03:50:50.4016077Z  * [new branch]        staging/cherri-p10r15-ios-docs-d37b433-20261119 -> origin/staging/cherri-p10r15-ios-docs-d37b433-20261119
+2026-11-23T03:50:50.4016786Z  * [new branch]        staging/cherri-p10r15-ios-docs-evidence-20261119 -> origin/staging/cherri-p10r15-ios-docs-evidence-20261119
+2026-11-23T03:50:50.4017488Z  * [new branch]        staging/cherri-p10r15-ios-docs-wired-20261119 -> origin/staging/cherri-p10r15-ios-docs-wired-20261119
+2026-11-23T03:50:50.4018168Z  * [new branch]        staging/cherri-p10r15-ios-startup-20261119 -> origin/staging/cherri-p10r15-ios-startup-20261119
+2026-11-23T03:50:50.4018871Z  * [new branch]        staging/cherri-p10r15-ios-startup-ddc6c02-20261119 -> origin/staging/cherri-p10r15-ios-startup-ddc6c02-20261119
+2026-11-23T03:50:50.4019654Z  * [new branch]        staging/cherri-p10r15-lang002-reference-20261119 -> origin/staging/cherri-p10r15-lang002-reference-20261119
+2026-11-23T03:50:50.4020826Z  * [new branch]        staging/cherri-p10r15-legacy-inline-proof-20261118 -> origin/staging/cherri-p10r15-legacy-inline-proof-20261118
+2026-11-23T03:50:50.4021772Z  * [new branch]        staging/cherri-p10r15-legacy-native-numbers-20261119 -> origin/staging/cherri-p10r15-legacy-native-numbers-20261119
+2026-11-23T03:50:50.4022698Z  * [new branch]        staging/cherri-p10r15-local-contracts-20261119 -> origin/staging/cherri-p10r15-local-contracts-20261119
+2026-11-23T03:50:50.4023456Z  * [new branch]        staging/cherri-p10r15-local-scenarios-20261119 -> origin/staging/cherri-p10r15-local-scenarios-20261119
+2026-11-23T03:50:50.4024227Z  * [new branch]        staging/cherri-p10r15-menus-asset-fixture-20261119 -> origin/staging/cherri-p10r15-menus-asset-fixture-20261119
+2026-11-23T03:50:50.4024987Z  * [new branch]        staging/cherri-p10r15-module-contracts-20261119 -> origin/staging/cherri-p10r15-module-contracts-20261119
+2026-11-23T03:50:50.4025726Z  * [new branch]        staging/cherri-p10r15-native-audit-proof-20261118 -> origin/staging/cherri-p10r15-native-audit-proof-20261118
+2026-11-23T03:50:50.4026891Z  * [new branch]        staging/cherri-p10r15-native-boundary-20261119 -> origin/staging/cherri-p10r15-native-boundary-20261119
+2026-11-23T03:50:50.4027701Z  * [new branch]        staging/cherri-p10r15-native-boundary-f7f1447-20261119 -> origin/staging/cherri-p10r15-native-boundary-f7f1447-20261119
+2026-11-23T03:50:50.4028507Z  * [new branch]        staging/cherri-p10r15-native-reporting-proof-20261118 -> origin/staging/cherri-p10r15-native-reporting-proof-20261118
+2026-11-23T03:50:50.4029285Z  * [new branch]        staging/cherri-p10r15-number-coercion-20261118 -> origin/staging/cherri-p10r15-number-coercion-20261118
+2026-11-23T03:50:50.4029785Z  * [new branch]        staging/cherri-p10r15-number-coercion-native-20261119 -> origin/staging/cherri-p10r15-number-coercion-native-20261119
+2026-11-23T03:50:50.4030271Z  * [new branch]        staging/cherri-p10r15-number-coercion-proof-20261118 -> origin/staging/cherri-p10r15-number-coercion-proof-20261118
+2026-11-23T03:50:50.4030925Z  * [new branch]        staging/cherri-p10r15-output-isolation-20261119 -> origin/staging/cherri-p10r15-output-isolation-20261119
+2026-11-23T03:50:50.4031581Z  * [new branch]        staging/cherri-p10r15-presence-proof-20261118 -> origin/staging/cherri-p10r15-presence-proof-20261118
+2026-11-23T03:50:50.4032303Z  * [new branch]        staging/cherri-p10r15-promotion-package-fix-20261119 -> origin/staging/cherri-p10r15-promotion-package-fix-20261119
+2026-11-23T03:50:50.4033240Z  * [new branch]        staging/cherri-p10r15-prompt-number-proof-20261118 -> origin/staging/cherri-p10r15-prompt-number-proof-20261118
+2026-11-23T03:50:50.4033916Z  * [new branch]        staging/cherri-p10r15-registry-proof-20261118 -> origin/staging/cherri-p10r15-registry-proof-20261118
+2026-11-23T03:50:50.4034361Z  * [new branch]        staging/cherri-p10r15-required-encodings-20261119 -> origin/staging/cherri-p10r15-required-encodings-20261119
+2026-11-23T03:50:50.4034782Z  * [new branch]        staging/cherri-p10r15-source-r10-20261118 -> origin/staging/cherri-p10r15-source-r10-20261118
+2026-11-23T03:50:50.4035233Z  * [new branch]        staging/cherri-p10r15-storage-retry-contracts-20261119 -> origin/staging/cherri-p10r15-storage-retry-contracts-20261119
+2026-11-23T03:50:50.4035740Z  * [new branch]        staging/cherri-p10r15-supplemental-acceptance-20261119 -> origin/staging/cherri-p10r15-supplemental-acceptance-20261119
+2026-11-23T03:50:50.4036221Z  * [new branch]        staging/cherri-p10r15-supplemental-meta-20261119 -> origin/staging/cherri-p10r15-supplemental-meta-20261119
+2026-11-23T03:50:50.4036665Z  * [new branch]        staging/cherri-p10r15-supplemental-next-20261119 -> origin/staging/cherri-p10r15-supplemental-next-20261119
+2026-11-23T03:50:50.4037125Z  * [new branch]        staging/cherri-p10r15-unicode-diagnostic-20261119 -> origin/staging/cherri-p10r15-unicode-diagnostic-20261119
+2026-11-23T03:50:50.4037564Z  * [new branch]        staging/cherri-p10r15-unicode-proof-20261118 -> origin/staging/cherri-p10r15-unicode-proof-20261118
+2026-11-23T03:50:50.4037988Z  * [new branch]        staging/cherri-p10r15-variadic-proof-20261118 -> origin/staging/cherri-p10r15-variadic-proof-20261118
+2026-11-23T03:50:50.4038327Z  * [new branch]        sync/upstream-2026-10   -> origin/sync/upstream-2026-10
+2026-11-23T03:50:50.4038656Z  * [new branch]        upstream-pure-cherri-original-20261022 -> origin/upstream-pure-cherri-original-20261022
+2026-11-23T03:50:50.4039557Z [command]/usr/bin/git branch --list --remote origin/agent/cherri-p10r15-k11-verification-20261123
+2026-11-23T03:50:50.4039915Z   origin/agent/cherri-p10r15-k11-verification-20261123
+2026-11-23T03:50:50.4040541Z [command]/usr/bin/git rev-parse refs/remotes/origin/agent/cherri-p10r15-k11-verification-20261123
+2026-11-23T03:50:50.4040873Z 9b4135e705b08f765b7304e01212d3b9658806fb
+2026-11-23T03:50:50.4041293Z ##[endgroup]
+2026-11-23T03:50:50.4041508Z ##[group]Determining the checkout info
+2026-11-23T03:50:50.4041733Z ##[endgroup]
+2026-11-23T03:50:50.4041869Z [command]/usr/bin/git sparse-checkout disable
+2026-11-23T03:50:50.4061199Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-23T03:50:50.4086354Z ##[group]Checking out the ref
+2026-11-23T03:50:50.4088921Z [command]/usr/bin/git checkout --progress --force -B agent/cherri-p10r15-k11-verification-20261123 refs/remotes/origin/agent/cherri-p10r15-k11-verification-20261123
+2026-11-23T03:50:50.9959707Z Switched to a new branch 'agent/cherri-p10r15-k11-verification-20261123'
+2026-11-23T03:50:50.9991368Z branch 'agent/cherri-p10r15-k11-verification-20261123' set up to track 'origin/agent/cherri-p10r15-k11-verification-20261123'.
+2026-11-23T03:50:51.0037477Z ##[endgroup]
+2026-11-23T03:50:51.0085072Z [command]/usr/bin/git log -1 --format=%H
+2026-11-23T03:50:51.0108938Z 9b4135e705b08f765b7304e01212d3b9658806fb
+2026-11-23T03:50:51.0605616Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-23T03:50:51.0605829Z with:
+2026-11-23T03:50:51.0605947Z   event: refresh
+2026-11-23T03:50:51.0606174Z   device_id: ***
+2026-11-23T03:50:51.0606301Z   token: ***
+2026-11-23T03:50:51.0607595Z   github_token: ***
+2026-11-23T03:50:51.0607718Z ##[endgroup]
+2026-11-23T03:50:51.8229590Z ##[group]Run actions/setup-go@v6
+2026-11-23T03:50:51.8229748Z with:
+2026-11-23T03:50:51.8229870Z   go-version: 1.24.x
+2026-11-23T03:50:51.8229995Z   check-latest: false
+2026-11-23T03:50:51.8231728Z   token: ***
+2026-11-23T03:50:51.8231842Z   cache: true
+2026-11-23T03:50:51.8231951Z ##[endgroup]
+2026-11-23T03:50:51.9062170Z Setup go version spec 1.24.x
+2026-11-23T03:50:51.9176134Z Attempting to download 1.24.x...
+2026-11-23T03:50:52.5930313Z matching 1.24.x...
+2026-11-23T03:50:52.5953458Z Acquiring 1.24.13 from https://github.com/actions/go-versions/releases/download/1.24.13-21696107652/go-1.24.13-linux-x64.tar.gz
+2026-11-23T03:50:53.2568561Z Extracting Go...
+2026-11-23T03:50:53.2653260Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/58d039f7-3f07-4003-8007-b8f3e0cbb69b -f /home/runner/work/_temp/d520d53c-7b4d-436b-911b-f2a310ffee29
+2026-11-23T03:50:54.1807400Z Successfully extracted go to /home/runner/work/_temp/58d039f7-3f07-4003-8007-b8f3e0cbb69b
+2026-11-23T03:50:54.1807824Z Adding to the cache ...
+2026-11-23T03:50:57.7464939Z Successfully cached go to /opt/hostedtoolcache/go/1.24.13/x64
+2026-11-23T03:50:57.7465977Z Added go to the path
+2026-11-23T03:50:57.7467889Z Successfully set up Go version 1.24.x
+2026-11-23T03:50:57.7644284Z [command]/opt/hostedtoolcache/go/1.24.13/x64/bin/go env GOMODCACHE
+2026-11-23T03:50:57.7681821Z [command]/opt/hostedtoolcache/go/1.24.13/x64/bin/go env GOCACHE
+2026-11-23T03:50:57.7719872Z /home/runner/go/pkg/mod
+2026-11-23T03:50:57.7732606Z /home/runner/.cache/go-build
+2026-11-23T03:50:57.9093752Z Cache is not found
+2026-11-23T03:50:57.9113028Z go version go1.24.13 linux/amd64
+2026-11-23T03:50:57.9113173Z 
+2026-11-23T03:50:57.9113357Z ##[group]go env
+2026-11-23T03:50:58.6165013Z AR='ar'
+2026-11-23T03:50:58.6165261Z CC='gcc'
+2026-11-23T03:50:58.6165544Z CGO_CFLAGS='-O2 -g'
+2026-11-23T03:50:58.6165724Z CGO_CPPFLAGS=''
+2026-11-23T03:50:58.6165857Z CGO_CXXFLAGS='-O2 -g'
+2026-11-23T03:50:58.6166030Z CGO_ENABLED='1'
+2026-11-23T03:50:58.6166152Z CGO_FFLAGS='-O2 -g'
+2026-11-23T03:50:58.6166275Z CGO_LDFLAGS='-O2 -g'
+2026-11-23T03:50:58.6166395Z CXX='g++'
+2026-11-23T03:50:58.6166509Z GCCGO='gccgo'
+2026-11-23T03:50:58.6166629Z GO111MODULE=''
+2026-11-23T03:50:58.6166751Z GOAMD64='v1'
+2026-11-23T03:50:58.6166860Z GOARCH='amd64'
+2026-11-23T03:50:58.6166968Z GOAUTH='netrc'
+2026-11-23T03:50:58.6167079Z GOBIN=''
+2026-11-23T03:50:58.6167211Z GOCACHE='/home/runner/.cache/go-build'
+2026-11-23T03:50:58.6167372Z GOCACHEPROG=''
+2026-11-23T03:50:58.6167486Z GODEBUG=''
+2026-11-23T03:50:58.6167611Z GOENV='/home/runner/.config/go/env'
+2026-11-23T03:50:58.6167754Z GOEXE=''
+2026-11-23T03:50:58.6167867Z GOEXPERIMENT=''
+2026-11-23T03:50:58.6167982Z GOFIPS140='off'
+2026-11-23T03:50:58.6168095Z GOFLAGS=''
+2026-11-23T03:50:58.6168491Z GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build1846621369=/tmp/go-build -gno-record-gcc-switches'
+2026-11-23T03:50:58.6168854Z GOHOSTARCH='amd64'
+2026-11-23T03:50:58.6168975Z GOHOSTOS='linux'
+2026-11-23T03:50:58.6169090Z GOINSECURE=''
+2026-11-23T03:50:58.6169225Z GOMOD='/home/runner/work/cherri/cherri/go.mod'
+2026-11-23T03:50:58.6169515Z GOMODCACHE='/home/runner/go/pkg/mod'
+2026-11-23T03:50:58.6169742Z GONOPROXY=''
+2026-11-23T03:50:58.6169914Z GONOSUMDB=''
+2026-11-23T03:50:58.6170076Z GOOS='linux'
+2026-11-23T03:50:58.6170270Z GOPATH='/home/runner/go'
+2026-11-23T03:50:58.6170576Z GOPRIVATE=''
+2026-11-23T03:50:58.6170824Z GOPROXY='https://proxy.golang.org,direct'
+2026-11-23T03:50:58.6171134Z GOROOT='/opt/hostedtoolcache/go/1.24.13/x64'
+2026-11-23T03:50:58.6171354Z GOSUMDB='sum.golang.org'
+2026-11-23T03:50:58.6171491Z GOTELEMETRY='local'
+2026-11-23T03:50:58.6171643Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+2026-11-23T03:50:58.6171811Z GOTMPDIR=''
+2026-11-23T03:50:58.6171925Z GOTOOLCHAIN='local'
+2026-11-23T03:50:58.6172106Z GOTOOLDIR='/opt/hostedtoolcache/go/1.24.13/x64/pkg/tool/linux_amd64'
+2026-11-23T03:50:58.6172310Z GOVCS=''
+2026-11-23T03:50:58.6172680Z GOVERSION='go1.24.13'
+2026-11-23T03:50:58.6172801Z GOWORK=''
+2026-11-23T03:50:58.6172921Z PKG_CONFIG='pkg-config'
+2026-11-23T03:50:58.6173011Z 
+2026-11-23T03:50:58.6173290Z ##[endgroup]
+2026-11-23T03:50:58.6354894Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-23T03:50:58.6355225Z with:
+2026-11-23T03:50:58.6355339Z   event: refresh
+2026-11-23T03:50:58.6355559Z   device_id: ***
+2026-11-23T03:50:58.6355683Z   token: ***
+2026-11-23T03:50:58.6357048Z   github_token: ***
+2026-11-23T03:50:58.6357163Z env:
+2026-11-23T03:50:58.6357272Z   GOTOOLCHAIN: local
+2026-11-23T03:50:58.6357396Z ##[endgroup]
+2026-11-23T03:50:59.5416948Z ##[group]Run go test -run TestCherriNoSign -v ./...
+2026-11-23T03:50:59.5417235Z [36;1mgo test -run TestCherriNoSign -v ./...[0m
+2026-11-23T03:50:59.5417418Z [36;1mgo test -run TestDecomp -v ./...[0m
+2026-11-23T03:50:59.5447238Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:50:59.5447392Z env:
+2026-11-23T03:50:59.5447507Z   GOTOOLCHAIN: local
+2026-11-23T03:50:59.5447633Z ##[endgroup]
+2026-11-23T03:50:59.6453581Z go: downloading howett.net/plist v1.0.1
+2026-11-23T03:50:59.6775334Z go: downloading github.com/electrikmilk/args-parser v1.1.3
+2026-11-23T03:50:59.6795620Z go: downloading github.com/glebarez/go-sqlite v1.22.0
+2026-11-23T03:50:59.6796024Z go: downloading github.com/go-git/go-git/v5 v5.16.3
+2026-11-23T03:50:59.8248126Z go: downloading github.com/google/uuid v1.6.0
+2026-11-23T03:50:59.8400118Z go: downloading golang.org/x/sys v0.37.0
+2026-11-23T03:50:59.8421497Z go: downloading modernc.org/libc v1.37.6
+2026-11-23T03:50:59.9297125Z go: downloading modernc.org/sqlite v1.28.0
+2026-11-23T03:51:00.0494835Z go: downloading dario.cat/mergo v1.0.2
+2026-11-23T03:51:00.0933066Z go: downloading github.com/ProtonMail/go-crypto v1.3.0
+2026-11-23T03:51:00.1651217Z go: downloading github.com/go-git/go-billy/v5 v5.6.2
+2026-11-23T03:51:00.2287902Z go: downloading github.com/sergi/go-diff v1.4.0
+2026-11-23T03:51:00.3477792Z go: downloading golang.org/x/crypto v0.43.0
+2026-11-23T03:51:00.4910711Z go: downloading github.com/cyphar/filepath-securejoin v0.5.1
+2026-11-23T03:51:00.5320804Z go: downloading github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376
+2026-11-23T03:51:00.5321556Z go: downloading github.com/pjbgf/sha1cd v0.5.0
+2026-11-23T03:51:00.5452222Z go: downloading github.com/emirpasic/gods v1.18.1
+2026-11-23T03:51:00.5758145Z go: downloading github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
+2026-11-23T03:51:00.6101445Z go: downloading github.com/cloudflare/circl v1.6.1
+2026-11-23T03:51:00.9039868Z go: downloading github.com/dustin/go-humanize v1.0.1
+2026-11-23T03:51:00.9040268Z go: downloading github.com/mattn/go-isatty v0.0.20
+2026-11-23T03:51:00.9040850Z go: downloading modernc.org/mathutil v1.6.0
+2026-11-23T03:51:00.9482842Z go: downloading modernc.org/memory v1.7.2
+2026-11-23T03:51:00.9512373Z go: downloading gopkg.in/warnings.v0 v0.1.2
+2026-11-23T03:51:00.9530284Z go: downloading github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8
+2026-11-23T03:51:00.9903225Z go: downloading github.com/kevinburke/ssh_config v1.4.0
+2026-11-23T03:51:00.9908923Z go: downloading github.com/skeema/knownhosts v1.3.2
+2026-11-23T03:51:00.9950820Z go: downloading github.com/xanzy/ssh-agent v0.3.3
+2026-11-23T03:51:01.0315796Z go: downloading golang.org/x/net v0.46.0
+2026-11-23T03:51:01.0418718Z go: downloading github.com/klauspost/cpuid/v2 v2.3.0
+2026-11-23T03:51:01.1001370Z go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+2026-11-23T03:51:31.6351514Z === RUN   TestCherriNoSign
+2026-11-23T03:51:31.6381461Z tests/a11y.cherri
+2026-11-23T03:51:31.6382083Z ✅  PASSED
+2026-11-23T03:51:31.6382197Z 
+2026-11-23T03:51:31.6382291Z tests/ai.cherri
+2026-11-23T03:51:31.6382498Z ✅  PASSED
+2026-11-23T03:51:31.6382594Z 
+2026-11-23T03:51:31.6382686Z tests/arrays.cherri
+2026-11-23T03:51:31.6382892Z ✅  PASSED
+2026-11-23T03:51:31.6382994Z 
+2026-11-23T03:51:31.6383088Z tests/automations.cherri
+2026-11-23T03:51:31.6383337Z ✅  PASSED
+2026-11-23T03:51:31.6383428Z 
+2026-11-23T03:51:31.6383521Z tests/calendar.cherri
+2026-11-23T03:51:31.6383735Z ✅  PASSED
+2026-11-23T03:51:31.6383834Z 
+2026-11-23T03:51:31.6383931Z tests/conditionals.cherri
+2026-11-23T03:51:31.6384161Z ✅  PASSED
+2026-11-23T03:51:31.6384574Z 
+2026-11-23T03:51:31.6384687Z tests/control-flow-output.cherri
+2026-11-23T03:51:31.6384935Z ✅  PASSED
+2026-11-23T03:51:31.6385031Z 
+2026-11-23T03:51:31.6385120Z tests/copy-paste.cherri
+2026-11-23T03:51:31.6385350Z ✅  PASSED
+2026-11-23T03:51:31.6385438Z 
+2026-11-23T03:51:31.6385540Z tests/corpus-batch001.cherri
+2026-11-23T03:51:31.6385767Z ✅  PASSED
+2026-11-23T03:51:31.6385869Z 
+2026-11-23T03:51:31.6386141Z tests/crypto.cherri
+2026-11-23T03:51:31.6386365Z ✅  PASSED
+2026-11-23T03:51:31.6386465Z 
+2026-11-23T03:51:31.6386571Z tests/date-comparisons.cherri
+2026-11-23T03:51:31.6386824Z ✅  PASSED
+2026-11-23T03:51:31.6387090Z 
+2026-11-23T03:51:31.6387439Z tests/definitions.cherri
+2026-11-23T03:51:31.6387989Z ✅  PASSED
+2026-11-23T03:51:31.6388231Z 
+2026-11-23T03:51:31.6388462Z tests/dictionary.cherri
+2026-11-23T03:51:31.6388820Z ✅  PASSED
+2026-11-23T03:51:31.6389058Z 
+2026-11-23T03:51:31.6389283Z tests/empty-types.cherri
+2026-11-23T03:51:31.6389642Z ✅  PASSED
+2026-11-23T03:51:31.6389870Z 
+2026-11-23T03:51:31.6390106Z tests/enum.cherri
+2026-11-23T03:51:31.6390634Z ✅  PASSED
+2026-11-23T03:51:31.6390867Z 
+2026-11-23T03:51:31.6391100Z tests/functions.cherri
+2026-11-23T03:51:31.6391477Z ✅  PASSED
+2026-11-23T03:51:31.6391705Z 
+2026-11-23T03:51:31.6391943Z tests/getas-typecast.cherri
+2026-11-23T03:51:31.6392304Z ✅  PASSED
+2026-11-23T03:51:31.6392540Z 
+2026-11-23T03:51:31.6392774Z tests/globals.cherri
+2026-11-23T03:51:31.6393114Z ✅  PASSED
+2026-11-23T03:51:31.6393343Z 
+2026-11-23T03:51:31.6393565Z tests/hello-world.cherri
+2026-11-23T03:51:31.6393928Z ✅  PASSED
+2026-11-23T03:51:31.6394176Z 
+2026-11-23T03:51:31.6394402Z tests/images.cherri
+2026-11-23T03:51:31.6394745Z ✅  PASSED
+2026-11-23T03:51:31.6394976Z 
+2026-11-23T03:51:31.6395210Z tests/import-questions.cherri
+2026-11-23T03:51:31.6395600Z ✅  PASSED
+2026-11-23T03:51:31.6395831Z 
+2026-11-23T03:51:31.6396066Z tests/include-actions.cherri
+2026-11-23T03:51:31.6396433Z ✅  PASSED
+2026-11-23T03:51:31.6396686Z 
+2026-11-23T03:51:31.6396911Z tests/include.cherri
+2026-11-23T03:51:31.6397268Z ✅  PASSED
+2026-11-23T03:51:31.6397507Z 
+2026-11-23T03:51:31.6397734Z tests/includes.cherri
+2026-11-23T03:51:31.6398085Z ✅  PASSED
+2026-11-23T03:51:31.6398319Z 
+2026-11-23T03:51:31.6398537Z tests/math.cherri
+2026-11-23T03:51:31.6398867Z ✅  PASSED
+2026-11-23T03:51:31.6399102Z 
+2026-11-23T03:51:31.6399359Z tests/measurements.cherri
+2026-11-23T03:51:31.6399738Z ✅  PASSED
+2026-11-23T03:51:31.6399970Z 
+2026-11-23T03:51:31.6400212Z tests/menus.cherri
+2026-11-23T03:51:31.6400648Z ✅  PASSED
+2026-11-23T03:51:31.6400877Z 
+2026-11-23T03:51:31.6401090Z tests/nil.cherri
+2026-11-23T03:51:31.6401432Z ✅  PASSED
+2026-11-23T03:51:31.6401656Z 
+2026-11-23T03:51:31.6401895Z tests/numbers.cherri
+2026-11-23T03:51:31.6402246Z ✅  PASSED
+2026-11-23T03:51:31.6402485Z 
+2026-11-23T03:51:31.6402712Z tests/qty-color.cherri
+2026-11-23T03:51:31.6403054Z ✅  PASSED
+2026-11-23T03:51:31.6403282Z 
+2026-11-23T03:51:31.6403543Z tests/raw-action-output-capture.cherri
+2026-11-23T03:51:31.6403963Z ✅  PASSED
+2026-11-23T03:51:31.6404211Z 
+2026-11-23T03:51:31.6404459Z tests/raw-action-variable-values.cherri
+2026-11-23T03:51:31.6404893Z ✅  PASSED
+2026-11-23T03:51:31.6405125Z 
+2026-11-23T03:51:31.6405346Z tests/raw-action.cherri
+2026-11-23T03:51:31.6405697Z ✅  PASSED
+2026-11-23T03:51:31.6405925Z 
+2026-11-23T03:51:31.6406249Z tests/repeats.cherri
+2026-11-23T03:51:31.6406608Z ✅  PASSED
+2026-11-23T03:51:31.6406840Z 
+2026-11-23T03:51:31.6407092Z tests/shortcuts.cherri
+2026-11-23T03:51:31.6407439Z ✅  PASSED
+2026-11-23T03:51:31.6407665Z 
+2026-11-23T03:51:31.6407886Z tests/smol.cherri
+2026-11-23T03:51:31.6408219Z ✅  PASSED
+2026-11-23T03:51:31.6408450Z 
+2026-11-23T03:51:31.6408687Z tests/split-screen.cherri
+2026-11-23T03:51:31.6409041Z ✅  PASSED
+2026-11-23T03:51:31.6409273Z 
+2026-11-23T03:51:31.6409491Z tests/standard.cherri
+2026-11-23T03:51:31.6409838Z ✅  PASSED
+2026-11-23T03:51:31.6410063Z 
+2026-11-23T03:51:31.6410287Z tests/storage.cherri
+2026-11-23T03:51:31.6410730Z ✅  PASSED
+2026-11-23T03:51:31.6411060Z 
+2026-11-23T03:51:31.6459981Z tests/text.cherri
+2026-11-23T03:51:31.6461145Z ✅  PASSED
+2026-11-23T03:51:31.6461403Z 
+2026-11-23T03:51:31.6461651Z tests/toggle-set.cherri
+2026-11-23T03:51:31.6462030Z ✅  PASSED
+2026-11-23T03:51:31.6462274Z 
+2026-11-23T03:51:31.6462508Z tests/types.cherri
+2026-11-23T03:51:31.6462859Z ✅  PASSED
+2026-11-23T03:51:31.6463092Z 
+2026-11-23T03:51:31.6463418Z tests/variable-interpolation-utf16.cherri
+2026-11-23T03:51:31.6464042Z ✅  PASSED
+2026-11-23T03:51:31.6464289Z 
+2026-11-23T03:51:31.6464525Z tests/variables.cherri
+2026-11-23T03:51:31.6464885Z ✅  PASSED
+2026-11-23T03:51:31.6465125Z 
+2026-11-23T03:51:31.6465348Z tests/web.cherri
+2026-11-23T03:51:31.6465700Z ✅  PASSED
+2026-11-23T03:51:31.6465948Z 
+2026-11-23T03:51:31.6466250Z tests/zz-action-identifiers.cherri
+2026-11-23T03:51:31.6466692Z ✅  PASSED
+2026-11-23T03:51:31.6466934Z 
+2026-11-23T03:51:31.6467180Z --- PASS: TestCherriNoSign (0.11s)
+2026-11-23T03:51:31.6467559Z PASS
+2026-11-23T03:51:31.6467896Z ok  	github.com/electrikmilk/cherri	0.116s
+2026-11-23T03:51:31.6468411Z ?   	github.com/electrikmilk/cherri/cmd/cherri-migrate	[no test files]
+2026-11-23T03:51:31.6468963Z testing: warning: no tests to run
+2026-11-23T03:51:31.6469314Z PASS
+2026-11-23T03:51:31.6469757Z ok  	github.com/electrikmilk/cherri/internal/icloudshortcut	0.004s [no tests to run]
+2026-11-23T03:51:31.6470289Z testing: warning: no tests to run
+2026-11-23T03:51:31.6470985Z PASS
+2026-11-23T03:51:31.6471498Z ok  	github.com/electrikmilk/cherri/internal/language/analysis	0.003s [no tests to run]
+2026-11-23T03:51:31.6949885Z testing: warning: no tests to run
+2026-11-23T03:51:31.6950737Z PASS
+2026-11-23T03:51:31.6951342Z ok  	github.com/electrikmilk/cherri/internal/language/assets	0.003s [no tests to run]
+2026-11-23T03:51:31.7403011Z testing: warning: no tests to run
+2026-11-23T03:51:31.7410954Z PASS
+2026-11-23T03:51:31.7471372Z ok  	github.com/electrikmilk/cherri/internal/language/backend	0.003s [no tests to run]
+2026-11-23T03:51:31.7501043Z ?   	github.com/electrikmilk/cherri/internal/language/enums	[no test files]
+2026-11-23T03:51:31.8291471Z testing: warning: no tests to run
+2026-11-23T03:51:31.8291865Z PASS
+2026-11-23T03:51:31.8292208Z ok  	github.com/electrikmilk/cherri/internal/language/ir	0.003s [no tests to run]
+2026-11-23T03:51:32.4412599Z testing: warning: no tests to run
+2026-11-23T03:51:32.4413226Z PASS
+2026-11-23T03:51:32.4414113Z ok  	github.com/electrikmilk/cherri/internal/language/lower	0.003s [no tests to run]
+2026-11-23T03:51:32.4414892Z testing: warning: no tests to run
+2026-11-23T03:51:32.4415112Z PASS
+2026-11-23T03:51:32.4415407Z ok  	github.com/electrikmilk/cherri/internal/language/lsp	0.003s [no tests to run]
+2026-11-23T03:51:32.4415833Z testing: warning: no tests to run
+2026-11-23T03:51:32.4416053Z PASS
+2026-11-23T03:51:32.4416370Z ok  	github.com/electrikmilk/cherri/internal/language/migrate	0.002s [no tests to run]
+2026-11-23T03:51:32.4416858Z ?   	github.com/electrikmilk/cherri/internal/language/modules	[no test files]
+2026-11-23T03:51:32.6451784Z testing: warning: no tests to run
+2026-11-23T03:51:32.6472647Z PASS
+2026-11-23T03:51:32.6475296Z ok  	github.com/electrikmilk/cherri/internal/language/protocol	0.003s [no tests to run]
+2026-11-23T03:51:34.1311023Z testing: warning: no tests to run
+2026-11-23T03:51:34.1311683Z PASS
+2026-11-23T03:51:34.1312051Z ok  	github.com/electrikmilk/cherri/internal/language/schema	0.004s [no tests to run]
+2026-11-23T03:51:34.1312531Z testing: warning: no tests to run
+2026-11-23T03:51:34.1312759Z PASS
+2026-11-23T03:51:34.1313098Z ok  	github.com/electrikmilk/cherri/internal/language/service	0.004s [no tests to run]
+2026-11-23T03:51:34.1313529Z testing: warning: no tests to run
+2026-11-23T03:51:34.1313752Z PASS
+2026-11-23T03:51:34.1314094Z ok  	github.com/electrikmilk/cherri/internal/language/source	0.002s [no tests to run]
+2026-11-23T03:51:34.1314497Z testing: warning: no tests to run
+2026-11-23T03:51:34.1314714Z PASS
+2026-11-23T03:51:34.1315037Z ok  	github.com/electrikmilk/cherri/internal/language/syntax	0.002s [no tests to run]
+2026-11-23T03:51:34.3571713Z testing: warning: no tests to run
+2026-11-23T03:51:34.3601531Z PASS
+2026-11-23T03:51:34.3611007Z ok  	github.com/electrikmilk/cherri/internal/language/types	0.008s [no tests to run]
+2026-11-23T03:51:34.3651653Z testing: warning: no tests to run
+2026-11-23T03:51:34.3668428Z PASS
+2026-11-23T03:51:34.3691472Z ok  	github.com/electrikmilk/cherri/internal/language/workspace	0.014s [no tests to run]
+2026-11-23T03:51:34.6332376Z testing: warning: no tests to run
+2026-11-23T03:51:34.6338769Z PASS
+2026-11-23T03:51:34.6339521Z ok  	github.com/electrikmilk/cherri/internal/shortcutcompare	0.005s [no tests to run]
+2026-11-23T03:51:34.6340830Z testing: warning: no tests to run
+2026-11-23T03:51:34.6341136Z PASS
+2026-11-23T03:51:34.6341861Z ok  	github.com/electrikmilk/cherri/tools/ci-test-discovery	0.005s [no tests to run]
+2026-11-23T03:51:34.6342717Z ?   	github.com/electrikmilk/cherri/tools/inventory	[no test files]
+2026-11-23T03:51:34.6343356Z testing: warning: no tests to run
+2026-11-23T03:51:34.6343651Z PASS
+2026-11-23T03:51:34.6344296Z ok  	github.com/electrikmilk/cherri/tools/ios-runtime-verifier	0.002s [no tests to run]
+2026-11-23T03:51:37.4912054Z testing: warning: no tests to run
+2026-11-23T03:51:37.4919791Z PASS
+2026-11-23T03:51:37.4941331Z ok  	github.com/electrikmilk/cherri/tools/language-acceptance	0.005s [no tests to run]
+2026-11-23T03:51:37.4971330Z testing: warning: no tests to run
+2026-11-23T03:51:37.4981126Z PASS
+2026-11-23T03:51:37.4981647Z ok  	github.com/electrikmilk/cherri/tools/language-docs	0.003s [no tests to run]
+2026-11-23T03:51:37.4982090Z testing: warning: no tests to run
+2026-11-23T03:51:37.4982311Z PASS
+2026-11-23T03:51:37.4982606Z ok  	github.com/electrikmilk/cherri/tools/language-migrate	0.003s [no tests to run]
+2026-11-23T03:51:37.4982849Z testing: warning: no tests to run
+2026-11-23T03:51:37.4982990Z PASS
+2026-11-23T03:51:37.4983183Z ok  	github.com/electrikmilk/cherri/tools/language-schema	0.004s [no tests to run]
+2026-11-23T03:51:37.5091382Z ?   	github.com/electrikmilk/cherri/tools/language-stdlib	[no test files]
+2026-11-23T03:51:37.7396205Z testing: warning: no tests to run
+2026-11-23T03:51:37.7396508Z PASS
+2026-11-23T03:51:37.7396869Z ok  	github.com/electrikmilk/cherri/tools/legacy-parity	0.004s [no tests to run]
+2026-11-23T03:51:37.8844508Z testing: warning: no tests to run
+2026-11-23T03:51:37.8844790Z PASS
+2026-11-23T03:51:37.8845053Z ok  	github.com/electrikmilk/cherri/tools/shortcut-corpus	0.003s [no tests to run]
+2026-11-23T03:51:39.8231242Z === RUN   TestDecomp
+2026-11-23T03:51:39.8266524Z Decompiling...
+2026-11-23T03:51:39.8268308Z Comparing to expected...
+2026-11-23T03:51:39.8273405Z [32m[1m✅  PASSED[0m
+2026-11-23T03:51:39.8274621Z 
+2026-11-23T03:51:39.8274913Z --- PASS: TestDecomp (0.03s)
+2026-11-23T03:51:39.8275445Z === RUN   TestDecompileTextPartsKeepsEmptyCustomSeparator
+2026-11-23T03:51:39.8276137Z --- PASS: TestDecompileTextPartsKeepsEmptyCustomSeparator (0.00s)
+2026-11-23T03:51:39.8276805Z === RUN   TestDecompileStateIsolation
+2026-11-23T03:51:39.8277300Z --- PASS: TestDecompileStateIsolation (0.04s)
+2026-11-23T03:51:39.8277899Z === RUN   TestDecompSelfContainedIncludesRegression
+2026-11-23T03:51:39.8278619Z --- PASS: TestDecompSelfContainedIncludesRegression (0.11s)
+2026-11-23T03:51:39.8279201Z === RUN   TestDecompIncludeReconstructionMultiCategory
+2026-11-23T03:51:39.8279583Z 
+2026-11-23T03:51:39.8280040Z Warning: Value for action argument 'format' is the same as the default value.
+2026-11-23T03:51:39.8280691Z 
+2026-11-23T03:51:39.8280940Z ### Make Archive
+2026-11-23T03:51:39.8281216Z 
+2026-11-23T03:51:39.8281509Z Create an archive of `files` named `name` in `format`.
+2026-11-23T03:51:39.8281877Z 
+2026-11-23T03:51:39.8282274Z ```
+2026-11-23T03:51:39.8282695Z makeArchive(..., archiveFormat ?format = ".zip", ...)
+2026-11-23T03:51:39.8283151Z ``` (11:34)
+2026-11-23T03:51:39.8283405Z 
+2026-11-23T03:51:39.8283551Z 
+2026-11-23T03:51:39.8284044Z Warning: Value for action argument 'format' is the same as the default value.
+2026-11-23T03:51:39.8284465Z 
+2026-11-23T03:51:39.8284711Z ### Make Archive
+2026-11-23T03:51:39.8285532Z 
+2026-11-23T03:51:39.8285818Z Create an archive of `files` named `name` in `format`.
+2026-11-23T03:51:39.8286196Z 
+2026-11-23T03:51:39.8286419Z ```
+2026-11-23T03:51:39.8286801Z makeArchive(..., archiveFormat ?format = ".zip", ...)
+2026-11-23T03:51:39.8287412Z ``` (12:34)
+2026-11-23T03:51:39.8287662Z 
+2026-11-23T03:51:39.8288194Z --- PASS: TestDecompIncludeReconstructionMultiCategory (0.04s)
+2026-11-23T03:51:39.8288919Z === RUN   TestDecompBasicActionsEmitNoIncludes
+2026-11-23T03:51:39.8289422Z --- PASS: TestDecompBasicActionsEmitNoIncludes (0.01s)
+2026-11-23T03:51:39.8289961Z === RUN   TestDecompDuplicateCategoryEmitsSingleInclude
+2026-11-23T03:51:39.8290775Z --- PASS: TestDecompDuplicateCategoryEmitsSingleInclude (0.03s)
+2026-11-23T03:51:39.8291403Z === RUN   TestDecompIncludeOrderDeterministic
+2026-11-23T03:51:39.8294825Z --- PASS: TestDecompIncludeOrderDeterministic (0.07s)
+2026-11-23T03:51:39.8295307Z === RUN   TestDecompIncludeStateIsolation
+2026-11-23T03:51:39.8295773Z --- PASS: TestDecompIncludeStateIsolation (0.13s)
+2026-11-23T03:51:39.8296369Z === RUN   TestDecompExternalFixtureSelfContained
+2026-11-23T03:51:39.8296868Z --- PASS: TestDecompExternalFixtureSelfContained (0.02s)
+2026-11-23T03:51:39.8297315Z PASS
+2026-11-23T03:51:39.8297872Z ok  	github.com/electrikmilk/cherri	0.488s
+2026-11-23T03:51:39.8298395Z ?   	github.com/electrikmilk/cherri/cmd/cherri-migrate	[no test files]
+2026-11-23T03:51:39.8298875Z testing: warning: no tests to run
+2026-11-23T03:51:39.8299342Z PASS
+2026-11-23T03:51:39.8299822Z ok  	github.com/electrikmilk/cherri/internal/icloudshortcut	0.004s [no tests to run]
+2026-11-23T03:51:39.8300540Z testing: warning: no tests to run
+2026-11-23T03:51:39.8300908Z PASS
+2026-11-23T03:51:39.8301413Z ok  	github.com/electrikmilk/cherri/internal/language/analysis	0.003s [no tests to run]
+2026-11-23T03:51:39.8302100Z testing: warning: no tests to run
+2026-11-23T03:51:39.8302462Z PASS
+2026-11-23T03:51:39.8302944Z ok  	github.com/electrikmilk/cherri/internal/language/assets	0.004s [no tests to run]
+2026-11-23T03:51:39.8303512Z testing: warning: no tests to run
+2026-11-23T03:51:39.8304002Z PASS
+2026-11-23T03:51:39.8304478Z ok  	github.com/electrikmilk/cherri/internal/language/backend	0.002s [no tests to run]
+2026-11-23T03:51:39.8305281Z ?   	github.com/electrikmilk/cherri/internal/language/enums	[no test files]
+2026-11-23T03:51:39.8305821Z testing: warning: no tests to run
+2026-11-23T03:51:39.8306199Z PASS
+2026-11-23T03:51:39.8306659Z ok  	github.com/electrikmilk/cherri/internal/language/ir	0.003s [no tests to run]
+2026-11-23T03:51:39.8307331Z testing: warning: no tests to run
+2026-11-23T03:51:39.8307703Z PASS
+2026-11-23T03:51:39.8308283Z ok  	github.com/electrikmilk/cherri/internal/language/lower	0.005s [no tests to run]
+2026-11-23T03:51:39.8308993Z testing: warning: no tests to run
+2026-11-23T03:51:39.8309370Z PASS
+2026-11-23T03:51:39.8309858Z ok  	github.com/electrikmilk/cherri/internal/language/lsp	0.002s [no tests to run]
+2026-11-23T03:51:39.8310619Z testing: warning: no tests to run
+2026-11-23T03:51:39.8311450Z PASS
+2026-11-23T03:51:39.8311952Z ok  	github.com/electrikmilk/cherri/internal/language/migrate	0.007s [no tests to run]
+2026-11-23T03:51:39.8312638Z ?   	github.com/electrikmilk/cherri/internal/language/modules	[no test files]
+2026-11-23T03:51:39.9119551Z testing: warning: no tests to run
+2026-11-23T03:51:39.9130903Z PASS
+2026-11-23T03:51:39.9140311Z ok  	github.com/electrikmilk/cherri/internal/language/protocol	0.002s [no tests to run]
+2026-11-23T03:51:39.9411754Z testing: warning: no tests to run
+2026-11-23T03:51:39.9451365Z PASS
+2026-11-23T03:51:39.9452436Z ok  	github.com/electrikmilk/cherri/internal/language/schema	0.006s [no tests to run]
+2026-11-23T03:51:40.1161429Z testing: warning: no tests to run
+2026-11-23T03:51:40.1167352Z PASS
+2026-11-23T03:51:40.1168105Z ok  	github.com/electrikmilk/cherri/internal/language/service	0.004s [no tests to run]
+2026-11-23T03:51:40.1169014Z testing: warning: no tests to run
+2026-11-23T03:51:40.1169484Z PASS
+2026-11-23T03:51:40.1170584Z ok  	github.com/electrikmilk/cherri/internal/language/source	0.002s [no tests to run]
+2026-11-23T03:51:40.1171380Z testing: warning: no tests to run
+2026-11-23T03:51:40.1171962Z PASS
+2026-11-23T03:51:40.1172686Z ok  	github.com/electrikmilk/cherri/internal/language/syntax	0.003s [no tests to run]
+2026-11-23T03:51:40.1548900Z testing: warning: no tests to run
+2026-11-23T03:51:40.1563633Z PASS
+2026-11-23T03:51:40.1564565Z ok  	github.com/electrikmilk/cherri/internal/language/types	0.003s [no tests to run]
+2026-11-23T03:51:40.2433821Z testing: warning: no tests to run
+2026-11-23T03:51:40.2434814Z PASS
+2026-11-23T03:51:40.2435561Z ok  	github.com/electrikmilk/cherri/internal/language/workspace	0.002s [no tests to run]
+2026-11-23T03:51:40.2994983Z testing: warning: no tests to run
+2026-11-23T03:51:40.2995920Z PASS
+2026-11-23T03:51:40.2996610Z ok  	github.com/electrikmilk/cherri/internal/shortcutcompare	0.003s [no tests to run]
+2026-11-23T03:51:40.2997322Z testing: warning: no tests to run
+2026-11-23T03:51:40.2997833Z PASS
+2026-11-23T03:51:40.2998385Z ok  	github.com/electrikmilk/cherri/tools/ci-test-discovery	0.002s [no tests to run]
+2026-11-23T03:51:40.2999155Z ?   	github.com/electrikmilk/cherri/tools/inventory	[no test files]
+2026-11-23T03:51:40.3470772Z testing: warning: no tests to run
+2026-11-23T03:51:40.3487295Z PASS
+2026-11-23T03:51:40.3488380Z ok  	github.com/electrikmilk/cherri/tools/ios-runtime-verifier	0.002s [no tests to run]
+2026-11-23T03:51:40.6996442Z testing: warning: no tests to run
+2026-11-23T03:51:40.7003756Z PASS
+2026-11-23T03:51:40.7004658Z ok  	github.com/electrikmilk/cherri/tools/language-acceptance	0.005s [no tests to run]
+2026-11-23T03:51:40.7005734Z testing: warning: no tests to run
+2026-11-23T03:51:40.7006249Z PASS
+2026-11-23T03:51:40.7007009Z ok  	github.com/electrikmilk/cherri/tools/language-docs	0.003s [no tests to run]
+2026-11-23T03:51:40.7007870Z testing: warning: no tests to run
+2026-11-23T03:51:40.7008521Z PASS
+2026-11-23T03:51:40.7009289Z ok  	github.com/electrikmilk/cherri/tools/language-migrate	0.003s [no tests to run]
+2026-11-23T03:51:40.7010109Z testing: warning: no tests to run
+2026-11-23T03:51:40.7010899Z PASS
+2026-11-23T03:51:40.7011575Z ok  	github.com/electrikmilk/cherri/tools/language-schema	0.002s [no tests to run]
+2026-11-23T03:51:40.7110943Z ?   	github.com/electrikmilk/cherri/tools/language-stdlib	[no test files]
+2026-11-23T03:51:40.8240818Z testing: warning: no tests to run
+2026-11-23T03:51:40.8241368Z PASS
+2026-11-23T03:51:40.8241774Z ok  	github.com/electrikmilk/cherri/tools/legacy-parity	0.002s [no tests to run]
+2026-11-23T03:51:40.8840001Z testing: warning: no tests to run
+2026-11-23T03:51:40.8840607Z PASS
+2026-11-23T03:51:40.8841021Z ok  	github.com/electrikmilk/cherri/tools/shortcut-corpus	0.003s [no tests to run]
+2026-11-23T03:51:40.9050343Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-23T03:51:40.9050867Z with:
+2026-11-23T03:51:40.9051114Z   event: refresh
+2026-11-23T03:51:40.9051402Z   device_id: ***
+2026-11-23T03:51:40.9051628Z   token: ***
+2026-11-23T03:51:40.9053064Z   github_token: ***
+2026-11-23T03:51:40.9053242Z env:
+2026-11-23T03:51:40.9053463Z   GOTOOLCHAIN: local
+2026-11-23T03:51:40.9053707Z ##[endgroup]
+2026-11-23T03:51:41.8247499Z ##[group]Run mkdir -p dist
+2026-11-23T03:51:41.8247704Z [36;1mmkdir -p dist[0m
+2026-11-23T03:51:41.8248013Z [36;1mCGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-linux-arm64 .[0m
+2026-11-23T03:51:41.8248464Z [36;1mCGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-linux-amd64 .[0m
+2026-11-23T03:51:41.8248952Z [36;1mCGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-migrate-linux-arm64 ./cmd/cherri-migrate[0m
+2026-11-23T03:51:41.8249481Z [36;1mCGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=true -trimpath -ldflags='-s -w' -o dist/cherri-migrate-linux-amd64 ./cmd/cherri-migrate[0m
+2026-11-23T03:51:41.8250136Z [36;1mfor BIN in dist/cherri-linux-arm64 dist/cherri-linux-amd64 dist/cherri-migrate-linux-arm64 dist/cherri-migrate-linux-amd64; do[0m
+2026-11-23T03:51:41.8250620Z [36;1m  chmod +x "$BIN"[0m
+2026-11-23T03:51:41.8250811Z [36;1m  printf '%s\n' "$GITHUB_SHA" > "$BIN.commit"[0m
+2026-11-23T03:51:41.8251023Z [36;1m  sha256sum "$BIN" | awk '{print $1}' > "$BIN.sha256"[0m
+2026-11-23T03:51:41.8251202Z [36;1mdone[0m
+2026-11-23T03:51:41.8251330Z [36;1mls -lh dist/cherri-*[0m
+2026-11-23T03:51:41.8279683Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:51:41.8279833Z env:
+2026-11-23T03:51:41.8279952Z   GOTOOLCHAIN: local
+2026-11-23T03:51:41.8280083Z ##[endgroup]
+2026-11-23T03:52:18.0944332Z -rwxr-xr-x 1 runner runner  17M Nov 23 03:52 dist/cherri-linux-amd64
+2026-11-23T03:52:18.0944692Z -rw-r--r-- 1 runner runner   41 Nov 23 03:52 dist/cherri-linux-amd64.commit
+2026-11-23T03:52:18.0944966Z -rw-r--r-- 1 runner runner   65 Nov 23 03:52 dist/cherri-linux-amd64.sha256
+2026-11-23T03:52:18.0945238Z -rwxr-xr-x 1 runner runner  16M Nov 23 03:51 dist/cherri-linux-arm64
+2026-11-23T03:52:18.0945524Z -rw-r--r-- 1 runner runner   41 Nov 23 03:52 dist/cherri-linux-arm64.commit
+2026-11-23T03:52:18.0945791Z -rw-r--r-- 1 runner runner   65 Nov 23 03:52 dist/cherri-linux-arm64.sha256
+2026-11-23T03:52:18.0946056Z -rwxr-xr-x 1 runner runner 5.5M Nov 23 03:52 dist/cherri-migrate-linux-amd64
+2026-11-23T03:52:18.0946348Z -rw-r--r-- 1 runner runner   41 Nov 23 03:52 dist/cherri-migrate-linux-amd64.commit
+2026-11-23T03:52:18.0946802Z -rw-r--r-- 1 runner runner   65 Nov 23 03:52 dist/cherri-migrate-linux-amd64.sha256
+2026-11-23T03:52:18.0947246Z -rwxr-xr-x 1 runner runner 5.3M Nov 23 03:52 dist/cherri-migrate-linux-arm64
+2026-11-23T03:52:18.0947689Z -rw-r--r-- 1 runner runner   41 Nov 23 03:52 dist/cherri-migrate-linux-arm64.commit
+2026-11-23T03:52:18.0948147Z -rw-r--r-- 1 runner runner   65 Nov 23 03:52 dist/cherri-migrate-linux-arm64.sha256
+2026-11-23T03:52:18.1008980Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-23T03:52:18.1009209Z with:
+2026-11-23T03:52:18.1009344Z   event: refresh
+2026-11-23T03:52:18.1009542Z   device_id: ***
+2026-11-23T03:52:18.1009672Z   token: ***
+2026-11-23T03:52:18.1011150Z   github_token: ***
+2026-11-23T03:52:18.1011275Z env:
+2026-11-23T03:52:18.1011387Z   GOTOOLCHAIN: local
+2026-11-23T03:52:18.1011510Z ##[endgroup]
+2026-11-23T03:52:19.0906960Z ##[group]Run test -f skills/cherri-shortcuts/SKILL.md
+2026-11-23T03:52:19.0907215Z [36;1mtest -f skills/cherri-shortcuts/SKILL.md[0m
+2026-11-23T03:52:19.0907432Z [36;1mtest -f skills/cherri-shortcuts/scripts/setup.sh[0m
+2026-11-23T03:52:19.0907644Z [36;1mtest -f skills/cherri-shortcuts/scripts/build.sh[0m
+2026-11-23T03:52:19.0907866Z [36;1mtest -f skills/cherri-shortcuts/references/openminis.md[0m
+2026-11-23T03:52:19.0908123Z [36;1mgrep -q '^name: cherri-shortcuts$' skills/cherri-shortcuts/SKILL.md[0m
+2026-11-23T03:52:19.0908382Z [36;1mgrep -q '^description:' skills/cherri-shortcuts/SKILL.md[0m
+2026-11-23T03:52:19.0908649Z [36;1mfor script in skills/cherri-shortcuts/scripts/*.sh; do sh -n "$script"; done[0m
+2026-11-23T03:52:19.0936110Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:52:19.0936252Z env:
+2026-11-23T03:52:19.0936375Z   GOTOOLCHAIN: local
+2026-11-23T03:52:19.0936502Z ##[endgroup]
+2026-11-23T03:52:19.1144054Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-23T03:52:19.1144407Z with:
+2026-11-23T03:52:19.1144588Z   event: refresh
+2026-11-23T03:52:19.1144864Z   device_id: ***
+2026-11-23T03:52:19.1145065Z   token: ***
+2026-11-23T03:52:19.1147338Z   github_token: ***
+2026-11-23T03:52:19.1147535Z env:
+2026-11-23T03:52:19.1147717Z   GOTOOLCHAIN: local
+2026-11-23T03:52:19.1147917Z ##[endgroup]
+2026-11-23T03:52:19.9954542Z ##[group]Run sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-wrapper-observations.json
+2026-11-23T03:52:19.9955060Z [36;1msh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-wrapper-observations.json[0m
+2026-11-23T03:52:19.9982919Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:52:19.9983071Z env:
+2026-11-23T03:52:19.9983191Z   GOTOOLCHAIN: local
+2026-11-23T03:52:19.9983376Z   CHERRI_BIN: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64
+2026-11-23T03:52:19.9983666Z   CHERRI_MIGRATE_BIN: /home/runner/work/cherri/cherri/dist/cherri-migrate-linux-amd64
+2026-11-23T03:52:19.9983923Z   CHERRI_REF: 9b4135e705b08f765b7304e01212d3b9658806fb
+2026-11-23T03:52:19.9984145Z   SKILL_DIR: /home/runner/work/cherri/cherri/skills/cherri-shortcuts
+2026-11-23T03:52:19.9984348Z ##[endgroup]
+2026-11-23T03:52:20.1214816Z Testing compiler...
+2026-11-23T03:52:20.1246344Z Testing action discovery wrapper...
+2026-11-23T03:52:20.2669109Z Testing machine-readable catalog wrapper...
+2026-11-23T03:52:20.4299762Z Testing unsigned compile wrapper...
+2026-11-23T03:52:20.5960191Z Testing decompile wrapper...
+2026-11-23T03:52:20.7624808Z Testing decompiled-source recompilation (self-contained invariant)...
+2026-11-23T03:52:21.2785496Z Testing existing-Shortcut prepare/edit workflow...
+2026-11-23T03:52:21.7786565Z Testing AEA1 signed-input rejection...
+2026-11-23T03:52:21.8230952Z Testing 10 controlled transport, compatibility, and pinned-document scenarios with real tools...
+2026-11-23T03:52:23.0682933Z   [PASS] Scenario 1: real same-source pair installed through controlled downloads
+2026-11-23T03:52:23.9722006Z   [PASS] Scenario 2: compatible complete cache is reusable offline
+2026-11-23T03:52:24.0738286Z   [PASS] Scenario 3: incompatible cached response rejected offline
+2026-11-23T03:52:24.3505719Z   [PASS] Scenario 4: verified cache wins without running an incompatible bundle
+2026-11-23T03:52:24.4628766Z   [PASS] Scenario 5: explicit incompatible response never falls back
+2026-11-23T03:52:24.5767326Z   [PASS] Scenario 6: same language with incorrect schema is rejected
+2026-11-23T03:52:24.7922505Z   [PASS] Scenario 7: malformed schema and malformed JSON responses are rejected
+2026-11-23T03:52:25.1231977Z   [PASS] Scenario 8: altered documentation fingerprint is rejected
+2026-11-23T03:52:25.5294900Z   [PASS] Scenario 9: controlled download failure preserves the real working pair
+2026-11-23T03:52:25.8546956Z Cloning into '/tmp/cherri-skill-test-13991/home-s1/.cherri-docs.J0TrM5/candidate'...
+2026-11-23T03:52:25.8592134Z done.
+2026-11-23T03:52:26.4772647Z   [PASS] Scenario 10: controlled reinstall preserves real tool source and original docs pin
+2026-11-23T03:52:26.4831357Z Cherri Shortcuts skill self-test passed.
+2026-11-23T03:52:26.4968011Z ##[group]Run sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
+2026-11-23T03:52:26.4968369Z [36;1msh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh[0m
+2026-11-23T03:52:26.4994788Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:52:26.4994938Z env:
+2026-11-23T03:52:26.4995065Z   GOTOOLCHAIN: local
+2026-11-23T03:52:26.4995251Z   CHERRI_BIN: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64
+2026-11-23T03:52:26.4995530Z   CHERRI_MIGRATE_BIN: /home/runner/work/cherri/cherri/dist/cherri-migrate-linux-amd64
+2026-11-23T03:52:26.4995804Z   CHERRI_REF: 9b4135e705b08f765b7304e01212d3b9658806fb
+2026-11-23T03:52:26.4995968Z ##[endgroup]
+2026-11-23T03:52:30.2912027Z CHERRI_K04_CASE:offline_cache_healthy
+2026-11-23T03:52:30.5610507Z CHERRI_K04_CASE:stale_schema_rejected
+2026-11-23T03:52:31.0985744Z CHERRI_K04_CASE:restore_after_schema
+2026-11-23T03:52:31.3773648Z CHERRI_K04_CASE:stale_docs_commit_rejected
+2026-11-23T03:52:31.9138062Z CHERRI_K04_CASE:restore_after_commit
+2026-11-23T03:52:31.9600942Z CHERRI_K04_CASE:incompatible_cache_rejected
+2026-11-23T03:52:32.6318990Z CHERRI_K04_CASE:restore_cache
+2026-11-23T03:52:32.9090541Z CHERRI_K04_CASE:missing_docs_rejected
+2026-11-23T03:52:32.9090896Z CHERRI_K04_CASE:no_network_observed
+2026-11-23T03:52:32.9091269Z PASS: 18 compatibility isolation checks using real compiler and canonical docs
+2026-11-23T03:52:32.9230616Z ##[group]Run go test -count=1 -timeout=15m -run '^(TestP15SkillFreshPinnedInstall|TestP15K02|TestP15K03)' .
+2026-11-23T03:52:32.9231056Z [36;1mgo test -count=1 -timeout=15m -run '^(TestP15SkillFreshPinnedInstall|TestP15K02|TestP15K03)' .[0m
+2026-11-23T03:52:32.9257825Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:52:32.9257970Z env:
+2026-11-23T03:52:32.9258090Z   GOTOOLCHAIN: local
+2026-11-23T03:52:32.9258218Z ##[endgroup]
+2026-11-23T03:53:33.9799358Z ok  	github.com/electrikmilk/cherri	60.016s
+2026-11-23T03:53:33.9979215Z ##[group]Run go run ./tools/language-docs dist/macro-actions-reference.md
+2026-11-23T03:53:33.9979704Z [36;1mgo run ./tools/language-docs dist/macro-actions-reference.md[0m
+2026-11-23T03:53:33.9980169Z [36;1mdist/cherri-linux-amd64 --capabilities-json > dist/macro-capabilities.json[0m
+2026-11-23T03:53:33.9981154Z [36;1mMACRO_FP=$(python3 -c 'import json; print(json.load(open("dist/macro-capabilities.json"))["macroFingerprint"])')[0m
+2026-11-23T03:53:33.9981697Z [36;1mpython3 tools/p10r15/verify_macro_compatibility.py \[0m
+2026-11-23T03:53:33.9992207Z [36;1m  --compiler dist/cherri-linux-amd64 \[0m
+2026-11-23T03:53:33.9992566Z [36;1m  --migrator dist/cherri-migrate-linux-amd64 \[0m
+2026-11-23T03:53:33.9992899Z [36;1m  --compiler-commit "$GITHUB_SHA" \[0m
+2026-11-23T03:53:33.9993177Z [36;1m  --skill skills/cherri-shortcuts \[0m
+2026-11-23T03:53:33.9993485Z [36;1m  --docs-reference dist/macro-actions-reference.md \[0m
+2026-11-23T03:53:33.9993857Z [36;1m  --expected-macro-fingerprint "$MACRO_FP" \[0m
+2026-11-23T03:53:33.9994194Z [36;1m  --report dist/macro-compatibility-isolation.json[0m
+2026-11-23T03:53:34.0031011Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:53:34.0031244Z env:
+2026-11-23T03:53:34.0031428Z   GOTOOLCHAIN: local
+2026-11-23T03:53:34.0031628Z ##[endgroup]
+2026-11-23T03:53:34.1333094Z Generated dist/macro-actions-reference.md successfully (505 actions).
+2026-11-23T03:53:34.6117150Z {"case": "actual_healthy_tuple", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:34.7062310Z {"case": "controlled_healthy_capabilities_response", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:34.9304955Z {"case": "proxy_cannot_impersonate_installed_compiler", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:35.0342396Z {"case": "compiler_macro_missing", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:35.1388469Z {"case": "compiler_restore_after_missing", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:35.2401753Z {"case": "compiler_macro_malformed", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:35.3427313Z {"case": "compiler_restore_after_malformed", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:35.4426979Z {"case": "compiler_macro_mismatch", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:35.5445683Z {"case": "compiler_restore_after_mismatch", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:35.5837666Z {"case": "manifest_macro_empty", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:35.9590790Z {"case": "manifest_restore_after_empty", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:35.9976435Z {"case": "manifest_macro_malformed", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:36.3568175Z {"case": "manifest_restore_after_malformed", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:36.5047025Z {"case": "manifest_macro_mismatch", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:36.8614194Z {"case": "manifest_restore_after_mismatch", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:37.2110954Z {"case": "docs_macro_missing", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:37.5642204Z {"case": "docs_restore_after_missing", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:37.9148693Z {"case": "docs_macro_malformed", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:38.2647921Z {"case": "docs_restore_after_malformed", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:38.6099494Z {"case": "docs_macro_mismatch", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:38.9640651Z {"case": "docs_restore_after_mismatch", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:39.3247222Z {"case": "old_manifest_without_macro_field", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:39.6764347Z {"case": "actual_current_tuple_restored", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:39.7089331Z {"checks": 23, "passed": 23, "failed": 0}
+2026-11-23T03:53:39.7219130Z ##[group]Run python3 tools/p10r15/generate_macro_contract_coverage.py --refresh --out-dir dist/macro-contracts
+2026-11-23T03:53:39.7219584Z [36;1mpython3 tools/p10r15/generate_macro_contract_coverage.py --refresh --out-dir dist/macro-contracts[0m
+2026-11-23T03:53:39.7219969Z [36;1mpython3 tools/p10r15/generate_macro_contract_coverage.py --verify --out-dir dist/macro-contracts[0m
+2026-11-23T03:53:39.7220628Z [36;1mpython3 tools/p10r15/verify_macro_ledger_evidence.py --repo . --ledger-dir dist/macro-contracts --report dist/macro-contracts/verifier-audit.json[0m
+2026-11-23T03:53:39.7247545Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:53:39.7247688Z env:
+2026-11-23T03:53:39.7247811Z   GOTOOLCHAIN: local
+2026-11-23T03:53:39.7247937Z ##[endgroup]
+2026-11-23T03:53:40.5803737Z {"case": "require_v2_debug", "verdict": "PASS"}
+2026-11-23T03:53:40.6179160Z {"case": "require_v2_release", "verdict": "PASS"}
+2026-11-23T03:53:40.6560517Z {"case": "require_legacy_debug", "verdict": "PASS"}
+2026-11-23T03:53:40.6943140Z {"case": "require_legacy_release", "verdict": "PASS"}
+2026-11-23T03:53:40.7287231Z {"case": "measure_v2_debug", "verdict": "PASS"}
+2026-11-23T03:53:40.7615901Z {"case": "measure_v2_release", "verdict": "PASS"}
+2026-11-23T03:53:40.8007381Z {"case": "measure_legacy_debug", "verdict": "PASS"}
+2026-11-23T03:53:40.8391219Z {"case": "measure_legacy_release", "verdict": "PASS"}
+2026-11-23T03:53:40.8727494Z {"case": "collect_v2_0", "verdict": "PASS"}
+2026-11-23T03:53:40.9062461Z {"case": "collect_v2_1", "verdict": "PASS"}
+2026-11-23T03:53:40.9614844Z {"case": "collect_v2_100", "verdict": "PASS"}
+2026-11-23T03:53:40.9965286Z {"case": "collect_v2_dictionary", "verdict": "PASS"}
+2026-11-23T03:53:41.0181196Z {"case": "measure_legacy_empty_rejected", "verdict": "PASS"}
+2026-11-23T03:53:41.0400815Z {"case": "measure_legacy_control_value_rejected", "verdict": "PASS"}
+2026-11-23T03:53:41.0539312Z {"case": "measure_v2_empty_rejected", "verdict": "PASS"}
+2026-11-23T03:53:41.1141638Z {"case": "paginate_v2", "verdict": "PASS"}
+2026-11-23T03:53:41.1462040Z {"case": "paginate-zero_v2", "verdict": "PASS"}
+2026-11-23T03:53:41.2024632Z {"case": "paginate_legacy", "verdict": "PASS"}
+2026-11-23T03:53:41.2363860Z {"case": "paginate-zero_legacy", "verdict": "PASS"}
+2026-11-23T03:53:41.3289985Z {"asanaChildren": 11, "open": 11, "closed": 0, "compilerMacros": 15, "compileChecks": 19, "compilePassed": 19, "causalMutationChecks": 14, "structuralExecutionVerdict": "PASS", "releaseCompletion": "OPEN"}
+2026-11-23T03:53:41.4047365Z {"asanaChildren": 11, "open": 11, "closed": 0, "compilerMacros": 15, "compileChecks": 19, "compilePassed": 19, "causalMutationChecks": 14, "structuralExecutionVerdict": "PASS", "releaseCompletion": "OPEN"}
+2026-11-23T03:53:41.5292518Z {"case": "actual_healthy_evidence", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:41.6121068Z {"case": "stale_source", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:41.6953812Z {"case": "restore_after_stale_source", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:41.7784114Z {"case": "edited_observation", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:41.8615564Z {"case": "restore_after_edited_observation", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:41.9459846Z {"case": "missing_child", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:42.0248690Z {"case": "restore_after_missing_child", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:42.1048162Z {"case": "premature_closure", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:42.1842050Z {"case": "restore_after_premature_closure", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:42.2604624Z {"case": "missing_compile", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:42.3365656Z {"case": "restore_after_missing_compile", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:42.4137484Z {"case": "missing_mutations", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:42.4905793Z {"case": "restore_after_missing_mutations", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:42.5712816Z {"case": "false_action_count", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:42.6569191Z {"case": "restore_after_false_action_count", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:42.7449798Z {"case": "false_roundtrip", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:42.8361897Z {"case": "restore_after_false_roundtrip", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:42.9216882Z {"case": "stale_markdown", "exitCode": 1, "verdict": "PASS"}
+2026-11-23T03:53:43.0045441Z {"case": "restore_after_stale_markdown", "exitCode": 0, "verdict": "PASS"}
+2026-11-23T03:53:43.0083852Z {"checks": 19, "passed": 19, "failed": 0}
+2026-11-23T03:53:43.0193353Z ##[group]Run python3 -B -m unittest discover -s tools/p10r15 -p 'test_verify_debug_export.py' -v
+2026-11-23T03:53:43.0194059Z [36;1mpython3 -B -m unittest discover -s tools/p10r15 -p 'test_verify_debug_export.py' -v[0m
+2026-11-23T03:53:43.0194596Z [36;1mgo test -count=1 -timeout=5m -run '^TestP15DebugExport' .[0m
+2026-11-23T03:53:43.0195171Z [36;1mpython3 tools/p10r15/verify_debug_export.py --report dist/debug-export-validation.json[0m
+2026-11-23T03:53:43.0227561Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:53:43.0227725Z env:
+2026-11-23T03:53:43.0227856Z   GOTOOLCHAIN: local
+2026-11-23T03:53:43.0227992Z ##[endgroup]
+2026-11-23T03:53:43.1316777Z test_both_dialects_preserve_every_macro_action_and_original_bytes (test_verify_debug_export.ExportBoundaryTests.test_both_dialects_preserve_every_macro_action_and_original_bytes) ... ok
+2026-11-23T03:53:43.1317932Z test_legacy_does_not_inherit_v2_terminal_removal (test_verify_debug_export.ExportBoundaryTests.test_legacy_does_not_inherit_v2_terminal_removal) ... ok
+2026-11-23T03:53:43.1318802Z test_missing_file_producer_is_rejected (test_verify_debug_export.ExportBoundaryTests.test_missing_file_producer_is_rejected) ... ok
+2026-11-23T03:53:43.1319701Z test_no_interior_action_is_hidden_by_the_terminal_split (test_verify_debug_export.ExportBoundaryTests.test_no_interior_action_is_hidden_by_the_terminal_split) ... ok
+2026-11-23T03:53:43.1320874Z test_noncanonical_identifier_rejected_by_boundary_and_model (test_verify_debug_export.ExportBoundaryTests.test_noncanonical_identifier_rejected_by_boundary_and_model) ... ok
+2026-11-23T03:53:43.1321847Z test_prelude_reorder_or_addition_is_rejected (test_verify_debug_export.ExportBoundaryTests.test_prelude_reorder_or_addition_is_rejected) ... ok
+2026-11-23T03:53:43.1322780Z test_v2_missing_or_corrupted_void_boundary_is_rejected (test_verify_debug_export.ExportBoundaryTests.test_v2_missing_or_corrupted_void_boundary_is_rejected) ... ok
+2026-11-23T03:53:43.1323500Z test_v2_native_omitted_parameters_preserves_the_exact_original_action (test_verify_debug_export.ExportBoundaryTests.test_v2_native_omitted_parameters_preserves_the_exact_original_action) ... ok
+2026-11-23T03:53:43.1323875Z 
+2026-11-23T03:53:43.1323983Z ----------------------------------------------------------------------
+2026-11-23T03:53:43.1324198Z Ran 8 tests in 0.001s
+2026-11-23T03:53:43.1324286Z 
+2026-11-23T03:53:43.1324336Z OK
+2026-11-23T03:53:44.5851424Z ok  	github.com/electrikmilk/cherri	0.315s
+2026-11-23T03:53:46.7242259Z {"causalFaults": 7, "cliCompiles": 16, "cliNegatives": 16, "elapsedSeconds": 2.05, "exactNativeActionRoundtrips": 16, "independentModelCases": 80, "nativeExecuted": 0, "nativeProbeCompiles": 12, "report": "dist/debug-export-validation.json", "status": "PASS_SOURCE_AND_MODEL_ONLY"}
+2026-11-23T03:53:46.7364193Z ##[group]Run python3 -B -m unittest test_verify_remote_release test_remote_promotion.EvidenceGates -v
+2026-11-23T03:53:46.7364830Z [36;1mpython3 -B -m unittest test_verify_remote_release test_remote_promotion.EvidenceGates -v[0m
+2026-11-23T03:53:46.7395238Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:53:46.7395405Z env:
+2026-11-23T03:53:46.7395529Z   GOTOOLCHAIN: local
+2026-11-23T03:53:46.7395662Z ##[endgroup]
+2026-11-23T03:53:46.8637566Z test_consumer_token_and_exact_attachment_remain_required (test_verify_remote_release.SyntheticWorkflowTests.test_consumer_token_and_exact_attachment_remain_required) ... ok
+2026-11-23T03:53:46.8638869Z test_dialects_do_not_accept_each_others_graphs (test_verify_remote_release.SyntheticWorkflowTests.test_dialects_do_not_accept_each_others_graphs) ... ok
+2026-11-23T03:53:46.8639712Z test_exact_legacy_graph_is_unchanged (test_verify_remote_release.SyntheticWorkflowTests.test_exact_legacy_graph_is_unchanged) ... ok
+2026-11-23T03:53:46.8640776Z test_explicit_empty_v2_terminal_parameters_are_equivalent (test_verify_remote_release.SyntheticWorkflowTests.test_explicit_empty_v2_terminal_parameters_are_equivalent) ... ok
+2026-11-23T03:53:46.8641817Z test_legacy_assignment_identity_and_reference_remain_required (test_verify_remote_release.SyntheticWorkflowTests.test_legacy_assignment_identity_and_reference_remain_required) ... ok
+2026-11-23T03:53:46.8642841Z test_literal_and_nonempty_producer_uuid_remain_required (test_verify_remote_release.SyntheticWorkflowTests.test_literal_and_nonempty_producer_uuid_remain_required) ... ok
+2026-11-23T03:53:46.8643823Z test_malformed_or_value_bearing_terminal_is_rejected (test_verify_remote_release.SyntheticWorkflowTests.test_malformed_or_value_bearing_terminal_is_rejected) ... ok
+2026-11-23T03:53:46.8644849Z test_native_v2_void_preserves_original_actions_and_exact_reference (test_verify_remote_release.SyntheticWorkflowTests.test_native_v2_void_preserves_original_actions_and_exact_reference) ... ok
+2026-11-23T03:53:46.8645806Z test_no_extra_or_interior_action_is_hidden (test_verify_remote_release.SyntheticWorkflowTests.test_no_extra_or_interior_action_is_hidden) ... ok
+2026-11-23T03:53:46.8647113Z test_terminal_nothing_cannot_hide_annotation_or_unknown_metadata (test_verify_remote_release.SyntheticWorkflowTests.test_terminal_nothing_cannot_hide_annotation_or_unknown_metadata) ... ok
+2026-11-23T03:53:46.8648055Z test_v2_requires_a_terminal_void_action (test_verify_remote_release.SyntheticWorkflowTests.test_v2_requires_a_terminal_void_action) ... ok
+2026-11-23T03:53:46.8731531Z test_actual_manifest_files_missing_stale_duplicate_or_wrong_stage_rejected (test_remote_promotion.EvidenceGates.test_actual_manifest_files_missing_stale_duplicate_or_wrong_stage_rejected) ... ok
+2026-11-23T03:53:46.8965490Z test_complete_unit_model_and_causal_corruptions (test_remote_promotion.EvidenceGates.test_complete_unit_model_and_causal_corruptions) ... ok
+2026-11-23T03:53:46.8968893Z test_duplicate_json_keys_rejected (test_remote_promotion.EvidenceGates.test_duplicate_json_keys_rejected) ... ok
+2026-11-23T03:53:46.9004547Z test_entrypoint_requires_exact_current_v2_and_legacy_graphs (test_remote_promotion.EvidenceGates.test_entrypoint_requires_exact_current_v2_and_legacy_graphs) ... ok
+2026-11-23T03:53:46.9011379Z test_incomplete_actual_historical_report_rejected (test_remote_promotion.EvidenceGates.test_incomplete_actual_historical_report_rejected) ... ok
+2026-11-23T03:53:46.9049373Z test_smoke_requires_exact_v2_wire_order_and_unchanged_legacy (test_remote_promotion.EvidenceGates.test_smoke_requires_exact_v2_wire_order_and_unchanged_legacy) ... ok
+2026-11-23T03:53:46.9049887Z 
+2026-11-23T03:53:46.9050040Z ----------------------------------------------------------------------
+2026-11-23T03:53:46.9050340Z Ran 17 tests in 0.042s
+2026-11-23T03:53:46.9050559Z 
+2026-11-23T03:53:46.9050626Z OK
+2026-11-23T03:53:46.9212415Z ##[group]Run python3 -B -m unittest discover -s tools/p10r15 -p 'test_verify_paginate.py' -v
+2026-11-23T03:53:46.9212779Z [36;1mpython3 -B -m unittest discover -s tools/p10r15 -p 'test_verify_paginate.py' -v[0m
+2026-11-23T03:53:46.9213049Z [36;1mgo test -count=1 -timeout=5m -run '^TestP15Paginate' .[0m
+2026-11-23T03:53:46.9213328Z [36;1mpython3 tools/p10r15/verify_paginate.py --report dist/paginate-validation.json[0m
+2026-11-23T03:53:46.9239580Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:53:46.9239721Z env:
+2026-11-23T03:53:46.9239843Z   GOTOOLCHAIN: local
+2026-11-23T03:53:46.9239967Z ##[endgroup]
+2026-11-23T03:53:46.9832779Z test_legacy_graph_is_unchanged_and_has_no_void_boundary (test_verify_paginate.PaginateBoundaryTests.test_legacy_graph_is_unchanged_and_has_no_void_boundary) ... ok
+2026-11-23T03:53:46.9834073Z test_missing_extra_interior_or_moved_nothing_is_rejected (test_verify_paginate.PaginateBoundaryTests.test_missing_extra_interior_or_moved_nothing_is_rejected) ... ok
+2026-11-23T03:53:46.9835080Z test_parameterized_or_annotated_terminal_nothing_is_rejected (test_verify_paginate.PaginateBoundaryTests.test_parameterized_or_annotated_terminal_nothing_is_rejected) ... ok
+2026-11-23T03:53:46.9836082Z test_result_must_bind_the_actual_uncoerced_original_list (test_verify_paginate.PaginateBoundaryTests.test_result_must_bind_the_actual_uncoerced_original_list) ... ok
+2026-11-23T03:53:46.9836975Z test_unknown_macro_effects_remain_rejected (test_verify_paginate.PaginateBoundaryTests.test_unknown_macro_effects_remain_rejected) ... ok
+2026-11-23T03:53:46.9837953Z test_v2_boundary_accepts_omitted_or_empty_parameters_without_mutation (test_verify_paginate.PaginateBoundaryTests.test_v2_boundary_accepts_omitted_or_empty_parameters_without_mutation) ... ok
+2026-11-23T03:53:46.9839052Z test_zero_budget_keeps_list_result_and_separate_main_completion (test_verify_paginate.PaginateBoundaryTests.test_zero_budget_keeps_list_result_and_separate_main_completion) ... ok
+2026-11-23T03:53:46.9839604Z 
+2026-11-23T03:53:46.9839754Z ----------------------------------------------------------------------
+2026-11-23T03:53:46.9840670Z Ran 7 tests in 0.001s
+2026-11-23T03:53:46.9840795Z 
+2026-11-23T03:53:46.9840865Z OK
+2026-11-23T03:53:48.3297015Z ok  	github.com/electrikmilk/cherri	0.241s
+2026-11-23T03:53:51.9855929Z {"causalFaults": 7, "cliCompiles": 32, "cliNegatives": 44, "elapsedSeconds": 3.537, "exactNativeActionRoundtrips": 32, "independentModelCases": 144, "nativeExecuted": 0, "report": "dist/paginate-validation.json", "status": "PASS_SOURCE_AND_MODEL_ONLY"}
+2026-11-23T03:53:52.0021817Z ##[group]Run python3 tools/p10r15/verify_storage_probes.py dist/cherri-linux-amd64 --output dist/storage-probe-validation.json
+2026-11-23T03:53:52.0022342Z [36;1mpython3 tools/p10r15/verify_storage_probes.py dist/cherri-linux-amd64 --output dist/storage-probe-validation.json[0m
+2026-11-23T03:53:52.0049718Z shell: /usr/bin/bash -e {0}
+2026-11-23T03:53:52.0049875Z env:
+2026-11-23T03:53:52.0049994Z   GOTOOLCHAIN: local
+2026-11-23T03:53:52.0050119Z ##[endgroup]
+2026-11-23T03:54:16.9436644Z Traceback (most recent call last):
+2026-11-23T03:54:16.9438317Z   File "/home/runner/work/cherri/cherri/tools/p10r15/verify_storage_probes.py", line 200, in <module>
+2026-11-23T03:54:16.9438722Z     main()
+2026-11-23T03:54:16.9438859Z     ~~~~^^
+2026-11-23T03:54:16.9439096Z   File "/home/runner/work/cherri/cherri/tools/p10r15/verify_storage_probes.py", line 128, in main
+2026-11-23T03:54:16.9439560Z     phase0 = checked([sys.executable, "-X", "utf8", QA / "validate_macro_fixtures.py",
+2026-11-23T03:54:16.9440482Z                       ROOT, compiler], "actual Phase 0 CLI and publication gates", 180)
+2026-11-23T03:54:16.9440945Z   File "/home/runner/work/cherri/cherri/tools/p10r15/verify_storage_probes.py", line 33, in checked
+2026-11-23T03:54:16.9441272Z     raise RuntimeError(label + " exited " + str(result.returncode) +
+2026-11-23T03:54:16.9441653Z                        ": " + (result.stdout + result.stderr)[-1800:])
+2026-11-23T03:54:16.9441942Z RuntimeError: actual Phase 0 CLI and publication gates exited 1: Traceback (most recent call last):
+2026-11-23T03:54:16.9442368Z   File "/home/runner/work/cherri/cherri/tools/shortcuts-simulator-qa/validate_macro_fixtures.py", line 152, in <module>
+2026-11-23T03:54:16.9442823Z     damaged[-1]["WFWorkflowActionParameters"]["GroupingIdentifier"] = "00000000-0000-0000-0000-000000000000"
+2026-11-23T03:54:16.9443111Z     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-23T03:54:16.9443288Z KeyError: 'WFWorkflowActionParameters'
+2026-11-23T03:54:16.9443395Z 
+2026-11-23T03:54:16.9562147Z ##[error]Process completed with exit code 1.
+2026-11-23T03:54:16.9656229Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:16.9656556Z with:
+2026-11-23T03:54:16.9656689Z   name: cherri-signing-fault-evidence
+2026-11-23T03:54:16.9656946Z   path: dist/signing-protocol-exit-evidence.json
+dist/signing-pinned-build-identity.json
+
+2026-11-23T03:54:16.9657203Z   if-no-files-found: ignore
+2026-11-23T03:54:16.9657347Z   compression-level: 6
+2026-11-23T03:54:16.9657470Z   overwrite: false
+2026-11-23T03:54:16.9657598Z   include-hidden-files: false
+2026-11-23T03:54:16.9657728Z env:
+2026-11-23T03:54:16.9657836Z   GOTOOLCHAIN: local
+2026-11-23T03:54:16.9657961Z ##[endgroup]
+2026-11-23T03:54:17.0768261Z (node:63323) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:17.0768819Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:17.0801167Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-23T03:54:17.0805153Z The least common ancestor is /home/runner/work/cherri/cherri/dist. This will be the root directory of the artifact
+2026-11-23T03:54:17.0805809Z No files were found with the provided path: dist/signing-protocol-exit-evidence.json
+2026-11-23T03:54:17.0806376Z dist/signing-pinned-build-identity.json. No artifacts will be uploaded.
+2026-11-23T03:54:17.0947610Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:17.0947836Z with:
+2026-11-23T03:54:17.0948011Z   name: cherri-macro-compatibility-evidence
+2026-11-23T03:54:17.0948218Z   path: dist/macro-compatibility-isolation.json
+2026-11-23T03:54:17.0948398Z   if-no-files-found: ignore
+2026-11-23T03:54:17.0948544Z   compression-level: 6
+2026-11-23T03:54:17.0948674Z   overwrite: false
+2026-11-23T03:54:17.0948805Z   include-hidden-files: false
+2026-11-23T03:54:17.0948943Z env:
+2026-11-23T03:54:17.0949054Z   GOTOOLCHAIN: local
+2026-11-23T03:54:17.0949180Z ##[endgroup]
+2026-11-23T03:54:17.2149793Z (node:63335) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:17.2150255Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:17.2191118Z With the provided path, there will be 1 file uploaded
+2026-11-23T03:54:17.2192585Z Artifact name is valid!
+2026-11-23T03:54:17.2193022Z Root directory input is valid!
+2026-11-23T03:54:17.5109695Z Beginning upload of artifact content to blob storage
+2026-11-23T03:54:17.5240609Z (node:63335) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-23T03:54:17.6686899Z Uploaded bytes 2478
+2026-11-23T03:54:17.7120143Z Finished uploading artifact content to blob storage!
+2026-11-23T03:54:17.7120689Z SHA256 digest of uploaded artifact zip is 08508488cc90762eeb3e42cd52ace02ed8e307d2d2401bca345cdb3cfa927de2
+2026-11-23T03:54:17.7122383Z Finalizing artifact upload
+2026-11-23T03:54:18.0614272Z Artifact cherri-macro-compatibility-evidence.zip successfully finalized. Artifact ID 14788377329
+2026-11-23T03:54:18.0615139Z Artifact cherri-macro-compatibility-evidence has been successfully uploaded! Final size is 2478 bytes. Artifact ID is 14788377329
+2026-11-23T03:54:18.0619185Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/45108334792/artifacts/14788377329
+2026-11-23T03:54:18.0751247Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:18.0751420Z with:
+2026-11-23T03:54:18.0751557Z   name: cherri-macro-contract-evidence
+2026-11-23T03:54:18.0751746Z   path: dist/macro-contracts/
+2026-11-23T03:54:18.0751900Z   if-no-files-found: ignore
+2026-11-23T03:54:18.0752046Z   compression-level: 6
+2026-11-23T03:54:18.0752181Z   overwrite: false
+2026-11-23T03:54:18.0752313Z   include-hidden-files: false
+2026-11-23T03:54:18.0752454Z env:
+2026-11-23T03:54:18.0752572Z   GOTOOLCHAIN: local
+2026-11-23T03:54:18.0752701Z ##[endgroup]
+2026-11-23T03:54:18.1868607Z (node:63348) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:18.1869724Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:18.1931739Z With the provided path, there will be 3 files uploaded
+2026-11-23T03:54:18.1932192Z Artifact name is valid!
+2026-11-23T03:54:18.1932479Z Root directory input is valid!
+2026-11-23T03:54:18.4639732Z Beginning upload of artifact content to blob storage
+2026-11-23T03:54:18.4783792Z (node:63348) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-23T03:54:18.6329940Z Uploaded bytes 15162
+2026-11-23T03:54:18.6701100Z Finished uploading artifact content to blob storage!
+2026-11-23T03:54:18.6701671Z SHA256 digest of uploaded artifact zip is aeb0d8b337e726a4884834968fc410edc33bcca8b5199af2be5d12340d7bd780
+2026-11-23T03:54:18.6702131Z Finalizing artifact upload
+2026-11-23T03:54:19.1084137Z Artifact cherri-macro-contract-evidence.zip successfully finalized. Artifact ID 14788541790
+2026-11-23T03:54:19.1084746Z Artifact cherri-macro-contract-evidence has been successfully uploaded! Final size is 15162 bytes. Artifact ID is 14788541790
+2026-11-23T03:54:19.1088988Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/45108334792/artifacts/14788541790
+2026-11-23T03:54:19.1246385Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:19.1246568Z with:
+2026-11-23T03:54:19.1246703Z   name: cherri-debug-export-evidence
+2026-11-23T03:54:19.1246888Z   path: dist/debug-export-validation.json
+2026-11-23T03:54:19.1247062Z   if-no-files-found: warn
+2026-11-23T03:54:19.1247221Z   compression-level: 6
+2026-11-23T03:54:19.1247354Z   overwrite: false
+2026-11-23T03:54:19.1247498Z   include-hidden-files: false
+2026-11-23T03:54:19.1247641Z env:
+2026-11-23T03:54:19.1247765Z   GOTOOLCHAIN: local
+2026-11-23T03:54:19.1247896Z ##[endgroup]
+2026-11-23T03:54:19.2356590Z (node:63360) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:19.2357014Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:19.2387643Z With the provided path, there will be 1 file uploaded
+2026-11-23T03:54:19.2400784Z Artifact name is valid!
+2026-11-23T03:54:19.2401332Z Root directory input is valid!
+2026-11-23T03:54:19.4688496Z Beginning upload of artifact content to blob storage
+2026-11-23T03:54:19.4798451Z (node:63360) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-23T03:54:19.6071383Z Uploaded bytes 4157
+2026-11-23T03:54:19.6439554Z Finished uploading artifact content to blob storage!
+2026-11-23T03:54:19.6440164Z SHA256 digest of uploaded artifact zip is 951cf7b7370c8ab30887cf8b306c78ac9b8b614a79ea837dc5b1bcdecfe879b7
+2026-11-23T03:54:19.6440967Z Finalizing artifact upload
+2026-11-23T03:54:19.9717317Z Artifact cherri-debug-export-evidence.zip successfully finalized. Artifact ID 14787863694
+2026-11-23T03:54:19.9718052Z Artifact cherri-debug-export-evidence has been successfully uploaded! Final size is 4157 bytes. Artifact ID is 14787863694
+2026-11-23T03:54:19.9723043Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/45108334792/artifacts/14787863694
+2026-11-23T03:54:19.9851575Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:19.9851752Z with:
+2026-11-23T03:54:19.9851884Z   name: cherri-paginate-evidence
+2026-11-23T03:54:19.9852056Z   path: dist/paginate-validation.json
+2026-11-23T03:54:19.9852221Z   if-no-files-found: warn
+2026-11-23T03:54:19.9852365Z   compression-level: 6
+2026-11-23T03:54:19.9852502Z   overwrite: false
+2026-11-23T03:54:19.9852637Z   include-hidden-files: false
+2026-11-23T03:54:19.9852782Z env:
+2026-11-23T03:54:19.9852902Z   GOTOOLCHAIN: local
+2026-11-23T03:54:19.9853154Z ##[endgroup]
+2026-11-23T03:54:20.0966758Z (node:63372) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:20.0967173Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:20.1011133Z With the provided path, there will be 1 file uploaded
+2026-11-23T03:54:20.1031531Z Artifact name is valid!
+2026-11-23T03:54:20.1031887Z Root directory input is valid!
+2026-11-23T03:54:20.3875864Z Beginning upload of artifact content to blob storage
+2026-11-23T03:54:20.3993911Z (node:63372) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-23T03:54:20.5376999Z Uploaded bytes 4869
+2026-11-23T03:54:20.5751303Z Finished uploading artifact content to blob storage!
+2026-11-23T03:54:20.5751716Z SHA256 digest of uploaded artifact zip is 8c63a943d2170ac2dab031673f5cc6cb0e08300da14194a3daec9b85186c6b13
+2026-11-23T03:54:20.5752396Z Finalizing artifact upload
+2026-11-23T03:54:20.9542628Z Artifact cherri-paginate-evidence.zip successfully finalized. Artifact ID 14788083122
+2026-11-23T03:54:20.9543281Z Artifact cherri-paginate-evidence has been successfully uploaded! Final size is 4869 bytes. Artifact ID is 14788083122
+2026-11-23T03:54:20.9547677Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/45108334792/artifacts/14788083122
+2026-11-23T03:54:20.9691899Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:20.9692086Z with:
+2026-11-23T03:54:20.9692227Z   name: cherri-storage-probe-evidence
+2026-11-23T03:54:20.9692411Z   path: dist/storage-probe-validation.json
+2026-11-23T03:54:20.9692595Z   if-no-files-found: warn
+2026-11-23T03:54:20.9692748Z   compression-level: 6
+2026-11-23T03:54:20.9692889Z   overwrite: false
+2026-11-23T03:54:20.9693029Z   include-hidden-files: false
+2026-11-23T03:54:20.9693176Z env:
+2026-11-23T03:54:20.9693316Z   GOTOOLCHAIN: local
+2026-11-23T03:54:20.9693456Z ##[endgroup]
+2026-11-23T03:54:21.0762984Z (node:63384) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:21.0763502Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:21.0785660Z ##[warning]No files were found with the provided path: dist/storage-probe-validation.json. No artifacts will be uploaded.
+2026-11-23T03:54:21.0919625Z ##[group]Run actions/upload-artifact@v4
+2026-11-23T03:54:21.0919815Z with:
+2026-11-23T03:54:21.0919968Z   name: cherri-native-continuation-evidence
+2026-11-23T03:54:21.0920239Z   path: dist/native-continuation-validation.json
+dist/continuation-python.log
+
+2026-11-23T03:54:21.0920677Z   if-no-files-found: warn
+2026-11-23T03:54:21.0920837Z   compression-level: 6
+2026-11-23T03:54:21.0920985Z   overwrite: false
+2026-11-23T03:54:21.0921133Z   include-hidden-files: false
+2026-11-23T03:54:21.0921290Z env:
+2026-11-23T03:54:21.0921438Z   GOTOOLCHAIN: local
+2026-11-23T03:54:21.0921597Z ##[endgroup]
+2026-11-23T03:54:21.2011337Z (node:63396) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-23T03:54:21.2012030Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-23T03:54:21.2036855Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-23T03:54:21.2042567Z The least common ancestor is /home/runner/work/cherri/cherri/dist. This will be the root directory of the artifact
+2026-11-23T03:54:21.2044568Z ##[warning]No files were found with the provided path: dist/native-continuation-validation.json
+dist/continuation-python.log. No artifacts will be uploaded.
+2026-11-23T03:54:21.2244189Z Post job cleanup.
+2026-11-23T03:54:21.2837987Z [command]/usr/bin/git version
+2026-11-23T03:54:21.2872874Z git version 2.56.1
+2026-11-23T03:54:21.2899220Z Temporarily overriding HOME='/home/runner/work/_temp/ff0fc89d-d573-4937-b57e-51f401223b6e' before making global git config changes
+2026-11-23T03:54:21.2900259Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T03:54:21.2903369Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri
+2026-11-23T03:54:21.2934092Z Removing SSH command configuration
+2026-11-23T03:54:21.2938471Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T03:54:21.2969545Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T03:54:21.3230332Z Removing HTTP extra header
+2026-11-23T03:54:21.3232226Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T03:54:21.3264589Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T03:54:21.3525262Z Removing includeIf entries pointing to credentials config files
+2026-11-23T03:54:21.3531273Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T03:54:21.3555424Z includeif.gitdir:/home/runner/work/cherri/cherri/.git.path
+2026-11-23T03:54:21.3555966Z includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path
+2026-11-23T03:54:21.3556345Z includeif.gitdir:/github/workspace/.git.path
+2026-11-23T03:54:21.3556584Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T03:54:21.3563374Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/.git.path
+2026-11-23T03:54:21.3583768Z /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3592266Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3623282Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path
+2026-11-23T03:54:21.3643177Z /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3651378Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3678943Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-23T03:54:21.3697676Z /github/runner_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3704351Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3731337Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T03:54:21.3749797Z /github/runner_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3762616Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config
+2026-11-23T03:54:21.3790963Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T03:54:21.4052157Z Removing credentials config '/home/runner/work/_temp/git-credentials-1b37a929-5caf-453c-a6f7-c02c8c4aabdd.config'
+2026-11-23T03:54:21.4201749Z Cleaning up orphan processes
+2026-11-23T03:54:21.4442797Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,0 +1,219 @@
+{
+  "schema": "cherri.storage-phase0-failure-analysis/v1",
+  "created_utc": "2026-11-23T04:02:24.320352+00:00",
+  "source_sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "run_id": 45108334792,
+  "job_id": 137474681088,
+  "original_log": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k11-frozen-ci-20261123/openminis-storage-failure-intake-01/job-137474681088.original.log",
+    "exit_code": 0,
+    "start": "2026-11-23T03:58:15.870453+00:00",
+    "elapsed_seconds": 1.4711519805714488,
+    "bytes": 123079,
+    "sha256": "63fa6f563bde398d0248ba67145bcbba2c16bfe2c78d98000f7b26544873fe09"
+  },
+  "cause": {
+    "fixture": "CherriTypedDefaultsPOC",
+    "failed_file": "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+    "line": 152,
+    "exception": "KeyError: WFWorkflowActionParameters",
+    "failed_action": "wrong-dispatch-closure negative mutation indexes final completion action instead of preceding dispatcher End If",
+    "positive_gate": "The actual K11 call stack is after successful Phase0 compilation and verify_adapter_graph; the unchanged verifier requires Output, End If, parameter-free Nothing. No raw K11 compiled plist was uploaded, so no new exact plist hash is invented.",
+    "retained_graph_provenance": {
+      "kind": "RETAINED_ACTUAL_LOCAL_COMPILE_FOR_ORACLE_MUTATION_TESTS",
+      "compilerSource": "46d828b6f514ffb12222ff8125253e6ba9c9d415",
+      "compilerSHA256": "59fb40c42ef1774fa9d1a451b3c653865e264b6e2978a94c4439ec1448a13a4a",
+      "appleRuntime": "NOT_RUN",
+      "formalAcceptanceGranted": false
+    },
+    "retained_actual_graph_tails": [
+      {
+        "fixtureId": "CherriBindingCapturePOC",
+        "sourceSHA256": "31916ae7bcf533a4968b43aa898df9344674dca29e350331643ed239163f1a99",
+        "nativeActionCount": 33,
+        "tail": [
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+            "WFWorkflowActionParameters": {
+              "CustomOutputName": "qaFinalSummary",
+              "UUID": "E8F3CD96-4D8C-49AE-ACE0-3329C23D5072",
+              "WFTextActionText": {
+                "Value": {
+                  "attachmentsByRange": {
+                    "{33, 1}": {
+                      "Type": "Variable",
+                      "VariableName": "qaClipboard64"
+                    },
+                    "{35, 1}": {
+                      "OutputName": "qaTraceEnvelope",
+                      "OutputUUID": "EE83E332-80E9-4371-A5DB-48A07C3FC9AC",
+                      "Type": "ActionOutput"
+                    }
+                  },
+                  "string": "CHERRI_QA_BINDING_CAPTURE_RESULT:\ufffc\n\ufffc"
+                },
+                "WFSerializationType": "WFTextTokenString"
+              }
+            }
+          },
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.comment",
+            "WFWorkflowActionParameters": {
+              "WFCommentActionText": "ANCHOR_CARD_28_BOTTOM_FOOTER"
+            }
+          },
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.output",
+            "WFWorkflowActionParameters": {
+              "WFOutput": {
+                "Value": {
+                  "attachmentsByRange": {
+                    "{0, 1}": {
+                      "OutputName": "qaFinalSummary",
+                      "OutputUUID": "E8F3CD96-4D8C-49AE-ACE0-3329C23D5072",
+                      "Type": "ActionOutput"
+                    }
+                  },
+                  "string": "\ufffc"
+                },
+                "WFSerializationType": "WFTextTokenString"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "fixtureId": "CherriTypedDefaultsPOC",
+        "sourceSHA256": "6b4f62c80d2e63ca53ee68c769aae13dc84b3eca766046481d6cd3b607b9efbe",
+        "nativeActionCount": 90,
+        "tail": [
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.output",
+            "WFWorkflowActionParameters": {
+              "WFOutput": {
+                "Value": {
+                  "attachmentsByRange": {
+                    "{0, 1}": {
+                      "OutputName": "qaFinalSummary",
+                      "OutputUUID": "04E59169-9A8A-42D2-9DE2-7B60A6549DE3",
+                      "Type": "ActionOutput"
+                    }
+                  },
+                  "string": "\ufffc"
+                },
+                "WFSerializationType": "WFTextTokenString"
+              }
+            }
+          },
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+            "WFWorkflowActionParameters": {
+              "GroupingIdentifier": "8B2F77A1-02D7-4996-B71F-8C1BD58296B3",
+              "WFControlFlowMode": 2
+            }
+          },
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.nothing"
+          }
+        ]
+      }
+    ]
+  },
+  "proposed_change": {
+    "path": "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+    "line": 152,
+    "before_index": -1,
+    "after_index": -2,
+    "patch_sha256": "046c8feb0bf31d1a16f90b05c3e865cdf30639f9e5b880dc69477799569b579f",
+    "graph_validator_changed": false,
+    "fixture_changed": false,
+    "compiler_changed": false,
+    "deadline_changed": false,
+    "mutation_inventory_changed": false
+  },
+  "existing_controls": "test_binding_defaults_probe.py:105-154 already retains healthy actual graphs and rejects missing/extra/parameterized completion, incorrect closure mode/group and redirected output. No new duplicated suite is proposed.",
+  "downstream_review": {
+    "storage": "Only the shared Phase0 negative mutation is a demonstrated failure; exact native roundtrips remain unmodified.",
+    "unicode_mutation": "The later output mutation operates on an explicit terminal Output in a fixture without function dispatcher; no change proposed.",
+    "continuation": "All four fixture sources end in output(...) without function definitions. finishMainOutput preserves terminal Output; their single UUID-bearing prefix Nothing is the actual debugClearLogs implementation. No generic terminal Nothing admission is justified or proposed.",
+    "status": "STATIC_SOURCE_REVIEW_ONLY; downstream original producer has not executed in K11"
+  },
+  "source_bindings": [
+    {
+      "path": "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+      "sha256": "4e7cf4499b5688d72a611c48cc76f956e0fb7eb368e7403617fa51abb067bebb",
+      "bytes": 24609
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/binding_defaults_probe.py",
+      "sha256": "b56ec0a9c797d41167581a706ba688f34fe405918fa1a5740612799d943e49c7",
+      "bytes": 9498
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/test_binding_defaults_probe.py",
+      "sha256": "015c2f8f1a8ba2b1fde34b5785a64268849d1192cf6c72d97c4b86c3269ed054",
+      "bytes": 11266
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/testdata/binding_defaults_compiled_graphs.json",
+      "sha256": "bd84c98f349f64657ae03887041197983dbcc98dc183cc27915fa11c5cf9b07f",
+      "bytes": 88176
+    },
+    {
+      "path": "tools/p10r15/verify_storage_probes.py",
+      "sha256": "737d418bd33fd72ebf6a89177d705607f6b0b9d3e50c13e9b1614189ca7dcd80",
+      "bytes": 12193
+    },
+    {
+      "path": "tools/p10r15/verify_native_continuation_probes.py",
+      "sha256": "5b2fe8df0e10eb79eece86e22b97d909cd493deb88b2f2318578da5594d9dbc5",
+      "bytes": 27988
+    },
+    {
+      "path": "internal/language/lower/main_output.go",
+      "sha256": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619",
+      "bytes": 1917
+    },
+    {
+      "path": "debug_stdlib.go",
+      "sha256": "b6ccb989cd957223d4c00eef90870b1d2742b03806ea229df73fb384d6135c18",
+      "bytes": 52742
+    },
+    {
+      "path": ".github/workflows/openminis-skill.yml",
+      "sha256": "b8ab27028149ed357b41a48dc09e83ba5e015b4b5b7f3bd224bfbd9ac4532210",
+      "bytes": 18573
+    },
+    {
+      "path": "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json",
+      "sha256": "2ff3682c698167364c6df7d57a60ae007d652cb27e6ae6a7703c72b684020724",
+      "bytes": 2161
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-cross-run-v2.cherri",
+      "sha256": "74be70ae304570aa3e17d3659ebbc4844b57a4376c96cceb01ab6ea73f5a3a61",
+      "bytes": 1587
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-http-json-control-v2.cherri",
+      "sha256": "c6c2cbb51d8e34c0caf55aa87bed1a50372155d7471f8a62a9e69532c0462e54",
+      "bytes": 1470
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-http-json-fetch-v2.cherri",
+      "sha256": "325f64e30728020d96694817d8c3c0e1a969fbc6a2a12bc223bbaa84bcf87b39",
+      "bytes": 1574
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri",
+      "sha256": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99",
+      "bytes": 1305
+    }
+  ],
+  "activity": {
+    "new_producer_runs": 0,
+    "source_edits": 0,
+    "provider_requests": 0,
+    "new_remote_polls": 0
+  }
+}

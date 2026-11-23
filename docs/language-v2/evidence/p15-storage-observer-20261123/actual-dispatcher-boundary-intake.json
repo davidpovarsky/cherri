@@ -1,0 +1,72 @@
+{
+  "sourceCommit": "db3b01672e0e09f7898bf11bef7b11be83b51a21",
+  "compilerBinarySha256": "b26d3a236e2813915496125f394bd8e27daead04cda6166dea64292e8f25cd59",
+  "plistSha256": "bd22f74b62743cb357328bbe7c1bfffdc81beed1b089152580e6db049bccf7b0",
+  "actionCount": 92,
+  "actualTail": [
+    {
+      "index": 89,
+      "identifier": "is.workflow.actions.output",
+      "parameters": {
+        "WFOutput": {
+          "Value": {
+            "attachmentsByRange": {
+              "{0, 1}": {
+                "OutputName": "qaFinalSummary",
+                "OutputUUID": "8BF93A6F-542C-424A-8B71-E435C98BC230",
+                "Type": "ActionOutput"
+              }
+            },
+            "string": "\ufffc"
+          },
+          "WFSerializationType": "WFTextTokenString"
+        }
+      },
+      "keys": [
+        "WFWorkflowActionIdentifier",
+        "WFWorkflowActionParameters"
+      ]
+    },
+    {
+      "index": 90,
+      "identifier": "is.workflow.actions.conditional",
+      "parameters": {
+        "GroupingIdentifier": "2D04B246-5949-4ABB-956A-64B072F1EEC6",
+        "WFControlFlowMode": 2
+      },
+      "keys": [
+        "WFWorkflowActionIdentifier",
+        "WFWorkflowActionParameters"
+      ]
+    },
+    {
+      "index": 91,
+      "identifier": "is.workflow.actions.nothing",
+      "parameters": null,
+      "keys": [
+        "WFWorkflowActionIdentifier"
+      ]
+    }
+  ],
+  "originalFailureTarget": "last action has no WFWorkflowActionParameters",
+  "correctedMutationTarget": "penultimate conditional closure retains its control-flow group contract",
+  "bindingCausalResult": {
+    "graph": {
+      "status": "PASS_LOCAL_GRAPH_ONLY",
+      "actualClipboardObservation": true,
+      "maximumEncodedClipboardCharacters": 512,
+      "originalShortcutName": "CherriTypedDefaultsPOC",
+      "appleRuntime": "NOT_RUN"
+    },
+    "rejectedGraphMutations": [
+      "wrong-observation",
+      "raised-cap",
+      "hardcoded-summary",
+      "wrong-output-edge",
+      "unexpected-tail",
+      "wrong-self-call-name",
+      "wrong-self-call-identity",
+      "wrong-dispatch-closure"
+    ]
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "kind": "STORAGE_OBSERVER_QUALIFICATION",
+  "sourceCommit": "db3b01672e0e09f7898bf11bef7b11be83b51a21",
+  "startedUtc": "2026-11-23T04:09:22.443915+00:00",
+  "completedUtc": "2026-11-23T04:11:01.670974+00:00",
+  "elapsedSeconds": 99.22704864572734,
+  "status": "PASS",
+  "sourceStateUnchanged": true,
+  "stages": [
+    {
+      "kind": "ORIGINAL_PRODUCER_PROCESS",
+      "stage": "storage-attempt-01",
+      "argv": [
+        "/usr/bin/python3",
+        "tools/p10r15/verify_storage_probes.py",
+        "/dev/shm/cherri-p10r15-runtime-20261123/cherri-storage-observer-source/artifacts/p15-storage-qualification/cherri",
+        "--build",
+        "--output",
+        "/mnt/development/projects/evidence/cherri-p10r15-storage-observer-20261123/storage-attempt-01/validation.json"
+      ],
+      "cwd": "/dev/shm/cherri-p10r15-runtime-20261123/cherri-storage-observer-source",
+      "sourceCommit": "db3b01672e0e09f7898bf11bef7b11be83b51a21",
+      "startedUtc": "2026-11-23T04:09:22.444068+00:00",
+      "additionalOuterBoundSeconds": null,
+      "state": "COMPLETED",
+      "noLiveProviderEnvironment": true,
+      "environmentNames": [
+        "GOCACHE",
+        "GOMODCACHE",
+        "GOTMPDIR",
+        "GOTOOLCHAIN",
+        "HOME",
+        "LANG",
+        "LOGNAME",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "SHELL",
+        "TMPDIR",
+        "USER"
+      ],
+      "exitCode": 0,
+      "completedUtc": "2026-11-23T04:10:59.572681+00:00",
+      "durationSeconds": 97.1284693479538,
+      "stdout.original.log": {
+        "bytes": 449,
+        "sha256": "a7f38c2907557ad9fd009fadf16f70d9d39b7f72d97ea383243fb88557619838"
+      },
+      "stderr.original.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "kind": "ORIGINAL_PRODUCER_PROCESS",
+      "stage": "binding-control-attempt-01",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_binding_defaults_probe.BindingDefaultsProbeTests.test_retained_actual_compiled_adapters_require_exact_dispatcher_completion"
+      ],
+      "cwd": "/dev/shm/cherri-p10r15-runtime-20261123/cherri-storage-observer-source",
+      "sourceCommit": "db3b01672e0e09f7898bf11bef7b11be83b51a21",
+      "startedUtc": "2026-11-23T04:10:59.609312+00:00",
+      "additionalOuterBoundSeconds": 60,
+      "state": "COMPLETED",
+      "noLiveProviderEnvironment": true,
+      "environmentNames": [
+        "GOCACHE",
+        "GOMODCACHE",
+        "GOTMPDIR",
+        "GOTOOLCHAIN",
+        "HOME",
+        "LANG",
+        "LOGNAME",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "PYTHONPATH",
+        "SHELL",
+        "TMPDIR",
+        "USER"
+      ],
+      "exitCode": 0,
+      "completedUtc": "2026-11-23T04:10:59.723530+00:00",
+      "durationSeconds": 0.11408404354006052,
+      "stdout.original.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr.original.log": {
+        "bytes": 310,
+        "sha256": "c3c5eb58172a0e8e0a12ec566bcebeae5c3d2de85de588c7d028385b07efdf29"
+      }
+    },
+    {
+      "kind": "ORIGINAL_PRODUCER_PROCESS",
+      "stage": "continuation-attempt-01",
+      "argv": [
+        "/usr/bin/python3",
+        "tools/p10r15/verify_native_continuation_probes.py",
+        "/dev/shm/cherri-p10r15-runtime-20261123/cherri-storage-observer-source/artifacts/p15-storage-qualification/cherri",
+        "--output",
+        "/mnt/development/projects/evidence/cherri-p10r15-storage-observer-20261123/continuation-attempt-01/validation.json"
+      ],
+      "cwd": "/dev/shm/cherri-p10r15-runtime-20261123/cherri-storage-observer-source",
+      "sourceCommit": "db3b01672e0e09f7898bf11bef7b11be83b51a21",
+      "startedUtc": "2026-11-23T04:10:59.724042+00:00",
+      "additionalOuterBoundSeconds": null,
+      "state": "COMPLETED",
+      "noLiveProviderEnvironment": true,
+      "environmentNames": [
+        "GOCACHE",
+        "GOMODCACHE",
+        "GOTMPDIR",
+        "GOTOOLCHAIN",
+        "HOME",
+        "LANG",
+        "LOGNAME",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "SHELL",
+        "TMPDIR",
+        "USER"
+      ],
+      "exitCode": 0,
+      "completedUtc": "2026-11-23T04:11:01.617757+00:00",
+      "durationSeconds": 1.8936196994036436,
+      "stdout.original.log": {
+        "bytes": 230,
+        "sha256": "ad1a7fb7f0822f594163dc1ff4a98d1a11a7552000217b70525c816c8d6e7d51"
+      },
+      "stderr.original.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "failure": null,
+  "nativeExecuted": 0,
+  "signing": "NOT_RUN",
+  "providerCalls": 0,
+  "aggregateCeilingSeconds": 2700,
+  "aggregateTerminationGraceSeconds": 30,
+  "compiler": {
+    "path": "/dev/shm/cherri-p10r15-runtime-20261123/cherri-storage-observer-source/artifacts/p15-storage-qualification/cherri",
+    "bytes": 24181558,
+    "sha256": "b26d3a236e2813915496125f394bd8e27daead04cda6166dea64292e8f25cd59"
+  }
+}

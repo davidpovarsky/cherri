@@ -1,0 +1,47 @@
+{
+  "source_sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "scope": "Static directly-related terminal boundary cross-check only; no compile or producer execution",
+  "rows": [
+    {
+      "module": "native_boundary_diagnostic.py",
+      "fixture": "tools/shortcuts-simulator-qa/fixtures/qa-native-boundary-diagnostic-v2.cherri",
+      "source_sha256": "30f7ea3431a917b4b8f73b200ef113fd833cd0e522f9932b1a714e53bfd4e8dd",
+      "function_declaration_lines": [],
+      "last_noncomment_source": [
+        97,
+        "output(boundarySummary)"
+      ]
+    },
+    {
+      "module": "file_materialization_diagnostic.py",
+      "fixture": "tools/shortcuts-simulator-qa/fixtures/qa-file-materialization-diagnostic-v2.cherri",
+      "source_sha256": "f008fe73c47c9d90695b965e585b748a62698f6e4bb8cad97b21ddf158717863",
+      "function_declaration_lines": [],
+      "last_noncomment_source": [
+        98,
+        "output(finalSummary)"
+      ]
+    },
+    {
+      "module": "f04_record_empty_probe.py",
+      "fixture": "tools/shortcuts-simulator-qa/fixtures/qa-f04-record-empty-v2.cherri",
+      "source_sha256": "71e107ee20de044274bac55b15439fe86cdb06b6b793d29a7beec49b38d320f4",
+      "function_declaration_lines": [],
+      "last_noncomment_source": [
+        38,
+        "output(finalSummary)"
+      ]
+    },
+    {
+      "module": "export_unicode_diagnostic.py",
+      "fixture": "tools/shortcuts-simulator-qa/fixtures/qa-export-unicode-diagnostic-v2.cherri",
+      "source_sha256": "4bbf88356f04bbf7ad2f07c1cc30874e611a0bcd7314a38c82a56b1ba5eeb3aa",
+      "function_declaration_lines": [],
+      "last_noncomment_source": [
+        85,
+        "output(finalSummary)"
+      ]
+    }
+  ],
+  "conclusion": "Explicit terminal Output paths do not need a main-completion allowance. Their existing full-graph output and corruption checks remain unchanged."
+}
