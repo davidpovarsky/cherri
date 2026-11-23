@@ -31,6 +31,7 @@ func p15SchemaIsNumericZero(value any) bool {
 // worktree. The Number replacement is an intentional temporary mutation, not a
 // claim that Apple accepts a Number for Quick Look's ordinary Bool parameter.
 func TestP15SchemaOptionalDeclarationPropagation(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	repo := p15SchemaAcceptanceWorktree(t)
 	actionPath := filepath.Join(repo, "actions/basic.cherri")
 	original, err := os.ReadFile(actionPath)

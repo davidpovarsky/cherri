@@ -127,6 +127,7 @@ func p15RP08Default(t *testing.T, parameter map[string]any, present bool, value 
 }
 
 func TestP15RP08SchemaIdentityProduction(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	var repo = p15SchemaReplica(t)
 	var binaries = t.TempDir()
 	var compiler = filepath.Join(binaries, "compiler.exe")
