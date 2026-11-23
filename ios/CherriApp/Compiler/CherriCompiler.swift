@@ -43,9 +43,60 @@ struct CompilationDiagnostic: Error, Identifiable, Equatable, Sendable {
 }
 
 struct CompiledShortcut: Sendable {
+    let id = UUID()
     let name: String
+    let actualMode: String
     let plist: Data
     let signedShortcut: Data?
+    let sourceRequest: CherriEditorBuildRequest
+    let previewSourceMap: CherriPreviewSourceMap?
+}
+
+/// Compiler-produced UTF-8 spans are opaque to the Swift editor. Only the
+/// compiler's explicit preview API validates and applies this same-build map.
+struct CherriPreviewSourceMap: Codable, Sendable {
+    struct Parameter: Codable, Sendable {
+        let wireKey: String
+        let argumentStart: Int
+        let argumentEnd: Int
+    }
+
+    struct Entry: Codable, Sendable {
+        let actionIndex: Int
+        let actionIdentifier: String
+        let callStart: Int
+        let callEnd: Int
+        let parameters: [Parameter]
+    }
+
+    let version: Int
+    let name: String
+    let mode: String
+    let buildProfile: String
+    let sourceSHA256: String
+    let plistSHA256: String
+    let actionCount: Int
+    let entries: [Entry]
+    let integritySHA256: String
+
+    func uniqueParameterIndex(actionIdentifier: String, wireKey: String) -> Int? {
+        let matches = entries.filter { $0.actionIdentifier == actionIdentifier }.flatMap { entry in
+            entry.parameters.filter { $0.wireKey == wireKey }.map { _ in entry.actionIndex }
+        }
+        return matches.count == 1 ? matches[0] : nil
+    }
+}
+
+private struct CherriPreviewSourceEditRequest: Encodable {
+    let source: String
+    let name: String
+    let mode: String
+    let buildProfile: String
+    let plistBase64: String
+    let previewSourceMap: CherriPreviewSourceMap
+    let actionIndex: Int
+    let parameterKey: String
+    let newExpression: String
 }
 
 struct CherriActionParameter: Decodable, Hashable, Sendable {
@@ -151,8 +202,10 @@ struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
 private struct CompilerBridgeResponse: Decodable {
     let ok: Bool
     let name: String?
+    let mode: String?
     let plistBase64: String?
     let signedBase64: String?
+    let previewSourceMap: CherriPreviewSourceMap?
     let source: String?
     let error: String?
     let line: Int?
@@ -345,6 +398,39 @@ enum CherriCompiler {
         }.value
     }
 
+    /// Native preview indices are not AST statement indices. Preserve the
+    /// existing editSourceNode API for callers that actually own AST indices.
+    static func editPreviewSource(compiled: CompiledShortcut, actionIndex: Int, parameterKey: String, newExpression: String) async throws -> CherriSourceEditResponse {
+        guard compiled.actualMode == "v2", let map = compiled.previewSourceMap else {
+            throw CompilationDiagnostic(message: "This compiled preview has no editable source map.", line: 1, column: 1)
+        }
+        let request = CherriPreviewSourceEditRequest(
+            source: compiled.sourceRequest.source,
+            name: compiled.name,
+            mode: compiled.actualMode,
+            buildProfile: compiled.sourceRequest.buildProfile.rawValue,
+            plistBase64: compiled.plist.base64EncodedString(),
+            previewSourceMap: map,
+            actionIndex: actionIndex,
+            parameterKey: parameterKey,
+            newExpression: newExpression
+        )
+        let json = String(decoding: try JSONEncoder().encode(request), as: UTF8.self)
+        return try await Task.detached(priority: .userInitiated) {
+            let pointer = json.withCString {
+                CherriEditPreviewSource(UnsafeMutablePointer(mutating: $0))
+            }
+            guard let pointer else {
+                throw CompilationDiagnostic(message: "Cherri editPreviewSource returned no response.", line: 1, column: 1)
+            }
+            defer { CherriFree(pointer) }
+            return try JSONDecoder().decode(
+                CherriSourceEditResponse.self,
+                from: Data(String(cString: pointer).utf8)
+            )
+        }.value
+    }
+
     private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool, buildProfile: CherriBuildProfile) throws -> CompiledShortcut {
         let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
             name.withCString { namePointer in
@@ -369,11 +455,17 @@ enum CherriCompiler {
             throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
         }
 
+        guard let actualMode = response.mode, actualMode == "v2" || actualMode == "legacy" else {
+            throw CompilationDiagnostic(message: "Compiler response did not identify its selected language mode.", line: 1, column: 1)
+        }
         let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
         return CompiledShortcut(
             name: response.name ?? name,
+            actualMode: actualMode,
             plist: plist,
-            signedShortcut: signedData
+            signedShortcut: signedData,
+            sourceRequest: CherriEditorBuildRequest(source: source, mode: mode, name: name, buildProfile: buildProfile),
+            previewSourceMap: response.previewSourceMap
         )
     }
 

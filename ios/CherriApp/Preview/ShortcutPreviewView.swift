@@ -5,6 +5,7 @@ import WebKit
 struct ShortcutPreviewView: UIViewRepresentable {
     let plist: Data?
     let name: String
+    let compilationID: UUID
     var actionMetadataJSON: String?
     let onEdit: (ShortcutPreviewEdit) -> Void
 
@@ -45,6 +46,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
     }
 
     static func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
+        coordinator.invalidateRendering()
         uiView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.editMessageName)
     }
 
@@ -53,7 +55,8 @@ struct ShortcutPreviewView: UIViewRepresentable {
 
         var parent: ShortcutPreviewView
         private var isReady = false
-        private var lastPayloadKey: String?
+        private var renderState = CherriPreviewRenderState()
+        private var renderedOnEdit: ((ShortcutPreviewEdit) -> Void)?
         private var lastRegisteredMetadata: String?
 
         init(parent: ShortcutPreviewView) {
@@ -99,32 +102,42 @@ struct ShortcutPreviewView: UIViewRepresentable {
 
         func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
             isReady = false
-            lastPayloadKey = nil
+            invalidateRendering()
             webView.reload()
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            guard message.name == Self.editMessageName,
-                  let payload = message.body as? [String: Any],
-                  let kind = payload["kind"] as? String else {
-                return
-            }
+            guard message.name == Self.editMessageName, let webView = message.webView else { return }
+            let payload = message.body as? [String: Any]
+            let messageID = (payload?["compilationID"] as? String).flatMap(UUID.init(uuidString:))
+            let callback = renderState.accepts(messageID, committedID: parent.compilationID) ? renderedOnEdit : nil
+            let edit = payload.flatMap(Self.previewEdit)
 
+            // Web editing has already changed the DOM. Restore committed bytes
+            // even when the message is missing a context or belongs to an old
+            // render. A later successful transaction supplies a new compilation.
+            invalidateRendering()
+            renderIfReady(in: webView)
+            if let callback, let edit { callback(edit) }
+        }
+
+        private static func previewEdit(_ payload: [String: Any]) -> ShortcutPreviewEdit? {
+            guard let kind = payload["kind"] as? String else { return nil }
             switch kind {
             case "workflowType":
                 guard let value = payload["value"] as? String,
-                      let enabled = Self.boolValue(payload["enabled"]) else { return }
-                parent.onEdit(.workflowType(value: value, enabled: enabled))
+                      let enabled = boolValue(payload["enabled"]) else { return nil }
+                return .workflowType(value: value, enabled: enabled)
 
             case "quickActionSurface":
                 guard let value = payload["value"] as? String,
-                      let enabled = Self.boolValue(payload["enabled"]) else { return }
-                parent.onEdit(.quickActionSurface(value: value, enabled: enabled))
+                      let enabled = boolValue(payload["enabled"]) else { return nil }
+                return .quickActionSurface(value: value, enabled: enabled)
 
             case "actionParameter":
                 guard let index = (payload["actionIndex"] as? NSNumber)?.intValue,
                       let key = payload["key"] as? String,
-                      let valueType = payload["valueType"] as? String else { return }
+                      let valueType = payload["valueType"] as? String else { return nil }
 
                 let value: ShortcutPreviewValue?
                 switch valueType {
@@ -135,57 +148,65 @@ struct ShortcutPreviewView: UIViewRepresentable {
                 case "real":
                     value = (payload["value"] as? NSNumber).map { .real($0.doubleValue) }
                 case "bool":
-                    value = Self.boolValue(payload["value"]).map(ShortcutPreviewValue.bool)
+                    value = boolValue(payload["value"]).map(ShortcutPreviewValue.bool)
                 default:
                     value = nil
                 }
-
-                guard let value else { return }
-                parent.onEdit(.actionParameter(actionIndex: index, key: key, value: value))
+                guard let value else { return nil }
+                return .actionParameter(actionIndex: index, key: key, value: value)
 
             default:
-                break
+                return nil
             }
+        }
+
+        func invalidateRendering() {
+            renderState.invalidate()
+            renderedOnEdit = nil
         }
 
         func renderIfReady(in webView: WKWebView) {
             guard isReady else { return }
 
             guard let plist = parent.plist else {
-                guard lastPayloadKey != nil else { return }
-                lastPayloadKey = nil
+                invalidateRendering()
                 webView.evaluateJavaScript("window.clearShortcutPreview?.()")
                 return
             }
 
-            let base64 = plist.base64EncodedString()
-            let payloadKey = "\(parent.name):\(base64.hashValue)"
-            guard payloadKey != lastPayloadKey else { return }
-
-            let encodedBase64 = Self.javaScriptString(base64)
+            let payloadKey = parent.compilationID
+            guard renderState.needsRender(payloadKey) else { return }
+            let generation = renderState.begin(payloadKey)
+            renderedOnEdit = nil
+            let onEdit = parent.onEdit
+            let encodedBase64 = Self.javaScriptString(plist.base64EncodedString())
             let encodedName = Self.javaScriptString(parent.name)
+            let encodedContext = Self.javaScriptString(payloadKey.uuidString)
             let script = """
             (() => {
                 if (typeof window.renderShortcutFromBase64 !== 'function') {
                     throw new Error('preview-shortcut bundle did not initialize');
                 }
-                return window.renderShortcutFromBase64(\(encodedBase64), \(encodedName));
+                return window.renderShortcutFromBase64(\(encodedBase64), \(encodedName), \(encodedContext));
             })()
             """
 
             webView.evaluateJavaScript(script) { [weak self, weak webView] _, error in
-                guard let self, let webView else { return }
+                guard let self, let webView,
+                      self.renderState.isPending(payloadKey, generation: generation) else { return }
                 if let error {
                     self.showError("Shortcut preview failed: \(error.localizedDescription)", in: webView)
                     return
                 }
-                self.lastPayloadKey = payloadKey
+                self.renderState.complete(payloadKey, generation: generation)
+                self.renderedOnEdit = onEdit
+                self.renderIfReady(in: webView)
             }
         }
 
         func showError(_ message: String, in webView: WKWebView) {
             isReady = true
-            lastPayloadKey = nil
+            invalidateRendering()
 
             let escapedMessage = Self.htmlEscaped(message)
             let html = """

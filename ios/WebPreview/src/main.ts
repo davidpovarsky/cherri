@@ -2,7 +2,7 @@ import 'preview-shortcut/css';
 import { ShortcutPreview, registerActionMetadata } from 'preview-shortcut';
 
 type CherriPreviewWindow = Window & {
-  renderShortcutFromBase64?: (base64: string, name: string) => void;
+  renderShortcutFromBase64?: (base64: string, name: string, compilationID: string) => void;
   clearShortcutPreview?: () => void;
   registerCherriActionMetadata?: (metadata: Record<string, { title?: string }>) => void;
   webkit?: {
@@ -44,8 +44,10 @@ function decodeBase64UTF8(base64: string): string {
   return new TextDecoder('utf-8').decode(bytes);
 }
 
-function postPreviewEdit(message: object) {
-  hostWindow.webkit?.messageHandlers?.cherriPreviewEdit?.postMessage(message);
+function postPreviewEdit(compilationID: string, message: object) {
+  // This opaque ID belongs to the render that installed the event handler.
+  // It carries no source, source map, plist hash, or editing authority.
+  hostWindow.webkit?.messageHandlers?.cherriPreviewEdit?.postMessage({ ...message, compilationID });
 }
 
 // preview-shortcut renders booleans as real Framework7 checkbox toggles. In
@@ -92,19 +94,20 @@ document.addEventListener('click', (event) => {
   }, 0);
 }, true);
 
-function bindWorkflowToggles() {
+function bindWorkflowToggles(compilationID: string) {
   const toggles = Array.from(
     document.querySelectorAll<HTMLInputElement>(`${selector} .sp-modal input[type="checkbox"]`),
   );
 
   workflowToggleBindings.forEach((binding, index) => {
     const checkbox = toggles[index];
-    if (!checkbox || checkbox.dataset.cherriEditBound === 'true') {
+    if (!checkbox || checkbox.dataset.cherriEditBound === compilationID) {
       return;
     }
-    checkbox.dataset.cherriEditBound = 'true';
+    checkbox.dataset.cherriEditBound = compilationID;
     checkbox.addEventListener('change', () => {
-      postPreviewEdit({ kind: binding.kind, value: binding.value, enabled: checkbox.checked });
+      if (checkbox.dataset.cherriEditBound !== compilationID) { return; }
+      postPreviewEdit(compilationID, { kind: binding.kind, value: binding.value, enabled: checkbox.checked });
     });
   });
 }
@@ -123,7 +126,7 @@ function editableParameterEntries(action: any): Array<[string, any]> {
   return Object.entries(actionParameters(action)).filter(([key]) => !ignored.has(key));
 }
 
-function bindActionBooleanParameters(card: HTMLElement, action: any, actionIndex: number) {
+function bindActionBooleanParameters(card: HTMLElement, action: any, actionIndex: number, compilationID: string) {
   const booleanEntries = editableParameterEntries(action)
     .filter(([, value]) => typeof value === 'boolean');
   if (!booleanEntries.length) {
@@ -139,13 +142,14 @@ function bindActionBooleanParameters(card: HTMLElement, action: any, actionIndex
   }
 
   checkboxes.forEach((checkbox, index) => {
-    if (checkbox.dataset.cherriEditBound === 'true') {
+    if (checkbox.dataset.cherriEditBound === compilationID) {
       return;
     }
     const [key] = booleanEntries[index];
-    checkbox.dataset.cherriEditBound = 'true';
+    checkbox.dataset.cherriEditBound = compilationID;
     checkbox.addEventListener('change', () => {
-      postPreviewEdit({
+      if (checkbox.dataset.cherriEditBound !== compilationID) { return; }
+      postPreviewEdit(compilationID, {
         kind: 'actionParameter',
         actionIndex,
         key,
@@ -156,7 +160,7 @@ function bindActionBooleanParameters(card: HTMLElement, action: any, actionIndex
   });
 }
 
-function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionIndex: number) {
+function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionIndex: number, compilationID: string) {
   const candidates = Array.from(card.querySelectorAll<HTMLElement>('.sp-value'))
     .filter((element) => !element.querySelector('.sp-variable-value'));
   const used = new Set<HTMLElement>();
@@ -177,13 +181,16 @@ function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionInd
 
     const element = matches[0];
     used.add(element);
+    if (element.dataset.cherriEditBound === compilationID) { continue; }
     element.classList.add('cherri-editable-value');
     element.contentEditable = 'true';
     element.setAttribute('role', 'textbox');
     element.setAttribute('aria-label', key);
     element.spellcheck = false;
+    element.dataset.cherriEditBound = compilationID;
 
     element.addEventListener('keydown', (event) => {
+      if (element.dataset.cherriEditBound !== compilationID) { return; }
       if (event.key === 'Escape') {
         element.textContent = rendered;
         element.blur();
@@ -195,6 +202,7 @@ function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionInd
     });
 
     element.addEventListener('blur', () => {
+      if (element.dataset.cherriEditBound !== compilationID) { return; }
       const edited = element.textContent ?? '';
       if (edited === rendered) {
         return;
@@ -206,7 +214,7 @@ function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionInd
           element.textContent = rendered;
           return;
         }
-        postPreviewEdit({
+        postPreviewEdit(compilationID, {
           kind: 'actionParameter',
           actionIndex,
           key,
@@ -216,7 +224,7 @@ function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionInd
         return;
       }
 
-      postPreviewEdit({
+      postPreviewEdit(compilationID, {
         kind: 'actionParameter',
         actionIndex,
         key,
@@ -227,12 +235,12 @@ function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionInd
   }
 }
 
-function wireGraphicalEditing() {
+function wireGraphicalEditing(compilationID: string) {
   if (!preview) {
     return;
   }
 
-  bindWorkflowToggles();
+  bindWorkflowToggles(compilationID);
 
   const actions = preview.data.WFWorkflowActions ?? [];
   const cards = visibleActionCards();
@@ -242,12 +250,12 @@ function wireGraphicalEditing() {
       return;
     }
     card.dataset.cherriActionIndex = String(actionIndex);
-    bindActionBooleanParameters(card, action, actionIndex);
-    bindPrimitiveActionParameters(card, action, actionIndex);
+    bindActionBooleanParameters(card, action, actionIndex, compilationID);
+    bindPrimitiveActionParameters(card, action, actionIndex, compilationID);
   });
 }
 
-hostWindow.renderShortcutFromBase64 = (base64: string, name: string) => {
+hostWindow.renderShortcutFromBase64 = (base64: string, name: string, compilationID: string) => {
   const plist = decodeBase64UTF8(base64);
 
   if (preview === null) {
@@ -263,7 +271,7 @@ hostWindow.renderShortcutFromBase64 = (base64: string, name: string) => {
 
   preview.name = name;
   preview.load(plist);
-  wireGraphicalEditing();
+  wireGraphicalEditing(compilationID);
 };
 
 hostWindow.clearShortcutPreview = () => {

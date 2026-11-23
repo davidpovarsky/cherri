@@ -154,7 +154,7 @@ struct WorkspaceView: View {
                 diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
             }
         }
-        .task(id: CherriEditorBuildRequest(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)) {
+        .task(id: CherriLivePreviewRequest(request: currentBuildRequest, isApplyingPreviewEdit: isApplyingPreviewEdit)) {
             guard livePreview, !isImporting, !isApplyingPreviewEdit else { return }
             // An empty document has no preview to render. Keep editor metadata
             // available without starting the compiler or WebKit during opening.
@@ -168,6 +168,9 @@ struct WorkspaceView: View {
                 }
                 return
             }
+            // A committed visual edit already rebuilt this exact request.
+            // A changed source paused by that edit still resumes through task identity.
+            guard compiled?.sourceRequest != currentBuildRequest else { return }
             try? await Task.sleep(for: .milliseconds(650))
             guard !Task.isCancelled else { return }
             await build(signed: false, liveBuild: true)
@@ -194,13 +197,15 @@ struct WorkspaceView: View {
                 ShortcutPreviewView(
                     plist: compiled.plist,
                     name: compiled.name,
+                    compilationID: compiled.id,
                     actionMetadataJSON: previewActionMetadataJSON,
                     onEdit: { edit in
                         Task { @MainActor in
-                            handlePreviewEdit(edit)
+                            handlePreviewEdit(edit, rendered: compiled)
                         }
                     }
                 )
+                .allowsHitTesting(!isBusy)
             } else {
                 // A placeholder must not instantiate an invisible WKWebView.
                 // The editor remains the same sibling when compiled data arrives.
@@ -215,7 +220,7 @@ struct WorkspaceView: View {
             if compiled != nil {
                 HStack(spacing: 8) {
                     Button("Edit Preview Param") {
-                        handlePreviewEdit(.actionParameter(actionIndex: 0, key: "text", value: .string("VisualParamUpdated")))
+                        handleShowResultPreviewEdit()
                     }
                     .font(.caption)
                     .buttonStyle(.borderedProminent)
@@ -284,9 +289,13 @@ struct WorkspaceView: View {
         fileURL?.deletingPathExtension().lastPathComponent ?? "Shortcut"
     }
 
+    private var currentBuildRequest: CherriEditorBuildRequest {
+        CherriEditorBuildRequest(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+    }
+
     @MainActor
     private func build(signed: Bool, liveBuild: Bool = false) async {
-        guard !Task.isCancelled else { return }
+        guard !Task.isCancelled, !isApplyingPreviewEdit else { return }
         buildRequestGeneration += 1
         let generation = buildRequestGeneration
         let request = CherriEditorBuildRequest(
@@ -411,105 +420,81 @@ struct WorkspaceView: View {
     }
 
     @MainActor
-    private func handlePreviewEdit(_ edit: ShortcutPreviewEdit) {
-        guard let current = compiled else { return }
+    private func handleShowResultPreviewEdit() {
+        guard let current = compiled,
+              let index = current.previewSourceMap?.uniqueParameterIndex(
+                actionIdentifier: "is.workflow.actions.showresult", wireKey: "Text"
+              ) else {
+            diagnostic = CompilationDiagnostic(message: "This preview has no unique editable Show Result parameter.", line: 1, column: 1)
+            return
+        }
+        handlePreviewEdit(
+            .actionParameter(actionIndex: index, key: "Text", value: .string("VisualParamUpdated")),
+            rendered: current
+        )
+    }
 
-        do {
-            let editedPlist = try ShortcutPlistEditor.applying(edit, to: current.plist)
-            if sourceBeforePreviewEdits == nil {
-                sourceBeforePreviewEdits = document.text
-            }
+    @MainActor
+    private func handlePreviewEdit(_ edit: ShortcutPreviewEdit, rendered: CompiledShortcut? = nil) {
+        guard !isBusy, let current = compiled else { return }
+        let original = rendered ?? current
+        guard original.id == current.id, original.sourceRequest == currentBuildRequest else {
+            diagnostic = CompilationDiagnostic(message: "The preview is out of date. Build the current source before editing it.", line: 1, column: 1)
+            return
+        }
 
-            previewEditGeneration += 1
-            let generation = previewEditGeneration
-            let name = current.name
-
-            // Update the visible preview immediately. Decompile and recompile in
-            // the background to canonicalize the corresponding Cherri source.
-            compiled = CompiledShortcut(name: name, plist: editedPlist, signedShortcut: nil)
-            signedURL = nil
-
-            Task { @MainActor in
-                await syncPreviewEditToSource(edit: edit, plist: editedPlist, name: name, generation: generation)
-            }
-        } catch {
-            diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+        previewEditGeneration += 1
+        buildRequestGeneration += 1
+        let transaction = CherriPreviewEditTransaction(
+            original: original, buildGeneration: buildRequestGeneration, editGeneration: previewEditGeneration
+        )
+        // Claim the edit before scheduling work. The old source, plist and
+        // signed export remain committed while mapping/rebuilding is in flight.
+        isApplyingPreviewEdit = true
+        Task { @MainActor in
+            await syncPreviewEditToSource(edit, transaction: transaction)
         }
     }
 
     @MainActor
-    private func syncPreviewEditToSource(edit: ShortcutPreviewEdit, plist: Data, name: String, generation: Int) async {
-        isApplyingPreviewEdit = true
+    private func previewEditIsCurrent(_ transaction: CherriPreviewEditTransaction) -> Bool {
+        !isImporting && transaction.matches(
+            compiled: compiled, request: currentBuildRequest,
+            buildGeneration: buildRequestGeneration, editGeneration: previewEditGeneration
+        )
+    }
+
+    @MainActor
+    private func syncPreviewEditToSource(_ edit: ShortcutPreviewEdit, transaction: CherriPreviewEditTransaction) async {
         defer {
-            if generation == previewEditGeneration {
+            if transaction.editGeneration == previewEditGeneration {
                 isApplyingPreviewEdit = false
             }
         }
 
         do {
-            if languageMode == .v2 || languageMode == .auto {
-                switch edit {
-                case .actionParameter(let actionIndex, let key, let value):
-                    let formattedExpr = formatPreviewValueForCherri(value)
-                    let editResp = try await CherriCompiler.editSourceNode(
-                        source: document.text,
-                        actionIndex: actionIndex,
-                        paramLabel: key,
-                        newExpr: formattedExpr
-                    )
-                    guard editResp.ok, let newSource = editResp.source else {
-                        throw CompilationDiagnostic(
-                            message: "Visual edit cannot safely update this source (\(editResp.error ?? "unsupported parameter")). Source preserved.",
-                            line: 1,
-                            column: 1
-                        )
+            let published = try await transaction.perform(
+                edit, operations: .live,
+                isCurrent: { previewEditIsCurrent(transaction) },
+                publish: { source, rebuilt in
+                    // This synchronous MainActor block is the only publication.
+                    if sourceBeforePreviewEdits == nil {
+                        sourceBeforePreviewEdits = transaction.original.sourceRequest.source
                     }
-                    let rebuilt = try await CherriCompiler.compile(source: newSource, name: name, mode: languageMode.rawValue)
-                    guard generation == previewEditGeneration else { return }
-
-                    document.text = newSource
+                    document.text = source
                     compiled = rebuilt
                     diagnostic = nil
+                    diagnostics = []
                     signedURL = nil
-                    await refreshActionCatalog()
-                default:
-                    throw CompilationDiagnostic(
-                        message: "Visual metadata edit cannot safely update v2 source directly. Source preserved.",
-                        line: 1,
-                        column: 1
-                    )
                 }
-            } else {
-                let source = try await CherriCompiler.decompile(plist: plist, name: name)
-                let rebuilt = try await CherriCompiler.compile(source: source, name: name, mode: "legacy")
-                guard generation == previewEditGeneration else { return }
-
-                document.text = source
-                compiled = rebuilt
-                diagnostic = nil
-                signedURL = nil
-                await refreshActionCatalog()
-            }
+            )
+            if published { await refreshActionCatalog() }
         } catch let compilerError as CompilationDiagnostic {
-            guard generation == previewEditGeneration else { return }
+            guard !Task.isCancelled, previewEditIsCurrent(transaction) else { return }
             diagnostic = compilerError
         } catch {
-            guard generation == previewEditGeneration else { return }
+            guard !Task.isCancelled, previewEditIsCurrent(transaction) else { return }
             diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
-        }
-    }
-
-    private func formatPreviewValueForCherri(_ value: ShortcutPreviewValue) -> String {
-        switch value {
-        case .string(let s):
-            let escaped = s.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
-            return "\"\(escaped)\""
-        case .integer(let i):
-            return "\(i)"
-        case .real(let r):
-            return "\(r)"
-        case .bool(let b):
-            return b ? "true" : "false"
         }
     }
 
