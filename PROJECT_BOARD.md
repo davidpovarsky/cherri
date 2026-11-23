@@ -1,5 +1,16 @@
 # Project Board
 
+### 2026-11-23 — Pagination macro result and V2 main completion
+
+The K10 pagination observer rejected the compiler's required terminal Nothing.
+A narrow extractor now verifies that exact boundary and the original results
+List separately, preserving the full graph for lossless roundtrips and leaving
+Legacy behavior and the macro allowlist unchanged. One clean a8402e05 replay
+passed 32 CLI cases, 32 complete roundtrips, 144 model cases, 44 invalid-source
+cases and 7 causal faults; native executions remain 0. The original failed CI
+and causal compile are preserved. See [the bounded proof](docs/language-v2/evidence/p15-paginate-observer-20261123/README.md).
+
+
 This is a living working-memory document for this repository.
 It is intentionally lightweight. Humans and coding agents should update it when useful discoveries, ideas, plans, optimizations, problems, or follow-up work arise during normal development.
 Do not turn this into a duplicate issue tracker or a dump of temporary thoughts.

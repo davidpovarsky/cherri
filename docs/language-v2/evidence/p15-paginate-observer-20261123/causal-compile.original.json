@@ -1,0 +1,113 @@
+{
+  "actionCount": 183,
+  "compilerBinarySHA256": "42f6e42e7b6a8ea6f523a752fd2f06b96265e733fa00ad808190e062d1266301",
+  "compilerInvocations": 1,
+  "compilerSHA": "ca316a3dee252456c4bec751594cf249c709b331",
+  "elapsedSeconds": 0.04228851106017828,
+  "exitCode": 0,
+  "firstActions": [
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.list",
+      "WFWorkflowActionParameters": {
+        "CustomOutputName": "__cherri_paginate_4f3d1b9dbfea4f7aab0a4bab70b66677_0",
+        "UUID": "32FCC4FC-0716-48B0-9278-1449EC53C1CA",
+        "WFItems": []
+      }
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+      "WFWorkflowActionParameters": {
+        "WFInput": {
+          "Value": {
+            "OutputName": "__cherri_paginate_4f3d1b9dbfea4f7aab0a4bab70b66677_0",
+            "OutputUUID": "32FCC4FC-0716-48B0-9278-1449EC53C1CA",
+            "Type": "ActionOutput"
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        },
+        "WFVariableName": "__cherri_paginate_4f3d1b9dbfea4f7aab0a4bab70b66677_results"
+      }
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.list",
+      "WFWorkflowActionParameters": {
+        "CustomOutputName": "__cherri_paginate_4f3d1b9dbfea4f7aab0a4bab70b66677_2",
+        "UUID": "0C7E1517-5F04-4D71-B48F-675FFDB0937B",
+        "WFItems": []
+      }
+    }
+  ],
+  "implementationSHA": "4feadab9db4d351628f78593304373631693869a",
+  "lastMacroAction": {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "Paginated Items",
+      "UUID": "04C6662B-30E7-474A-BE1C-AF66E06B873E",
+      "WFVariable": {
+        "Value": {
+          "Type": "Variable",
+          "VariableName": "__cherri_paginate_4f3d1b9dbfea4f7aab0a4bab70b66677_results"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  "nativeExecuted": 0,
+  "networkRequests": 0,
+  "originals": {
+    "argv.original.json": {
+      "bytes": 920,
+      "sha256": "adb108a03b993882ea2426e0875259bb0488fc99e22ec6e1aae8f0247309092b"
+    },
+    "stderr.original.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.original.bin": {
+      "bytes": 8078,
+      "sha256": "7acef3bad24b50bdfd3a5b90cfbf273e814a9a35816b574de144cd7b662b5e31"
+    },
+    "v2-debug-base.original.cherri": {
+      "bytes": 65,
+      "sha256": "2f2bec4e4f37fa4462a7be3ef4fb17b25deae02e92ee1014eb256929b99050b7"
+    },
+    "v2-debug-base.original.shortcut": {
+      "bytes": 115362,
+      "sha256": "b5a183a0304248954a0630f8e2400f8027d01a3b8594b8d7484d8529e166f1a5"
+    }
+  },
+  "outOfAllowlist": [
+    {
+      "action": {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.nothing"
+      },
+      "index": 182
+    }
+  ],
+  "schemaVersion": 1,
+  "sourceCleanBeforeAfter": true,
+  "sourceWitness": {
+    "internal/language/lower/main_output.go": {
+      "byteIdenticalAtR7": true,
+      "sha256": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619"
+    },
+    "p15_paginate_result_oracle_test.go": {
+      "byteIdenticalAtR7": true,
+      "sha256": "9db5f7cf5b9af2ac9dedeb8f7cb812c1d5aafff377e67d2bf20ff0800d3683a8"
+    },
+    "p15_paginate_test.go": {
+      "byteIdenticalAtR7": true,
+      "sha256": "41c941f9e9a3a15751e15003c2fafd2eb94439f6d67312344f40c4b36f850c13"
+    },
+    "paginate_macro.go": {
+      "byteIdenticalAtR7": true,
+      "sha256": "77dc889c1238c1fe91a9e0b5250bef7e802ec4967ec0d44fc23ed4cac2d34076"
+    },
+    "tools/p10r15/verify_paginate.py": {
+      "byteIdenticalAtR7": true,
+      "sha256": "1f8edac2b046bdf8b662bf7d817b5ed6469ddb7a4508ebec49c458d517d6b4cd"
+    }
+  },
+  "startedUTC": "2026-11-23T02:55:11.731391+00:00",
+  "status": "CONFIRMED_STALE_V2_MACRO_OBSERVER"
+}

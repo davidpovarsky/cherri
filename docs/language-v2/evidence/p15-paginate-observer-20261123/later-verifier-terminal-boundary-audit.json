@@ -1,0 +1,112 @@
+{
+  "findings": [
+    {
+      "finding": "The three selected public sources end in explicit output(finalSummary). The validator preserves full native-action roundtrips. The shared Phase0 classifier only removes an exact adjacent debug-clear pair and retains other actions. No same terminal exclusion found in the reviewed path.",
+      "stage": "native storage probe contracts"
+    },
+    {
+      "finding": "The four manifest-bound public sources end in explicit output(finalSummary), without function declarations. finishMainOutput returns when the actual last emitted identifier is output. The one initial debug-clear Nothing assertion is therefore appropriate for these sources and must remain strict.",
+      "stage": "native continuation probes"
+    },
+    {
+      "finding": "The existing binding_defaults_probe.py explicitly expects the dispatcher closing conditional followed by exactly one parameter-free terminal Nothing. It already preserves and verifies this boundary.",
+      "stage": "shared typed-defaults diagnostic"
+    },
+    {
+      "finding": "The examined success control checks a nonempty WFWorkflowActions list; it does not exclude or require a last macro action.",
+      "stage": "installed signing controls"
+    },
+    {
+      "finding": "The searched package_skill.py, self-test.sh, test-json-boundary.sh and packaged_skill_execution files contain no matching terminal Nothing effect allowlist assumption. This targeted search does not claim all future steps will pass.",
+      "stage": "source/runtime packaging and Alpine scripts"
+    }
+  ],
+  "implementationSHA": "4feadab9db4d351628f78593304373631693869a",
+  "newCompilerInvocations": 0,
+  "newNetworkRequests": 0,
+  "newTestsExecuted": 0,
+  "reviewedUTC": "2026-11-23T03:01:03.983888+00:00",
+  "scope": "Later OpenMinis stages reviewed specifically for the demonstrated V2 terminal Nothing observer assumption; no new producer/test/network replay. This is source analysis, not a later-stage execution pass.",
+  "selectedSourceFixtures": [
+    {
+      "id": "qa-storage-text-same-run-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-same-run-v2.cherri",
+      "sha256": "3eeac22205bdef8a26d5af511675719d628a62625a460575db1cd832459e7ece"
+    },
+    {
+      "id": "qa-storage-scope-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-scope-v2.cherri",
+      "sha256": "2d1924591e6e8328f314fafe5d8d684d2d5597bf94300ac7d5cf4e27700b1f2c"
+    },
+    {
+      "id": "qa-storage-delete-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-delete-v2.cherri",
+      "sha256": "4361d16d59d97a81c93da7e8d3d81168f2c10caa25db67229a18bb848edd05fc"
+    },
+    {
+      "id": "qa-storage-text-cross-run-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-cross-run-v2.cherri",
+      "sha256": "74be70ae304570aa3e17d3659ebbc4844b57a4376c96cceb01ab6ea73f5a3a61"
+    },
+    {
+      "id": "qa-http-json-control-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-http-json-control-v2.cherri",
+      "sha256": "c6c2cbb51d8e34c0caf55aa87bed1a50372155d7471f8a62a9e69532c0462e54"
+    },
+    {
+      "id": "qa-http-json-fetch-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-http-json-fetch-v2.cherri",
+      "sha256": "325f64e30728020d96694817d8c3c0e1a969fbc6a2a12bc223bbaa84bcf87b39"
+    },
+    {
+      "id": "qa-number-comparison-diag-v2",
+      "lastSourceStatement": "output(finalSummary)",
+      "noFunctionDeclaration": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri",
+      "sha256": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99"
+    }
+  ],
+  "sourceMutations": 0,
+  "sourceWitness": {
+    ".github/workflows/openminis-skill.yml": "8db3604f03de19405104caf6bff7af5147f3aed846210cf2f8c9247eca8914c9",
+    "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json": "2ff3682c698167364c6df7d57a60ae007d652cb27e6ae6a7703c72b684020724",
+    "docs/apple-runtime/p10r15/storage-probe-manifest.json": "e1f9ad0c7a18ef971a10d8b6aa88da316d5845ee6769965ee1846572d7037607",
+    "internal/language/lower/main_output.go": "fc1db052c51023b06e57e279674fdde7fd066edc87811bfdfe4ad70026922619",
+    "scripts/ios27_shortcuts_simulator_qa.sh": "7d211f57f28b70dfe5577f9ee24159210e9c1ccdbabf5930c074a1550f860bb9",
+    "skills/cherri-shortcuts/scripts/self-test.sh": "1db9198aa2806ae5e4ef38941c5fe6e3cbc92507f8c84f4404f878ae2185a257",
+    "skills/cherri-shortcuts/scripts/test-json-boundary.sh": "839ee5c4868b406e45bd86a6a35116eec6567104a451da350a70372359e964af",
+    "tools/language-acceptance/packaged_skill_execution.go": "b90db29e911c216b0729f3f742da25300775331b60506cebf556208d12792b0d",
+    "tools/language-acceptance/packaged_skill_execution_test.go": "6a0d629ef302034316ff7a01fcce06a13eaff00f46521d0217fda9bbe6c6c686",
+    "tools/p10r15/package_skill.py": "9bd373ea4f88473b1a89c7a620cf242734d5a93c6d13ebc7fb9fbb19709597ee",
+    "tools/p10r15/verify_installed_signing.py": "4cda29aab91d979944b761398a72d4210fdff08fb44a6c41417864673e6d0190",
+    "tools/p10r15/verify_native_continuation_probes.py": "5b2fe8df0e10eb79eece86e22b97d909cd493deb88b2f2318578da5594d9dbc5",
+    "tools/p10r15/verify_storage_probes.py": "737d418bd33fd72ebf6a89177d705607f6b0b9d3e50c13e9b1614189ca7dcd80",
+    "tools/shortcuts-simulator-qa/binding_defaults_probe.py": "b56ec0a9c797d41167581a706ba688f34fe405918fa1a5740612799d943e49c7",
+    "tools/shortcuts-simulator-qa/export_unicode_diagnostic.py": "524e1895f7622d221f4cbdc1bbc0de8e7a4e8524e1e67f6b168344bec78c6e87",
+    "tools/shortcuts-simulator-qa/f04_record_empty_probe.py": "bbf1efae48fb8d1cd332b8fe93f5ea64a6e34e43154c29da5ff193cfcb51cc78",
+    "tools/shortcuts-simulator-qa/file_materialization_diagnostic.py": "edbbea85d38c2332a5ad4a5393d3b90687c935776f4a9aecec9e9b7ef6a19f01",
+    "tools/shortcuts-simulator-qa/fixture_compile_contract.py": "3ec9b45231780977ac13a0fbc6eff45bb4429c14f092437728b33e20cc3f3ce3",
+    "tools/shortcuts-simulator-qa/fixtures/qa-http-json-control-v2.cherri": "c6c2cbb51d8e34c0caf55aa87bed1a50372155d7471f8a62a9e69532c0462e54",
+    "tools/shortcuts-simulator-qa/fixtures/qa-http-json-fetch-v2.cherri": "325f64e30728020d96694817d8c3c0e1a969fbc6a2a12bc223bbaa84bcf87b39",
+    "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99",
+    "tools/shortcuts-simulator-qa/fixtures/qa-storage-delete-v2.cherri": "4361d16d59d97a81c93da7e8d3d81168f2c10caa25db67229a18bb848edd05fc",
+    "tools/shortcuts-simulator-qa/fixtures/qa-storage-scope-v2.cherri": "2d1924591e6e8328f314fafe5d8d684d2d5597bf94300ac7d5cf4e27700b1f2c",
+    "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-cross-run-v2.cherri": "74be70ae304570aa3e17d3659ebbc4844b57a4376c96cceb01ab6ea73f5a3a61",
+    "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-same-run-v2.cherri": "3eeac22205bdef8a26d5af511675719d628a62625a460575db1cd832459e7ece",
+    "tools/shortcuts-simulator-qa/native_boundary_diagnostic.py": "77a3b150709ad1a9a81004b164f2c07cda7c138c13f30ed46c0551d7f25dcb5a",
+    "tools/shortcuts-simulator-qa/validate_macro_fixtures.py": "4e7cf4499b5688d72a611c48cc76f956e0fb7eb368e7403617fa51abb067bebb"
+  },
+  "status": "READ_ONLY_TERMINAL_BOUNDARY_REVIEW"
+}
