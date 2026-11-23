@@ -1,0 +1,488 @@
+{
+  "formatVersion": 1,
+  "operation": "CREATE_ONE_STANDALONE_ORDINARY_K10_CLONE",
+  "startedAtUtc": "2026-11-23T02:34:04.699477+00:00",
+  "source": "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+  "target": "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+  "sourceCommit": "4feadab9db4d351628f78593304373631693869a",
+  "sourceTree": "b53b53b9671b682944c8c5609ae66755b4635c1f",
+  "branch": "agent/cherri-p10r15-k10-verification-20261123",
+  "uid": 1001,
+  "remotePublicationVerifiedReceiptSHA256": "045c02f2e8d04b1b535fc18c18e6210e2ffca190ddd698c94d81bf9ca79a0fab",
+  "capacityBefore": {
+    "freeDevelopmentBytes": 4522192896,
+    "trackedBytes": 247898239,
+    "sourceObjectStores": [
+      {
+        "path": "/mnt/development/projects/worktrees/cherri-p10r15-r8-integration-20261123/.git/objects",
+        "bytes": 4511526
+      },
+      {
+        "path": "/mnt/development/projects/git-mirrors/cherri.git/objects",
+        "bytes": 87296173
+      }
+    ],
+    "estimatedClonePeakBytes": 699949093
+  },
+  "status": "READY_STANDALONE_ORDINARY_K10_SOURCE",
+  "verifiedCommit": "4feadab9db4d351628f78593304373631693869a",
+  "verifiedTree": "b53b53b9671b682944c8c5609ae66755b4635c1f",
+  "verifiedBranch": "agent/cherri-p10r15-k10-verification-20261123",
+  "canonicalOrigin": "https://github.com/davidpovarsky/cherri.git",
+  "independentRemoteRef": "4feadab9db4d351628f78593304373631693869a\trefs/heads/agent/cherri-p10r15-k10-verification-20261123",
+  "isGitDirectory": true,
+  "hasAlternates": false,
+  "isShallow": false,
+  "reachableCommits": 3577,
+  "sourceUnchanged": true,
+  "clean": true,
+  "ownerUid": 1001,
+  "foreignOwnerFiles": [],
+  "hardlinkedFiles": [],
+  "cloneFileCount": 6618,
+  "cloneBytes": 327392974,
+  "freeDevelopmentBytesAfter": 4175396864,
+  "steps": [
+    {
+      "name": "01-source-head",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "rev-parse",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.702347+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.708830+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "ceebb11d831779f6058089d888f3bff2bac969589a10de0a6df40d0c09add03b",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "02-source-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.711261+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.717170+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "8bbac972485e2a2d18c351b8c83632158ee3ea081e42a1a33ede4780b81a814a",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "03-source-branch",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.719727+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.725738+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "918487c3b0203a552344e5ac4ef02e933c00f29e7db51d85931261a536e18c92",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 46,
+      "stderrBytes": 0
+    },
+    {
+      "name": "04-source-status",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "status",
+        "--porcelain=v1"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.729173+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.769608+00:00",
+      "seconds": 0.04,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "05-source-count",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "rev-list",
+        "--count",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.772237+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.807688+00:00",
+      "seconds": 0.035,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "0e488c5b33134b0823f33ed41ccc29e68cfcdabd18e4d1209f9b9f4e0b7edd99",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 5,
+      "stderrBytes": 0
+    },
+    {
+      "name": "06-source-shallow",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "rev-parse",
+        "--is-shallow-repository"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.810399+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.816133+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 6,
+      "stderrBytes": 0
+    },
+    {
+      "name": "07-source-common",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "rev-parse",
+        "--git-common-dir"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.818491+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.829797+00:00",
+      "seconds": 0.011,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "6ac8912c32a4abd8d028edb18c81d6b333c2670abd912635f38a946a6fd63da7",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 79,
+      "stderrBytes": 0
+    },
+    {
+      "name": "08-source-tree-size",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "ls-tree",
+        "-r",
+        "-l",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.833134+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:04.961218+00:00",
+      "seconds": 0.128,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "0b9dbbdb0e874772688f26ff81bf7adeb7b71c1c0d2e7d39f24b0dc9195a6a83",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 960710,
+      "stderrBytes": 0
+    },
+    {
+      "name": "09-clone",
+      "argv": [
+        "git",
+        "-c",
+        "pack.threads=1",
+        "clone",
+        "--no-local",
+        "--no-hardlinks",
+        "--single-branch",
+        "--branch",
+        "agent/cherri-p10r15-k10-verification-20261123",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:04.989929+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.303038+00:00",
+      "seconds": 5.313,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 300,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "9a4d6bbb8db7c5f29dcf79b7ccadfadfc1dae9817cac91d64a5d10f9633aa3de",
+      "stdoutBytes": 0,
+      "stderrBytes": 87
+    },
+    {
+      "name": "10-canonical-origin",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/davidpovarsky/cherri.git"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.305795+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.311256+00:00",
+      "seconds": 0.005,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "11-target-head",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "rev-parse",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.313589+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.319381+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "ceebb11d831779f6058089d888f3bff2bac969589a10de0a6df40d0c09add03b",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "12-target-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.321623+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.327362+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "8bbac972485e2a2d18c351b8c83632158ee3ea081e42a1a33ede4780b81a814a",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "13-target-branch",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.329877+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.335686+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "918487c3b0203a552344e5ac4ef02e933c00f29e7db51d85931261a536e18c92",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 46,
+      "stderrBytes": 0
+    },
+    {
+      "name": "14-target-status",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "status",
+        "--porcelain=v1"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.337954+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.669007+00:00",
+      "seconds": 0.331,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "15-target-shallow",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "rev-parse",
+        "--is-shallow-repository"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.671437+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.677033+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 6,
+      "stderrBytes": 0
+    },
+    {
+      "name": "16-target-count",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "rev-list",
+        "--count",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.679114+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.713125+00:00",
+      "seconds": 0.034,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "0e488c5b33134b0823f33ed41ccc29e68cfcdabd18e4d1209f9b9f4e0b7edd99",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 5,
+      "stderrBytes": 0
+    },
+    {
+      "name": "17-target-origin",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.715427+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:10.722017+00:00",
+      "seconds": 0.007,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "42297efb7e5b0808301458532988fd3db681e75d0c3b539058442b57d00a58c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 44,
+      "stderrBytes": 0
+    },
+    {
+      "name": "18-independent-remote",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "ls-remote",
+        "--exit-code",
+        "--refs",
+        "origin",
+        "refs/heads/agent/cherri-p10r15-k10-verification-20261123"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:10.724333+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:11.141331+00:00",
+      "seconds": 0.417,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "f86e95082ec3956feb5e8189df2ec6d97e425b16d43a4d8702f4d68279057919",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 98,
+      "stderrBytes": 0
+    },
+    {
+      "name": "19-connectivity",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/releases/cherri-p10r15-k10-source-20261123",
+        "fsck",
+        "--connectivity-only",
+        "--no-reflogs",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:11.144103+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:11.262419+00:00",
+      "seconds": 0.118,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 90,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "20-source-final-status",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "status",
+        "--porcelain=v1"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:11.380876+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:11.416592+00:00",
+      "seconds": 0.036,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "21-source-final-head",
+      "argv": [
+        "git",
+        "-C",
+        "/mnt/development/projects/worktrees/cherri-p10r15-k10-integration-20261123",
+        "rev-parse",
+        "HEAD"
+      ],
+      "startedAtUtc": "2026-11-23T02:34:11.418934+00:00",
+      "finishedAtUtc": "2026-11-23T02:34:11.424723+00:00",
+      "seconds": 0.006,
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "stdoutSHA256": "ceebb11d831779f6058089d888f3bff2bac969589a10de0a6df40d0c09add03b",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    }
+  ],
+  "finishedAtUtc": "2026-11-23T02:34:11.427151+00:00"
+}

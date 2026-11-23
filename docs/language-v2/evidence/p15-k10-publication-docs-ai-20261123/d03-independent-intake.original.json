@@ -1,0 +1,1433 @@
+{
+  "schema": "cherri-d03-independent-original-intake/v1",
+  "observed_at": "2026-11-23T02:46:34.699361+00:00",
+  "status": "PASS_DOCS_PRODUCER_SCOPE_ONLY",
+  "implementation_sha": "4feadab9db4d351628f78593304373631693869a",
+  "compiler_sha": "ca316a3dee252456c4bec751594cf249c709b331",
+  "documentation_sha": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+  "run": 45100819514,
+  "job": 137451021109,
+  "artifact": 14785267658,
+  "original_archive_path": "/mnt/development/projects/evidence/cherri-p10r15-k10-frozen-ci-20261123/d03-consumers/14785267658.original.zip",
+  "original_archive_sha256": "d2638223df5951eba08d44afac6568dbf9ac482d1d9887c9c199e20a94cbfb4c",
+  "outer_members": 50,
+  "original_reference_count": 34,
+  "source_package_members": 23,
+  "source_package_payload_blobs": 22,
+  "installed_source_and_docs_bindings": 7,
+  "installed_searches": [
+    {
+      "case": "active-empty",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_bytes": 61,
+      "stderr_bytes": 0
+    },
+    {
+      "case": "active-show",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_bytes": 10259,
+      "stderr_bytes": 0
+    },
+    {
+      "case": "legacy-empty",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_bytes": 56,
+      "stderr_bytes": 0
+    },
+    {
+      "case": "legacy-query",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_bytes": 11029,
+      "stderr_bytes": 0
+    },
+    {
+      "case": "absent-query",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "case": "invalid-regex",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 33
+    },
+    {
+      "case": "missing-current",
+      "exit_code": 1,
+      "timed_out": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 125
+    },
+    {
+      "case": "restored-active",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_bytes": 10259,
+      "stderr_bytes": 0
+    }
+  ],
+  "public_http_observations": [
+    {
+      "route": "",
+      "status": 200,
+      "bytes": 12383,
+      "sha256": "3d64023fbc9154560645cd4a3595b886cc67bf4263a883f2011d53f9aa3ff54f"
+    },
+    {
+      "route": "fork-language/",
+      "status": 200,
+      "bytes": 14291,
+      "sha256": "cd737e344d7c64ee0f604ab39263ad2d1a4eb0825cbdb6cca3aa9e7b659162cb"
+    },
+    {
+      "route": "fork-language/guide",
+      "status": 200,
+      "bytes": 39100,
+      "sha256": "4a83c6d9f040b3d4d6725546b3f8f861d5512b86ad726b2d0ca75ecceabb2385"
+    },
+    {
+      "route": "fork-language/actions",
+      "status": 200,
+      "bytes": 798667,
+      "sha256": "c863ebd0ec9535fd6da10b82d7e3da8c8366f4b07de0ce4855c51e524c5b29fc"
+    },
+    {
+      "route": "fork-language/migration",
+      "status": 200,
+      "bytes": 20082,
+      "sha256": "ad43d981d696a32dd01866ae6fe783289d43015f67bb3c71b655eead15428364"
+    },
+    {
+      "route": "assets/js/search-data.json",
+      "status": 200,
+      "bytes": 218910,
+      "sha256": "2387c2c2f8da9996a48c3373e05117b8238bec93bd575c5aec3dcd0f237428a0"
+    },
+    {
+      "route": "assets/preview.js",
+      "status": 200,
+      "bytes": 1528,
+      "sha256": "a61c7dc57a7135beb6e7e77f08e92237063f95c7ab730f43ab21a8908641f091"
+    }
+  ],
+  "public_search_entries": 50,
+  "public_action_search_entries": 21,
+  "site_original_causal_controls": 6,
+  "collector_elapsed_seconds": 2.060139811999999,
+  "go_intake_parent_seconds": 0.09,
+  "go_intake_package_seconds": 0.095,
+  "docs_record_accepted": true,
+  "original_D03_report_status": "FAILED",
+  "app_integration_accepted": false,
+  "d03_complete": false,
+  "closure_complete": false,
+  "new_tests_or_producers_executed": 0,
+  "new_network_requests": 0,
+  "originals_modified": false,
+  "checks": [
+    {
+      "check": "original archive digest and size",
+      "passed": true
+    },
+    {
+      "check": "zip unique safe regular members 50",
+      "passed": true
+    },
+    {
+      "check": "zip original CRC 50",
+      "passed": true
+    },
+    {
+      "check": "zip member count 50",
+      "passed": true
+    },
+    {
+      "check": "50 independent member inventory exact",
+      "passed": true
+    },
+    {
+      "check": "outer member cherri-docs-site-controls.json",
+      "passed": true
+    },
+    {
+      "check": "outer member cherri-docs-site-evidence.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/absent-query.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/absent-query.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/active-empty.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/active-show.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/active-empty.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/active-show.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/docs-actions.md",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/docs-guide.md",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/docs-index.md",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/docs-migration.md",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/documentation-compatibility-manifest.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/documentation-consumer-evidence.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/documentation-site-build.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/documentation-consumers.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/documentation-site-controls.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/documentation-site-deployment.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/installed-common.sh.txt",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/installed-search-docs.sh.txt",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/invalid-regex.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/invalid-regex.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/legacy-empty.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/legacy-empty.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/legacy-query.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/legacy-query.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/missing-current.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/missing-current.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-actions.html",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-guide.html",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-home.html",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-index.html",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-migration.html",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-preview.js",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/published-search-data.json",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/restored-active.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "outer member consumer/restored-active.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "outer member documentation-site-deployment.json",
+      "passed": true
+    },
+    {
+      "check": "outer member github-deployment-artifacts.json",
+      "passed": true
+    },
+    {
+      "check": "outer member github-deployment-jobs.json",
+      "passed": true
+    },
+    {
+      "check": "outer member github-deployment-run.json",
+      "passed": true
+    },
+    {
+      "check": "outer member github-deployment-run-confirmed.json",
+      "passed": true
+    },
+    {
+      "check": "outer member intake-receipt.json",
+      "passed": true
+    },
+    {
+      "check": "outer member intake-test.jsonl",
+      "passed": true
+    },
+    {
+      "check": "outer member intake-test.stderr.txt",
+      "passed": true
+    },
+    {
+      "check": "outer member original-publication-evidence.zip",
+      "passed": true
+    },
+    {
+      "check": "outer member publication-input-receipt.json",
+      "passed": true
+    },
+    {
+      "check": "outer member skill-source-create.json",
+      "passed": true
+    },
+    {
+      "check": "outer member skill-source-verify.json",
+      "passed": true
+    },
+    {
+      "check": "outer member skill-source.zip",
+      "passed": true
+    },
+    {
+      "check": "actual exact K10 workflow terminal success",
+      "passed": true
+    },
+    {
+      "check": "actual installed-public job terminal success",
+      "passed": true
+    },
+    {
+      "check": "actual job step Package and install the exact committed Skill outside its source tree",
+      "passed": true
+    },
+    {
+      "check": "actual job step Collect actual installed searches and exact live documentation bytes",
+      "passed": true
+    },
+    {
+      "check": "actual job step Validate actual collector bytes with existing Go intake in this workspace",
+      "passed": true
+    },
+    {
+      "check": "actual job step Verify original Pages ZIP and current deployment metadata",
+      "passed": true
+    },
+    {
+      "check": "independent artifact metadata binding",
+      "passed": true
+    },
+    {
+      "check": "consumer manifest exact K10 Git blob",
+      "passed": true
+    },
+    {
+      "check": "S D K pins",
+      "passed": true
+    },
+    {
+      "check": "one distinct original docs record",
+      "passed": true
+    },
+    {
+      "check": "original record scope and actual exit",
+      "passed": true
+    },
+    {
+      "check": "actual installed consumer clean identity",
+      "passed": true
+    },
+    {
+      "check": "actual canonical consumer origins",
+      "passed": true
+    },
+    {
+      "check": "consumer schemaFingerprint",
+      "passed": true
+    },
+    {
+      "check": "consumer codecFingerprint",
+      "passed": true
+    },
+    {
+      "check": "consumer macroFingerprint",
+      "passed": true
+    },
+    {
+      "check": "collector observation within original job",
+      "passed": true
+    },
+    {
+      "check": "actual collector invocation exact",
+      "passed": true
+    },
+    {
+      "check": "34 original consumer references",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference docs-index.md",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference docs-guide.md",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference docs-actions.md",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference docs-migration.md",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference installed-search-docs.sh.txt",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference installed-common.sh.txt",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference documentation-compatibility-manifest.json",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference documentation-site-build.json",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference documentation-site-controls.json",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference documentation-site-deployment.json",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference active-empty.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference active-empty.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference active-show.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference active-show.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference legacy-empty.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference legacy-empty.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference legacy-query.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference legacy-query.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference absent-query.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference absent-query.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference invalid-regex.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference invalid-regex.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference missing-current.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference missing-current.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference restored-active.stdout.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference restored-active.stderr.log",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-home.html",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-index.html",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-guide.html",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-actions.html",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-migration.html",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-search-data.json",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference published-preview.js",
+      "passed": true
+    },
+    {
+      "check": "original absolute reference documentation-consumers.json",
+      "passed": true
+    },
+    {
+      "check": "D11 exact documentation fork-language/index.md",
+      "passed": true
+    },
+    {
+      "check": "D11 exact documentation fork-language/guide.md",
+      "passed": true
+    },
+    {
+      "check": "D11 exact documentation fork-language/actions.md",
+      "passed": true
+    },
+    {
+      "check": "D11 exact documentation fork-language/migration.md",
+      "passed": true
+    },
+    {
+      "check": "four docs inventory",
+      "passed": true
+    },
+    {
+      "check": "K10 installed Skill scripts/search-docs.sh",
+      "passed": true
+    },
+    {
+      "check": "K10 installed Skill scripts/common.sh",
+      "passed": true
+    },
+    {
+      "check": "K10 installed Skill compatibility-manifest.json",
+      "passed": true
+    },
+    {
+      "check": "three installed Skill identities",
+      "passed": true
+    },
+    {
+      "check": "all seven original before after digests unchanged",
+      "passed": true
+    },
+    {
+      "check": "eight original distinct searches",
+      "passed": true
+    },
+    {
+      "check": "search invocation active-empty",
+      "passed": true
+    },
+    {
+      "check": "search original streams active-empty",
+      "passed": true
+    },
+    {
+      "check": "search original exit active-empty",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs active-empty",
+      "passed": true
+    },
+    {
+      "check": "exact selected subtree active-empty",
+      "passed": true
+    },
+    {
+      "check": "search invocation active-show",
+      "passed": true
+    },
+    {
+      "check": "search original streams active-show",
+      "passed": true
+    },
+    {
+      "check": "search original exit active-show",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs active-show",
+      "passed": true
+    },
+    {
+      "check": "actual bounded subtree search active-show",
+      "passed": true
+    },
+    {
+      "check": "current generated action matches active-show",
+      "passed": true
+    },
+    {
+      "check": "search invocation legacy-empty",
+      "passed": true
+    },
+    {
+      "check": "search original streams legacy-empty",
+      "passed": true
+    },
+    {
+      "check": "search original exit legacy-empty",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs legacy-empty",
+      "passed": true
+    },
+    {
+      "check": "exact selected subtree legacy-empty",
+      "passed": true
+    },
+    {
+      "check": "search invocation legacy-query",
+      "passed": true
+    },
+    {
+      "check": "search original streams legacy-query",
+      "passed": true
+    },
+    {
+      "check": "search original exit legacy-query",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs legacy-query",
+      "passed": true
+    },
+    {
+      "check": "actual bounded subtree search legacy-query",
+      "passed": true
+    },
+    {
+      "check": "search invocation absent-query",
+      "passed": true
+    },
+    {
+      "check": "search original streams absent-query",
+      "passed": true
+    },
+    {
+      "check": "search original exit absent-query",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs absent-query",
+      "passed": true
+    },
+    {
+      "check": "no match empty success",
+      "passed": true
+    },
+    {
+      "check": "search invocation invalid-regex",
+      "passed": true
+    },
+    {
+      "check": "search original streams invalid-regex",
+      "passed": true
+    },
+    {
+      "check": "search original exit invalid-regex",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs invalid-regex",
+      "passed": true
+    },
+    {
+      "check": "invalid regex error retained",
+      "passed": true
+    },
+    {
+      "check": "search invocation missing-current",
+      "passed": true
+    },
+    {
+      "check": "search original streams missing-current",
+      "passed": true
+    },
+    {
+      "check": "search original exit missing-current",
+      "passed": true
+    },
+    {
+      "check": "isolated missing current fail closed",
+      "passed": true
+    },
+    {
+      "check": "search invocation restored-active",
+      "passed": true
+    },
+    {
+      "check": "search original streams restored-active",
+      "passed": true
+    },
+    {
+      "check": "search original exit restored-active",
+      "passed": true
+    },
+    {
+      "check": "search pinned docs restored-active",
+      "passed": true
+    },
+    {
+      "check": "actual bounded subtree search restored-active",
+      "passed": true
+    },
+    {
+      "check": "current generated action matches restored-active",
+      "passed": true
+    },
+    {
+      "check": "healthy restoration byte identical",
+      "passed": true
+    },
+    {
+      "check": "original site input cherri-docs-site-evidence.json",
+      "passed": true
+    },
+    {
+      "check": "original site input cherri-docs-site-controls.json",
+      "passed": true
+    },
+    {
+      "check": "original site input documentation-site-deployment.json",
+      "passed": true
+    },
+    {
+      "check": "site build exact pins and scope",
+      "passed": true
+    },
+    {
+      "check": "original six site controls all reject and restore",
+      "passed": true
+    },
+    {
+      "check": "seven exact actual public HTTP observations",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original ",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original fork-language/",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original fork-language/guide",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original fork-language/actions",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original fork-language/migration",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original assets/js/search-data.json",
+      "passed": true
+    },
+    {
+      "check": "public HTTP original assets/preview.js",
+      "passed": true
+    },
+    {
+      "check": "actual live actions equals deployed original",
+      "passed": true
+    },
+    {
+      "check": "actual live search equals deployed original",
+      "passed": true
+    },
+    {
+      "check": "search contains exact50 built entries",
+      "passed": true
+    },
+    {
+      "check": "public search route 0",
+      "passed": true
+    },
+    {
+      "check": "public search route 1",
+      "passed": true
+    },
+    {
+      "check": "public search route 2",
+      "passed": true
+    },
+    {
+      "check": "public search route 3",
+      "passed": true
+    },
+    {
+      "check": "public search route 4",
+      "passed": true
+    },
+    {
+      "check": "public search route 5",
+      "passed": true
+    },
+    {
+      "check": "public search route 6",
+      "passed": true
+    },
+    {
+      "check": "public search route 7",
+      "passed": true
+    },
+    {
+      "check": "public search route 8",
+      "passed": true
+    },
+    {
+      "check": "public search route 9",
+      "passed": true
+    },
+    {
+      "check": "public search route 10",
+      "passed": true
+    },
+    {
+      "check": "public search route 11",
+      "passed": true
+    },
+    {
+      "check": "public search route 12",
+      "passed": true
+    },
+    {
+      "check": "public search route 13",
+      "passed": true
+    },
+    {
+      "check": "public search route 14",
+      "passed": true
+    },
+    {
+      "check": "public search route 15",
+      "passed": true
+    },
+    {
+      "check": "public search route 16",
+      "passed": true
+    },
+    {
+      "check": "public search route 17",
+      "passed": true
+    },
+    {
+      "check": "public search route 18",
+      "passed": true
+    },
+    {
+      "check": "public search route 19",
+      "passed": true
+    },
+    {
+      "check": "public search route 20",
+      "passed": true
+    },
+    {
+      "check": "public search route 21",
+      "passed": true
+    },
+    {
+      "check": "public search route 22",
+      "passed": true
+    },
+    {
+      "check": "public search route 23",
+      "passed": true
+    },
+    {
+      "check": "public search route 24",
+      "passed": true
+    },
+    {
+      "check": "public search route 25",
+      "passed": true
+    },
+    {
+      "check": "public search route 26",
+      "passed": true
+    },
+    {
+      "check": "public search route 27",
+      "passed": true
+    },
+    {
+      "check": "public search route 28",
+      "passed": true
+    },
+    {
+      "check": "public search route 29",
+      "passed": true
+    },
+    {
+      "check": "public search route 30",
+      "passed": true
+    },
+    {
+      "check": "public search route 31",
+      "passed": true
+    },
+    {
+      "check": "public search route 32",
+      "passed": true
+    },
+    {
+      "check": "public search route 33",
+      "passed": true
+    },
+    {
+      "check": "public search route 34",
+      "passed": true
+    },
+    {
+      "check": "public search route 35",
+      "passed": true
+    },
+    {
+      "check": "public search route 36",
+      "passed": true
+    },
+    {
+      "check": "public search route 37",
+      "passed": true
+    },
+    {
+      "check": "public search route 38",
+      "passed": true
+    },
+    {
+      "check": "public search route 39",
+      "passed": true
+    },
+    {
+      "check": "public search route 40",
+      "passed": true
+    },
+    {
+      "check": "public search route 41",
+      "passed": true
+    },
+    {
+      "check": "public search route 42",
+      "passed": true
+    },
+    {
+      "check": "public search route 43",
+      "passed": true
+    },
+    {
+      "check": "public search route 44",
+      "passed": true
+    },
+    {
+      "check": "public search route 45",
+      "passed": true
+    },
+    {
+      "check": "public search route 46",
+      "passed": true
+    },
+    {
+      "check": "public search route 47",
+      "passed": true
+    },
+    {
+      "check": "public search route 48",
+      "passed": true
+    },
+    {
+      "check": "public search route 49",
+      "passed": true
+    },
+    {
+      "check": "21 generated action search entries",
+      "passed": true
+    },
+    {
+      "check": "publication receipt S D K exact",
+      "passed": true
+    },
+    {
+      "check": "original Pages ZIP exact",
+      "passed": true
+    },
+    {
+      "check": "zip unique safe regular members 2",
+      "passed": true
+    },
+    {
+      "check": "zip original CRC 2",
+      "passed": true
+    },
+    {
+      "check": "zip member count 2",
+      "passed": true
+    },
+    {
+      "check": "exact original publication ZIP members",
+      "passed": true
+    },
+    {
+      "check": "original published receipt cherri-docs-site-evidence.json",
+      "passed": true
+    },
+    {
+      "check": "original published receipt cherri-docs-site-controls.json",
+      "passed": true
+    },
+    {
+      "check": "original GitHub deployment metadata github-deployment-run.json",
+      "passed": true
+    },
+    {
+      "check": "original GitHub deployment metadata github-deployment-jobs.json",
+      "passed": true
+    },
+    {
+      "check": "original GitHub deployment metadata github-deployment-artifacts.json",
+      "passed": true
+    },
+    {
+      "check": "original GitHub deployment metadata github-deployment-run-confirmed.json",
+      "passed": true
+    },
+    {
+      "check": "original confirmed D11 deployment identity",
+      "passed": true
+    },
+    {
+      "check": "original build deploy jobs exact",
+      "passed": true
+    },
+    {
+      "check": "actual publication artifact original hash",
+      "passed": true
+    },
+    {
+      "check": "minimal deployment projection exact",
+      "passed": true
+    },
+    {
+      "check": "zip unique safe regular members 23",
+      "passed": true
+    },
+    {
+      "check": "zip original CRC 23",
+      "passed": true
+    },
+    {
+      "check": "zip member count 23",
+      "passed": true
+    },
+    {
+      "check": "source package S D K exact",
+      "passed": true
+    },
+    {
+      "check": "source package exact22 payload inventory",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes LICENSE",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/SKILL.md",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/agents/openai.yaml",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/compatibility-manifest.json",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/references/debug-logging.md",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/references/openminis.md",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/references/workflow.md",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/action.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/build.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/catalog.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/common.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/decompile.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/doctor.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/installation.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/json-object.awk",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/prepare-edit.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/real-release-integration.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/search-docs.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/self-test.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/setup.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh",
+      "passed": true
+    },
+    {
+      "check": "source package original Git bytes skills/cherri-shortcuts/scripts/test-json-boundary.sh",
+      "passed": true
+    },
+    {
+      "check": "actual package receipt skill-source-create.json",
+      "passed": true
+    },
+    {
+      "check": "actual package receipt skill-source-verify.json",
+      "passed": true
+    },
+    {
+      "check": "strict intake source bound original consumer record",
+      "passed": true
+    },
+    {
+      "check": "app tier and closure explicitly not granted",
+      "passed": true
+    },
+    {
+      "check": "actual original named Go run pass and package pass",
+      "passed": true
+    },
+    {
+      "check": "all original Go events within actual job",
+      "passed": true
+    },
+    {
+      "check": "receipt actually emitted by original Go producer",
+      "passed": true
+    },
+    {
+      "check": "literal original D03 status retained verbatim",
+      "passed": true
+    },
+    {
+      "check": "literal original missing integration validation error retained",
+      "passed": true
+    }
+  ],
+  "source_witness": [
+    {
+      "path": ".github/workflows/p10r15-documentation-consumers.yml",
+      "sha256": "08b45b5dde694c5b6d3d7acca59e2251b0dbd7401344546884864229130348d0",
+      "bytes": 6607
+    },
+    {
+      "path": "tools/p10r15/package_skill.py",
+      "sha256": "9bd373ea4f88473b1a89c7a620cf242734d5a93c6d13ebc7fb9fbb19709597ee",
+      "bytes": 11970
+    },
+    {
+      "path": "tools/p10r15/prepare_documentation_consumer_ci.py",
+      "sha256": "61b6de7af3c6cf03252a038505e60147cb29b11d7ea984ba59b02f6a30149a38",
+      "bytes": 13254
+    },
+    {
+      "path": "tools/p10r15/verify_documentation_consumers.py",
+      "sha256": "ae641d4f1d931ce3d0874796102cf34e9c87e2972b093b6b216f85c18036df12",
+      "bytes": 22066
+    },
+    {
+      "path": "tools/language-acceptance/documentation_consumer_ci_test.go",
+      "sha256": "0d3e81cc3b4e71b60bac46ca46461010c7057467363383c0940dba2aac792278",
+      "bytes": 6969
+    },
+    {
+      "path": "tools/language-acceptance/documentation_consumers_intake.go",
+      "sha256": "b0ad63b894a6d3fa3c2917e0c3200ae7504efbed384bd5a9e5e9b7d7cba3f89a",
+      "bytes": 22519
+    },
+    {
+      "path": "tools/language-acceptance/documentation_intake.go",
+      "sha256": "317908bc79bba2c41dc139788f69473e06e2a92736fdff584f09829487877ab4",
+      "bytes": 21907
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "26a0fd40c6ac383237ef847c5dffe689aeb65f72a7a22b3be29fb967c229770e",
+      "bytes": 73465
+    },
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "bytes": 31418
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "bytes": 35665
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "bytes": 29212
+    }
+  ],
+  "package_source_witness": [
+    {
+      "path": "LICENSE",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "bytes": 18092
+    },
+    {
+      "path": "skills/cherri-shortcuts/SKILL.md",
+      "sha256": "5e9c938af45bec158112f8e049df9b765e4a6f3adb64ddb0ef121cf6c07c6c1d",
+      "bytes": 9783
+    },
+    {
+      "path": "skills/cherri-shortcuts/agents/openai.yaml",
+      "sha256": "0defb2db477322a83fcd0a899832853c387f67f42c731015b79a93e9aba1c7d7",
+      "bytes": 112
+    },
+    {
+      "path": "skills/cherri-shortcuts/compatibility-manifest.json",
+      "sha256": "fc43c6014a639eb102f7a93e518a94951212f459fc45b38d6070bc6ea430f20d",
+      "bytes": 620
+    },
+    {
+      "path": "skills/cherri-shortcuts/references/debug-logging.md",
+      "sha256": "5cd6a368eebb86d509ea9cccfeb30d9c8f3c6e86691ab00300c27fd85a8aba98",
+      "bytes": 3714
+    },
+    {
+      "path": "skills/cherri-shortcuts/references/openminis.md",
+      "sha256": "8a4edd31dcdce776969d9cccb475aeacacf225363c83d320ef284c386c00db36",
+      "bytes": 6108
+    },
+    {
+      "path": "skills/cherri-shortcuts/references/workflow.md",
+      "sha256": "a0420aa9dc1ef30b5af94dde786e5575a30064392b4adc4433267095e7e3b99a",
+      "bytes": 5136
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/action.sh",
+      "sha256": "fd21b9cd937c640d89e5d0bc043e6a98c207e59ec80f04f8fdd7d2f5b672b1ee",
+      "bytes": 510
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/build.sh",
+      "sha256": "7bbb35317afd8b85edd33e8ac5a6a035058f2541570d56e578f21549b009f887",
+      "bytes": 4779
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/catalog.sh",
+      "sha256": "843f281e57da99acc2f43890ec18b30a04496de6ec37584bc0335e33dd722bdc",
+      "bytes": 501
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/common.sh",
+      "sha256": "3204cfbd20e77f2e2d81155e5b0ba22fbd434488c1525592860e3fed286cf9cc",
+      "bytes": 14926
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/decompile.sh",
+      "sha256": "2ca477687939c8b4883262fd38322c81119c021acac370dac0525a33a98a890f",
+      "bytes": 1336
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/doctor.sh",
+      "sha256": "4c1f1887af1457d4b006ee403ad405ab18a797371ecd8a0aa7fda2b8ede2fde5",
+      "bytes": 1593
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/installation.sh",
+      "sha256": "162ecee3b00e5e65707414d856589b650472db0b5620858a84300738d938c168",
+      "bytes": 7891
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/json-object.awk",
+      "sha256": "de149c0f795f3d660efb99dfeec8862a9abb6f4504023d331b22dbb72ece3ef4",
+      "bytes": 6374
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/prepare-edit.sh",
+      "sha256": "066f6e490f80ae4a3ab170b938c93a0aaf8c0482e2a228fef600d24fcb4d2d63",
+      "bytes": 5149
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/real-release-integration.sh",
+      "sha256": "e1a36216792a36cf44d6384dc0384b3bfc39dceff65625dbc35ac1c06ef22eb6",
+      "bytes": 8259
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/search-docs.sh",
+      "sha256": "b304c96f76072d5e594006f552d3746cdde033d29b669e7aa73ac3bd4d84eff8",
+      "bytes": 1515
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/self-test.sh",
+      "sha256": "1db9198aa2806ae5e4ef38941c5fe6e3cbc92507f8c84f4404f878ae2185a257",
+      "bytes": 17240
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/setup.sh",
+      "sha256": "8164db7370def6c3ce584104ff2c4c6c0a818b04d3161ced0e5a7820d1ad0119",
+      "bytes": 17316
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh",
+      "sha256": "71fb156783f8f71abb5eb19abf6176ef1fbad548bcce9d31592f5244a02f62ce",
+      "bytes": 7626
+    },
+    {
+      "path": "skills/cherri-shortcuts/scripts/test-json-boundary.sh",
+      "sha256": "839ee5c4868b406e45bd86a6a35116eec6567104a451da350a70372359e964af",
+      "bytes": 1930
+    }
+  ],
+  "original_D03_validation_errors": [
+    "requirement D03 has unsatisfied local tier"
+  ],
+  "original_strict_intake_sha256": "573a211b05019afdac35133315c144b84007f064b091b6b7d2f80fa577b1ac1b",
+  "scope_interpretation": "Documentation producer accepted; original D03 aggregate fails because the separately required integration tier is absent.",
+  "reviewed_at": "2026-11-23T02:48:59.317331+00:00",
+  "prior_mechanical_intake_sha256": "c6f4493f801dc20e8e0ad433896e271f71457cb4aa201aea599e4466ef9f517a",
+  "clarification": "The retained first derived receipt used FAILED_MISSING_INTEGRATION as a descriptive label; this reviewed receipt quotes the original FAILED field verbatim. No workflow original, assertion or verdict was changed."
+}
