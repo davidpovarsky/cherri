@@ -51,19 +51,45 @@ jobs:
         go build -v ./...
         go build -o cherri .
 
-    - name: Reserve current-run state race evidence
+    - name: Reserve current-run state race and editor evidence
+      id: reserve_current_run_evidence
       env:
         CHERRI_STATE_TEST_EVIDENCE_DIR: ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+        CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT: ${{ runner.temp }}/cherri-editor-contract-evidence-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       run: |
         set -euo pipefail
         test ! -e "$CHERRI_STATE_TEST_EVIDENCE_DIR"
         test ! -L "$CHERRI_STATE_TEST_EVIDENCE_DIR"
         mkdir -m 700 -- "$CHERRI_STATE_TEST_EVIDENCE_DIR"
+        test ! -e "$CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT"
+        test ! -L "$CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT"
+        mkdir -m 700 -- "$CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT"
 
     - name: Full Go Test Suite
       env:
         CHERRI_STATE_TEST_EVIDENCE_DIR: ${{ runner.temp }}/cherri-state-acceptance-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+        CHERRI_EDITOR_CONTRACT_EVIDENCE_OUTPUT: ${{ runner.temp }}/cherri-editor-contract-evidence-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       run: python3 -B tools/p10r15/run_full_go_suite.py --report "$RUNNER_TEMP/cherri-full-go-suite.json"
+
+    - name: Collect bounded public Linux editor diagnostic tuples
+      id: capture_linux_editor_diagnostics
+      if: always() && steps.reserve_current_run_evidence.outcome == 'success'
+      run: |
+        python3 -B tools/p10r15/collect_editor_contract_evidence.py \
+          --root "$RUNNER_TEMP/cherri-editor-contract-evidence-$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+          --output "$RUNNER_TEMP/cherri-editor-contract-public-capture-$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+          --source "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --tuples-only
+
+    - name: Upload original Linux editor diagnostic tuples
+      if: always() && steps.capture_linux_editor_diagnostics.outcome == 'success'
+      uses: actions/upload-artifact@v4
+      with:
+        name: cherri-editor-contract-linux-${{ github.run_id }}-${{ github.run_attempt }}
+        path: |
+          ${{ runner.temp }}/cherri-editor-contract-public-capture-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/inventory.json
+          ${{ runner.temp }}/cherri-editor-contract-public-capture-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/public-editor-evidence.zip
+        if-no-files-found: warn
+        retention-days: 14
 
     - name: Upload original Linux state race evidence
       if: always()

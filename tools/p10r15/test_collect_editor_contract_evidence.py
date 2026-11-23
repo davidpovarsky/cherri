@@ -107,5 +107,85 @@ class PublicEditorCaptureTests(unittest.TestCase):
         self.assertEqual(report["files"], [])
         self.assertEqual(report["formal_requirements_proved"], [])
 
+
+    def test_tuple_mode_preserves_failure_bytes_without_reading_build_products(self):
+        originals = {
+            "editor-contract-e05-12345/e05-swift-process.json":
+                b'{"exit_code":1,"timed_out":false,"source_files":[]}\n',
+            "editor-contract-e05-12345/e05-swift-go.jsonl":
+                b'{"passed":false,"compiled":false,"summary":null}\n',
+            "editor-contract-e05-12345/e05-swift-stderr.log": b"",
+            "editor-contract-e05-12345/swift/receipt.json":
+                b'{"passed":false,"compile":{"exit_code":1},"execution":null}\n',
+            "editor-contract-e05-12345/swift/compile.stdout": b"",
+            "editor-contract-e05-12345/swift/compile.stderr":
+                b"public synthetic compiler diagnostic\n",
+        }
+        for name, data in originals.items():
+            self.file(name, data)
+        products = []
+        for prefix, stem, generated in (
+            ("editor-contract-e05-12345", "editor-publication-probe",
+             "editor-publication-generated.swift"),
+            ("canonical-swift-paths/editor-contract-e06-67890", "position-probe",
+             "position-generated.swift"),
+        ):
+            for name in (generated, stem, stem + ".exe", stem + ".exp", stem + ".lib"):
+                products.append(self.file(prefix + "/swift/" + name, b"public build product"))
+        original_open = Path.open
+        def reject_product_read(path, *args, **kwargs):
+            if path in products:
+                raise AssertionError("excluded public build product was opened")
+            return original_open(path, *args, **kwargs)
+        with patch.object(Path, "open", reject_product_read):
+            report = capture.collect(self.root, self.output, "a" * 40, "1234", tuples_only=True)
+        self.assertEqual(report["capture_mode"], "diagnostic_tuples_only")
+        self.assertEqual(report["status"], "CAPTURED")
+        self.assertFalse(report["ui_executed"])
+        self.assertEqual(report["formal_requirements_proved"], [])
+        self.assertEqual(report["total_bytes"], sum(map(len, originals.values())))
+        self.assertEqual([item["path"] for item in report["files"]], sorted(originals))
+        self.assertEqual([item["path"] for item in report["omitted_public_build_products"]],
+                         sorted(path.relative_to(self.root).as_posix() for path in products))
+        with zipfile.ZipFile(self.output / "public-editor-evidence.zip") as archive:
+            self.assertEqual(archive.namelist(), sorted(originals))
+            for name, data in originals.items():
+                self.assertEqual(archive.read(name), data)
+        for name, data in originals.items():
+            self.assertEqual((self.root / name).read_bytes(), data)
+        for path in products:
+            self.assertEqual(path.read_bytes(), b"public build product")
+
+    def test_tuple_mode_rejects_foreign_source_or_executable(self):
+        for name in ("editor-contract-e05-12345/swift/foreign.swift",
+                     "editor-contract-e05-12345/swift/foreign-probe",
+                     "private-corpus.json"):
+            with self.subTest(name=name):
+                target = self.file(name, b"synthetic rejected input")
+                with self.assertRaisesRegex(ValueError, "foreign"):
+                    capture.collect(self.root, self.output, "a" * 40, "1234", tuples_only=True)
+                self.assertFalse(self.output.exists())
+                target.unlink()
+
+    def test_tuple_mode_omitted_products_do_not_bypass_original_caps(self):
+        self.file("editor-contract-e05-12345/swift/editor-publication-probe", b"12345")
+        self.file("editor-contract-e05-12345/swift/editor-publication-generated.swift", b"12345")
+        for limit, value in (("MAX_FILES", 1), ("MAX_FILE_BYTES", 4), ("MAX_TOTAL_BYTES", 9)):
+            with self.subTest(limit=limit), patch.object(capture, limit, value):
+                with self.assertRaisesRegex(ValueError, "fixed capture budget"):
+                    capture.collect(self.root, self.output, "a" * 40, "1234", tuples_only=True)
+                self.assertFalse(self.output.exists())
+
+    def test_tuple_mode_build_products_alone_do_not_claim_observation(self):
+        self.file("editor-contract-e05-12345/swift/editor-publication-probe")
+        report = capture.collect(self.root, self.output, "a" * 40, "1234", tuples_only=True)
+        self.assertEqual(report["status"], "NOT_RUN")
+        self.assertEqual(report["files"], [])
+        self.assertEqual(report["total_bytes"], 0)
+        self.assertFalse(report["ui_executed"])
+        self.assertEqual(report["formal_requirements_proved"], [])
+        with zipfile.ZipFile(self.output / "public-editor-evidence.zip") as archive:
+            self.assertEqual(archive.namelist(), [])
+
 if __name__ == "__main__":
     unittest.main()

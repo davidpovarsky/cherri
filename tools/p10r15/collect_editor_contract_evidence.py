@@ -11,6 +11,11 @@ import zipfile
 MAX_FILES = 128
 MAX_FILE_BYTES = 8 << 20
 MAX_TOTAL_BYTES = 32 << 20
+PUBLIC_BUILD_PRODUCTS = {"editor-publication-generated.swift", "position-generated.swift"} | {
+    stem + suffix
+    for stem in ("editor-publication-probe", "position-probe")
+    for suffix in ("", ".exe", ".exp", ".lib")
+}
 STEPS = {"e01": {"service"}, "e02": {"service"}, "e03": {"service"},
          "e05": {"mobile", "swift"}, "e06": {"lsp", "mobile", "swift"}}
 
@@ -44,12 +49,12 @@ def allowed(relative):
 def linked(path):
     return path.is_symlink() or getattr(path, "is_junction", lambda: False)()
 
-def collect(root, output, source, run_id):
+def collect(root, output, source, run_id, *, tuples_only=False):
     if not re.fullmatch("[0-9a-f]{40}", source) or not re.fullmatch("[0-9]+", run_id):
         raise ValueError("invalid CI context")
     if linked(root):
         raise ValueError("linked evidence root")
-    payloads, inventory, total = [], [], 0
+    payloads, inventory, omitted, total, scanned_bytes = [], [], [], 0, 0
     if root.exists():
         if not root.is_dir():
             raise ValueError("evidence root is not a directory")
@@ -63,9 +68,14 @@ def collect(root, output, source, run_id):
                 if linked(path) or not path.is_file() or not allowed(relative):
                     raise ValueError("foreign or linked public evidence path: " + relative.as_posix())
                 size = path.stat().st_size
-                total += size
-                if len(payloads) >= MAX_FILES or size > MAX_FILE_BYTES or total > MAX_TOTAL_BYTES:
+                scanned_bytes += size
+                if len(payloads) + len(omitted) >= MAX_FILES or size > MAX_FILE_BYTES or scanned_bytes > MAX_TOTAL_BYTES:
                     raise ValueError("public editor evidence exceeds fixed capture budget")
+                if tuples_only and path.name in PUBLIC_BUILD_PRODUCTS:
+                    # Keep originals in place; publish neither source nor executables.
+                    omitted.append({"path": relative.as_posix(), "bytes": size})
+                    continue
+                total += size
                 with path.open("rb") as stream:
                     data = stream.read(MAX_FILE_BYTES + 1)
                 if len(data) != size:
@@ -85,6 +95,9 @@ def collect(root, output, source, run_id):
               "limits": {"files": MAX_FILES, "file_bytes": MAX_FILE_BYTES, "total_bytes": MAX_TOTAL_BYTES},
               "files": sorted(inventory, key=lambda x: x["path"]), "total_bytes": total,
               "archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest()}
+    if tuples_only:
+        report["capture_mode"] = "diagnostic_tuples_only"
+        report["omitted_public_build_products"] = sorted(omitted, key=lambda item: item["path"])
     (output / "inventory.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n")
     return report
 
@@ -94,8 +107,10 @@ def main():
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--source", required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--tuples-only", action="store_true",
+                        help="retain original public process/diagnostic tuples without generated source or binaries")
     args = parser.parse_args()
-    report = collect(args.root, args.output, args.source, args.run_id)
+    report = collect(args.root, args.output, args.source, args.run_id, tuples_only=args.tuples_only)
     print(json.dumps({"status": report["status"], "files": len(report["files"]),
                       "total_bytes": report["total_bytes"], "archive_sha256": report["archive_sha256"]}))
 
