@@ -639,8 +639,42 @@ func finalProvenanceValidatePublication(in *finalProvenanceInputs, role string) 
 		if !reflect.DeepEqual(finalProvenanceObject(remote, "ref"), ref) || !reflect.DeepEqual(finalProvenanceObject(remote, "commit"), commit) {
 			return fmt.Errorf("publication result changed the raw remote binding")
 		}
-		if !reflect.DeepEqual(o["primaryBefore"], o["primaryAfter"]) {
+		primaryBefore := finalProvenanceObject(finalProvenanceObject(o, "validation"), "primaryBefore")
+		primaryAfter := finalProvenanceObject(o, "primaryAfter")
+		for _, primary := range []map[string]any{primaryBefore, primaryAfter} {
+			head, headOK := primary["head"].(string)
+			_, statusOK := primary["status"].(string)
+			fixture, fixtureOK := primary["preservedFixtureSHA256"].(string)
+			if len(primary) != 3 || !headOK || !finalProvenanceHex(head, 40) || !statusOK || !fixtureOK || !finalProvenanceHex(fixture, 64) {
+				return fmt.Errorf("Windows primary checkout observation is missing or malformed")
+			}
+		}
+		if !reflect.DeepEqual(primaryBefore, primaryAfter) {
 			return fmt.Errorf("publication changed the unrelated primary checkout")
+		}
+		var primaryCommand []string
+		for _, original := range []struct {
+			name, field string
+			command     []string
+			primary     map[string]any
+		}{
+			{"03-primary-head-before", "head", []string{"rev-parse", "HEAD"}, primaryBefore},
+			{"04-primary-status-before", "status", []string{"status", "--porcelain=v1"}, primaryBefore},
+			{"19-primary-head-after", "head", []string{"rev-parse", "HEAD"}, primaryAfter},
+			{"20-primary-status-after", "status", []string{"status", "--porcelain=v1"}, primaryAfter},
+		} {
+			argv, ok := finalProvenanceStrings(byName[original.name]["argv"])
+			if !ok || len(argv) != 5 || argv[0] == "" || argv[1] != "-C" || argv[2] == "" || !reflect.DeepEqual(argv[3:], original.command) {
+				return fmt.Errorf("Windows primary checkout command differs from original observation")
+			}
+			if primaryCommand == nil {
+				primaryCommand = argv[:3]
+			} else if !reflect.DeepEqual(primaryCommand, argv[:3]) {
+				return fmt.Errorf("Windows primary checkout commands target different checkouts")
+			}
+			if strings.TrimSpace(string(in.Bytes[p.Streams[original.name].Stdout])) != original.primary[original.field] {
+				return fmt.Errorf("Windows primary checkout objects disagree with original streams")
+			}
 		}
 	case "source-create-only/1":
 		if finalProvenanceString(o, "sourceCommit") != s.SHA || finalProvenanceString(o, "ref") != s.PublishedRef || finalProvenanceString(o, "status") != "PASS" || !finalProvenanceBool(o, "sourceCleanAfter", true) {
