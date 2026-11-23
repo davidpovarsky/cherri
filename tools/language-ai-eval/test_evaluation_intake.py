@@ -202,13 +202,15 @@ class IntakeTamperControls(unittest.TestCase):
         receipt = {"schema": "cherri-ai-graph-validation/v1", "request_id": request["request_id"],
             "task_id": task["id"], "arm": request["arm"], "source_sha256": eb.digest(code),
             "compiler": self.bundle["manifest"]["compiler"], "started_at": now, "finished_at": now,
-            "compiler_environment_profile": "isolated-defaults/v1",
+            "compiler_environment_profile": eb.reviewed_profile(self.bundle["manifest"]["profile"])["compiler_environment_profile"],
             "synthetic": False, "apple_runtime_proved": False, "semantic_scope": "six-task-emitted-pure-graph",
             "command": [str(self.root / "compiler.exe"), "compile", str(directory / "source.cherri"), "--mode="+request["arm"],
                         "--output", str(directory / "output.shortcut"), "--skip-sign"],
             "compile_returncode": 0, "compile_elapsed_seconds": 0.001, "status": "ADJUDICATED",
             "graph_sha256": eb.digest(raw), "reply_sha256": eb.digest(eb.canonical(answer)),
             "originals": {p.name: {"sha256": eb.digest(p.read_bytes()), "bytes": p.stat().st_size} for p in directory.iterdir()}}
+        if self.bundle["manifest"]["profile"] == eb.V2_PROFILE:
+            receipt["evaluation_profile"] = eb.V2_PROFILE
         put(directory / "validator-receipt.json", receipt)
         return answer
 
@@ -481,6 +483,115 @@ class IntakeTamperControls(unittest.TestCase):
             directory = self.root / "attempts" / request["request_id"] / "provider"
             with self.assertRaisesRegex(eb.BundleError, "PROVIDER_UNADJUDICABLE_CONTENT_BLOCK"):
                 intake.verify_provider(directory, request, self.bundle)
+
+    def use_v2_intake_control(self):
+        pin = mock.patch.object(eb, "V2_COMPILER_SHA256", "f"*64)
+        pin.start()
+        self.addCleanup(pin.stop)
+        selected = eb.reviewed_profile(eb.V2_PROFILE, require_compiler=True)
+        self.bundle["manifest"] = copy.deepcopy(self.bundle["manifest"])
+        self.bundle["manifest"].update(profile=eb.V2_PROFILE, provider=selected["provider"],
+                                       producer_sha256={name: eb.digest(Path(eb.__file__).with_name(name).read_bytes())
+                                                        for name in selected["producer_files"]},
+                                       compiler=selected["compiler"],
+                                       compiler_environment_profile=selected["compiler_environment_profile"])
+        put(self.root/"manifest.json", self.bundle["manifest"])
+        eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", self.root/"private"/"signing-key.pem",
+                  "-in", self.root/"manifest.json", "-out", self.root/"signature.bin")
+        self.story["data"]["comments"][0]["text"] = eb.anchor_text(self.bundle)
+        self.bundle["anchor"] = eb.validate_anchor(self.story, self.bundle)
+        put(self.trusted, self.story)
+
+    def test_v2_mock_receipts_join_twelve_outcomes_without_changing_the_denominator(self):
+        self.use_v2_intake_control()
+        records = [self.outcome(request) for request in self.requests]
+        self.write_report(records)
+        result = self.run_intake()
+        self.assertEqual(result["status"], "VERIFIED_MEASUREMENT")
+        self.assertEqual(result["expected_outcomes"], 12)
+        self.assertEqual(len(result["records"]), 12)
+        self.assertEqual(result["compiler"], self.bundle["manifest"]["compiler"])
+        self.assertEqual({arm: sum(r["arm"] == arm for r in result["records"]) for arm in ("legacy", "v2")},
+                         {"legacy": 6, "v2": 6})
+
+    def test_v2_intake_rejects_hash_reconciled_wire_drift(self):
+        self.use_v2_intake_control()
+        request = self.requests[0]
+        self.provider(request)
+        directory = self.root/"attempts"/request["request_id"]/"provider"
+        receipt_path = directory/"provider-receipt.json"
+        baseline_receipt = eb.unique_json(receipt_path.read_bytes())
+        wire_path = directory/"generation.request.original.json"
+        baseline_wire = eb.unique_json(wire_path.read_bytes())
+        mutations = [
+            ("disabled", lambda b: b.update(thinking={"type": "disabled"})),
+            ("adaptive", lambda b: b.update(thinking={"type": "adaptive"})),
+            ("tools", lambda b: b.update(tools=[])),
+            ("model", lambda b: b.update(model="other-model")),
+            ("effort", lambda b: b["output_config"].update(effort="max")),
+            ("missing effort", lambda b: b.pop("output_config")),
+            ("output cap", lambda b: b.update(max_tokens=2001)),
+            ("stream", lambda b: b.update(stream=True))]
+        for name, change in mutations:
+            with self.subTest(mutation=name):
+                wire = copy.deepcopy(baseline_wire)
+                change(wire)
+                raw = eb.canonical(wire)
+                wire_path.write_bytes(raw)
+                receipt = copy.deepcopy(baseline_receipt)
+                receipt["calls"]["generation"]["request_sha256"] = eb.digest(raw)
+                receipt["originals"][wire_path.name].update(sha256=eb.digest(raw), bytes=len(raw))
+                put(receipt_path, receipt)
+                with self.assertRaisesRegex(eb.BundleError, "PROVIDER_HTTP_FIELDS|PROVIDER_OUTPUT_CAP"):
+                    intake.verify_provider(directory, request, self.bundle)
+
+    def test_v1_receipt_cannot_claim_v2_and_v1_seals_cannot_be_restamped(self):
+        request = self.requests[0]
+        record = self.outcome(request)
+        directory = self.root/"attempts"/request["request_id"]/"provider"
+        path = directory/"provider-receipt.json"
+        receipt = eb.unique_json(path.read_bytes())
+        receipt["evaluation_profile"] = eb.V2_PROFILE
+        put(path, receipt)
+        with self.assertRaisesRegex(eb.BundleError, "PROVIDER_PROFILE"):
+            intake.verify_provider(directory, request, self.bundle)
+        self.use_v2_intake_control()
+        with self.assertRaisesRegex(eb.BundleError, "OUTCOME_SEAL_IDENTITY"):
+            eb.verify_outcome_seal(self.bundle, record)
+
+    def test_v2_provider_and_validator_require_explicit_profile_receipts(self):
+        self.use_v2_intake_control()
+        request = self.requests[0]
+        reply = self.provider(request)
+        provider_dir = self.root/"attempts"/request["request_id"]/"provider"
+        provider = intake.verify_provider(provider_dir, request, self.bundle)
+        provider_path = provider_dir/"provider-receipt.json"
+        provider_receipt = eb.unique_json(provider_path.read_bytes())
+        provider_receipt.pop("evaluation_profile")
+        put(provider_path, provider_receipt)
+        with self.assertRaisesRegex(eb.BundleError, "PROVIDER_PROFILE"):
+            intake.verify_provider(provider_dir, request, self.bundle)
+        self.validator(request, reply)
+        directory = self.root/"attempts"/request["request_id"]/"validator"
+        path = directory/"validator-receipt.json"
+        receipt = eb.unique_json(path.read_bytes())
+        receipt.pop("evaluation_profile")
+        put(path, receipt)
+        with self.assertRaisesRegex(eb.BundleError, "VALIDATOR_PROFILE"):
+            intake.verify_validator(directory, request, provider, self.bundle)
+
+    def test_v2_canonical_intake_requires_the_reviewed_protocol_git_bytes(self):
+        self.use_v2_intake_control()
+        def changed_protocol_git(command, **kwargs):
+            name = command[-1].rsplit("/", 1)[1]
+            raw = Path(eb.__file__).with_name(name).read_bytes()
+            return raw + b"synthetic Git document drift\n" if name == "fresh-instance-protocol-v2.md" else raw
+        with mock.patch.object(intake, "load_bundle", return_value=self.bundle), \
+             mock.patch.object(intake.subprocess, "check_output", side_effect=changed_protocol_git):
+            with self.assertRaisesRegex(eb.BundleError, "FROZEN_GIT_SOURCE_BINDING"):
+                intake.intake(self.root, self.trusted)
+
+
 
 
 if __name__ == "__main__":

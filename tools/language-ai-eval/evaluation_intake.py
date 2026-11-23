@@ -17,9 +17,9 @@ import plistlib
 import subprocess
 import sys
 
-from evaluation_bundle import (API_VERSION, MODEL, PRODUCER_FILES, SCHEMA,
+from evaluation_bundle import (API_VERSION, MODEL, PROFILE, V2_PROFILE, SCHEMA,
     BundleError, canonical, digest, load_bundle, read_regular, request_sequence,
-    require, unique_json, utc_time, validate_anchor, verify_outcome_seal, write_new)
+    require, reviewed_profile, unique_json, utc_time, validate_anchor, verify_outcome_seal, write_new)
 from graph_validator import COMPILE_TIMEOUT, MAX_PLIST, semantic_checks, validation_request
 
 EXPECTED_SYSTEM = (
@@ -82,6 +82,11 @@ def ordered_times(*values):
 def verify_provider(directory, request, bundle):
     receipt = unique_json(original(directory / "provider-receipt.json"))
     require(receipt.get("schema") == "cherri-anthropic-provider/v1", "PROVIDER_RECEIPT_SCHEMA")
+    profile = bundle["manifest"].get("profile")
+    selected = reviewed_profile(profile)
+    require(bundle["manifest"]["provider"] == selected["provider"], "PROVIDER_SETTINGS")
+    require("evaluation_profile" not in receipt if profile == PROFILE else
+            receipt.get("evaluation_profile") == profile, "PROVIDER_PROFILE")
     for key in ("request_id", "task_id", "arm"):
         require(receipt.get(key) == request[key], "PROVIDER_RECEIPT_IDENTITY")
     require(receipt.get("implementation_sha") == bundle["manifest"]["implementation_sha"]
@@ -126,7 +131,12 @@ def verify_provider(directory, request, bundle):
         require(digest(raw_request) == call.get("request_sha256"), "PROVIDER_HTTP_REQUEST_HASH")
         body = unique_json(raw_request)
         fields = {"model", "system", "messages", "thinking"} | ({"max_tokens", "stream"} if name == "generation" else set())
-        require(set(body) == fields and body.get("model") == MODEL and body.get("thinking") == {"type": "disabled"}, "PROVIDER_HTTP_FIELDS")
+        if profile == V2_PROFILE:
+            fields.add("output_config")
+        require(set(body) == fields and body.get("model") == MODEL
+                and body.get("thinking") == selected["provider"]["settings"]["thinking"], "PROVIDER_HTTP_FIELDS")
+        if profile == V2_PROFILE:
+            require(body.get("output_config") == selected["provider"]["settings"]["output_config"], "PROVIDER_HTTP_FIELDS")
         require(body.get("system") == EXPECTED_SYSTEM
                 and receipt.get("system_sha256") == digest(EXPECTED_SYSTEM.encode()), "PROVIDER_SYSTEM_PROMPT")
         messages = body.get("messages")
@@ -207,7 +217,11 @@ def verify_validator(directory, request, provider, bundle):
     for key in ("request_id", "task_id", "arm"):
         require(receipt.get(key) == request[key], "VALIDATOR_IDENTITY")
     require(receipt.get("compiler") == bundle["manifest"]["compiler"], "VALIDATOR_COMPILER_IDENTITY")
-    require(receipt.get("compiler_environment_profile") == "isolated-defaults/v1", "VALIDATOR_ENVIRONMENT_PROFILE")
+    profile = bundle["manifest"].get("profile")
+    selected = reviewed_profile(profile)
+    require("evaluation_profile" not in receipt if profile == PROFILE else
+            receipt.get("evaluation_profile") == profile, "VALIDATOR_PROFILE")
+    require(receipt.get("compiler_environment_profile") == selected["compiler_environment_profile"], "VALIDATOR_ENVIRONMENT_PROFILE")
     require(receipt.get("originals_complete", True) is True, "VALIDATOR_ORIGINALS_INCOMPLETE")
     inventory(directory, receipt)
     validated = unique_json(original(directory / "request.json"))
@@ -250,7 +264,7 @@ def intake(bundle_path, trusted_asana_response):
     trusted_raw = original(trusted_path)
     require(validate_anchor(unique_json(trusted_raw), bundle) == bundle["anchor"], "LIVE_ANCHOR_CHANGED")
     root = Path(__file__).resolve().parents[2]
-    for name in PRODUCER_FILES:
+    for name in reviewed_profile(bundle["manifest"]["profile"])["producer_files"]:
         data = subprocess.check_output(["git", "--no-replace-objects", "show",
               bundle["manifest"]["implementation_sha"]+":tools/language-ai-eval/"+name], cwd=root, timeout=15)
         require(digest(data) == bundle["manifest"]["producer_sha256"][name], "FROZEN_GIT_SOURCE_BINDING")

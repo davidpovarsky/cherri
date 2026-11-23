@@ -468,6 +468,41 @@ class SixTaskGraphControls(unittest.TestCase):
         with self.assertRaisesRegex(validator.Unsupported, "NUMBER_TEXT_LIMIT"):
             validator.number("1"*129)
 
+    def test_v2_compiler_environment_has_attempt_local_tmpdir_without_inherited_secrets(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            with mock.patch.dict(validator.os.environ, {
+                    "ANTHROPIC_API_KEY": "synthetic-not-a-credential", "TMPDIR": "outside",
+                    "PATH": "outside", "HOME": "outside", "LANG": "C"}, clear=True):
+                environment = validator.compiler_environment(directory, bundle.V2_PROFILE)
+            self.assertEqual(set(environment), {"LANG", "TEMP", "TMP", "TMPDIR"})
+            self.assertEqual(environment["TMPDIR"], str(directory/"compiler-temp"))
+            self.assertEqual(environment["TEMP"], environment["TMPDIR"])
+            self.assertEqual(environment["TMP"], environment["TMPDIR"])
+
+    def test_v2_native_validation_receipt_uses_selected_profile_and_isolated_environment(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory, task, request, fake_bundle = self.inventory_attempt(Path(temporary))
+            fake_bundle["manifest"]["profile"] = bundle.V2_PROFILE
+            graph = plistlib.dumps(self.graph(0), fmt=plistlib.FMT_BINARY)
+            calls = []
+            def compile_control(command, **kwargs):
+                calls.append((command, kwargs))
+                self.assertEqual(kwargs["env"]["TMPDIR"], str(directory/"compiler-temp"))
+                self.assertNotIn("ANTHROPIC_API_KEY", kwargs["env"])
+                (directory/"output.shortcut").write_bytes(graph)
+                return validator.subprocess.CompletedProcess(command, 0)
+            with mock.patch.object(validator, "validation_request", return_value=task), \
+                 mock.patch.object(validator, "claim_request", return_value=directory), \
+                 mock.patch.object(validator.subprocess, "run", side_effect=compile_control):
+                reply = validator.evaluate_request(request, fake_bundle)
+            self.assertTrue(all(check["passed"] for check in reply["checks"]))
+            self.assertEqual(len(calls), 1)
+            receipt = json.loads((directory/"validator-receipt.json").read_bytes())
+            self.assertEqual(receipt["evaluation_profile"], bundle.V2_PROFILE)
+            self.assertEqual(receipt["compiler_environment_profile"], "isolated-defaults-linux/v2")
+
+
 
 if __name__ == "__main__":
     unittest.main()

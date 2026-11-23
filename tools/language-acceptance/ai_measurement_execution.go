@@ -72,6 +72,7 @@ var aiMeasurementSources = func() []string {
 		"tools/language-ai-eval/evaluation_bundle.py",
 		"tools/language-ai-eval/evaluation_intake.py",
 		"tools/language-ai-eval/fresh-instance-protocol.md",
+		"tools/language-ai-eval/fresh-instance-protocol-v2.md",
 		"tools/language-ai-eval/graph_validator.py",
 		"tools/language-ai-eval/runner.py",
 		"tools/language-ai-eval/tasks.json",

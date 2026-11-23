@@ -1,5 +1,6 @@
 """Offline provenance controls; no network, model request or compiler call."""
 import copy
+from contextlib import contextmanager
 import json
 from pathlib import Path
 import stat
@@ -390,6 +391,148 @@ class ProvenanceControls(unittest.TestCase):
         with mock.patch.object(Path, "open", opened):
             with self.assertRaisesRegex(eb.BundleError, "INPUT_CHANGED_DURING_READ"):
                 eb.read_regular(actual, 8)
+
+    @contextmanager
+    def prepared_profile_control(self, profile):
+        # Public deterministic unit material: no fresh seed or compiler executes.
+        repository = Path(eb.__file__).resolve().parents[2]
+        version = profile.rsplit("/", 1)[1]
+        output = self.root / ("offline-profile-" + version)
+        compiler = self.root / ("nonexecutable-compiler-control-" + version)
+        compiler.write_bytes(b"synthetic compiler control; never execute\n")
+        compiler_hash = eb.digest(compiler.read_bytes())
+        model = {"id": eb.MODEL, "created_at": "2026-09-28T00:00:00Z", "lifecycle": "active"}
+        model_raw = eb.canonical(model)
+        response = self.root / ("synthetic-model-response-" + version)
+        response.write_bytes(model_raw)
+        receipt = self.root / ("synthetic-model-receipt-" + version)
+        receipt.write_bytes(eb.canonical({
+            "httpStatus": 200, "operation": "PROVIDER_MODEL_IDENTITY_ONLY",
+            "requestedModelId": eb.MODEL, "transportErrorType": None, "parseErrorType": None,
+            "canonicalIdentityVerified": True, "returnedModel": model,
+            "finishedAtUtc": "2026-11-21T00:00:00Z",
+            "responseSha256": eb.digest(model_raw), "responseBytes": len(model_raw)}))
+        def git_control(command, **kwargs):
+            arguments = command[2:]
+            if arguments == ["status", "--porcelain"]:
+                return b""
+            if arguments == ["rev-parse", "HEAD"]:
+                return b"cccccccccccccccccccccccccccccccccccccccc\n"
+            if len(arguments) == 2 and arguments[0] == "show":
+                return (repository / arguments[1].split(":", 1)[1]).read_bytes()
+            raise AssertionError("unexpected synthetic source operation")
+        with mock.patch.object(eb, "COMPILER_SHA256", compiler_hash), \
+             mock.patch.object(eb, "V2_COMPILER_SHA256", compiler_hash), \
+             mock.patch.object(eb.secrets, "token_bytes", return_value=bytes(range(32))) as seed, \
+             mock.patch.object(eb.subprocess, "check_output", side_effect=git_control):
+            eb.create_bundle(output, repository, compiler, receipt, response, profile=profile)
+            seed.assert_called_once_with(32)
+            yield eb.load_bundle(output, require_anchor=False)
+
+    def test_profile_v1_constants_and_fresh_instance_derivation_are_preserved(self):
+        self.assertEqual(eb.PROFILE, "fresh-six-exact-instances/v1")
+        self.assertEqual(eb.COMPILER_SOURCE, "b791ce0616d1821cebfc57909a6bc50a195ca68c")
+        self.assertEqual(eb.COMPILER_SHA256, "50e73c811c6829448f7406a6be4731b632cf27ef038615c83bdd5c96cb3b6ef3")
+        original = eb.reviewed_profile(eb.PROFILE)
+        self.assertEqual(original["provider"]["settings"], {"thinking": {"type": "disabled"}, "stream": False})
+        original["provider"]["settings"]["thinking"]["type"] = "mutated"
+        self.assertEqual(eb.PROVIDER["settings"]["thinking"], {"type": "disabled"})
+        with self.assertRaisesRegex(eb.BundleError, "BUNDLE_PROFILE"):
+            eb.reviewed_profile("unreviewed-profile")
+
+    def test_v2_unreviewed_compiler_blocks_before_source_seed_or_output_creation(self):
+        output = self.root / "must-not-exist"
+        with mock.patch.object(eb, "V2_COMPILER_SHA256", None), \
+             mock.patch.object(eb.secrets, "token_bytes") as seed, \
+             mock.patch.object(eb.subprocess, "check_output") as git, \
+             mock.patch.object(eb, "crypto") as crypto:
+            with self.assertRaisesRegex(eb.BundleError, "UNREVIEWED_PROFILE_COMPILER"):
+                eb.create_bundle(output, self.root, self.root/"absent", self.root/"absent",
+                                 self.root/"absent", profile=eb.V2_PROFILE)
+            seed.assert_not_called()
+            git.assert_not_called()
+            crypto.assert_not_called()
+        self.assertFalse(output.exists())
+
+    def test_both_profiles_seal_and_load_exact_budgets_and_original_six_public_patterns(self):
+        suites = []
+        for profile in (eb.PROFILE, eb.V2_PROFILE):
+            with self.subTest(profile=profile), self.prepared_profile_control(profile) as bundle:
+                manifest = bundle["manifest"]
+                self.assertEqual(manifest["profile"], profile)
+                self.assertEqual(manifest["provider"], eb.reviewed_profile(profile)["provider"])
+                self.assertEqual(manifest["budget"], {"max_input_tokens": 12000, "max_output_tokens": 2000})
+                self.assertEqual(manifest["expected_outcomes"], 12)
+                self.assertEqual(manifest["retry_limit"], 0)
+                self.assertEqual(manifest["task_ids"], list(eb.TASK_IDS))
+                self.assertEqual(len(eb.request_sequence(bundle)), 12)
+                self.assertEqual(manifest["compiler"], eb.reviewed_profile(profile)["compiler"])
+                suites.append(eb.canonical(bundle["suite"]))
+                mode = (bundle["root"] / "compiler.exe").stat().st_mode
+                if eb.os.name == "posix":
+                    self.assertEqual(stat.S_IMODE(mode) if profile == eb.V2_PROFILE else mode & 0o111,
+                                     0o700 if profile == eb.V2_PROFILE else 0)
+        self.assertEqual(suites[0], suites[1])
+
+    def test_validly_signed_profile_budget_compiler_and_tool_mutations_still_reject(self):
+        with self.prepared_profile_control(eb.V2_PROFILE) as bundle:
+            original = bundle["manifest"]
+            changes = [
+                ("v1 label", lambda m: m.update(profile=eb.PROFILE), "PROVIDER_SETTINGS"),
+                ("v1 settings", lambda m: m.update(provider=copy.deepcopy(eb.PROVIDER)), "PROVIDER_SETTINGS"),
+                ("model drift", lambda m: m["provider"].update(model="other-model"), "PROVIDER_SETTINGS"),
+                ("tools", lambda m: m["provider"]["settings"].update(tools=[]), "PROVIDER_SETTINGS"),
+                ("effort", lambda m: m["provider"]["settings"]["output_config"].update(effort="max"), "PROVIDER_SETTINGS"),
+                ("input cap", lambda m: m["budget"].update(max_input_tokens=12001), "EQUAL_BUDGET"),
+                ("output cap", lambda m: m["budget"].update(max_output_tokens=2001), "EQUAL_BUDGET"),
+                ("retries", lambda m: m.update(retry_limit=1), "OUTCOME_POLICY"),
+                ("outcomes", lambda m: m.update(expected_outcomes=11), "OUTCOME_POLICY"),
+                ("compiler source", lambda m: m["compiler"].update(source_sha=eb.COMPILER_SOURCE), "COMPILER_IDENTITY"),
+                ("compiler binary", lambda m: m["compiler"].update(binary_sha256="0"*64), "COMPILER_IDENTITY"),
+                ("environment", lambda m: m.update(compiler_environment_profile="isolated-defaults/v1"), "COMPILER_ENVIRONMENT_PROFILE")]
+            for name, change, error in changes:
+                with self.subTest(mutation=name):
+                    modified = copy.deepcopy(original)
+                    change(modified)
+                    (bundle["root"]/"manifest.json").write_bytes(eb.canonical(modified))
+                    eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", bundle["root"]/"private"/"signing-key.pem",
+                              "-in", bundle["root"]/"manifest.json", "-out", bundle["root"]/"signature.bin")
+                    with self.assertRaisesRegex(eb.BundleError, error):
+                        eb.load_bundle(bundle["root"], require_anchor=False)
+
+    def test_v1_manifest_relabel_does_not_reuse_its_original_signature(self):
+        with self.prepared_profile_control(eb.PROFILE) as bundle:
+            modified = copy.deepcopy(bundle["manifest"])
+            selected = eb.reviewed_profile(eb.V2_PROFILE)
+            modified.update(profile=eb.V2_PROFILE, provider=selected["provider"],
+                            compiler=selected["compiler"],
+                            compiler_environment_profile=selected["compiler_environment_profile"])
+            (bundle["root"]/"manifest.json").write_bytes(eb.canonical(modified))
+            with self.assertRaisesRegex(eb.BundleError, "SIGNATURE_VERIFICATION_FAILED"):
+                eb.load_bundle(bundle["root"], require_anchor=False)
+
+    def test_v2_reviewed_protocol_cannot_drift_or_leave_its_sealed_inventory(self):
+        name = "fresh-instance-protocol-v2.md"
+        self.assertNotIn(name, eb.reviewed_profile(eb.PROFILE)["producer_files"])
+        with self.prepared_profile_control(eb.V2_PROFILE) as bundle:
+            self.assertIn(name, bundle["manifest"]["producer_sha256"])
+            actual_read = eb.read_regular
+            protocol_path = Path(eb.__file__).with_name(name)
+            def changed_protocol(path, *args, **kwargs):
+                raw = actual_read(path, *args, **kwargs)
+                return raw + b"synthetic document drift\n" if Path(path) == protocol_path else raw
+            with mock.patch.object(eb, "read_regular", side_effect=changed_protocol):
+                with self.assertRaisesRegex(eb.BundleError, "PRODUCER_CHANGED"):
+                    eb.load_bundle(bundle["root"], require_anchor=False)
+            modified = copy.deepcopy(bundle["manifest"])
+            modified["producer_sha256"].pop(name)
+            (bundle["root"]/"manifest.json").write_bytes(eb.canonical(modified))
+            eb.crypto("pkeyutl", "-sign", "-rawin", "-inkey", bundle["root"]/"private"/"signing-key.pem",
+                      "-in", bundle["root"]/"manifest.json", "-out", bundle["root"]/"signature.bin")
+            with self.assertRaisesRegex(eb.BundleError, "PRODUCER_INVENTORY"):
+                eb.load_bundle(bundle["root"], require_anchor=False)
+
+
 
 
 if __name__ == "__main__":

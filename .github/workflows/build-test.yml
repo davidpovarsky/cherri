@@ -34,7 +34,12 @@ jobs:
       run: python3 -B -m unittest discover -s tools/shortcut-runtime/tests -p 'test_required_encoding*.py' -v
 
     - name: AI Evaluation Harness Controls (no external model calls)
-      run: python3 -B -m unittest discover -s tools/language-ai-eval -p 'test_*.py' -v
+      shell: bash
+      run: |
+        set -euo pipefail
+        TMPDIR="$(cd -- "${RUNNER_TEMP:?}" && pwd -P)"
+        export TMPDIR
+        python3 -B -m unittest discover -s tools/language-ai-eval -p 'test_*.py' -v
 
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -129,7 +134,12 @@ jobs:
       run: python3 -B -m unittest discover -s tools/shortcut-runtime/tests -p 'test_required_encoding*.py' -v
 
     - name: AI Evaluation Harness Controls (no external model calls)
-      run: python3 -B -m unittest discover -s tools/language-ai-eval -p 'test_*.py' -v
+      shell: bash
+      run: |
+        set -euo pipefail
+        TMPDIR="$(cd -- "${RUNNER_TEMP:?}" && pwd -P)"
+        export TMPDIR
+        python3 -B -m unittest discover -s tools/language-ai-eval -p 'test_*.py' -v
 
     - name: Mandatory WorkflowKit REQUIRED Encoding Gate
       timeout-minutes: 12

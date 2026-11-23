@@ -47,9 +47,19 @@ PRODUCER_FILES = (
     "runner.py", "evaluation_bundle.py", "anthropic_adapter.py",
     "graph_validator.py", "evaluation_intake.py", "tasks.json",
 )
+V2_PRODUCER_FILES = PRODUCER_FILES + ("fresh-instance-protocol-v2.md",)
 HTTP_TIMEOUTS = {"count": 15, "message": 90}
 PROVIDER = {"model": MODEL, "api_version": API_VERSION,
             "settings": {"thinking": {"type": "disabled"}, "stream": False}}
+
+# V1 remains the historical reviewed profile. V2 is selected explicitly and
+# cannot seal or load a real bundle until the exact native compiler is reviewed.
+V2_PROFILE = "fresh-six-exact-instances/v2"
+V2_COMPILER_SOURCE = "ca316a3dee252456c4bec751594cf249c709b331"
+V2_COMPILER_SHA256 = None
+V2_PROVIDER = {"model": MODEL, "api_version": API_VERSION,
+               "settings": {"thinking": {"type": "between_tools"},
+                            "output_config": {"effort": "high"}, "stream": False}}
 
 
 class BundleError(ValueError):
@@ -79,6 +89,21 @@ def unique_json(raw):
         return result
     return json.loads(raw, object_pairs_hook=pairs,
                       parse_constant=lambda _: (_ for _ in ()).throw(BundleError("NONFINITE_JSON")))
+
+
+def reviewed_profile(name, *, require_compiler=False):
+    require(name in (PROFILE, V2_PROFILE), "BUNDLE_PROFILE")
+    current = name == V2_PROFILE
+    compiler = {"source_sha": V2_COMPILER_SOURCE if current else COMPILER_SOURCE,
+                "binary_sha256": V2_COMPILER_SHA256 if current else COMPILER_SHA256}
+    if require_compiler:
+        require(isinstance(compiler["binary_sha256"], str) and
+                re.fullmatch(r"[0-9a-f]{64}", compiler["binary_sha256"]) is not None,
+                "UNREVIEWED_PROFILE_COMPILER")
+    return {"provider": unique_json(canonical(V2_PROVIDER if current else PROVIDER)),
+            "producer_files": V2_PRODUCER_FILES if current else PRODUCER_FILES,
+            "compiler": compiler,
+            "compiler_environment_profile": "isolated-defaults-linux/v2" if current else "isolated-defaults/v1"}
 
 
 def _stat_is_link(info):
@@ -381,8 +406,9 @@ def load_bundle(path, require_anchor=True):
     raw = read_regular(root / "manifest.json")
     manifest = unique_json(raw)
     require(isinstance(manifest, dict) and raw == canonical(manifest), "MANIFEST_NOT_CANONICAL")
-    require(manifest.get("schema") == BUNDLE_SCHEMA and manifest.get("profile") == PROFILE, "BUNDLE_PROFILE")
-    require(manifest.get("provider") == PROVIDER, "PROVIDER_SETTINGS")
+    require(manifest.get("schema") == BUNDLE_SCHEMA, "BUNDLE_PROFILE")
+    profile = reviewed_profile(manifest.get("profile"), require_compiler=True)
+    require(manifest.get("provider") == profile["provider"], "PROVIDER_SETTINGS")
     require(manifest.get("budget") == {"max_input_tokens": 12000, "max_output_tokens": 2000}, "EQUAL_BUDGET")
     require(all(type(value) is int for value in manifest["budget"].values()), "TOKEN_CAP_TYPES")
     require(manifest.get("http_timeout_seconds") == HTTP_TIMEOUTS and manifest.get("process_timeout_seconds") == 120, "SEALED_TIMEOUTS")
@@ -415,7 +441,7 @@ def load_bundle(path, require_anchor=True):
     for task, template in zip(suite["tasks"], originals):
         require(task["kind"] == template["kind"] and set(task["oracle"]) == set(template["oracle"]), "ORIGINAL_CONTRACT_SHAPE_CHANGED")
     producer_hashes = manifest.get("producer_sha256")
-    require(isinstance(producer_hashes, dict) and set(producer_hashes) == set(PRODUCER_FILES), "PRODUCER_INVENTORY")
+    require(isinstance(producer_hashes, dict) and set(producer_hashes) == set(profile["producer_files"]), "PRODUCER_INVENTORY")
     for name, expected in producer_hashes.items():
         require(digest(read_regular(Path(__file__).with_name(name))) == expected, "PRODUCER_CHANGED")
     guides = {}
@@ -424,9 +450,11 @@ def load_bundle(path, require_anchor=True):
         guide = read_regular(root / (arm + "-guide.md"))
         require(digest(guide) == expected, "GUIDE_HASH")
         guides[arm] = guide.decode("utf-8")
-    require(manifest.get("compiler") == {"source_sha": COMPILER_SOURCE, "binary_sha256": COMPILER_SHA256}, "COMPILER_IDENTITY")
-    require(manifest.get("compiler_environment_profile") == "isolated-defaults/v1", "COMPILER_ENVIRONMENT_PROFILE")
-    require(digest(read_regular(root / "compiler.exe", 512 * 1024 * 1024)) == COMPILER_SHA256, "COMPILER_BYTES_CHANGED")
+    require(manifest.get("compiler") == profile["compiler"], "COMPILER_IDENTITY")
+    require(manifest.get("compiler_environment_profile") == profile["compiler_environment_profile"], "COMPILER_ENVIRONMENT_PROFILE")
+    require(digest(read_regular(root / "compiler.exe", 512 * 1024 * 1024)) == profile["compiler"]["binary_sha256"], "COMPILER_BYTES_CHANGED")
+    if manifest["profile"] == V2_PROFILE and os.name == "posix":
+        require((root / "compiler.exe").stat().st_mode & stat.S_IXUSR, "COMPILER_NOT_EXECUTABLE")
     metadata = read_regular(root / "model-metadata-receipt.json")
     require(digest(metadata) == manifest.get("model_metadata_receipt_sha256"), "MODEL_METADATA_CHANGED")
     validate_model_metadata(unique_json(metadata))
@@ -537,7 +565,8 @@ def verify_outcome_seal(bundle, record):
     return payload
 
 
-def create_bundle(output, code_root, compiler, model_receipt, model_response):
+def create_bundle(output, code_root, compiler, model_receipt, model_response, *, profile=PROFILE):
+    selected = reviewed_profile(profile, require_compiler=True)
     output, code_root, compiler = Path(output), Path(code_root).resolve(), Path(compiler)
     require(output.is_absolute() and not output.exists(), "BUNDLE_OUTPUT_MUST_BE_NEW")
     git = lambda *args: subprocess.check_output(["git", "--no-replace-objects", *args], cwd=code_root, timeout=15)
@@ -547,13 +576,13 @@ def create_bundle(output, code_root, compiler, model_receipt, model_response):
     producer_root = code_root / "tools" / "language-ai-eval"
     require(producer_root.resolve() == Path(__file__).parent.resolve(), "SEALER_NOT_FROM_FROZEN_SOURCE")
     hashes = {}
-    for name in PRODUCER_FILES:
+    for name in selected["producer_files"]:
         raw = read_regular(producer_root / name)
         require(raw == git("show", head + ":tools/language-ai-eval/" + name), "SOURCE_WORKING_BYTES_CHANGED")
         hashes[name] = digest(raw)
     require(hashes["tasks.json"] == ORIGINAL_SUITE_SHA256, "ORIGINAL_SUITE_CHANGED")
     compiler_bytes = read_regular(compiler, 512 * 1024 * 1024)
-    require(digest(compiler_bytes) == COMPILER_SHA256, "UNREVIEWED_COMPILER_BINARY")
+    require(digest(compiler_bytes) == selected["compiler"]["binary_sha256"], "UNREVIEWED_COMPILER_BINARY")
     metadata_raw = read_regular(model_receipt)
     metadata = unique_json(metadata_raw)
     validate_model_metadata(metadata)
@@ -568,6 +597,8 @@ def create_bundle(output, code_root, compiler, model_receipt, model_response):
     suite_raw = canonical(suite)
     write_new(output / "suite.json", suite_raw)
     write_new(output / "compiler.exe", compiler_bytes)
+    if profile == V2_PROFILE:
+        (output / "compiler.exe").chmod(0o700)
     write_new(output / "model-metadata-receipt.json", metadata_raw)
     write_new(output / "model-metadata-response.original.body", model_raw)
     for arm, relative in GUIDE_FILES.items():
@@ -576,19 +607,19 @@ def create_bundle(output, code_root, compiler, model_receipt, model_response):
         write_new(output / (arm + "-guide.md"), guide)
     crypto("genpkey", "-algorithm", "ED25519", "-out", private / "signing-key.pem")
     crypto("pkey", "-in", private / "signing-key.pem", "-pubout", "-out", output / "public-key.pem")
-    manifest = {"schema": BUNDLE_SCHEMA, "profile": PROFILE, "created_at": utc_now(),
+    manifest = {"schema": BUNDLE_SCHEMA, "profile": profile, "created_at": utc_now(),
                 "implementation_sha": head, "producer_sha256": hashes,
                 "original_suite_sha256": ORIGINAL_SUITE_SHA256,
                 "seed_commitment_sha256": digest(seed), "suite_sha256": digest(suite_raw),
                 "oracle_sha256": digest(canonical({t["id"]: t["oracle"] for t in suite["tasks"]})),
                 "public_key_sha256": digest(read_regular(output / "public-key.pem")),
-                "provider": PROVIDER,
+                "provider": selected["provider"],
                 "model_metadata_receipt_sha256": digest(metadata_raw),
                 "budget": {"max_input_tokens": 12000, "max_output_tokens": 2000},
                 "http_timeout_seconds": HTTP_TIMEOUTS,
                 "process_timeout_seconds": 120, "order_seed": int.from_bytes(derive(seed, "order")[:8], "big") % 2**63,
-                "guide_sha256": GUIDE_HASHES, "compiler": {"source_sha": COMPILER_SOURCE, "binary_sha256": COMPILER_SHA256},
-                "compiler_environment_profile": "isolated-defaults/v1",
+                "guide_sha256": GUIDE_HASHES, "compiler": selected["compiler"],
+                "compiler_environment_profile": selected["compiler_environment_profile"],
                 "task_ids": list(TASK_IDS), "expected_outcomes": 12, "retry_limit": 0,
                 "provenance_scope": "fresh_exact_instances_after_code_and_model_freeze",
                 "unseen_pattern_provenance_proved": False, "apple_runtime_proved": False}
@@ -621,9 +652,10 @@ def main():
     parser.add_argument("--compiler", type=Path, required=True)
     parser.add_argument("--model-receipt", type=Path, required=True)
     parser.add_argument("--model-response", type=Path, required=True)
+    parser.add_argument("--profile", choices=(PROFILE, V2_PROFILE), default=PROFILE)
     args = parser.parse_args()
     try:
-        print(json.dumps(create_bundle(args.output, args.code_root, args.compiler, args.model_receipt, args.model_response)))
+        print(json.dumps(create_bundle(args.output, args.code_root, args.compiler, args.model_receipt, args.model_response, profile=args.profile)))
     except (OSError, ValueError, subprocess.SubprocessError):
         print("EVALUATION_BUNDLE_NOT_SEALED", file=__import__("sys").stderr)
         return 1

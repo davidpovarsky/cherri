@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime, format_datetime
 
 from runner import SCHEMA, atomic_json
+from evaluation_bundle import PROFILE, V2_PROFILE, reviewed_profile
 
 HOST = "api.anthropic.com"
 MODEL = "claude-sonnet-5-5"
@@ -196,16 +197,20 @@ def basic_request(request):
         integer(value, "invalid_budget", 1)
 
 
-def provider_payload(request):
+def provider_payload(request, profile=PROFILE):
     # Explicit allowlist: seed, suite, private parameters and oracles never enter
     # the provider's context. This exact transformation is source-bound.
     public = {key: request[key] for key in ("arm", "kind", "prompt", "starter", "guide")}
-    return {
+    settings = reviewed_profile(profile)["provider"]["settings"]
+    payload = {
         "model": MODEL,
         "system": SYSTEM_PROMPT,
         "messages": [{"role": "user", "content": encoded(public).decode("utf-8")}],
-        "thinking": {"type": "disabled"},
+        "thinking": settings["thinking"],
     }
+    if profile == V2_PROFILE:
+        payload["output_config"] = settings["output_config"]
+    return payload
 
 
 def actual_usage(value):
@@ -331,10 +336,10 @@ def run_adapter(request, raw_request, env, *, transport=None, bundle_api=None):
         bundle = bundle_api.load_bundle(Path(bundle_path), require_anchor=True)
         bundle_api.validate_model_request(request, bundle)
         manifest = bundle["manifest"]
-        check(manifest["provider"] == {
-            "model": MODEL, "api_version": API_VERSION,
-            "settings": {"thinking": {"type": "disabled"}, "stream": False},
-        } and manifest["provider"]["settings"]["stream"] is False, "provider_configuration_mismatch")
+        profile = manifest.get("profile")
+        check(profile in (PROFILE, V2_PROFILE), "provider_configuration_mismatch")
+        check(manifest["provider"] == reviewed_profile(profile)["provider"]
+              and manifest["provider"]["settings"]["stream"] is False, "provider_configuration_mismatch")
         check(manifest["budget"] == request["budget"], "bundle_budget_mismatch")
         check(manifest["http_timeout_seconds"] == {"count": COUNT_TIMEOUT, "message": MESSAGE_TIMEOUT}
               and all(type(v) is int for v in manifest["http_timeout_seconds"].values())
@@ -367,11 +372,13 @@ def run_adapter(request, raw_request, env, *, transport=None, bundle_api=None):
             "calls": {"count": {"attempted": False}, "generation": {"attempted": False}},
             "originals": {},
         }
+        if profile == V2_PROFILE:
+            receipt["evaluation_profile"] = profile
         check(not (attempt/"provider-receipt.json").exists(), "occupied_receipt")
         original("adapter-request.original.json", raw_request)
         original("request.json", encoded(request))
         persist()
-        payload = provider_payload(request)
+        payload = provider_payload(request, profile)
         count = exchange("count", COUNT_PATH, payload, COUNT_TIMEOUT)
         preflight = integer(count.get("input_tokens"), "invalid_preflight_count", 1)
         receipt["provider_preflight_input_tokens"] = preflight

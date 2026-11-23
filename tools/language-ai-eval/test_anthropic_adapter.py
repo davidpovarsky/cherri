@@ -38,6 +38,7 @@ class FakeBundle:
         self.expected = copy.deepcopy(request)
         self.loaded = self.validated = self.claimed = 0
         self.manifest = {
+            "profile": adapter.PROFILE,
             "implementation_sha": "c" * 40,
             "producer_sha256": {"anthropic_adapter.py": hashlib.sha256(
                 Path(adapter.__file__).read_bytes()).hexdigest()},
@@ -486,6 +487,64 @@ class OfflineProviderControls(unittest.TestCase):
         code = adapter.main(io.BytesIO(b"x"*(adapter.MAX_BYTES+1)), out, {})
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(out.getvalue())["error_type"], "request_too_large")
+
+    def use_v2_profile_control(self):
+        self.api.manifest["profile"] = adapter.V2_PROFILE
+        self.api.manifest["provider"] = adapter.reviewed_profile(adapter.V2_PROFILE)["provider"]
+
+    def test_v2_wire_has_between_tools_high_effort_and_no_other_provider_capabilities(self):
+        self.use_v2_profile_control()
+        reply, code = self.run_case()
+        self.assertEqual(code, 0, reply)
+        self.assertEqual(len(self.calls), 2)
+        for index, call in enumerate(self.calls):
+            expected = {"model", "system", "messages", "thinking", "output_config"}
+            if index:
+                expected |= {"max_tokens", "stream"}
+            self.assertEqual(set(call["body"]), expected)
+            self.assertEqual(call["body"]["thinking"], {"type": "between_tools"})
+            self.assertEqual(call["body"]["output_config"], {"effort": "high"})
+            self.assertEqual(call["body"]["model"], "claude-sonnet-5-5")
+        self.assertEqual(self.read_receipt()["evaluation_profile"], adapter.V2_PROFILE)
+        self.assertEqual(self.read_receipt()["budget"], self.request["budget"])
+
+    def test_v2_rejects_mixed_profiles_and_unreviewed_settings_before_http(self):
+        self.use_v2_profile_control()
+        baseline = copy.deepcopy(self.api.manifest)
+        mutations = [
+            ("old label", lambda m: m.update(profile=adapter.PROFILE)),
+            ("unknown profile", lambda m: m.update(profile="unreviewed-profile")),
+            ("disabled", lambda m: m["provider"]["settings"].update(thinking={"type": "disabled"})),
+            ("adaptive", lambda m: m["provider"]["settings"].update(thinking={"type": "adaptive"})),
+            ("tools", lambda m: m["provider"]["settings"].update(tools=[])),
+            ("effort", lambda m: m["provider"]["settings"]["output_config"].update(effort="max")),
+            ("stream", lambda m: m["provider"]["settings"].update(stream=True)),
+            ("model", lambda m: m["provider"].update(model="other-model"))]
+        for name, change in mutations:
+            with self.subTest(mutation=name):
+                self.api.manifest = copy.deepcopy(baseline)
+                change(self.api.manifest)
+                self.assert_failure("provider_configuration_mismatch")
+                self.assertEqual(self.api.claimed, 0)
+
+    def test_v2_unexpected_thinking_usage_remains_unadjudicated(self):
+        self.use_v2_profile_control()
+        response = message()
+        response["usage"]["output_tokens_details"] = {"thinking_tokens": 1}
+        self.change_response(response)
+        self.assert_failure("unexpected_thinking_usage", 2)
+
+    def test_v2_tool_content_is_not_model_source_or_a_retry(self):
+        self.use_v2_profile_control()
+        response = message()
+        response["content"] = [{"type": "tool_use", "id": "tool_offline", "name": "x", "input": {}}]
+        self.change_response(response)
+        reply, code = self.run_case()
+        self.assertNotEqual(code, 0)
+        self.assertNotIn("code", reply)
+        self.assertEqual(len(self.calls), 2)
+        self.assertFalse((self.attempt/"generated-source.original.cherri").exists())
+
 
 
 class FixedTransportControls(unittest.TestCase):

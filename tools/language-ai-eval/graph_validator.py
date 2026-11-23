@@ -19,9 +19,9 @@ import sys
 import time
 import uuid
 
-from evaluation_bundle import (BundleError, SCHEMA, canonical, claim_request,
+from evaluation_bundle import (BundleError, PROFILE, V2_PROFILE, SCHEMA, canonical, claim_request,
                                digest, load_bundle, model_request, read_regular,
-                               require, unique_json, utc_now, write_new)
+                               require, reviewed_profile, unique_json, utc_now, write_new)
 
 
 PREFIX = "is.workflow.actions."
@@ -613,18 +613,23 @@ def validation_request(request, bundle):
     return task
 
 
-def compiler_environment(directory):
+def compiler_environment(directory, profile=PROFILE):
     # The compiler gets operating-system runtime paths/locale only. Provider
     # credentials and mutable Cherri feature overrides are not inherited.
+    reviewed_profile(profile)
     allowed = {"SystemRoot", "SYSTEMROOT", "WINDIR", "LANG", "LC_ALL", "LC_CTYPE"}
     result = {key: value for key, value in os.environ.items() if key in allowed}
     scratch = Path(directory) / "compiler-temp"
     scratch.mkdir(exist_ok=False)
     result.update(TEMP=str(scratch), TMP=str(scratch))
+    if profile == V2_PROFILE:
+        result["TMPDIR"] = str(scratch)
     return result
 
 
 def evaluate_request(request, bundle):
+    profile = bundle["manifest"].get("profile", PROFILE)
+    selected = reviewed_profile(profile)
     task = validation_request(request, bundle)
     directory = claim_request(bundle, request, "validator")
     write_new(directory / "request.json", canonical(request))
@@ -632,8 +637,10 @@ def evaluate_request(request, bundle):
     receipt = {"schema": "cherri-ai-graph-validation/v1", "request_id": request["request_id"],
                "task_id": task["id"], "arm": request["arm"], "source_sha256": request["source_sha256"],
                "compiler": bundle["manifest"]["compiler"], "started_at": utc_now(),
-               "compiler_environment_profile": "isolated-defaults/v1",
+               "compiler_environment_profile": selected["compiler_environment_profile"],
                "synthetic": False, "apple_runtime_proved": False, "semantic_scope": "six-task-emitted-pure-graph"}
+    if profile == V2_PROFILE:
+        receipt["evaluation_profile"] = profile
     try:
         safe_source(request["source"])
         binary = bundle["root"] / "compiler.exe"
@@ -644,7 +651,7 @@ def evaluate_request(request, bundle):
         started = time.monotonic()
         with (directory / "compiler.stdout").open("xb") as stdout, (directory / "compiler.stderr").open("xb") as stderr:
             process = subprocess.run(command, cwd=directory, stdout=stdout, stderr=stderr,
-                                     timeout=COMPILE_TIMEOUT, check=False, env=compiler_environment(directory))
+                                     timeout=COMPILE_TIMEOUT, check=False, env=compiler_environment(directory, profile))
         receipt.update(compile_returncode=process.returncode, compile_elapsed_seconds=round(time.monotonic()-started, 6))
         if process.returncode != 0:
             checks = [{"name": name, "passed": False} for name in request["required_checks"]]
