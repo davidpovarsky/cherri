@@ -1,0 +1,29 @@
+{
+  "schema": "cherri-s4-independent-intake-supervisor-intent/2",
+  "source": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=5s",
+    "60s",
+    "python3",
+    "-B",
+    "/mnt/development/projects/diagnostics/cherri-private-s4-20261123/intake-s57b6d919-proposal-01/audit_new_source_s4.py",
+    "--execute-reviewed-intake"
+  ],
+  "uid": 1001,
+  "startedUTC": "2026-11-23T06:55:52.719105+00:00",
+  "adapterSHA256": "f186bc74fb355aa0334ca60696e387a2a55deea0ab5ffb0230a58285bc66ce77",
+  "rootHandoffSHA256": "8b9d1389e6a51bc6bdc9a55e32ec138eaa72b3660a70ba8897433d3153de2178",
+  "completedProducerReceiptSHA256": {
+    "00-p12-par": "4b7b80d68dc180af104700dcb68c4e3d882ed42071332e17a697aaa60d0f0890",
+    "01-p13": "9b42f6e89ff1d39587abccd5b1a9c282e1f16911b5975f75f3bcca768d504db9",
+    "02-p10-measure": "bb5505197094f176c2d8f9eeb3671cdf4b827789b9df5497a51aeec313eac8c3",
+    "03-p11-fresh38x2": "7b16fa02e4b4eda8239244a21b8815715b85561da055b9b00cdeb44ca693f7a0",
+    "04-p12-lifecycle": "60bd69e3c764098dceb94f9e03c62d13333d2e4b8af7ca0aeb642ddab1e55aa6"
+  },
+  "privateHashPassAuthorized": 1,
+  "producerExecutionsAuthorized": 0,
+  "outerSeconds": 60,
+  "termKillGraceSeconds": 5
+}

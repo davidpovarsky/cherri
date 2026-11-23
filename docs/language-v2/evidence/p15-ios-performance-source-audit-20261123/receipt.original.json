@@ -1,0 +1,109 @@
+{
+  "schema": "cherri-ios-performance-source-review/1",
+  "utc": "2026-11-23T06:54:59.559550+00:00",
+  "source": "d67e6c0995ef12112b944b78347f481235506b9d",
+  "reviewer": "/root",
+  "skill": "swiftui-performance-audit",
+  "method": "Read-only source review of startup, editor invalidation/completion, detached compiler bridge and actual failed input-test boundaries; no profiling or native rerun.",
+  "sourceBindings": [
+    {
+      "path": "ios/CherriApp/App/CherriApp.swift",
+      "bytes": 393,
+      "sha256": "1566e855e13f0cb17bce76a810bc2d440d35964f3bb6d68b51fb95d47d27dcfe",
+      "blob": "42e4ca1150d850e80842482c212715b01027c038"
+    },
+    {
+      "path": "ios/CherriApp/Documents/CherriDocument.swift",
+      "bytes": 1837,
+      "sha256": "6c533568992ffd877fa701075bd90047fcb3d22b9c4834e07c0d4da3ed972e6c",
+      "blob": "6f88edbaf225cf7170d6421e5b46fca4afe3f0e1"
+    },
+    {
+      "path": "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift",
+      "bytes": 12396,
+      "sha256": "21755f3697bda713227aeecd01394345dd4c65a3c8e030dd2c7991af16739c45",
+      "blob": "1a3c24d9a36ec91f9146ba11266912994c90f7aa"
+    },
+    {
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "bytes": 22613,
+      "sha256": "b20f03c22b15be70e8437fac7b0dc1ee13add040c37c1d9e742358b52893bf20",
+      "blob": "edb9683059d84e03dc5654b060bd5ae2d8338e2f"
+    },
+    {
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "bytes": 22695,
+      "sha256": "45581a83f937780dd1b3c430c6285ad103f1a571dc54d292ff41630c152ddbee",
+      "blob": "6421e9e415f11d43b381295a485f28bf3eacadf9"
+    },
+    {
+      "path": "ios/CherriApp/Editor/CherriLanguage.swift",
+      "bytes": 2411,
+      "sha256": "c214bbbc827b205dfa8dccf38f313064505e0c0acd96f90e8a394786a9ef0179",
+      "blob": "edd4485c577a67af12af0f7defb069484671c840"
+    },
+    {
+      "path": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+      "bytes": 1370,
+      "sha256": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592",
+      "blob": "9181fa1522f1b59734173dc79adf90a276c3d1dc"
+    },
+    {
+      "path": "ios/CherriApp/Compiler/CherriCompiler.swift",
+      "bytes": 22209,
+      "sha256": "cca5ca2d099867dd5815934cff46682aa80d8fd63d13a33d484e7ca62091e51f",
+      "blob": "25877fdb654da0d9a392812dbefe25aabf25c15d"
+    },
+    {
+      "path": "ios/CherriTests/CherriEditorInputTests.swift",
+      "bytes": 15443,
+      "sha256": "6157a4fd46602043df866c4b94d2be27501d3c89f93703057958574a59ef7d7b",
+      "blob": "00863fb96b735c9890cb82b5ecb81e6129ca1029"
+    },
+    {
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "bytes": 54532,
+      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+      "blob": "33028f1f8b53b3855382a1ab6042a2c59402f687"
+    }
+  ],
+  "observations": [
+    {
+      "finding": "App initialization contains DocumentGroup composition and optional diagnostic event only; no compiler/network dispatch in the reviewed app init.",
+      "sources": [
+        "ios/CherriApp/App/CherriApp.swift",
+        "ios/CherriApp/Documents/CherriDocument.swift"
+      ]
+    },
+    {
+      "finding": "Startup observer writes asynchronously on its utility queue, bounds events/bytes/lifetime and uses one asynchronous main-queue probe; it does not issue readiness/AX queries. No synchronous main-thread wait found in its production call path.",
+      "source": "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift"
+    },
+    {
+      "finding": "Empty document live-preview path bypasses compilation and does not instantiate WKWebView. Catalogue bridge work runs detached; its later metadata serialization on the main actor was observed in source but has no measured latency attribution.",
+      "sources": [
+        "ios/CherriApp/App/WorkspaceView.swift",
+        "ios/CherriApp/Compiler/CherriCompiler.swift"
+      ]
+    },
+    {
+      "finding": "The single-character-paste case constructs an isolated CodeView in a UIKit window and calls native paste. It does not instantiate WorkspaceView or use the Cherri compiler; workspace catalogue/completion costs cannot directly explain this test's observed delay.",
+      "source": "ios/CherriTests/CherriEditorInputTests.swift"
+    },
+    {
+      "finding": "The retained GeneratedCloser failure occurred at the shared startup AX-query boundary before its keyboard/delimiter sequence; changing delimiter semantics would not target that observed failure boundary.",
+      "source": "ios/CherriUITests/CherriEditorUITests.swift"
+    },
+    {
+      "finding": "Editor completion publication already checks task cancellation and exact source/caret identity. The inspected code does not establish the cause of either missing native XCT issue."
+    }
+  ],
+  "decision": "INCONCLUSIVE_FOR_RUNTIME_CAUSE_NO_SPECULATIVE_PRODUCT_PATCH",
+  "nextRequiredEvidence": "Actual final-source full57 native run and authenticated encrypted xcresult summary, retaining unchanged original limits and failures.",
+  "runtimeClaimsGranted": false,
+  "performanceImprovementMeasured": false,
+  "sourceChanged": false,
+  "testsRun": 0,
+  "producerInvocations": 0,
+  "policyR23Changed": false
+}

@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.5 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 26 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.6 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 27 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1803,3 +1803,77 @@ source/proof integration and byte-exact preservation of all209 ignored
 originals. The common Git object store, source branches, private inputs,
 new S clone, original compiler artifacts and all receipts remain available.
 The original K11 worktree was retained when current capacity proved sufficient.
+
+
+## 27. New-source S4 accepted and raw505 executed — 2026-11-23
+
+### Current source and milestone board
+
+This checkpoint builds on integration d67e6c0995ef12112b944b78347f481235506b9d.
+Compiler S remains 57b6d919757e1d0262993c6f11c6dc1cd17d6177, Docs D12 remains
+ce98fa542785fe4298d3acbf38da120b32bd5029, and final consumer K is not yet frozen.
+
+[All five fresh private S4 parents](evidence/p15-s4-new-source-20261123/README.md)
+completed once on exact clean S. Driver durations were 232.970, 157.128,
+159.364, 231.231 and 314.181 seconds; every original parent and package passed,
+with no FAIL, SKIP or timeout. The independent complete intake then passed
+once in 0.479617 seconds, preserving all original strict event and summary
+checks. Its one hash pass verified the same 38 inputs and 62,980,131 bytes.
+Source/test bytes and every original receipt remained unchanged. Root verified
+all 26 proof members and 23 exact original copies before this adoption.
+Private input names, content and raw Go streams remain outside the public proof.
+
+### Acceptance matrix and evidence log
+
+The accepted S4 counts are 27,652 actions, 23,353 natural, 4,298 fallback,
+one retained invalid and zero demotions; the applicable third-party count is
+137. Lifecycle reconciles 23,353 fresh and 23,353 sequential natural actions,
+with empty differences. All five original Go900/driver930 bounds remain;
+the four existing owner routes retain970, lifecycle retains its direct route.
+No R7 execution or precompile credit was reused.
+
+Fresh raw505 also actually ran once on S at06:55:38–06:55:58UTC: both exact
+parents passed, process20.203581885 seconds, exit0 and no timeout. All505
+entries passed each measured local tier;497 callable actions and8 constructs,
+six parameter dimensions, zero parameter failures. Native specimen and Apple
+runtime counters remain zero. Original receipt SHA256 is
+c577f775fac7bdf74fb3dabb71fd586c0e357f9af19df4069a0ba635fedb4877.
+Independent raw intake is still pending at this checkpoint. The new deterministic
+raw files equal the historical bytes; the measured input fingerprint remains
+995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e.
+Equal output bytes do not restamp the earlier execution as current-source work.
+
+### Open defects and decisions
+
+Docs D12 main was normally fast-forwarded at06:59:15UTC after the accepted S4
+handoff and refreshed publication guards. Automatic Pages45127859158 and
+Docs45127859207 are still under observation here. Original deployment artifacts
+and exact live-byte checks are required before claiming site success.
+
+[Read-only SwiftUI source review](evidence/p15-ios-performance-source-audit-20261123/receipt.original.json)
+did not establish the cause of the four original K11 native failures. The paste
+test constructs an isolated CodeView; the GeneratedCloser failure preceded its
+keyboard sequence at the startup AX query. No speculative product patch or
+timeout change was made. The next actual native run must retain the newly
+qualified encrypted xcresult summary and the original57-test scope.
+
+AI evaluation v2 still contains its historical R7 compiler pin. A narrow
+coordinated update to the independently qualified S/binary must be reviewed
+before final K is frozen; no environment override, old calibration restamp,
+provider generation or new commitment anchor is authorized by this checkpoint.
+R23v1 remains active and its proposed v2 remains inactive: both explicit owner
+input responses were empty, granting neither approval nor rejection.
+
+### Next work and closure
+
+Complete raw intake and the exact AI pin update, settle C0, run the original
+600-second generator, then the original56-gate1800-second producer and metadata
+verification. Preserve the actual R23 outcome and Linux platform limitation.
+Freeze final K only after these source changes and ledgers are settled, then
+run its required CI/native workflows, installed consumers, actual RemoteBuilder
+qualification and fresh AI/full179 evaluation with their original contracts.
+
+Latest complete formal179 remains K8:114PASS/0FAIL/26NOT_RUN/
+38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN; closure_complete=false. S4 acceptance,
+raw505 success and a Docs main push do not grant aggregate release, physical
+device or complete native acceptance.

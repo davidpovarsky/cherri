@@ -1,0 +1,30 @@
+{
+  "schema": "cherri-s4-intake-transport-launch-failure/1",
+  "observedUTC": "2026-11-23T06:55:52.709241+00:00",
+  "sentinelJob": "script_job_5703f10e9de34ade9ac0ec01db0eddf1",
+  "hubRequest": "hreq_53e3072b99494fa5",
+  "failedWrapperArgv": [
+    "sudo",
+    "-n",
+    "ubuntu",
+    "python3",
+    "-B",
+    "-"
+  ],
+  "exitCode": 1,
+  "stderr": "sudo: ubuntu: command not found\n",
+  "cause": "Missing separate -u option in transport wrapper",
+  "auditorInvocations": 0,
+  "privateInputPasses": 0,
+  "intakeOutputAbsent": true,
+  "supervisorOutputAbsent": true,
+  "correctedWrapperArgv": [
+    "sudo",
+    "-n",
+    "-u",
+    "ubuntu",
+    "python3",
+    "-B",
+    "-"
+  ]
+}

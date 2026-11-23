@@ -1,0 +1,42 @@
+{
+  "schema": "cherri-s4-independent-intake-root-handoff/2",
+  "utc": "2026-11-23T06:50:04.872704+00:00",
+  "reviewer": "/root",
+  "executor": "/root/ci_source_audit",
+  "source": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "auditorSHA256": "f186bc74fb355aa0334ca60696e387a2a55deea0ab5ffb0230a58285bc66ce77",
+  "proposalManifestSHA256": "c8120bb8d4666ff82810a190c8081be54c7c597c2098a33392c0520443b4c657",
+  "completeAuditorSourceRead": true,
+  "completeAdaptationRead": true,
+  "independentStrictCoreChecks": [
+    {
+      "original": "audit-remaining-gate.py",
+      "originalSHA256": "7b32b34cdbd558ab4c1be85effe203d35771eba675f49b9e73253603f81968c5",
+      "strictCoreSHA256": "49d5201b87cb260cb0e05ce15345efcb3b83a896fc28feeff12469ca15aa46aa",
+      "adapterCoreExactlyPreservedApartFromIndentation": true
+    },
+    {
+      "original": "audit-replay.py",
+      "originalSHA256": "311d5ce382e446dd5ccd87df5e73d294defe88e243041914a247c27a71584d76",
+      "strictCoreSHA256": "b9a6ba2b73e9b91e74d4adc17bdfbc40a6850d4fc424bcca2f2154fc33983b91",
+      "adapterCoreExactlyPreservedApartFromIndentation": true
+    }
+  ],
+  "authorization": "ONE_COMPLETE_INTAKE_AFTER_ALL_FIVE_ACTUAL_TERMINAL_RECEIPTS",
+  "maximumIntakeSeconds": 60,
+  "termKillGraceSeconds": 5,
+  "privateScope": {
+    "manifestSHA256": "766ac82ef7d92f50a894e50bc84d3fed9cc2d375f81ffe2771dbe8a5a6de5f39",
+    "fileCount": 38,
+    "bytes": 62980131,
+    "inPlaceHashPasses": 1,
+    "semanticRead": false,
+    "namesOrContentPublication": false
+  },
+  "producerCommandsAuthorized": false,
+  "sourceMutationAuthorized": false,
+  "producerDeadlinesChanged": false,
+  "historicalExecutionCreditReused": false,
+  "actualIntakeExecutedByRoot": false,
+  "repeatOnFailureAuthorized": false
+}
