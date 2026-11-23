@@ -136,6 +136,10 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 	if err != nil {
 		return err
 	}
+	observedIDs := make(map[string]bool, len(runner.observations))
+	for _, observation := range runner.observations {
+		observedIDs[observation.ID] = true
+	}
 	var rows = make([]ExecutionAuditRow, 0, mapping.TotalRequirements)
 	for _, declared := range mapping.Records {
 		var res, exists = runner.results[declared.ID]
@@ -177,8 +181,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		}
 		if gap := incompleteLocalAssertions[row.ID]; gap != "" {
 			row.Blocker = gap
-			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
-			row.Scope = "Observed smoke only; no formal acceptance tier proven"
+			row.Scope = "No local smoke observation recorded; no formal acceptance tier proven"
+			if observedIDs[row.ID] {
+				row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
+				row.Scope = "Observed smoke only; no formal acceptance tier proven"
+			}
 		}
 		if row.ID == "D03" {
 			row.TestNames = []string{documentationConsumerTestID, documentationAppTestID}
