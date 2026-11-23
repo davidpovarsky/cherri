@@ -1,0 +1,202 @@
+{
+  "actualSource": {
+    "after": "ea372f168aec7743b7a317065e7b49d287d812647efa690916004aec2ad385f6",
+    "baseHead": "476767cd0580672c3335886d883cc869eaef4760",
+    "before": "f91fac5594335afc26b99bcdfe93b033d4077b5aeead617add2e3974ecd57cc5",
+    "beforeAfterDiffExact": true,
+    "newCommitAtExecution": null,
+    "state": "DIRTY_TWO_FILE_CANDIDATE_UNCHANGED_DURING_TESTS"
+  },
+  "adoptionCandidate03UpdatedAtUtc": "2026-11-23T17:10:41.477588+00:00",
+  "cleanE05CommitBindingIntake": {
+    "bytes": 2477,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/retained-e05-binding.original.json",
+    "sha256": "a028e54d369a50457d7cc80882f9dce5ce4f2cebaf7ec2364bd15c7f24142c1b"
+  },
+  "cleanImplementationCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+  "cleanSourceThreeParentQualification": {
+    "failed": 0,
+    "independentIntake": {
+      "bytes": 24240,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-independent-intake-01/review.original.json",
+      "sha256": "6131317348aa2559b03539acf524e75c2ee3991197024f4e5e3a5596e8415aec"
+    },
+    "namedPassed": 242,
+    "parents": 3,
+    "rawGoExit": 0,
+    "result": {
+      "bytes": 16693,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/result.original.json",
+      "sha256": "a6e6bc9e7272e59b5f2808990a226173383b032aba79d16d7c51d9e28333f7a9"
+    },
+    "rootIntake": {
+      "bytes": 23798,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-qualification-root-intake-01/intake.original.json",
+      "sha256": "ac05e836b7228a9c67720284179efec876970fe308c648dbfc7c7d03ddaca552"
+    },
+    "skipped": 0,
+    "sourceCleanUnchanged": true,
+    "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+    "sourceTree": "8cbfbeb56ab540b96f545ca6a6f2029b3048b797",
+    "subcases": 239
+  },
+  "component": "Precommit direct harness controls",
+  "corrections": {
+    "E05": "Add missing CherriBuildProfile fixture declaration and isApplyingPreviewEdit=false state; retain all26 controls.",
+    "RP52": "Refresh only the expected callCompileBridge literal to the preserved production actualMode/sourceRequest/previewSourceMap body; comparator, argument forwarding and all31 children remain."
+  },
+  "draft02UpdatedAtUtc": "2026-11-23T17:04:23.286639+00:00",
+  "e05": {
+    "actualSigningProved": false,
+    "allPassed": true,
+    "compile": {
+      "duration_seconds": 2.170507427304983,
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 90,
+      "within_budget": true
+    },
+    "controls": 26,
+    "execution": {
+      "duration_seconds": 0.032095350325107574,
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 45,
+      "within_budget": true
+    },
+    "formalRequirementsProved": [],
+    "realCompilerExecuted": false,
+    "receipt": {
+      "bytes": 12838,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/receipt.json",
+      "sha256": "4fe35e9453c1a7f2ea819c06a0b3d0173ac5636828819a131d2f7c1519cd98c8"
+    },
+    "scope": "Portable Swift control flow with controlled backend adapters.",
+    "summaryCount": 1,
+    "uiExecuted": false
+  },
+  "formalAcceptanceGranted": false,
+  "independentIntake": {
+    "bytes": 24403,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-independent-intake-01/intake.original.json",
+    "sha256": "57e9979ffe3a993ad64178f300f3d48dc6d29ed84e7ef3c5f12c88b858a9cf90"
+  },
+  "laterCommittedImplementation": {
+    "commit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+    "parent": "476767cd0580672c3335886d883cc869eaef4760",
+    "qualificationAttributionUnchanged": true,
+    "receipt": {
+      "bytes": 26245,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/implementation-commit-01/result.original.json",
+      "sha256": "6b8485d45a3fbc93f86982f07681b042dccac2f141df2f571cce9f17a625f7c0"
+    },
+    "tree": "8cbfbeb56ab540b96f545ca6a6f2029b3048b797"
+  },
+  "latestSelectedRootObservationAtUtc": "2026-11-23T16:56:41.583301+00:00",
+  "oldReportRewritten": false,
+  "originalJoins": {
+    "allReceiptObjectsEqualOwnerRecords": true,
+    "allReportedExitCodesZero": true,
+    "allReportedGroupsGone": true,
+    "allReportedTimeoutsOverflowSignalsAbsent": true,
+    "originalProcessReceiptsVerified": 13,
+    "originalStreamsVerified": 26
+  },
+  "originalProposalManifest": {
+    "bytes": 2065,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-final179-k476767-20261123/harness-repair-candidate-01/MANIFEST.json",
+    "sha256": "577db03f3dfbabd3495bb7abd18752dca2c62e91247bacd0376d2166ad088627"
+  },
+  "originalProposalPatch": {
+    "bytes": 2183,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-final179-k476767-20261123/harness-repair-candidate-01/harness-repair.UNAPPLIED.patch",
+    "sha256": "90cf956b854952b999f569afc809320258fa58a8becada491a492ba3da0ccbc0"
+  },
+  "preparedAtUtc": "2026-11-23T16:59:29.411861+00:00",
+  "preservedPriorAttempt": {
+    "automaticRetry": false,
+    "durationSeconds": 0.1334573533385992,
+    "failure": {
+      "bytes": 8624,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-01/failure.original.json",
+      "sha256": "a6cbcb73ddcfb537b523be511f43c739ef53784ab2dd3375bffc89d88c53e6d4"
+    },
+    "goStarted": true,
+    "namedTestEvents": 0,
+    "rawExit": 1,
+    "reason": "Configured temporary directory absent; original Go failure retained.",
+    "stderr": {
+      "bytes": 108,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-01/rp52.stderr.original",
+      "sha256": "2991cf3379d3b62f93a60d05f6695875053d78b9342cd5ebe104cd33418a00f1"
+    },
+    "stdout": {
+      "bytes": 0,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-01/rp52.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "producerRerunForProjection": false,
+  "projectionOnly": true,
+  "proofCommit": null,
+  "proposalTimeState": "UNAPPLIED_UNTESTED (historical preparation state; later actual tests have separate receipts)",
+  "publication": null,
+  "rootIntake": {
+    "bytes": 5985,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-root-intake-01/intake.original.json",
+    "sha256": "c178d79911cb4a4569c538dd4fc92a3521a7119fe98269dd18c513f5b9e37462"
+  },
+  "rp52": {
+    "children": 31,
+    "durationSeconds": 23.871716086752713,
+    "exactNameInventory": [
+      "TestP15RP52EntrypointSourceBoundaries/actual_go_exports",
+      "TestP15RP52EntrypointSourceBoundaries/actual_swift_default",
+      "TestP15RP52EntrypointSourceBoundaries/go_unsigned_default_auto",
+      "TestP15RP52EntrypointSourceBoundaries/go_signed_default_auto",
+      "TestP15RP52EntrypointSourceBoundaries/go_explicit_mode_dropped",
+      "TestP15RP52EntrypointSourceBoundaries/go_profile_mode_dropped",
+      "TestP15RP52EntrypointSourceBoundaries/go_default_extra_statement",
+      "TestP15RP52EntrypointSourceBoundaries/go_unknown_export",
+      "TestP15RP52EntrypointSourceBoundaries/go_missing_export",
+      "TestP15RP52EntrypointSourceBoundaries/go_swapped_parameters",
+      "TestP15RP52EntrypointSourceBoundaries/go_wrong_parameter_type",
+      "TestP15RP52EntrypointSourceBoundaries/go_wrong_return_type",
+      "TestP15RP52EntrypointSourceBoundaries/swift_auto_default",
+      "TestP15RP52EntrypointSourceBoundaries/swift_legacy_default",
+      "TestP15RP52EntrypointSourceBoundaries/swift_mode_literal",
+      "TestP15RP52EntrypointSourceBoundaries/swift_comment_shadow",
+      "TestP15RP52EntrypointSourceBoundaries/swift_string_shadow",
+      "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_entry",
+      "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_enum",
+      "TestP15RP52EntrypointSourceBoundaries/swift_missing_bridge",
+      "TestP15RP52EntrypointSourceBoundaries/swift_local_shadow",
+      "TestP15RP52EntrypointSourceBoundaries/swift_unterminated_comment",
+      "TestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_literal",
+      "TestP15RP52EntrypointSourceBoundaries/swift_bridge_mode_pointer",
+      "TestP15RP52EntrypointSourceBoundaries/swift_bridge_swapped_abi",
+      "TestP15RP52EntrypointSourceBoundaries/swift_duplicate_bridge",
+      "TestP15RP52EntrypointSourceBoundaries/swift_inactive_enum_live_struct",
+      "TestP15RP52EntrypointSourceBoundaries/swift_nested_enum_live_struct",
+      "TestP15RP52EntrypointSourceBoundaries/nested_comment",
+      "TestP15RP52EntrypointSourceBoundaries/opaque_interpolation",
+      "TestP15RP52EntrypointSourceBoundaries/opaque_raw_string",
+      "TestP15RP52EntrypointSourceBoundaries"
+    ],
+    "failed": 0,
+    "fullNineParentProducerExecuted": false,
+    "goTimeout": "3m0s",
+    "namedPasses": 32,
+    "ownerLimitSeconds": 240,
+    "parents": 1,
+    "process": {
+      "bytes": 1110,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/rp52.process.original.json",
+      "sha256": "dfba947c66f2fe1ce1ad97ca706fcd13c976185082b4c93d50335e1f78655d5b"
+    },
+    "rawExit": 0,
+    "skipped": 0,
+    "timeout": false
+  },
+  "schema": "cherri-checkpoint32-public-projection/1"
+}

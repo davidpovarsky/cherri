@@ -1,0 +1,310 @@
+{
+  "acceptanceProcessSeconds": 46.70095255598426,
+  "acceptedStatus": "ACCEPTED_CLEAN_THREE_PARENT_QUALIFICATION",
+  "actual179Reexecuted": false,
+  "actualArtifactBytes": 1917547,
+  "actualArtifactCount": 72,
+  "actualArtifactInventory": {
+    "bytes": 22500,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/actual-artifacts.original.json",
+    "sha256": "7104a857a2ebfc999d75846f3dfb579a6a05bf5d2613bad0553f1f706f31a905"
+  },
+  "actualDedicatedEND01Executed": false,
+  "automaticRetry": false,
+  "command": [
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "2160s",
+    "/mnt/development/tooling/cherri-go/mod/golang.org/toolchain@v0.0.1-go1.24.13.linux-arm64/bin/go",
+    "test",
+    "-json",
+    "-v",
+    "-count=1",
+    "-timeout=35m",
+    "github.com/electrikmilk/cherri/tools/language-acceptance",
+    "-run",
+    "^(TestEditorContractActualProductionEvidence|TestEditorContractCanonicalSwiftExecutionPaths|TestPublicFrontendActualProductionEvidence)$"
+  ],
+  "component": "Clean continuation three-parent qualification",
+  "components": {
+    "RP52": {
+      "addedToOuter242": false,
+      "elapsedSeconds": 10.596949008,
+      "localComponentReport": {
+        "authority": "Accepted root parent assertions and independent original stdout intake; not a replacement full179 row.",
+        "closureComplete": false,
+        "passedCases": 1,
+        "status": "PASSED",
+        "totalCases": 1
+      },
+      "originalGoTimeoutSeconds": 180,
+      "originalProcess": {
+        "bytes": 24618,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/public-frontend-evidence/rp52-1471478638/rp52-process.json",
+        "sha256": "0d6cb1fd542a16633d0ba4d1e10f46a4b777a2a23652d70666ac6a81be3f2cde"
+      },
+      "originalRawStreamPin": {
+        "bytes": 144011,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/public-frontend-evidence/rp52-1471478638/rp52-go.jsonl",
+        "sha256": "6e693b68042ee7cc7a13d0df587e9238cbefb2323e90d9bfe82e58329398c8e5"
+      },
+      "parents": 9,
+      "rawExit": 0,
+      "rawStreamReopenedForProjection": false,
+      "requiredAndDiscoveredCounts": 98,
+      "sourceCleanBeforeAfter": true,
+      "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+      "subcases": 89,
+      "timeout": false
+    },
+    "canonicalSwift": {
+      "original": {
+        "bytes": 20694,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/editor-evidence/canonical-swift-paths/canonical-swift-paths-evidence.json",
+        "sha256": "2b8be0ab9652f48db1aea0556a1594c928a5ef4d264d97efd8af5a30efaab233"
+      },
+      "records": 2,
+      "results": [
+        {
+          "executed_levels": [
+            "service"
+          ],
+          "id": "E05",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "executed_levels": [
+            "protocol"
+          ],
+          "id": "E06",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        }
+      ],
+      "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+      "uiExecuted": false
+    },
+    "editor": {
+      "closureComplete": false,
+      "missingExternalTier": "ios-ui",
+      "original": {
+        "bytes": 41830,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/editor-evidence/editor-contract-evidence.json",
+        "sha256": "0556cab4a39edbc6cc65a9ee5feb8f84b5db39889b77839204ab9606172a27a9"
+      },
+      "records": 5,
+      "results": [
+        {
+          "executed_levels": [
+            "service"
+          ],
+          "id": "E01",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "executed_levels": [
+            "service"
+          ],
+          "id": "E02",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "executed_levels": [
+            "service"
+          ],
+          "id": "E03",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "executed_levels": [
+            "service"
+          ],
+          "id": "E05",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        },
+        {
+          "executed_levels": [
+            "protocol"
+          ],
+          "id": "E06",
+          "passed": false,
+          "status": "PENDING_EXTERNAL"
+        }
+      ],
+      "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402"
+    },
+    "freshPortableSwift": {
+      "authority": {
+        "bytes": 24240,
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-independent-intake-01/review.original.json",
+        "sha256": "6131317348aa2559b03539acf524e75c2ee3991197024f4e5e3a5596e8415aec"
+      },
+      "freshReceipts": 4,
+      "nativeUIExecution": false,
+      "positionControlsPerInvocation": 17,
+      "positionInvocations": 2,
+      "publicationControlsPerInvocation": 26,
+      "publicationInvocations": 2,
+      "realAppleRuntime": false
+    }
+  },
+  "cutoff": "Prepublication metadata adoption candidate; no self-referential proof commit SHA.",
+  "failed": 0,
+  "formalAcceptanceGranted": false,
+  "independentIntake": {
+    "bytes": 24240,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-independent-intake-01/review.original.json",
+    "sha256": "6131317348aa2559b03539acf524e75c2ee3991197024f4e5e3a5596e8415aec"
+  },
+  "independentNestedInventory": {
+    "distinctSourcePaths": 157,
+    "nestedReceipts": 14,
+    "nestedStreams": 28,
+    "source": "Root-accepted independent review61313173; these are nested verification inventories, not additional outer test events."
+  },
+  "jsonEventCount": 992,
+  "namedPassCount": 242,
+  "nativeOrGlobalReleaseClosureGranted": false,
+  "originalBounds": {
+    "goTestSeconds": 2100,
+    "hostSeconds": 2400,
+    "outerKillAfterSeconds": 30,
+    "outerTimeoutSeconds": 2160,
+    "ownerSeconds": 2340,
+    "processOwnerSeconds": 2200,
+    "retainedE05IntakeSeconds": 30
+  },
+  "originalK476ReportRewritten": false,
+  "originalOwnerFinishedAt": "2026-11-23T17:01:07.872338+00:00",
+  "originalOwnerStartedAt": "2026-11-23T17:00:20.916226+00:00",
+  "originalOwnerStatus": "PROCESS_TERMINAL_PENDING_ROOT_EVENT_REVIEW",
+  "originalProcessCount": 12,
+  "originalResult": {
+    "bytes": 16693,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/result.original.json",
+    "sha256": "a6e6bc9e7272e59b5f2808990a226173383b032aba79d16d7c51d9e28333f7a9"
+  },
+  "originalStreamCount": 24,
+  "ownerSeconds": 46.9561251597479,
+  "parentPassCount": 3,
+  "parentResults": {
+    "TestEditorContractActualProductionEvidence": {
+      "childPassCount": 57,
+      "elapsedSeconds": 20.79,
+      "namedPassCount": 58
+    },
+    "TestEditorContractCanonicalSwiftExecutionPaths": {
+      "childPassCount": 8,
+      "elapsedSeconds": 11.72,
+      "namedPassCount": 9
+    },
+    "TestPublicFrontendActualProductionEvidence": {
+      "childPassCount": 174,
+      "elapsedSeconds": 13.33,
+      "namedPassCount": 175
+    }
+  },
+  "preparedAtUtc": "2026-11-23T17:10:41.477588+00:00",
+  "producerRerunForProjection": false,
+  "projectionOnly": true,
+  "proofCommit": null,
+  "publication": null,
+  "rawGoExit": 0,
+  "realAppleRuntime": false,
+  "retainedE05": {
+    "binding": {
+      "bytes": 2477,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/retained-e05-binding.original.json",
+      "sha256": "a028e54d369a50457d7cc80882f9dce5ce4f2cebaf7ec2364bd15c7f24142c1b"
+    },
+    "intakeProcessSeconds": 0.10112366918474436,
+    "intakeTimeoutSeconds": 30,
+    "observedBinding": {
+      "formalRequirementsProved": [],
+      "intakeResult": {
+        "controls": 26,
+        "kind": "publication",
+        "result": "VERIFIED",
+        "source": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+        "ui_executed": false
+      },
+      "originalExecutionTimeBaseHead": "476767cd0580672c3335886d883cc869eaef4760",
+      "originalExecutionTimeSourceState": "DIRTY_TWO_FILE_HARNESS_REPAIR",
+      "retainedArtifactPins": [
+        {
+          "bytes": 0,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 0,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 27679,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/editor-publication-generated.swift",
+          "sha256": "728707acede2d1811c4327681e311bbb4381a386e75fc90e4e6325c4eb9c3326"
+        },
+        {
+          "bytes": 397216,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/editor-publication-probe",
+          "sha256": "209533955b166f41e3c0a09f5f03977b0401cc4f473a387a5b3a79cf851e3642"
+        },
+        {
+          "bytes": 0,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/execute.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 6426,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/execute.stdout",
+          "sha256": "9fb974166f2d210ebda679acf203a67fcd8a2d8625ee91faf48128db990d4db5"
+        },
+        {
+          "bytes": 12838,
+          "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-02/e05/receipt.json",
+          "sha256": "4fe35e9453c1a7f2ea819c06a0b3d0173ac5636828819a131d2f7c1519cd98c8"
+        }
+      ],
+      "retainedProbeReexecuted": false,
+      "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+      "sourceTree": "8cbfbeb56ab540b96f545ca6a6f2029b3048b797",
+      "status": "VERIFIED_IDENTICAL_SIX_COMMITTED_BLOBS_AND_RETAINED_PROCESS_BYTES",
+      "uiExecuted": false
+    },
+    "oldProbeReexecuted": false,
+    "originalExecutionAttributionPreserved": true
+  },
+  "rootIntake": {
+    "bytes": 23798,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-qualification-root-intake-01/intake.original.json",
+    "sha256": "ac05e836b7228a9c67720284179efec876970fe308c648dbfc7c7d03ddaca552"
+  },
+  "rootRehashedAllArtifactsAndProcessStreams": true,
+  "schema": "cherri-checkpoint32-public-projection/1",
+  "signals": [],
+  "skipped": 0,
+  "sourceAfter": {
+    "bytes": 2557,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/source-after.original.json",
+    "sha256": "59d577461811930f1c92b5b323d0948fbf52bc1383ce34864e604dc791bc70d4"
+  },
+  "sourceBefore": {
+    "bytes": 2840,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/source-before.original.json",
+    "sha256": "56886ac9283a4b433bd465593dfc8feb6f89d6039c3a092b3fdc85c840357538"
+  },
+  "sourceCleanUnchanged": true,
+  "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+  "sourceTree": "8cbfbeb56ab540b96f545ca6a6f2029b3048b797",
+  "subcasePassCount": 239,
+  "timeout": false,
+  "verifiedProcessRelatedFiles": 36
+}

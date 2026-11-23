@@ -1,0 +1,847 @@
+{
+  "actualEnd01DeliveryExecuted": false,
+  "auditStatusCounts": {
+    "BLOCKED_EXTERNAL": 36,
+    "FAIL": 4,
+    "PASS": 111,
+    "UNVERIFIED": 28
+  },
+  "closureComplete": false,
+  "component": "Finalized original K476 local179",
+  "denominator": {
+    "acceptance": 94,
+    "repair": 52,
+    "supplemental": 33,
+    "total": 179
+  },
+  "evidenceScope": "Original ordered statuses and bounded producer metadata; no original report, audit or evidence record is normalized or replaced.",
+  "failedRows": [
+    {
+      "detail": "editor process failed: process=exit status 1 timeout=false clean_after=true",
+      "id": "E05"
+    },
+    {
+      "detail": "Configured evaluation intake rejected: AI measurement requires all twelve measured outcomes; exit zero or incomplete outcomes do not measure quality",
+      "id": "AI01"
+    },
+    {
+      "detail": "Local assertions verified; pending external tier: [external-eval] (Actual fixed Go child TestP15RP50AIHarnessControlFlow executed all fifteen Python harness controls; originals and immutable source witnesses retained; actual Python task runner control-flow suite only; fake adapters are not AI quality evidence; the separate sealed-original intake supplies any measured external tier); Configured evaluation intake rejected: AI measurement requires all twelve measured outcomes; exit zero or incomplete outcomes do not measure quality",
+      "id": "RP50"
+    },
+    {
+      "detail": "actual RP52 process failed: process=exit status 1 parse=invalid bounded production event elapsed time timeout=false clean=true",
+      "id": "RP52"
+    }
+  ],
+  "formalAcceptanceGranted": false,
+  "latestSelectedRootObservationAtUtc": "2026-11-23T16:56:41.583301+00:00",
+  "matchingDetailPairs": 143,
+  "oldReportsRewritten": false,
+  "originalAudit": {
+    "bytes": 451832,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-final179-k476767-20261123/attempt-01/acceptance-execution-audit.json",
+    "sha256": "4f98944fd4bc10b77b726804486bfdc2ddfe58a51f088c05383fe735e5bd6562"
+  },
+  "originalEND01Status": "NOT_RUN",
+  "originalReport": {
+    "bytes": 84961,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-final179-k476767-20261123/attempt-01/acceptance-report.json",
+    "sha256": "cb9aae6ed314a645437f6e03af3776993ccbcf2841d4f09348d7e27f1b16c8a4"
+  },
+  "phase": "local",
+  "preparedAtUtc": "2026-11-23T16:59:29.411861+00:00",
+  "producer": {
+    "budgets": {
+      "outerRunSeconds": 5340,
+      "outerStopReceiptSeconds": 30,
+      "outerStopSeconds": 30,
+      "outerTotalSeconds": 5400,
+      "producerSeconds": 4800,
+      "producerTerminationGraceSeconds": 30
+    },
+    "elapsedSeconds": 1520.08459,
+    "finishedAt": "2026-11-23T16:29:42.750124Z",
+    "gnuTimeoutExit124": false,
+    "hostSignalsObserved": [],
+    "producerExitCode": 1,
+    "producerFinishedAt": "2026-11-23T16:29:42.470669Z",
+    "producerStartedAt": "2026-11-23T16:04:22.886635Z",
+    "sourceSha": "476767cd0580672c3335886d883cc869eaef4760",
+    "sourcesUnchanged": true,
+    "status": "PRODUCER_TERMINAL"
+  },
+  "producerRerunForProjection": false,
+  "projectionOnly": true,
+  "reportAuditDetailMismatchCount": 36,
+  "reportAuditDetailMismatchIDs": [
+    "V01",
+    "V03",
+    "T01",
+    "S01",
+    "L02",
+    "L04",
+    "N01",
+    "F01",
+    "F02",
+    "FN01",
+    "FN02",
+    "FN03",
+    "FN04",
+    "M02",
+    "E01",
+    "E02",
+    "E03",
+    "E06",
+    "E07",
+    "RP12",
+    "RP14",
+    "RP15",
+    "RP17",
+    "RP18",
+    "RP19",
+    "RP21",
+    "RP22",
+    "RP24",
+    "RP25",
+    "BRG08",
+    "BRG10",
+    "BRG11",
+    "BRG12",
+    "BRG13",
+    "BRG14",
+    "BRG16"
+  ],
+  "rootIntake": {
+    "bytes": 206708,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-final179-k476767-20261123/terminal-root-intake-01/inspection.original.json",
+    "sha256": "12360a2ce40d0b0c3152ef3aebf21034383744c4607a7eef38cff6ecfe4aa5b9"
+  },
+  "rowsInOriginalOrder": [
+    {
+      "id": "B01",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "B02",
+      "status": "PASSED"
+    },
+    {
+      "id": "U01",
+      "status": "PASSED"
+    },
+    {
+      "id": "U02",
+      "status": "PASSED"
+    },
+    {
+      "id": "U03",
+      "status": "PASSED"
+    },
+    {
+      "id": "U04",
+      "status": "PASSED"
+    },
+    {
+      "id": "P01",
+      "status": "PASSED"
+    },
+    {
+      "id": "P02",
+      "status": "PASSED"
+    },
+    {
+      "id": "P03",
+      "status": "PASSED"
+    },
+    {
+      "id": "P04",
+      "status": "PASSED"
+    },
+    {
+      "id": "P05",
+      "status": "PASSED"
+    },
+    {
+      "id": "V01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "V02",
+      "status": "PASSED"
+    },
+    {
+      "id": "V03",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "V04",
+      "status": "PASSED"
+    },
+    {
+      "id": "C01",
+      "status": "PASSED"
+    },
+    {
+      "id": "C02",
+      "status": "PASSED"
+    },
+    {
+      "id": "C03",
+      "status": "PASSED"
+    },
+    {
+      "id": "C04",
+      "status": "PASSED"
+    },
+    {
+      "id": "C05",
+      "status": "PASSED"
+    },
+    {
+      "id": "T01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "T02",
+      "status": "PASSED"
+    },
+    {
+      "id": "T03",
+      "status": "PASSED"
+    },
+    {
+      "id": "T04",
+      "status": "PASSED"
+    },
+    {
+      "id": "T05",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T06",
+      "status": "PASSED"
+    },
+    {
+      "id": "T07",
+      "status": "PASSED"
+    },
+    {
+      "id": "T08",
+      "status": "PASSED"
+    },
+    {
+      "id": "T09",
+      "status": "PASSED"
+    },
+    {
+      "id": "S01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "S02",
+      "status": "PASSED"
+    },
+    {
+      "id": "S03",
+      "status": "PASSED"
+    },
+    {
+      "id": "L01",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "L02",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "L03",
+      "status": "PASSED"
+    },
+    {
+      "id": "L04",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "N01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "N02",
+      "status": "PASSED"
+    },
+    {
+      "id": "N03",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "F01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "F02",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "F03",
+      "status": "PASSED"
+    },
+    {
+      "id": "F04",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "F05",
+      "status": "PASSED"
+    },
+    {
+      "id": "FN01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "FN02",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "FN03",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "FN04",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "FN05",
+      "status": "PASSED"
+    },
+    {
+      "id": "M01",
+      "status": "PASSED"
+    },
+    {
+      "id": "M02",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "M03",
+      "status": "PASSED"
+    },
+    {
+      "id": "M04",
+      "status": "PASSED"
+    },
+    {
+      "id": "M05",
+      "status": "PASSED"
+    },
+    {
+      "id": "IM01",
+      "status": "PASSED"
+    },
+    {
+      "id": "IM02",
+      "status": "PASSED"
+    },
+    {
+      "id": "IM03",
+      "status": "PASSED"
+    },
+    {
+      "id": "IM04",
+      "status": "PASSED"
+    },
+    {
+      "id": "IM05",
+      "status": "PASSED"
+    },
+    {
+      "id": "AC01",
+      "status": "PASSED"
+    },
+    {
+      "id": "AC02",
+      "status": "PASSED"
+    },
+    {
+      "id": "AC03",
+      "status": "PASSED"
+    },
+    {
+      "id": "R01",
+      "status": "PASSED"
+    },
+    {
+      "id": "R02",
+      "status": "PASSED"
+    },
+    {
+      "id": "R03",
+      "status": "PASSED"
+    },
+    {
+      "id": "R04",
+      "status": "PASSED"
+    },
+    {
+      "id": "R05",
+      "status": "PASSED"
+    },
+    {
+      "id": "R06",
+      "status": "PASSED"
+    },
+    {
+      "id": "R07",
+      "status": "PASSED"
+    },
+    {
+      "id": "E01",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E02",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E03",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E04",
+      "status": "PASSED"
+    },
+    {
+      "id": "E05",
+      "status": "FAILED"
+    },
+    {
+      "id": "E06",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E07",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "E08",
+      "status": "PASSED"
+    },
+    {
+      "id": "CL01",
+      "status": "PASSED"
+    },
+    {
+      "id": "CL02",
+      "status": "PASSED"
+    },
+    {
+      "id": "CL03",
+      "status": "PASSED"
+    },
+    {
+      "id": "D01",
+      "status": "PASSED"
+    },
+    {
+      "id": "D02",
+      "status": "PASSED"
+    },
+    {
+      "id": "D03",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "K01",
+      "status": "PASSED"
+    },
+    {
+      "id": "K02",
+      "status": "PASSED"
+    },
+    {
+      "id": "K03",
+      "status": "PASSED"
+    },
+    {
+      "id": "K04",
+      "status": "PASSED"
+    },
+    {
+      "id": "K05",
+      "status": "PASSED"
+    },
+    {
+      "id": "CI01",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "CI02",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "CI03",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "CI04",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "AI01",
+      "status": "FAILED"
+    },
+    {
+      "id": "END01",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP01",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP02",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP03",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP04",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP05",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP06",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP07",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP08",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP09",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP10",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP11",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP12",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP13",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP14",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP15",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP16",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP17",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP18",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP19",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP20",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP21",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP22",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP23",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP24",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP25",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "RP26",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP27",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP28",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP29",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP30",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP31",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP32",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP33",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP34",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP35",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP36",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP37",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP38",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP39",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP40",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP41",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP42",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP43",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP44",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP45",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP46",
+      "status": "PASSED"
+    },
+    {
+      "id": "RP47",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP48",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP49",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP50",
+      "status": "FAILED"
+    },
+    {
+      "id": "RP51",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "RP52",
+      "status": "FAILED"
+    },
+    {
+      "id": "BRG01",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG02",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG03",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG04",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG05",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG06",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG07",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG08",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG09",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG10",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG11",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG12",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG13",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG14",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG15",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG16",
+      "status": "PENDING_EXTERNAL"
+    },
+    {
+      "id": "BRG17",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG18",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG19",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG20",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG21",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG22",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG23",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG24",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG25",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG26",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG27",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG28",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG29",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG30",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG31",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "BRG32",
+      "status": "PASSED"
+    },
+    {
+      "id": "BRG33",
+      "status": "PASSED"
+    }
+  ],
+  "schema": "cherri-checkpoint32-public-projection/1",
+  "sourceCommit": "476767cd0580672c3335886d883cc869eaef4760",
+  "sourceTree": "f40a975ac4e49dc5d06b3cac17627d8be144c3e0",
+  "statusCounts": {
+    "FAILED": 4,
+    "NOT_RUN": 28,
+    "PASSED": 111,
+    "PENDING_EXTERNAL": 36
+  },
+  "timestamp": "2026-11-23T16:29:42Z"
+}

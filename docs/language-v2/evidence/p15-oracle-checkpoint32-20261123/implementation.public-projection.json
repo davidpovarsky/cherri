@@ -1,0 +1,114 @@
+{
+  "adoptionCandidate03UpdatedAtUtc": "2026-11-23T17:10:41.477588+00:00",
+  "cleanThreeParentQualification": {
+    "failed": 0,
+    "independentIntake": {
+      "bytes": 24240,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-independent-intake-01/review.original.json",
+      "sha256": "6131317348aa2559b03539acf524e75c2ee3991197024f4e5e3a5596e8415aec"
+    },
+    "namedPassed": 242,
+    "parents": 3,
+    "rawGoExit": 0,
+    "result": {
+      "bytes": 16693,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-source-qualification-01/result.original.json",
+      "sha256": "a6e6bc9e7272e59b5f2808990a226173383b032aba79d16d7c51d9e28333f7a9"
+    },
+    "rootIntake": {
+      "bytes": 23798,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/clean-qualification-root-intake-01/intake.original.json",
+      "sha256": "ac05e836b7228a9c67720284179efec876970fe308c648dbfc7c7d03ddaca552"
+    },
+    "skipped": 0,
+    "sourceCleanUnchanged": true,
+    "sourceCommit": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+    "sourceTree": "8cbfbeb56ab540b96f545ca6a6f2029b3048b797",
+    "subcases": 239
+  },
+  "component": "Clean continuation implementation commit",
+  "executionAttribution": "Earlier direct harness and detail GREEN ran on dirty candidate bytes; the commit is their later exact source continuation, not a retroactive clean-source execution.",
+  "formalAcceptanceGranted": false,
+  "independentGreenReview": {
+    "bytes": 12985,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/detail-green-independent-intake-01/review.original.json",
+    "sha256": "22480b301fe65297680f478b63965249f49323cd04ce7f1eb5037148e126f7fa"
+  },
+  "newFinalK": null,
+  "newRelease": false,
+  "observedCommit": {
+    "atUtc": "2026-11-23T16:58:36.247906+00:00",
+    "branch": "agent/cherri-p10r15-k15-verification-repair-20261123",
+    "clean": true,
+    "commitAttempts": 1,
+    "files": [
+      "p15_frontend_entrypoint_audit_test.go",
+      "tools/language-acceptance/execution_truth_test.go",
+      "tools/language-acceptance/final_provenance_execution_test.go",
+      "tools/language-acceptance/main.go",
+      "tools/p10r15/editor_publication_probe.swift"
+    ],
+    "formal179OrEnd01ClosureGranted": false,
+    "head": "08dab62c1dd838a4a45f4d6bfcea2ad5e0817402",
+    "originalK476Unmodified": true,
+    "parent": "476767cd0580672c3335886d883cc869eaef4760",
+    "sourceRole": "QUALIFIED_CONTINUATION_IMPLEMENTATION",
+    "status": "COMMITTED_TESTED_CONTINUATION_IMPLEMENTATION",
+    "tree": "8cbfbeb56ab540b96f545ca6a6f2029b3048b797"
+  },
+  "originalCommitReceipt": {
+    "bytes": 26245,
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/implementation-commit-01/result.original.json",
+    "sha256": "6b8485d45a3fbc93f86982f07681b042dccac2f141df2f571cce9f17a625f7c0"
+  },
+  "preparedAtUtc": "2026-11-23T17:04:23.286639+00:00",
+  "producerRerunForProjection": false,
+  "projectionOnly": true,
+  "proofCommit": null,
+  "publication": null,
+  "qualificationOriginals": [
+    {
+      "bytes": 5985,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/precommit-harness-root-intake-01/intake.original.json",
+      "sha256": "c178d79911cb4a4569c538dd4fc92a3521a7119fe98269dd18c513f5b9e37462"
+    },
+    {
+      "bytes": 1872,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/detail-red-root-intake-01/intake.original.json",
+      "sha256": "d9ff9f1da851ffd3e5d5bd604c70e2ff12e23ea20a535346d36516e1d6134d32"
+    },
+    {
+      "bytes": 3939,
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-k15-verification-repair-20261123/detail-green-root-intake-01/intake.original.json",
+      "sha256": "f3cad1f55d236642820de8ef9dd87ad275769b68c3917f67899ad258c3185cfb"
+    }
+  ],
+  "schema": "cherri-checkpoint32-public-projection/1",
+  "sourcePins": {
+    "p15_frontend_entrypoint_audit_test.go": {
+      "bytes": 19012,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/p15_frontend_entrypoint_audit_test.go",
+      "sha256": "fdca59e9660c19bc9c11390d5690a502d0b54e0206b15d24f4cce550ed6180cd"
+    },
+    "tools/language-acceptance/execution_truth_test.go": {
+      "bytes": 13264,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/language-acceptance/execution_truth_test.go",
+      "sha256": "984bb94dfbf43a37f0d08ab82c429425ed2905c161bbae93ed4339eca24ce89f"
+    },
+    "tools/language-acceptance/final_provenance_execution_test.go": {
+      "bytes": 42100,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/language-acceptance/final_provenance_execution_test.go",
+      "sha256": "3863be970b98d86661281619596b214592019a77369c2df1d44c14d7b3b1cd32"
+    },
+    "tools/language-acceptance/main.go": {
+      "bytes": 72990,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/language-acceptance/main.go",
+      "sha256": "cdbd5ae6facc3a035ec24c00de24b9262a59f6ed6ccf0d6252f6e711684e44d3"
+    },
+    "tools/p10r15/editor_publication_probe.swift": {
+      "bytes": 22933,
+      "path": "/mnt/development/projects/worktrees/cherri-p10r15-k15-verification-repair-20261123/tools/p10r15/editor_publication_probe.swift",
+      "sha256": "3acb91746916ffe821c136b58ba7f32cc62940cd4b6eddc4c89ea15da1f1f707"
+    }
+  }
+}

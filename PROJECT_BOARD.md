@@ -25,6 +25,14 @@ Potential improvements, features, optimizations, or architectural ideas.
 
 ## Discoveries & Tips
 
+### 2026-11-23 — Acceptance detail fidelity and verified continuation
+
+K476's original full179 remains 111 PASSED / 4 FAILED / 28 NOT_RUN / 36 PENDING_EXTERNAL. The report discarded detailed pending diagnostics while the audit preserved them; unchanged END01 correctly rejects those original pairs. The minimal repair preserves the authoritative detail. Genuine causal RED and focused six-parent/ten-event GREEN remain retained separately.
+
+Root committed the five reviewed files as 08dab62c1dd838a4a45f4d6bfcea2ad5e0817402, tree 8cbfbeb56ab540b96f545ca6a6f2029b3048b797, parent K476. Its separate clean qualification passed three parents and 239 subcases (242 named events). The nested nine-parent/89-child RP52 producer is locally PASSED; editor E05 and related results still require ios-ui. Nested counts are not added to outer totals.
+
+Earlier dirty-candidate RP52 32-event, E05 26-control and detail GREEN results retain their actual source attribution and initial missing-temp failure. The retained E05 probe was verified against identical committed blobs without rerunning it. No old report, native outcome, full179 result or actual END delivery is replaced. Publication was pending at the checkpoint cutoff. [Bounded Chapter32 evidence](docs/language-v2/evidence/p15-oracle-checkpoint32-20261123/README.md).
+
 ### V2 main output and bounded export graphs (2026-11-23)
 
 V2 main fallthrough emits a parameter-free Nothing after the macro's named File

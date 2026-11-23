@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.10 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete K12 local execution: **112/179 PASSED, 2 FAILED, 28 NOT_RUN, 37 PENDING_EXTERNAL**. Separate retained-native reconciliation: **122/179 PASSED, 27 FAILED, 30 NOT_RUN** under different aggregator status semantics; **closure_complete=false**. Chapter 31 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.11 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution: **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**; **closure_complete=false**. Chapter 32 records continuation implementation **08dab62c1dd838a4a45f4d6bfcea2ad5e0817402** and its clean **242-event scoped qualification**. Publication was pending at the checkpoint cutoff; this is not a new final K or release. Earlier chapters and original reports retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2420,3 +2420,94 @@ was changed while assembling it. Project status remains **IN_PROGRESS** and
 **closure_complete=false**. The next full179 proposal is inactive, with final
 source/context/workflow/capacity inputs still subject to the explicit root
 handoff.
+
+## 32. K476 full179 result and verification-harness continuation — 2026-11-23
+
+> **Prepublication checkpoint, 2026-11-23, 17:07 UTC.** This checkpoint binds the retained K476 originals, the reviewed repairs at clean continuation implementation 08dab62c1dd838a4a45f4d6bfcea2ad5e0817402, and its accepted three-parent qualification. Publication remains pending. This is not a new final K or release.
+
+### Current source and milestone board
+
+The latest complete local acceptance execution belongs to **K476767cd0580672c3335886d883cc869eaef4760**, tree **f40a975ac4e49dc5d06b3cac17627d8be144c3e0**. It finished on 2026-11-23 at 16:29:42 UTC with **111 PASSED, 4 FAILED, 28 NOT_RUN and 36 PENDING_EXTERNAL**. Its actual producer exit was 1, elapsed time 1,520.084590 seconds, with no timeout or source drift and closure false.
+
+The [bounded public metadata packet](evidence/p15-oracle-checkpoint32-20261123/README.md) preserves all 179 ordered original ID/status rows, source-bound receipt hashes and the distinction between observed results and pending work. Earlier chapters and reports retain their original sources and outcomes.
+
+| Milestone | Actual scope at this checkpoint cutoff |
+|---|---|
+| Frozen K476 full179 | Complete 94/52/33 inventory; original 111/4/28/36 outcome remains unchanged. |
+| Direct RP52 harness qualification | One parent plus 31 children: 32 named passes on an unchanged, uncommitted two-file candidate based on K476. |
+| Direct E05 portable harness qualification | 26 named controls and one summary passed on that same candidate; real compiler and UI execution were false. |
+| Pending-detail causal RED | One selected parent/subcase failed at the exact lost-diagnostic assertion; raw Go exit 1, no timeout or source drift. |
+| Six-parent repair GREEN | Six parents and four children: 10 named passes, no failure or skip; unchanged dirty five-file candidate on K476 base. |
+| Three clean-source acceptance parents | At `08dab62c`: 3 parents + 239 subcases = 242 named passes; no failure or skip, raw exit 0, clean unchanged source. |
+| Clean continuation implementation | 08dab62c1dd838a4a45f4d6bfcea2ad5e0817402, tree 8cbfbeb56ab540b96f545ca6a6f2029b3048b797, parent K476; five reviewed files committed cleanly. Its evidence checkpoint follows this implementation; publication was pending at the cutoff. This is not a new final K or release. |
+
+### Acceptance matrix and evidence log
+
+#### Complete original run: four failures and 64 unexecuted or pending rows
+
+The four FAILED IDs are **E05, AI01, RP50 and RP52**. AI01/RP50 preserve the actual rejection of an incomplete twelve-outcome evaluation; no new model-quality result is inferred. E05 and RP52 produced actual nonzero child outcomes. Their subsequently targeted harness work is recorded separately and does not replace either original row.
+
+The report SHA256 is `cb9aae6ed314a645437f6e03af3776993ccbcf2841d4f09348d7e27f1b16c8a4`; its companion audit SHA256 is `4f98944fd4bc10b77b726804486bfdc2ddfe58a51f088c05383fe735e5bd6562`. The audit retains 111 PASS, 4 FAIL, 28 UNVERIFIED and 36 BLOCKED_EXTERNAL rows. These are the audit’s corresponding status labels, not a second acceptance execution.
+
+CI03 and CI04 remain NOT_RUN under the explicitly selected absence of all six context variables. Actual cancelled native jobs and Build-mac produced no usable checkout observations, and the unchanged combined context builder requires all seven witnesses before emitting either context. No checkout is inferred from head_sha, no 404 response is used as a log, and CI04 NOT_RUN is not a finding of a privacy leak. D03 still needs its exact app consumers in addition to published Docs/Skill evidence.
+
+[Original full179 projection](evidence/p15-oracle-checkpoint32-20261123/full179.public-projection.json)
+
+#### Harness checks: useful component results with precise source attribution
+
+The accepted direct checks ran before a new commit existed. Their proper source attribution is an **unchanged dirty two-file candidate on K476 base**, not clean K476 and not a future commit. Root’s intake is `c178d79911cb4a4569c538dd4fc92a3521a7119fe98269dd18c513f5b9e37462`; the independent intake verified all 13 process receipts and 26 original streams.
+
+RP52’s expected callCompileBridge body was stale after production gained actualMode, sourceRequest and previewSourceMap. Only that expected literal was refreshed to the preserved production body. E05’s portable fixture gained the missing CherriBuildProfile declaration and isApplyingPreviewEdit=false state. Their parsers, source forwarding and all existing control inventories remain unchanged.
+
+RP52’s selected source-boundary parent passed its complete 32-event inventory in 23.871716 seconds, with no failure or skip. Its original three-minute Go limit and 240-second process limit remained. This is not the complete nine-parent RP52 acceptance producer.
+
+E05’s portable Swift compilation and execution passed all 26 unchanged controls. Compilation took 2.170507 seconds within 90 seconds; execution took 0.032095 seconds within 45 seconds. Controlled backend adapters supplied the harness behavior. The receipt explicitly retains realCompilerExecuted=false, uiExecuted=false and no formal requirements proved; its signed-write control is not Apple signing.
+
+The first harness attempt is preserved: Go started and exited 1 after 0.133457 seconds because the configured temporary directory was absent, with no named test events. The later successful direct checks do not erase that failure. The later clean-source qualification is recorded below; the precommit source attribution remains unchanged.
+
+[Harness metadata and preserved attempts](evidence/p15-oracle-checkpoint32-20261123/harness.public-projection.json)
+
+#### END01: authentic report/audit contradiction, reproduced before the repair
+
+All 36 PENDING_EXTERNAL rows have an actual detail mismatch. Runner.Record retained the detailed pending message, including production-test diagnostics. The aggregator replaced only the report copy with a generic sentence, while the audit writer kept the original detail. Frozen END01 correctly requires exact equality at final_provenance_execution.go:1048–1049 before projecting the delivery ledger. The other 143 original detail pairs agree.
+
+No materializer or END01 execution was attempted with these contradictory originals. An external normalization would not repair the canonical incompatibility and would misrepresent the originals.
+
+The continuation repair removes only the report-only assignment at original main.go:675. It retains statuses, counters, tiers, final-phase rejection and END01’s equality check. Two appended regressions in existing files exercise Record → aggregation → actual audit serialization, including direct and empty details, and a coherently repinned audit-detail corruption with the exact expected rejection.
+
+The tests-first RED selected only TestPendingExternalDetailReportAuditConsistency/recorded_production_detail. It failed at the intended lost-diagnostic assertion, with two named failure terminals (parent and subcase), raw Go exit 1, no timeout and unchanged source. Root’s RED intake is `d9ff9f1da851ffd3e5d5bd604c70e2ff12e23ea20a535346d36516e1d6134d32`. The root-owned focused GREEN then passed six parents and four children: **10 named passes**, 44 JSON events, raw Go exit 0, no timeout and no source drift. Root’s intake is `f3cad1f55d236642820de8ef9dd87ad275769b68c3917f67899ad258c3185cfb`; it rehashed 33 process-receipt/stream objects. This ran on the dirty five-file repair candidate, with END01’s canonical guard unchanged. It executed neither a new full179 nor the actual dedicated END01 delivery route. The independent GREEN review also verified all 11 process records and 22 original streams, with no issue (receipt SHA256 22480b301fe65297680f478b63965249f49323cd04ce7f1eb5037148e126f7fa). Those execution-time results remain attributed to the dirty candidate. Root subsequently committed the exact five reviewed files as clean implementation 08dab62c1dd838a4a45f4d6bfcea2ad5e0817402, tree 8cbfbeb56ab540b96f545ca6a6f2029b3048b797, parent K476. The commit receipt SHA256 is 6b8485d45a3fbc93f86982f07681b042dccac2f141df2f571cce9f17a625f7c0. This records the later source identity without relabeling the earlier executions. The accepted clean-source qualification follows below. The proof commit has no embedded self-SHA, and publication remains pending.
+
+[END01 blocker and repair scope](evidence/p15-oracle-checkpoint32-20261123/end01.public-projection.json)
+
+#### Clean-source component qualification at 08dab62c
+
+The separate qualification ran on clean **08dab62c1dd838a4a45f4d6bfcea2ad5e0817402**, tree **8cbfbeb56ab540b96f545ca6a6f2029b3048b797**, with identical source before and after. The three selected parents and 239 subcases passed: **242 named events**, 992 original JSON events, no failures or skips, raw Go exit 0 and no timeout. The acceptance command took **46.700953 seconds**; the complete owner took **46.956125 seconds**. The run used the original 35-minute Go test limit and the selected 2,160-second outer timeout with a 30-second termination grace period.
+
+| Selected parent | Named passes, including its parent |
+|---|---:|
+| TestEditorContractActualProductionEvidence | 58 |
+| TestEditorContractCanonicalSwiftExecutionPaths | 9 |
+| TestPublicFrontendActualProductionEvidence | 175 |
+
+The root and independent intakes verified all **72 actual artifacts (1,917,547 bytes)**, 12 outer process receipts and 24 streams. The independent review also joined 14 nested receipts, 28 nested streams and 157 distinct source paths. Those are verification inventories, not additional acceptance-test counts.
+
+The fresh nested RP52 producer passed its original **nine parents and 89 children**, with exact required/discovered inventory, exit 0, no timeout, clean source and 10.596949 seconds elapsed under its original three-minute Go limit. The actual scoped RP52 report is locally PASSED (1/1), closure false. These 98 nested events are not added to the 242 outer events.
+
+The clean editor artifact retains E01/E02/E03/E05/E06 as **PENDING_EXTERNAL for ios-ui**; the canonical Swift-path artifact also retains E05/E06 pending. Four fresh portable Swift receipts cover 26 publication controls twice and 17 position controls twice. They establish their local scopes without real Apple runtime or UI execution.
+
+A separate 30-second read-only intake bound the retained precommit E05 receipt's 26 controls to the six identical committed blobs at 08dab62c. It did not rerun that old probe or change its dirty-candidate execution attribution. The root intake, independent review, actual result, retained-E05 binding and exact nested component metadata are linked in the [clean qualification projection](evidence/p15-oracle-checkpoint32-20261123/cleanqualification.public-projection.json).
+
+This qualification did not rerun full179, execute actual END01 delivery, publish a source, or grant native/global closure. The original K476 rows remain unchanged.
+
+### Decisions, open defects and next work
+
+1. **Adopt the verified continuation at its actual source.** Implementation `08dab62c` and its clean three-parent qualification are accepted. Keep their exact original bindings through the separate proof/publication steps. Preserve the RED and precommit attempt histories. Component success must not rewrite the K476 report or become a new final-source claim.
+2. **Complete local coverage and dedicated producers.** The independent 64-row review found fifteen dedicated-scenario gaps: RP20, RP26, RP39, RP40, RP41, RP47, RP48, RP49, BRG01, BRG15, BRG25, BRG26, BRG27, BRG28 and BRG31. T05/L01/N03/F04 retain incomplete local semantic coverage; B01 needs a real repository-preservation observation. These are concrete remaining obligations, not additional observed regressions from this run. RP41’s repaired production path does not automatically supply its formal combined/UI producer.
+3. **Retain the race result without inventing an import route.** A genuine K476 Linux CI race archive exists, with six required tests, exit 0 and no timeout. The frozen Oracle route rejects external race directories and only starts the race producer inside matching Linux GitHub CI. RP51/BRG06 therefore remain NOT_RUN. Any current-CI intake/assembly extension needs its own reviewed implementation; no replay or raw-bundle promotion is authorized by this checkpoint.
+4. **Obtain the actual missing Apple outcomes.** Thirty-one rows need ios-runtime evidence and five need ios-ui evidence. CI01 still needs the real correct/corrupt/restored WorkflowKit triplet; CI02 and dedicated runtime/signing scenarios retain their own exact fixtures and assertions. Hosted acquisition failure supplies no result. Earlier source successes, generic workflow success and local structural checks remain separate.
+5. **Keep delivery integrity separate from required gate success.** END01 may validate a truthful failed/pending same-source delivery when its original report/audit and independently authenticated publications agree. It grants no CI03, RP49 or BRG31 credit. Current K476’s contradiction remains blocked. Future source selection and any genuinely necessary new evidence belong to a separate root handoff.
+6. **Preserve policy and AI boundaries.** R23 v1 remains active; the v2 proposal remains unapproved. R22 remains platform-bound. The consumed historical AI cohort and incomplete measured outcomes remain unchanged; no provider retry, replacement cohort or outcome-driven reseed is implied.
+
+[Exact next-evidence categories and IDs](evidence/p15-oracle-checkpoint32-20261123/next-work.public-projection.json)
+
+Project status remains **IN_PROGRESS**, with **closure_complete=false**. Assembling these evidence projections ran no additional producer or canonical validator and copied no raw log, archive or private input.
