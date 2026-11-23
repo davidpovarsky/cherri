@@ -1,0 +1,81 @@
+{
+  "source": "ca316a3dee252456c4bec751594cf249c709b331",
+  "branch": "audit/cherri-p10r15-r23-20261123",
+  "sourceStatusBefore": "",
+  "sourceStatusAfter": "",
+  "checks": [
+    {
+      "id": "registry",
+      "command": [
+        "python3",
+        "-B",
+        "tools/p10r3/run_release_gates.py",
+        "--verify-registry"
+      ],
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T00:08:27.189469+00:00",
+      "finishedUTC": "2026-11-23T00:08:27.256473+00:00",
+      "seconds": 0.06699206307530403,
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 53,
+        "sha256": "e502719c12f15dfb634853aeef40217ea31d8e028f9b89bbcd4c9b145b52a174",
+        "path": "registry.stdout.original"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "path": "registry.stderr.original"
+      }
+    },
+    {
+      "id": "commit",
+      "command": [
+        "python3",
+        "-B",
+        "tools/p10r3/run_release_gates.py",
+        "--verify-commit"
+      ],
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T00:08:27.256861+00:00",
+      "finishedUTC": "2026-11-23T00:08:27.478924+00:00",
+      "seconds": 0.22207059059292078,
+      "exitCode": 1,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "path": "commit.stdout.original"
+      },
+      "stderr": {
+        "bytes": 981,
+        "sha256": "27d8d96b78d039ff0bd613e01ac8edb8a2fdef7acb56d3d0aeeeab88ab8d24ba",
+        "path": "commit.stderr.original"
+      }
+    },
+    {
+      "id": "r23",
+      "command": [
+        "python3",
+        "-B",
+        "tools/p10r3/run_release_gates.py",
+        "--gate",
+        "R23"
+      ],
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T00:08:27.479229+00:00",
+      "finishedUTC": "2026-11-23T00:08:27.557485+00:00",
+      "seconds": 0.07826524693518877,
+      "exitCode": 1,
+      "stdout": {
+        "bytes": 1023,
+        "sha256": "e28dd0f415f7529bbf0f0d7be9e6259e0dfb6f8f97f8a026f9e98539e77ac907",
+        "path": "r23.stdout.original"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "path": "r23.stderr.original"
+      }
+    }
+  ]
+}

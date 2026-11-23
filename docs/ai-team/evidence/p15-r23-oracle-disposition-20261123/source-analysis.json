@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "analysisUTC": "2026-11-23T00:16:28.878778+00:00",
+  "source": "ca316a3dee252456c4bec751594cf249c709b331",
+  "tree": "df61b6ddf47137998c6053cfada292f0a6a17cca",
+  "fixedBaseline": "76d722502e20db977e84a095444d0172442655b8",
+  "sourceStatusBefore": "",
+  "kind": "read-only source diagnosis; no native replay",
+  "protectedPaths": [
+    {
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "baseline": {
+        "bytes": 21887,
+        "sha256": "d5ef275d13efd5873cd2cfaca040592d6c8ffdfe26eec291344e0b47c3290f89",
+        "tests": [
+          "testE01CompletionDisplayAndInsertionUI",
+          "testE02DiagnosticsRenderingAndNavigationUI",
+          "testE03EditorActionsHoverRenameUI",
+          "testE05EditorResponsivenessStaleEditsUI",
+          "testE06BidirectionalHebrewEmojiUI",
+          "testE07VisualParameterEditingCanvasUI",
+          "testBRG27EditorRealWorldWorkflowUI",
+          "testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+          "testNegativeMissingUIElementFailsClosed"
+        ]
+      },
+      "current": {
+        "bytes": 54532,
+        "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+        "tests": [
+          "testD03CurrentDocumentationSearchUI",
+          "testE01CompletionDisplayAndInsertionUI",
+          "testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+          "testE02DiagnosticsRenderingAndNavigationUI",
+          "testE03EditorActionsHoverRenameUI",
+          "testE05EditorResponsivenessStaleEditsUI",
+          "testE06BidirectionalHebrewEmojiUI",
+          "testE07VisualParameterEditingCanvasUI",
+          "testBRG27EditorRealWorldWorkflowUI",
+          "testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+          "testNegativeMissingUIElementFailsClosed",
+          "testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+          "testTypedSourceAndResetPreserveExactUTF16"
+        ]
+      },
+      "baselineE01": {
+        "firstLine": 71,
+        "text": "    func testE01CompletionDisplayAndInsertionUI() throws {\n        let editor = ensureEditorReady()\n        setEditorContent(editor, \"sho\")\n\n        let actionsBtn = app.buttons[\"actionsButton\"]\n        XCTAssertTrue(actionsBtn.waitForExistence(timeout: 5), \"Actions button must exist in editor bar\")\n\n        let showCandidate = app.buttons[\"completionItem_show\"]\n        let showSuggestion = app.buttons[\"suggestionItem_show\"]\n\n        if showCandidate.waitForExistence(timeout: 3) && showCandidate.isHittable {\n            showCandidate.tap()\n        } else if showSuggestion.waitForExistence(timeout: 3) && showSuggestion.isHittable {\n            showSuggestion.tap()\n        } else {\n            actionsBtn.tap()\n            let paletteList = app.collectionViews[\"actionPaletteList\"].exists ? app.collectionViews[\"actionPaletteList\"] : app.tables[\"actionPaletteList\"]\n            XCTAssertTrue(paletteList.waitForExistence(timeout: 5), \"Action palette list must be presented\")\n\n            let showAction = app.buttons[\"paletteAction_show\"].exists ? app.buttons[\"paletteAction_show\"] : paletteList.cells.firstMatch\n            XCTAssertTrue(showAction.waitForExistence(timeout: 5), \"Candidate action show must exist in palette\")\n            showAction.tap()\n        }\n\n        // Verify editor content reflects completed insertion and no trailing uncompleted prefix\n        XCTAssertTrue(editor.waitForExistence(timeout: 5), \"Editor must remain present after insertion\")\n        var editorValue = (editor.value as? String) ?? \"\"\n        XCTAssertTrue(editorValue.contains(\"show\"), \"Editor text must reflect inserted action call\")\n        XCTAssertFalse(editorValue.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix(\"sho\"), \"Editor text must not end in incomplete prefix 'sho'\")\n\n        if !editorValue.contains(\"(\") {\n            typeIntoEditor(editor, \"(\\\"E01_Verified\\\")\\n\")\n        } else if !editorValue.contains(\"\\n\") {\n            typeIntoEditor(editor, \"\\n\")\n        }\n\n        let buildBtn = app.buttons[\"buildButton\"]\n        XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), \"Build button must exist in toolbar\")\n        buildBtn.tap()\n\n        let compiledStatus = app.staticTexts[\"compiledStatusText\"]\n        XCTAssertTrue(compiledStatus.waitForExistence(timeout: 8), \"Compiled status must appear upon successful compilation\")\n        let diagStatus = app.staticTexts[\"diagnosticStatusText\"]\n        XCTAssertFalse(diagStatus.exists, \"No compilation diagnostic must exist for valid inserted code\")\n\n        print(\"[CHECKPOINT:E01_COMPLETION_INSERTED] Contextual completion candidate selected, inserted, and verified in editor\")\n    }\n\n    // E02: Multiple diagnostics rendering with accurate inline indicators and ranges\n"
+      },
+      "currentE01": {
+        "firstLine": 552,
+        "text": "    func testE01CompletionDisplayAndInsertionUI() throws {\n        let editor = ensureEditorReady()\n        setEditorContent(editor, \"sho\")\n\n        let actionsBtn = app.buttons[\"actionsButton\"]\n        XCTAssertTrue(actionsBtn.waitForExistence(timeout: 5), \"Actions button must exist in editor bar\")\n\n        let showCandidate = app.buttons[\"completionItem_show\"]\n        let showSuggestion = app.buttons[\"suggestionItem_show\"]\n\n        if showCandidate.waitForExistence(timeout: 3) && showCandidate.isHittable {\n            showCandidate.tap()\n        } else if showSuggestion.waitForExistence(timeout: 3) && showSuggestion.isHittable {\n            showSuggestion.tap()\n        } else {\n            recordEditorReceipt(stage: \"completion-candidates\")\n            XCTFail(\"Exact contextual candidate show must be visible and hittable\")\n            return\n        }\n\n        // Verify editor content reflects completed insertion and no trailing uncompleted prefix\n        XCTAssertTrue(editor.waitForExistence(timeout: 5), \"Editor must remain present after insertion\")\n        expectedSyntheticSource = \"show(<#input#>)\"\n        let insertionCompleted = waitForEditorValue(editor) {\n            Array($0.utf16) == Array(\"show(<#input#>)\".utf16)\n        }\n        recordEditorReceipt(stage: \"completion-insertion\")\n        XCTAssertTrue(insertionCompleted, \"Selected completion must finish updating the editor source\")\n        let editorValue = (editor.value as? String) ?? \"\"\n        XCTAssertTrue(editorValue.contains(\"show\"), \"Editor text must reflect inserted action call\")\n        XCTAssertFalse(editorValue.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix(\"sho\"), \"Editor text must not end in incomplete prefix 'sho'\")\n\n        // Compile the exact inserted bytes first. An editor hole is not an\n        // implicit Ask Each Time request, and must produce a diagnostic.\n        let buildBtn = app.buttons[\"buildButton\"]\n        XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), \"Build button must exist in toolbar\")\n        buildBtn.tap()\n\n        let diagStatus = app.staticTexts[\"diagnosticStatusText\"]\n        XCTAssertTrue(diagStatus.waitForExistence(timeout: 8), \"Unfilled insertion must be rejected\")\n        XCTAssertFalse(app.staticTexts[\"compiledStatusText\"].exists, \"Unfilled insertion must not compile\")\n        let filledSource = editorValue.replacingOccurrences(of: \"<#input#>\", with: \"\\\"P15_INSERTED\\\"\")\n        setEditorContent(editor, filledSource)\n        buildBtn.tap()\n        XCTAssertTrue(app.staticTexts[\"compiledStatusText\"].waitForExistence(timeout: 8), \"Explicitly filled insertion must compile\")\n        XCTAssertFalse(diagStatus.exists, \"Filled insertion must clear the earlier diagnostic\")\n\n        print(\"[CHECKPOINT:E01_COMPLETION_INSERTED] Contextual completion candidate selected, inserted, and verified in editor\")\n    }\n\n"
+      }
+    },
+    {
+      "path": "ios/CherriApp/Views/CodeEditorView.swift",
+      "baseline": null,
+      "current": null
+    }
+  ],
+  "diff": {
+    "path": "protected-paths.diff",
+    "sha256": "0496e2f78732aba10e6335ce497bd1e66752370d4fa621efdad7957f9ab0ad28",
+    "numstat": "584\t35\tios/CherriUITests/CherriEditorUITests.swift\n"
+  },
+  "contracts": {
+    "docs/apple-runtime/p10/p10r2-acceptance-contract.json": {
+      "sha256": "d797f6216daa8f7de48cb806d6535a8615120dc157333119131f52de1aa7b662",
+      "rows": [
+        {
+          "id": "R23",
+          "intent": "Protected parallel iOS files remain completely untouched relative to merge base",
+          "producerEntryPoint": "git diff merge-base against protected paths",
+          "positiveFixture": "0 diff lines on ios/CherriUITests/CherriEditorUITests.swift and ios/CherriApp/Views/CodeEditorView.swift",
+          "negativeFixture": "any modification to protected iOS files",
+          "executableCommand": "git diff origin/main...HEAD -- ios/CherriUITests/CherriEditorUITests.swift ios/CherriApp/Views/CodeEditorView.swift",
+          "expectedStatus": "PASS",
+          "proofSource": "git diff"
+        }
+      ]
+    },
+    "tests/language-v2/acceptance-contract.json": {
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "rows": [
+        {
+          "id": "E01",
+          "group": "editor",
+          "requirement": "Contextual labels/enums/compatible variables completion",
+          "minimum_test_level": "service+UI",
+          "expected": "Actual expected-type candidates rather than global prefix list",
+          "negative_case": false,
+          "status": "PLANNED_NOT_EXECUTED"
+        },
+        {
+          "id": "D03",
+          "group": "docs",
+          "requirement": "Active fork docs separated from upstream reference",
+          "minimum_test_level": "docs+integration",
+          "expected": "Skill/app search current subtree; old examples not recommended",
+          "negative_case": false,
+          "status": "PLANNED_NOT_EXECUTED"
+        }
+      ]
+    },
+    "tests/language-v2/repair-regression-plan.json": {
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "rows": [
+        {
+          "id": "RP40",
+          "title": "Actual Swift integration",
+          "original_requirement_ids": [
+            "E01",
+            "E02",
+            "E03",
+            "E05",
+            "E06"
+          ],
+          "audit_fix_ids": [
+            "FIX-15"
+          ],
+          "required_test_levels": [
+            "app-integration",
+            "UI"
+          ],
+          "scenario": "Build the real app, open v2 source, request completion/diagnostics/rename and compile through the app on iOS.",
+          "expected_observation": "Actual Swift call paths use modern service/protocol and shared registry; C export presence alone is insufficient.",
+          "status": "PLANNED_NOT_EXECUTED",
+          "must_preserve_original_minimum_levels": true
+        }
+      ]
+    },
+    "tests/language-v2/backend-recovery-gates.json": {
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "rows": [
+        {
+          "id": "BRG27",
+          "title": "Real editor ranges, completion and stale edits",
+          "status": "PLANNED_NOT_EXECUTED",
+          "mandatory": true,
+          "related_original_ids": [
+            "P02",
+            "P05",
+            "E01",
+            "E02",
+            "E03",
+            "E04",
+            "E05",
+            "E06"
+          ],
+          "related_repair_ids": [
+            "RP38",
+            "RP39",
+            "RP40"
+          ],
+          "minimum_evidence_tiers": [
+            "service",
+            "integration",
+            "ios-ui"
+          ],
+          "scenario": "Exercise actual Swift bridge/editor and LSP with incomplete code, UTF-16 text, multi-errors, parameter/enum replacement, rapid versioned edits, hover/rename/format.",
+          "expected_observation": "Correct contextual edits/ranges and only newest response applied; formatter preserves literals/comments; no independent Swift semantics.",
+          "proposed_test_prefix": "TestBackendRecovery27",
+          "evidence_must_reference_actual_production_path": true
+        }
+      ]
+    }
+  },
+  "swiftIntegration": {
+    "path": "ios/CherriTests/CherriCoreIntegrationTests.swift",
+    "sourceSHA256": "ff65a1c41d485514fcff06e680a49e7377dcdd6de5720a79457128d756246d5d",
+    "firstLine": 72,
+    "text": "        let showAction = try XCTUnwrap(actions.first(where: { $0.name == \"show\" }))\n        XCTAssertFalse(showAction.signature.isEmpty)\n        XCTAssertEqual(showAction.shortcutIdentifier, \"is.workflow.actions.showresult\")\n    }\n\n    private func assertUnfilledSnippetRejected(_ source: String) async throws {\n        do {\n            _ = try await CherriCompiler.compile(source: source, name: \"Unfilled Palette\")\n            XCTFail(\"An unfilled editor hole must not become an Ask Each Time prompt\")\n        } catch is CompilationDiagnostic {\n            // The expected parser diagnostic proves no native program was returned.\n        }\n    }\n\n    func testPaletteSnippetSuppliesRequiredArguments() async throws {\n        _ = try await CherriCompiler.compile(\n            source: \"show(\\\"Initialize catalog\\\")\\n\",\n            name: \"Snippet Test\"\n        )\n        let actions = try await CherriCompiler.actionCatalog()\n        let show = try XCTUnwrap(actions.first(where: { $0.name == \"show\" }))\n        XCTAssertEqual(show.insertionSnippet, \"show(<#input#>)\")\n        try await assertUnfilledSnippetRejected(show.insertionSnippet)\n        _ = try await CherriCompiler.compile(\n            source: show.insertionSnippet.replacingOccurrences(of: \"<#input#>\", with: \"\\\"P15_INPUT\\\"\"),\n            name: \"Explicitly Filled Show Snippet\"\n        )\n\n        let alert = try XCTUnwrap(actions.first(where: { $0.name == \"alert\" }))\n        XCTAssertEqual(alert.insertionSnippet, \"alert(<#alert#>)\")\n        try await assertUnfilledSnippetRejected(alert.insertionSnippet)\n        _ = try await CherriCompiler.compile(\n            source: alert.insertionSnippet.replacingOccurrences(of: \"<#alert#>\", with: \"\\\"P15_ALERT\\\"\"),\n            name: \"Explicitly Filled Alert Snippet\"\n        )\n\n        let pdf = try XCTUnwrap(actions.first(where: { $0.name == \"getPDFText\" }))\n        XCTAssertEqual(pdf.insertionSnippet, \"getPDFText(<#pdfFile#>)\")\n"
+  },
+  "historicalPurpose": {
+    "path": "docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md",
+    "R23Lines": [
+      {
+        "line": 774,
+        "text": "| **R23** | Isolation | Concurrent UI tests file protection | **VERIFIED** (0 touched files in UI) |"
+      }
+    ]
+  },
+  "scopeMapSearch": {
+    "gitTrackedMatches": [],
+    "packageMetadataName": "cherri-p10r15-continuation-evidence-20261119.json",
+    "packageMetadataSHA256": "a24b1120a3e2055497ec30f96c9b56736095bc84d87ce82d83691e2fb6b74370",
+    "matchingListedPaths": [],
+    "scope": "Only tracked source and named package metadata; no exhaustive server archive search."
+  },
+  "sourceStatusAfter": ""
+}

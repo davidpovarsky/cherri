@@ -1,0 +1,12 @@
+{
+  "id": "R23",
+  "name": "Protected parallel iOS files remain untouched across P10 baseline 76d7225..HEAD and working tree",
+  "status": "FAIL",
+  "tier": "PRODUCTION_PATH",
+  "command": "git diff 76d722502e20db977e84a095444d0172442655b8..HEAD -- ios/CherriUITests/CherriEditorUITests.swift ios/CherriApp/Views/CodeEditorView.swift && git status --porcelain -- ios/CherriUITests/CherriEditorUITests.swift ios/CherriApp/Views/CodeEditorView.swift",
+  "exitCode": 1,
+  "durationSeconds": 0.01,
+  "outputSha256": "7445ab5488f730a742db669ab2a15e768cac52be6a5aa14f4e1c7f5a296ac322",
+  "sourceFile": "git",
+  "error": "Protected iOS files modified since 76d722502e20db977e84a095444d0172442655b8 or in working tree:\nDIFF:\ndiff --git a/ios/CherriUITests/CherriEditorUITests.swift b/ios/CherriUITests/CherriEditorUITests.swift\nindex 1cb31fee..33028f1f 100644\n--- a/ios/CherriUITests/CherriEditorUITests.swift\n+++ b/ios/CherriUITests/CherriEditorUITests.swift\n@@ -11,46 +11,380 @@ import XCTest\n \n final class CherriEdi"
+}
