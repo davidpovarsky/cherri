@@ -75,7 +75,7 @@ func TestP15RP45ExtractedInstallAndRollback(t *testing.T) {
 	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP45", false)
 	compilerCandidate := p15InstallRead(t, f.compiler)
-	migrationPath := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
+	migrationPath := p15InstallActualTool(t, f.root, f.sourceSHA, "./cmd/cherri-migrate", "")
 	p15ExtractedRequireRole(t, migrationPath, f.sourceSHA, "github.com/electrikmilk/cherri/cmd/cherri-migrate")
 	migrationCandidate := p15InstallRead(t, migrationPath)
 	docsRepo := filepath.FromSlash(f.env["CHERRI_DOCS_REPO"])

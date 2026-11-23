@@ -13,7 +13,7 @@ import (
 func TestP15RP44ExtractedCacheAndBundleSelection(t *testing.T) {
 	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP44", false)
-	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
+	migration := p15InstallActualTool(t, f.root, f.sourceSHA, "./cmd/cherri-migrate", "")
 	p15ExtractedRequireRole(t, migration, f.sourceSHA, "github.com/electrikmilk/cherri/cmd/cherri-migrate")
 	current := map[string][]byte{"cherri": p15InstallRead(t, f.compiler), "cherri-migrate": p15InstallRead(t, migration)}
 	oldSource := "d7052f4568db26dba169bdefc72623e48c04968a"
@@ -147,7 +147,7 @@ func TestP15RP44ExtractedCacheAndBundleSelection(t *testing.T) {
 func TestP15RP44ExtractedCompatibilityConsumer(t *testing.T) {
 	p15FullSuiteSubprocessParallel(t)
 	f := p15ExtractedFixture(t, "RP44", false)
-	migration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
+	migration := p15InstallActualTool(t, f.root, f.sourceSHA, "./cmd/cherri-migrate", "")
 	consumer := p15CopySkillOracle(t)
 	p15InstallWrite(t, filepath.Join(consumer, "skills", "cherri-shortcuts", "compatibility-manifest.json"), p15InstallRead(t, filepath.Join(f.skill, "compatibility-manifest.json")))
 	p15InstallWrite(t, filepath.Join(consumer, "docs", "language-v2", "actions-reference.md"), p15InstallRead(t, filepath.Join(f.env["CHERRI_DOCS_REPO"], "fork-language", "actions.md")))

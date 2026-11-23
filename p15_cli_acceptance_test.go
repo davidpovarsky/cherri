@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -22,13 +23,93 @@ import (
 
 func p15AcceptanceCLI(t *testing.T) string {
 	t.Helper()
-	bin := filepath.Join(t.TempDir(), "cherri-acceptance.exe")
-	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	var root, err = filepath.Abs(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return p15AcceptanceCLIAtRoot(t, root, nil)
+}
+
+// Only an ordinary clean checkout admits a reusable candidate. Go still checks
+// every effective build input when validating that candidate's action identity.
+func p15AcceptanceCLIReuseIdentity(root string, environment []string) (string, string) {
+	var gitEntry, err = os.Lstat(filepath.Join(root, ".git"))
+	if err != nil || !gitEntry.IsDir() {
+		return "", ""
+	}
+	var ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	var git = func(args ...string) ([]byte, error) {
+		var command = exec.CommandContext(ctx, "git", append([]string{"--no-replace-objects", "-C", root}, args...)...)
+		command.Env = environment
+		return command.Output()
+	}
+	var top, topErr = git("rev-parse", "--show-toplevel")
+	var rootInfo, rootErr = os.Stat(root)
+	var topInfo, topStatErr = os.Stat(strings.TrimSpace(string(top)))
+	if topErr != nil || rootErr != nil || topStatErr != nil || !os.SameFile(rootInfo, topInfo) {
+		return "", ""
+	}
+	var head, headErr = git("rev-parse", "HEAD")
+	var status, statusErr = git("status", "--porcelain=v1", "--untracked-files=normal")
+	if headErr != nil || statusErr != nil || len(status) != 0 {
+		return "", ""
+	}
+	var source = strings.TrimSpace(string(head))
+	var goPath, goErr = exec.LookPath("go")
+	if len(source) != 40 || goErr != nil {
+		return "", ""
+	}
+	var goBytes, goReadErr = os.ReadFile(goPath)
+	if goReadErr != nil {
+		return "", ""
+	}
+	var goDigest = sha256.Sum256(goBytes)
+	var sortedEnvironment = append([]string(nil), environment...)
+	sort.Strings(sortedEnvironment)
+	var environmentDigest = sha256.Sum256([]byte(strings.Join(sortedEnvironment, "\x00")))
+	var key = "p15-acceptance-cli:go-build-default-90s\x00" + root + "\x00" + source + "\x00" + goPath + "\x00" + string(goDigest[:]) + "\x00" + string(environmentDigest[:])
+	return source, key
+}
+
+func p15AcceptanceCLIAtRoot(t *testing.T, root string, observe func(bool, []byte)) string {
+	t.Helper()
+	var bin = filepath.Join(t.TempDir(), "cherri-acceptance.exe")
+	var environment = os.Environ()
+	var source, key = p15AcceptanceCLIReuseIdentity(root, environment)
+	var seeded bool
+	if key != "" {
+		p15InstallBuiltTools.Lock()
+		defer p15InstallBuiltTools.Unlock()
+		if entry, exists := p15InstallBuiltTools.entries[key]; exists {
+			if err := entry.verify(); err != nil {
+				t.Fatal(err)
+			}
+			p15InstallWrite(t, bin, entry.data)
+			seeded = true
+		}
+	}
+	// Even a seeded private output must pass the original Go command. The Go
+	// action cache, rather than our candidate lookup key, decides whether to link.
+	var ctx, cancel = context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 	var buildStarted = time.Now()
-	cmd := exec.CommandContext(ctx, "go", "build", "-o", bin, ".")
-	if out, err := cmd.CombinedOutput(); err != nil {
+	var cmd = exec.CommandContext(ctx, "go", "build", "-o", bin, ".")
+	cmd.Dir, cmd.Env = root, environment
+	var out, err = cmd.CombinedOutput()
+	if err != nil {
 		t.Fatalf("build current production CLI: %v (context: %v, elapsed: %s)\n%s", err, ctx.Err(), time.Since(buildStarted).Round(time.Millisecond), out)
+	}
+	if key != "" {
+		p15ExtractedRequireRole(t, bin, source, "github.com/electrikmilk/cherri")
+		var afterSource, afterKey = p15AcceptanceCLIReuseIdentity(root, os.Environ())
+		if afterSource != source || afterKey != key {
+			t.Fatal("CLI source or build environment changed during candidate validation")
+		}
+		p15InstallBuiltTools.entries[key] = p15NewInstallBuiltTool(p15InstallRead(t, bin))
+	}
+	if observe != nil {
+		observe(seeded, append([]byte(nil), out...))
 	}
 	return bin
 }

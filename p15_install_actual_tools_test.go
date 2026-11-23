@@ -11,10 +11,27 @@ import (
 	"testing"
 )
 
+type p15InstallBuiltTool struct {
+	data   []byte
+	digest [sha256.Size]byte
+}
+
+func p15NewInstallBuiltTool(data []byte) p15InstallBuiltTool {
+	var owned = append([]byte(nil), data...)
+	return p15InstallBuiltTool{data: owned, digest: sha256.Sum256(owned)}
+}
+
+func (entry p15InstallBuiltTool) verify() error {
+	if sha256.Sum256(entry.data) != entry.digest {
+		return fmt.Errorf("immutable actual-tool cache digest changed")
+	}
+	return nil
+}
+
 var p15InstallBuiltTools = struct {
 	sync.Mutex
-	bytes map[string][]byte
-}{bytes: map[string][]byte{}}
+	entries map[string]p15InstallBuiltTool
+}{entries: map[string]p15InstallBuiltTool{}}
 
 // Only the complete ordinary suite opts reviewed subprocess parents into Go's
 // bounded scheduler. Selected acceptance producers must retain their strict
@@ -81,21 +98,24 @@ func p15InstallActualTool(t *testing.T, root, source, packagePath, variant strin
 	key := root + "\x00" + source + "\x00" + packagePath + "\x00" + variant
 	p15InstallBuiltTools.Lock()
 	defer p15InstallBuiltTools.Unlock()
-	data, exists := p15InstallBuiltTools.bytes[key]
+	entry, exists := p15InstallBuiltTools.entries[key]
 	if !exists {
 		var flags []string
 		if variant != "" {
 			flags = []string{"-ldflags=-buildid=" + variant}
 		}
 		built := p15ExtractedBuild(t, root, source, packagePath, flags...)
-		data = append([]byte(nil), p15InstallRead(t, built)...)
-		p15InstallBuiltTools.bytes[key] = data
+		entry = p15NewInstallBuiltTool(p15InstallRead(t, built))
+		p15InstallBuiltTools.entries[key] = entry
+	}
+	if err := entry.verify(); err != nil {
+		t.Fatal(err)
 	}
 	path := filepath.Join(t.TempDir(), "actual-tool")
 	if isWindowsRuntime() {
 		path += ".exe"
 	}
-	p15InstallWrite(t, path, data)
+	p15InstallWrite(t, path, entry.data)
 	role := "github.com/electrikmilk/cherri"
 	if packagePath == "./cmd/cherri-migrate" {
 		role += "/cmd/cherri-migrate"

@@ -456,7 +456,7 @@ func TestP15RP42MigrationDocumentedFlags(t *testing.T) {
 		t.Fatal(err)
 	}
 	head := p15ExtractedRevision(t, root)
-	binary := p15ExtractedBuild(t, root, head, "./cmd/cherri-migrate")
+	binary := p15InstallActualTool(t, root, head, "./cmd/cherri-migrate", "")
 	for _, flag := range []string{"--check", "--write"} {
 		t.Run(strings.TrimPrefix(flag, "--"), func(t *testing.T) {
 			for _, after := range []bool{false, true} {
@@ -513,7 +513,7 @@ func TestP15RP44ExtractedCapabilitiesRejection(t *testing.T) {
 		realBinary += ".exe"
 	}
 	p15InstallWrite(t, realBinary, p15InstallRead(t, f.compiler))
-	realMigration := p15ExtractedBuild(t, f.root, f.sourceSHA, "./cmd/cherri-migrate")
+	realMigration := p15InstallActualTool(t, f.root, f.sourceSHA, "./cmd/cherri-migrate", "")
 	p15InstallWrite(t, f.migration, p15InstallRead(t, realMigration))
 	p15InstallWrite(t, f.migration+".commit", []byte(f.sourceSHA+"\n"))
 	p15InstallWrite(t, f.migration+".sha256", []byte(p15ExtractedHash(t, f.migration)+"\n"))
