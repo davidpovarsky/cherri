@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.2 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 24 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.3 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 24 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1633,3 +1633,37 @@ must be explicitly revised for the final source before launch.
 
 No main merge, live RemoteBuilder activation, new AI quality result, completed
 179 acceptance or project closure is claimed at this checkpoint.
+
+
+### Follow-up: K10 Runtime PoC fully reconciled
+
+Follow-up timestamp: 2026-11-23T05:27:56.003685+00:00. Source before this evidence checkpoint:
+`e7123d48d87e9cae28aee29314da1071c8804371`.
+[The K10 Runtime PoC packet](evidence/p15-k10-runtime-poc-20261123/README.md)
+now completes the detailed intake previously marked in progress in this chapter.
+Run45101192445/attempt1/job137452178932 succeeded in20m29s at exact K10.
+
+Root verified14 packet originals, the complete32-member GitHub archive, all31
+published payload hashes, all17 exact K10 helper source bindings and all five
+signed AEA1 fixture files. The six original runtime facets cover the bounded
+V01/V03, L02/L04, N01, FN01/FN02/FN03, S01 and F01 observations. S01/F01's exact
+313-byte clipboard and fresh-reset proof match their original contract. The
+actual platform is macOS27.0.1, Xcode27.1 and iOS27.2 Simulator.
+
+The unchanged exporter and coverage observer reproduced the original formal
+records during pure artifact intake; no native or Go test was replayed. The
+historical17 diagnostic labels did not become extra formal requirements.
+This is six runtime facets for ten IDs, not complete acceptance of those IDs,
+a later-source result, physical-device proof or the separate full original
+F01 fixture. The retained Linux R22 row remains BLOCKED_PLATFORM; it is not
+rewritten by this separate native same-producer success. K10 direct F01 and K11
+PoC continue through their original sole observers.
+
+The final independent integration audit at6dc2a609 verified all236 compiler
+bindings against both the existing K11 witness and exact R7, with zero
+mismatches. The only active non-documentation changes from K11 were the
+one-byte storage-observer correction and the two schema scheduling calls.
+Protected Swift files, all three179 contracts, the compatibility manifest and
+the entire ios/ tree remained unchanged. This PoC follow-up changes only
+documentation. R23 still has no policy authorization; release freeze, full
+acceptance and live promotion remain pending.
