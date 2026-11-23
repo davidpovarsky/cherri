@@ -372,6 +372,11 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 }
 
 func inspectEmittedPlistForIdentifier(plistBytes []byte, expectedIdent string) (string, []string) {
+	// rawAction catalog probes invoke this exact fixture target. A trailing
+	// output-normalization action must never satisfy the identity check.
+	if expectedIdent == "is.workflow.actions.raw" || expectedIdent == "is.workflow.actions.rawaction" {
+		expectedIdent = "is.workflow.actions.custom.p10test"
+	}
 	var doc map[string]any
 	if _, err := plist.Unmarshal(plistBytes, &doc); err != nil {
 		return "", nil
@@ -380,8 +385,6 @@ func inspectEmittedPlistForIdentifier(plistBytes []byte, expectedIdent string) (
 	if !ok || len(acts) == 0 {
 		return "", nil
 	}
-	var lastIdent string
-	var lastKeys []string
 	for _, rawAct := range acts {
 		act, ok := rawAct.(map[string]any)
 		if !ok {
@@ -394,15 +397,9 @@ func inspectEmittedPlistForIdentifier(plistBytes []byte, expectedIdent string) (
 			keys = append(keys, k)
 		}
 		slices.Sort(keys)
-		lastIdent = ident
-		lastKeys = keys
 		if ident == expectedIdent {
 			return ident, keys
 		}
-	}
-	// Special case: embedFile and makeVCard emit is.workflow.actions.gettext, rawAction emits its argument identifier
-	if (expectedIdent == "is.workflow.actions.raw" || expectedIdent == "is.workflow.actions.rawaction") && lastIdent != "" {
-		return lastIdent, lastKeys
 	}
 	return "", nil
 }
