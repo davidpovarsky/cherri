@@ -72,6 +72,7 @@ func p15AssertSkillCases(t *testing.T, output string) {
 }
 
 func TestP15K04OfflineCacheProduction(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	root, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)
@@ -112,6 +113,7 @@ func p15CopySkillOracle(t *testing.T) string {
 }
 
 func TestP15K04OfflineOracleRejectsBypasses(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	binary := p15InstallActualCompiler(t)
 	root := p15CopySkillOracle(t)
 	healthy, err := p15RunSkillIsolation(t, root, binary)
