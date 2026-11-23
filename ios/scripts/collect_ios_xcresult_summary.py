@@ -369,7 +369,19 @@ def prepare(repo, context, root, *, deadline):
     require(not exit_path.exists() and not exit_path.is_symlink(), "NATIVE_EXIT_INVALID")
     sources = source_binding(repo, context["sourceSha"], deadline)
     root.mkdir(mode=0o700)
-    require(directory_identity(root)["mode"] == 0o700, "RESERVATION_INVALID")
+    created = directory_identity(root)
+    # A setgid parent can add that bit to mkdir's requested 0700 mode.
+    descriptor = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        opened = os.fstat(descriptor)
+        require((opened.st_dev, opened.st_ino, opened.st_uid) ==
+                (created["device"], created["inode"], created["owner"]),
+                "RESERVATION_INVALID")
+        os.fchmod(descriptor, 0o700)
+    finally:
+        os.close(descriptor)
+    require(directory_identity(root) == {**created, "mode": 0o700},
+            "RESERVATION_INVALID")
     private = root / "private"
     private.mkdir(mode=0o700)
     bundle = root / "tests.xcresult"

@@ -216,6 +216,20 @@ class TestIOSXCResultSummary(unittest.TestCase):
                 with self.assertRaises((ValueError, TypeError)):
                     consumer.private_intake(artifact, plaintext, expected, subject)
 
+    def test_setgid_parent_creates_exact_private_root_without_parent_change(self):
+        parent = self.path / "setgid-parent"
+        parent.mkdir(mode=0o700)
+        parent.chmod(0o2700)
+        before = subject.directory_identity(parent)
+        self.assertEqual(before["mode"], 0o2700)
+        repo, context, root, sources, expected = fixture(parent)
+        after = subject.directory_identity(root)
+        self.assertEqual(after["mode"], 0o700)
+        self.assertEqual(subject.directory_identity(root / "private")["mode"], 0o700)
+        self.assertEqual(subject.directory_identity(parent), before)
+        marker = subject.reservation(repo, context, root, expected)
+        self.assertEqual(marker["rootIdentity"], after)
+
     def test_preexisting_exit_or_reservation_is_rejected(self):
         repo, context, root, sources, reservation = self.new_fixture()
         with self.assertRaises(ValueError):
