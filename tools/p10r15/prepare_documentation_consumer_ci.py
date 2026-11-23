@@ -16,7 +16,8 @@ import re
 import stat
 import subprocess
 import zipfile
-from urllib.request import Request, urlopen
+from urllib.error import HTTPError
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from verify_documentation_consumers import (
     COMPILER_ORIGIN, digest, load_json, regular_bytes, require,
@@ -32,16 +33,55 @@ MAX_MEMBER_BYTES = 262144
 MAX_METADATA_BYTES = 1048576
 
 
+class MetadataHTTPError(ValueError):
+    """Expose only the fixed public endpoint, status and numeric retry metadata."""
+
+    def __init__(self, relative, status, headers, authenticated):
+        super().__init__("D03_METADATA_HTTP_" + str(status))
+        self.public_details = {"endpoint": relative, "status": status,
+                               "authenticated": authenticated}
+        for header, field in (("X-RateLimit-Remaining", "rateLimitRemaining"),
+                              ("X-RateLimit-Reset", "rateLimitReset"),
+                              ("Retry-After", "retryAfterSeconds")):
+            value = headers.get(header, "")
+            if re.fullmatch(r"[0-9]{1,12}", value):
+                self.public_details[field] = int(value)
+
+
+class NoMetadataRedirect(HTTPRedirectHandler):
+    def redirect_request(self, request, response, code, message, headers, new_url):
+        # Exact URL identity is required, so a redirect has no valid use here.
+        # Reject it before urllib can forward an Authorization header.
+        return None
+
+
 def public_metadata(relative):
+    require(isinstance(relative, str) and re.fullmatch(
+        r"actions/runs/[1-9][0-9]{0,19}"
+        r"(?:/attempts/[1-9][0-9]{0,19}/jobs\?per_page=100|/artifacts\?per_page=100)?",
+        relative), "D03_METADATA_ENDPOINT")
     url = API + relative
-    request = Request(url, headers={"Accept": "application/vnd.github+json",
-                                  "User-Agent": "Cherri-D03-public-receipt-verifier/1",
-                                  "Cache-Control": "no-cache"})
-    with urlopen(request, timeout=30) as response:
-        require(response.status == 200 and response.url == url, "D03_METADATA_HTTP_IDENTITY")
-        data = response.read(MAX_METADATA_BYTES + 1)
-        require(len(data) <= MAX_METADATA_BYTES, "D03_METADATA_SIZE_LIMIT")
-        return data
+    headers = {"Accept": "application/vnd.github+json",
+               "User-Agent": "Cherri-D03-public-receipt-verifier/1",
+               "Cache-Control": "no-cache"}
+    token = os.environ.get("CHERRI_D03_GITHUB_TOKEN", "")
+    require(not token or not re.search(r"\s", token), "D03_METADATA_TOKEN_FORMAT")
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    request = Request(url, headers=headers)
+    try:
+        with build_opener(NoMetadataRedirect()).open(request, timeout=30) as response:
+            require(response.status == 200 and response.url == url, "D03_METADATA_HTTP_IDENTITY")
+            data = response.read(MAX_METADATA_BYTES + 1)
+            require(len(data) <= MAX_METADATA_BYTES, "D03_METADATA_SIZE_LIMIT")
+            return data
+    except HTTPError as error:
+        try:
+            require(error.url == url, "D03_METADATA_HTTP_IDENTITY")
+            failure = MetadataHTTPError(relative, error.code, error.headers, bool(token))
+        finally:
+            error.close()
+        raise failure from None
 
 
 def timestamp(value):
@@ -203,8 +243,11 @@ def main():
     except (ValueError, OSError, KeyError, TypeError, subprocess.SubprocessError) as error:
         # Never echo a supplied ZIP, response body, credentials or unknown path.
         code = str(error) if isinstance(error, ValueError) and str(error).startswith("D03_") else type(error).__name__
-        print(json.dumps({"status": "D03_PREPARATION_BLOCKED", "code": code,
-                          "formalAcceptanceGranted": False}))
+        failure = {"status": "D03_PREPARATION_BLOCKED", "code": code,
+                   "formalAcceptanceGranted": False}
+        if isinstance(error, MetadataHTTPError):
+            failure["http"] = error.public_details
+        print(json.dumps(failure))
         return 1
     print(json.dumps(receipt))
     if os.environ.get("GITHUB_OUTPUT"):

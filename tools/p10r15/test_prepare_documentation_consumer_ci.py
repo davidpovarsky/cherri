@@ -1,14 +1,21 @@
 """Publication transport controls; HTTP metadata/site execution is modeled here."""
 import base64
 import copy
+from contextlib import contextmanager, redirect_stdout
+from email.message import Message
 from datetime import datetime, timedelta, timezone
 import io
 import json
+import os
 from pathlib import Path
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
+from unittest import mock
+from urllib.request import HTTPHandler, HTTPSHandler, build_opener
+from urllib.response import addinfourl
 import warnings
 import zipfile
 
@@ -185,6 +192,144 @@ class PublicationInputs(unittest.TestCase):
         for value in ("", "%%%", "YQ==\n", "A" * (4 * ((GATE.MAX_ZIP_BYTES + 2) // 3) + 1)):
             with self.subTest(value_length=len(value)), self.assertRaises(ValueError):
                 GATE.decode_archive(value)
+
+
+
+class PublicMetadataTransport(unittest.TestCase):
+    endpoint = "actions/runs/123456"
+
+    def setUp(self):
+        env = mock.patch.dict(os.environ, {"CHERRI_D03_GITHUB_TOKEN": ""})
+        env.start()
+        self.addCleanup(env.stop)
+
+    @contextmanager
+    def transport(self, responder):
+        requests = []
+
+        def respond(handler, request):
+            requests.append(request)
+            code, values, body, url = responder(request)
+            headers = Message()
+            for key, value in values.items():
+                headers[key] = value
+            response = addinfourl(io.BytesIO(body), headers, url or request.full_url, code)
+            response.msg = "Synthetic metadata response"
+            return response
+
+        class SyntheticHTTP(HTTPHandler):
+            http_open = respond
+
+        class SyntheticHTTPS(HTTPSHandler):
+            https_open = respond
+
+        def opener(*handlers):
+            return build_opener(*handlers, SyntheticHTTP(), SyntheticHTTPS())
+
+        with mock.patch.object(GATE, "build_opener", side_effect=opener):
+            yield requests
+
+    def test_existing_token_changes_anonymous_rejection_to_exact_public_bytes(self):
+        original = b'{"original":"public metadata bytes"}\n'
+        def server(request):
+            if request.get_header("Authorization") == "Bearer synthetic-api-token":
+                return 200, {}, original, None
+            return 403, {"X-RateLimit-Remaining": "0"}, b"synthetic rejected body", None
+
+        with self.transport(server) as requests:
+            with self.assertRaisesRegex(GATE.MetadataHTTPError, "D03_METADATA_HTTP_403") as failed:
+                GATE.public_metadata(self.endpoint)
+            self.assertFalse(failed.exception.public_details["authenticated"])
+            self.assertEqual(failed.exception.public_details["rateLimitRemaining"], 0)
+            with mock.patch.dict(os.environ, {"CHERRI_D03_GITHUB_TOKEN": "synthetic-api-token"}):
+                self.assertEqual(GATE.public_metadata(self.endpoint), original)
+        self.assertEqual([r.full_url for r in requests], [GATE.API + self.endpoint] * 2)
+
+    def test_only_fixed_public_api_endpoints_can_receive_a_token(self):
+        invalid = ("https://other.invalid/run", "//other.invalid/run", "../other",
+                   "actions/runs/0", "actions/runs/1?token=private",
+                   "actions/runs/1/artifacts?per_page=100&redirect=other",
+                   "actions/runs/1/attempts/0/jobs?per_page=100",
+                   "actions/runs/1/%2e%2e/other")
+        with mock.patch.dict(os.environ, {"CHERRI_D03_GITHUB_TOKEN": "synthetic-api-token"}), \
+                mock.patch.object(GATE, "build_opener") as opener:
+            for path in invalid:
+                with self.subTest(path=path), self.assertRaisesRegex(ValueError, "D03_METADATA_ENDPOINT"):
+                    GATE.public_metadata(path)
+            opener.assert_not_called()
+
+    def test_redirects_stop_before_a_second_request_or_token_forward(self):
+        destinations = ("https://outside.invalid/private",
+                        "http://api.github.com/private",
+                        GATE.API + "actions/runs/999")
+        for status in (301, 302, 303, 307, 308):
+            for destination in destinations:
+                with self.subTest(status=status, destination=destination), \
+                        mock.patch.dict(os.environ, {"CHERRI_D03_GITHUB_TOKEN": "synthetic-api-token"}), \
+                        self.transport(lambda request: (status, {"Location": destination},
+                                                        b"synthetic redirect body", None)) as requests:
+                    with self.assertRaisesRegex(GATE.MetadataHTTPError, "D03_METADATA_HTTP_" + str(status)):
+                        GATE.public_metadata(self.endpoint)
+                    self.assertEqual(len(requests), 1)
+                    self.assertEqual(requests[0].full_url, GATE.API + self.endpoint)
+                    self.assertEqual(requests[0].get_header("Authorization"), "Bearer synthetic-api-token")
+
+    def test_http_errors_retain_status_endpoint_and_only_numeric_retry_metadata(self):
+        for status in (401, 403, 404, 429, 503):
+            with self.subTest(status=status), self.transport(lambda request: (
+                    status, {"X-RateLimit-Remaining": "0", "X-RateLimit-Reset": "1795400000",
+                             "Retry-After": "60", "X-Unreviewed": "synthetic-private-header"},
+                    b"synthetic-private-response-body", None)):
+                with self.assertRaises(GATE.MetadataHTTPError) as raised:
+                    GATE.public_metadata(self.endpoint)
+                self.assertEqual(raised.exception.public_details, {
+                    "endpoint": self.endpoint, "status": status, "authenticated": False,
+                    "rateLimitRemaining": 0, "rateLimitReset": 1795400000,
+                    "retryAfterSeconds": 60})
+                self.assertEqual(str(raised.exception), "D03_METADATA_HTTP_" + str(status))
+
+    def test_unknown_retry_header_text_is_not_reported(self):
+        with self.transport(lambda request: (
+                403, {"X-RateLimit-Remaining": "synthetic-private-header",
+                      "Retry-After": "9999999999999"}, b"private response", None)):
+            with self.assertRaises(GATE.MetadataHTTPError) as raised:
+                GATE.public_metadata(self.endpoint)
+        self.assertEqual(raised.exception.public_details,
+                         {"endpoint": self.endpoint, "status": 403, "authenticated": False})
+
+    def test_response_identity_and_byte_limit_still_fail_closed(self):
+        for body, url, code in ((b"{}", "https://outside.invalid", "D03_METADATA_HTTP_IDENTITY"),
+                                (b"x" * (GATE.MAX_METADATA_BYTES + 1), None, "D03_METADATA_SIZE_LIMIT")):
+            with self.subTest(code=code), self.transport(lambda request: (200, {}, body, url)):
+                with self.assertRaisesRegex(ValueError, code):
+                    GATE.public_metadata(self.endpoint)
+
+    def test_main_prints_public_http_details_without_payload_or_token(self):
+        failure = GATE.MetadataHTTPError(self.endpoint, 403, {"X-RateLimit-Remaining": "0"}, True)
+        stream = io.StringIO()
+        with mock.patch.object(GATE, "prepare", side_effect=failure), \
+                mock.patch.object(sys, "argv", ["prepare", "--source", "/synthetic-source",
+                                               "--implementation-sha", "a" * 40,
+                                               "--output", "/synthetic-output"]), \
+                mock.patch.dict(os.environ, {"CHERRI_D03_GITHUB_TOKEN": "synthetic-api-token",
+                                             "CHERRI_D03_PUBLICATION_ZIP_BASE64": "synthetic-private-archive"}), \
+                redirect_stdout(stream):
+            self.assertEqual(GATE.main(), 1)
+        result = json.loads(stream.getvalue())
+        self.assertEqual(result["code"], "D03_METADATA_HTTP_403")
+        self.assertEqual(result["http"], failure.public_details)
+        self.assertFalse(result["formalAcceptanceGranted"])
+        for private in ("synthetic-api-token", "synthetic-private-archive", "Authorization"):
+            self.assertNotIn(private, stream.getvalue())
+
+    def test_whitespace_token_fails_before_any_network_request(self):
+        for token in (" leading", "trailing ", "line\nbreak", "line\rbreak"):
+            with self.subTest(token=repr(token)), \
+                    mock.patch.dict(os.environ, {"CHERRI_D03_GITHUB_TOKEN": token}), \
+                    mock.patch.object(GATE, "build_opener") as opener:
+                with self.assertRaisesRegex(ValueError, "D03_METADATA_TOKEN_FORMAT"):
+                    GATE.public_metadata(self.endpoint)
+                opener.assert_not_called()
 
 
 if __name__ == "__main__":

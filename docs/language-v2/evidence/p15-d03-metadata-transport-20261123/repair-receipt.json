@@ -1,0 +1,46 @@
+{
+  "baseCommit": "cdc9e8c97d0ca5c3d1ee601c4340acddf67a6387",
+  "formalAcceptanceGranted": false,
+  "guards": {
+    "authOnlyFixedGitHubApi": true,
+    "noAutomaticRetry": true,
+    "originalSevenControlsByteIdentical": true,
+    "prepareBodyByteIdentical": true,
+    "redirectsBlockedBeforeSecondRequest": true,
+    "sourceZipDeploymentValidationByteIdentical": true,
+    "unverifiedArchiveStillQuarantined": true,
+    "workflowPermissionsUnchanged": true,
+    "workflowTimeoutUnchanged": true
+  },
+  "historicalRateLimitCauseConfirmed": false,
+  "installedConsumerAccepted": false,
+  "laterOracleReproductionStatus": [
+    200,
+    200,
+    200
+  ],
+  "originalCiRun": 45093532445,
+  "originalCiSource": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+  "originalFailureLogSha256": "0a114a07a4f6ea51e0e1bd38354bc8b2d27b82cd94be40d3f4db9546dce5c9eb",
+  "originalHttpStatusAndEndpointRetained": false,
+  "realCiReplayPerformed": false,
+  "result": "IMPLEMENTED_FOCUSED_CONTROLS_PASS_CI_PENDING",
+  "schema": "cherri.d03-metadata-transport-repair/1",
+  "sourceFiles": {
+    ".github/workflows/p10r15-documentation-consumers.yml": "08b45b5dde694c5b6d3d7acca59e2251b0dbd7401344546884864229130348d0",
+    "tools/p10r15/prepare_documentation_consumer_ci.py": "61b6de7af3c6cf03252a038505e60147cb29b11d7ea984ba59b02f6a30149a38",
+    "tools/p10r15/test_prepare_documentation_consumer_ci.py": "b2a860273371511c0ab9543ab796caee458849e983f58a75484e730daafd4574"
+  },
+  "tests": {
+    "addedTransportTests": 8,
+    "count": 15,
+    "exitCode": 0,
+    "log": "controls-stderr.original.txt",
+    "priorTests": 7,
+    "processElapsedSeconds": 1.6839905781671405,
+    "report": "controls-receipt.json",
+    "reportedSeconds": 1.128,
+    "stderrSha256": "644e12671ad87a59c41a336053d916834b6327fd6a6c07050c117a25775b044c",
+    "testsUseSyntheticTransportOnly": true
+  }
+}

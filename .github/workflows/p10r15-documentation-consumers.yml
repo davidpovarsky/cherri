@@ -56,6 +56,7 @@ jobs:
       - name: Verify original Pages ZIP and current deployment metadata
         id: publication
         env:
+          CHERRI_D03_GITHUB_TOKEN: ${{ github.token }}
           CHERRI_D03_DEPLOYMENT_RUN_ID: ${{ inputs.docs_deployment_run_id }}
           CHERRI_D03_PUBLICATION_ZIP_BASE64: ${{ inputs.publication_evidence_zip_base64 }}
         run: >-
