@@ -1,0 +1,189 @@
+{
+  "artifacts": [
+    {
+      "created_at": "2026-11-23T00:31:30Z",
+      "digest": "sha256:64e64bb70f973ae24d3c58a2c53023b72993b40a61899ac51093664a258b0cb8",
+      "expires_at": "2026-11-26T00:31:29Z",
+      "id": 14781100004,
+      "name": "cherri-qa-project-prerequisite-45086924979-1",
+      "size_in_bytes": 586002
+    },
+    {
+      "created_at": "2026-11-23T00:31:34Z",
+      "digest": "sha256:467625960a2a648ae95c7949ef628b496de70c37dcb3105858e08556d4c92b69",
+      "expires_at": "2026-11-30T00:31:32Z",
+      "id": 14780552216,
+      "name": "cherri-ios27-simulator-qa-45086924979",
+      "size_in_bytes": 69105
+    }
+  ],
+  "dispatchInputs": {
+    "capture_full_editor": "false",
+    "device_profile": "ipad-default",
+    "max_editor_pages": "1",
+    "probe_level": "full",
+    "require_runtime": "true",
+    "sample_id": "qa-json-body-file-utf8",
+    "upload_sanitized_artifacts": "true",
+    "verify_local_ocr": "false"
+  },
+  "expectedContractSha256": "ea45b8953cd0cfbbcc10120f677f8b52b0b710ef6b7eea54bebb086af0f2286b",
+  "fixture": {
+    "fileName": "qa-json-body-file-utf8-v2.cherri",
+    "fixtureId": "qa-json-body-file-utf8-v2",
+    "nativeActionCount": 17,
+    "sourceSha256": "8e69b72584bedbfc101c8b2e4cfec92e07afc70a47c7f9405abde9bea6a73247",
+    "unsignedPlistSha256": "09a1e8d896e97aee2f45a470040ddde3769b308eff79778e052eb95dd16dc45e"
+  },
+  "intakeUtc": "2026-11-23T00:39:27.806292+00:00",
+  "jobId": 137407571068,
+  "limits": {
+    "editorCapture": "PARTIAL_EDITOR_CAPTURE",
+    "editorInspectorStatus": "NEEDS_REVIEW",
+    "formalAcceptanceGranted": false,
+    "newTestsRun": false,
+    "perActionCoverageVerified": false,
+    "physicalDeviceTested": "BLOCKED_DEVICE",
+    "releaseReadiness": "PARTIAL_READY",
+    "sourceChangesMade": false,
+    "typedValueCoverage": "UNKNOWN_AT_TRACE_EVENT"
+  },
+  "prerequisite": {
+    "budgetsSeconds": {
+      "aggregate": 240,
+      "encryption": 20,
+      "generate": 60,
+      "install": 180,
+      "outer": 310,
+      "preflight": 30
+    },
+    "captureComplete": true,
+    "ciphertext": {
+      "bytes": 583690,
+      "sha256": "d7c814b229dabbbe5c4e843669ae02385842e0ba1763aabc5ac3a6d4a1374c29"
+    },
+    "diagnosticSourceSha": "ca316a3dee252456c4bec751594cf249c709b331",
+    "elapsedMs": 91704,
+    "environmentMatched": true,
+    "formalAcceptanceGranted": false,
+    "plaintextArchive": {
+      "bytes": 583104,
+      "sha256": "5fdbeaf7661db5aac800ca1fcd67f7dea6fa3e7ecc2bb42fecf6bd0ed3186eaf"
+    },
+    "prerequisiteOnly": true,
+    "prerequisiteStatus": "PREPARED",
+    "qaContextMatchedAfter": true,
+    "qaContextMatchedBefore": true,
+    "reason": "NONE",
+    "recipientSha256": "55956e825597a2e60acca4045e4ea8040ae27f17caa7964e9b4493824fa0c1f1",
+    "schema": "cherri-project-prerequisite-observation/3",
+    "sourceMatchedAfter": true,
+    "sourceMatchedBefore": true,
+    "workflowRunAttempt": "1",
+    "workflowRunId": "45086924979"
+  },
+  "prerequisiteStages": [
+    {
+      "elapsedMs": 87037,
+      "exitCode": 0,
+      "stage": "install",
+      "status": "PASS"
+    },
+    {
+      "elapsedMs": 220,
+      "exitCode": 0,
+      "stage": "generate",
+      "status": "PASS"
+    }
+  ],
+  "privateOriginalVerification": {
+    "allMembersComplete": true,
+    "archiveSha256": "5fdbeaf7661db5aac800ca1fcd67f7dea6fa3e7ecc2bb42fecf6bd0ed3186eaf",
+    "environmentMatched": true,
+    "expectedProtocolSha256": "a510884adc98c7a40a1e35e160df699403fbe11ed497d20931007f8ed5a13659",
+    "localVerificationPassed": true,
+    "manifestAndContextMatched": true,
+    "method": "IN_PLACE_OWNER_PRIVATE_WINDOWS_FIXED_RECEIPT_ONLY",
+    "originalMembersVerified": 23,
+    "plaintextOrKeyTransferred": false,
+    "prerequisitePrepared": true,
+    "sourceCleanBefore": true,
+    "sourceCommandCount": 3,
+    "sourceCommandPrefixMatched": true,
+    "sourceFileCount": 21,
+    "sourceFilesMatchR7": true,
+    "sourceJournalVerified": true,
+    "sourceMatchedAfter": true,
+    "sourceTreeSha256": "bd73ec09cdfce7f3f410667f871bd20e1d72b4ed2cb0a55c070fde52f1cbd21b"
+  },
+  "publication": {
+    "gatePassed": true,
+    "pixelRedactionClaimed": false,
+    "publicationManifestSha256": "cdadaaadb8390990ecaaf548f33c361e7e7351fd22431e504a2e4b8aa7e3e492",
+    "publishedMemberBindingsVerified": 26,
+    "rasterAllowed": false,
+    "syntheticOnly": true
+  },
+  "runtime": {
+    "bodyBytes": 222,
+    "bodySha256": "310514cc82c5926d5b2f63ff61f23e4d41967f60e83cfd6a60db058656f3bdac",
+    "callbackEventsSha256": "cc76bf259e916b8b34c24d456e40750b9650cba48fdf08b81fedce0510d9baff",
+    "candidateNullObserved": true,
+    "compiledCallbackVerified": true,
+    "compiledShortcutRuntimeExecuted": true,
+    "contractVerifiedByWorkflow": true,
+    "freshExecutionIdentityMatched": true,
+    "jsonControlsExact": true,
+    "missingKeyAbsent": true,
+    "nonSelfTestCallbackStatus": "SUCCESS",
+    "orderedRequests": [
+      {
+        "method": "POST",
+        "responseStatus": 200,
+        "responseWriteCompleted": true,
+        "route": "primary",
+        "sequence": 1
+      },
+      {
+        "method": "GET",
+        "responseStatus": 200,
+        "responseWriteCompleted": true,
+        "route": "continued",
+        "sequence": 2
+      }
+    ],
+    "rawUtf8BodyVerified": true,
+    "rejectedRequestCount": 0,
+    "semanticOutputExact": true,
+    "traceParsedRowsMatchCallback": true,
+    "traceRecordCount": 4,
+    "traceSha256": "f80f63c1c9a43bac87ec311160466de64255926a57112f56987973f66de90701"
+  },
+  "schema": "cherri-apple-file-utf8-intake/1",
+  "signing": {
+    "headerMagic": "AEA1",
+    "signedArtifactSha256": "beff6af088d695541bc72ba50d0fdd5dcdee30f06c790cfe09f9eb6515ddbc8e",
+    "signedByteSize": 24196
+  },
+  "workflow": {
+    "conclusion": "success",
+    "created_at": "2026-11-23T00:07:40Z",
+    "event": "workflow_dispatch",
+    "head_branch": "audit/cherri-p10r15-r7-integration-20261122",
+    "head_sha": "ca316a3dee252456c4bec751594cf249c709b331",
+    "html_url": "https://github.com/davidpovarsky/cherri/actions/runs/45086924979",
+    "id": 45086924979,
+    "path": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-11-23T00:32:16Z",
+    "workflow_id": 419263697
+  },
+  "xctest": {
+    "failedTests": 0,
+    "passedTests": 4,
+    "result": "Passed",
+    "skippedTests": 0,
+    "totalTestCount": 4
+  }
+}
