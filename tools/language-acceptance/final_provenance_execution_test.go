@@ -169,8 +169,16 @@ func (f *finalProvenanceFixture) addSourcePublication(t *testing.T) {
 	f.expected.Publications["compiler"] = finalProvenancePublication{Format: "source-create-only/1", Result: "compiler-publication"}
 }
 func (f *finalProvenanceFixture) addWindowsPublication(t *testing.T) {
-	s := f.expected.Sources["implementation"]
-	p := finalProvenancePublication{Format: "windows-create-only/1", Result: "implementation-publication", Streams: map[string]finalProvenanceStreams{}}
+	f.addWindowsPublicationForRole(t, "implementation")
+}
+func (f *finalProvenanceFixture) addWindowsPublicationForRole(t *testing.T, role string) {
+	s := f.expected.Sources[role]
+	p := finalProvenancePublication{Format: "windows-create-only/1", Result: role + "-publication", Streams: map[string]finalProvenanceStreams{}}
+	streamPrefix := "publication-"
+	if role != "implementation" {
+		streamPrefix = role + "-publication-"
+	}
+	primary := map[string]any{"head": strings.Repeat("3", 40), "status": "?? synthetic-preserved-fixture.cherri", "preservedFixtureSHA256": strings.Repeat("8", 64)}
 	names := []string{"01-origin", "02-base-refs", "03-primary-head-before", "04-primary-status-before", "05-transfer", "06-bundle-heads", "07-bundle-verify", "08-import", "09-commit", "10-tree", "11-ancestry", "12-connectivity", "13-imported-refs", "14-remote-before", "15-push", "16-remote-after", "17-api-ref", "18-api-commit", "21-refs-after-publication", "19-primary-head-after", "20-primary-status-after"}
 	ref := map[string]any{"ref": s.PublishedRef, "sha": s.SHA, "type": "commit"}
 	commit := map[string]any{"sha": s.SHA, "tree": s.Tree, "parents": []string{}}
@@ -183,6 +191,12 @@ func (f *finalProvenanceFixture) addWindowsPublication(t *testing.T) {
 		switch name {
 		case "01-origin":
 			stdout = []byte("https://github.com/" + s.Repository + ".git\n")
+		case "03-primary-head-before", "19-primary-head-after":
+			argv = []string{"git", "-C", "C:/synthetic-primary-checkout", "rev-parse", "HEAD"}
+			stdout = []byte(primary["head"].(string) + "\n")
+		case "04-primary-status-before", "20-primary-status-after":
+			argv = []string{"git", "-C", "C:/synthetic-primary-checkout", "status", "--porcelain=v1"}
+			stdout = []byte(primary["status"].(string) + "\n")
 		case "14-remote-before":
 			code = 2
 			argv = []string{"git", "ls-remote", "--exit-code", "--refs", "origin", s.PublishedRef}
@@ -197,14 +211,14 @@ func (f *finalProvenanceFixture) addWindowsPublication(t *testing.T) {
 		case "18-api-commit":
 			stdout, _ = json.Marshal(commit)
 		}
-		pair := finalProvenanceStreams{"publication-" + name + ".stdout", "publication-" + name + ".stderr"}
+		pair := finalProvenanceStreams{streamPrefix + name + ".stdout", streamPrefix + name + ".stderr"}
 		f.putBytes(t, pair.Stdout, stdout)
 		f.putBytes(t, pair.Stderr, []byte{})
 		p.Streams[name] = pair
 		steps = append(steps, map[string]any{"name": name, "argv": argv, "exitCode": code, "timedOut": false, "stdoutSHA256": finalProvenanceDigest(stdout), "stderrSHA256": finalProvenanceDigest(nil), "stdoutBytes": len(stdout), "stderrBytes": 0, "startedAtUtc": start.Add(time.Duration(2*i) * time.Second).Format(time.RFC3339), "finishedAtUtc": start.Add(time.Duration(2*i+1) * time.Second).Format(time.RFC3339)})
 	}
-	f.put(t, p.Result, map[string]any{"sourceCommit": s.SHA, "sourceTree": s.Tree, "ref": s.PublishedRef, "status": "PUBLISHED_REMOTE_VERIFIED", "pushAttempted": true, "pushTimedOut": false, "pushAttemptLimit": 1, "pushExitCode": 0, "destinationMustBeAbsent": true, "primaryMutationAuthorized": false, "primaryUnchanged": true, "primaryBefore": map[string]any{"head": "unchanged fixture"}, "primaryAfter": map[string]any{"head": "unchanged fixture"}, "steps": steps, "remoteBinding": map[string]any{"ref": ref, "commit": commit}})
-	f.expected.Publications["implementation"] = p
+	f.put(t, p.Result, map[string]any{"sourceCommit": s.SHA, "sourceTree": s.Tree, "ref": s.PublishedRef, "status": "PUBLISHED_REMOTE_VERIFIED", "pushAttempted": true, "pushTimedOut": false, "pushAttemptLimit": 1, "pushExitCode": 0, "destinationMustBeAbsent": true, "primaryMutationAuthorized": false, "primaryUnchanged": true, "validation": map[string]any{"primaryBefore": primary}, "primaryAfter": primary, "steps": steps, "remoteBinding": map[string]any{"ref": ref, "commit": commit}})
+	f.expected.Publications[role] = p
 }
 func (f *finalProvenanceFixture) addDocsPublication(t *testing.T) {
 	s := f.expected.Sources["docs"]
@@ -662,5 +676,139 @@ func TestFinalProvenanceDedicatedEntryAndScope(t *testing.T) {
 	}
 	if _, err = os.Stat(filepath.Join(f.output, "acceptance-report.json")); !os.IsNotExist(err) {
 		t.Fatal("delivery-only operation synthesized a new 179 report")
+	}
+}
+
+// This regression uses the authentic publisher's nested primary-state schema.
+// Its payloads and repositories remain synthetic; no private file is opened.
+func TestFinalProvenanceWindowsReceiptPrimaryState(t *testing.T) {
+	cases := []struct {
+		name, want string
+	}{
+		{"authentic_nested_implementation_receipt", ""},
+		{"authentic_nested_compiler_receipt", ""},
+		{"empty_status_is_preserved", ""},
+		{"missing_validation", "Windows primary checkout observation is missing or malformed"},
+		{"top_level_only_substitute", "Windows primary checkout observation is missing or malformed"},
+		{"missing_nested_before", "Windows primary checkout observation is missing or malformed"},
+		{"empty_both_observations", "Windows primary checkout observation is missing or malformed"},
+		{"missing_both_observations", "Windows primary checkout observation is missing or malformed"},
+		{"missing_after", "Windows primary checkout observation is missing or malformed"},
+		{"wrong_head_type", "Windows primary checkout observation is missing or malformed"},
+		{"malformed_head", "Windows primary checkout observation is missing or malformed"},
+		{"missing_status", "Windows primary checkout observation is missing or malformed"},
+		{"wrong_status_type", "Windows primary checkout observation is missing or malformed"},
+		{"missing_fixture_hash", "Windows primary checkout observation is missing or malformed"},
+		{"malformed_fixture_hash", "Windows primary checkout observation is missing or malformed"},
+		{"different_after_head", "publication changed the unrelated primary checkout"},
+		{"different_after_status", "publication changed the unrelated primary checkout"},
+		{"different_after_fixture_hash", "publication changed the unrelated primary checkout"},
+		{"wrong_before_head_stream", "Windows primary checkout objects disagree with original streams"},
+		{"wrong_after_head_stream", "Windows primary checkout objects disagree with original streams"},
+		{"wrong_before_status_stream", "Windows primary checkout objects disagree with original streams"},
+		{"wrong_after_status_stream", "Windows primary checkout objects disagree with original streams"},
+		{"wrong_head_command", "Windows primary checkout command differs from original observation"},
+		{"different_primary_target", "Windows primary checkout commands target different checkouts"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := finalProvenanceFixtureNew(t)
+			role := "implementation"
+			if tc.name == "authentic_nested_compiler_receipt" {
+				role = "compiler"
+				f.addWindowsPublicationForRole(t, role)
+			}
+			publication := f.expected.Publications[role]
+			o := f.object(t, publication.Result)
+			validation := finalProvenanceObject(o, "validation")
+			before := finalProvenanceObject(validation, "primaryBefore")
+			after := finalProvenanceObject(o, "primaryAfter")
+			if _, exists := o["primaryBefore"]; exists || len(before) != 3 || !reflect.DeepEqual(before, after) {
+				t.Fatal("fixture does not model the authentic nested publication shape")
+			}
+			step := func(name string) map[string]any {
+				for _, raw := range finalProvenanceArray(o, "steps") {
+					item := raw.(map[string]any)
+					if finalProvenanceString(item, "name") == name {
+						return item
+					}
+				}
+				t.Fatal("missing original synthetic publication step", name)
+				return nil
+			}
+			stream := func(name, value string) {
+				id := publication.Streams[name].Stdout
+				f.putBytes(t, id, []byte(value))
+				pin := f.expected.Files[id]
+				item := step(name)
+				item["stdoutSHA256"], item["stdoutBytes"] = pin.SHA256, pin.Bytes
+			}
+			switch tc.name {
+			case "empty_status_is_preserved":
+				before["status"], after["status"] = "", ""
+				stream("04-primary-status-before", "")
+				stream("20-primary-status-after", "")
+			case "missing_validation":
+				delete(o, "validation")
+			case "top_level_only_substitute":
+				o["primaryBefore"] = before
+				delete(o, "validation")
+			case "missing_nested_before":
+				delete(validation, "primaryBefore")
+			case "empty_both_observations":
+				validation["primaryBefore"], o["primaryAfter"] = map[string]any{}, map[string]any{}
+			case "missing_both_observations":
+				delete(validation, "primaryBefore")
+				delete(o, "primaryAfter")
+			case "missing_after":
+				delete(o, "primaryAfter")
+			case "wrong_head_type":
+				before["head"], after["head"] = 3, 3
+			case "malformed_head":
+				before["head"], after["head"] = strings.Repeat("g", 40), strings.Repeat("g", 40)
+			case "missing_status":
+				delete(before, "status")
+				delete(after, "status")
+			case "wrong_status_type":
+				before["status"], after["status"] = false, false
+			case "missing_fixture_hash":
+				delete(before, "preservedFixtureSHA256")
+				delete(after, "preservedFixtureSHA256")
+			case "malformed_fixture_hash":
+				before["preservedFixtureSHA256"], after["preservedFixtureSHA256"] = "bad", "bad"
+			case "different_after_head":
+				after["head"] = strings.Repeat("4", 40)
+			case "different_after_status":
+				after["status"] = "?? changed-synthetic-fixture.cherri"
+			case "different_after_fixture_hash":
+				after["preservedFixtureSHA256"] = strings.Repeat("9", 64)
+			case "wrong_before_head_stream":
+				stream("03-primary-head-before", strings.Repeat("4", 40)+"\n")
+			case "wrong_after_head_stream":
+				stream("19-primary-head-after", strings.Repeat("4", 40)+"\n")
+			case "wrong_before_status_stream":
+				stream("04-primary-status-before", "?? changed-synthetic-fixture.cherri\n")
+			case "wrong_after_status_stream":
+				stream("20-primary-status-after", "?? changed-synthetic-fixture.cherri\n")
+			case "wrong_head_command":
+				step("03-primary-head-before")["argv"] = []string{"git", "-C", "C:/synthetic-primary-checkout", "rev-parse", "HEAD^"}
+			case "different_primary_target":
+				step("20-primary-status-after")["argv"] = []string{"git", "-C", "C:/different-synthetic-checkout", "status", "--porcelain=v1"}
+			}
+			f.put(t, publication.Result, o)
+			f.pin(t)
+			in, err := finalProvenanceLoad(f.config, f.output)
+			if err != nil {
+				t.Fatal("coherent independently pinned fixture did not load", err)
+			}
+			err = finalProvenanceValidatePublication(in, role)
+			if tc.want == "" {
+				if err != nil {
+					t.Fatal("authentic Windows publication shape was rejected", err)
+				}
+			} else if err == nil || err.Error() != tc.want {
+				t.Fatalf("causal original publication boundary: got %v, want %q", err, tc.want)
+			}
+		})
 	}
 }
