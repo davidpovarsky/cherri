@@ -1,0 +1,276 @@
+{
+  "candidateSmokeStatus": "NOT_STARTED_PENDING_FINAL_COHERENT_TUPLE",
+  "canonicalPublicSigningCommands": 0,
+  "closureClaimed": false,
+  "entrypointSummary": {
+    "checks": 39,
+    "failed": 1,
+    "notRun": 0,
+    "passed": 38
+  },
+  "evidenceRoot": "/mnt/development/projects/evidence/cherri-p10r15-k10-remote-inactive-20261123",
+  "failedRows": [
+    "runner_compile_unsigned"
+  ],
+  "finalHelperSHA256": "424f433a11e0e8edffd0d0c205ff914428ffdab513cd00d2914ea44f3be5441e",
+  "finalTupleRequiresFreshOriginalReports": [
+    "stage",
+    "source-package",
+    "runtime-package",
+    "unpacked-package",
+    "entrypoints-39",
+    "signing-faults-58",
+    "candidate-smoke-8"
+  ],
+  "formatVersion": 1,
+  "liveActivationPerformed": false,
+  "observerChecks": [
+    {
+      "exitCode": 1,
+      "finishedAtUtc": "2026-11-23T03:06:41.069536+00:00",
+      "phase": "baseline-red",
+      "receipt": "baseline-red.result.json",
+      "seconds": 0.107084,
+      "sha256": "9d8b216288e93e14bc03d4d06e99dc665cbc8e5e8f71683cbe0cec0d803e4f25",
+      "startedAtUtc": "2026-11-23T03:06:40.962415+00:00",
+      "stderrSHA256": "9f01b439cc4479f416a5037b35a5bda246ab753966db403db066bf9f5accb075",
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exitCode": 1,
+      "finishedAtUtc": "2026-11-23T03:07:39.375161+00:00",
+      "phase": "gate-baseline-red",
+      "receipt": "gate-baseline-red.result.json",
+      "seconds": 1.633704,
+      "sha256": "96bc63c83ce376d008da9b3aa6bcdaca08a48a6b9733f9b441d859bc650a6dc9",
+      "startedAtUtc": "2026-11-23T03:07:37.741415+00:00",
+      "stderrSHA256": "8c749bb7620fec3010e84b9482ee29889936381bf03776f40ca6f1e5d4b499cf",
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exitCode": 1,
+      "finishedAtUtc": "2026-11-23T03:08:04.993670+00:00",
+      "phase": "smoke-gate-red",
+      "receipt": "smoke-gate-red.result.json",
+      "seconds": 0.210892,
+      "sha256": "132d00635f5b4dc7792a01a656c98f486c4af84d0a447a1378c15894b9f2fbb9",
+      "startedAtUtc": "2026-11-23T03:08:04.782709+00:00",
+      "stderrSHA256": "ff065c88429906958bd5538d6913aee94fa49b95084289b9682f71b04c1f7b3f",
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T03:08:05.357925+00:00",
+      "phase": "focused-green",
+      "receipt": "focused-green.result.json",
+      "seconds": 0.363362,
+      "sha256": "f12a0b608df7c9ae9028b97f47f507a9308c05db8525f70f3f72e0a3c284c565",
+      "startedAtUtc": "2026-11-23T03:08:04.994541+00:00",
+      "stderrSHA256": "47c519dbc33a93bfeb01b4ff903805bdb7fbb30d866336d1230f3f058cfa5702",
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T03:10:01.558542+00:00",
+      "phase": "terminal-key-followup",
+      "receipt": "terminal-key-followup.result.json",
+      "seconds": 0.098535,
+      "sha256": "eb5407de73270925fde4502b80df81fea6d88b99109330346e57018de9775345",
+      "startedAtUtc": "2026-11-23T03:10:01.459969+00:00",
+      "stderrSHA256": "93afb8bb8f1641a671286c25046fde6f0eea265ce58aed90ec8677b641a11b9f",
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "observerEvidenceRoot": "/mnt/development/projects/diagnostics/cherri-remote-void-observer-20261123",
+  "observerFixCommit": "e780fefa113ab441440b040f0cc3d118c7eeaa85",
+  "observerFixCommits": [
+    "e780fefa113ab441440b040f0cc3d118c7eeaa85",
+    "c697476374ef3e6659be62ec390594cdb609f8bd"
+  ],
+  "originalArtifactReinterpretation": {
+    "bytes": 1149,
+    "path": "observer-original-artifact-check.json",
+    "sha256": "2e135e9a123505facded836673539f443b63ca94c94058f957dcf088bb8fabc1"
+  },
+  "originalEntrypointGatePassed": false,
+  "originalMetadataIntakeSHA256": "473b037de44d7c3629905e1bac93a6b856d4fbde1ad0bc90fd9eb4b20cbd40e4",
+  "originalsChanged": false,
+  "packageArchives": {
+    "runtime.zip": {
+      "sha256": "6515c3852fb9c8adaaca0dbbc393d9f054e726541c2106aa4c7881ea7d3297e4"
+    },
+    "source.zip": {
+      "sha256": "0daaced47d430d70238347618c92b0061dacae5c3552935f0af031548df9a2f1"
+    }
+  },
+  "packageInventories": {
+    "runtime": 29,
+    "source": 23,
+    "unpackedRuntime": 29
+  },
+  "phases": [
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T02:44:29.790346+00:00",
+      "liveUnchanged": true,
+      "phase": "stage",
+      "process": {
+        "bytes": 9850,
+        "path": "stage.process.result.json",
+        "root": "evidenceRoot",
+        "sha256": "d05d02c8eb851632c163f691e695395e47a21a9bb7bcee72b0c55f263b5038f7"
+      },
+      "report": {
+        "bytes": 5590,
+        "path": "staging-receipt.json",
+        "root": "stageRoot",
+        "sha256": "7af1d2fe3900a85bf67d511513d4ad14e5d48926c682c4e36661b66c44da1e10"
+      },
+      "seconds": 5.916,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T02:44:23.868862+00:00",
+      "status": "PROCESS_PASS_WITH_ORIGINAL_REPORT"
+    },
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T02:45:24.908616+00:00",
+      "liveUnchanged": true,
+      "phase": "source-package",
+      "process": {
+        "bytes": 8823,
+        "path": "source-package.process.result.json",
+        "root": "evidenceRoot",
+        "sha256": "2f11819cf3ef70f036f4e33cf8c694035bd5cbb9db1384da92a62dbea44339d1"
+      },
+      "report": {
+        "bytes": 566,
+        "path": "source-integrity.json",
+        "root": "evidenceRoot",
+        "sha256": "97aa20ab9ae53ec0a03e9c1084e308ccf4a7ecbcdda888738bd63aceae638ea8"
+      },
+      "seconds": 0.116,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T02:45:24.787900+00:00",
+      "status": "PROCESS_PASS_WITH_ORIGINAL_REPORT"
+    },
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T02:45:26.657382+00:00",
+      "liveUnchanged": true,
+      "phase": "runtime-package",
+      "process": {
+        "bytes": 9149,
+        "path": "runtime-package.process.result.json",
+        "root": "evidenceRoot",
+        "sha256": "af68aba935a677c8d9ccd4f939bd8e96766c4ba36858d247fd68450beb09f0e1"
+      },
+      "report": {
+        "bytes": 1163,
+        "path": "runtime-integrity.json",
+        "root": "evidenceRoot",
+        "sha256": "5246c0947d94bd2ee9de67f92ffd5623f6c7fa3010237dabd9bf5101cfa44f0f"
+      },
+      "seconds": 1.473,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T02:45:25.180330+00:00",
+      "status": "PROCESS_PASS_WITH_ORIGINAL_REPORT"
+    },
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T02:45:27.230211+00:00",
+      "liveUnchanged": true,
+      "phase": "unpacked-package",
+      "process": {
+        "bytes": 9269,
+        "path": "unpacked-package.process.result.json",
+        "root": "evidenceRoot",
+        "sha256": "74dddda8278fda6a746a35cac6db4cc68c988d878b1d9976e13d3f04f28e4d92"
+      },
+      "report": {
+        "bytes": 1162,
+        "path": "unpacked-integrity.json",
+        "root": "evidenceRoot",
+        "sha256": "89d597253d541629f4c5f11682a3bc0206199c31268331d6a8127b2b9e9ad679"
+      },
+      "seconds": 0.317,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T02:45:26.910416+00:00",
+      "status": "PROCESS_PASS_WITH_ORIGINAL_REPORT"
+    },
+    {
+      "exitCode": 1,
+      "finishedAtUtc": "2026-11-23T02:48:52.599111+00:00",
+      "liveUnchanged": true,
+      "phase": "entrypoints",
+      "process": {
+        "bytes": 9415,
+        "path": "entrypoints.process.result.json",
+        "root": "evidenceRoot",
+        "sha256": "0719f775cf0bf11e33b5f780654a554e3ee33d46c0a70fa786f7ffb3854fa5ea"
+      },
+      "report": {
+        "bytes": 54081,
+        "path": "entrypoints.json",
+        "root": "evidenceRoot",
+        "sha256": "0a7817f803831720e459fda551a6b8cfe067e540975d8f06edc4b2819291c996"
+      },
+      "seconds": 125.897,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T02:46:46.699458+00:00",
+      "status": "PROCESS_FAILED_OR_INCOMPLETE_RETAINED"
+    },
+    {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T02:59:38.142751+00:00",
+      "liveUnchanged": true,
+      "phase": "signing-faults",
+      "process": {
+        "bytes": 9043,
+        "path": "signing-faults.process.result.json",
+        "root": "evidenceRoot",
+        "sha256": "a306b05459c0af2382f0ebe9ef1ab961214cd9b877f95295fdc161bbe4750ee1"
+      },
+      "report": {
+        "bytes": 144067,
+        "path": "signing-faults.json",
+        "root": "evidenceRoot",
+        "sha256": "b5268b6f4a3298b0ff4065ed254d5c1aaced471bdefe154a18bcf910a3385c98"
+      },
+      "seconds": 245.627,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T02:55:32.513454+00:00",
+      "status": "PROCESS_PASS_WITH_ORIGINAL_REPORT"
+    }
+  ],
+  "recordedAtUtc": "2026-11-23T03:09:26.608304+00:00",
+  "redGreenDoesNotReplaceActualGateReports": true,
+  "requiredGoRow": {
+    "check": "runner_existing_tests",
+    "exitCode": 0,
+    "seconds": 67.435,
+    "stdoutBytes": 4916,
+    "stdoutSha256": "4c5915586d6ff3154dd3ba5f05f67229b783fe460cba22e28294ce0a8ee63f14",
+    "verdict": "PASS"
+  },
+  "scope": "METADATA_ONLY_INTAKE_OF_ORIGINAL_K10_INACTIVE_PRODUCERS",
+  "signingFaultSummary": {
+    "checks": 58,
+    "controlsPassed": 5,
+    "failures": 0,
+    "negativesRejected": 53
+  },
+  "sourceIntegrityIsExtractedRuntimeSelfTest": false,
+  "stageRoot": "/mnt/development/projects/releases/cherri-p10r15-k10-remote-stage-20261123",
+  "tuple": {
+    "codecFingerprint": "eb550a69bd2e0413369d6b0c0863448c755724b4103c5e4a3617125a72ee3122",
+    "compilerCommit": "ca316a3dee252456c4bec751594cf249c709b331",
+    "compilerSHA256": "42f6e42e7b6a8ea6f523a752fd2f06b96265e733fa00ad808190e062d1266301",
+    "docsCommit": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+    "label": "p15-r7-d11-k10-20261123",
+    "macroFingerprint": "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c",
+    "migrationSHA256": "050e33ad7b078118c0c9dea8ca32a0123926d4a975154244311a5a9f4fe64f91",
+    "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+    "skillSourceHead": "4feadab9db4d351628f78593304373631693869a",
+    "sourceBranch": "agent/cherri-p10r15-k10-verification-20261123"
+  }
+}
