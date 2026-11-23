@@ -9,16 +9,18 @@ import (
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
-	"github.com/electrikmilk/cherri/internal/language/service"
 )
 
 // rp41MobilePreviewActions uses the same unsigned V2 producer as CherriCompileMode.
 // It retains every emitted native action; no AST index or synthetic graph is supplied.
-func rp41MobilePreviewActions(t *testing.T, src string) []ShortcutAction {
+func rp41MobilePreviewActions(t *testing.T, src string, retained ...*mobileCompileResponse) []ShortcutAction {
 	t.Helper()
 	response := compileForMobileMode(src, "RP41PreviewSourceEdit", "v2", false)
 	if !response.OK || response.Mode != "v2" || response.PlistBase64 == "" || response.SignedBase64 != "" {
 		t.Fatalf("actual unsigned mobile compile failed: %+v", response)
+	}
+	for _, target := range retained {
+		*target = response
 	}
 	raw, err := base64.StdEncoding.DecodeString(response.PlistBase64)
 	if err != nil {
@@ -98,7 +100,8 @@ wait(8)
 	if !ok || parameter.WireKey == "" {
 		t.Fatal("canonical Wait primary wire key is unavailable")
 	}
-	baseline := rp41MobilePreviewActions(t, simple)
+	var baselinePreview mobileCompileResponse
+	baseline := rp41MobilePreviewActions(t, simple, &baselinePreview)
 	var literal any
 	waitCount := 0
 	for _, action := range baseline {
@@ -118,16 +121,16 @@ wait(8)
 	if err != nil || string(encodedLiteral) != "2" {
 		t.Fatalf("actual Wait parameter is not the primitive number editable by WebPreview: %s (%v)", encodedLiteral, err)
 	}
-	expandedActions := rp41MobilePreviewActions(t, expanded)
-	checkMapped := func(t *testing.T, src string, actions []ShortcutAction, requireExpansion bool) {
+	var expandedPreview mobileCompileResponse
+	expandedActions := rp41MobilePreviewActions(t, expanded, &expandedPreview)
+	checkMapped := func(t *testing.T, src string, actions []ShortcutAction, preview mobileCompileResponse, requireExpansion bool) {
 		t.Helper()
 		nativeIndex := rp41NativeLiteralIndex(t, actions, waitAction.AppleIdentifier, parameter.WireKey, literal)
 		if requireExpansion && nativeIndex == 1 {
 			t.Fatal("fixture did not exercise native-index/top-level-statement divergence")
 		}
 		t.Logf("actual preview selection native_index=%d identifier=%s wire_key=%s", nativeIndex, waitAction.AppleIdentifier, parameter.WireKey)
-		svc := service.NewService(schema.DefaultRegistry())
-		updated, err := svc.ApplyVisualSourceEdit(src, nativeIndex, parameter.WireKey, replacement)
+		updated, err := rp41ApplyPreviewEdit(t, src, preview, nativeIndex, parameter.WireKey, replacement)
 		if err != nil {
 			t.Fatalf("mapped actual native action %d was rejected: %v", nativeIndex, err)
 		}
@@ -146,10 +149,10 @@ wait(8)
 		}
 	}
 	t.Run("mapped_without_expansion", func(t *testing.T) {
-		checkMapped(t, simple, baseline, false)
+		checkMapped(t, simple, baseline, baselinePreview, false)
 	})
 	t.Run("mapped_after_native_expansion", func(t *testing.T) {
-		checkMapped(t, expanded, expandedActions, true)
+		checkMapped(t, expanded, expandedActions, expandedPreview, true)
 	})
 	t.Run("generated_condition_value_read_only", func(t *testing.T) {
 		// The Bool condition's Number producer is generated from a literal, not
@@ -185,8 +188,7 @@ wait(8)
 			t.Fatalf("generated field is not a WebPreview-editable primitive: %s", encoded)
 		}
 		t.Logf("actual generated selection native_index=%d identifier=is.workflow.actions.number wire_key=%s", nativeIndex, key)
-		svc := service.NewService(schema.DefaultRegistry())
-		updated, err := svc.ApplyVisualSourceEdit(expanded, nativeIndex, key, newExpr)
+		updated, err := rp41ApplyPreviewEdit(t, expanded, expandedPreview, nativeIndex, key, newExpr)
 		if err == nil || strings.TrimSpace(err.Error()) == "" {
 			t.Fatal("generated native value edit needs an explanatory rejection")
 		}

@@ -26,6 +26,8 @@ type CompileOptions struct {
 	// RequireAuthoredWorkflow rejects native.workflow provenance before any output
 	// is finalized. Edit workflows instead supply an original and exact policy.
 	RequireAuthoredWorkflow bool
+	// previewSourceMap is opt-in compiler-owned mobile provenance, never plist data.
+	previewSourceMap *previewSourceMap
 }
 
 var legacyActiveBuildProfile = BuildProfileDebug

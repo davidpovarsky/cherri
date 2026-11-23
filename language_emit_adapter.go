@@ -385,6 +385,9 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 	lowerer.SetTypeAnnotations(analyzer.TypeAnnotations())
 	lowerer.SetKnownPresentDictionaryIndexes(analyzer.KnownPresentDictionaryIndexes())
 	lowerer.SetEnumValues(analyzer.EnumValues())
+	if options.previewSourceMap != nil {
+		lowerer.EnableVisualSourceOrigins(prog)
+	}
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
 	}
@@ -393,7 +396,14 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 		return nil, fmt.Errorf("[CHERRI_EDIT_POLICY_REQUIRED] Native workflow provenance requires an original and explicit allowed-delta policy before signing")
 	}
 
-	return session.Finalize()
+	plistBytes, err := session.Finalize()
+	if err != nil {
+		return nil, err
+	}
+	if options.previewSourceMap != nil {
+		*options.previewSourceMap = session.finalizePreviewSourceMap(filePath, content, profile, plistBytes)
+	}
+	return plistBytes, nil
 }
 
 // CompileFileV2 compiles a Cherri v2 file to an unsigned or signed .shortcut file.

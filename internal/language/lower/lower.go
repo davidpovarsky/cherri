@@ -16,6 +16,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/modules"
 	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
 	"howett.net/plist"
@@ -110,6 +111,7 @@ type Lowerer struct {
 	knownDictionaryIndexes         map[syntax.Expression]bool
 	literalTextCarriers            map[*ir.NativeActionNode]bool
 	nativeResultReferences         map[*ir.NativeActionNode]*ir.AttachmentToken
+	visualSourceCalls              map[*syntax.CallExpr]source.Span
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -5682,6 +5684,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 	}
 
+	var visualOrigin *backend.VisualSourceOrigin
+	if l.visualSourceCalls != nil {
+		visualOrigin = l.visualSourceOrigin(call)
+	}
+
 	// Expand only the explicit outer argument pack. The same canonical binder
 	// validates it during analysis; existing source-order snapshots now apply
 	// separately to each original element, without changing nested values.
@@ -5725,6 +5732,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					StaticType:  l.argumentStaticType(call.PrimaryArg),
 					Value:       primVal,
 				})
+				if visualOrigin != nil {
+					visualOrigin.ArgumentSpans = append(visualOrigin.ArgumentSpans, call.PrimaryArg.NodeSpan())
+				}
 			}
 		}
 
@@ -5807,6 +5817,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					StaticType:  l.argumentStaticType(nArg.Value),
 					Value:       val,
 				})
+				if visualOrigin != nil {
+					visualOrigin.ArgumentSpans = append(visualOrigin.ArgumentSpans, nArg.Value.NodeSpan())
+				}
 			} else if nArg.Label != "" {
 				return nil, fmt.Errorf("unknown parameter label %q for action %q", nArg.Label, actionName)
 			} else {
@@ -5821,13 +5834,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		resolvedCall := backend.ResolvedCall{
-			SourceDocument:  string(call.NodeSpan().Document),
-			DefinitionID:    actionSchema.ID,
-			AppleIdentifier: actionSchema.AppleIdentifier,
-			OutputUUID:      outputUUID,
-			OutputName:      outputName,
-			Arguments:       callArgs,
-			NodeID:          uuid,
+			SourceDocument:     string(call.NodeSpan().Document),
+			DefinitionID:       actionSchema.ID,
+			AppleIdentifier:    actionSchema.AppleIdentifier,
+			OutputUUID:         outputUUID,
+			OutputName:         outputName,
+			Arguments:          callArgs,
+			NodeID:             uuid,
+			VisualSourceOrigin: visualOrigin,
 		}
 
 		// All authored arguments and their required snapshots now exist. Pure

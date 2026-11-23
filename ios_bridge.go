@@ -230,3 +230,13 @@ func encodeMobileResponse(response mobileCompileResponse) *C.char {
 func CherriFree(pointer *C.char) {
 	C.free(unsafe.Pointer(pointer))
 }
+
+//export CherriEditPreviewSource
+func CherriEditPreviewSource(requestJSON *C.char) *C.char {
+	response := editPreviewSourceForMobile(C.GoString(requestJSON))
+	encoded, err := json.Marshal(response)
+	if err != nil {
+		return C.CString(`{"ok":false,"error":"native preview edit response encoding failed"}`)
+	}
+	return C.CString(string(encoded))
+}

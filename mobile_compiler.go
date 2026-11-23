@@ -31,15 +31,16 @@ const (
 )
 
 type mobileCompileResponse struct {
-	OK           bool   `json:"ok"`
-	Name         string `json:"name,omitempty"`
-	PlistBase64  string `json:"plistBase64,omitempty"`
-	SignedBase64 string `json:"signedBase64,omitempty"`
-	Source       string `json:"source,omitempty"`
-	Error        string `json:"error,omitempty"`
-	Line         int    `json:"line,omitempty"`
-	Column       int    `json:"column,omitempty"`
-	Mode         string `json:"mode,omitempty"`
+	OK               bool              `json:"ok"`
+	Name             string            `json:"name,omitempty"`
+	PlistBase64      string            `json:"plistBase64,omitempty"`
+	SignedBase64     string            `json:"signedBase64,omitempty"`
+	Source           string            `json:"source,omitempty"`
+	Error            string            `json:"error,omitempty"`
+	Line             int               `json:"line,omitempty"`
+	Column           int               `json:"column,omitempty"`
+	Mode             string            `json:"mode,omitempty"`
+	PreviewSourceMap *previewSourceMap `json:"previewSourceMap,omitempty"`
 }
 
 type mobileActionParameter = catalogParameter
@@ -158,13 +159,16 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 	}
 
 	if selectedMode == MobileCompileModeV2 {
+		var previewMap previewSourceMap
+		options.previewSourceMap = &previewMap
 		v2Bytes, err := compileSourceToPlistWithSession(name+".cherri", src, options, newCanonicalBackendSessionLocked)
 		if err == nil {
 			response = mobileCompileResponse{
-				OK:          true,
-				Name:        name,
-				PlistBase64: base64.StdEncoding.EncodeToString(v2Bytes),
-				Mode:        string(MobileCompileModeV2),
+				OK:               true,
+				Name:             name,
+				PlistBase64:      base64.StdEncoding.EncodeToString(v2Bytes),
+				Mode:             string(MobileCompileModeV2),
+				PreviewSourceMap: &previewMap,
 			}
 			if sign {
 				service := hubSign()

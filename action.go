@@ -390,6 +390,12 @@ var emptyAppIntent = appIntent{}
 
 // getActionParameters creates the actions' parameters by injecting the values of the arguments into the defined parameters.
 func getActionParameters(arguments []actionArgument) map[string]any {
+	return getActionParametersWithOrigins(arguments, nil)
+}
+
+// The optional observer records only writes made by the ordinary argument
+// serializer. It does not change values, native keys or custom-builder output.
+func getActionParametersWithOrigins(arguments []actionArgument, observe func(int, string)) map[string]any {
 	resolveQuestionArgs(arguments)
 
 	var params = make(map[string]any)
@@ -410,13 +416,17 @@ func getActionParameters(arguments []actionArgument) map[string]any {
 		if len(arguments) == 0 {
 			return params
 		}
-		makeActionParams(arguments, params)
+		makeActionParamsWithOrigins(arguments, params, observe)
 	}
 
 	return params
 }
 
 func makeActionParams(arguments []actionArgument, params map[string]any) {
+	makeActionParamsWithOrigins(arguments, params, nil)
+}
+
+func makeActionParamsWithOrigins(arguments []actionArgument, params map[string]any, observe func(int, string)) {
 	var argumentsSize = len(arguments)
 	for i, param := range currentAction.definition.parameters {
 		if argumentsSize <= i {
@@ -427,6 +437,9 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 		}
 		if (currentAction.identifier == "editEvent" || currentAction.identifier == "editReminder") && param.name == "newValue" {
 			continue
+		}
+		if observe != nil {
+			observe(i, param.key)
 		}
 
 		if arguments[i].valueType == Reference {

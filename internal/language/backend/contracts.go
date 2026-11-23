@@ -141,6 +141,8 @@ type ResolvedCall struct {
 	OutputUUID      string
 	OutputName      string
 	NodeID          string
+	// VisualSourceOrigin is opt-in authored-call provenance, never a native field.
+	VisualSourceOrigin *VisualSourceOrigin
 }
 
 // ControlFlowKind defines control flow structures.

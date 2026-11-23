@@ -35,6 +35,7 @@ type CanonicalBackendSession struct {
 	importQuestionBindings   []importQuestionBinding
 	resolvedQuestionNodes    map[string]map[string]any
 	platformVersions         *canonicalPlatformVersionContext
+	previewSourceCandidates  []previewSourceCandidate
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -104,12 +105,19 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	// Prepare arguments for canonical action matching definition parameters
 	var args []actionArgument
 	providedIndices := make(map[int]bool)
+	var previewPositions []int
+	if call.VisualSourceOrigin != nil {
+		previewPositions = make([]int, len(call.Arguments))
+		for index := range previewPositions {
+			previewPositions[index] = -1
+		}
+	}
 	if len(def.parameters) > 0 {
 		args = make([]actionArgument, len(def.parameters))
 		for i := range args {
 			args[i] = actionArgument{valueType: Nil, value: nil}
 		}
-		for _, callArg := range call.Arguments {
+		for callIndex, callArg := range call.Arguments {
 			pos := callArg.Position
 			// Variadic values grow args, but canonical parameter positions remain fixed.
 			if pos < 0 || pos >= len(def.parameters) {
@@ -131,6 +139,10 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 				if !matched {
 					return "", fmt.Errorf("unknown parameter %q for canonical action %q", callArg.ParameterID, ident)
 				}
+			}
+			if previewPositions != nil && !callArg.Omitted && !callArg.Value.Omitted &&
+				callArg.Value.Kind != backend.ValNil && !def.parameters[pos].infinite {
+				previewPositions[callIndex] = pos
 			}
 			if pos < len(def.parameters) && def.parameters[pos].infinite && providedIndices[pos] {
 				args = append(args, convertCallArgForCanonicalParameter(callArg, def.parameters[pos].key))
@@ -184,8 +196,16 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	// Run canonical checkAction
 	checkAction()
 
-	// Run canonical getActionParameters
-	params := getActionParameters(args)
+	// Observe only automatic canonical argument writes. A custom makeParams
+	// builder has no such writes and remains read-only in the native preview.
+	var previewWrites []previewParameterWrite
+	var observeParameter func(int, string)
+	if call.VisualSourceOrigin != nil {
+		observeParameter = func(position int, key string) {
+			previewWrites = append(previewWrites, previewParameterWrite{position: position, key: key})
+		}
+	}
+	params := getActionParametersWithOrigins(args, observeParameter)
 
 	if isDebugStdlibMacro(ident) {
 		if ident == "require" {
@@ -239,6 +259,9 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		WFWorkflowActionParameters: params,
 	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, action)
+	if call.VisualSourceOrigin != nil {
+		s.rememberPreviewSourceCall(call, params, fullIdent, previewPositions, previewWrites)
+	}
 	if len(s.importQuestionBindings) > 0 && call.NodeID != "" {
 		if s.resolvedQuestionNodes == nil {
 			s.resolvedQuestionNodes = map[string]map[string]any{}
