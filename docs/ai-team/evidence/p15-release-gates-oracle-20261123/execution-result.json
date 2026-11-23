@@ -1,0 +1,62 @@
+{
+  "source": "1c07e3fee1368d7379616143168c072c79ffe8ad",
+  "tree": "8f09fce6e7dee8388104b68d3a1b7302120fdd06",
+  "startedUTC": "2026-11-23T00:58:05.482432+00:00",
+  "command": [
+    "python3",
+    "-B",
+    "tools/p10r3/run_release_gates.py",
+    "--run-all",
+    "--out-results",
+    "/mnt/development/projects/evidence/cherri-p10r15-r8-release-gates-20261123/first-1c07e3fe/gate-results.original.json"
+  ],
+  "goVersion": "go version go1.24.13 linux/arm64",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "sourceCleanBefore": true,
+  "outerGuardSeconds": 1800,
+  "testCommandsUnchanged": true,
+  "environment": {
+    "GOTOOLCHAIN": "go1.24.13",
+    "GOMODCACHE": "/mnt/development/tooling/cherri-go/mod",
+    "GOCACHE": "/mnt/development/tooling/cherri-go/build",
+    "GOTMPDIR": "/mnt/development/tooling/cherri-go/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "GIT_NO_REPLACE_OBJECTS": "1"
+  },
+  "timedOut": false,
+  "exitCode": 1,
+  "finishedUTC": "2026-11-23T01:05:36.903273+00:00",
+  "elapsedSeconds": 451.42702504247427,
+  "sourceUnchanged": true,
+  "sourceStatusAfter": "",
+  "reportPresent": true,
+  "artifacts": {
+    "stdout.original": {
+      "bytes": 4459,
+      "sha256": "36dd61bcdda845476c3d6385bd6cc3e932ba49236303469324de9a90682df280"
+    },
+    "stderr.original": {
+      "bytes": 212,
+      "sha256": "63935f8b96a8b80d14a0e8ad3c40a74f4759ab697b44a80d71b2195cb8a17006"
+    },
+    "gate-results.original.json": {
+      "bytes": 27200,
+      "sha256": "59b9b4bd18b1c3fd38b25156d7a55c057bdcbbbc522dd623c6ec33b7e6d0f8d6"
+    }
+  },
+  "reportedSummary": {
+    "totalGates": 56,
+    "passingGates": 54,
+    "blockedExternalGates": 1,
+    "failingGates": 1,
+    "rGatesTotal": 28,
+    "rGatesPassing": 26,
+    "rGatesBlockedExternal": 1,
+    "aGatesTotal": 28,
+    "aGatesPassing": 28,
+    "aGatesFailing": 0
+  },
+  "reportedVerdict": "NOT_READY",
+  "reportedSource": "1c07e3fee1368d7379616143168c072c79ffe8ad",
+  "reportedFingerprint": "e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0"
+}

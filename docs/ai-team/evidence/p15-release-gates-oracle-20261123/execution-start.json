@@ -1,0 +1,26 @@
+{
+  "source": "1c07e3fee1368d7379616143168c072c79ffe8ad",
+  "tree": "8f09fce6e7dee8388104b68d3a1b7302120fdd06",
+  "startedUTC": "2026-11-23T00:58:05.482432+00:00",
+  "command": [
+    "python3",
+    "-B",
+    "tools/p10r3/run_release_gates.py",
+    "--run-all",
+    "--out-results",
+    "/mnt/development/projects/evidence/cherri-p10r15-r8-release-gates-20261123/first-1c07e3fe/gate-results.original.json"
+  ],
+  "goVersion": "go version go1.24.13 linux/arm64",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "sourceCleanBefore": true,
+  "outerGuardSeconds": 1800,
+  "testCommandsUnchanged": true,
+  "environment": {
+    "GOTOOLCHAIN": "go1.24.13",
+    "GOMODCACHE": "/mnt/development/tooling/cherri-go/mod",
+    "GOCACHE": "/mnt/development/tooling/cherri-go/build",
+    "GOTMPDIR": "/mnt/development/tooling/cherri-go/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "GIT_NO_REPLACE_OBJECTS": "1"
+  }
+}
