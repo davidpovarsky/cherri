@@ -84,6 +84,9 @@ jobs:
       - name: Test bounded iOS evidence collector
         run: python3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v
 
+      - name: Verify bounded xcresult summary protocol
+        run: python3 -I -B -m unittest discover -s ios/scripts -p 'test_ios_xcresult_summary.py' -v
+
       - name: Verify bounded startup observation controls
         run: |
           python3 -m unittest discover -s ios/scripts -p 'test_capture_startup_observation.py' -v
@@ -272,6 +275,7 @@ jobs:
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
       - name: Run CherriCore in iOS Simulator
+        id: ios_native_test
         working-directory: ios
         env:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
@@ -304,6 +308,9 @@ jobs:
           xcrun simctl spawn "$SIMULATOR_UDID" defaults write com.apple.Preferences KeyboardHardware -bool NO 2>/dev/null || true
           xcrun simctl spawn "$SIMULATOR_UDID" defaults write -g ConnectHardwareKeyboard -bool NO 2>/dev/null || true
 
+          XCRESULT_ROOT="$RUNNER_TEMP/cherri-ios-xcresult-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA}"
+          python3 -I -B scripts/collect_ios_xcresult_summary.py prepare --repo ..
+
           set +e
           python3 scripts/prepare_editor_dependency.py --check-only || exit $?
           xcodebuild \
@@ -314,6 +321,7 @@ jobs:
             -configuration Debug \
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
             -derivedDataPath .build/tests \
+            -resultBundlePath "$XCRESULT_ROOT/tests.xcresult" \
             CODE_SIGNING_ALLOWED=NO \
             "${STARTUP_SELECTION[@]}" \
             test > xcodetest.log 2>&1
@@ -323,6 +331,27 @@ jobs:
           printf '%s\n' "$status" > xcodetest.exitcode
           echo "xcodebuild test exit: $status (bounded diagnostics are collected in the next step)"
           exit "$status"
+
+      - name: Capture bounded iOS xcresult summary
+        id: ios_xcresult_summary
+        if: always()
+        working-directory: ios
+        env:
+          IOS_XCRESULT_RESERVATION_SHA: ${{ steps.ios_native_test.outputs.xcresult_reservation_sha256 }}
+        run: |
+          python3 -I -B scripts/collect_ios_xcresult_summary.py collect --repo .. \
+            --reservation-sha "$IOS_XCRESULT_RESERVATION_SHA"
+
+      - name: Upload encrypted iOS xcresult summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcresult-summary
+          path: |
+            ${{ runner.temp }}/cherri-ios-xcresult-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}/public/ios-xcresult-summary.zip.p7m
+            ${{ runner.temp }}/cherri-ios-xcresult-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}/public/receipt.json
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Collect bounded iOS test evidence
         id: ios_evidence
