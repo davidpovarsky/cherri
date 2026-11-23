@@ -1,0 +1,12 @@
+diff --git a/ios/scripts/test_ios_xcresult_summary.py b/ios/scripts/test_ios_xcresult_summary.py
+index 8357847a..e3658954 100644
+--- a/ios/scripts/test_ios_xcresult_summary.py
++++ b/ios/scripts/test_ios_xcresult_summary.py
+@@ -219,6 +219,7 @@ class TestIOSXCResultSummary(unittest.TestCase):
+     def test_setgid_parent_creates_exact_private_root_without_parent_change(self):
+         parent = self.path / "setgid-parent"
+         parent.mkdir(mode=0o700)
++        os.chown(parent, -1, os.getgid())
+         parent.chmod(0o2700)
+         before = subject.directory_identity(parent)
+         self.assertEqual(before["mode"], 0o2700)

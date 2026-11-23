@@ -1,0 +1,40 @@
+test_actual_helper_exact_cap_and_detection_byte (test_ios_xcresult_summary.TestIOSXCResultSummary.test_actual_helper_exact_cap_and_detection_byte) ... ok
+test_actual_timeout_nonzero_and_held_pipe_never_pass (test_ios_xcresult_summary.TestIOSXCResultSummary.test_actual_timeout_nonzero_and_held_pipe_never_pass) ... /usr/lib/python3.12/subprocess.py:1127: ResourceWarning: subprocess 2235255 is still running
+  _warn("subprocess %s is still running" % self.pid,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_authenticated_expectations_precede_private_read (test_ios_xcresult_summary.TestIOSXCResultSummary.test_authenticated_expectations_precede_private_read) ... ok
+test_ciphertext_oversize_stays_private_without_public_partial (test_ios_xcresult_summary.TestIOSXCResultSummary.test_ciphertext_oversize_stays_private_without_public_partial) ... ok
+test_cli_argument_and_runtime_errors_do_not_echo_private_values (test_ios_xcresult_summary.TestIOSXCResultSummary.test_cli_argument_and_runtime_errors_do_not_echo_private_values) ... ok
+test_collector_overflow_never_seals_or_clips_original (test_ios_xcresult_summary.TestIOSXCResultSummary.test_collector_overflow_never_seals_or_clips_original) ... ok
+test_consumer_import_requires_independent_source_hash (test_ios_xcresult_summary.TestIOSXCResultSummary.test_consumer_import_requires_independent_source_hash) ... ok
+test_encryption_failure_is_fixed_and_has_no_cipher (test_ios_xcresult_summary.TestIOSXCResultSummary.test_encryption_failure_is_fixed_and_has_no_cipher) ... ok
+test_exact_cap_collector_and_incomplete_private_classification (test_ios_xcresult_summary.TestIOSXCResultSummary.test_exact_cap_collector_and_incomplete_private_classification) ... ok
+test_exact_zip_inventory_and_member_types (test_ios_xcresult_summary.TestIOSXCResultSummary.test_exact_zip_inventory_and_member_types) ... /usr/lib/python3.12/zipfile/__init__.py:1620: UserWarning: Duplicate name: 'identity.json'
+  return self._open_to_write(zinfo, force_zip64=force_zip64)
+ok
+test_json_syntax_and_false_completeness (test_ios_xcresult_summary.TestIOSXCResultSummary.test_json_syntax_and_false_completeness) ... ok
+test_marker_hash_parent_mode_inode_and_symlink (test_ios_xcresult_summary.TestIOSXCResultSummary.test_marker_hash_parent_mode_inode_and_symlink) ... ok
+test_missing_invalid_exit_and_result_child_never_launch (test_ios_xcresult_summary.TestIOSXCResultSummary.test_missing_invalid_exit_and_result_child_never_launch) ... ok
+test_mutation_during_capture_is_receipt_only (test_ios_xcresult_summary.TestIOSXCResultSummary.test_mutation_during_capture_is_receipt_only) ... ok
+test_original_native_exit_sequence_and_bounds_remain (test_ios_xcresult_summary.TestIOSXCResultSummary.test_original_native_exit_sequence_and_bounds_remain) ... ok
+test_plain_cipher_and_member_hash_rejection (test_ios_xcresult_summary.TestIOSXCResultSummary.test_plain_cipher_and_member_hash_rejection) ... ok
+test_preexisting_exit_or_reservation_is_rejected (test_ios_xcresult_summary.TestIOSXCResultSummary.test_preexisting_exit_or_reservation_is_rejected) ... ok
+test_real_capture_seal_and_independent_private_intake (test_ios_xcresult_summary.TestIOSXCResultSummary.test_real_capture_seal_and_independent_private_intake) ... ok
+test_receipt_cannot_substitute_identity_or_old_protocol (test_ios_xcresult_summary.TestIOSXCResultSummary.test_receipt_cannot_substitute_identity_or_old_protocol) ... ok
+test_setgid_parent_creates_exact_private_root_without_parent_change (test_ios_xcresult_summary.TestIOSXCResultSummary.test_setgid_parent_creates_exact_private_root_without_parent_change) ... FAIL
+test_source_and_transitive_import_reject_changed_bytes (test_ios_xcresult_summary.TestIOSXCResultSummary.test_source_and_transitive_import_reject_changed_bytes) ... ok
+test_unsealed_rejection_never_reads_plaintext (test_ios_xcresult_summary.TestIOSXCResultSummary.test_unsealed_rejection_never_reads_plaintext) ... ok
+
+======================================================================
+FAIL: test_setgid_parent_creates_exact_private_root_without_parent_change (test_ios_xcresult_summary.TestIOSXCResultSummary.test_setgid_parent_creates_exact_private_root_without_parent_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/development/projects/worktrees/cherri-p10r15-505-refresh-20261123/ios/scripts/test_ios_xcresult_summary.py", line 224, in test_setgid_parent_creates_exact_private_root_without_parent_change
+    self.assertEqual(before["mode"], 0o2700)
+AssertionError: 448 != 1472
+
+----------------------------------------------------------------------
+Ran 22 tests in 3.167s
+
+FAILED (failures=1)

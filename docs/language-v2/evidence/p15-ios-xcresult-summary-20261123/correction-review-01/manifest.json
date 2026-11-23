@@ -1,0 +1,53 @@
+{
+  "schema": "cherri-ios-xcresult-correction-review/1",
+  "createdAt": "2026-11-23T06:15:07.094258+00:00",
+  "base": "305b734b03f86a53eeff58ab8e803dd4a65a3823",
+  "cause": "Inherited setgid bit caused strict fresh-root0700 guard to reject before any control parent. Preserve strict mode; normalize only newly exclusive fd-bound directory.",
+  "originalFailureReceipt": "qualification-attempt-01/result.original.json",
+  "originalFailureSha256": "da6fe8153e1cc2341952907c7cbf04cc7d565700c30284192bd713b025ae9e83",
+  "patch": {
+    "path": "correction.patch",
+    "bytes": 2650,
+    "sha256": "35148da493e3a9d59a0e81cc463a924d01d9c0f993a52571e1fdd8418e942289"
+  },
+  "files": [
+    {
+      "path": "ios/scripts/collect_ios_xcresult_summary.py",
+      "bytes": 31328,
+      "sha256": "99b0f2894775e9ff395c3382f2428b18d919733762109b999a3c7dfb21330402"
+    },
+    {
+      "path": "ios/scripts/test_ios_xcresult_summary.py",
+      "bytes": 29770,
+      "sha256": "de9d1ead77c1fbe6f33d2c70664a2af0bf7fab95e274ec3ce1c3f07d9400166c"
+    }
+  ],
+  "testParents": [
+    "test_real_capture_seal_and_independent_private_intake",
+    "test_authenticated_expectations_precede_private_read",
+    "test_consumer_import_requires_independent_source_hash",
+    "test_receipt_cannot_substitute_identity_or_old_protocol",
+    "test_setgid_parent_creates_exact_private_root_without_parent_change",
+    "test_preexisting_exit_or_reservation_is_rejected",
+    "test_marker_hash_parent_mode_inode_and_symlink",
+    "test_source_and_transitive_import_reject_changed_bytes",
+    "test_mutation_during_capture_is_receipt_only",
+    "test_actual_helper_exact_cap_and_detection_byte",
+    "test_collector_overflow_never_seals_or_clips_original",
+    "test_actual_timeout_nonzero_and_held_pipe_never_pass",
+    "test_encryption_failure_is_fixed_and_has_no_cipher",
+    "test_missing_invalid_exit_and_result_child_never_launch",
+    "test_exact_cap_collector_and_incomplete_private_classification",
+    "test_ciphertext_oversize_stays_private_without_public_partial",
+    "test_unsealed_rejection_never_reads_plaintext",
+    "test_plain_cipher_and_member_hash_rejection",
+    "test_exact_zip_inventory_and_member_types",
+    "test_json_syntax_and_false_completeness",
+    "test_cli_argument_and_runtime_errors_do_not_echo_private_values",
+    "test_original_native_exit_sequence_and_bounds_remain"
+  ],
+  "runtimeExecutionsAfterFailure": 0,
+  "strictModeUnchanged": "0700",
+  "existingParentPermissionsChanged": false,
+  "workflowChanged": false
+}

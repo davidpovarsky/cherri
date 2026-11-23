@@ -1,0 +1,22 @@
+setUpClass (test_ios_xcresult_summary.TestIOSXCResultSummary) ... ERROR
+
+======================================================================
+ERROR: setUpClass (test_ios_xcresult_summary.TestIOSXCResultSummary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/development/projects/worktrees/cherri-p10r15-505-refresh-20261123/ios/scripts/test_ios_xcresult_summary.py", line 103, in setUpClass
+    cls.repo, cls.context, cls.root, cls.sources, cls.reservation = fixture(cls.parent)
+                                                                    ^^^^^^^^^^^^^^^^^^^
+  File "/mnt/development/projects/worktrees/cherri-p10r15-505-refresh-20261123/ios/scripts/test_ios_xcresult_summary.py", line 62, in fixture
+    reservation = subject.prepare(repo, context, root, deadline=time.monotonic() + 15)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/development/projects/worktrees/cherri-p10r15-505-refresh-20261123/ios/scripts/collect_ios_xcresult_summary.py", line 372, in prepare
+    require(directory_identity(root)["mode"] == 0o700, "RESERVATION_INVALID")
+  File "/mnt/development/projects/worktrees/cherri-p10r15-505-refresh-20261123/ios/scripts/collect_ios_xcresult_summary.py", line 75, in require
+    raise Rejected(code)
+_test_collect_ios_xcresult_summary.Rejected: RESERVATION_INVALID
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.059s
+
+FAILED (errors=1)
