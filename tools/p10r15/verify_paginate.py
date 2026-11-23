@@ -32,6 +32,58 @@ ALLOWED = {
 }
 
 
+def extract_paginate_graph(actions, *, legacy):
+    """Verify main completion separately from the macro's typed List result."""
+    assert isinstance(actions, list) and actions, "empty pagination graph"
+    if legacy:
+        graph = actions
+        boundary = "LEGACY_UNCHANGED"
+    else:
+        terminal = actions[-1]
+        assert (isinstance(terminal, dict)
+                and terminal.get("WFWorkflowActionIdentifier") == PREFIX + "nothing"
+                and set(terminal) <= {"WFWorkflowActionIdentifier", "WFWorkflowActionParameters"}
+                and terminal.get("WFWorkflowActionParameters", {}) == {}), \
+            "V2 main requires exactly one parameter-free terminal Nothing"
+        graph = actions[:-1]
+        boundary = "V2_EXPLICIT_VOID_VERIFIED"
+
+    # Nothing is not a macro effect. Reject it at every interior position and
+    # keep the complete original actions for the independent lossless roundtrip.
+    allowed = {PREFIX + name for name in ALLOWED}
+    assert all(isinstance(action, dict)
+               and action.get("WFWorkflowActionIdentifier") in allowed
+               for action in graph), "unreviewed pagination action"
+    assert len(graph) >= 3, "pagination result graph is incomplete"
+    initial, store, result = graph[0], graph[1], graph[-1]
+    ip = initial.get("WFWorkflowActionParameters", {})
+    sp = store.get("WFWorkflowActionParameters", {})
+    rp = result.get("WFWorkflowActionParameters", {})
+    assert (initial["WFWorkflowActionIdentifier"] == PREFIX + "list"
+            and ip.get("WFItems") == []
+            and isinstance(ip.get("UUID"), str) and ip["UUID"]
+            and isinstance(ip.get("CustomOutputName"), str)), \
+        "pagination must initialize its actual empty List"
+    name = sp.get("WFVariableName")
+    assert (store["WFWorkflowActionIdentifier"] == PREFIX + "setvariable"
+            and isinstance(name, str) and name.startswith("__cherri_paginate_")
+            and name.endswith("_results")
+            and sp.get("WFInput") == {
+                "WFSerializationType": "WFTextTokenAttachment",
+                "Value": {"Type": "ActionOutput", "OutputUUID": ip["UUID"],
+                          "OutputName": ip["CustomOutputName"]}}), \
+        "pagination results must bind the original List producer"
+    assert sum(action["WFWorkflowActionIdentifier"] == PREFIX + "setvariable"
+               and action.get("WFWorkflowActionParameters", {}).get("WFVariableName") == name
+               for action in graph) == 1, "pagination List initializer was overwritten"
+    assert (result["WFWorkflowActionIdentifier"] == PREFIX + "getvariable"
+            and rp.get("WFVariable") == {
+                "WFSerializationType": "WFTextTokenAttachment",
+                "Value": {"Type": "Variable", "VariableName": name}}), \
+        "pagination result must read the original results List"
+    return graph, boundary
+
+
 class GuardStop(Exception):
     pass
 
@@ -412,7 +464,7 @@ def main():
                     command = [exe,"compile",source,"-o",target,"--skip-sign","--no-ansi","--build-profile",profile]+(["--legacy"] if legacy else [])
                     checked(command,ident)
                     graph = plistlib.loads(target.read_bytes())["WFWorkflowActions"]
-                    assert all(a["WFWorkflowActionIdentifier"].removeprefix(PREFIX) in ALLOWED for a in graph)
+                    macro_graph, main_boundary = extract_paginate_graph(graph, legacy=legacy)
                     imported, rebuilt = output/(ident+"-import.cherri"), output/(ident+"-rebuilt.shortcut")
                     checked([exe,"import",target,"--mode=v2","--lossless","-o",imported], ident+" lossless import")
                     checked([exe,"compile",imported,"-o",rebuilt,"--skip-sign","--no-ansi"], ident+" rebuild")
@@ -420,29 +472,30 @@ def main():
                     models = {}
                     if flavor == "base":
                         for case_name, case in cases.items():
-                            models[case_name] = invoke_case(graph,server,case)
+                            models[case_name] = invoke_case(macro_graph,server,case)
                     elif flavor in {"zero-pages","zero-items"}:
-                        models["zero-network"] = inspect_graph(graph,server,{"/entry.json":(200,{"items":[item]})},[],[])
-                        assert len(graph)==3
+                        models["zero-network"] = inspect_graph(macro_graph,server,{"/entry.json":(200,{"items":[item]})},[],[])
+                        assert len(macro_graph)==3 and len(graph)==(3 if legacy else 4)
                     elif flavor == "page-cap":
                         route = cases["three-pages-middle-empty"][0]
-                        models["one-request"] = inspect_graph(graph,server,route,[item,{"id":2}],["/entry.json"])
+                        models["one-request"] = inspect_graph(macro_graph,server,route,[item,{"id":2}],["/entry.json"])
                     elif flavor == "item-cap":
                         route = cases["three-pages-middle-empty"][0]
-                        models["stop-before-next"] = inspect_graph(graph,server,route,[item,{"id":2}],["/entry.json"])
+                        models["stop-before-next"] = inspect_graph(macro_graph,server,route,[item,{"id":2}],["/entry.json"])
                     elif flavor == "upper-limits":
-                        models["inclusive-limit-boundaries"] = invoke_case(graph,server,cases["single"])
+                        models["inclusive-limit-boundaries"] = invoke_case(macro_graph,server,cases["single"])
                     elif flavor == "custom":
                         route = {"/entry.json":(200,{"rows":[item],"after":"two.json"}),"/two.json":(200,{"rows":[{"id":2}]})}
-                        models["custom-selectors"] = inspect_graph(graph,server,route,[item,{"id":2}],["/entry.json","/two.json"])
+                        models["custom-selectors"] = inspect_graph(macro_graph,server,route,[item,{"id":2}],["/entry.json","/two.json"])
                     else:
                         values = [{"id":i,"typed":item} for i in range(1000)]
                         route = {"/entry.json":(200,{"items":values,"next":"two.json"})}
-                        models["thousand-no-extra-request"] = inspect_graph(graph,server,route,values,["/entry.json"])
+                        models["thousand-no-extra-request"] = inspect_graph(macro_graph,server,route,values,["/entry.json"])
                     checks.append({"id":ident,"status":"PASS","sourceSha256":hashlib.sha256(source.read_bytes()).hexdigest(),
                                    "actionCount":len(graph),"getActionNodes":sum(a["WFWorkflowActionIdentifier"]==PREFIX+"downloadurl" for a in graph),
-                                   "exactNativeActionRoundtrip":True,"models":models})
-                    graphs[(legacy,profile,flavor)] = graph
+                                   "exactNativeActionRoundtrip":True,"models":models,
+                                    "macroActionCount":len(macro_graph),"mainOutputBoundary":main_boundary})
+                    graphs[(legacy,profile,flavor)] = macro_graph
         base = graphs[(False,"debug","base")]
         def params(graph, suffix):
             return [a.setdefault("WFWorkflowActionParameters",{}) for a in graph if a["WFWorkflowActionIdentifier"]==PREFIX+suffix]
