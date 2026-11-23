@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.6 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 27 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.7 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 28 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1877,3 +1877,70 @@ Latest complete formal179 remains K8:114PASS/0FAIL/26NOT_RUN/
 38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN; closure_complete=false. S4 acceptance,
 raw505 success and a Docs main push do not grant aggregate release, physical
 device or complete native acceptance.
+
+
+## 28. Raw505 intake, published D12 and the AI compiler pin — 2026-11-23
+
+### Current source and milestone board
+
+This checkpoint follows09094ddc and settles the source/evidence inputs for C0.
+Compiler S remains57b6d919757e1d0262993c6f11c6dc1cd17d6177 and the published
+Docs version remainsD12ce98fa542785fe4298d3acbf38da120b32bd5029. Final K is
+still pending the original derived generator, actual56 gates and metadata check.
+
+### Acceptance matrix and evidence log
+
+[Independent raw505 intake](evidence/p15-505-new-source-20261123/README.md)
+accepted the new actual S run:108 original Go events, two exact PASS parents,
+one package PASS and no duplicate/orphan/incomplete/parse failure.
+It independently recounted all505 local flags and reconstructed all six
+per-action parameter summaries. Eligible PASS counts are347 required,
+347 missing-required rejection,202 optional,98 enum,397 dynamic reference
+and65 platform checks; no eligible failure, untested or blocked parameter case.
+All8 constructs preserve their original N/A treatment. Native/runtime counts
+remain0; the505 native/runtime requirements are not closed by this local result.
+Both newly generated raw files exactly match the already tracked bytes.
+Their new source attribution is supplied by the actual process/stream proof.
+
+[Docs D12 publication](evidence/p15-docs-d12-publication-20261123/README.md)
+completed SUCCESS for automatic Pages45127859158 and Docs45127859207,
+both push/main/attempt1 on exactD12. Deployment7992458856 succeeded.
+All seven fixed live HTTPS responses returned200 and exactly matched the
+published Pages artifact. Root independently verified80 packet members,
+12 Docs Git blobs, both whole original artifact hashes, seven actual tar/body
+joins and two original build-log receipt objects. The original build-time
+sitePublished=false flag remains unchanged; the separate deployment and live
+evidence establish publication. Both observers are terminal, without timeout.
+Content also equalsD11, so the exact run/source/artifact/deployment identities,
+not byte equality alone, identify the new publication.
+
+[AI v2 compiler-pin qualification](evidence/p15-ai-s57b6-pin-20261123/README.md)
+passed all10 focused existing offline controls in1.217737s wall time.
+Only the two production compiler constants changed; one signed retired-R7
+mutation was added, and the maintained protocol now separates historical
+R7 calibration from pending new-S calibration. Original v1, provider settings,
+token caps,12 outcomes,no retries,source witness and frozen contracts remain.
+No provider request, fresh cohort, compiler or Go execution occurred here.
+
+### Decisions, open defects and next work
+
+C0 admits the exact newly measured raw bytes, qualified new-S AI pin and
+publication proof. The source-bound595 broad raw inputs and597 built-in P10
+dependencies remain equal to S; the current measured fingerprint is still
+995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e.
+The changed AI files and compatibility manifest remain separately bound outside
+that built-in fingerprint. A post-commit external C0 receipt must confirm the
+exact source/tree and scope before the600-second generator runs.
+
+Run the original seven-output generator, commit C1, execute all56 original
+gates under1800 seconds and retain their actual results, then verify metadata
+and commit C2. Original R23v1 remains active; its source difference must retain
+FAIL until an explicit applicable owner decision. Oracle's native platform
+limitation remains distinct. Neither policy nor required deadline is relaxed.
+
+After final K is fixed and published, use the new unchanged1537-byte D12
+receipt ZIP in D03. Required Build/OpenMinis/full-iOS/Runtime-PoC workflows
+and full repaired F01 need actual final-source results. RemoteBuilder's
+39/58/8 qualification, fresh final-K AI calibration/cohort and full179 remain.
+Latest complete formal179 is still K8:114PASS/0FAIL/26NOT_RUN/
+38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN; closure_complete=false.

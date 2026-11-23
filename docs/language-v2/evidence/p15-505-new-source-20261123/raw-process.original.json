@@ -1,0 +1,117 @@
+{
+  "source": {
+    "head": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "toplevel": "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123",
+    "replace_refs": "",
+    "tree": "370d85f75d8fb5bba5f9c8afe438208d97a525c8",
+    "branch": "audit/cherri-p10r15-f01-compiler-20261123",
+    "status": ""
+  },
+  "argv": [
+    "/usr/local/bin/go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=15m",
+    "-parallel=2",
+    "-run",
+    "^(TestP10_VerifyAndRecord505CatalogExecution|TestP10_ParameterContractMatrix_AllCatalogActions)$",
+    "."
+  ],
+  "pid": 2267328,
+  "started_utc": "2026-11-23T06:55:38.226482+00:00",
+  "finished_utc": "2026-11-23T06:55:58.430058+00:00",
+  "elapsed_seconds": 20.203581885434687,
+  "exit_code": 0,
+  "timed_out": false,
+  "source_after": {
+    "head": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "toplevel": "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123",
+    "replace_refs": "",
+    "tree": "370d85f75d8fb5bba5f9c8afe438208d97a525c8",
+    "branch": "audit/cherri-p10r15-f01-compiler-20261123",
+    "status": ""
+  },
+  "input_fingerprint_before": "995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e",
+  "input_fingerprint_after": "995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e",
+  "ran": [
+    "TestP10_VerifyAndRecord505CatalogExecution",
+    "TestP10_ParameterContractMatrix_AllCatalogActions"
+  ],
+  "passed": [
+    "TestP10_VerifyAndRecord505CatalogExecution",
+    "TestP10_ParameterContractMatrix_AllCatalogActions"
+  ],
+  "failed_or_skipped": [],
+  "package_pass_events": 1,
+  "json_parse_errors": [],
+  "artifact_files": [
+    {
+      "path": "p10-505-execution-evidence.json",
+      "bytes": 717835,
+      "sha256": "6a99ea3f0e541b4dca416f6cfdef775a7492eef118ddc33f9cc5632398d4aeb8"
+    },
+    {
+      "path": "p10-505-parameter-contract-evidence.json",
+      "bytes": 1814832,
+      "sha256": "74c5ed6ffb65594937aefcf248cef7f1d5ed47388fc57352c148f478e14f8eb5"
+    }
+  ],
+  "artifact_summaries": [
+    {
+      "file": "p10-505-execution-evidence.json",
+      "bytes": 717835,
+      "sha256": "6a99ea3f0e541b4dca416f6cfdef775a7492eef118ddc33f9cc5632398d4aeb8",
+      "actual_counters": {
+        "totalCatalogEntries": 505,
+        "callableCount": 497,
+        "constructCount": 8,
+        "legacyPassCount": 505,
+        "v2PassCount": 505,
+        "plistIdentifierPassCount": 505,
+        "parameterContractPassCount": 505,
+        "decompilePassCount": 505,
+        "roundTripPassCount": 505,
+        "structuralRoundTripCount": 505,
+        "nativeSpecimenParityCount": 0,
+        "appleRuntimeExecutedCount": 0
+      },
+      "entry_count": 505,
+      "unique_name_count": 505,
+      "catalog_name_set_sha256": "2b7bc6130c047175f9b71063d26275bff0d1a9f56b0ed2f4b762c37ec14fabf6",
+      "dimension_summary_count": 6,
+      "schema_version": null,
+      "all_contracts_passed": null
+    },
+    {
+      "file": "p10-505-parameter-contract-evidence.json",
+      "bytes": 1814832,
+      "sha256": "74c5ed6ffb65594937aefcf248cef7f1d5ed47388fc57352c148f478e14f8eb5",
+      "actual_counters": {
+        "totalCatalog": 505,
+        "callableCount": 497,
+        "constructCount": 8,
+        "passedCount": 505,
+        "failedCount": 0
+      },
+      "entry_count": 505,
+      "unique_name_count": 505,
+      "catalog_name_set_sha256": "2b7bc6130c047175f9b71063d26275bff0d1a9f56b0ed2f4b762c37ec14fabf6",
+      "dimension_summary_count": 6,
+      "schema_version": "2.0.0",
+      "all_contracts_passed": true
+    }
+  ],
+  "artifact_shape_or_count_errors": [],
+  "execution_valid": true,
+  "raw_input_count": 595,
+  "raw_inputs_unchanged": true,
+  "stdout_sha256": "0a6880f2712ee3424621658ef82bcc115a558c04b7ee684c63c953d826e06c20",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "capacity_free_before": 2670370816,
+  "capacity_free_after": 2665918464,
+  "final_consumer_source": null,
+  "status": "PASS",
+  "artifact_semantics_pending_independent_intake": true,
+  "native_or_apple_acceptance": false
+}

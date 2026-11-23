@@ -1,0 +1,30 @@
+{
+  "source": {
+    "head": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "toplevel": "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123",
+    "replace_refs": "",
+    "tree": "370d85f75d8fb5bba5f9c8afe438208d97a525c8",
+    "branch": "audit/cherri-p10r15-f01-compiler-20261123",
+    "status": ""
+  },
+  "argv": [
+    "/usr/local/bin/go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=15m",
+    "-parallel=2",
+    "-run",
+    "^(TestP10_VerifyAndRecord505CatalogExecution|TestP10_ParameterContractMatrix_AllCatalogActions)$",
+    "."
+  ],
+  "pid": 2267328,
+  "started_utc": "2026-11-23T06:55:38.226482+00:00",
+  "finished_utc": "2026-11-23T06:55:58.430058+00:00",
+  "elapsed_seconds": 20.203581885434687,
+  "exit_code": 0,
+  "timed_out": false,
+  "stdout_sha256": "0a6880f2712ee3424621658ef82bcc115a558c04b7ee684c63c953d826e06c20",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "postflight_validation_pending": true
+}

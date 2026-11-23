@@ -1,0 +1,49 @@
+{
+  "source": {
+    "head": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "toplevel": "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123",
+    "replace_refs": "",
+    "tree": "370d85f75d8fb5bba5f9c8afe438208d97a525c8",
+    "branch": "audit/cherri-p10r15-f01-compiler-20261123",
+    "status": ""
+  },
+  "argv": [
+    "/usr/local/bin/go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=15m",
+    "-parallel=2",
+    "-run",
+    "^(TestP10_VerifyAndRecord505CatalogExecution|TestP10_ParameterContractMatrix_AllCatalogActions)$",
+    "."
+  ],
+  "environment_selection": {
+    "GOTOOLCHAIN": "go1.24.13",
+    "GOMODCACHE": "/mnt/development/tooling/cherri-go/mod",
+    "GOCACHE": "/mnt/development/tooling/cherri-go/runtime-persistent-20261123/build-cache",
+    "GOTMPDIR": "/mnt/development/tooling/cherri-go/runtime-persistent-20261123/tmp-ubuntu",
+    "TMPDIR": "/mnt/development/tooling/cherri-go/runtime-persistent-20261123/tmp-ubuntu",
+    "CHERRI_CATALOG_EVIDENCE_DIR": "/mnt/development/projects/evidence/cherri-p10r15-505-s57b6d919-20261123/raw-attempt-01/artifacts"
+  },
+  "expected_producers": [
+    "TestP10_VerifyAndRecord505CatalogExecution",
+    "TestP10_ParameterContractMatrix_AllCatalogActions"
+  ],
+  "expected_artifacts": [
+    "p10-505-execution-evidence.json",
+    "p10-505-parameter-contract-evidence.json"
+  ],
+  "test_timeout_seconds": 900,
+  "process_wall_limit_seconds": 1200,
+  "scope": "Actual local catalog execution only; no native specimen or Apple runtime credit.",
+  "driver_sha256": "8ed66b338062c7d31efc5fce6dd468a599be0557309fe29344c204a2add33467",
+  "recorded_utc": "2026-11-23T06:55:38.180678+00:00",
+  "minimum_free_bytes": 2147483648,
+  "capacity_free_before": 2670370816,
+  "termination_grace_seconds": 5,
+  "kill_reap_wait_seconds": 5,
+  "final_consumer_source": null,
+  "raw_input_count": 595,
+  "provider_ai_private_environment_forwarded": false
+}

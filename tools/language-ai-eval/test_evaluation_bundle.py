@@ -488,6 +488,7 @@ class ProvenanceControls(unittest.TestCase):
                 ("retries", lambda m: m.update(retry_limit=1), "OUTCOME_POLICY"),
                 ("outcomes", lambda m: m.update(expected_outcomes=11), "OUTCOME_POLICY"),
                 ("compiler source", lambda m: m["compiler"].update(source_sha=eb.COMPILER_SOURCE), "COMPILER_IDENTITY"),
+                ("retired R7 compiler source", lambda m: m["compiler"].update(source_sha="ca316a3dee252456c4bec751594cf249c709b331"), "COMPILER_IDENTITY"),
                 ("compiler binary", lambda m: m["compiler"].update(binary_sha256="0"*64), "COMPILER_IDENTITY"),
                 ("environment", lambda m: m.update(compiler_environment_profile="isolated-defaults/v1"), "COMPILER_ENVIRONMENT_PROFILE")]
             for name, change, error in changes:

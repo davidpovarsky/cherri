@@ -1,0 +1,236 @@
+{
+  "schema": "cherri-raw505-independent-intake/2",
+  "auditedUTC": "2026-11-23T07:01:26.390198+00:00",
+  "source": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "tree": "370d85f75d8fb5bba5f9c8afe438208d97a525c8",
+  "sourceProcessReceiptSHA256": "c577f775fac7bdf74fb3dabb71fd586c0e357f9af19df4069a0ba635fedb4877",
+  "sourceSupervisorSHA256": "8ed66b338062c7d31efc5fce6dd468a599be0557309fe29344c204a2add33467",
+  "auditorSHA256": "ede00b320a5b60038f36ca69c8a6f62a9b91f17eada07d27f3d324ea11c5664d",
+  "actualProcessSeconds": 20.203581885434687,
+  "actualExitCode": 0,
+  "timedOut": false,
+  "eventCount": 108,
+  "parseErrorCount": 0,
+  "parentCount": 2,
+  "parents": [
+    {
+      "test": "TestP10_VerifyAndRecord505CatalogExecution",
+      "action": "pass",
+      "elapsed": 14.84
+    },
+    {
+      "test": "TestP10_ParameterContractMatrix_AllCatalogActions",
+      "action": "pass",
+      "elapsed": 2.47
+    }
+  ],
+  "packageCount": 1,
+  "packageElapsed": 17.33,
+  "localCounts": {
+    "legacyPassCount": 505,
+    "v2PassCount": 505,
+    "plistIdentifierPassCount": 505,
+    "parameterContractPassCount": 505,
+    "decompilePassCount": 505,
+    "roundTripPassCount": 505,
+    "structuralRoundTripCount": 505
+  },
+  "constructCount": 8,
+  "callableCount": 497,
+  "parameterPassed": 505,
+  "parameterFailed": 0,
+  "parameterDimensions": [
+    {
+      "dimension": "requiredParams",
+      "totalCatalog": 505,
+      "constructsExcluded": 8,
+      "eligible": 347,
+      "tested": 347,
+      "pass": 347,
+      "fail": 0,
+      "notApplicable": 158,
+      "notTested": 0,
+      "blocked": 0,
+      "subKindBreakdown": {
+        "NO_REQUIRED_PARAMS": 150,
+        "REQUIRED_PARAMS_EMITTED": 347,
+        "COMPILER_CONSTRUCT": 8
+      }
+    },
+    {
+      "dimension": "missingRequiredRejected",
+      "totalCatalog": 505,
+      "constructsExcluded": 8,
+      "eligible": 347,
+      "tested": 347,
+      "pass": 347,
+      "fail": 0,
+      "notApplicable": 158,
+      "notTested": 0,
+      "blocked": 0,
+      "subKindBreakdown": {
+        "NO_REQUIRED_PARAMS": 150,
+        "POSITIONAL_REQUIRED_REJECTED": 342,
+        "VARIADIC_REQUIRED_REJECTED": 5,
+        "COMPILER_CONSTRUCT": 8
+      }
+    },
+    {
+      "dimension": "optionalParams",
+      "totalCatalog": 505,
+      "constructsExcluded": 8,
+      "eligible": 202,
+      "tested": 202,
+      "pass": 202,
+      "fail": 0,
+      "notApplicable": 303,
+      "notTested": 0,
+      "blocked": 0,
+      "subKindBreakdown": {
+        "NO_OPTIONAL_PARAMS": 295,
+        "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED": 202,
+        "COMPILER_CONSTRUCT": 8
+      }
+    },
+    {
+      "dimension": "enumValidation",
+      "totalCatalog": 505,
+      "constructsExcluded": 8,
+      "eligible": 98,
+      "tested": 98,
+      "pass": 98,
+      "fail": 0,
+      "notApplicable": 407,
+      "notTested": 0,
+      "blocked": 0,
+      "subKindBreakdown": {
+        "NO_ENUM_PARAMS": 399,
+        "VALID_ACCEPTED_INVALID_REJECTED": 98,
+        "COMPILER_CONSTRUCT": 8
+      }
+    },
+    {
+      "dimension": "dynamicReference",
+      "totalCatalog": 505,
+      "constructsExcluded": 8,
+      "eligible": 397,
+      "tested": 397,
+      "pass": 397,
+      "fail": 0,
+      "notApplicable": 108,
+      "notTested": 0,
+      "blocked": 0,
+      "subKindBreakdown": {
+        "ZERO_PARAMETERS": 84,
+        "DYNAMIC_VARIABLE_ACCEPTED": 396,
+        "LITERAL_ONLY_REJECTED": 1,
+        "ENUM_LITERAL_DISCRIMINATOR_ONLY": 16,
+        "COMPILER_CONSTRUCT": 8
+      }
+    },
+    {
+      "dimension": "platformGate",
+      "totalCatalog": 505,
+      "constructsExcluded": 8,
+      "eligible": 65,
+      "tested": 65,
+      "pass": 65,
+      "fail": 0,
+      "notApplicable": 440,
+      "notTested": 0,
+      "blocked": 0,
+      "subKindBreakdown": {
+        "UNIVERSAL_NO_GATE": 432,
+        "MIN_VERSION_GATE": 19,
+        "MIN_VERSION_GATE+MAX_VERSION_GATE": 2,
+        "MAC_ONLY_GATE+MIN_VERSION_GATE": 6,
+        "MAC_ONLY_GATE": 15,
+        "NON_MAC_ONLY_GATE": 17,
+        "NON_MAC_ONLY_GATE+MIN_VERSION_GATE": 6,
+        "COMPILER_CONSTRUCT": 8
+      }
+    }
+  ],
+  "nativeStatusCounts": {
+    "NEEDS_EVIDENCE": 505
+  },
+  "runtimeStatusCounts": {
+    "BLOCKED_DEVICE": 505
+  },
+  "nativeRuntimeAcceptanceGranted": false,
+  "artifacts": [
+    {
+      "path": "p10-505-execution-evidence.json",
+      "bytes": 717835,
+      "sha256": "6a99ea3f0e541b4dca416f6cfdef775a7492eef118ddc33f9cc5632398d4aeb8",
+      "historicalTrackedSha256": "6a99ea3f0e541b4dca416f6cfdef775a7492eef118ddc33f9cc5632398d4aeb8",
+      "byteIdenticalToHistorical": true,
+      "newActualExecutionSource": "57b6d919757e1d0262993c6f11c6dc1cd17d6177"
+    },
+    {
+      "path": "p10-505-parameter-contract-evidence.json",
+      "bytes": 1814832,
+      "sha256": "74c5ed6ffb65594937aefcf248cef7f1d5ed47388fc57352c148f478e14f8eb5",
+      "historicalTrackedSha256": "74c5ed6ffb65594937aefcf248cef7f1d5ed47388fc57352c148f478e14f8eb5",
+      "byteIdenticalToHistorical": true,
+      "newActualExecutionSource": "57b6d919757e1d0262993c6f11c6dc1cd17d6177"
+    }
+  ],
+  "checks": {
+    "originalManifestMembers": true,
+    "submittedSupervisor": true,
+    "exactSource": true,
+    "actualTerminal": true,
+    "originalCommand": true,
+    "originalBounds": true,
+    "actualToolchain": true,
+    "freshAdmission": true,
+    "streams": true,
+    "strictEvents": true,
+    "twoRawFiles": true,
+    "two505Catalogs": true,
+    "constructIdentities": true,
+    "constructCounts": true,
+    "localExecutionCounts": true,
+    "nativeRuntimeScope": true,
+    "allParameterContracts": true,
+    "dimension_requiredParams": true,
+    "dimension_missingRequiredRejected": true,
+    "dimension_optionalParams": true,
+    "dimension_enumValidation": true,
+    "dimension_dynamicReference": true,
+    "dimension_platformGate": true,
+    "sixDimensionsReconstructed": true,
+    "originalArtifactBindings": true,
+    "S_to_d67_rawGitEquivalence": true,
+    "actualBroadInputsBeforeAfter": true,
+    "actual597DependencyFingerprint": true,
+    "S_to_d67_dependencyGitEquivalence": true,
+    "S_ancestorOf_d67": true,
+    "sourceStillClean": true
+  },
+  "intakeAccepted": true,
+  "sourceEquivalence": {
+    "source": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "sourceTree": "370d85f75d8fb5bba5f9c8afe438208d97a525c8",
+    "consumerObservation": "d67e6c0995ef12112b944b78347f481235506b9d",
+    "consumerTree": "901e3d1c4db16c5644b8e04271cc6d8e428d5ad2",
+    "finalConsumerSource": null,
+    "broadRawInputs": 595,
+    "rawGitEntriesEqual": true,
+    "currentActualFileWitnessSha256": "95c3a05cacf3d83b368641662bee1bc4a04b1844755f030a0ad1e5d539a00b94",
+    "dependencyCount": 597,
+    "dependencyFingerprint": "995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e",
+    "dependencyEntriesEqual": true,
+    "ancestor": true,
+    "compatibilityManifestOutsideBuiltInFingerprint": true,
+    "finalSourceRecheckRequired": true
+  },
+  "historicalOutputBytesReusedAsMeasurement": false,
+  "newMeasuredBytesEqualHistorical": true,
+  "newSourceMeasurementAtS": true,
+  "dependencyFingerprintActuallyChanged": false,
+  "producerCommandsExecutedByIntake": 0,
+  "privateInputReads": 0,
+  "intakeDurationSeconds": 0.285705
+}

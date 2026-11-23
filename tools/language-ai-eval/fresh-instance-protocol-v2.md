@@ -1,11 +1,13 @@
 # AI01 profile v2: Sonnet 5.5 transport and native compiler calibration
 
-Status: the exact reviewed R7 Linux ARM64 compiler is pinned and all twelve
-original public baseline compilations and graph replays passed. Final
-independent source/protocol review and frozen-source execution handoff remain
-required before any real evaluation bundle. No fresh evaluation seed, provider request or measured
-quality outcome is part of this change. The historical v1 protocol and receipts
-remain unchanged.
+Status: the exact reviewed Linux ARM64 compiler at source
+`57b6d919757e1d0262993c6f11c6dc1cd17d6177` is pinned. Its twelve original public
+baseline compilations and graph replays at the final evaluation implementation
+remain pending. Final independent source/protocol review and frozen-source
+execution handoff are required before a new real evaluation bundle. No fresh
+evaluation seed, provider request or measured quality outcome is part of this
+change. The historical v1 protocol and all earlier calibration receipts remain
+unchanged.
 
 ## Why this is a new profile
 
@@ -66,16 +68,24 @@ or adjudication cannot produce a complete quality score.
 ## Compiler and environment boundary
 
 Evaluation implementation source and compiler source are distinct identities.
-The new profile fixes compiler source to R7
-`ca316a3dee252456c4bec751594cf249c709b331`.
+The current compiler pin is the F01 Boolean-helper repair at source
+`57b6d919757e1d0262993c6f11c6dc1cd17d6177`.
 The exact native binary SHA256 is
-`42f6e42e7b6a8ea6f523a752fd2f06b96265e733fa00ad808190e062d1266301`.
-It was built from a clean canonical R7 clone with Go1.24.13, CGO disabled,
-Linux/ARM64 and embedded unmodified R7 VCS identity. The actual pair receipt
-has SHA256 `d3bae0c50203bf0237289f8d18b242db1997d95feac5ebcbb2f2beee721fdcfc`.
-Identity pinning and the actual twelve-case calibration below are separate
-requirements before a real seed. Preparation and loading reject an absent compiler pin
-with `UNREVIEWED_PROFILE_COMPILER`; no environment or CLI override bypasses it.
+`5a1c0922925a8f3fb001052c7077f3a1df242c4cb8f04609d06f432d84683f5a`.
+It was built from a clean canonical clone with Go1.24.13, CGO disabled,
+Linux/ARM64 and embedded unmodified VCS identity for that exact source. The
+actual pair receipt has SHA256
+`d26e90977ab77d747e24e41793f5d365fae745efdb7a0e8fd0ec4f0f302353be`.
+Identity pinning and actual twelve-case calibration at the final evaluation
+implementation are separate requirements before a real seed. Preparation and
+loading reject an absent compiler pin with `UNREVIEWED_PROFILE_COMPILER`;
+no environment or CLI override bypasses it.
+
+This pre-cohort compiler-pin revision keeps the profile, schema, environment
+and seven-file inventory unchanged. The signed manifest binds the exact
+compiler tuple, implementation commit and producer bytes. Earlier R7 v2
+bundles and receipts remain attached to their original source and compiler;
+they must not be resumed, relabelled or restamped as the new measurement.
 
 The bundle retains the existing `compiler.exe` filename as its envelope.
 For v2 it contains the exact Linux ARM64 binary and receives owner-only mode
@@ -89,20 +99,22 @@ HOME/USERPROFILE, inherited PATH/temp paths and Cherri corpus/feature overrides
 remain absent. This is an environment policy, not an OS sandbox claim.
 
 Before a real seed, compile the same twelve authored public baseline inputs
-once using that exact R7 binary, one per task/arm, with unchanged 35-second
+once using that exact pinned binary, one per task/arm, with unchanged 35-second
 per-case and 450-second aggregate limits. Retain the original plan, source
 bytes, commands, binary/VCS identity, streams, plists and every failure.
 Independently replay the same graph oracle against those actual outputs.
 Preserve the S3/S4 calibration originals separately. Any demonstrated mismatch
 must be repaired and reviewed before freezing a new evaluation implementation.
 
-The actual R7 calibration ran at clean implementation
+The historical R7 calibration ran at clean implementation
 `752c41b74f64fd633e63792fd4685156fabe913c`: twelve original source files,
 twelve compiler exits0 and twelve graph replays PASS in0.808499 seconds.
 All source and binary bytes remained unchanged. See the
 [original calibration packet](../../docs/language-v2/evidence/p15-ai01-v2-r7-calibration-20261123/README.md).
-This documentation follow-up changes no executable calibration producer.
-No real evaluation seed, provider request or model-quality measurement occurred.
+Those original R7 results remain historical and do not calibrate the new
+compiler or final evaluation implementation. The new twelve-case calibration
+must be retained separately before a fresh cohort is sealed. No real evaluation
+seed, provider request or model-quality measurement is claimed here.
 
 ## Budget and authorization
 
@@ -125,7 +137,7 @@ value belongs in source, arguments, plans, receipts or public evidence.
    compiler receipt and twelve-case calibration. Pin the real compiler hash.
 2. Freeze the final evaluation implementation in a clean Git commit. Canonical
    Go intake requires this exact implementation SHA, even when compiler source
-   is the separate R7 pin. Do not label a later tooling commit as K8.
+   is the separate pin above. Record both exact identities.
 3. Preserve an original authenticated model-identity response and receipt.
    Key-variable presence or public model documentation alone does not prove
    current account entitlement or replace that response.
