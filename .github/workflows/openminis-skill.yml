@@ -151,7 +151,7 @@ jobs:
 
       - name: Execute source-bound macro contract coverage
         run: |
-          python3 tools/p10r15/generate_macro_contract_coverage.py --refresh --out-dir dist/macro-contracts
+          python3 tools/p10r15/generate_macro_contract_coverage.py --refresh --out-dir dist/macro-contracts --retain-compiler dist/macro-contracts/compiler
           python3 tools/p10r15/generate_macro_contract_coverage.py --verify --out-dir dist/macro-contracts
           python3 tools/p10r15/verify_macro_ledger_evidence.py --repo . --ledger-dir dist/macro-contracts --report dist/macro-contracts/verifier-audit.json
 

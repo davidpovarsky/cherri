@@ -550,7 +550,18 @@ def build_rows(macros, cases, label_controls=None):
     return rows
 
 
-def refresh(repo):
+def retain_compiler(binary, destination, expected_sha):
+    data = binary.read_bytes()
+    if sha(data) != expected_sha:
+        raise ValueError("MACRO_RETAINED_COMPILER_SOURCE_CHANGED")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("xb") as output:
+        output.write(data)
+    if sha(destination.read_bytes()) != expected_sha:
+        raise ValueError("MACRO_RETAINED_COMPILER_COPY_CHANGED")
+
+
+def refresh(repo, compiler_output=None):
     fingerprint = input_fingerprint(repo)
     source_sha = run(["git", "rev-parse", "HEAD"], repo).stdout.strip()
     dirty = bool(run(["git", "status", "--porcelain"], repo).stdout.strip())
@@ -634,6 +645,8 @@ def refresh(repo):
                   "labelControls": label_controls,
                   "requirements": requirements,
                   "privacy": {"privateCorpusRead": False, "signerUsed": False, "networkFixtureExecuted": False, "liveConsumerChanged": False}}
+        if compiler_output is not None:
+            retain_compiler(binary, compiler_output, compiler_sha)
     if input_fingerprint(repo) != fingerprint:
         raise ValueError("SOURCE_CHANGED_DURING_EXECUTION")
     passed = all(c["verdict"] == "PASS" for c in compiles) and all(c["verdict"] == "PASS" for c in mutations)
@@ -747,16 +760,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=ROOT)
     parser.add_argument("--out-dir", type=Path)
+    parser.add_argument("--retain-compiler", type=Path, help="retain the already-tested exact compiler at a fresh explicit path")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--refresh", action="store_true")
     mode.add_argument("--verify", action="store_true")
     opts = parser.parse_args()
+    if opts.retain_compiler is not None:
+        if not opts.refresh:
+            parser.error("--retain-compiler requires --refresh")
+        if opts.retain_compiler.exists() or opts.retain_compiler.is_symlink():
+            parser.error("retained compiler destination must be absent")
     repo = opts.repo.resolve()
     out = opts.out_dir.resolve() if opts.out_dir else repo / "docs/apple-runtime/p10r15"
     json_path = out / "macro-contract-coverage.json"
     md_path = out / "macro-contract-coverage.md"
     if opts.refresh:
-        report = refresh(repo)
+        report = refresh(repo, opts.retain_compiler)
         write_json(json_path, report)
         md_path.write_bytes(markdown(report).encode("utf-8"))
     else:
