@@ -174,6 +174,9 @@ def validate_reports(records, candidate, skill_manifest, skill_build_hash):
             ids = ["is.workflow.actions.gettext", "is.workflow.actions.showresult"]
             if row["check"] != "runner_compile_unsigned":
                 ids.insert(1, "is.workflow.actions.setvariable")
+            else:
+                # The entrypoint collector records sorted unique native IDs.
+                ids.insert(1, "is.workflow.actions.nothing")
             require(native[0]["nativeActionIDs"] == ids and native[0]["actions"] == len(ids), "Unexpected native producer/consumer graph")
         else:
             require(row["nativeArtifacts"] == [], "Unexpected entrypoint artifact")
@@ -274,6 +277,9 @@ def validate_smoke(report, release, home, hashes, default_home):
                 ids = ["is.workflow.actions.gettext", "is.workflow.actions.showresult"]
                 if row["route"] == "legacy":
                     ids.insert(1, "is.workflow.actions.setvariable")
+                else:
+                    # Smoke records actual wire order, including the V2 void tail.
+                    ids.append("is.workflow.actions.nothing")
                 require(artifact["nativeActionIDs"] == ids and type(artifact["nativeActions"]) is int
                         and artifact["nativeActions"] == len(ids), "Smoke native graph shape differs")
             else:

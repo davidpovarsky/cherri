@@ -32,6 +32,8 @@ def smoke_model(home, release, hashes, modes, default=False):
                 ids = ["is.workflow.actions.gettext", "is.workflow.actions.showresult"]
                 if route == "legacy":
                     ids.insert(1, "is.workflow.actions.setvariable")
+                elif operation == "unsigned":
+                    ids.append("is.workflow.actions.nothing")
                 artifacts = [{"file": route + ".shortcut", "sha256": "1" * 64, "bytes": 100,
                               "magicHex": "41454131" if operation == "signed" else "3c3f786d",
                               "nativeActionIDs": ids, "nativeActions": len(ids),
@@ -86,6 +88,10 @@ def reports_model():
                                  "exitCode": 1, "nativeArtifacts": [], "seconds": 0.1,
                                  "stdoutSha256": gates.sha(b""), "stdoutBytes": 0,
                                  "diagnosticTail": "Synthetic unit model: " + diagnostic})
+    v2_native = next(row for row in entry["results"]
+                     if row["check"] == "runner_compile_unsigned")["nativeArtifacts"][0]
+    v2_native.update(actions=3, nativeActionIDs=["is.workflow.actions.gettext",
+                     "is.workflow.actions.nothing", "is.workflow.actions.showresult"])
     entry["summary"] = {"checks": 39, "passed": 39, "failed": 0, "notRun": 0}
     entry["activationGatePassed"] = True
     hashes = {name: stage["candidateHashes"][name] for name in gates.PROTECTED}
@@ -161,6 +167,60 @@ class EvidenceGates(unittest.TestCase):
                 changed = copy.deepcopy(baseline)
                 mutate(changed)
                 with self.assertRaises((ValueError, KeyError)):
+                    self.validate(changed)
+
+
+    def test_entrypoint_requires_exact_current_v2_and_legacy_graphs(self):
+        baseline = reports_model()
+        self.validate(baseline)
+        def native(records, name):
+            return next(row for row in records["entrypoints"]["results"]
+                        if row["check"] == name)["nativeArtifacts"][0]
+        mutations = {
+            "v2_missing_void": lambda r: native(r, "runner_compile_unsigned").update(
+                actions=2, nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.showresult"]),
+            "v2_extra_action": lambda r: native(r, "runner_compile_unsigned").update(actions=4),
+            "v2_wrong_id": lambda r: native(r, "runner_compile_unsigned").update(
+                nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.setvariable",
+                                 "is.workflow.actions.showresult"]),
+            "v2_unsorted_inventory": lambda r: native(r, "runner_compile_unsigned").update(
+                nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.showresult",
+                                 "is.workflow.actions.nothing"]),
+            "v2_bad_semantics": lambda r: native(r, "runner_compile_unsigned").update(syntheticSemanticsMatch=False),
+            "legacy_void_substitution": lambda r: native(r, "legacy_compile_unsigned").update(
+                nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.nothing",
+                                 "is.workflow.actions.showresult"]),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(mutation=name):
+                changed = copy.deepcopy(baseline)
+                mutate(changed)
+                with self.assertRaises(ValueError):
+                    self.validate(changed)
+
+    def test_smoke_requires_exact_v2_wire_order_and_unchanged_legacy(self):
+        baseline = reports_model()
+        self.validate(baseline)
+        def native(records, route):
+            return next(row for row in records["candidateSmoke"]["results"]
+                        if row["route"] == route and row["operation"] == "unsigned")["artifacts"][0]
+        mutations = {
+            "v2_missing_void": lambda r: native(r, "v2").update(
+                nativeActions=2, nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.showresult"]),
+            "v2_extra_action": lambda r: native(r, "v2").update(nativeActions=4),
+            "v2_interior_void": lambda r: native(r, "v2").update(
+                nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.nothing",
+                                 "is.workflow.actions.showresult"]),
+            "v2_bad_semantics": lambda r: native(r, "v2").update(syntheticSemanticsMatch=False),
+            "legacy_extra_void": lambda r: native(r, "legacy").update(
+                nativeActions=4, nativeActionIDs=["is.workflow.actions.gettext", "is.workflow.actions.setvariable",
+                                                 "is.workflow.actions.showresult", "is.workflow.actions.nothing"]),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(mutation=name):
+                changed = copy.deepcopy(baseline)
+                mutate(changed)
+                with self.assertRaises(ValueError):
                     self.validate(changed)
 
     def test_duplicate_json_keys_rejected(self):

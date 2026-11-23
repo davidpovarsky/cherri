@@ -52,6 +52,17 @@ def execute_owned(command, env, cwd, timeout):
 
 def synthetic_workflow_matches(actions, dialect):
     """Independent exact producer/consumer oracle for these two tiny fixtures."""
+    if dialect == "v2":
+        if not actions:
+            return False
+        terminal = actions[-1]
+        if (not isinstance(terminal, dict)
+                or terminal.get("WFWorkflowActionIdentifier") != "is.workflow.actions.nothing"
+                or terminal.get("WFWorkflowActionParameters", {}) != {}):
+            return False
+        # V2 main-void lowering emits one parameter-free terminal Nothing.
+        # Keep every producer/consumer action and the caller's input unchanged.
+        actions = actions[:-1]
     expected_ids = ["is.workflow.actions.gettext"]
     if dialect == "legacy":
         expected_ids.append("is.workflow.actions.setvariable")
