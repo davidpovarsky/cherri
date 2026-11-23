@@ -1,0 +1,658 @@
+{
+  "all10PublishedMemberBindingsVerified": true,
+  "allArtifactGitHubDigestsVerified": true,
+  "artifacts": [
+    {
+      "bytes": 75667,
+      "id": 14786790193,
+      "name": "ios-build-evidence",
+      "original": "artifacts/14786790193-ios-build-evidence.original.zip",
+      "sha256": "48388483f3288ebcc07a7b9bd62977e82227c29ab9e70dbb095f429e19db94d1"
+    },
+    {
+      "bytes": 8151,
+      "id": 14786177571,
+      "name": "startup-lifecycle-observation",
+      "original": "artifacts/14786177571-startup-lifecycle-observation.original.zip",
+      "sha256": "41db3cc1431a83d0be1da2f7a5277f02a084ac27e9513e33df8e722e48c571cd"
+    }
+  ],
+  "captureEventsRevalidatedAgainstOriginalSource": [
+    {
+      "appEventsVerified": 28,
+      "caseConclusions": [
+        "passed"
+      ],
+      "caseStarts": 1,
+      "issueCount": 0,
+      "observerHealth": {
+        "absenceProvesMainThreadBlocked": false,
+        "absenceProvesMissingLifecycle": false,
+        "executionWasOnMainThread": true,
+        "heartbeatCount": 12,
+        "heartbeatSpanMs": 23998,
+        "largestObservedHeartbeatGapMs": 5361,
+        "mainQueueExecutionObserved": true,
+        "mainQueueProbeEnqueued": true,
+        "mainQueueResponseMs": 848,
+        "status": "HEARTBEATS_OBSERVED",
+        "terminatedBy": "NO_TERMINAL_EVENT"
+      },
+      "rejectedMetadataCount": 0,
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "uniqueTestInvocation": true
+    },
+    {
+      "appEventsVerified": 63,
+      "caseConclusions": [
+        "failed"
+      ],
+      "caseStarts": 1,
+      "issueCount": 1,
+      "observerHealth": {
+        "absenceProvesMainThreadBlocked": false,
+        "absenceProvesMissingLifecycle": false,
+        "executionWasOnMainThread": true,
+        "heartbeatCount": 45,
+        "heartbeatSpanMs": 87830,
+        "largestObservedHeartbeatGapMs": 3116,
+        "mainQueueExecutionObserved": true,
+        "mainQueueProbeEnqueued": true,
+        "mainQueueResponseMs": 553,
+        "status": "HEARTBEATS_OBSERVED",
+        "terminatedBy": "NO_TERMINAL_EVENT"
+      },
+      "rejectedMetadataCount": 0,
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "uniqueTestInvocation": true
+    },
+    {
+      "appEventsVerified": 34,
+      "caseConclusions": [
+        "passed"
+      ],
+      "caseStarts": 1,
+      "issueCount": 0,
+      "observerHealth": {
+        "absenceProvesMainThreadBlocked": false,
+        "absenceProvesMissingLifecycle": false,
+        "executionWasOnMainThread": true,
+        "heartbeatCount": 18,
+        "heartbeatSpanMs": 33547,
+        "largestObservedHeartbeatGapMs": 2408,
+        "mainQueueExecutionObserved": true,
+        "mainQueueProbeEnqueued": true,
+        "mainQueueResponseMs": 1075,
+        "status": "HEARTBEATS_OBSERVED",
+        "terminatedBy": "NO_TERMINAL_EVENT"
+      },
+      "rejectedMetadataCount": 0,
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "uniqueTestInvocation": true
+    }
+  ],
+  "captureSourceBindings": [
+    {
+      "bytes": 18378,
+      "path": ".github/workflows/ios-build.yml",
+      "sha256": "d5f8198a880df816e05b041960c5189d9ebed1f844dd4ccb2f4a9e968b0417e2"
+    },
+    {
+      "bytes": 393,
+      "path": "ios/CherriApp/App/CherriApp.swift",
+      "sha256": "1566e855e13f0cb17bce76a810bc2d440d35964f3bb6d68b51fb95d47d27dcfe"
+    },
+    {
+      "bytes": 22613,
+      "path": "ios/CherriApp/App/WorkspaceView.swift",
+      "sha256": "b20f03c22b15be70e8437fac7b0dc1ee13add040c37c1d9e742358b52893bf20"
+    },
+    {
+      "bytes": 1655,
+      "path": "ios/CherriApp/Diagnostics/StartupContainerWitness.swift",
+      "sha256": "b7f69b1c59effe822125645628db6dc379ab5d4cde6e9792b59fc59915efb4bd"
+    },
+    {
+      "bytes": 12396,
+      "path": "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift",
+      "sha256": "21755f3697bda713227aeecd01394345dd4c65a3c8e030dd2c7991af16739c45"
+    },
+    {
+      "bytes": 1837,
+      "path": "ios/CherriApp/Documents/CherriDocument.swift",
+      "sha256": "6c533568992ffd877fa701075bd90047fcb3d22b9c4834e07c0d4da3ed972e6c"
+    },
+    {
+      "bytes": 22695,
+      "path": "ios/CherriApp/Editor/CherriEditorView.swift",
+      "sha256": "45581a83f937780dd1b3c430c6285ad103f1a571dc54d292ff41630c152ddbee"
+    },
+    {
+      "bytes": 54532,
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8"
+    },
+    {
+      "bytes": 8081,
+      "path": "ios/CherriUITests/EditorStartupDeadline.swift",
+      "sha256": "76e60417bf5bb21ee5f42a38636a96d4511242bef25e1ab81147dacbbd1d6645"
+    },
+    {
+      "bytes": 20180,
+      "path": "ios/scripts/capture_startup_observation.py",
+      "sha256": "94fdda26072d439b8686e559fd62e4aac39278b137682c321ad08a0dafd014bd"
+    },
+    {
+      "bytes": 38537,
+      "path": "ios/scripts/collect_ios_test_evidence.py",
+      "sha256": "86fcaeb12bc762a33eb4664a241c6735681bb0ac1eaf0e4c359aafd33d750265"
+    }
+  ],
+  "counts": {
+    "failed": 1,
+    "passed": 56
+  },
+  "d03ReadinessReceipts": [
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "controlScope": "document-and-editor",
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3759,
+      "schemaVersion": "1.1",
+      "stage": "window-wait",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": true,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "controlScope": "document-and-editor",
+      "createDocumentExists": true,
+      "createDocumentHittable": true,
+      "documentCreationIssued": false,
+      "editorExists": false,
+      "editorHittable": false,
+      "elapsedMilliseconds": 3759,
+      "schemaVersion": "1.1",
+      "stage": "document-check",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": false,
+      "windowExists": true
+    },
+    {
+      "appRunningForeground": true,
+      "budgetMilliseconds": 28000,
+      "controlScope": "editor-only",
+      "createDocumentExists": false,
+      "createDocumentHittable": false,
+      "documentCreationIssued": true,
+      "editorExists": true,
+      "editorHittable": true,
+      "elapsedMilliseconds": 7404,
+      "schemaVersion": "1.1",
+      "stage": "editor-wait",
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "waitCompleted": true,
+      "windowExists": true
+    }
+  ],
+  "d03ReadinessTiming": {
+    "budgetMilliseconds": 28000,
+    "droppedEntries": 0,
+    "elapsedMilliseconds": 7404,
+    "inFlightObservationCount": 0
+  },
+  "documentationEvidence": {
+    "errorCodes": [
+      "RUN_NOT_ELIGIBLE"
+    ],
+    "status": "NOT_VERIFIED"
+  },
+  "documentationUIStates": [
+    {
+      "keyboardExists": true,
+      "migrationButtonExists": false,
+      "migrationElementExists": false,
+      "noResultsExists": true,
+      "queryIsExpected": true,
+      "schemaVersion": "1.0",
+      "searchExists": true,
+      "stage": "before-toggle",
+      "switchExists": true,
+      "switchHittable": true,
+      "switchOff": true,
+      "switchOn": false,
+      "syntheticSourceResetVerified": true,
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+    },
+    {
+      "keyboardExists": true,
+      "migrationButtonExists": true,
+      "migrationElementExists": true,
+      "noResultsExists": false,
+      "queryIsExpected": true,
+      "schemaVersion": "1.0",
+      "searchExists": true,
+      "stage": "after-toggle",
+      "switchExists": true,
+      "switchHittable": true,
+      "switchOff": false,
+      "switchOn": true,
+      "syntheticSourceResetVerified": true,
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+    },
+    {
+      "keyboardExists": true,
+      "migrationButtonExists": true,
+      "migrationElementExists": true,
+      "noResultsExists": false,
+      "queryIsExpected": true,
+      "schemaVersion": "1.0",
+      "searchExists": true,
+      "stage": "result-wait",
+      "switchExists": true,
+      "switchHittable": true,
+      "switchOff": false,
+      "switchOn": true,
+      "syntheticSourceResetVerified": true,
+      "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+    }
+  ],
+  "doneQueryDetailRetained": false,
+  "failedTest": {
+    "durationSeconds": 92.556,
+    "observedStatus": "failed",
+    "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+  },
+  "failedWorkflowLog": {
+    "bytes": 22799,
+    "republished": false,
+    "sha256": "70cab931aea6e41ad55110ae4fa4baf082e5d7f3f3d0a326f8651ae599bfd0a1"
+  },
+  "failureExistenceVsHittabilityDistinguished": false,
+  "failureIssue": {
+    "descriptions": {
+      "compact": {
+        "capturedBytes": 20,
+        "capturedSha256": "568d077a0615492b11f3fb998ee6475b2a346494a9ce793960d5c1d2658f3050",
+        "originalBytes": 20,
+        "truncated": false
+      },
+      "detailed": {
+        "capturedBytes": 0,
+        "capturedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "originalBytes": 0,
+        "truncated": false
+      },
+      "errorDescription": {
+        "capturedBytes": 0,
+        "capturedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "originalBytes": 0,
+        "truncated": false
+      },
+      "errorDomain": {
+        "capturedBytes": 0,
+        "capturedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "originalBytes": 0,
+        "truncated": false
+      }
+    },
+    "diagnosticSignatures": [],
+    "errorCode": 0,
+    "errorDomain": "ABSENT",
+    "errorPresent": false,
+    "issueIndex": 1,
+    "issueType": "UNREVIEWED",
+    "schemaVersion": "1",
+    "sourceFile": "CherriEditorUITests.swift",
+    "sourceLine": 542,
+    "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+  },
+  "finalDocumentationCheckpointObserved": false,
+  "finalDoneAssertionPassed": false,
+  "finalSourcePreservationAssertionReached": false,
+  "formalAcceptanceGranted": false,
+  "formalEvidenceRecordCount": 0,
+  "intakeUtc": "2026-11-23T03:07:22.378533+00:00",
+  "limits": [
+    "Done existence and hittability cannot be separated by the retained compound assertion",
+    "No complete D03 or full iOS acceptance",
+    "No physical-device or arbitrary-input runtime credit",
+    "Original K8 failures remain separate and unchanged",
+    "K10 results are not relabeled to later source"
+  ],
+  "originalMigrationResultAssertionPassed": true,
+  "originalToggleAssertionPassed": true,
+  "protectedTestSourceChangedFromK8": false,
+  "protectedUITestSha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+  "repairCommit": "f79ee85a6cf5b8691684d141c0127420b5e59a80",
+  "repairNativeVerification": "PENDING",
+  "rootCauseStatus": "SUPPORTED_TOOLBAR_SEARCH_PRESENTATION_HYPOTHESIS_PENDING_NATIVE_VERIFICATION",
+  "sameOriginal57TestIdsAsK8Full": true,
+  "schema": "cherri-k10-ios-full-independent-intake/1",
+  "standardAssertionPrefixDigestMatched": true,
+  "startupCaptureAcceptanceRecordCount": 0,
+  "terminalConclusion": "failure",
+  "tests": [
+    {
+      "durationSeconds": 0.434,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testActionCatalogUsesCompilerDefinitions"
+    },
+    {
+      "durationSeconds": 0.065,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract"
+    },
+    {
+      "durationSeconds": 0.16,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testBuildProfilesPreserveSourceThroughCABI"
+    },
+    {
+      "durationSeconds": 0.094,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics"
+    },
+    {
+      "durationSeconds": 2.222,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems"
+    },
+    {
+      "durationSeconds": 0.057,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testCompileProducesShortcutPlist"
+    },
+    {
+      "durationSeconds": 0.004,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testCompletionRequestBindsExactUTF16SourceAndCaret"
+    },
+    {
+      "durationSeconds": 0.137,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE01ContextualCompletionService"
+    },
+    {
+      "durationSeconds": 0.545,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis"
+    },
+    {
+      "durationSeconds": 0.099,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition"
+    },
+    {
+      "durationSeconds": 0.024,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService"
+    },
+    {
+      "durationSeconds": 0.021,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing"
+    },
+    {
+      "durationSeconds": 1.498,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics"
+    },
+    {
+      "durationSeconds": 0.015,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits"
+    },
+    {
+      "durationSeconds": 0.035,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew"
+    },
+    {
+      "durationSeconds": 0.021,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
+    },
+    {
+      "durationSeconds": 9.699,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testEveryCatalogActionEmptyCallReturnsWithoutCrashingBridge"
+    },
+    {
+      "durationSeconds": 0.047,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testExactShoCompletionUsesCurrentBridgeSnapshot"
+    },
+    {
+      "durationSeconds": 0.069,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testPaletteSnippetSuppliesRequiredArguments"
+    },
+    {
+      "durationSeconds": 0.004,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testRepeatedCompileResetsIncludedActions"
+    },
+    {
+      "durationSeconds": 0.033,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testRP40SwiftIntegrationService"
+    },
+    {
+      "durationSeconds": 0.013,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testRP52DefaultRejectsLegacyAndKeepsExplicitReference"
+    },
+    {
+      "durationSeconds": 0.004,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testShortcutPlistEditorAppliesPreviewEdits"
+    },
+    {
+      "durationSeconds": 0.023,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testSimpleCompileDecompileRoundTrip"
+    },
+    {
+      "durationSeconds": 0.034,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis"
+    },
+    {
+      "durationSeconds": 0.01,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile"
+    },
+    {
+      "durationSeconds": 0.014,
+      "observedStatus": "passed",
+      "testId": "CherriCoreIntegrationTests/testVisualMetadataDecompileRoundTrip"
+    },
+    {
+      "durationSeconds": 0.094,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testAuthoredCloserIsNeverConsumed"
+    },
+    {
+      "durationSeconds": 0.033,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testCommentGeneratedClosersAndCompleteRealInput"
+    },
+    {
+      "durationSeconds": 0.071,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testCurlyBlockGeneratedClosersAndCompleteRealInput"
+    },
+    {
+      "durationSeconds": 0.079,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testDeletionInvalidatesGeneratedProvenance"
+    },
+    {
+      "durationSeconds": 0.147,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testDictionaryGeneratedClosersAndCompleteRealInput"
+    },
+    {
+      "durationSeconds": 0.01,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testGeneratedCloserSurvivesUntilMatchingKeyAndIsConsumedOnce"
+    },
+    {
+      "durationSeconds": 0.117,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testListGeneratedClosersAndCompleteRealInput"
+    },
+    {
+      "durationSeconds": 0.013,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testMultiCharacterInsertionDoesNotConsumeGeneratedText"
+    },
+    {
+      "durationSeconds": 0.089,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput"
+    },
+    {
+      "durationSeconds": 0.009,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testSelectionMovementInvalidatesGeneratedProvenance"
+    },
+    {
+      "durationSeconds": 4.772,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText"
+    },
+    {
+      "durationSeconds": 0.128,
+      "observedStatus": "passed",
+      "testId": "CherriEditorInputTests/testUnicodeUTF16OffsetsPreserveGeneratedCloser"
+    },
+    {
+      "durationSeconds": 2.142,
+      "observedStatus": "passed",
+      "testId": "CherriPreviewLifecycleTests/testCompiledPreviewAppearsAndIsRemovedWhenSourceClears"
+    },
+    {
+      "durationSeconds": 1.329,
+      "observedStatus": "passed",
+      "testId": "CherriPreviewLifecycleTests/testDisabledLivePreviewDoesNotCreateWebViewForUncompiledSource"
+    },
+    {
+      "durationSeconds": 1.087,
+      "observedStatus": "passed",
+      "testId": "CherriPreviewLifecycleTests/testEmptyWorkspaceMountsEditorWithoutWebPreview"
+    },
+    {
+      "durationSeconds": 0.093,
+      "observedStatus": "passed",
+      "testId": "DocumentationIndexTests/testD03BundledCurrentDocumentationSearch"
+    },
+    {
+      "durationSeconds": 0.082,
+      "observedStatus": "passed",
+      "testId": "DocumentationIndexTests/testD03RejectsHistoricalAndDamagedBundleRows"
+    },
+    {
+      "durationSeconds": 30.243,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI"
+    },
+    {
+      "durationSeconds": 92.556,
+      "observedStatus": "failed",
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+    },
+    {
+      "durationSeconds": 40.614,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"
+    },
+    {
+      "durationSeconds": 36.525,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI"
+    },
+    {
+      "durationSeconds": 22.992,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI"
+    },
+    {
+      "durationSeconds": 44.268,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE03EditorActionsHoverRenameUI"
+    },
+    {
+      "durationSeconds": 24.169,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI"
+    },
+    {
+      "durationSeconds": 32.607,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI"
+    },
+    {
+      "durationSeconds": 40.003,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"
+    },
+    {
+      "durationSeconds": 22.811,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard"
+    },
+    {
+      "durationSeconds": 9.228,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testNegativeMissingUIElementFailsClosed"
+    },
+    {
+      "durationSeconds": 24.238,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed"
+    },
+    {
+      "durationSeconds": 78.187,
+      "observedStatus": "passed",
+      "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16"
+    }
+  ],
+  "uiFailures": [
+    {
+      "failureCategory": "ASSERTION_FAILURE",
+      "sourceLine": 542,
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+    }
+  ],
+  "uniqueTestCount": 57,
+  "workflow": {
+    "attempt": 1,
+    "boundUtc": "2026-11-23T02:33:13.816542+00:00",
+    "case": "ios-full",
+    "createdAt": "2026-11-23T02:33:06Z",
+    "dispatchCount": 1,
+    "event": "workflow_dispatch",
+    "headBranch": "agent/cherri-p10r15-k10-verification-20261123",
+    "inputs": {
+      "documentation_component_only": false,
+      "runner_label": "macos-15",
+      "startup_observation_only": false
+    },
+    "runId": 45100858894,
+    "sourceCommit": "4feadab9db4d351628f78593304373631693869a",
+    "statusAtBinding": "queued",
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/45100858894",
+    "workflowId": 337107435,
+    "workflowPath": ".github/workflows/ios-build.yml"
+  },
+  "xcodebuildExitCode": 65
+}
