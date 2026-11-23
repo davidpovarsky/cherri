@@ -1,0 +1,130 @@
+{
+  "ai": {
+    "after": {
+      "observedUTC": null,
+      "path": null,
+      "sha256": null
+    },
+    "anchorStoryId": null,
+    "anchorTextSha256": null,
+    "before": {
+      "observedUTC": null,
+      "path": null,
+      "sha256": null
+    },
+    "bundlePath": null,
+    "completionReceipt": {
+      "path": null,
+      "sha256": null
+    },
+    "manifestSha256": null,
+    "reportSha256": null,
+    "rootReviewedCompletedOriginals": false
+  },
+  "authorization": null,
+  "budgets": {
+    "outerRunSeconds": 5340,
+    "outerStopReceiptSeconds": 30,
+    "outerStopSeconds": 30,
+    "outerTotalSeconds": 5400,
+    "producerSeconds": 4800,
+    "producerTerminationGraceSeconds": 30
+  },
+  "capacityReview": {
+    "historicalK8ExpandedBytes": 102725239,
+    "historicalK8Members": 2178,
+    "historicalReferenceIsNotCap": true,
+    "minimumMemAvailableBytes": null,
+    "minimumPersistentFreeBytes": null,
+    "minimumTmpfsFreeBytes": null,
+    "reviewedAt": null
+  },
+  "command": [
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "80m",
+    "/usr/local/bin/go",
+    "run",
+    "./tools/language-acceptance",
+    "--phase",
+    "local",
+    "--out",
+    "/mnt/development/projects/evidence/cherri-p10r15-k11-local179-20261123/attempt-01/acceptance-report.json"
+  ],
+  "formalAcceptanceGranted": false,
+  "launchEnabled": false,
+  "noAutomaticRetry": true,
+  "noAutomaticSourceSubstitution": true,
+  "output": "/mnt/development/projects/evidence/cherri-p10r15-k11-local179-20261123/attempt-01",
+  "privateCorpusInvocations": 0,
+  "proposalFiles": {
+    "EXECUTION-PLAN.md": "a9b4ccbb8972ee1745de0d77be99d475717319e7a0ea6d6987d71c29f82cfe5e",
+    "host-readiness.original.json": "55b6936175017af1ea4bc7832fc5e881072d9e36719202e3d01549e10c9a5b09",
+    "launch_reviewed.py": "b11db26ee31983bc32e32d17a5542c3a670e54f83081dd4191ebf9adf6fa02dc",
+    "source-witness.json": "918b88dfce62bb1b9951e5e797d5e0d2857b8ff9cf4f7e13b54cad231071fc17",
+    "supervise.py": "1ea10d1fd66d3f10b22db41fe4be6510b2d5bfd480219b4c1103ff96f21c1af2"
+  },
+  "providerCallsInThisLane": 0,
+  "publicFixtureSigning": {
+    "K05OriginalOnce": true,
+    "retryLimit": 0
+  },
+  "runnerUid": 1001,
+  "schemaVersion": 1,
+  "source": {
+    "branch": "agent/cherri-p10r15-k11-verification-20261123",
+    "origin": "https://github.com/davidpovarsky/cherri.git",
+    "path": "/dev/shm/cherri-p10r15-runtime-20261123/cherri-k11-source",
+    "sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+    "tree": "d3688f219f7454e80778cbcb3013967b6d339aad"
+  },
+  "status": "HELD_PENDING_ROOT_SOURCE_AI_CI_AND_CAPACITY_REVIEW",
+  "unit": "cherri-p10r15-local179-k11-20261123-attempt01.service",
+  "workflowBindings": [
+    {
+      "conclusion": null,
+      "event": null,
+      "originalPath": null,
+      "originalSchema": "GitHub REST actions run response",
+      "runAttempt": null,
+      "runId": null,
+      "sha256": null,
+      "status": null,
+      "workflowName": "Build & Test"
+    },
+    {
+      "conclusion": null,
+      "event": null,
+      "originalPath": null,
+      "originalSchema": "GitHub REST actions run response",
+      "runAttempt": null,
+      "runId": null,
+      "sha256": null,
+      "status": null,
+      "workflowName": "OpenMinis Skill"
+    },
+    {
+      "conclusion": null,
+      "event": null,
+      "originalPath": null,
+      "originalSchema": "GitHub REST actions run response",
+      "runAttempt": null,
+      "runId": null,
+      "sha256": null,
+      "status": null,
+      "workflowName": "iOS Build"
+    },
+    {
+      "conclusion": null,
+      "event": null,
+      "originalPath": null,
+      "originalSchema": "GitHub REST actions run response",
+      "runAttempt": null,
+      "runId": null,
+      "sha256": null,
+      "status": null,
+      "workflowName": "iOS 27 Shortcuts Runtime PoC"
+    }
+  ]
+}

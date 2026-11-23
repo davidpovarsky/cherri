@@ -1,0 +1,62 @@
+{
+  "MemAvailableBytes": 9195950080,
+  "MemTotalBytes": 12506689536,
+  "commands": [
+    {
+      "argv": [
+        "systemctl",
+        "show",
+        "--property=Version"
+      ],
+      "exitCode": 0,
+      "stderr": "",
+      "stdout": "Version=255.4-1ubuntu8.18\n"
+    },
+    {
+      "argv": [
+        "loginctl",
+        "show-user",
+        "ubuntu",
+        "-p",
+        "Linger",
+        "-p",
+        "State",
+        "-p",
+        "RuntimePath"
+      ],
+      "exitCode": 0,
+      "stderr": "",
+      "stdout": "RuntimePath=/run/user/1001\nState=active\nLinger=no\n"
+    },
+    {
+      "argv": [
+        "systemd-run",
+        "--help"
+      ],
+      "exitCode": 0,
+      "stderr": "",
+      "stdout": "  -u --unit=UNIT                  Run under the specified unit name\n  -p --property=NAME=VALUE        Set service or scope unit property\n     --no-block                   Do not wait until operation finished\n     --service-type=TYPE          Service type\n  -E --setenv=NAME[=VALUE]        Set environment variable"
+    }
+  ],
+  "filesystems": {
+    "development": {
+      "availableBytes": 409276416,
+      "totalBytes": 105089261568
+    },
+    "root": {
+      "availableBytes": 558882816,
+      "totalBytes": 47321268224
+    },
+    "tmpfs": {
+      "availableBytes": 4034097152,
+      "totalBytes": 6253342720
+    }
+  },
+  "gid": 1001,
+  "home": "/home/ubuntu",
+  "ordinaryGhHomeConfigExists": true,
+  "producerStarted": false,
+  "recordedAt": "2026-11-23T04:08:09.581303+00:00",
+  "uid": 1001,
+  "unitCreated": false
+}
