@@ -399,7 +399,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		}
 		if scenario, found := combinedValueBlockScenarios[row.ID]; found {
 			row.TestNames = scenario.tests()
-			row.ProductionPath = append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+			row.ProductionPath = append([]string{}, combinedValueBlockSourcePaths(row.ID)...)
 			row.Scope = scenario.Scope
 			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
 			if row.ID == "F04" {

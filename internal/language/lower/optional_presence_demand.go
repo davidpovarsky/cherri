@@ -77,6 +77,12 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 		case *syntax.BindingStmt:
 			bindings[value] = value.Name
 			depend(value.Name, value.Value)
+			if l.loopResultLocalPlan != nil && l.loopResultLocalPlan.BindingValues[value.Value] &&
+				l.loopResultNeedsCells(value.Value) {
+				// Each local cell consumes its value's independent presence,
+				// even if the binding itself is only counted or unused.
+				seed(value.Value)
+			}
 		case *syntax.AssignStmt:
 			depend(value.Name, value.Value)
 		case *syntax.ReturnStmt:

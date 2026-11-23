@@ -15,28 +15,48 @@ import (
 type combinedValueBlockScenario struct {
 	Group, Title, Unit, Native, Scope string
 	Required                          []string
+	ObservationTests                  []string
 }
 
-const combinedValueBlockF04Gap = "The complete F04 scenario is NOT_RUN: nested List and Optional loop elements have no verified native one-element/no-flatten/presence transport. Supported scalar and for-item graphs plus current target rejection are bounded observations only."
+const combinedValueBlockF04Gap = "The complete F04 scenario is NOT_RUN: closed Count and enrolled immutable local cells preserve one Dictionary cell per normal iteration with explicit payload presence; general nested List and Optional sequence export, function/native/aggregate interfaces, mutable or widened aliases, and unenrolled consumers remain unsupported. These bounded observations do not grant complete F04 tier credit."
+
+var combinedValueBlockF04ObservationTests = []string{
+	"TestP15F04CellPayloadContextBoundaries",
+	"TestP15F04ClosedItemsCountGraphCorruptions",
+	"TestP15F04ClosedItemsCountNativeGraphs",
+	"TestP15F04ClosedItemsCountPreservesUnsupportedBoundaries",
+	"TestP15F04KnownListLoopResultsFailClosed",
+	"TestP15F04LocalCellAdmissionBoundaries",
+	"TestP15F04LocalCellBoundaryPromotions",
+	"TestP15F04LocalCellConsumerNativeGraphs",
+	"TestP15F04LocalCellGraphRejectsCorruption",
+	"TestP15F04LocalCellOptionalDemand",
+	"TestP15F04LocalCellScopeRestoration",
+	"TestP15F04LocalCellUnsupportedInterfaces",
+	"TestP15F04OptionalLoopPresentScalarGraphs",
+	"TestP15F04OptionalLoopResultsFailClosed",
+}
 
 var combinedValueBlockScenarios = map[string]combinedValueBlockScenario{
 	"F04": {"control", "Value loop collects one semantic element per iteration", "TestP15F04ValueLoopBoundaryUnit", "TestP15F04ValueLoopBoundaryNative",
-		"Bounded supported facets only: actual zero/multiple repeat and for-item sources retain typed Text/Number/Bool results, exact complete native graphs and causal corruption controls. Nested List/Optional target rejection is explicitly observed and is not cardinality fulfillment. No complete F04 tier credit or Apple execution.", []string{"unit", "native-structure"}},
+		"Bounded supported facets only: original scalar/for-item graphs plus closed Items Count and enrolled immutable local bindings, aliases, checked indexing, decoded for iteration, independent presence and scope restoration. Complete native graph and causal controls cover zero/multiple iterations, None/false/zero/empty payloads and private-cell escape rejection. General sequence and interface support remains incomplete; no complete F04 tier credit or Apple execution is claimed.", []string{"unit", "native-structure"}, combinedValueBlockF04ObservationTests},
 	"RP23": {"repair", "Value block and loop yields", "TestP15RP23ValueBlockLoopUnit", "TestP15RP23ValueBlockLoopNative",
-		"Distinct local joined scenario: Number if yields, Bool menu yields, zero/multiple Text loop yields, two-item for results and one final consumer. Exact semantic types, all native branch/result edges and absence of overwritten outputs are independently checked; missing/illegal/overwritten yields have causal source-bound diagnostics and no emitted artifact. This local supported scenario supplies no F04 nested List/Optional or Apple result evidence.", []string{"unit", "native-structure"}},
+		"Distinct local joined scenario: Number if yields, Bool menu yields, zero/multiple Text loop yields, two-item for results and one final consumer. Exact semantic types, all native branch/result edges and absence of overwritten outputs are independently checked; missing/illegal/overwritten yields have causal source-bound diagnostics and no emitted artifact. This local supported scenario supplies no F04 nested List/Optional or Apple result evidence.", []string{"unit", "native-structure"}, nil},
 	"BRG14": {"recovery_gate", "Value blocks, loop results and return", "TestBackendRecovery14ValueBlockReturnUnit", "TestBackendRecovery14ValueBlockReturnNative",
-		"Distinct joined supported value-block scenario plus actual complete main/child early-return, bare-return, both-branch return and zero-iteration return graphs. Typed values, complete dispatch/function/caller ancestry, exact output/Nothing boundaries and final unused Text are independently specified and causally corrupted. No M02/F04/FN evidence inheritance; nested List/Optional transport and actual Apple value/cardinality/frame outcomes remain unproved.", []string{"unit", "native-structure", "ios-runtime"}},
+		"Distinct joined supported value-block scenario plus actual complete main/child early-return, bare-return, both-branch return and zero-iteration return graphs. Typed values, complete dispatch/function/caller ancestry, exact output/Nothing boundaries and final unused Text are independently specified and causally corrupted. No M02/F04/FN evidence inheritance; nested List/Optional transport and actual Apple value/cardinality/frame outcomes remain unproved.", []string{"unit", "native-structure", "ios-runtime"}, nil},
 }
 
 //go:embed combined_value_block_inventory.json
 var combinedValueBlockInventory []byte
 var combinedValueBlockEvidence = func() struct {
-	Events      map[string][]string `json:"events"`
-	SourcePaths []string            `json:"source_paths"`
+	Events         map[string][]string `json:"events"`
+	SourcePaths    []string            `json:"source_paths"`
+	F04SourcePaths []string            `json:"f04_source_paths"`
 } {
 	var value struct {
-		Events      map[string][]string `json:"events"`
-		SourcePaths []string            `json:"source_paths"`
+		Events         map[string][]string `json:"events"`
+		SourcePaths    []string            `json:"source_paths"`
+		F04SourcePaths []string            `json:"f04_source_paths"`
 	}
 	if err := json.Unmarshal(combinedValueBlockInventory, &value); err != nil {
 		panic(err)
@@ -47,7 +67,15 @@ var combinedValueBlockLocalTiers = []string{"unit", "native-structure"}
 
 const combinedValueBlockSourceWitnessSHA256 = "8815479e1809972ff46ad19856b708a6cef1f994137b1250e1914d18bb096f6c"
 
+const combinedValueBlockF04TestsSHA256 = "a960a6db2660a4982e5edb0b933163621cb27f45c734c7dac4e39837c3626ae3"
+const combinedValueBlockF04EventsSHA256 = "f78f50ebf43bf7da514234add79681a007bb011184d69ded560a036f7e713a67"
+const combinedValueBlockF04SourceWitnessSHA256 = "9a2c6d6ca839e4249f9803404b72756a674930800507e4b1f7908d7c0f07e127"
+
 func validateCombinedValueBlockSourceInventory(names []string) error {
+	return validateCombinedValueBlockSourceWitness(names, combinedValueBlockSourceWitnessSHA256)
+}
+
+func validateCombinedValueBlockSourceWitness(names []string, expected string) error {
 	if len(names) == 0 || len(names) > 128 {
 		return fmt.Errorf("invalid bounded combined-value-block source inventory")
 	}
@@ -59,14 +87,20 @@ func validateCombinedValueBlockSourceInventory(names []string) error {
 			return fmt.Errorf("duplicate combined-value-block source witness")
 		}
 	}
-	if editorSHA([]byte(strings.Join(names, "\n")+"\n")) != combinedValueBlockSourceWitnessSHA256 {
+	if editorSHA([]byte(strings.Join(names, "\n")+"\n")) != expected {
 		return fmt.Errorf("combined-value-block inventory omits or changes reviewed source witnesses")
 	}
 	return nil
 }
-func (s combinedValueBlockScenario) tests() []string { return []string{s.Unit, s.Native} }
+func (s combinedValueBlockScenario) tests() []string {
+	return append([]string{s.Unit, s.Native}, s.ObservationTests...)
+}
 func (s combinedValueBlockScenario) testIDs() []string {
-	return []string{"github.com/electrikmilk/cherri:" + s.Unit, "github.com/electrikmilk/cherri:" + s.Native}
+	var ids []string
+	for _, name := range s.tests() {
+		ids = append(ids, "github.com/electrikmilk/cherri:"+name)
+	}
+	return ids
 }
 func (s combinedValueBlockScenario) producer(tier string) string {
 	if tier == "unit" {
@@ -77,13 +111,62 @@ func (s combinedValueBlockScenario) producer(tier string) string {
 	}
 	return ""
 }
+
+func combinedValueBlockSourcePaths(id string) []string {
+	if id == "F04" {
+		return combinedValueBlockEvidence.F04SourcePaths
+	}
+	return combinedValueBlockEvidence.SourcePaths
+}
+
+// F04 has a fixed observation family. Existing process, source and event
+// validators remain authoritative; no observation becomes an acceptance record.
+func validateCombinedValueBlockF04ObservationInventory(tests, events, paths []string) error {
+	if len(tests) != 16 || editorSHA([]byte(strings.Join(tests, "\n")+"\n")) != combinedValueBlockF04TestsSHA256 {
+		return fmt.Errorf("F04 observation parent inventory changed")
+	}
+	if len(events) != 226 || !sort.StringsAreSorted(events) ||
+		editorSHA([]byte(strings.Join(events, "\n")+"\n")) != combinedValueBlockF04EventsSHA256 {
+		return fmt.Errorf("F04 observation named-event inventory changed")
+	}
+	parents := map[string]bool{}
+	for _, name := range tests {
+		if parents[name] || strings.Contains(name, "/") || !strings.HasPrefix(name, "TestP15F04") {
+			return fmt.Errorf("F04 observation parent is duplicate or foreign")
+		}
+		parents[name] = true
+	}
+	seen := map[string]bool{}
+	for _, name := range events {
+		if seen[name] || !parents[strings.SplitN(name, "/", 2)[0]] {
+			return fmt.Errorf("F04 observation event is duplicate or foreign")
+		}
+		seen[name] = true
+	}
+	for name := range parents {
+		if !seen[name] {
+			return fmt.Errorf("F04 observation parent event missing")
+		}
+	}
+	return validateCombinedValueBlockSourceWitness(paths, combinedValueBlockF04SourceWitnessSHA256)
+}
+
+func validateCombinedValueBlockScenarioInventory(id string) error {
+	if id == "F04" {
+		return validateCombinedValueBlockF04ObservationInventory(
+			combinedValueBlockScenarios[id].tests(), combinedValueBlockEvidence.Events[id],
+			combinedValueBlockSourcePaths(id))
+	}
+	return validateCombinedValueBlockSourceInventory(combinedValueBlockSourcePaths(id))
+}
+
 func combinedValueBlockPrefix(id string) string { return "combined-value-block-" + strings.ToLower(id) }
 func (r *Runner) executeCombinedValueBlock(id string) ([]EvidenceArtifact, string, bool, error) {
 	var scenario, ok = combinedValueBlockScenarios[id]
 	if !ok {
 		return nil, "", false, fmt.Errorf("unknown value-block scenario")
 	}
-	if err := validateCombinedValueBlockSourceInventory(combinedValueBlockEvidence.SourcePaths); err != nil {
+	if err := validateCombinedValueBlockScenarioInventory(id); err != nil {
 		return nil, "", false, err
 	}
 	var root, err = filepath.Abs(resolveRepoRoot())
@@ -103,7 +186,7 @@ func (r *Runner) executeCombinedValueBlock(id string) ([]EvidenceArtifact, strin
 	}
 	var command = productionTestCommand(scenario.tests())
 	var budget = productionTestTimeout(scenario.tests()) + time.Minute
-	var receipt, artifacts, runErr = runExactSourceProcess(root, source, id, combinedValueBlockPrefix(id), directory, command, budget, combinedValueBlockEvidence.Events[id], combinedValueBlockEvidence.SourcePaths)
+	var receipt, artifacts, runErr = runExactSourceProcess(root, source, id, combinedValueBlockPrefix(id), directory, command, budget, combinedValueBlockEvidence.Events[id], combinedValueBlockSourcePaths(id))
 	if runErr != nil {
 		return artifacts, "", len(artifacts) > 0, runErr
 	}
@@ -178,7 +261,7 @@ func validateCombinedValueBlockArtifacts(id, source string, artifacts []Evidence
 	if !ok {
 		return fmt.Errorf("unknown value-block artifact scenario")
 	}
-	if err := validateCombinedValueBlockSourceInventory(combinedValueBlockEvidence.SourcePaths); err != nil {
+	if err := validateCombinedValueBlockScenarioInventory(id); err != nil {
 		return err
 	}
 	var prefix = combinedValueBlockPrefix(id)
@@ -192,7 +275,7 @@ func validateCombinedValueBlockArtifacts(id, source string, artifacts []Evidence
 	}
 	var raw, stderr = data[prefix+"-go.jsonl"], data[prefix+"-stderr.log"]
 	var budget = productionTestTimeout(scenario.tests()) + time.Minute
-	if err = validateExactSourceProcess(id, source, receipt, productionTestCommand(scenario.tests()), combinedValueBlockEvidence.Events[id], raw, stderr, budget, combinedValueBlockEvidence.SourcePaths); err != nil {
+	if err = validateExactSourceProcess(id, source, receipt, productionTestCommand(scenario.tests()), combinedValueBlockEvidence.Events[id], raw, stderr, budget, combinedValueBlockSourcePaths(id)); err != nil {
 		return err
 	}
 	if err = parseStrictNamedProductionOutput(combinedValueBlockEvidence.Events[id], budget, raw); err != nil {

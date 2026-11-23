@@ -48,6 +48,42 @@ class IOSTestEvidenceTests(unittest.TestCase):
             outputs = {path.name: path.read_text(encoding="utf-8") for path in (root / "output").iterdir()}
             return diagnostic, records, outputs
 
+    def test_partial_brg25_brg27_probes_preserve_results_without_formal_credit(self):
+        cases = (
+            ("testBRG25SharedAnalysisBridgeContract", True, ""),
+            ("testBRG27EditorRealWorldWorkflowUI", False, "[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]"),
+        )
+        for method, service, checkpoint in cases:
+            for status, exit_code in (("passed", 0), ("failed", 65)):
+                with self.subTest(method=method, status=status):
+                    diagnostic, records, outputs = self.collect(
+                        self.block(method=method, status=status, body=checkpoint, service=service),
+                        exit_code)
+                    suite = "CherriCoreIntegrationTests" if service else "CherriEditorUITests"
+                    self.assertEqual(diagnostic["runStatus"], status.upper())
+                    self.assertEqual(diagnostic["testResults"], [
+                        {"testId": suite + "/" + method, "observedStatus": status}])
+                    self.assertEqual(records, [])
+                    self.assertIn(method, outputs["xcodetest.log"])
+                    if checkpoint:
+                        self.assertIn(checkpoint, outputs["xcodetest.log"])
+
+    def test_partial_gate_probes_do_not_change_existing_e01_credit(self):
+        log = (
+            self.block(method="testBRG25SharedAnalysisBridgeContract", service=True)
+            + self.block(method="testBRG27EditorRealWorldWorkflowUI",
+                         body="[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]")
+            + self.block(body=self.checkpoint + "\n" + self.receipt())
+            + self.block(service=True)
+        )
+        diagnostic, records, outputs = self.collect(log)
+        self.assertEqual(diagnostic["runStatus"], "PASSED")
+        self.assertEqual(len(diagnostic["testResults"]), 4)
+        self.assertEqual(len(records), 2)
+        self.assertTrue(all(record["requirements"] == ["E01"] for record in records))
+        self.assertEqual({record["tier"] for record in records}, {"service", "ios-ui"})
+        self.assertIn("[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]", outputs["xcodetest.log"])
+
     def test_success_requires_real_test_boundary_checkpoint_and_process_success(self):
         log = self.block(body=self.checkpoint + "\n" + self.receipt()) + self.block(service=True)
         diagnostic, records, outputs = self.collect(log)
@@ -186,6 +222,112 @@ class IOSTestEvidenceTests(unittest.TestCase):
         self.assertEqual(len(diagnostic["uiReceipts"]), 64)
         _, _, outputs = self.collect(self.block(status="failed", body=self.receipt(actualSource="x" * 16385)), 65)
         self.assertNotIn("x" * 16385, "".join(outputs.values()))
+
+
+    def rp40_collect(self, text, exit_code=0, *, run_id="1234", diagnostic_only=False):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "raw.log").write_text(text, encoding="utf-8")
+            if exit_code is not None:
+                (root / "exit").write_text(str(exit_code), encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                diagnostic, records = collector.collect(
+                    root / "raw.log", root / "output", "a" * 40, run_id, root / "exit",
+                    diagnostic_only=diagnostic_only)
+            outputs = {p.name: p.read_text(encoding="utf-8") for p in (root / "output").iterdir()}
+            return diagnostic, records, outputs
+
+    def rp40_block(self, **updates):
+        values = {"method": collector.RP40_APP_TEST.split("/")[1],
+                  "service": True, "body": collector.RP40_APP_CHECKPOINT}
+        values.update(updates)
+        return self.block(**values)
+
+    def test_rp40_joined_app_record_binds_two_originals_and_never_grants_ui(self):
+        diagnostic, records, outputs = self.rp40_collect(self.rp40_block())
+        self.assertEqual(len(records), 1)
+        record = records[0]
+        self.assertEqual(record["requirements"], ["RP40"])
+        self.assertEqual(record["tier"], "app-integration")
+        self.assertEqual(record["test_id"], collector.RP40_APP_TEST)
+        self.assertEqual(record["assertions"], collector.RP40_APP_ASSERTIONS)
+        self.assertEqual(record["detail"], collector.RP40_APP_SCOPE)
+        self.assertEqual(record["implementation_sha"], "a" * 40)
+        self.assertEqual(record["command"], ["xcodebuild", "test", "-scheme", "Cherri"])
+        self.assertEqual(diagnostic["appIntegrationEvidence"]["status"], "VERIFIED_APP_INTEGRATION")
+        self.assertIs(diagnostic["appIntegrationEvidence"]["uiTierGranted"], False)
+        fixture = SCRIPT.parents[2] / collector.RP40_APP_FIXTURE
+        self.assertEqual(record["fixture_sha256"], hashlib.sha256(fixture.read_bytes()).hexdigest())
+        self.assertEqual(diagnostic["appIntegrationEvidence"]["fixtureSHA256"], record["fixture_sha256"])
+        self.assertEqual({Path(a["path"]).name for a in record["artifacts"]},
+                         {"xcodetest.log", "ios-test-diagnostics.json"})
+        for artifact in record["artifacts"]:
+            self.assertEqual(artifact["run_id"], "1234")
+            self.assertEqual(artifact["sha256"],
+                             hashlib.sha256(outputs[Path(artifact["path"]).name].encode()).hexdigest())
+
+    def test_rp40_old_service_and_completion_only_ui_are_not_combined_proof(self):
+        log = (self.block(method="testRP40SwiftIntegrationService", service=True)
+               + self.block(body=self.checkpoint) + self.rp40_block())
+        _, records, _ = self.rp40_collect(log)
+        rp40 = [r for r in records if "RP40" in r["requirements"]]
+        self.assertEqual(len(rp40), 1)
+        self.assertEqual(rp40[0]["test_id"], collector.RP40_APP_TEST)
+        self.assertEqual(rp40[0]["tier"], "app-integration")
+        self.assertEqual([r["requirements"] for r in records if r["tier"] == "ios-ui"], [["E01"]])
+        _, old_records, _ = self.rp40_collect(
+            self.block(method="testRP40SwiftIntegrationService", service=True))
+        self.assertEqual(old_records, [])
+
+    def test_rp40_checkpoint_and_test_boundary_corruptions_are_rejected(self):
+        good = self.rp40_block()
+        cases = {
+            "missing": self.rp40_block(body=""),
+            "outside": collector.RP40_APP_CHECKPOINT + "\n" + self.rp40_block(body=""),
+            "another_case": self.block(service=True, body=collector.RP40_APP_CHECKPOINT)
+                            + self.rp40_block(body=""),
+            "duplicate_marker": self.rp40_block(body=(collector.RP40_APP_CHECKPOINT + "\n") * 2),
+            "marker_suffix": self.rp40_block(body=collector.RP40_APP_CHECKPOINT + " private payload"),
+            "duplicate_case": good + good,
+            "incomplete": good.split("passed (", 1)[0],
+            "wrong_target": good.replace("CherriTests.CherriCoreIntegrationTests",
+                                         "OtherTarget.CherriCoreIntegrationTests"),
+            "failed_case": self.rp40_block(status="failed"),
+            "other_failed_case": good + self.block(service=True, status="failed"),
+        }
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                _, records, _ = self.rp40_collect(text)
+                self.assertFalse(any("RP40" in r["requirements"] for r in records))
+
+    def test_rp40_whole_process_and_diagnostic_only_guards_are_preserved(self):
+        for options in ({"exit_code": 65}, {"exit_code": None},
+                        {"run_id": "UNKNOWN"}, {"diagnostic_only": True}):
+            with self.subTest(options=options):
+                diagnostic, records, _ = self.rp40_collect(self.rp40_block(), **options)
+                self.assertEqual(records, [])
+                self.assertNotEqual(diagnostic["appIntegrationEvidence"]["status"],
+                                    "VERIFIED_APP_INTEGRATION")
+
+    def test_rp40_missing_source_fixture_never_becomes_app_evidence(self):
+        original = collector.RP40_APP_FIXTURE
+        try:
+            collector.RP40_APP_FIXTURE = "ios/CherriTests/RP40MissingFixture.swift"
+            diagnostic, records, _ = self.rp40_collect(self.rp40_block())
+        finally:
+            collector.RP40_APP_FIXTURE = original
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["appIntegrationEvidence"]["status"], "SOURCE_FIXTURE_UNAVAILABLE")
+
+    def test_rp40_checkpoint_does_not_publish_arbitrary_text_or_private_paths(self):
+        secret = "PRIVATE_RP40_DOCUMENT /Users/Private/source.cherri ghp_FAKE_SECRET_TOKEN"
+        _, records, outputs = self.rp40_collect(self.rp40_block(body=secret + "\n" + collector.RP40_APP_CHECKPOINT))
+        self.assertEqual(len(records), 1)
+        self.assertNotIn(secret, "".join(outputs.values()))
+        _, records, outputs = self.rp40_collect(
+            self.rp40_block(body=collector.RP40_APP_CHECKPOINT + " " + secret))
+        self.assertEqual(records, [])
+        self.assertNotIn(secret, "".join(outputs.values()))
 
     def startup_receipt(self, **updates):
         value = {"schemaVersion": "1.0", "testName": f"CherriEditorUITests/{self.ui_method}",
@@ -732,6 +874,115 @@ class IOSTestEvidenceTests(unittest.TestCase):
             result = subprocess.run([bash, "-c", script], cwd=directory, capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 65, result.stderr)
             self.assertEqual((Path(directory) / "xcodetest.exitcode").read_text().strip(), "65")
+
+
+    def rp40_ui_block(self, *, body=None, status="passed", target="CherriUITests.CherriRP40UITests"):
+        method = collector.RP40_UI_TEST.split("/")[1]
+        if body is None:
+            body = "\n".join(collector.RP40_UI_STAGE_PREFIX + stage for stage in collector.RP40_UI_STAGES)
+            body += "\n" + collector.RP40_UI_CHECKPOINT
+        return (f"Test Case '-[{target} {method}]' started.\n{body}\n"
+                f"Test Case '-[{target} {method}]' {status} (0.123 seconds).\n")
+
+    def test_rp40_ui_is_dedicated_and_source_bound(self):
+        diagnostic, records, outputs = self.collect(self.rp40_ui_block())
+        self.assertEqual(len(records), 1)
+        record = records[0]
+        self.assertEqual(record["requirements"], ["RP40"])
+        self.assertEqual(record["tier"], "ios-ui")
+        self.assertEqual(record["test_id"], collector.RP40_UI_TEST)
+        self.assertEqual(record["assertions"], collector.RP40_UI_ASSERTIONS)
+        self.assertEqual(record["detail"], collector.RP40_UI_SCOPE)
+        self.assertEqual({Path(a["path"]).name for a in record["artifacts"]},
+                         {"xcodetest.log", "ios-test-diagnostics.json"})
+        for artifact in record["artifacts"]:
+            self.assertEqual(artifact["sha256"],
+                             hashlib.sha256(outputs[Path(artifact["path"]).name].encode()).hexdigest())
+        self.assertEqual(record["fixture_sha256"],
+                         hashlib.sha256((SCRIPT.parents[2] / collector.RP40_UI_FIXTURE).read_bytes()).hexdigest())
+        self.assertEqual(diagnostic["appIntegrationUIEvidence"]["status"], "VERIFIED_APP_UI")
+        self.assertIs(diagnostic["appIntegrationUIEvidence"]["appIntegrationTierGranted"], False)
+        self.assertEqual(diagnostic["appIntegrationEvidence"]["status"], "NOT_OBSERVED")
+
+    def test_rp40_ui_and_hosted_app_remain_separate_records(self):
+        for log in (self.rp40_block() + self.rp40_ui_block(),
+                    self.rp40_ui_block() + self.rp40_block()):
+            with self.subTest(order=log[:90]):
+                diagnostic, records, _ = self.collect(log)
+                self.assertEqual(len(records), 2)
+                self.assertEqual({(r["tier"], r["test_id"]) for r in records},
+                                 {("app-integration", collector.RP40_APP_TEST),
+                                  ("ios-ui", collector.RP40_UI_TEST)})
+                self.assertTrue(all(row["observedStatus"] == "passed" for row in diagnostic["testResults"]))
+
+    def test_rp40_ui_requires_all_ordered_stages_and_exact_marker_in_its_case(self):
+        stage_lines = [collector.RP40_UI_STAGE_PREFIX + stage for stage in collector.RP40_UI_STAGES]
+        good = "\n".join(stage_lines + [collector.RP40_UI_CHECKPOINT])
+        mutations = {
+            "missing_stage": self.rp40_ui_block(body="\n".join(stage_lines[1:] + [collector.RP40_UI_CHECKPOINT])),
+            "duplicate_stage": self.rp40_ui_block(body="\n".join(stage_lines[:1] + stage_lines + [collector.RP40_UI_CHECKPOINT])),
+            "reordered_stage": self.rp40_ui_block(body="\n".join(list(reversed(stage_lines)) + [collector.RP40_UI_CHECKPOINT])),
+            "unknown_stage": self.rp40_ui_block(body=good.replace("semantic-rename", "UNREVIEWED_STAGE")),
+            "stage_suffix": self.rp40_ui_block(body=good.replace("semantic-rename", "semantic-rename PRIVATE_TOKEN")),
+            "missing_marker": self.rp40_ui_block(body="\n".join(stage_lines)),
+            "duplicate_marker": self.rp40_ui_block(body=good + "\n" + collector.RP40_UI_CHECKPOINT),
+            "marker_suffix": self.rp40_ui_block(body=good + " PRIVATE_TOKEN"),
+            "marker_outside": collector.RP40_UI_CHECKPOINT + "\n" + self.rp40_ui_block(body="\n".join(stage_lines)),
+            "marker_before_stages": self.rp40_ui_block(body=collector.RP40_UI_CHECKPOINT + "\n" + "\n".join(stage_lines)),
+            "other_target": self.rp40_ui_block(target="CherriTests.CherriRP40UITests"),
+            "other_class": self.rp40_ui_block(target="CherriUITests.CherriEditorUITests"),
+            "borrowed_completion": self.block(body=self.checkpoint + "\n" + good),
+            "duplicate_case": self.rp40_ui_block() * 2,
+            "failed_case": self.rp40_ui_block(status="failed"),
+            "incomplete_case": self.rp40_ui_block().split(" passed (")[0],
+        }
+        for name, log in mutations.items():
+            with self.subTest(name=name):
+                self.assertEqual(len(self.collect(self.rp40_ui_block())[1]), 1)
+                _, records, outputs = self.collect(log)
+                self.assertFalse(any(r["tier"] == "ios-ui" and "RP40" in r["requirements"] for r in records))
+                self.assertNotIn("PRIVATE_TOKEN", "".join(outputs.values()))
+
+    def test_rp40_ui_process_failure_and_diagnostic_only_never_grant_credit(self):
+        for exit_code in (65, None):
+            diagnostic, records, _ = self.collect(self.rp40_ui_block(), exit_code)
+            self.assertEqual(records, [])
+            self.assertNotEqual(diagnostic["appIntegrationUIEvidence"]["status"], "VERIFIED_APP_UI")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "raw").write_text(self.rp40_ui_block())
+            (root / "exit").write_text("0")
+            with contextlib.redirect_stdout(io.StringIO()):
+                diagnostic, records = collector.collect(root / "raw", root / "out", "a" * 40,
+                                                        "1234", root / "exit", diagnostic_only=True)
+            self.assertEqual(records, [])
+            self.assertTrue(diagnostic["diagnosticOnly"])
+
+    def test_rp40_ui_missing_source_and_unknown_source_do_not_receive_credit(self):
+        original = collector.RP40_UI_FIXTURE
+        try:
+            collector.RP40_UI_FIXTURE = "ios/CherriUITests/AbsentRP40.swift"
+            diagnostic, records, _ = self.collect(self.rp40_ui_block())
+        finally:
+            collector.RP40_UI_FIXTURE = original
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["appIntegrationUIEvidence"]["status"], "SOURCE_FIXTURE_UNAVAILABLE")
+        self.assertEqual(self.collect(self.rp40_ui_block(), sha="UNKNOWN")[1], [])
+
+    def test_rp40_ui_publishes_only_fixed_stage_tokens_and_failure_metadata(self):
+        secret = "PRIVATE_RP40_UI_VALUE /Users/Private/source.cherri ghp_FAKE_TOKEN"
+        body = secret + "\n" + "\n".join(collector.RP40_UI_STAGE_PREFIX + x for x in collector.RP40_UI_STAGES)
+        body += "\n" + collector.RP40_UI_CHECKPOINT
+        _, records, outputs = self.collect(self.rp40_ui_block(body=body))
+        self.assertEqual(len(records), 1)
+        self.assertNotIn(secret, "".join(outputs.values()))
+        failure = ("CherriRP40UITests.swift:246: error: -[CherriUITests.CherriRP40UITests "
+                   "testRP40ActualAppDocumentWorkflowUI] : XCTAssertTrue failed - " + secret)
+        diagnostic, records, outputs = self.collect(self.rp40_ui_block(body=failure, status="failed"), 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["uiFailures"], [{
+            "testId": collector.RP40_UI_TEST, "sourceLine": 246, "failureCategory": "ASSERTION_FAILURE"}])
+        self.assertNotIn(secret, "".join(outputs.values()))
 
 
 if __name__ == "__main__":

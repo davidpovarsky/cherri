@@ -389,9 +389,7 @@ func TestP15F04ClosedItemsCountGraphCorruptions(t *testing.T) {
 
 func TestP15F04ClosedItemsCountPreservesUnsupportedBoundaries(t *testing.T) {
 	cases := []struct{ name, source string }{
-		{"aliased_collection", "let values=repeat 2 {yield []}\nreturn count(values)"},
 		{"ordinary_export", "return repeat 2 {yield []}"},
-		{"index_consumer", "let values=repeat 2 {yield []}\nreturn values[0]"},
 		{"function_transport", "function use(values:AnyContent)->Number{return 0}\nreturn use(repeat 2 {yield none})"},
 		{"character_count", "return count(repeat 2 {yield []},type:\"Characters\")"},
 		{"named_items_not_enrolled", "return count(repeat 2 {yield []},type:\"Items\")"},

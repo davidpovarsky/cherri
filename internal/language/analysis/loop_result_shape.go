@@ -10,7 +10,7 @@ import (
 // Unknown/AnyContent remains an unverified native-last-action boundary.
 func (a *Analyzer) requireNativeLoopResultShape(body *syntax.BlockStmt) {
 	// Only the actual closed Items Count consumer owns a cell transport.
-	if body != nil && body == a.loopResultCountBody {
+	if body != nil && (body == a.loopResultCountBody || a.localLoopResultShapeSupported(body)) {
 		return
 	}
 	if !statementMayContinue(body) {
@@ -37,7 +37,8 @@ func (a *Analyzer) requireNativeLoopResultShape(body *syntax.BlockStmt) {
 // yields and ordinary bindings still create ordinary native Lists.
 func (a *Analyzer) analyzeLoopResultYield(yield *syntax.YieldStmt, scope *Scope) types.Type {
 	if _, literal := yield.Value.(*syntax.ListExpr); literal &&
-		loopResultCellFinalYield(a.loopResultCountBody, yield) {
+		(loopResultCellFinalYield(a.loopResultCountBody, yield) ||
+			loopResultCellFinalYield(a.loopResultLocalBody, yield)) {
 		return a.analyzeDictionaryValue(yield.Value, scope)
 	}
 	return a.analyzeExpression(yield.Value, scope)

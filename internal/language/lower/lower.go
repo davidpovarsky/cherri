@@ -40,6 +40,7 @@ type BindingRef struct {
 	AppendVariable         bool
 	OptionalPresence       interface{} // compiler-owned value presence, independent of argument omission
 	OptionalPresenceUnused bool        // exact source binding has no semantic presence consumer
+	LoopResultElement      types.Type  // source-owned local cell sequence; nil for ordinary values
 }
 
 func lookupContentItemClass(prop string) (string, bool) {
@@ -112,6 +113,7 @@ type Lowerer struct {
 	optionalJoinYields             map[*syntax.YieldStmt]bool
 	loopResultFrames               map[syntax.Expression]*loopResultFrame
 	loopResultYields               map[*syntax.YieldStmt]*loopResultFrame
+	loopResultLocalPlan            *schema.LoopResultLocalPlan
 	knownDictionaryIndexes         map[syntax.Expression]bool
 	literalTextCarriers            map[*ir.NativeActionNode]bool
 	nativeResultReferences         map[*ir.NativeActionNode]*ir.AttachmentToken
@@ -548,6 +550,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 	}
 
+	l.loopResultLocalPlan = schema.PlanLoopResultLocals(prog, l.registry)
 	l.prepareOptionalPresenceDemand(prog)
 
 	// 2. If functions are declared and called, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
@@ -1699,6 +1702,11 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 }
 
 func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
+	loopResultElement, restoreLocalCells, localCellError := l.beginLocalLoopResultBinding(b)
+	if localCellError != nil {
+		return localCellError
+	}
+	defer restoreLocalCells()
 	trackOptionalPresence := l.optionalPresenceNeeded(b)
 	if b.Value == nil {
 		// uninitialized var
@@ -1979,6 +1987,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		ref.Type = varType
 		ref.OptionalPresence = optionalPresence
 		ref.OptionalPresenceUnused = !trackOptionalPresence
+		ref.LoopResultElement = loopResultElement
 		if l.isPolymorphicContainerLookupExpr(b.Value) {
 			ref.PolymorphicLookup = true
 		}
@@ -3506,21 +3515,21 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
 		prevItemBinding, hadItemBinding = l.bindings[stmt.ItemVar]
 		nativeName := l.lexicalLoopVariableName(stmt.ItemVar)
+		itemValue, itemPresence, itemType := l.localLoopResultForItem(stmt.Iterable, repeatItemName)
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
 				"WFVariableName": nativeName,
-				"WFInput": &ir.AttachmentToken{
-					Type:       "Variable",
-					OutputName: repeatItemName,
-				},
+				"WFInput":        itemValue,
 			},
 		}
 		l.emitAction(setVarNode)
 		l.bindings[stmt.ItemVar] = BindingRef{
-			IsVariable:   true,
-			VariableName: nativeName,
+			IsVariable:       true,
+			VariableName:     nativeName,
+			Type:             itemType,
+			OptionalPresence: itemPresence,
 		}
 	}
 
@@ -3729,6 +3738,10 @@ func (l *Lowerer) lowerMenuWithOutput(stmt *syntax.MenuStmt, withOutput bool) (*
 func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	if expr == nil {
 		return nil, nil
+	}
+	if l.localLoopResultElement(expr) != nil &&
+		(l.loopResultLocalPlan == nil || !l.loopResultLocalPlan.AllowedValues[expr]) {
+		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: private loop-result cells cannot escape their enrolled local consumer at %s", expr.NodeSpan())
 	}
 	if value, resolved := l.enumValues[expr]; resolved {
 		return value, nil
@@ -3988,6 +4001,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		indexVal, err := l.lowerExpression(e.Index)
 		if err != nil {
 			return nil, err
+		}
+		if l.localLoopResultElement(e.Target) != nil {
+			return l.lowerLocalLoopResultIndex(e, targetVal, indexVal)
 		}
 		var targetType types.Type
 		if l.exprTypes != nil {

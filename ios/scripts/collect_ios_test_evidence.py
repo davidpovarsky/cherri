@@ -15,9 +15,11 @@ import re
 import documentation_evidence as docs
 
 # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
+# The BRG25 bridge probe and BRG27 single-document build remain diagnostics.
+# Their full joined requirements need dedicated complete producers.
 ui_test_map = {
     "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": (
-        ["E01", "RP40"],
+        ["E01"],
         {"completion_contextual": "true"},
         "[CHECKPOINT:E01_COMPLETION_INSERTED]"
     ),
@@ -46,11 +48,6 @@ ui_test_map = {
         {"visual_source_edit_bounded": "true"},
         "[CHECKPOINT:E07_PREVIEW_EDIT_VERIFIED]"
     ),
-    "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": (
-        ["BRG27"],
-        {"multi_diagnostics": "true", "completion_contextual": "true"},
-        "[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]"
-    ),
 }
 
 # Service and bridge integration tests map to tier: "service" or "integration"
@@ -62,14 +59,61 @@ service_test_map = {
     "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits": (["E05"], {"versioned_edits_isolated": "true"}),
     "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew": (["E06"], {"utf16_spans_exact": "true"}),
     "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection": (["E07", "RP41", "BRG28"], {"visual_source_edit_bounded": "true"}),
-    "CherriCoreIntegrationTests/testRP40SwiftIntegrationService": (["RP40"], {"completion_contextual": "true"}),
-    "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract": (["BRG25"], {"shared_analysis_bridge": "true"}),
     "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis": (["P05"], {"unicode_identifiers": "true"}),
 }
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|DocumentationIndexTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
-FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests|CherriPreviewLifecycleTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
+# This dedicated hosted-app scenario does not supply its separate UI tier.
+RP40_APP_TEST = "CherriCoreIntegrationTests/testRP40ActualAppEntrypointsJoinedContract"
+RP40_APP_CHECKPOINT = "[CHECKPOINT:RP40_APP_ENTRYPOINTS_VERIFIED]"
+RP40_APP_REJECTED = "[CHERRI_RP40_REJECTED] "
+RP40_APP_FIXTURE = "ios/CherriTests/CherriCoreIntegrationTests.swift"
+RP40_APP_ASSERTIONS = {
+    "actual_app_entrypoints": "true",
+    "current_completion_snapshot": "true",
+    "same_document_diagnostics": "true",
+    "semantic_rename_exact": "true",
+    "unsigned_v2_compile": "true",
+    "catalog_completion_compile_agree": "true",
+    "negative_controls_executed": "true",
+}
+RP40_APP_SCOPE = (
+    "Hosted Cherri app XCTest executes the production document, completion, "
+    "analysis, rename and unsigned v2 compile APIs on one synthetic document; "
+    "actual UI gestures, document-browser opening and rendered publication remain unproved."
+)
+
+
+# Dedicated RP40 UI producer. A hosted-app record cannot supply this tier.
+RP40_UI_TEST = "CherriRP40UITests/testRP40ActualAppDocumentWorkflowUI"
+RP40_UI_CHECKPOINT = "[CHECKPOINT:RP40_APP_UI_JOINED_VERIFIED]"
+RP40_UI_REJECTED = "[CHERRI_RP40_UI_REJECTED] "
+RP40_UI_STAGE_PREFIX = "[CHERRI_RP40_UI_STAGE] "
+RP40_UI_STAGES = [
+    "opened-synthetic-document", "contextual-completion", "unfilled-rejected",
+    "source-compiled", "diagnostics-rendered", "semantic-rename", "renamed-source-compiled",
+]
+RP40_UI_FIXTURE = "ios/CherriUITests/CherriRP40UITests.swift"
+RP40_UI_ASSERTIONS = {
+    "app_document_ui": "true",
+    "contextual_service_completion_ui": "true",
+    "unfilled_editor_hole_rejected_ui": "true",
+    "same_document_diagnostics_rendered": "true",
+    "semantic_rename_exact_ui": "true",
+    "unsigned_build_requested_ui": "true",
+    "renamed_source_build_recovered": "true",
+    "synthetic_reset_verified": "true",
+}
+RP40_UI_SCOPE = (
+    "Genuine XCUITest drives one opened Cherri document through a verified empty "
+    "reset, contextual completion, rejected unfilled input, unsigned Build, "
+    "rendered diagnostics, exact semantic rename and renamed-source Build; "
+    "the separate hosted-app integration tier is not supplied by this UI record."
+)
+
+
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|DocumentationIndexTests)|CherriUITests\.(?:CherriEditorUITests|CherriRP40UITests)) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriRP40UITests|CherriEditorInputTests|CherriPreviewLifecycleTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
 STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown", "completion-candidates"}
@@ -78,7 +122,10 @@ BOOL_FIELDS = {
     "compiledStatusExists", "diagnosticStatusExists", "diagnosticsBannerExists", "keyboardExists",
     "showCompletionExists", "showCompletionHittable", "showSuggestionExists", "showSuggestionHittable",
 }
-CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
+CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {
+    "[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]",
+    "[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]",  # Bounded diagnostic only.
+}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
 STARTUP_PREFIX = "[CHERRI_UI_STARTUP] "
 STARTUP_TIMING_PREFIX = "[CHERRI_UI_STARTUP_TIMING] "
@@ -374,14 +421,36 @@ def bounded_log(raw_text):
     active_test = None
     documentation_events = 0
     documentation_ui_events = 0
+    rp40_ui_stage_index = 0
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
         if case := CASE_LINE.fullmatch(line):
             active_test = (case.group(1).split(".")[1] + "/" + case.group(2)) if case.group(3) == "started." else None
             original_paste_wait_observed = False
+            if active_test == RP40_UI_TEST:
+                rp40_ui_stage_index = 0
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
+        elif line.startswith(RP40_UI_STAGE_PREFIX):
+            token = line[len(RP40_UI_STAGE_PREFIX):]
+            if (active_test == RP40_UI_TEST and rp40_ui_stage_index < len(RP40_UI_STAGES)
+                    and token == RP40_UI_STAGES[rp40_ui_stage_index]):
+                lines.append(line)
+                rp40_ui_stage_index += 1
+            else:
+                lines.append(RP40_UI_REJECTED + "INVALID_STAGE")
+        elif line.startswith(RP40_UI_CHECKPOINT) or line.startswith(RP40_UI_REJECTED):
+            if (line == RP40_UI_CHECKPOINT and active_test == RP40_UI_TEST
+                    and rp40_ui_stage_index == len(RP40_UI_STAGES)):
+                lines.append(line)
+            else:
+                lines.append(RP40_UI_REJECTED + "INVALID_CHECKPOINT")
+        elif line.startswith(RP40_APP_CHECKPOINT) or line.startswith(RP40_APP_REJECTED):
+            if line == RP40_APP_CHECKPOINT and active_test == RP40_APP_TEST:
+                lines.append(line)
+            else:
+                lines.append(RP40_APP_REJECTED + "INVALID_CHECKPOINT")
         elif line.startswith(docs.UI_STATE_PREFIX):
             documentation_ui_events += 1
             if documentation_ui_events <= 8:
@@ -565,25 +634,86 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
                 }],
                 "detail": f"Executed and passed Swift service integration test {test_id} in iOS Simulator",
             })
-            if test_id == "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract":
-                records.append({
-                    "evidence_id": "ev-ios-build-BRG25",
-                    "requirements": ["BRG25"],
-                    "tier": "ios-build",
+
+
+
+    app_integration = {
+        "status": "NOT_OBSERVED",
+        "testId": RP40_APP_TEST,
+        "scope": RP40_APP_SCOPE,
+        "uiTierGranted": False,
+    }
+    app_integration_record = None
+    app_entry = test_blocks.get(RP40_APP_TEST)
+    if app_entry is not None:
+        app_integration["status"] = "INELIGIBLE_OR_INCOMPLETE"
+        app_status, app_body = app_entry
+        if (acceptance_eligible and run_id != "UNKNOWN" and app_status == "passed"
+                and app_body.splitlines().count(RP40_APP_CHECKPOINT) == 1
+                and RP40_APP_REJECTED not in log_text):
+            try:
+                fixture = (Path(__file__).resolve().parents[2] / RP40_APP_FIXTURE).read_bytes()
+                if not fixture or len(fixture) > 1024 * 1024:
+                    raise ValueError("bounded RP40 fixture unavailable")
+                fixture_sha = hashlib.sha256(fixture).hexdigest()
+                app_integration.update(status="VERIFIED_APP_INTEGRATION", fixtureSHA256=fixture_sha)
+                app_integration_record = {
+                    "evidence_id": "ev-ios-app-integration-RP40",
+                    "requirements": ["RP40"], "tier": "app-integration",
                     "implementation_sha": impl_sha,
-                    "test_id": test_id,
-                    "command": ["xcodebuild", "build-for-testing", "-scheme", "Cherri"],
-                    "exit_code": 0,
-                    "result": "passed",
-                    "assertions": assertions,
+                    "fixture_sha256": fixture_sha,
+                    "test_id": RP40_APP_TEST,
+                    "command": ["xcodebuild", "test", "-scheme", "Cherri"],
+                    "exit_code": 0, "result": "passed",
+                    "assertions": dict(RP40_APP_ASSERTIONS),
+                    "detail": RP40_APP_SCOPE,
                     "artifacts": [{
                         "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/xcodetest.log",
-                        "sha256": log_sha,
-                        "run_id": run_id,
+                        "sha256": log_sha, "run_id": run_id,
                     }],
-                    "detail": "Built iOS Simulator app and verified shared bridge contract",
-                })
+                }
+            except (OSError, ValueError):
+                app_integration["status"] = "SOURCE_FIXTURE_UNAVAILABLE"
 
+    app_ui = {
+        "status": "NOT_OBSERVED",
+        "testId": RP40_UI_TEST,
+        "scope": RP40_UI_SCOPE,
+        "appIntegrationTierGranted": False,
+    }
+    app_ui_record = None
+    ui_entry = test_blocks.get(RP40_UI_TEST)
+    if ui_entry is not None:
+        app_ui["status"] = "INELIGIBLE_OR_INCOMPLETE"
+        ui_status, ui_body = ui_entry
+        if (acceptance_eligible and run_id != "UNKNOWN" and ui_status == "passed"
+                and ui_body.splitlines().count(RP40_UI_CHECKPOINT) == 1
+                and RP40_UI_REJECTED not in log_text
+                and [line[len(RP40_UI_STAGE_PREFIX):] for line in ui_body.splitlines()
+                     if line.startswith(RP40_UI_STAGE_PREFIX)] == RP40_UI_STAGES):
+            try:
+                fixture = (Path(__file__).resolve().parents[2] / RP40_UI_FIXTURE).read_bytes()
+                if not fixture or len(fixture) > 1024 * 1024:
+                    raise ValueError("bounded RP40 fixture unavailable")
+                fixture_sha = hashlib.sha256(fixture).hexdigest()
+                app_ui.update(status="VERIFIED_APP_UI", fixtureSHA256=fixture_sha)
+                app_ui_record = {
+                    "evidence_id": "ev-ios-ui-RP40",
+                    "requirements": ["RP40"], "tier": "ios-ui",
+                    "implementation_sha": impl_sha,
+                    "fixture_sha256": fixture_sha,
+                    "test_id": RP40_UI_TEST,
+                    "command": ["xcodebuild", "test", "-scheme", "Cherri"],
+                    "exit_code": 0, "result": "passed",
+                    "assertions": dict(RP40_UI_ASSERTIONS),
+                    "detail": RP40_UI_SCOPE,
+                    "artifacts": [{
+                        "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/xcodetest.log",
+                        "sha256": log_sha, "run_id": run_id,
+                    }],
+                }
+            except (OSError, ValueError):
+                app_ui["status"] = "SOURCE_FIXTURE_UNAVAILABLE"
 
     documentation = {"status": "NOT_REQUESTED", "errorCodes": []}
     documentation_files = {}
@@ -639,6 +769,8 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "diagnosticOnly": diagnostic_only,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
         "documentationEvidence": documentation,
+        "appIntegrationEvidence": app_integration,
+        "appIntegrationUIEvidence": app_ui,
         "documentationUIStates": [json.loads(line[len(docs.UI_STATE_PREFIX):]) for line in log_text.splitlines() if line.startswith(docs.UI_STATE_PREFIX)],
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
         "startupTimingTraces": [json.loads(line[len(STARTUP_TIMING_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_TIMING_PREFIX)],
@@ -649,6 +781,18 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
                     "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},
     }
     (output_dir / "ios-test-diagnostics.json").write_text(json.dumps(diagnostic, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if app_integration_record is not None:
+        diagnostic_bytes = (output_dir / "ios-test-diagnostics.json").read_bytes()
+        app_integration_record["artifacts"].append({
+            "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/ios-test-diagnostics.json",
+            "sha256": hashlib.sha256(diagnostic_bytes).hexdigest(), "run_id": run_id})
+        records.append(app_integration_record)
+    if app_ui_record is not None:
+        diagnostic_bytes = (output_dir / "ios-test-diagnostics.json").read_bytes()
+        app_ui_record["artifacts"].append({
+            "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/ios-test-diagnostics.json",
+            "sha256": hashlib.sha256(diagnostic_bytes).hexdigest(), "run_id": run_id})
+        records.append(app_ui_record)
     if documentation_record is not None:
         diagnostic_bytes = (output_dir / "ios-test-diagnostics.json").read_bytes()
         documentation_record["artifacts"].append({

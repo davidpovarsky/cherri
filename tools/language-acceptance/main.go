@@ -964,6 +964,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateEditorContractRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateAppIntegrationRecord(reqID, rec, manifest); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validatePreviewEditRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}

@@ -300,3 +300,15 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 - Clean source `0f50e542` replaces the original ASCII usage regex with equivalent parenthesis/prefix discovery. Baseline and fixed sources each passed72 named events across three repetitions, including20,120 differential byte strings per repetition. Existing Legacy CLI/native/state controls passed10 named events from an ordinary clone; the initial linked-worktree VCS build failure remains retained.
 - Public64KiB–4MiB payload and256KiB call-dense body measurements show lower scan cost and zero scanner allocations. These measurements do not establish private S4 causality or completion. Original S4 source/file/timeout metadata is unchanged; no private corpus replay, deadline change, formal record or release promotion occurred.
 - Source-bound originals and limits: [function-usage scan proof](docs/language-v2/p15-function-usage-scan-20261122.md). Final integrated and private gates remain separate.
+
+
+## 2026-11-23 — K17 semantic checkpoint and truthful evidence scope
+
+- N03 has a genuine clean-617 local producer. F04's admitted local consumers passed 179 focused + 522 language names; its full sequence/interface semantics remain open.
+- F04 observation plumbing passed 12 checks across 3 parents. It records the already-qualified families in a fixed 16-parent/226-event inventory without changing deadlines, the 128-path bound or full F04 NOT_RUN.
+- RP40's separate app/UI producers and strict intakes passed 81 Go/58 Python controls. Actual same-source Apple execution remains required; protected Swift/startup limits are unchanged.
+- Public synthetic-original retention passed 14 Python methods for only the two reviewed fixtures. The global publisher/privacy boundary is unchanged. Original control 45260523425 remains a preflight failure: Git status exceeded its original 3-second cap at 3.036 seconds; no runtime result exists.
+- BRG25/BRG27 metadata correction passed 3 Python methods + 5 Go names on the latest 272-file setup. Partial bridge/build probes no longer grant full-scenario or synthetic build credit; their diagnostic results remain intact.
+- Capacity07 passed reversible checkout reduction while preserving Capacity06's zero-mutation preflight failure, Git objects/refs, ignored originals and R23v1 policy. The unchanged 2 GiB producer floor was satisfied at its final observation.
+- Ready local N03/RP39/RP41 producers, missing joined scenarios, real semantic gaps, existing context/native intakes and historical B01/BRG01 gaps remain distinct. The original 476/949/617 outcomes are not restamped onto a final source.
+- Complete the preserved P10 S/C0/C1/C2 chain and source-bound verification after source freeze. See [the semantic checkpoint](docs/language-v2/p15-k17-semantic-continuation-20261123.md) and its exact original references.

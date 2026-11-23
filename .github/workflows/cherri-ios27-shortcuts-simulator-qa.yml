@@ -268,6 +268,29 @@ jobs:
             --output "artifacts/cherri-ios27-simulator-qa-public/${{ github.run_id }}" \
             --fixtures-dir tools/shortcuts-simulator-qa/fixtures
 
+      - name: Retain exact originals for the two public nested-List fixtures
+        id: nested_list_public_originals
+        if: always() && steps.privacy_gate.outputs.passed == 'true' && (inputs.sample_id == 'qa-nested-list-control' || inputs.sample_id == 'qa-nested-list-candidate') && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
+        timeout-minutes: 1
+        env:
+          NESTED_PUBLIC_FIXTURE: ${{ format('{0}-v2', inputs.sample_id) }}
+        run: |
+          python3 -B tools/shortcuts-simulator-qa/nested_list_public_originals.py stage \
+            --repo . --root "artifacts/cherri-ios27-simulator-qa/$GITHUB_RUN_ID" \
+            --public-root "artifacts/cherri-ios27-simulator-qa-public/$GITHUB_RUN_ID" \
+            --output "artifacts/cherri-nested-list-public-originals/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+            --fixture "$NESTED_PUBLIC_FIXTURE" --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Upload the fixed public nested-List originals
+        if: always() && steps.nested_list_public_originals.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-nested-list-public-originals-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/cherri-nested-list-public-originals/${{ github.run_id }}-${{ github.run_attempt }}/
+          retention-days: 7
+          if-no-files-found: error
+
       - name: Upload Sanitized Simulator QA Artifacts
         if: always() && steps.privacy_gate.outputs.passed == 'true' && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
         uses: actions/upload-artifact@v4

@@ -328,6 +328,196 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertFalse(comp.isEmpty)
     }
 
+
+    /// Runs in the real Cherri app test host. UI gestures and publication are
+    /// separate requirements; this method exercises the app's production APIs.
+    @MainActor
+    func testRP40ActualAppEntrypointsJoinedContract() async throws {
+        let prefix = "// RP40 value comment שלום 🌍\n"
+            + "let value = text(\"RP40_VALUE\")\n"
+            + "let untouched = \"value remains literal\"\n"
+        var document = CherriDocument(text: prefix + "sho")
+        let request = CherriCompletionRequest(
+            source: document.text,
+            selection: NSRange(location: document.text.utf16.count, length: 0)
+        )
+        let position = try XCTUnwrap(request.position)
+        XCTAssertEqual(position.line, 4)
+        XCTAssertEqual(position.column, 4)
+        let items = try await CherriCompiler.complete(
+            source: request.source, line: position.line, column: position.column
+        )
+        let matches = request.matchingItems(items, prefix: "sho").filter { $0.label == "show" }
+        XCTAssertEqual(matches.count, 1)
+        let show = try XCTUnwrap(matches.first)
+        XCTAssertEqual(show.insertText, "show(<#input#>)")
+        XCTAssertEqual(request.matchingItems(items, prefix: "RP40_no_such_action"), [])
+        XCTAssertNotEqual(request, CherriCompletionRequest(
+            source: document.text + "w",
+            selection: NSRange(location: document.text.utf16.count, length: 0)
+        ))
+        let snippet = try XCTUnwrap(show.insertText)
+        try await assertUnfilledSnippetRejected(prefix + snippet + "\n")
+        let replacement = snippet.replacingOccurrences(of: "<#input#>", with: "value")
+        document.text = (document.text as NSString).replacingCharacters(
+            in: NSRange(location: document.text.utf16.count - 3, length: 3),
+            with: replacement + "\n"
+        )
+        let completed = prefix + "show(value)\n"
+        XCTAssertTrue(document.text.utf16.elementsEqual(completed.utf16))
+
+        let valid = try await CherriCompiler.analyze(source: document.text)
+        XCTAssertTrue(valid.valid)
+        XCTAssertTrue(valid.diagnostics.isEmpty)
+        XCTAssertEqual(valid.languageVersion, "2.0")
+        XCTAssertEqual(valid.schemaFingerprint.count, 64)
+        XCTAssertTrue(valid.schemaFingerprint.allSatisfy { "0123456789abcdef".contains($0) })
+
+        let invalid = document.text + "unknownRP40()\n"
+        let diagnostic = try await CherriCompiler.analyze(source: invalid)
+        XCTAssertFalse(diagnostic.valid)
+        XCTAssertEqual(diagnostic.languageVersion, valid.languageVersion)
+        XCTAssertEqual(diagnostic.schemaFingerprint, valid.schemaFingerprint)
+        XCTAssertEqual(diagnostic.diagnostics.count, 1)
+        let unknown = try XCTUnwrap(diagnostic.diagnostics.first)
+        XCTAssertEqual(unknown.code, "E_UNKNOWN_ACTION")
+        XCTAssertEqual(unknown.range.start, CherriWirePosition(line: 4, character: 0))
+        XCTAssertEqual(unknown.range.end, CherriWirePosition(line: 4, character: 11))
+        do {
+            _ = try await CherriCompiler.compile(source: invalid, name: "RP40 Rejected")
+            XCTFail("The app compiler accepted the diagnosed unknown action")
+        } catch let failure as CompilationDiagnostic {
+            XCTAssertTrue(failure.message.contains("E_UNKNOWN_ACTION"))
+        }
+
+        let rejectedRename = try await CherriCompiler.rename(
+            source: document.text, line: 2, column: 6, newName: "1invalid"
+        )
+        XCTAssertFalse(rejectedRename.ok)
+        XCTAssertNil(rejectedRename.source)
+        XCTAssertNotNil(rejectedRename.error)
+        XCTAssertTrue(document.text.utf16.elementsEqual(completed.utf16))
+        let renamed = try await CherriCompiler.rename(
+            source: document.text, line: 2, column: 6, newName: "renamedValue"
+        )
+        XCTAssertTrue(renamed.ok)
+        let edited = try XCTUnwrap(renamed.source)
+        let expected = "// RP40 value comment שלום 🌍\n"
+            + "let renamedValue = text(\"RP40_VALUE\")\n"
+            + "let untouched = \"value remains literal\"\n"
+            + "show(renamedValue)\n"
+        XCTAssertTrue(edited.utf16.elementsEqual(expected.utf16))
+        let expectedEdits = [
+            CherriTextEditItem(
+                range: CherriWireRange(
+                    start: CherriWirePosition(line: 1, character: 4),
+                    end: CherriWirePosition(line: 1, character: 9)
+                ), newText: "renamedValue"
+            ),
+            CherriTextEditItem(
+                range: CherriWireRange(
+                    start: CherriWirePosition(line: 3, character: 5),
+                    end: CherriWirePosition(line: 3, character: 10)
+                ), newText: "renamedValue"
+            ),
+        ]
+        let edits = try XCTUnwrap(renamed.edits)
+        XCTAssertEqual(edits.count, 2)
+        XCTAssertEqual(Set(edits), Set(expectedEdits))
+        document.text = edited
+
+        let compiled = try await CherriCompiler.compile(
+            source: document.text, name: "RP40 App Contract", mode: "v2", buildProfile: .debug
+        )
+        XCTAssertEqual(compiled.actualMode, "v2")
+        XCTAssertNil(compiled.signedShortcut)
+        XCTAssertTrue(compiled.sourceRequest.source.utf16.elementsEqual(expected.utf16))
+        XCTAssertEqual(compiled.sourceRequest.name, "RP40 App Contract")
+        XCTAssertEqual(compiled.sourceRequest.mode, "v2")
+        XCTAssertEqual(compiled.sourceRequest.buildProfile, .debug)
+        let actions = try XCTUnwrap(
+            try propertyList(compiled.plist)["WFWorkflowActions"] as? [[String: Any]]
+        )
+        let catalog = try await CherriCompiler.actionCatalog()
+        let catalogShow = catalog.filter { $0.name == show.label }
+        XCTAssertEqual(catalogShow.count, 1)
+        let sharedShow = try XCTUnwrap(catalogShow.first)
+        XCTAssertEqual(sharedShow.shortcutIdentifier, "is.workflow.actions.showresult")
+        let shown = actions.filter {
+            $0["WFWorkflowActionIdentifier"] as? String == sharedShow.shortcutIdentifier
+        }
+        XCTAssertEqual(shown.count, 1)
+        let shownParameters = try XCTUnwrap(
+            shown.first?["WFWorkflowActionParameters"] as? [String: Any]
+        )
+        XCTAssertNotNil(shownParameters["Text"])
+        let namedTexts = actions.filter { action in
+            let parameters = action["WFWorkflowActionParameters"] as? [String: Any]
+            return action["WFWorkflowActionIdentifier"] as? String == "is.workflow.actions.gettext"
+                && parameters?["CustomOutputName"] as? String == "renamedValue"
+                && parameters?["WFTextActionText"] as? String == "RP40_VALUE"
+        }
+        XCTAssertEqual(namedTexts.count, 1)
+        let producer = try XCTUnwrap(
+            namedTexts.first?["WFWorkflowActionParameters"] as? [String: Any]
+        )
+        let producerUUID = try XCTUnwrap(producer["UUID"] as? String)
+        XCTAssertNotNil(UUID(uuidString: producerUUID))
+        let producerPositions = actions.indices.filter {
+            (actions[$0]["WFWorkflowActionParameters"] as? [String: Any])?["UUID"] as? String
+                == producerUUID
+        }
+        XCTAssertEqual(producerPositions.count, 1)
+        let showPosition = try XCTUnwrap(actions.firstIndex {
+            $0["WFWorkflowActionIdentifier"] as? String == sharedShow.shortcutIdentifier
+        })
+        XCTAssertLessThan(try XCTUnwrap(producerPositions.first), showPosition)
+
+        // The ordinary show(Text) writer serializes this immutable reference
+        // as one text-token attachment. Require its exact producer edge.
+        func shownTextMatchesProducer(_ candidate: Any?) -> Bool {
+            guard let token = candidate as? [String: Any],
+                  Set(token.keys) == Set(["WFSerializationType", "Value"]),
+                  token["WFSerializationType"] as? String == "WFTextTokenString",
+                  let value = token["Value"] as? [String: Any],
+                  Set(value.keys) == Set(["string", "attachmentsByRange"]),
+                  value["string"] as? String == "\u{FFFC}",
+                  let attachments = value["attachmentsByRange"] as? [String: Any],
+                  Set(attachments.keys) == Set(["{0, 1}"]),
+                  let reference = attachments["{0, 1}"] as? [String: Any] else {
+                return false
+            }
+            let expectedReference: [String: Any] = [
+                "Type": "ActionOutput", "OutputUUID": producerUUID, "OutputName": "renamedValue",
+            ]
+            return NSDictionary(dictionary: reference).isEqual(to: expectedReference)
+        }
+        XCTAssertTrue(shownTextMatchesProducer(shownParameters["Text"]))
+        var constantInput = shownParameters
+        constantInput["Text"] = "RP40_UNRELATED_CONSTANT"
+        XCTAssertFalse(shownTextMatchesProducer(constantInput["Text"]))
+        var wrongToken = try XCTUnwrap(shownParameters["Text"] as? [String: Any])
+        var wrongValue = try XCTUnwrap(wrongToken["Value"] as? [String: Any])
+        var wrongAttachments = try XCTUnwrap(wrongValue["attachmentsByRange"] as? [String: Any])
+        var wrongReference = try XCTUnwrap(wrongAttachments["{0, 1}"] as? [String: Any])
+        let wrongUUID = producerUUID == "00000000-0000-0000-0000-000000000000"
+            ? "11111111-1111-1111-1111-111111111111" : "00000000-0000-0000-0000-000000000000"
+        wrongReference["OutputUUID"] = wrongUUID
+        wrongAttachments["{0, 1}"] = wrongReference
+        wrongValue["attachmentsByRange"] = wrongAttachments
+        wrongToken["Value"] = wrongValue
+        var detachedInput = shownParameters
+        detachedInput["Text"] = wrongToken
+        XCTAssertFalse(shownTextMatchesProducer(detachedInput["Text"]))
+        XCTAssertTrue(shownTextMatchesProducer(shownParameters["Text"]))
+        let recovery = try await CherriCompiler.analyze(source: document.text)
+        XCTAssertTrue(recovery.valid)
+        XCTAssertTrue(recovery.diagnostics.isEmpty)
+        XCTAssertEqual(recovery.schemaFingerprint, valid.schemaFingerprint)
+        XCTAssertTrue(document.text.utf16.elementsEqual(expected.utf16))
+        print("[CHECKPOINT:RP40_APP_ENTRYPOINTS_VERIFIED]")
+    }
+
     // Deprecated forwarders for backward compatibility
     func testE01MultiDiagnosticAnalysis() async throws {
         try await testE02MultiDiagnosticAnalysisService()

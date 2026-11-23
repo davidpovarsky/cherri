@@ -264,14 +264,26 @@ class StartupObservationControls(unittest.TestCase):
     def test_diagnostic_scope_keeps_actual_pass_without_acceptance(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            name = "testBRG27EditorRealWorldWorkflowUI"
-            text = (f"Test Case '-[CherriUITests.CherriEditorUITests {name}]' started.\n"
-                    "[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]\n"
-                    f"Test Case '-[CherriUITests.CherriEditorUITests {name}]' passed (1.0 seconds).\n")
+            name = "testE01CompletionDisplayAndInsertionUI"
+            source = 'text("שלום 🌍")\n'
+            receipt = {
+                "schemaVersion": "1.0", "testName": "CherriEditorUITests/" + name,
+                "stage": "typed-source", "syntheticSourceResetVerified": True,
+                "actualSource": source, "expectedSource": source,
+                "exactUTF16Match": True, "editorExists": True,
+            }
+            text = "\n".join([
+                f"Test Case '-[CherriUITests.CherriEditorUITests {name}]' started.",
+                collector.RECEIPT_PREFIX + encode(receipt),
+                "[CHECKPOINT:E01_COMPLETION_INSERTED]",
+                f"Test Case '-[CherriUITests.CherriEditorUITests {name}]' passed (1.0 seconds).",
+            ]) + "\n"
             log = root/"log"; log.write_text(text, encoding="utf-8")
             code = root/"exit"; code.write_text("0", encoding="utf-8")
             ordinary, records = collector.collect(log, root/"ordinary", "a"*40, "42", code)
             self.assertEqual(len(records), 1)
+            self.assertEqual(records[0]["requirements"], ["E01"])
+            self.assertEqual(ordinary["uiReceipts"], [receipt])
             observed, records = collector.collect(log, root/"observed", "a"*40, "42", code, diagnostic_only=True)
             self.assertEqual(records, [])
             self.assertEqual(observed["runStatus"], "PASSED")

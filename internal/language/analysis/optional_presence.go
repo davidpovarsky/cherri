@@ -25,6 +25,9 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
 	case *syntax.IfStmt, *syntax.MenuStmt:
 		return a.controlValueHasPresence(expr)
 	case *syntax.IndexExpr:
+		if a.loopResultLocalValues[node.Target] != nil {
+			return true
+		}
 		if a.dictionaryIndexes[expr] {
 			return true
 		}

@@ -334,16 +334,8 @@ func TestCombinedValueBlockIncompleteF04Scope(t *testing.T) {
 	if !found {
 		t.Fatal("missing F04 contract")
 	}
-	var events = combinedValueBlockEvidence.Events["F04"]
-	if len(events) != 47 || !sort.StringsAreSorted(events) {
-		t.Fatal("changed fixed F04 observation inventory")
-	}
-	var seen = map[string]bool{}
-	for _, event := range events {
-		if seen[event] || !(event == combinedValueBlockScenarios["F04"].Unit || event == combinedValueBlockScenarios["F04"].Native || strings.HasPrefix(event, combinedValueBlockScenarios["F04"].Unit+"/") || strings.HasPrefix(event, combinedValueBlockScenarios["F04"].Native+"/")) {
-			t.Fatal("duplicate or foreign F04 observation event")
-		}
-		seen[event] = true
+	if err := validateCombinedValueBlockF04ObservationInventory(combinedValueBlockScenarios["F04"].tests(), combinedValueBlockEvidence.Events["F04"], combinedValueBlockSourcePaths("F04")); err != nil {
+		t.Fatal(err)
 	}
 	var mapping, mapErr = BuildRequirementsEvidenceMap(all)
 	if mapErr != nil {
@@ -401,4 +393,76 @@ func TestCombinedValueBlockF04ActualObservation(t *testing.T) {
 		}
 	}
 	t.Logf("F04 actual supported semantic/native facets on %s verified, 0 acceptance records, complete requirement NOT_RUN: %s", runner.implSHA, combinedValueBlockF04Gap)
+}
+
+func TestCombinedValueBlockF04ObservationInventory(t *testing.T) {
+	spec := combinedValueBlockScenarios["F04"]
+	tests, events, paths := spec.tests(), combinedValueBlockEvidence.Events["F04"], combinedValueBlockSourcePaths("F04")
+	if err := validateCombinedValueBlockF04ObservationInventory(tests, events, paths); err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) > 128 || len(tests) != 16 || len(events) != 226 {
+		t.Fatal("F04 observation bounds or selected family changed")
+	}
+	for _, path := range paths {
+		if _, err := os.Stat(resolveRepoPath(path)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, id := range []string{"RP23", "BRG14"} {
+		if !reflect.DeepEqual(combinedValueBlockSourcePaths(id), combinedValueBlockEvidence.SourcePaths) {
+			t.Fatal("F04 changed another scenario's source witness", id)
+		}
+	}
+	for _, fault := range []string{"missing_parent", "foreign_parent", "duplicate_parent", "missing_child", "foreign_child", "duplicate_child", "missing_lowerer", "missing_local_oracle", "oversized_source"} {
+		t.Run(fault, func(t *testing.T) {
+			changedTests := append([]string{}, tests...)
+			changedEvents := append([]string{}, events...)
+			changedPaths := append([]string{}, paths...)
+			switch fault {
+			case "missing_parent":
+				changedTests = changedTests[:len(changedTests)-1]
+			case "foreign_parent":
+				changedTests[len(changedTests)-1] = "TestP15F03Unrelated"
+			case "duplicate_parent":
+				changedTests[len(changedTests)-1] = changedTests[0]
+			case "missing_child":
+				changedEvents = changedEvents[:len(changedEvents)-1]
+			case "foreign_child":
+				changedEvents[len(changedEvents)-1] = tests[0] + "/unreviewed_child"
+				sort.Strings(changedEvents)
+			case "duplicate_child":
+				changedEvents[len(changedEvents)-1] = changedEvents[0]
+				sort.Strings(changedEvents)
+			case "missing_lowerer", "missing_local_oracle":
+				name := "internal/language/lower/loop_result_locals.go"
+				if fault == "missing_local_oracle" {
+					name = "p15_f04_local_cell_consumers_test.go"
+				}
+				var retained []string
+				for _, path := range changedPaths {
+					if path != name {
+						retained = append(retained, path)
+					}
+				}
+				if len(retained) != len(changedPaths)-1 {
+					t.Fatal("causal source removal did not change the intended witness")
+				}
+				changedPaths = retained
+			case "oversized_source":
+				changedPaths = make([]string, 129)
+			}
+			if err := validateCombinedValueBlockF04ObservationInventory(changedTests, changedEvents, changedPaths); err == nil {
+				t.Fatal("incomplete or foreign observation inventory was accepted")
+			}
+		})
+	}
+	if incompleteLocalAssertions["F04"] != combinedValueBlockF04Gap {
+		t.Fatal("F04 incomplete guard no longer describes the actual bounded observation")
+	}
+	for _, tier := range []string{"unit", "native-structure", "ios-runtime"} {
+		if err := validateCombinedValueBlockRecord("F04", EvidenceRecord{Requirements: []string{"F04"}, Tier: tier, Result: "passed"}); err == nil {
+			t.Fatal("observation-only inventory granted complete F04 credit")
+		}
+	}
 }

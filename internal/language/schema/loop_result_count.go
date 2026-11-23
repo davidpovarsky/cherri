@@ -10,23 +10,7 @@ import (
 // A different count mode, aliased collection, user function, raw action, or
 // incomplete action schema must keep the ordinary fail-closed loop boundary.
 func LoopResultItemsCountBody(call *syntax.CallExpr, action *ActionSchema) *syntax.BlockStmt {
-	if call == nil || action == nil || call.Block != nil || len(call.NamedArgs) != 0 ||
-		action.ID != "count" || action.CallableName != "count" || action.Module != "" ||
-		action.AppleIdentifier != "is.workflow.actions.count" || action.PrimaryParameterID != "input" ||
-		action.OutputType == nil || !types.Number.Equals(action.OutputType) ||
-		action.AppIntent != nil || action.CompilerConstruct || action.ScopedBlock ||
-		len(action.StaticParameters) != 0 || len(action.Parameters) != 2 {
-		return nil
-	}
-	input, mode := action.Parameters[0], action.Parameters[1]
-	if input.ID != "input" || input.Label != "input" || input.WireKey != "Input" ||
-		input.Codec != "token" || input.Optional || input.Variadic || input.Reference ||
-		input.Type == nil || input.Type.Kind() != types.KindAnyContent ||
-		mode.ID != "type" || mode.Label != "type" || mode.WireKey != "WFCountType" ||
-		mode.Codec != "enum" || !mode.Optional || mode.Variadic || mode.Reference ||
-		mode.DefaultValue == nil || *mode.DefaultValue != "Items" ||
-		mode.Type == nil || !types.Text.Equals(mode.Type) ||
-		mode.EnumName != "countType" {
+	if !LoopResultItemsCountConsumer(call, action) {
 		return nil
 	}
 	var body *syntax.BlockStmt
@@ -42,6 +26,31 @@ func LoopResultItemsCountBody(call *syntax.CallExpr, action *ActionSchema) *synt
 		return nil
 	}
 	return body
+}
+
+// The same exact schema gate also authorizes Items Count of an enrolled
+// local sequence. No call-name-only or alternate count-mode permission.
+func LoopResultItemsCountConsumer(call *syntax.CallExpr, action *ActionSchema) bool {
+	if call == nil || action == nil || call.Block != nil || len(call.NamedArgs) != 0 ||
+		action.ID != "count" || action.CallableName != "count" || action.Module != "" ||
+		action.AppleIdentifier != "is.workflow.actions.count" || action.PrimaryParameterID != "input" ||
+		action.OutputType == nil || !types.Number.Equals(action.OutputType) ||
+		action.AppIntent != nil || action.CompilerConstruct || action.ScopedBlock ||
+		len(action.StaticParameters) != 0 || len(action.Parameters) != 2 {
+		return false
+	}
+	input, mode := action.Parameters[0], action.Parameters[1]
+	if input.ID != "input" || input.Label != "input" || input.WireKey != "Input" ||
+		input.Codec != "token" || input.Optional || input.Variadic || input.Reference ||
+		input.Type == nil || input.Type.Kind() != types.KindAnyContent ||
+		mode.ID != "type" || mode.Label != "type" || mode.WireKey != "WFCountType" ||
+		mode.Codec != "enum" || !mode.Optional || mode.Variadic || mode.Reference ||
+		mode.DefaultValue == nil || *mode.DefaultValue != "Items" ||
+		mode.Type == nil || !types.Text.Equals(mode.Type) ||
+		mode.EnumName != "countType" {
+		return false
+	}
+	return true
 }
 
 // Private initialization and append actions must not become a source action's

@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.12 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter33 records core **1079e9bff6c5f2c2eea3002095840e23e9bd3719** and clean editor **133eac3b752248a5e5e03887c77951f1ef6a83ea** scoped evidence. Earlier K15 daf5d84 is published, but automatic Build45226682617 **FAILED**; K16 remains unpublished. This is a continuation checkpoint, not a new final K/S or release. Earlier chapters and original reports retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.13 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter 34 preserves published K16 **949b758abf5b6bee073940216dc498a86d84385f**, clean N03 source **6172184eac0f53c05268d0df4641772a905ffd09**, and the separately pinned F04/RP40/retention/metadata qualifications. Latest working-source qualification: **272 pins; BRG scope controls 3 Python + 5 Go PASS**. No final S or new full179 result is declared. K16 Build's stale P10 verification still requires the real source-bound refresh. Earlier chapters and original outcomes retain their historical sources.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2609,3 +2609,27 @@ The 18:28:05 root diagnosis is **fd431c7f148dd91ba50f7cb155b069aaed7b519dc6aee84
 [Scoped next-work projection](evidence/p15-oracle-checkpoint33-20261123/next-work.public-projection.json)
 
 Project status remains **IN_PROGRESS** and **closure_complete=false**. The checkpoint's own proof commit is intentionally null before adoption; K16 publication is pending. Prior chapters 0–32 and every original report retain their exact historical content and attribution.
+
+
+## 34. P10R15 K16 originals and K17 semantic continuation — 2026-11-23
+
+[The semantic checkpoint](p15-k17-semantic-continuation-20261123.md) and [public evidence projection](evidence/p15-oracle-checkpoint34-20261123/semantic.public-projection.json) bind each outcome to its original source and receipt.
+
+| Completed component | Actual outcome | Scope |
+| --- | --- | --- |
+| N03 on clean 617 | 30 outer and 222 nested names PASS | Distinct accounting layers; local unit/native-structure on that source |
+| F04 closed local consumers | 179 focused + 522 language names PASS | 231-file qualified working source; complete F04 remains open |
+| RP40 collector/intakes | 81 Go names + 58 Python methods PASS | Separate app/UI source producers exist; actual Apple execution remains required |
+| Public originals retention | 14 Python methods PASS | 242-file setup; only two fixed public fixtures and three originals per fixture |
+| F04 observation plumbing | 12 named checks / 3 parents PASS | 256-file setup; fixed 16-parent/226-event observer, unchanged 128-path cap and deadlines; no broad replay |
+| BRG25/BRG27 metadata correction | 3 Python methods + 5 Go names PASS | Latest 272-file setup; unsupported full-scenario/build credit removed; genuine joined scenarios remain open |
+| K16 F01 original intake | Exact callback/four-record trace accepted; 8 copied-event corruptions rejected | Run 45248592960/source 949 only |
+| K16 nested-list control | Original metadata proves Git status timeout at 3.036 seconds | Unchanged 3-second cap; no runtime observation or candidate authorization |
+| Capacity07 | Reversible checkout reduction PASS | 303,624,192 tracked allocated bytes retired; original 06 pre-mutation failure and protected evidence preserved |
+| P10 owners | 47 definitions / 19 settings independently reviewed | Static preparation; real raw/derived/56-gate chain remains pending |
+
+The original complete K476 report is unchanged. These stage counts are not a new total for the 179 obligations. No final S, later-source Apple credit or global closure is inferred.
+
+Current-source assessment identifies ready local N03/RP39/RP41 producers; real T05/L01/F04 semantic gaps; dedicated RP40 Apple execution; existing D03/native/context intakes; missing complete RP20/RP26/BRG15/BRG25–28 scenarios; and incomplete RP49/BRG31 final validation. B01/BRG01's October originals remain missing, separately from November preservation receipts. AI provider/R23v1 boundaries remain unchanged.
+
+Next: review and adopt these documentation changes, settle/freeze the selected source, execute the preserved P10 S/raw/C0/derived/C1/refresh/C2/clean-C2-verify/actual56 chain, then finish exact-source local/CI/native evidence through the existing bounded owners. Retain every failed original and update Asana after each verified stage.

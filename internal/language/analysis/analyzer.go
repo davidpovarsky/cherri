@@ -36,6 +36,7 @@ type Symbol struct {
 	nativeReferenceTarget bool
 	nativeAppendVariable  bool
 	nativeListValue       bool
+	loopResultElement     types.Type // source-owned local cell sequence element
 }
 
 // Scope represents a lexical scope.
@@ -88,6 +89,9 @@ type Analyzer struct {
 	currentFn              *syntax.FunctionDecl
 	inValueBlk             bool
 	loopResultCountBody    *syntax.BlockStmt
+	loopResultLocalBody    *syntax.BlockStmt
+	loopResultLocalPlan    *schema.LoopResultLocalPlan
+	loopResultLocalValues  map[syntax.Expression]types.Type
 	topLevelVars           map[string]source.Span
 	yieldedTypes           []types.Type
 	importStack            []string
@@ -371,6 +375,9 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	defer func() { a.analyzing = false }()
 	a.analyzeModuleDependencies()
 	a.expandCopyPaste(prog)
+	a.loopResultLocalPlan = schema.PlanLoopResultLocals(prog, a.registry)
+	a.loopResultLocalBody = nil
+	a.loopResultLocalValues = make(map[syntax.Expression]types.Type)
 	a.setupUses = make(map[*syntax.SetupDecl]int)
 	a.nativeReferenceCalls = make(map[syntax.Expression]bool)
 
@@ -780,7 +787,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 	case *syntax.BindingStmt:
 		var valType types.Type
 		if s.Value != nil {
+			restoreLocalCells := a.beginLocalLoopResultBinding(s)
 			valType = a.analyzeEnumContext(s.Value, scope, a.enumCatalog.TypeName(s.TypeExpr))
+			restoreLocalCells()
 		}
 		if isVoidValue(valType) {
 			if call, ok := s.Value.(*syntax.CallExpr); ok && call.Block != nil {
@@ -824,6 +833,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 
 		symbol := &Symbol{
+			loopResultElement:     a.validateLocalLoopResultBinding(s, declType),
 			nativeReferenceTarget: s.Value != nil && !isVoidValue(valType),
 			optionalPresence:      a.exprPresence[s.Value],
 			knownAbsent:           a.exprAbsent[s.Value],
@@ -977,7 +987,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			forScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		}
 		if s.ItemVar != "" && s.ItemVar != "_" {
-			forScope.Define(&Symbol{Name: s.ItemVar, Type: elemType, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
+			forScope.Define(&Symbol{Name: s.ItemVar, Type: elemType, Initialized: true, nativeReferenceTarget: true, Span: s.Span, optionalPresence: a.loopResultLocalValues[s.Iterable] != nil})
 		}
 		forScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		forScope.Define(&Symbol{Name: "RepeatItem", Type: elemType, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
@@ -1141,6 +1151,7 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	}
 	delete(a.exprPresence, expr)
 	t := a.analyzeExpressionInternal(expr, scope)
+	a.recordLocalLoopResult(expr, t, scope)
 	a.recordDictionaryProvenance(expr, scope)
 	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
 	a.exprAbsent[expr] = false

@@ -97,6 +97,9 @@ func (l *Lowerer) staticIndexHasPresentValue(expr syntax.Expression) bool {
 // Only compiler-owned presence participates in these predicates. Imported raw
 // native predicates and unrelated action-content tests retain their own wire.
 func (l *Lowerer) hasOptionalPresence(expr syntax.Expression) bool {
+	if l.localLoopResultIndexHasPresence(expr) {
+		return true
+	}
 	if l.optionalJoinNeeded(expr) {
 		return true
 	}

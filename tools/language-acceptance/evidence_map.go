@@ -143,16 +143,15 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "E07", "RP41", "BRG28":
 		reqUIAssertions["visual_source_edit_bounded"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE07VisualParameterEditingCanvasUI", "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection")
-	case "BRG27":
-		reqUIAssertions["multi_diagnostics"] = "true"
-		reqUIAssertions["completion_contextual"] = "true"
-		*testIDs = append(*testIDs, "CherriUITests/testBRG27EditorRealWorldWorkflowUI")
+	case "BRG25", "BRG27":
+		// Existing one-call bridge and one-document build probes are diagnostics.
+		// They do not authorize any tier of these complete joined scenarios.
 	case "RP40":
-		reqUIAssertions["completion_contextual"] = "true"
-		*testIDs = append(*testIDs, "CherriUITests/testE01CompletionDisplayAndInsertionUI", "CherriCoreIntegrationTests/testRP40SwiftIntegrationService")
-	case "BRG25":
-		reqUIAssertions["shared_analysis_bridge"] = "true"
-		*testIDs = append(*testIDs, "CherriUITests/testBRG27EditorRealWorldWorkflowUI", "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract")
+		// Only the dedicated joined UI scenario can supply this separate tier.
+		*testIDs = append(*testIDs, appIntegrationUITestID)
+		for key, value := range appIntegrationUIAssertions() {
+			reqUIAssertions[key] = value
+		}
 	case "P05":
 		reqUIAssertions["unicode_identifiers"] = "true"
 		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis")
@@ -551,7 +550,7 @@ func deriveAcceptanceFixtures(id, group string) []string {
 		return append([]string{}, functionTransportProductionPaths...)
 	}
 	if _, found := combinedValueBlockScenarios[id]; found {
-		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+		return append([]string{}, combinedValueBlockSourcePaths(id)...)
 	}
 	if id == "AI01" {
 		return append([]string{}, aiMeasurementSources...)
@@ -587,6 +586,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP40" {
+		return []string{appIntegrationTestID}
+	}
 	if id == "RP41" {
 		return previewEditTestIDs()
 	}
@@ -693,6 +695,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP40" {
+		return append([]string{}, appIntegrationSourcePaths...)
+	}
 	if id == "RP41" {
 		return append([]string{}, previewEditProductionPaths...)
 	}
@@ -706,7 +711,7 @@ func deriveRepairFixtures(id string) []string {
 		return append([]string{}, functionCombinedDefaultProductionPaths...)
 	}
 	if _, found := combinedValueBlockScenarios[id]; found {
-		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+		return append([]string{}, combinedValueBlockSourcePaths(id)...)
 	}
 	if _, found := combinedIndexArithmeticScenarios[id]; found {
 		return append([]string{}, combinedIndexArithmeticEvidence.SourcePaths...)
@@ -871,7 +876,7 @@ func deriveGateFixtures(id string) []string {
 		return append([]string{}, parameterFormsProductionPaths...)
 	}
 	if _, found := combinedValueBlockScenarios[id]; found {
-		return append([]string{}, combinedValueBlockEvidence.SourcePaths...)
+		return append([]string{}, combinedValueBlockSourcePaths(id)...)
 	}
 	if _, found := combinedIndexArithmeticScenarios[id]; found {
 		return append([]string{}, combinedIndexArithmeticEvidence.SourcePaths...)
