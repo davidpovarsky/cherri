@@ -163,7 +163,7 @@ jobs:
 
       - name: Validate Remote Builder graph observers
         working-directory: tools/p10r15
-        run: python3 -B -m unittest test_verify_remote_release test_remote_promotion.EvidenceGates -v
+        run: python3 -B -m unittest test_verify_remote_release test_remote_promotion.EvidenceGates test_remote_source_containment -v
 
       - name: Validate bounded GET pagination
         run: |

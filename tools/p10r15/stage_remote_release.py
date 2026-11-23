@@ -90,6 +90,27 @@ def immutable_release_reader(expected_tuple, tool_hashes):
     ])
 
 
+def canonicalize_source_guard(script, dialect):
+    """Compare real source paths with the real home plus the literal jobs boundary."""
+    if dialect == "v2":
+        old = '  real=$(realpath -- "$input")\n  case "$real" in "$BASE/jobs/"*)'
+        new = ('  real=$(realpath -- "$input")\n'
+               '  local base_real\n'
+               '  base_real=$(realpath -- "$BASE") || die "Cannot resolve Remote Builder home"\n'
+               '  case "$real" in "$base_real/jobs/"*)')
+    elif dialect == "legacy":
+        old = 'source="$(realpath -- "$1")"; shift\ncase "$source" in "$BASE/jobs/"*.cherri)'
+        new = ('source="$(realpath -- "$1")"; shift\n'
+               'base_real="$(realpath -- "$BASE")" || fail "cannot resolve Remote Builder home"\n'
+               'case "$source" in "$base_real/jobs/"*.cherri)')
+    else:
+        raise ValueError("Unknown Remote Builder language route")
+    if script.count(old) != 1:
+        raise ValueError("Observed " + dialect + " source guard changed")
+    # Resolving BASE/jobs instead would allow an escaping jobs symlink.
+    return script.replace(old, new)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("repo", "compiler-source", "compiler", "migrator", "docs", "live-home", "stage"):
@@ -169,6 +190,7 @@ def main():
     (candidate / "tools").symlink_to(args.live_home / "tools", target_is_directory=True)
     (candidate / "config/default-language-mode").write_bytes(mode)
     runner_text = (args.live_home / "bin/cherri-remote-runner.sh").read_text()
+    runner_text = canonicalize_source_guard(runner_text, "v2")
     # Preserve the real read/compile interfaces. Sync revalidates this immutable
     # release; it cannot fetch a moving P10/P9 branch or activate a fallback.
     start = runner_text.index("# A clone managed solely by this runner.")
@@ -223,6 +245,7 @@ def main():
     shutil.copy2(args.live_home / "bin/cherri-shortcut-lint.py",
                  candidate / "bin/cherri-shortcut-lint.py")
     legacy_text = (args.live_home / "bin/cherri-remote-legacy.sh").read_text()
+    legacy_text = canonicalize_source_guard(legacy_text, "legacy")
     legacy_text = legacy_text.replace(protected["bin/cherri-remote-runner.sh"], digest(runner))
     legacy_text = legacy_text.replace("$BASE/p10/runtime", "$BASE/" + args.label + "/runtime")
     legacy_text = legacy_text.replace("x.get('label')!='p10'", "x.get('label')!='" + args.label + "'")
