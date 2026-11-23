@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "intakeUtc": "2026-11-23T02:24:36.692121+00:00",
+  "status": "DIAGNOSTIC_FAILURE_RETAINED",
+  "runId": 45096540454,
+  "sourceCommit": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+  "headBranch": "audit/cherri-p10r15-r8-integration-20261123",
+  "workflowPath": ".github/workflows/ios-build.yml",
+  "workflowId": 337107435,
+  "event": "workflow_dispatch",
+  "attempt": 1,
+  "conclusion": "failure",
+  "diagnosticOnly": true,
+  "inputs": {
+    "startup_observation_only": true,
+    "documentation_component_only": false,
+    "runner_label": "macos-15"
+  },
+  "selectedTests": {
+    "passed": 2,
+    "failed": 1,
+    "methods": [
+      {
+        "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+        "result": "passed"
+      },
+      {
+        "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+        "result": "failed"
+      },
+      {
+        "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+        "result": "passed"
+      }
+    ]
+  },
+  "sourceBinding": {
+    ".github/workflows/ios-build.yml": {
+      "sha256": "627da9a34624564960f02658e649fb5b8c4823fcc994c49e0e7db6d532b70840",
+      "matchesReportedSource": true
+    },
+    "ios/CherriApp/App/CherriApp.swift": {
+      "sha256": "1566e855e13f0cb17bce76a810bc2d440d35964f3bb6d68b51fb95d47d27dcfe",
+      "matchesReportedSource": true
+    },
+    "ios/CherriApp/App/WorkspaceView.swift": {
+      "sha256": "b20f03c22b15be70e8437fac7b0dc1ee13add040c37c1d9e742358b52893bf20",
+      "matchesReportedSource": true
+    },
+    "ios/CherriApp/Diagnostics/StartupContainerWitness.swift": {
+      "sha256": "b7f69b1c59effe822125645628db6dc379ab5d4cde6e9792b59fc59915efb4bd",
+      "matchesReportedSource": true
+    },
+    "ios/CherriApp/Diagnostics/StartupLifecycleObserver.swift": {
+      "sha256": "21755f3697bda713227aeecd01394345dd4c65a3c8e030dd2c7991af16739c45",
+      "matchesReportedSource": true
+    },
+    "ios/CherriApp/Documents/CherriDocument.swift": {
+      "sha256": "6c533568992ffd877fa701075bd90047fcb3d22b9c4834e07c0d4da3ed972e6c",
+      "matchesReportedSource": true
+    },
+    "ios/CherriApp/Editor/CherriEditorView.swift": {
+      "sha256": "45581a83f937780dd1b3c430c6285ad103f1a571dc54d292ff41630c152ddbee",
+      "matchesReportedSource": true
+    },
+    "ios/CherriUITests/CherriEditorUITests.swift": {
+      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+      "matchesReportedSource": true
+    },
+    "ios/CherriUITests/EditorStartupDeadline.swift": {
+      "sha256": "76e60417bf5bb21ee5f42a38636a96d4511242bef25e1ab81147dacbbd1d6645",
+      "matchesReportedSource": true
+    },
+    "ios/scripts/capture_startup_observation.py": {
+      "sha256": "94fdda26072d439b8686e559fd62e4aac39278b137682c321ad08a0dafd014bd",
+      "matchesReportedSource": true
+    },
+    "ios/scripts/collect_ios_test_evidence.py": {
+      "sha256": "86fcaeb12bc762a33eb4664a241c6735681bb0ac1eaf0e4c359aafd33d750265",
+      "matchesReportedSource": true
+    }
+  },
+  "observations": [
+    {
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "conclusions": [
+        "passed"
+      ],
+      "singleInvocation": true,
+      "rejectedMetadataCount": 0,
+      "appEventsHashVerified": true,
+      "appSchemaRecomputed": true,
+      "observerHealthRecomputed": true,
+      "issues": [],
+      "observerHealth": {
+        "status": "HEARTBEATS_OBSERVED",
+        "heartbeatCount": 11,
+        "heartbeatSpanMs": 19891,
+        "largestObservedHeartbeatGapMs": 3116,
+        "terminatedBy": "NO_TERMINAL_EVENT",
+        "absenceProvesMissingLifecycle": false,
+        "mainQueueProbeEnqueued": true,
+        "mainQueueExecutionObserved": true,
+        "executionWasOnMainThread": true,
+        "mainQueueResponseMs": 80,
+        "absenceProvesMainThreadBlocked": false
+      }
+    },
+    {
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "conclusions": [
+        "failed"
+      ],
+      "singleInvocation": true,
+      "rejectedMetadataCount": 0,
+      "appEventsHashVerified": true,
+      "appSchemaRecomputed": true,
+      "observerHealthRecomputed": true,
+      "issues": [
+        {
+          "issueType": "UNREVIEWED",
+          "sourceFile": "CherriEditorUITests.swift",
+          "sourceLine": 531,
+          "errorPresent": false,
+          "errorDomain": "ABSENT",
+          "errorCode": 0,
+          "diagnosticSignatures": [],
+          "descriptions": {
+            "compact": {
+              "capturedBytes": 95,
+              "capturedSha256": "02101bcb935662b40c41d59613a496ec2585fb356677f82b4466003e356a06f1",
+              "originalBytes": 95,
+              "truncated": false
+            },
+            "detailed": {
+              "capturedBytes": 0,
+              "capturedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "originalBytes": 0,
+              "truncated": false
+            },
+            "errorDescription": {
+              "capturedBytes": 0,
+              "capturedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "originalBytes": 0,
+              "truncated": false
+            },
+            "errorDomain": {
+              "capturedBytes": 0,
+              "capturedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "originalBytes": 0,
+              "truncated": false
+            }
+          }
+        }
+      ],
+      "observerHealth": {
+        "status": "HEARTBEATS_OBSERVED",
+        "heartbeatCount": 34,
+        "heartbeatSpanMs": 65966,
+        "largestObservedHeartbeatGapMs": 2576,
+        "terminatedBy": "NO_TERMINAL_EVENT",
+        "absenceProvesMissingLifecycle": false,
+        "mainQueueProbeEnqueued": true,
+        "mainQueueExecutionObserved": true,
+        "executionWasOnMainThread": true,
+        "mainQueueResponseMs": 697,
+        "absenceProvesMainThreadBlocked": false
+      }
+    },
+    {
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "conclusions": [
+        "passed"
+      ],
+      "singleInvocation": true,
+      "rejectedMetadataCount": 0,
+      "appEventsHashVerified": true,
+      "appSchemaRecomputed": true,
+      "observerHealthRecomputed": true,
+      "issues": [],
+      "observerHealth": {
+        "status": "HEARTBEATS_OBSERVED",
+        "heartbeatCount": 17,
+        "heartbeatSpanMs": 31866,
+        "largestObservedHeartbeatGapMs": 2304,
+        "terminatedBy": "NO_TERMINAL_EVENT",
+        "absenceProvesMissingLifecycle": false,
+        "mainQueueProbeEnqueued": true,
+        "mainQueueExecutionObserved": true,
+        "executionWasOnMainThread": true,
+        "mainQueueResponseMs": 962,
+        "absenceProvesMainThreadBlocked": false
+      }
+    }
+  ],
+  "d03": {
+    "failureLine": 531,
+    "failureCategory": "ASSERTION_FAILURE",
+    "sourceAssertion": "The explicit toggle must turn on while preserving the exact search query",
+    "fixedPublicSourceAssertionDigestMatchesCompactDescription": true,
+    "startupReadyMilliseconds": 5751,
+    "startupBudgetMilliseconds": 28000,
+    "startupInFlightObservations": 0,
+    "beforeAfterToggleStates": [
+      {
+        "keyboardExists": true,
+        "migrationButtonExists": false,
+        "migrationElementExists": false,
+        "noResultsExists": true,
+        "queryIsExpected": true,
+        "schemaVersion": "1.0",
+        "searchExists": true,
+        "stage": "before-toggle",
+        "switchExists": true,
+        "switchHittable": true,
+        "switchOff": true,
+        "switchOn": false,
+        "syntheticSourceResetVerified": true,
+        "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+      },
+      {
+        "keyboardExists": true,
+        "migrationButtonExists": false,
+        "migrationElementExists": false,
+        "noResultsExists": true,
+        "queryIsExpected": true,
+        "schemaVersion": "1.0",
+        "searchExists": true,
+        "stage": "after-toggle",
+        "switchExists": true,
+        "switchHittable": true,
+        "switchOff": true,
+        "switchOn": false,
+        "syntheticSourceResetVerified": true,
+        "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
+      }
+    ],
+    "actualBoundary": "The existing switch was observed OFF before and after its normal tap, while exact search text remained intact.",
+    "causalLimits": [
+      "No underlying NSError or recognized compact signature was published.",
+      "The two control snapshots do not prove that the binding never changed transiently or that the same view identity persisted.",
+      "No control-frame or touch-point evidence was retained; a hit-target/platform explanation is an inference.",
+      "The original full-run45093282117 line215 startup failure remains a separate unresolved observation."
+    ]
+  },
+  "privateInspection": {
+    "layer": "Original public ZIPs and their structured metadata plus exact source; private raw XCTest descriptions/container output were not inspected.",
+    "rawDescriptionPublishedByThisIntake": false
+  },
+  "formalRecords": [],
+  "formalAcceptanceGranted": false,
+  "newCIExecutions": 0,
+  "newUnitTests": 0
+}
