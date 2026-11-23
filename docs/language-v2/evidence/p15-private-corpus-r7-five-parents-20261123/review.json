@@ -1,0 +1,273 @@
+{
+  "schema": "cherri-r7-private-five-parent-review/v1",
+  "reviewedUTC": "2026-11-23T01:35:56.374405+00:00",
+  "source": "ca316a3dee252456c4bec751594cf249c709b331",
+  "privateInputCount": 38,
+  "privateInputBytes": 62980131,
+  "privateActionCount": 27652,
+  "privateInputManifestSHA256": "766ac82ef7d92f50a894e50bc84d3fed9cc2d375f81ffe2771dbe8a5a6de5f39",
+  "inputsByteUnchanged": true,
+  "original035Preserved": true,
+  "sourceCleanNow": true,
+  "gateCount": 5,
+  "passedGateCount": 5,
+  "allFiveAcceptedAtThisSource": true,
+  "originalGoBudgetSecondsPerParent": 900,
+  "originalDriverBudgetSecondsPerParent": 930,
+  "originalLifecycleInvocationCount": 1,
+  "actualInvocationCountPerParent": 1,
+  "receipts": [
+    {
+      "mode": "00-p12-par",
+      "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+      "accepted": true,
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T01:13:49.549694+00:00",
+      "finishedUTC": "2026-11-23T01:17:27.775846+00:00",
+      "independentAuditUTC": "2026-11-23T01:17:28.094781+00:00",
+      "processSeconds": 218.226,
+      "parentSeconds": 215.35,
+      "packageSeconds": 215.383,
+      "eventCount": 8096,
+      "exitCode": 0,
+      "failed": 0,
+      "skipped": 0,
+      "goTimedOut": false,
+      "supervisorTimedOut": false,
+      "receiptSHA256": "c6d594189b3b5da3b6e7db1db09e5bb811ff22d7911c79d90e31b9c42ca2c713",
+      "auditSHA256": "dae31c62113ac35b951b587138eea317a65e9f3f2303272a940b45c1e954c583",
+      "stdoutSHA256": "bbe9faa620849bc48853f4184667c63e4d2e78f54709bc840c5c2bec21182027",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateStdoutBytes": 1624083,
+      "summary": {
+        "files": 38,
+        "actions": 27652,
+        "natural": 23353,
+        "fallback": 4298,
+        "invalid": 1,
+        "demotions": 0,
+        "thirdParty": 137
+      },
+      "outerOwnerReceiptSHA256": "8f679717e881dc0a9c4e056d8c0fe6774c31bb851e21ac6ab068d2408d269de5",
+      "capacityBefore": {
+        "observedUTC": "2026-11-23T01:13:48.726500+00:00",
+        "diskFreeBytes": 17711374336,
+        "loadAverage": [
+          3.412109375,
+          5.58642578125,
+          5.89501953125
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 108877097
+      },
+      "capacityAfter": {
+        "observedUTC": "2026-11-23T01:17:27.913036+00:00",
+        "diskFreeBytes": 17674665984,
+        "loadAverage": [
+          1.77978515625,
+          3.74658203125,
+          5.09228515625
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 110516543
+      }
+    },
+    {
+      "mode": "01-p13",
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "accepted": true,
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T01:18:37.212885+00:00",
+      "finishedUTC": "2026-11-23T01:22:10.326888+00:00",
+      "independentAuditUTC": "2026-11-23T01:22:11.044970+00:00",
+      "processSeconds": 213.114,
+      "parentSeconds": 208.69,
+      "packageSeconds": 208.734,
+      "eventCount": 5404,
+      "exitCode": 0,
+      "failed": 0,
+      "skipped": 0,
+      "goTimedOut": false,
+      "supervisorTimedOut": false,
+      "receiptSHA256": "0d064228009342baa715544f9451693582ebee860fda66a043f04c7be272f9de",
+      "auditSHA256": "167acfbb3ef278791bb6cff65b2b146e70110d343ca92429605984f1605cf7b3",
+      "stdoutSHA256": "5397f03fd853093e9db22ac38bf44cad2fa5308208116536654fc5ab428b4de5",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateStdoutBytes": 1024477,
+      "summary": {
+        "actions": 27652,
+        "natural": 23353,
+        "fallback": 4298,
+        "invalid": 1,
+        "demotions": 0
+      },
+      "outerOwnerReceiptSHA256": "5373d6ca1373c7f19833f1330eee88012556b3749ffc2987f1e888066721f80a",
+      "capacityBefore": {
+        "observedUTC": "2026-11-23T01:18:37.028770+00:00",
+        "diskFreeBytes": 17166520320,
+        "loadAverage": [
+          3.60400390625,
+          3.86767578125,
+          5.03857421875
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 110522446
+      },
+      "capacityAfter": {
+        "observedUTC": "2026-11-23T01:22:10.572854+00:00",
+        "diskFreeBytes": 16268738560,
+        "loadAverage": [
+          6.013671875,
+          4.76904296875,
+          5.14111328125
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 111565933
+      }
+    },
+    {
+      "mode": "02-p10-measure",
+      "test": "TestP10R10CorpusMeasure",
+      "accepted": true,
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T01:22:55.572372+00:00",
+      "finishedUTC": "2026-11-23T01:27:30.216866+00:00",
+      "independentAuditUTC": "2026-11-23T01:27:33.446048+00:00",
+      "processSeconds": 274.644,
+      "parentSeconds": 267.61,
+      "packageSeconds": 267.678,
+      "eventCount": 5473,
+      "exitCode": 0,
+      "failed": 0,
+      "skipped": 0,
+      "goTimedOut": false,
+      "supervisorTimedOut": false,
+      "receiptSHA256": "af04fd18aa6893faabb62ad722e857c4b38e7deb199e245355177fe0a4595a9a",
+      "auditSHA256": "20a6e16c8b3fd0fb0e429cc499db3c238f774e9900a394779ffa6e9999a39d40",
+      "stdoutSHA256": "b876c81337542dc913d0306e86dba4430841b8ab51add9ca866e1fded6bbdaeb",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateStdoutBytes": 946125,
+      "summary": {
+        "actions": 27652,
+        "natural": 23353
+      },
+      "outerOwnerReceiptSHA256": "48b5b967b1f0b3a96341b97d18550b2a9798fff0c2e90721daa8c69ec8edd5fd",
+      "capacityBefore": {
+        "observedUTC": "2026-11-23T01:22:55.301358+00:00",
+        "diskFreeBytes": 16076480512,
+        "loadAverage": [
+          5.93896484375,
+          4.888671875,
+          5.1611328125
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 111571696
+      },
+      "capacityAfter": {
+        "observedUTC": "2026-11-23T01:27:32.998157+00:00",
+        "diskFreeBytes": 14729093120,
+        "loadAverage": [
+          6.779296875,
+          6.2587890625,
+          5.68701171875
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 112528003
+      }
+    },
+    {
+      "mode": "03-p11-fresh38x2",
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "accepted": true,
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T01:29:15.544938+00:00",
+      "finishedUTC": "2026-11-23T01:33:15.907152+00:00",
+      "independentAuditUTC": "2026-11-23T01:33:16.253842+00:00",
+      "processSeconds": 240.362,
+      "parentSeconds": 221.38,
+      "packageSeconds": 221.423,
+      "eventCount": 8096,
+      "exitCode": 0,
+      "failed": 0,
+      "skipped": 0,
+      "goTimedOut": false,
+      "supervisorTimedOut": false,
+      "receiptSHA256": "4b71bf7b8d26d10701ae016bdda3f572df0e2db0836a493658412927b32c7613",
+      "auditSHA256": "bf297323500b41696e87f7b50e1667abe30a319b131f3e432b583f7eb07db3cf",
+      "stdoutSHA256": "7a8008d783912c269a590c1c2e78cdcfadd2cf66802570e3573791cef5c67e28",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateStdoutBytes": 1542720,
+      "summary": {
+        "files": 38,
+        "actions": 27652,
+        "natural": 23353
+      },
+      "outerOwnerReceiptSHA256": "959f7baf8f0d64c21daf655e739bd1e35648ac73ead59e13f30fca7844a958b5",
+      "capacityBefore": {
+        "observedUTC": "2026-11-23T01:29:15.362390+00:00",
+        "diskFreeBytes": 13858275328,
+        "loadAverage": [
+          3.54296875,
+          5.267578125,
+          5.3876953125
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 112533590
+      },
+      "capacityAfter": {
+        "observedUTC": "2026-11-23T01:33:16.069479+00:00",
+        "diskFreeBytes": 13985624064,
+        "loadAverage": [
+          1.84375,
+          3.67822265625,
+          4.7333984375
+        ],
+        "taskTmpBytes": 0,
+        "sharedGoTmpBytes": 0,
+        "privateEvidenceBytes": 114086635
+      }
+    },
+    {
+      "mode": "04-p12-lifecycle",
+      "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+      "accepted": true,
+      "source": "ca316a3dee252456c4bec751594cf249c709b331",
+      "startedUTC": "2026-11-23T00:17:19.476964+00:00",
+      "finishedUTC": "2026-11-23T00:23:53.564627+00:00",
+      "independentAuditUTC": "2026-11-23T00:23:54.774070+00:00",
+      "processSeconds": 394.088,
+      "parentSeconds": 361.1,
+      "packageSeconds": 361.243,
+      "eventCount": 10800,
+      "exitCode": 0,
+      "failed": 0,
+      "skipped": 0,
+      "goTimedOut": false,
+      "supervisorTimedOut": false,
+      "receiptSHA256": "fcae4084e7a3017ae891419e833e78b6d30336865df27f95b60c51046a417161",
+      "auditSHA256": "150d3ac0e4c0d9ac031a18da92aceda8d9b83f1d4156b4afad55b9b8b2fe2d90",
+      "stdoutSHA256": "9db3a93009922680eb7437da08c28bebbe8a1aa2ed5a5eddb01c34a6710b82de",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateStdoutBytes": 2144773,
+      "summary": [
+        {
+          "files": 38,
+          "freshNatural": 23353,
+          "sequentialNatural": 23353,
+          "diffsEmpty": true
+        }
+      ]
+    }
+  ],
+  "rawPrivateFilesPublished": false,
+  "formalRequirementsProved": [],
+  "releaseAccepted": false,
+  "scope": "Only the five original private-corpus parents on exact R7. Historical S3/S4 originals are retained; no automatic whole-project, Apple, consumer or later-source acceptance."
+}

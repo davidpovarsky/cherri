@@ -1,0 +1,73 @@
+{
+  "schema": "cherri-private-original-parent-replay-audit/v1",
+  "source": "ca316a3dee252456c4bec751594cf249c709b331",
+  "mode": "02-p10-measure",
+  "test": "TestP10R10CorpusMeasure",
+  "auditedUTC": "2026-11-23T01:27:33.446048+00:00",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=15m",
+    "-run",
+    "^TestP10R10CorpusMeasure$",
+    "."
+  ],
+  "goVersion": "go version go1.24.13 linux/arm64",
+  "goTimeoutSeconds": 900,
+  "driverTimeoutSeconds": 930,
+  "originalsVerified": true,
+  "exactContractVerified": true,
+  "privateInputCount": 38,
+  "privateInputBytes": 62980131,
+  "privateActionCount": 27652,
+  "privateInputManifestSHA256": "766ac82ef7d92f50a894e50bc84d3fed9cc2d375f81ffe2771dbe8a5a6de5f39",
+  "exactInventoryAndHashesVerified": true,
+  "original035Preserved": true,
+  "sourceCleanAndExactAfter": true,
+  "testSourceSHA256": "a6188a41ff23fd43f25308b8547391d9186d3c1b6ad92dbaea9ae514d865a761",
+  "adapterVerified": true,
+  "adapterSHA256": "9c296224c67b6c9abd16b043f78c763eb1c0edd0cb6aa5266b834823fbd3accc",
+  "compilePreparationReused": true,
+  "testExecutionCount": 1,
+  "eventCount": 5473,
+  "parseErrorCount": 0,
+  "startedCaseCount": 1,
+  "terminalCounts": {
+    "pass": 1
+  },
+  "incompleteCaseCount": 0,
+  "orphanTerminalCount": 0,
+  "packageTerminals": [
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "action": "pass",
+      "elapsed": 267.678
+    }
+  ],
+  "parentRunCount": 1,
+  "parentPassCount": 1,
+  "parentElapsedSeconds": 267.61,
+  "summaryCount": 1,
+  "summary": {
+    "actions": 27652,
+    "natural": 23353
+  },
+  "perInputSummaryCount": 38,
+  "summaryVerified": true,
+  "gatedNotRun": false,
+  "goTimedOut": false,
+  "supervisorTimedOut": false,
+  "exitCode": 0,
+  "driverDurationSeconds": 274.644,
+  "startedUTC": "2026-11-23T01:22:55.572372+00:00",
+  "finishedUTC": "2026-11-23T01:27:30.216866+00:00",
+  "driverGatePassed": true,
+  "currentStreamsVerified": true,
+  "stdoutSHA256": "b876c81337542dc913d0306e86dba4430841b8ab51add9ca866e1fded6bbdaeb",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "receiptSHA256": "af04fd18aa6893faabb62ad722e857c4b38e7deb199e245355177fe0a4595a9a",
+  "allCorpusValuesRemainPrivate": true,
+  "gateAccepted": true
+}
