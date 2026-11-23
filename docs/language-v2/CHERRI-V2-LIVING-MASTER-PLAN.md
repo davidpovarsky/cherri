@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.7.2 | **Current audit:** 2026-11-20 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **87/179 PASS, 0 FAILED, 92 pending or unexecuted** at immutable R2 4e56dbcfe895baa8f944b83715ecff0d07bfd24e; **closure_complete=false**. Chapter 20 is the latest ledger. R3 component repairs and older completion labels describe their own exact sources and do not replace this snapshot.
+> **Plan version:** 2.8.0 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 21 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -420,7 +420,6 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | EV-CLOUD-RELAY-SIGN-P9 | https://github.com/davidpovarsky/cherri/actions/runs/38481419887 | Live Cherri Cloud signing relay (attempt 8, job 116189487489, artifact 11939438135); AEA1 signed shortcut, schema 06e315d0..., WFTextTokenString dynamic dictionary key lowering | Verified PASS |
 | EV-CLOUD-RELAY-SIMULATE-P9 | https://github.com/davidpovarsky/cherri/actions/runs/38481419846 | Live Cherri Cloud iOS 27 simulator execution (attempt 3, job 116190577637, artifact 11939584604); output observed with simulator clipboard assertion CHERRI_P9_DYNAMIC_KEY_PASS | Verified PASS |
 
-
 ### Decisions (immutable rationale, supersede with explicit new entry)
 
 - **D001 Shared engine, not legacy everywhere:** Share the authoritative Cherri action definitions and Apple wire-builders where correct. Keep modern v2 language analysis, AST, typed IR, source spans, semantics and safe improvements. Extract shared pure builders rather than forcing all v2 language code through stateful legacy methods.
@@ -449,6 +448,8 @@ A requirement may be marked done only when its ledger row includes all applicabl
 
 ## 10. Next work / resumption card (update this first each new session)
 
+**Current resumption checkpoint: chapter 21, 2026-11-23.** The older card below is preserved for its historical source; use chapter 21 and fresh owner-held terminal receipts for current scheduling.
+
 | Field | Current value |
 |---|---|
 | Snapshot date | 2026-10-15 |
@@ -464,7 +465,6 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | Top evidence blocker | None. GitHub Actions `runs-on: xcode-27` available and active. |
 | Structural caution | Preserve branch isolation (`agent/cherri-p10-apple-actions-coverage`); do not touch `ios/CherriUITests/CherriEditorUITests.swift` or `ios/CherriApp/Views/CodeEditorView.swift` assigned to parallel iOS agent; do not merge to main without explicit owner command. |
 | Next document update responsibility | Coding agent following macOS 27 extraction execution. |
-
 
 ### Agent update template (copy below into the plan after EACH batch)
 
@@ -1062,3 +1062,53 @@ The D03 UI failure is not waived by successful compiler, XCFramework or app buil
 The pinned Skill tuple remains compiler b97ae752, docs 205217a, and R2 Skill source for the audited package. Current R3 schema changes require a coherent later compiler/docs/Skill tuple, actual consumer tests and a verified publication. torah-social was offline at the last authorized host check; no service installation or promotion occurred. Physical-device proof and an eligible real AI evaluation endpoint remain unavailable.
 
 Continue the complete schema/function/state producers, missing semantic implementations and macros, exact-source Apple runtime/UI, final private-corpus replay, coherent consumer pinning, documentation publication, live RemoteBuilder installation/rollback and release gates. Preserve failure receipts and all original contracts/goldens. Update Asana at each verified stage; do not mark a task complete until its own required observations exist.
+
+## 21. P10R15 Oracle continuation and frozen K8 evidence — 2026-11-23
+
+Checkpoint recorded at 2026-11-23T01:52:06+00:00. This is a time-bound ledger: pending jobs may finish later, and later receipts must be appended without rewriting the original outcomes. The coordinator owns CI dispatch and Asana updates; no duplicate workflow or private-parent invocation is authorized by this document.
+
+### Current source and milestone board
+
+The completed local179 source is K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903, with immutable compiler R7 ca316a3dee252456c4bec751594cf249c709b331 and documentation D11 365b08c5b4c71c6d22b591babb8d1ab852e5a3b9. The coordinator's latest declared follow-up checkpoint is b174a4fc67c0d77cfd9d13ef870cb237a281276f, unpushed when reported. Its repairs do not change the frozen K8 report or confer later-source acceptance.
+
+| Lane | Actual observed result / source | Remaining boundary |
+|---|---|---|
+| Complete local179 | K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; [run 45092775647](https://github.com/davidpovarsky/cherri/actions/runs/45092775647): 114 PASSED / 0 FAILED / 26 NOT_RUN / 38 PENDING_EXTERNAL / 1 AI_EVAL_NOT_RUN; closure false | The 65 outstanding rows remain open. All three contract hashes and all 179 required tiers are unchanged. |
+| Original private corpus parents | Exact R7 ca316a3dee252456c4bec751594cf249c709b331; five distinct original parents PASS, one invocation each; original Go 900s / driver 930s limits | 38 original inputs unchanged; lifecycle was not repeated. This is R7 corpus scope, not full179, Apple, or later-source acceptance. |
+| Documentation D11 | Documentation source published at 365b08c5b4c71c6d22b591babb8d1ab852e5a3b9; K8 manifest pins exact R7/D11 | Published source and nested documentation producer success do not prove installed D03 consumers. |
+| Root56 and protection | Original root56 at 1c07e3: 54 PASS, R23 FAIL, R22 BLOCKED_PLATFORM | R23 protection failure remains open. A fixture repair or unrelated passing iOS tests does not grant R23 acceptance. |
+| K8 build-test | [Run 45092772900](https://github.com/davidpovarsky/cherri/actions/runs/45092772900): Nix PASS; Linux still running in retained watcher at 01:49:17Z; macOS failed AI harness temporary-path controls | AI v2 compatibility and macOS temporary-directory fixes are in the unpushed follow-up. No fresh macOS/whole-build pass is claimed. |
+| OpenMinis packaging | [Run 45092778441](https://github.com/davidpovarsky/cherri/actions/runs/45092778441) FAIL at the real debug-export validator | Bounded fixes exist. A subsequent real verifier exposed omitted versus empty native Nothing parameters; fe37e330 adds eight passing focused controls. Full verifier replay remains pending at this checkpoint. |
+| Installed D03 public documentation | [Run 45093532445](https://github.com/davidpovarsky/cherri/actions/runs/45093532445) FAIL during Pages/deployment preparation with D03_PREPARATION_BLOCKED / HTTPError | A bounded preparation repair is separate from an actual successful consumer run. D03 remains NOT_RUN in the frozen K8 report. |
+| Full iOS application run | Exact K8 [run 45093282117](https://github.com/davidpovarsky/cherri/actions/runs/45093282117): 56/57 unique tests passed; UI 12/13; sole failure testD03CurrentDocumentationSearchUI; xcodebuild 65 | Failure occurred during editor accessibility query while waiting for the document, before the documentation UI. The precise issue was not retained; it remains unclassified. No timeout inference; the failed D03 case receives no UI acceptance credit. |
+| iOS diagnostic follow-up | Full-run safe issue capture repair f3e75cdb integrated as b174a4fc; exact-K8 [targeted run 45096540454](https://github.com/davidpovarsky/cherri/actions/runs/45096540454), startup_observation_only=true, selects the three original UI tests | Diagnostic is pending at this checkpoint; it does not replace or erase the failed full run. |
+| R7 Linux ARM64 compiler/migrator | Actual clean-source attempt 02 PASS at 01:43:20Z; both binaries carry clean exact R7 VCS and verified production roles | The earlier linked-worktree build lacked required VCS provenance and remains retained as a rejected attempt. This pair grants no signing, installed-consumer, or Apple/runtime claim. |
+
+### Acceptance matrix and exact change from R6
+
+[The independent K8 intake](p15-local179-k8-intake-20261123.md) preserves all 179 IDs and compares the original R6 run 44938764062/source d90b69a92e83b5034728c22e062a3dd96153a2a8 against the original K8 artifact. The R6 counts were 106 PASSED / 4 FAILED / 45 NOT_RUN / 23 PENDING_EXTERNAL / 1 AI_EVAL_NOT_RUN.
+
+- Four repaired failures now pass: K05, RP01, RP02, BRG04.
+- Four formerly unexecuted obligations now pass: FN05, RP23, RP46, BRG29.
+- Fifteen formerly unexecuted joined scenarios now have their local tiers and remain PENDING_EXTERNAL: RP12, RP14, RP15, RP17, RP18, RP19, RP21, RP24, RP25, BRG08, BRG10, BRG11, BRG13, BRG14, BRG16.
+- The other 156 statuses are unchanged. [All per-ID tiers and evidence references](evidence/p15-local179-k8-intake-20261123/requirements.json) remain reviewable.
+
+The 26 NOT_RUN obligations are B01, T05, L01, N03, F04, D03, CI01–CI04, END01, RP20, RP26, RP39–RP41, RP47–RP49, BRG01, BRG15, BRG25–BRG28, and BRG31. They are distinct implementation/evidence obligations, not all platform blockers. The 38 external-pending requirements and AI01 retain their original required tiers.
+
+### Evidence log and retained originals
+
+- Private corpus: [five original R7 parents](p15-private-corpus-r7-five-parents-20261123.md), proof 37a7c1af (integrated by coordinator as 4ecad81e). All five ran exactly once with the original limits. The exact 38 inputs, original invalid 035, and all raw streams remain private. The lifecycle's durable final audit was at 00:23:54Z; a stale transport notification did not extend or repeat its actual execution.
+- New179: proof 209cc757; original artifact 14782187815, ZIP SHA256 287c29fdf9b08618d185f0a9b13254fe90de6b807221f286fd1356dc2986d9e7; original report SHA256 3a35c908d81313a7e6a419a4e9f4ae4473534ba36767776454aab68836fb5f39. Full new and R6 originals remain outside Git; the bounded Git intake contains metadata only.
+- The new179 review verifies all 317 explicit artifact references, 499 unique current-source bindings, 51 retained Go process streams, two portable Swift probes, the separate race stream, and the nested S/D/K documentation evidence. The 178 records without individual artifact arrays retain source-bound runner assertions; no standalone raw stream is invented.
+- Full iOS: proof f3e75cdbc61127eddc20faebc9507d176b9572cd; original artifact 14783475575, SHA256 5dc25d444c97931145b8dfd9a9bf55faf96961e016f4d35c1f1adafe94a56d25. Actual full-run failure and empty formal runtime records remain authoritative. Safe issue capture was subsequently repaired; the failure's precise cause remains pending diagnosis.
+- Oracle durable sources: frozen CI receipts under /mnt/development/projects/evidence/cherri-p10r15-r8-frozen-ci-20261123; original iOS receipts under /mnt/development/evidence/cherri-p10r15-k8-ios-full-20261123; exact ARM64 pair under /mnt/development/projects/evidence/cherri-p10r15-r7-arm64-pair-20261123/attempt-02/result.json.
+- Coordinator Asana checkpoints: 1220773714984489 and 1220773787294022 under continuation task 1220635996500993. These are progress records, not replacements for the original gate artifacts.
+
+### Open defects, decisions and next work
+
+1. Preserve the frozen K8 report and all failed original receipts. A bounded repair, a focused control, or a successful diagnostic workflow is not a replacement for an affected full producer.
+2. Await the existing Linux/build, full debug-export replay, and exact-K8 three-test iOS diagnostic owners. Inspect their durable terminal receipts before scheduling any additional execution.
+3. Finish the bounded OpenMinis and D03 preparation repairs, then execute only the affected original producers against an explicit candidate. Keep R23 FAIL and the unresolved full iOS D03 failure visible until their own contracts pass.
+4. Repair the pre-existing CI01 metadata link truthfully: both K8 and R6 audit files point to a nonexistent CI01 observation. CI01 remains NOT_RUN/UNVERIFIED with no accepted record. Omit the nonexistent link or encode absence in a future report; never fabricate the missing observation or rewrite originals.
+5. Continue the exact 26 local gaps and 38 external requirements using per-ID obligations. Signed Apple runtime, application UI, installed consumers, required macOS encoding, CI security, delivery, and eligible external AI evaluation remain separate gates.
+6. Only after the actual required source-bound evidence is accepted may final179 and release closure be claimed. Current closure remains false.

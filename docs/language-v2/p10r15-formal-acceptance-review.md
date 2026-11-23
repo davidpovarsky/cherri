@@ -1,12 +1,38 @@
 # P10R15 formal acceptance review
 
-Date: 2026-11-18  
-Latest completed formal snapshot source: `8c42876a49081c961d6dce8344cc9879ff8f4a0f`
+Date: 2026-11-23
+
+Latest completed formal snapshot source: `2c54ebd50fa30597cbdd6337e6ecc6b65274a903`
 Verified starting point: P10R14 `ca8a62327e429d5574c8f2a5d440de2c5e553ab2`  
 Formal Asana acceptance task: `1220432417414104`  
 Status: **IMPLEMENTED_PARTIAL_EVIDENCE — project closure remains open**
 
-## Current result
+## Current result — K8 checkpoint, 2026-11-23
+
+Recorded at 2026-11-23T01:52:06+00:00. The completed [local179 run 45092775647](https://github.com/davidpovarsky/cherri/actions/runs/45092775647) reports **114 PASSED / 0 FAILED / 26 NOT_RUN / 38 PENDING_EXTERNAL / 1 AI_EVAL_NOT_RUN**, with all 179 unique IDs and unchanged contract tiers. The process returned 0 after 878.001618 seconds. **Closure remains false.**
+
+The exact tuple is implementation/Skill K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903, compiler R7 ca316a3dee252456c4bec751594cf249c709b331, and published documentation source D11 365b08c5b4c71c6d22b591babb8d1ab852e5a3b9. [Independent artifact/source intake](p15-local179-k8-intake-20261123.md) and [all 179 per-ID records](evidence/p15-local179-k8-intake-20261123/requirements.json) are the current reviewable checkpoint. The original R6 and K8 reports remain unchanged.
+
+Relative to the R6 106/4/45/23/1 snapshot, K05/RP01/RP02/BRG04 changed FAILED→PASSED; FN05/RP23/RP46/BRG29 changed NOT_RUN→PASSED; 15 distinct joined scenarios changed NOT_RUN→PENDING_EXTERNAL. The other 156 statuses are unchanged. No local tier is substituted for an outstanding Apple/runtime/UI or external evaluation tier.
+
+| Lane | Actual observed result / source | Remaining boundary |
+|---|---|---|
+| Complete local179 | K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; [run 45092775647](https://github.com/davidpovarsky/cherri/actions/runs/45092775647): 114 PASSED / 0 FAILED / 26 NOT_RUN / 38 PENDING_EXTERNAL / 1 AI_EVAL_NOT_RUN; closure false | The 65 outstanding rows remain open. All three contract hashes and all 179 required tiers are unchanged. |
+| Original private corpus parents | Exact R7 ca316a3dee252456c4bec751594cf249c709b331; five distinct original parents PASS, one invocation each; original Go 900s / driver 930s limits | 38 original inputs unchanged; lifecycle was not repeated. This is R7 corpus scope, not full179, Apple, or later-source acceptance. |
+| Documentation D11 | Documentation source published at 365b08c5b4c71c6d22b591babb8d1ab852e5a3b9; K8 manifest pins exact R7/D11 | Published source and nested documentation producer success do not prove installed D03 consumers. |
+| Root56 and protection | Original root56 at 1c07e3: 54 PASS, R23 FAIL, R22 BLOCKED_PLATFORM | R23 protection failure remains open. A fixture repair or unrelated passing iOS tests does not grant R23 acceptance. |
+| K8 build-test | [Run 45092772900](https://github.com/davidpovarsky/cherri/actions/runs/45092772900): Nix PASS; Linux still running in retained watcher at 01:49:17Z; macOS failed AI harness temporary-path controls | AI v2 compatibility and macOS temporary-directory fixes are in the unpushed follow-up. No fresh macOS/whole-build pass is claimed. |
+| OpenMinis packaging | [Run 45092778441](https://github.com/davidpovarsky/cherri/actions/runs/45092778441) FAIL at the real debug-export validator | Bounded fixes exist. A subsequent real verifier exposed omitted versus empty native Nothing parameters; fe37e330 adds eight passing focused controls. Full verifier replay remains pending at this checkpoint. |
+| Installed D03 public documentation | [Run 45093532445](https://github.com/davidpovarsky/cherri/actions/runs/45093532445) FAIL during Pages/deployment preparation with D03_PREPARATION_BLOCKED / HTTPError | A bounded preparation repair is separate from an actual successful consumer run. D03 remains NOT_RUN in the frozen K8 report. |
+| Full iOS application run | Exact K8 [run 45093282117](https://github.com/davidpovarsky/cherri/actions/runs/45093282117): 56/57 unique tests passed; UI 12/13; sole failure testD03CurrentDocumentationSearchUI; xcodebuild 65 | Failure occurred during editor accessibility query while waiting for the document, before the documentation UI. The precise issue was not retained; it remains unclassified. No timeout inference; the failed D03 case receives no UI acceptance credit. |
+| iOS diagnostic follow-up | Full-run safe issue capture repair f3e75cdb integrated as b174a4fc; exact-K8 [targeted run 45096540454](https://github.com/davidpovarsky/cherri/actions/runs/45096540454), startup_observation_only=true, selects the three original UI tests | Diagnostic is pending at this checkpoint; it does not replace or erase the failed full run. |
+| R7 Linux ARM64 compiler/migrator | Actual clean-source attempt 02 PASS at 01:43:20Z; both binaries carry clean exact R7 VCS and verified production roles | The earlier linked-worktree build lacked required VCS provenance and remains retained as a rejected attempt. This pair grants no signing, installed-consumer, or Apple/runtime claim. |
+
+**Intake qualification:** all explicit accepted-artifact references and checked source bindings match, but the pre-existing CI01 audit reference points to an absent observation in both R6 and K8. CI01 remains NOT_RUN/UNVERIFIED with zero accepted records. The 178 local records without individual artifact arrays retain runner assertions, not separate raw subprocess streams. The strict logical-reference intake is not fully complete; this limitation does not rewrite the original 114/0/26/38/1 counts.
+
+Current defects, evidence links, ownership and next work are in [living master chapter 21](CHERRI-V2-LIVING-MASTER-PLAN.md#21-p10r15-oracle-continuation-and-frozen-k8-evidence--2026-11-23). The snapshot below preserves the earlier source's results; it is historical, not the current acceptance count.
+
+## Historical result — 2026-11-18 at 8c42876a
 
 The fresh local runner at `8c42876a49081c961d6dce8344cc9879ff8f4a0f` executed all registered local producers and reports **179 obligations: 20 passed, 0 failed, 159 pending or unexecuted**. The independent audit contains **20 PASS, 156 UNVERIFIED and 3 BLOCKED_EXTERNAL**, with all 179 distinct IDs bound to that exact source SHA. The runner exited 0; `closure_complete` remains false. Generated at `2026-11-18T16:44:43Z`, job `job_3a30fa58f468`.
 
@@ -20,7 +46,7 @@ Only outputs freshly generated into the source-bound directory are authoritative
 
 Later source changes, signed runtime, iOS UI, installed consumers, private-corpus boundaries and release CI require their own receipts.
 
-## Reviewable artifacts
+## Historical reviewable artifacts — 8c42876a
 
 - [Formal aggregate](acceptance-results.json): all 179 IDs, statuses and required/executed levels.
 - [Execution audit](acceptance-execution-audit.json): per-ID production path, actual test names where present, positive/negative scope, source SHA, evidence and blocker.
@@ -28,7 +54,7 @@ Later source changes, signed runtime, iOS UI, installed consumers, private-corpu
 - [Historical smoke observations](acceptance-local-observations.json): measured outcome and the specific coverage gap for each of the 86 demoted probes.
 - `tests/language-v2/requirements-evidence-map.json` remains a declaration/traceability map. A mapped identifier is not proof that its scenario ran.
 
-## Producers accepted at their stated local tier
+## Historical producers accepted at their stated local tier
 
 | ID | Requirement | Executed tier | Actual producer |
 |---|---|---|---|
@@ -96,7 +122,7 @@ The full per-ID explanation is in the execution audit and smoke-observation file
 
 The private corpus and the full repository suite are centralized by the root agent and are not attributed to this component run.
 
-## Current parity and next work
+## Historical parity and next work — 2026-11-18
 
 | Surface | Current evidence position |
 |---|---|
