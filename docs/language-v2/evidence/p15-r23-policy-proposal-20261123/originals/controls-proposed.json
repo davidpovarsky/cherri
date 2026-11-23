@@ -1,0 +1,104 @@
+{
+  "status": "QUALIFIED_ONE_SYNTHETIC_PARENT_ONLY_NO_PRODUCTION_AUTHORIZATION",
+  "revision": 4,
+  "singleExistingParent": "TestP10CoverageAndGates.test_c5_06_r23_protected_ios_file_modified_fails_closed",
+  "parentCountUnchanged": 22,
+  "originalElevenFixtureActionsAndAssertions": "Byte-identical, now all use the public guarded execute_gate with owned synthetic-only fixture policy.",
+  "futureQualification": {
+    "authorization": "ROOT_AUTHORIZED_SINGLE_EXECUTION_COMPLETED_NO_RERUN",
+    "outerBoundSeconds": 60,
+    "temporaryRoot": "Explicit owned persistent directory below this proposal evidence root; no task tmpfs dependence",
+    "scope": "One existing unittest parent only, on an isolated qualification copy with DRAFT production policy. Approved fixture records are explicitly SYNTHETIC_TEST_ONLY. No active patch, real R23 v2 PASS, full22 suite, full56, Go, signing, workflow or provider execution."
+  },
+  "controls": [
+    {
+      "group": "exact-positive",
+      "cases": [
+        "one present/one absent exact approved synthetic state",
+        "benign GIT_NO_REPLACE_OBJECTS=1/GIT_OPTIONAL_LOCKS=0/GIT_TERMINAL_PROMPT=0",
+        "nonprotected committed continuation"
+      ]
+    },
+    {
+      "group": "policy-identity-rejection",
+      "cases": [
+        "draft_flag",
+        "draft_approval",
+        "null_approval",
+        "null_source",
+        "bad_source_digest",
+        "missing_time",
+        "wrong_version",
+        "wrong_baseline",
+        "wrong_previous_baseline",
+        "wrong_contract",
+        "missing_path",
+        "wrong_blob",
+        "wrong_mode",
+        "wrong_length",
+        "wrong_digest",
+        "wrong_record_hash",
+        "missing_record",
+        "duplicate_json_key"
+      ]
+    },
+    {
+      "group": "actual-protected-state-rejection",
+      "cases": [
+        "unstaged",
+        "staged",
+        "index_only",
+        "committed",
+        "assume-unchanged hidden working change",
+        "skip-worktree hidden working change",
+        "absent_untracked",
+        "absent_ignored",
+        "absent_staged",
+        "absent_committed",
+        "absent_directory",
+        "absent_broken_symlink",
+        "present_executable_mode",
+        "present_same_bytes_symlink"
+      ]
+    },
+    {
+      "group": "actual-git-context-and-ancestry-rejection",
+      "cases": [
+        "Actual protected index mutation; restored working bytes; clean alternate index demonstrates empty Git status; guard rejects GIT_INDEX_FILE without value disclosure",
+        "GIT_DIR and GIT_WORK_TREE routing rejected by name only",
+        "GIT_GRAFT_FILE routing rejected by name only",
+        "Unrelated orphan history with identical protected state",
+        "Default info/grafts demonstrably forges ordinary Git ancestry but guarded entry rejects it",
+        "git replace --graft demonstrably forges ordinary Git ancestry but all guarded observations ignore replacement objects"
+      ]
+    },
+    {
+      "group": "actual-cli-exit",
+      "cases": [
+        "Real --gate R23 child imports proposed module against owned DRAFT fixture and returns exit1 / JSON FAIL. All other gates are unexecuted."
+      ]
+    },
+    {
+      "group": "static-preservation",
+      "cases": [
+        "Original22 parent identities unchanged",
+        "Original11 fixture action/assertion block byte-identical",
+        "Original76d fallback expressions retained",
+        "Protected Swift bytes and original acceptance contract untouched",
+        "56 gate IDs unchanged",
+        "Four literal fingerprint inputs added; algorithm unchanged",
+        "--gate and --run-all call the same public execute_gate entry"
+      ]
+    }
+  ],
+  "qualification": {
+    "attempt": "qualification-attempt-01",
+    "parentExecutions": 1,
+    "exitCode": 0,
+    "durationSeconds": 1.1181646371260285,
+    "unittestReportedSeconds": 0.93,
+    "resultSha256": "ae064cd2736389aa8d95f5c658ce83d913e3464a45f41dc29c372c3649b2f29f",
+    "productionR23Executed": false,
+    "ownerApprovalCreated": false
+  }
+}

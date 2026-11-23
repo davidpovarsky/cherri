@@ -1,0 +1,576 @@
+diff --git a/tools/p10r3/run_release_gates.py b/tools/p10r3/run_release_gates.py
+--- a/tools/p10r3/run_release_gates.py
++++ b/tools/p10r3/run_release_gates.py
+@@ -196,12 +196,14 @@
+         "sourceFile": "scripts/ios27_runtime_poc.sh",
+     },
+     "R23": {
+-        "name": "Protected parallel iOS files remain untouched across P10 baseline 76d7225..HEAD and working tree",
++        "name": "Protected iOS state remains exact across R23 policy v2 baseline ca316a3..HEAD and working tree",
+         "checkProtectedIOSFiles": [
+             "ios/CherriUITests/CherriEditorUITests.swift",
+             "ios/CherriApp/Views/CodeEditorView.swift",
+         ],
+-        "upstreamBase": "76d722502e20db977e84a095444d0172442655b8",
++        "upstreamBase": "ca316a3dee252456c4bec751594cf249c709b331",
++        "policyRecord": "docs/apple-runtime/p10/r23-protected-state-policy-v2.json",
++        "policyRecordSha256": "feeee0f607d170ccb9602ede2213871c4a0dfcf8e82547b5a381b828d52fa6c7",
+         "tier": "PRODUCTION_PATH",
+         "sourceFile": "git",
+     },
+@@ -622,8 +624,8 @@
+ def evaluate_r23_protected_files(gate_id, defn, diff_stdout="", status_stdout="", returncodes=(0, 0)):
+     files = defn["checkProtectedIOSFiles"]
+     base = defn.get("upstreamBase", "76d722502e20db977e84a095444d0172442655b8")
+-    cmd_diff = ["git", "diff", f"{base}..HEAD", "--"] + files
+-    cmd_status = ["git", "status", "--porcelain", "--"] + files
++    cmd_diff = ["git", "--no-replace-objects", "diff", f"{base}..HEAD", "--"] + files
++    cmd_status = ["git", "--no-replace-objects", "status", "--porcelain", "--"] + files
+     combined = f"DIFF:\n{diff_stdout}\nSTATUS:\n{status_stdout}"
+     out_hash = hashlib.sha256(combined.encode("utf-8")).hexdigest()
+     cmd_str = f"{' '.join(cmd_diff)} && {' '.join(cmd_status)}"
+@@ -653,7 +655,7 @@
+     }
+ 
+ 
+-def execute_gate(gate_id, defn):
++def _execute_gate_observation(gate_id, defn):
+     """Executes a single gate command, returns result dictionary."""
+     t0 = time.time()
+ 
+@@ -663,8 +665,8 @@
+     if defn.get("checkProtectedIOSFiles"):
+         files = defn["checkProtectedIOSFiles"]
+         base = defn.get("upstreamBase", "76d722502e20db977e84a095444d0172442655b8")
+-        cmd_diff = ["git", "diff", f"{base}..HEAD", "--"] + files
+-        cmd_status = ["git", "status", "--porcelain", "--"] + files
++        cmd_diff = ["git", "--no-replace-objects", "diff", f"{base}..HEAD", "--"] + files
++        cmd_status = ["git", "--no-replace-objects", "status", "--porcelain", "--"] + files
+         p_diff = subprocess.run(cmd_diff, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+         p_stat = subprocess.run(cmd_status, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+         res = evaluate_r23_protected_files(
+@@ -795,6 +797,142 @@
+         versions["go"] = "unknown"
+     return versions
+ 
++
++
++def execute_gate(gate_id, defn):
++    """Apply the one pinned R23 v2 policy before the existing Git evaluator."""
++    if gate_id != "R23":
++        return _execute_gate_observation(gate_id, defn)
++    started = time.monotonic()
++    def require(condition, message):
++        if not condition:
++            raise ValueError(message)
++    def unique_object(pairs):
++        obj = {}
++        for key, value in pairs:
++            require(key not in obj, "duplicate policy key")
++            obj[key] = value
++        return obj
++    def git_bytes(*args):
++        result = subprocess.run(["git", "--no-replace-objects", *args], cwd=REPO_ROOT,
++                                capture_output=True, timeout=10)
++        require(result.returncode == 0, "required Git observation failed")
++        return result.stdout
++    result = None
++    try:
++        routing = [name for name in (
++            "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
++            "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
++            "GIT_REPLACE_REF_BASE", "GIT_NAMESPACE", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT",
++            "GIT_GRAFT_FILE",
++        ) if name in os.environ]
++        require(not routing, "unsupported Git routing override names: " + ",".join(routing))
++        top = git_bytes("rev-parse", "--show-toplevel").decode("utf-8").strip()
++        require(pathlib.Path(top).resolve() == REPO_ROOT.resolve(), "actual Git top-level differs")
++        graft_path = pathlib.Path(git_bytes("rev-parse", "--git-path", "info/grafts").decode("utf-8").strip())
++        if not graft_path.is_absolute():
++            graft_path = REPO_ROOT / graft_path
++        require(not os.path.lexists(graft_path), "legacy Git graft file is unsupported")
++        result = _execute_gate_observation(gate_id, defn)
++        policy_path = REPO_ROOT / defn["policyRecord"]
++        require(policy_path.is_file() and not policy_path.is_symlink(),
++                "pinned R23 policy record is missing or not a regular file")
++        with policy_path.open("rb") as stream:
++            raw = stream.read(65537)
++        require(len(raw) <= 65536 and hashlib.sha256(raw).hexdigest() == defn["policyRecordSha256"],
++                "R23 policy record digest mismatch")
++        policy = json.loads(raw, object_pairs_hook=unique_object)
++        require(policy["schemaVersion"] == 1 and policy["policyVersion"] == 2
++                and policy["policyId"] == "R23_EXACT_PROTECTED_STATE_V2",
++                "unknown R23 policy version")
++        require(policy["baseline"] == defn["upstreamBase"]
++                and policy["previousBaseline"] == "76d722502e20db977e84a095444d0172442655b8",
++                "R23 immutable baseline mismatch")
++        require(policy["proposalOnly"] is False, "draft proposal cannot authorize R23")
++        approval = policy["approval"]
++        require(approval["status"] == "APPROVED"
++                and approval["scope"] == "R23_EXACT_PROTECTED_STATE_V2",
++                "explicit owner R23 policy approval is absent")
++        require(approval["authorRole"] == "PROJECT_OWNER"
++                and isinstance(approval["sourceReference"], str) and approval["sourceReference"].strip()
++                and isinstance(approval["sourceText"], str) and approval["sourceText"].strip(),
++                "owner approval source is incomplete")
++        require(hashlib.sha256(approval["sourceText"].encode("utf-8")).hexdigest()
++                == approval["sourceTextSha256"], "owner approval source digest mismatch")
++        approved_at = datetime.datetime.fromisoformat(approval["approvedAtUtc"].replace("Z", "+00:00"))
++        require(approved_at.utcoffset() == datetime.timedelta(0), "owner approval UTC time missing")
++        contract = REPO_ROOT / policy["originalContract"]["path"]
++        require(policy["originalContract"]["path"] == "docs/apple-runtime/p10/p10r2-acceptance-contract.json"
++                and hashlib.sha256(contract.read_bytes()).hexdigest()
++                == policy["originalContract"]["sha256"], "original R23 contract drift")
++        files = defn["checkProtectedIOSFiles"]
++        states = policy["protectedPaths"]
++        require([entry["path"] for entry in states] == files
++                and files == ["ios/CherriUITests/CherriEditorUITests.swift",
++                              "ios/CherriApp/Views/CodeEditorView.swift"],
++                "protected path inventory changed")
++        def tree(revision):
++            observed = {}
++            for row in git_bytes("ls-tree", "-z", revision, "--", *files).split(b"\0"):
++                if row:
++                    metadata, path = row.split(b"\t", 1)
++                    mode, kind, blob = metadata.decode("ascii").split()
++                    observed[path.decode("utf-8")] = (mode, kind, blob)
++            return observed
++        git_bytes("merge-base", "--is-ancestor", defn["upstreamBase"], "HEAD")
++        baseline, head = tree(defn["upstreamBase"]), tree("HEAD")
++        index = {}
++        for row in git_bytes("ls-files", "--stage", "-z", "--", *files).split(b"\0"):
++            if row:
++                metadata, path = row.split(b"\t", 1)
++                mode, blob, stage = metadata.decode("ascii").split()
++                require(stage == "0" and path.decode("utf-8") not in index,
++                        "protected index is conflicted or duplicated")
++                index[path.decode("utf-8")] = (mode, "blob", blob)
++        for entry in states:
++            relative = entry["path"]
++            path = REPO_ROOT / relative
++            for parent in path.parents:
++                if parent == REPO_ROOT:
++                    break
++                require(not parent.is_symlink(), "protected parent is a symlink")
++            if entry["present"]:
++                expected = (entry["gitMode"], "blob", entry["gitBlob"])
++                require(baseline.get(relative) == head.get(relative) == index.get(relative) == expected,
++                        "protected baseline, HEAD or index identity differs")
++                original = git_bytes("cat-file", "blob", entry["gitBlob"])
++                require(len(original) == entry["bytes"]
++                        and hashlib.sha256(original).hexdigest() == entry["sha256"],
++                        "approved protected blob metadata differs")
++                require(path.is_file() and not path.is_symlink(),
++                        "protected working file is missing or not regular")
++                require(path.stat().st_size == entry["bytes"], "protected working length differs")
++                with path.open("rb") as stream:
++                    working = stream.read(entry["bytes"] + 1)
++                mode = "100755" if path.stat().st_mode & 0o111 else "100644"
++                require(working == original and mode == entry["gitMode"],
++                        "protected working bytes or executable mode differ")
++            else:
++                require(relative not in baseline and relative not in head and relative not in index
++                        and not os.path.lexists(path), "absent protected path was created")
++        result.update({"policyVersion": 2, "policyId": policy["policyId"],
++                       "policyRecordSha256": defn["policyRecordSha256"],
++                       "previousBaseline": policy["previousBaseline"],
++                       "approvedBaseline": policy["baseline"]})
++        result["durationSeconds"] = round(time.monotonic() - started, 3)
++        return result
++    except (OSError, ValueError, TypeError, KeyError, AttributeError, subprocess.SubprocessError) as exc:
++        error = "R23 v2 policy/state rejection: " + str(exc)
++        if result is None:
++            result = {"id": gate_id, "name": defn["name"], "tier": defn["tier"],
++                      "sourceFile": defn["sourceFile"],
++                      "command": "pinned R23 v2 approval and exact protected-state guard",
++                      "outputSha256": hashlib.sha256(error.encode("utf-8")).hexdigest()}
++        result.update({"status": "FAIL", "exitCode": 1, "policyVersion": 2,
++                       "durationSeconds": round(time.monotonic() - started, 3),
++                       "policyOutputSha256": hashlib.sha256(error.encode("utf-8")).hexdigest(),
++                       "error": error})
++        return result
+ 
+ def main():
+     parser = argparse.ArgumentParser(description="Cherri P10R4 Executable Release Gate Runner")
+diff --git a/tools/p10r3/test_coverage_and_gates.py b/tools/p10r3/test_coverage_and_gates.py
+--- a/tools/p10r3/test_coverage_and_gates.py
++++ b/tools/p10r3/test_coverage_and_gates.py
+@@ -5,7 +5,7 @@
+ - PART A & B (F-01, F-02): 505 Catalog Coverage Matrix schema, 13 statuses, 7 coverage dimensions,
+   evidenceTier anti-inflation, and 11-way ledger/crosswalk/report consistency.
+ - PART C (F-03): 56 Release Gates (R01..R28, A01..A28), R22 granular blocker classes,
+-  R23 76d7225..HEAD + working tree, inputDependencyFingerprint verification, and 10 negative gate tests.
++  R23 v2 ca316a3..HEAD + working tree, inputDependencyFingerprint verification, and 10 negative gate tests.
+ - PART E (F-04): Pure+Pack deterministic generator (`--generate`, `--verify-generated`),
+   7 classification buckets, and 15 Go-only actions consistency.
+ - F-06 & F-08: Device Acceptance Manifest 9 fixtures (`BLOCKED_DEVICE`) and external blockers.
+@@ -213,11 +213,53 @@
+         production_definition = copy.deepcopy(gates.GATE_DEFINITIONS["R23"])
+         protected = production_definition["checkProtectedIOSFiles"]
+         self.assertEqual(production_definition["upstreamBase"],
+-                         "76d722502e20db977e84a095444d0172442655b8")
++                         "ca316a3dee252456c4bec751594cf249c709b331")
+         self.assertEqual(protected, [
+             "ios/CherriUITests/CherriEditorUITests.swift",
+             "ios/CherriApp/Views/CodeEditorView.swift",
+         ])
++        contract_relative = "docs/apple-runtime/p10/p10r2-acceptance-contract.json"
++        contract_bytes = (REPO_ROOT / contract_relative).read_bytes()
++
++        def install_synthetic_policy(definition, baseline, git):
++            # Only this owned temporary repository receives synthetic approval.
++            # This is not a source of real owner authorization.
++            states = []
++            for relative in protected:
++                entry = git("ls-tree", baseline, "--", relative).strip()
++                if not entry:
++                    states.append({"path": relative, "present": False})
++                    continue
++                metadata, _ = entry.split("\t")
++                mode, kind, blob = metadata.split()
++                raw = (gates.REPO_ROOT / relative).read_bytes()
++                states.append({"path": relative, "present": True, "gitMode": mode,
++                               "gitBlob": blob, "bytes": len(raw),
++                               "sha256": hashlib.sha256(raw).hexdigest()})
++            text = "SYNTHETIC_TEST_ONLY: owned Git fixture; not a real owner decision."
++            record = {
++                "schemaVersion": 1, "policyVersion": 2,
++                "policyId": "R23_EXACT_PROTECTED_STATE_V2",
++                "baseline": baseline,
++                "previousBaseline": "76d722502e20db977e84a095444d0172442655b8",
++                "originalContract": {"path": contract_relative,
++                                     "sha256": hashlib.sha256(contract_bytes).hexdigest()},
++                "protectedPaths": states, "proposalOnly": False,
++                "fixtureKind": "SYNTHETIC_TEST_ONLY",
++                "approval": {"status": "APPROVED", "scope": "R23_EXACT_PROTECTED_STATE_V2",
++                             "authorRole": "PROJECT_OWNER",
++                             "sourceReference": "SYNTHETIC_TEST_ONLY://owned-temporary-git",
++                             "sourceText": text,
++                             "sourceTextSha256": hashlib.sha256(text.encode()).hexdigest(),
++                             "approvedAtUtc": "2026-01-01T00:00:00Z"},
++            }
++            definition["policyRecord"] = ".git/r23-policy.SYNTHETIC_TEST_ONLY.json"
++            path = gates.REPO_ROOT / definition["policyRecord"]
++            raw = (json.dumps(record, indent=2) + "\n").encode()
++            path.write_bytes(raw)
++            definition["policyRecordSha256"] = hashlib.sha256(raw).hexdigest()
++            return record, path
++
+         environment = {key: value for key, value in os.environ.items()
+                        if not key.startswith("GIT_")}
+         environment.update({
+@@ -252,6 +294,10 @@
+                 git("config", "--local", "core.autocrlf", "false")
+                 git("config", "--local", "commit.gpgsign", "false")
+                 git("config", "--local", "core.hooksPath", str(empty_template))
++                contract_path = root / contract_relative
++                contract_path.parent.mkdir(parents=True, exist_ok=True)
++                contract_path.write_bytes(contract_bytes)
++                git("add", "--", contract_relative)
+                 originals = {}
+                 for index, relative in enumerate(protected):
+                     path = root / relative
+@@ -264,6 +310,7 @@
+                 self.assertEqual(len(baseline), 40)
+                 fixture_definition = copy.deepcopy(production_definition)
+                 fixture_definition["upstreamBase"] = baseline
++                install_synthetic_policy(fixture_definition, baseline, git)
+ 
+                 def observe(expected, *, historical_changed, working_changed,
+                             changed_path=None):
+@@ -314,6 +361,214 @@
+                     missing = copy.deepcopy(fixture_definition)
+                     missing["upstreamBase"] = "0" * 40
+                     self.assertEqual(gates.execute_gate("R23", missing)["status"], "FAIL")
++
++                # New controls use the actual production shape: one present
++                # protected file and one absent path. The original eleven
++                # actual-Git actions/assertions above remain unchanged.
++                git("rm", "--", protected[1])
++                git("commit", "-m", "R23 synthetic present-absent baseline")
++                pristine = git("rev-parse", "HEAD").strip()
++                guard_definition = copy.deepcopy(production_definition)
++                guard_definition["upstreamBase"] = pristine
++                approved, policy_path = install_synthetic_policy(guard_definition, pristine, git)
++                present, absent = (root / relative for relative in protected)
++                present_bytes = present.read_bytes()
++
++                def write_policy(record):
++                    raw = (json.dumps(record, indent=2) + "\n").encode()
++                    policy_path.write_bytes(raw)
++                    guard_definition["policyRecordSha256"] = hashlib.sha256(raw).hexdigest()
++
++                def guard(expected):
++                    result = gates.execute_gate("R23", guard_definition)
++                    self.assertEqual(result["status"], expected, result)
++                    self.assertEqual(result["exitCode"], 0 if expected == "PASS" else 1)
++                    self.assertEqual(result["policyVersion"], 2)
++                    return result
++
++                with self.subTest(policy="exact_synthetic_present_absent_positive"):
++                    guard("PASS")
++                with self.subTest(policy="benign_git_environment"):
++                    with mock.patch.dict(os.environ, {
++                        "GIT_NO_REPLACE_OBJECTS": "1", "GIT_OPTIONAL_LOCKS": "0",
++                        "GIT_TERMINAL_PROMPT": "0",
++                    }):
++                        guard("PASS")
++
++                faults = [
++                    ("draft_flag", lambda r: r.update(proposalOnly=True)),
++                    ("draft_approval", lambda r: r["approval"].update(status="DRAFT_NOT_APPROVED")),
++                    ("null_approval", lambda r: r.update(approval=None)),
++                    ("null_source", lambda r: r["approval"].update(sourceReference=None)),
++                    ("bad_source_digest", lambda r: r["approval"].update(sourceTextSha256="0" * 64)),
++                    ("missing_time", lambda r: r["approval"].update(approvedAtUtc=None)),
++                    ("wrong_version", lambda r: r.update(policyVersion=3)),
++                    ("wrong_baseline", lambda r: r.update(baseline="0" * 40)),
++                    ("wrong_previous_baseline", lambda r: r.update(previousBaseline="0" * 40)),
++                    ("wrong_contract", lambda r: r["originalContract"].update(sha256="0" * 64)),
++                    ("missing_path", lambda r: r["protectedPaths"].pop()),
++                    ("wrong_blob", lambda r: r["protectedPaths"][0].update(gitBlob="0" * 40)),
++                    ("wrong_mode", lambda r: r["protectedPaths"][0].update(gitMode="100755")),
++                    ("wrong_length", lambda r: r["protectedPaths"][0].update(bytes=1)),
++                    ("wrong_digest", lambda r: r["protectedPaths"][0].update(sha256="0" * 64)),
++                ]
++                for name, mutate in faults:
++                    with self.subTest(policy=name):
++                        record = copy.deepcopy(approved)
++                        mutate(record)
++                        write_policy(record)
++                        guard("FAIL")
++                    write_policy(approved)
++                with self.subTest(policy="wrong_record_hash"):
++                    guard_definition["policyRecordSha256"] = "0" * 64
++                    guard("FAIL")
++                    write_policy(approved)
++                with self.subTest(policy="missing_record"):
++                    policy_path.unlink()
++                    guard("FAIL")
++                    write_policy(approved)
++                with self.subTest(policy="duplicate_json_key"):
++                    raw = b'{"schemaVersion":1,' + json.dumps(approved).encode()[1:]
++                    policy_path.write_bytes(raw)
++                    guard_definition["policyRecordSha256"] = hashlib.sha256(raw).hexdigest()
++                    guard("FAIL")
++                    write_policy(approved)
++
++                for state in ["unstaged", "staged", "index_only", "committed"]:
++                    with self.subTest(policy="present_" + state):
++                        present.write_bytes(present_bytes + b"// protected mutation\n")
++                        if state != "unstaged":
++                            git("add", "--", protected[0])
++                        if state == "index_only":
++                            present.write_bytes(present_bytes)
++                        if state == "committed":
++                            git("commit", "-m", "R23 synthetic protected mutation")
++                        guard("FAIL")
++                        git("reset", "--hard", pristine)
++                for flag in ["assume-unchanged", "skip-worktree"]:
++                    with self.subTest(policy=flag):
++                        git("update-index", "--" + flag, "--", protected[0])
++                        try:
++                            present.write_bytes(present_bytes + b"// hidden working mutation\n")
++                            self.assertEqual(git("status", "--porcelain", "--", protected[0]), "")
++                            guard("FAIL")
++                        finally:
++                            git("update-index", "--no-" + flag, "--", protected[0])
++                            present.write_bytes(present_bytes)
++
++                with self.subTest(policy="alternate_index_override"):
++                    alternate = fixture / "synthetic-clean-index"
++                    alternate.write_bytes((root / ".git/index").read_bytes())
++                    present.write_bytes(present_bytes + b"// actual index mutation\n")
++                    git("add", "--", protected[0])
++                    present.write_bytes(present_bytes)
++                    self.assertNotEqual(git("diff", "--cached", "--name-only", "--", *protected), "")
++                    try:
++                        with mock.patch.dict(os.environ, {"GIT_INDEX_FILE": str(alternate)}):
++                            self.assertEqual(git("status", "--porcelain", "--", *protected), "")
++                            result = guard("FAIL")
++                            self.assertIn("GIT_INDEX_FILE", result["error"])
++                            self.assertNotIn(str(alternate), result["error"])
++                    finally:
++                        git("reset", "--hard", pristine)
++                for variable, value in [("GIT_DIR", str(root / ".git")),
++                                        ("GIT_WORK_TREE", str(root)),
++                                        ("GIT_GRAFT_FILE", str(root / ".git/info/grafts"))]:
++                    with self.subTest(policy="routing_" + variable):
++                        with mock.patch.dict(os.environ, {variable: value}):
++                            result = guard("FAIL")
++                            self.assertIn(variable, result["error"])
++                            self.assertNotIn(value, result["error"])
++
++                (root / ".git/info").mkdir(parents=True, exist_ok=True)
++                for state in ["untracked", "ignored", "staged", "committed", "directory", "broken_symlink"]:
++                    with self.subTest(policy="absent_" + state):
++                        absent.parent.mkdir(parents=True, exist_ok=True)
++                        if state == "directory":
++                            absent.mkdir()
++                        elif state == "broken_symlink":
++                            absent.symlink_to("missing-synthetic-target")
++                        else:
++                            absent.write_bytes(b"// unexpected protected creation\n")
++                        if state == "ignored":
++                            (root / ".git/info/exclude").write_text(protected[1] + "\n")
++                        if state in ("staged", "committed"):
++                            git("add", "--", protected[1])
++                        if state == "committed":
++                            git("commit", "-m", "R23 synthetic absent path creation")
++                        guard("FAIL")
++                        git("reset", "--hard", pristine)
++                        if absent.is_symlink() or absent.is_file():
++                            absent.unlink()
++                        elif absent.is_dir():
++                            absent.rmdir()
++                        (root / ".git/info/exclude").write_text("")
++                with self.subTest(policy="present_executable_mode"):
++                    present.chmod(0o755)
++                    guard("FAIL")
++                    present.chmod(0o644)
++                with self.subTest(policy="present_same_bytes_symlink"):
++                    target = fixture / "synthetic-protected-copy"
++                    target.write_bytes(present_bytes)
++                    present.unlink()
++                    present.symlink_to(target)
++                    guard("FAIL")
++                    present.unlink()
++                    present.write_bytes(present_bytes)
++                with self.subTest(policy="unrelated_history_and_replacement"):
++                    git("checkout", "--orphan", "r23-unrelated-fixture")
++                    git("commit", "-m", "Unrelated synthetic history with identical protected state")
++                    unrelated = git("rev-parse", "HEAD").strip()
++                    self.assertNotEqual(unrelated, pristine)
++                    guard("FAIL")
++                    with self.subTest(policy="legacy_graft_ancestry"):
++                        grafts = root / ".git/info/grafts"
++                        grafts.write_text(unrelated + " " + pristine + "\n")
++                        try:
++                            # Legacy grafts also forge ancestry independently of replace refs.
++                            git("merge-base", "--is-ancestor", pristine, "HEAD")
++                            result = guard("FAIL")
++                            self.assertIn("graft", result["error"])
++                        finally:
++                            grafts.unlink()
++                    git("replace", "--graft", unrelated, pristine)
++                    try:
++                        # Prove that ordinary replacement-aware Git would admit
++                        # the forged ancestry; production must ignore replacements.
++                        git("merge-base", "--is-ancestor", pristine, "HEAD")
++                        guard("FAIL")
++                    finally:
++                        git("replace", "-d", unrelated)
++                        git("checkout", "r23-fixture")
++                    self.assertEqual(git("rev-parse", "HEAD").strip(), pristine)
++                with self.subTest(policy="nonprotected_committed_change"):
++                    (root / "outside-v2-protected-scope.txt").write_text("synthetic unrelated change\n")
++                    git("add", "--", "outside-v2-protected-scope.txt")
++                    git("commit", "-m", "R23 synthetic unrelated continuation")
++                    guard("PASS")
++                    git("reset", "--hard", pristine)
++
++                with self.subTest(policy="actual_gate_cli_rejects_draft"):
++                    record = copy.deepcopy(approved)
++                    record["proposalOnly"] = True
++                    write_policy(record)
++                    launcher = (
++                        "import importlib.util,json,pathlib,sys\n"
++                        "spec=importlib.util.spec_from_file_location('r23_fixture_cli',sys.argv[1])\n"
++                        "module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)\n"
++                        "module.REPO_ROOT=pathlib.Path(sys.argv[2])\n"
++                        "module.GATE_DEFINITIONS['R23']=json.loads(sys.argv[3])\n"
++                        "sys.argv=[sys.argv[1],'--gate','R23']\n"
++                        "module.main()\n"
++                    )
++                    child = subprocess.run(
++                        [sys.executable, "-c", launcher, str(gates.__file__), str(root),
++                         json.dumps(guard_definition)], cwd=root, capture_output=True,
++                        text=True, encoding="utf-8", timeout=30)
++                    self.assertEqual(child.returncode, 1, (child.stdout, child.stderr))
++                    self.assertEqual(json.loads(child.stdout)["status"], "FAIL")
++                    write_policy(approved)
++                self.assertEqual(git("status", "--porcelain"), "")
+         self.assertEqual(gates.GATE_DEFINITIONS["R23"], production_definition)
+ 
+     def test_c5_07_non_ancestor_source_commit_fails_closed(self):
+diff --git a/tools/p10r3/generate_catalog_and_pack_ledgers.py b/tools/p10r3/generate_catalog_and_pack_ledgers.py
+--- a/tools/p10r3/generate_catalog_and_pack_ledgers.py
++++ b/tools/p10r3/generate_catalog_and_pack_ledgers.py
+@@ -35,6 +35,10 @@
+     "tools/language-schema/*.go",
+     "tools/p10r3/generate_catalog_and_pack_ledgers.py",
+     "tools/p10r3/run_release_gates.py",
++    "docs/apple-runtime/p10/r23-protected-state-policy-v2.json",
++    "docs/apple-runtime/p10/p10r2-acceptance-contract.json",
++    "ios/CherriUITests/CherriEditorUITests.swift",
++    "ios/CherriApp/Views/CodeEditorView.swift",
+     "actions/*.cherri",
+     "actions_std.go",
+     "actions_catalog.go",
+diff --git a/docs/apple-runtime/p10/r23-protected-state-policy-v2.json b/docs/apple-runtime/p10/r23-protected-state-policy-v2.json
+new file mode 100644
+--- /dev/null
++++ b/docs/apple-runtime/p10/r23-protected-state-policy-v2.json
+@@ -0,0 +1,62 @@
++{
++  "schemaVersion": 1,
++  "policyVersion": 2,
++  "policyId": "R23_EXACT_PROTECTED_STATE_V2",
++  "baseline": "ca316a3dee252456c4bec751594cf249c709b331",
++  "previousBaseline": "76d722502e20db977e84a095444d0172442655b8",
++  "originalContract": {
++    "path": "docs/apple-runtime/p10/p10r2-acceptance-contract.json",
++    "sha256": "d797f6216daa8f7de48cb806d6535a8615120dc157333119131f52de1aa7b662"
++  },
++  "protectedPaths": [
++    {
++      "path": "ios/CherriUITests/CherriEditorUITests.swift",
++      "present": true,
++      "gitMode": "100644",
++      "gitType": "blob",
++      "gitBlob": "33028f1f8b53b3855382a1ab6042a2c59402f687",
++      "bytes": 54532,
++      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
++      "testMethods": [
++        "testD03CurrentDocumentationSearchUI",
++        "testE01CompletionDisplayAndInsertionUI",
++        "testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
++        "testE02DiagnosticsRenderingAndNavigationUI",
++        "testE03EditorActionsHoverRenameUI",
++        "testE05EditorResponsivenessStaleEditsUI",
++        "testE06BidirectionalHebrewEmojiUI",
++        "testE07VisualParameterEditingCanvasUI",
++        "testBRG27EditorRealWorldWorkflowUI",
++        "testNegativeSyntaxErrorRejectsCompilationFailsClosed",
++        "testNegativeMissingUIElementFailsClosed",
++        "testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
++        "testTypedSourceAndResetPreserveExactUTF16"
++      ]
++    },
++    {
++      "path": "ios/CherriApp/Views/CodeEditorView.swift",
++      "present": false
++    }
++  ],
++  "historicalR23Result": "FAIL_PRESERVED_NOT_RELABELED",
++  "approval": {
++    "status": "DRAFT_NOT_APPROVED",
++    "scope": "R23_EXACT_PROTECTED_STATE_V2",
++    "authorRole": "PROJECT_OWNER",
++    "sourceReference": null,
++    "sourceText": null,
++    "sourceTextSha256": null,
++    "approvedAtUtc": null
++  },
++  "proposalOnly": true,
++  "sourceObservedAt": "9b4135e705b08f765b7304e01212d3b9658806fb",
++  "requiredCurrentUiTestCount": 13,
++  "originalUiTestCount": 9,
++  "notes": [
++    "This record is an inactive proposal and conveys no authorization.",
++    "A real owner decision must approve the exact old/new states before activation.",
++    "An authenticated connector-created technical comment is not by itself independent owner approval.",
++    "No original UI method is excluded, renamed or disabled.",
++    "This policy does not replace actual UI execution or any other acceptance requirement."
++  ]
++}

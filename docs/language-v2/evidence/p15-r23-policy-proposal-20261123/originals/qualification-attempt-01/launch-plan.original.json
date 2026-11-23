@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "scope": "ONE_SYNTHETIC_R23_UNITTEST_PARENT_ONLY",
+  "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "ownedHead": "14a7440e839afdceca56a54c608f294e1d01073a",
+  "patchSha256": "65b4faad9bfdafd5b0bea4383c38f010f8098845e4eafff1e92593f5c309fbca",
+  "command": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=5s",
+    "60s",
+    "python3",
+    "-B",
+    "tools/p10r3/test_coverage_and_gates.py",
+    "TestP10CoverageAndGates.test_c5_06_r23_protected_ios_file_modified_fails_closed",
+    "-v"
+  ],
+  "cwd": "/mnt/development/projects/evidence/cherri-p10r15-r23-policy-review-k11-20261123/qualification-attempt-01/source",
+  "environmentNames": [
+    "HOME",
+    "LANG",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONUNBUFFERED",
+    "TMPDIR"
+  ],
+  "temporaryRoot": "/mnt/development/projects/evidence/cherri-p10r15-r23-policy-review-k11-20261123/qualification-attempt-01/tmp",
+  "timeoutSeconds": 60,
+  "termKillGraceSeconds": 5,
+  "copiedFiles": [
+    {
+      "path": "tools/p10r3/test_coverage_and_gates.py",
+      "bytes": 40169,
+      "sha256": "b3076f9a45fa62f9f90f5fb04276e876962db001fbc2f83c7e4dde2b4a6b0f87",
+      "origin": {
+        "kind": "INACTIVE_REVIEWED_PROPOSAL_REVISION_4",
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-r23-policy-review-k11-20261123/proposed-files/tools/p10r3/test_coverage_and_gates.py.inactive",
+        "patchSha256": "65b4faad9bfdafd5b0bea4383c38f010f8098845e4eafff1e92593f5c309fbca"
+      }
+    },
+    {
+      "path": "tools/p10r3/run_release_gates.py",
+      "bytes": 52587,
+      "sha256": "0e2bcc0dc9b3a87cc037643af5120d24b692292e77f2199e87e346ce7ac60c88",
+      "origin": {
+        "kind": "INACTIVE_REVIEWED_PROPOSAL_REVISION_4",
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-r23-policy-review-k11-20261123/proposed-files/tools/p10r3/run_release_gates.py.inactive",
+        "patchSha256": "65b4faad9bfdafd5b0bea4383c38f010f8098845e4eafff1e92593f5c309fbca"
+      }
+    },
+    {
+      "path": "tools/p10r3/generate_catalog_and_pack_ledgers.py",
+      "bytes": 74364,
+      "sha256": "0030c1d97ae80be2cbca67e502e5e03fa9b99be36c58dc7d0216be7d3cc98c2c",
+      "origin": {
+        "kind": "INACTIVE_REVIEWED_PROPOSAL_REVISION_4",
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-r23-policy-review-k11-20261123/proposed-files/tools/p10r3/generate_catalog_and_pack_ledgers.py.inactive",
+        "patchSha256": "65b4faad9bfdafd5b0bea4383c38f010f8098845e4eafff1e92593f5c309fbca"
+      }
+    },
+    {
+      "path": "tools/p10r3/verify_ledger_consistency.py",
+      "bytes": 19829,
+      "sha256": "3874be78525d8a4f96142973c65b0ab6a2d8ec41689c9e2afeb46ab7929abbd1",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "tools/p10r3/verify_ledger_consistency.py"
+      }
+    },
+    {
+      "path": "tools/p10r3/verify_or_generate_pack.py",
+      "bytes": 24177,
+      "sha256": "f687bd0c61d1acd384d1ddfedf4a3893e9dcb13596aec9c3af538f8fbb0e1426",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "tools/p10r3/verify_or_generate_pack.py"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+      "bytes": 1407491,
+      "sha256": "be5b497b6a06b33926fad6373abebfd414b8a3208e18aa5f34efd878fc1824de",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/coverage-evidence.schema.json",
+      "bytes": 8827,
+      "sha256": "26a146f34caa574d4aee262ac73b2922c114cdbbf13c91d2159621b5b16c82e3",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/coverage-evidence.schema.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+      "bytes": 14529,
+      "sha256": "6d57067fb5931ce48fea1c7b0495cb724d9de0ca90fb8a6cb59126576bf90785",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10-pack-15-go-only-audit.json",
+      "bytes": 18349,
+      "sha256": "ae672ed1b545926e1f8f2db6749d517b17c9268bd4e185878f67c82de4f6255f",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/p10-pack-15-go-only-audit.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/device-acceptance-manifest.json",
+      "bytes": 8536,
+      "sha256": "4e3878c0a494b4e3717008cbec0e3f5da551ef37c4f8b23dafdfdf17623ce6a3",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/device-acceptance-manifest.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/baseline-state.json",
+      "bytes": 2845,
+      "sha256": "6947c651dfdb19ab0fb73fac40d4529661b656d6a574f22f4644b21f7c7c369b",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/baseline-state.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10r2-acceptance-contract.json",
+      "bytes": 29569,
+      "sha256": "d797f6216daa8f7de48cb806d6535a8615120dc157333119131f52de1aa7b662",
+      "origin": {
+        "kind": "FROZEN_GIT_BLOB",
+        "commit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "path": "docs/apple-runtime/p10/p10r2-acceptance-contract.json"
+      }
+    },
+    {
+      "path": "docs/apple-runtime/p10/r23-protected-state-policy-v2.json",
+      "bytes": 2448,
+      "sha256": "feeee0f607d170ccb9602ede2213871c4a0dfcf8e82547b5a381b828d52fa6c7",
+      "origin": {
+        "kind": "INACTIVE_REVIEWED_PROPOSAL_REVISION_4",
+        "path": "/mnt/development/projects/evidence/cherri-p10r15-r23-policy-review-k11-20261123/proposed-files/docs/apple-runtime/p10/r23-protected-state-policy-v2.json.inactive",
+        "patchSha256": "65b4faad9bfdafd5b0bea4383c38f010f8098845e4eafff1e92593f5c309fbca"
+      }
+    }
+  ],
+  "sourceBefore": {
+    "head": "14a7440e839afdceca56a54c608f294e1d01073a",
+    "status": "",
+    "tree": "e3b0fa9236e6569b3c4ebd742c82acc5f2b44367"
+  },
+  "allParentIds": [
+    "test_f01_matrix_passes_schema_and_has_real_execution_refs",
+    "test_f01_negative_mutation_fake_unit_test_ref_fails_closed",
+    "test_f01_negative_mutation_invalid_source_line_fails_closed",
+    "test_f01_negative_mutation_invalid_decompile_mode_fails_closed",
+    "test_f01_negative_mutation_inflated_confirmed_runtime_fails_closed",
+    "test_f02_denominator_crosswalk_arithmetic_and_ledger_truth",
+    "test_f02_negative_mutations_across_crosswalk_and_reports_fail_closed",
+    "test_c5_01_missing_gate_in_registry_fails_closed",
+    "test_c5_02_skipped_go_test_fails_closed",
+    "test_c5_03_zero_tests_run_fails_closed",
+    "test_c5_04_missing_expected_marker_fails_closed",
+    "test_c5_05_non_zero_exit_code_fails_closed",
+    "test_c5_06_r23_protected_ios_file_modified_fails_closed",
+    "test_c5_07_non_ancestor_source_commit_fails_closed",
+    "test_c5_08_drifted_input_dependency_fingerprint_fails_closed",
+    "test_c5_fingerprint_covers_new_compiler_and_lowering_files",
+    "test_c5_fingerprint_normalizes_line_endings_and_excludes_generated_receipts",
+    "test_c5_09_release_verdict_never_ready_when_blocked_or_failing",
+    "test_c5_10_r22_granular_blocker_classification",
+    "test_f04_15_go_only_actions_and_pack_generator_verification",
+    "test_f06_device_acceptance_manifest_9_fixtures_blocked_device",
+    "test_f08_external_blockers_explicit"
+  ],
+  "originalElevenBlockBytes": 3473,
+  "originalElevenBlockSha256": "63f878bd2aec9f75e1926d6e5a7d67bb1cbcba81ded5c8ffa22afb6791bcb64b",
+  "draftPolicySha256": "feeee0f607d170ccb9602ede2213871c4a0dfcf8e82547b5a381b828d52fa6c7",
+  "activePatchApplied": false,
+  "productionR23Executed": false,
+  "ownerApprovalCreated": false,
+  "providerCalls": 0
+}

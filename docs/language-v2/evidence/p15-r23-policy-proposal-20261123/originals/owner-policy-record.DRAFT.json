@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": 2,
+  "policyId": "R23_EXACT_PROTECTED_STATE_V2",
+  "baseline": "ca316a3dee252456c4bec751594cf249c709b331",
+  "previousBaseline": "76d722502e20db977e84a095444d0172442655b8",
+  "originalContract": {
+    "path": "docs/apple-runtime/p10/p10r2-acceptance-contract.json",
+    "sha256": "d797f6216daa8f7de48cb806d6535a8615120dc157333119131f52de1aa7b662"
+  },
+  "protectedPaths": [
+    {
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "present": true,
+      "gitMode": "100644",
+      "gitType": "blob",
+      "gitBlob": "33028f1f8b53b3855382a1ab6042a2c59402f687",
+      "bytes": 54532,
+      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+      "testMethods": [
+        "testD03CurrentDocumentationSearchUI",
+        "testE01CompletionDisplayAndInsertionUI",
+        "testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+        "testE02DiagnosticsRenderingAndNavigationUI",
+        "testE03EditorActionsHoverRenameUI",
+        "testE05EditorResponsivenessStaleEditsUI",
+        "testE06BidirectionalHebrewEmojiUI",
+        "testE07VisualParameterEditingCanvasUI",
+        "testBRG27EditorRealWorldWorkflowUI",
+        "testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+        "testNegativeMissingUIElementFailsClosed",
+        "testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+        "testTypedSourceAndResetPreserveExactUTF16"
+      ]
+    },
+    {
+      "path": "ios/CherriApp/Views/CodeEditorView.swift",
+      "present": false
+    }
+  ],
+  "historicalR23Result": "FAIL_PRESERVED_NOT_RELABELED",
+  "approval": {
+    "status": "DRAFT_NOT_APPROVED",
+    "scope": "R23_EXACT_PROTECTED_STATE_V2",
+    "authorRole": "PROJECT_OWNER",
+    "sourceReference": null,
+    "sourceText": null,
+    "sourceTextSha256": null,
+    "approvedAtUtc": null
+  },
+  "proposalOnly": true,
+  "sourceObservedAt": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "requiredCurrentUiTestCount": 13,
+  "originalUiTestCount": 9,
+  "notes": [
+    "This record is an inactive proposal and conveys no authorization.",
+    "A real owner decision must approve the exact old/new states before activation.",
+    "An authenticated connector-created technical comment is not by itself independent owner approval.",
+    "No original UI method is excluded, renamed or disabled.",
+    "This policy does not replace actual UI execution or any other acceptance requirement."
+  ]
+}

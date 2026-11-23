@@ -1,0 +1,68 @@
+--- revision-3/tools/p10r3/run_release_gates.py
++++ revision-4/tools/p10r3/run_release_gates.py
+@@ -824,10 +824,15 @@
+             "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
+             "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+             "GIT_REPLACE_REF_BASE", "GIT_NAMESPACE", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT",
++            "GIT_GRAFT_FILE",
+         ) if name in os.environ]
+         require(not routing, "unsupported Git routing override names: " + ",".join(routing))
+         top = git_bytes("rev-parse", "--show-toplevel").decode("utf-8").strip()
+         require(pathlib.Path(top).resolve() == REPO_ROOT.resolve(), "actual Git top-level differs")
++        graft_path = pathlib.Path(git_bytes("rev-parse", "--git-path", "info/grafts").decode("utf-8").strip())
++        if not graft_path.is_absolute():
++            graft_path = REPO_ROOT / graft_path
++        require(not os.path.lexists(graft_path), "legacy Git graft file is unsupported")
+         result = _execute_gate_observation(gate_id, defn)
+         policy_path = REPO_ROOT / defn["policyRecord"]
+         require(policy_path.is_file() and not policy_path.is_symlink(),
+--- revision-3/tools/p10r3/test_coverage_and_gates.py
++++ revision-4/tools/p10r3/test_coverage_and_gates.py
+@@ -461,23 +461,29 @@
+                     alternate.write_bytes((root / ".git/index").read_bytes())
+                     present.write_bytes(present_bytes + b"// actual index mutation\n")
+                     git("add", "--", protected[0])
++                    present.write_bytes(present_bytes)
++                    self.assertNotEqual(git("diff", "--cached", "--name-only", "--", *protected), "")
+                     try:
+                         with mock.patch.dict(os.environ, {"GIT_INDEX_FILE": str(alternate)}):
++                            self.assertEqual(git("status", "--porcelain", "--", *protected), "")
+                             result = guard("FAIL")
+                             self.assertIn("GIT_INDEX_FILE", result["error"])
+                             self.assertNotIn(str(alternate), result["error"])
+                     finally:
+                         git("reset", "--hard", pristine)
+                 for variable, value in [("GIT_DIR", str(root / ".git")),
+-                                        ("GIT_WORK_TREE", str(root))]:
++                                        ("GIT_WORK_TREE", str(root)),
++                                        ("GIT_GRAFT_FILE", str(root / ".git/info/grafts"))]:
+                     with self.subTest(policy="routing_" + variable):
+                         with mock.patch.dict(os.environ, {variable: value}):
+                             result = guard("FAIL")
+                             self.assertIn(variable, result["error"])
+                             self.assertNotIn(value, result["error"])
+ 
++                (root / ".git/info").mkdir(parents=True, exist_ok=True)
+                 for state in ["untracked", "ignored", "staged", "committed", "directory", "broken_symlink"]:
+                     with self.subTest(policy="absent_" + state):
++                        absent.parent.mkdir(parents=True, exist_ok=True)
+                         if state == "directory":
+                             absent.mkdir()
+                         elif state == "broken_symlink":
+@@ -515,6 +521,16 @@
+                     unrelated = git("rev-parse", "HEAD").strip()
+                     self.assertNotEqual(unrelated, pristine)
+                     guard("FAIL")
++                    with self.subTest(policy="legacy_graft_ancestry"):
++                        grafts = root / ".git/info/grafts"
++                        grafts.write_text(unrelated + " " + pristine + "\n")
++                        try:
++                            # Legacy grafts also forge ancestry independently of replace refs.
++                            git("merge-base", "--is-ancestor", pristine, "HEAD")
++                            result = guard("FAIL")
++                            self.assertIn("graft", result["error"])
++                        finally:
++                            grafts.unlink()
+                     git("replace", "--graft", unrelated, pristine)
+                     try:
+                         # Prove that ordinary replacement-aware Git would admit
