@@ -1,0 +1,942 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_SOURCE_AND_MODEL_ONLY",
+  "nativeRuntimeStatus": "NOT_EXECUTED",
+  "featureStatus": "PARTIAL_SOURCE_IMPLEMENTED_PENDING_NATIVE",
+  "sourceCommit": "05854a2e78df7d6b7b215bf104a628830cc6bdad",
+  "worktreeDirtyBeforeEvidence": false,
+  "sourceFingerprint": "04bf045cf5da70c84ccb4b351b37a2571c774c09d6db6ecc3db7c9da753ec817",
+  "compilerSha256": "37ea20e59daade947ae10ad2079cdd6c0e6f35b0c7c6aa0e8e71e1f573ec0ebf",
+  "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+  "macroFingerprint": "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c",
+  "nativeMetadata": {
+    "path": "docs/apple-runtime/macos-27/builtin-actions.json",
+    "sha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+    "platform": "macOS 27 metadata; does not establish iPad runtime"
+  },
+  "scope": [
+    "macro produces one File; main fallthrough is verified separately; no provider save/share/network",
+    "default full payload redaction",
+    "opt-in Text payloads explicitly base64-utf8",
+    "non-Text payloads explicitly unsupported",
+    "dates/labels not collected"
+  ],
+  "nativeAssumptionsStillRequiringSignedRuntime": [
+    "empty cleared log Repeat cardinality",
+    "native Text Base64 UTF-8 including empty Text and controls",
+    "Text envelope Base64 Encode/Decode byte conversion",
+    "Set Name on newly produced File",
+    "Repeat and If result collection for 0/1/1000 items"
+  ],
+  "summary": {
+    "cliCompiles": 16,
+    "exactNativeActionRoundtrips": 16,
+    "independentModelCases": 80,
+    "cliNegatives": 16,
+    "causalFaults": 7,
+    "nativeProbeCompiles": 12,
+    "nativeExecuted": 0,
+    "elapsedSeconds": 3.712
+  },
+  "compiles": [
+    {
+      "id": "v2-json-redacted-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "52627486ab54328909d090967e8581f092a12d7bd534356be8b48f3d2f0ac84d",
+      "actionCount": 15,
+      "exportActionCount": 10,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 163,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 266,
+          "modelExecutedActions": 9
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 266,
+          "modelExecutedActions": 9
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 104162,
+          "modelExecutedActions": 3006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1110,
+          "modelExecutedActions": 33
+        }
+      }
+    },
+    {
+      "id": "v2-json-redacted-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "2463c9300f73d6152be8e1fa535cf0bc0b0f4a3d4e7fc85f32f913c9e2664fee",
+      "actionCount": 13,
+      "exportActionCount": 8,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 163,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 199,
+          "modelExecutedActions": 7
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 199,
+          "modelExecutedActions": 7
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 37162,
+          "modelExecutedActions": 1006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 495,
+          "modelExecutedActions": 15
+        }
+      }
+    },
+    {
+      "id": "v2-json-text-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "02c79f13f394c1f45d3473e6dff05ecf1f263352544b1aaf54f5c9f7ddbc727e",
+      "actionCount": 22,
+      "exportActionCount": 17,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 171,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 447,
+          "modelExecutedActions": 13
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 319,
+          "modelExecutedActions": 13
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 280770,
+          "modelExecutedActions": 5008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1419,
+          "modelExecutedActions": 45
+        }
+      }
+    },
+    {
+      "id": "v2-json-text-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "2b2243dc77a6ad091369c4c1cefbb677d07aff43550d82fba9014859591e405b",
+      "actionCount": 21,
+      "exportActionCount": 16,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 171,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 380,
+          "modelExecutedActions": 12
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 252,
+          "modelExecutedActions": 12
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 213770,
+          "modelExecutedActions": 4008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 804,
+          "modelExecutedActions": 36
+        }
+      }
+    },
+    {
+      "id": "v2-text-redacted-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "15e88b5cd2f933a14f9c006025c0e77e87c857a3ea6cf8dbb3ab39b01bf0e272",
+      "actionCount": 15,
+      "exportActionCount": 10,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 179,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 282,
+          "modelExecutedActions": 9
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 282,
+          "modelExecutedActions": 9
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 104178,
+          "modelExecutedActions": 3006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1126,
+          "modelExecutedActions": 33
+        }
+      }
+    },
+    {
+      "id": "v2-text-redacted-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "9371aca6efbb057651ba80a726af206da9bdfc26ae8a28cf2321942cb97c341f",
+      "actionCount": 13,
+      "exportActionCount": 8,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 179,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 215,
+          "modelExecutedActions": 7
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 215,
+          "modelExecutedActions": 7
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 37178,
+          "modelExecutedActions": 1006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 511,
+          "modelExecutedActions": 15
+        }
+      }
+    },
+    {
+      "id": "v2-text-text-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "f1a2e54d3be1866c479b8f710c60fd7a5da56fb608abc195edc2ba816919c494",
+      "actionCount": 22,
+      "exportActionCount": 17,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 187,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 463,
+          "modelExecutedActions": 13
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 335,
+          "modelExecutedActions": 13
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 280786,
+          "modelExecutedActions": 5008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1435,
+          "modelExecutedActions": 45
+        }
+      }
+    },
+    {
+      "id": "v2-text-text-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "49a0f572603a3e9e33ea6d4e557f77ebd41813eb519422a070b24552979e64ab",
+      "actionCount": 21,
+      "exportActionCount": 16,
+      "mainFallthroughBoundary": "V2_EXPLICIT_VOID_VERIFIED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 187,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 396,
+          "modelExecutedActions": 12
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 268,
+          "modelExecutedActions": 12
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 213786,
+          "modelExecutedActions": 4008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 820,
+          "modelExecutedActions": 36
+        }
+      }
+    },
+    {
+      "id": "legacy-json-redacted-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "52627486ab54328909d090967e8581f092a12d7bd534356be8b48f3d2f0ac84d",
+      "actionCount": 14,
+      "exportActionCount": 10,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 163,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 266,
+          "modelExecutedActions": 9
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 266,
+          "modelExecutedActions": 9
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 104162,
+          "modelExecutedActions": 3006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1110,
+          "modelExecutedActions": 33
+        }
+      }
+    },
+    {
+      "id": "legacy-json-redacted-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "2463c9300f73d6152be8e1fa535cf0bc0b0f4a3d4e7fc85f32f913c9e2664fee",
+      "actionCount": 12,
+      "exportActionCount": 8,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 163,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 199,
+          "modelExecutedActions": 7
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 199,
+          "modelExecutedActions": 7
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 37162,
+          "modelExecutedActions": 1006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 495,
+          "modelExecutedActions": 15
+        }
+      }
+    },
+    {
+      "id": "legacy-json-text-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "02c79f13f394c1f45d3473e6dff05ecf1f263352544b1aaf54f5c9f7ddbc727e",
+      "actionCount": 21,
+      "exportActionCount": 17,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 171,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 447,
+          "modelExecutedActions": 13
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 319,
+          "modelExecutedActions": 13
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 280770,
+          "modelExecutedActions": 5008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1419,
+          "modelExecutedActions": 45
+        }
+      }
+    },
+    {
+      "id": "legacy-json-text-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "2b2243dc77a6ad091369c4c1cefbb677d07aff43550d82fba9014859591e405b",
+      "actionCount": 20,
+      "exportActionCount": 16,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 171,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 380,
+          "modelExecutedActions": 12
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 252,
+          "modelExecutedActions": 12
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 213770,
+          "modelExecutedActions": 4008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 804,
+          "modelExecutedActions": 36
+        }
+      }
+    },
+    {
+      "id": "legacy-text-redacted-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "15e88b5cd2f933a14f9c006025c0e77e87c857a3ea6cf8dbb3ab39b01bf0e272",
+      "actionCount": 14,
+      "exportActionCount": 10,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 179,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 282,
+          "modelExecutedActions": 9
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 282,
+          "modelExecutedActions": 9
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 104178,
+          "modelExecutedActions": 3006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1126,
+          "modelExecutedActions": 33
+        }
+      }
+    },
+    {
+      "id": "legacy-text-redacted-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "9371aca6efbb057651ba80a726af206da9bdfc26ae8a28cf2321942cb97c341f",
+      "actionCount": 12,
+      "exportActionCount": 8,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 179,
+          "modelExecutedActions": 6
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 215,
+          "modelExecutedActions": 7
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 215,
+          "modelExecutedActions": 7
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 37178,
+          "modelExecutedActions": 1006
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 511,
+          "modelExecutedActions": 15
+        }
+      }
+    },
+    {
+      "id": "legacy-text-text-typesTrue",
+      "status": "PASS",
+      "sourceSha256": "f1a2e54d3be1866c479b8f710c60fd7a5da56fb608abc195edc2ba816919c494",
+      "actionCount": 21,
+      "exportActionCount": 17,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 187,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 463,
+          "modelExecutedActions": 13
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 335,
+          "modelExecutedActions": 13
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 280786,
+          "modelExecutedActions": 5008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 1435,
+          "modelExecutedActions": 45
+        }
+      }
+    },
+    {
+      "id": "legacy-text-text-typesFalse",
+      "status": "PASS",
+      "sourceSha256": "49a0f572603a3e9e33ea6d4e557f77ebd41813eb519422a070b24552979e64ab",
+      "actionCount": 20,
+      "exportActionCount": 16,
+      "mainFallthroughBoundary": "LEGACY_UNCHANGED",
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero": {
+          "entries": 0,
+          "bytes": 187,
+          "modelExecutedActions": 8
+        },
+        "one": {
+          "entries": 1,
+          "bytes": 396,
+          "modelExecutedActions": 12
+        },
+        "empty-text": {
+          "entries": 1,
+          "bytes": 268,
+          "modelExecutedActions": 12
+        },
+        "thousand": {
+          "entries": 1000,
+          "bytes": 213786,
+          "modelExecutedActions": 4008
+        },
+        "native-type-matrix": {
+          "entries": 9,
+          "bytes": 820,
+          "modelExecutedActions": 36
+        }
+      }
+    }
+  ],
+  "cliNegatives": [
+    {
+      "id": "False-debug-format",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-debug-path",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-debug-unproved-dates",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-debug-dynamic-format",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-release-format",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-release-path",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-release-unproved-dates",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "False-release-dynamic-format",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-debug-format",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-debug-path",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-debug-unproved-dates",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-debug-dynamic-format",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-release-format",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-release-path",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-release-unproved-dates",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "True-release-dynamic-format",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    }
+  ],
+  "causalFaults": [
+    {
+      "id": "base64-line-breaks",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "default-payload-leak",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "type-witness-bypass",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "unsafe-filename",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "wrong-file-direction",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "unproved-text-file-conversion",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "missing-output-reference",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    }
+  ],
+  "nativeProbes": [
+    {
+      "id": "qa-export-empty-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-empty-v2.cherri",
+      "dialect": "v2",
+      "scenario": "empty",
+      "expectedVerdict": "P15_EXPORT_EMPTY_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-empty",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_EMPTY_OK",
+      "compiledStatus": "PASS",
+      "sourceSha256": "86a22c60dfa32590012f825c954ad3bba1317d0c8d31e872e2869b06774d7943",
+      "utf8CodepointGuard": "NOT_APPLICABLE",
+      "actionCount": 58,
+      "unsignedSha256": "1bc99473f0a431757319c6647d8044d4b7e8143064f255e204515476ee03e548",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-unicode-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unicode-v2.cherri",
+      "dialect": "v2",
+      "scenario": "unicode",
+      "expectedVerdict": "P15_EXPORT_UNICODE_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-unicode",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNICODE_OK",
+      "compiledStatus": "PASS",
+      "sourceSha256": "073c2d4fbbe461f35b17796e4fef814f65f85a71acd0a5efa9ad0f195287b079",
+      "utf8CodepointGuard": "PASS",
+      "actionCount": 79,
+      "unsignedSha256": "18d41e036dc032edea2e24982d879a2ca09086d47c9d0f68c6240d84f7c6c81a",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-thousand-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-thousand-v2.cherri",
+      "dialect": "v2",
+      "scenario": "thousand",
+      "expectedVerdict": "P15_EXPORT_THOUSAND_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-thousand",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_THOUSAND_OK",
+      "compiledStatus": "PASS",
+      "sourceSha256": "2af22fd45d3dd808e311420e3286158e6c1a9b3003977f67722ab47f93e46acf",
+      "utf8CodepointGuard": "NOT_APPLICABLE",
+      "actionCount": 81,
+      "unsignedSha256": "bfedf5f4bba4128dd42bb99feaa664ca8fad1e2342b69c4bab93debafad899e5",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-redacted-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-redacted-v2.cherri",
+      "dialect": "v2",
+      "scenario": "redacted",
+      "expectedVerdict": "P15_EXPORT_REDACTED_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-redacted",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK",
+      "compiledStatus": "PASS",
+      "sourceSha256": "0a16f20503301bbde846eb076c32165832096d0bc438a85bcdfbc63c32338151",
+      "utf8CodepointGuard": "PASS",
+      "actionCount": 62,
+      "unsignedSha256": "04ca884c08384487680f9a16b973947d8b52d9a7688700a337eab806cbde7440",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-unsupported-file-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unsupported-file-v2.cherri",
+      "dialect": "v2",
+      "scenario": "unsupported-file",
+      "expectedVerdict": "P15_EXPORT_UNSUPPORTED_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-unsupported-file",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK",
+      "compiledStatus": "PASS",
+      "sourceSha256": "9f37412a686c34f7f6c3e27eb11aa1d04b2e5446695a2173d758a3a6b99d51a6",
+      "utf8CodepointGuard": "NOT_APPLICABLE",
+      "actionCount": 68,
+      "unsignedSha256": "2d3231b7e09554b9946ce728a197aaa74e908daa02eb2c4dd060b1bcd321d654",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-text-file-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-text-file-v2.cherri",
+      "dialect": "v2",
+      "scenario": "text-file",
+      "expectedVerdict": "P15_EXPORT_TEXT_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-text-file",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK",
+      "compiledStatus": "PASS",
+      "sourceSha256": "a8ae2bbe4f1263fa5c49571eb5f29960d1e1342e9e4ea245e5bf7502ff87e8e8",
+      "utf8CodepointGuard": "PASS",
+      "actionCount": 53,
+      "unsignedSha256": "4d7dfeb3939ac2bd4ef7fe1d2ef6e7bbabb5db505e77dd8f97e0a1e596ac095d",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-empty-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-empty-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "empty",
+      "expectedVerdict": "P15_EXPORT_EMPTY_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "compiledStatus": "PASS",
+      "sourceSha256": "5b98905b2a6ef5bf2a8d94c5445349248813ae0d0095d45839e9ae47a2ecdfed",
+      "utf8CodepointGuard": "NOT_APPLICABLE",
+      "actionCount": 57,
+      "unsignedSha256": "a0192f9154146b305a37ca596a0c6b3064c92fd5a1dfcd4104ee63b094da62ae",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-unicode-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unicode-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "unicode",
+      "expectedVerdict": "P15_EXPORT_UNICODE_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "compiledStatus": "PASS",
+      "sourceSha256": "19ef51ca39b16029bbc1bd225153a2494f9ce07c4462c9fe76ed0405a2d0b13b",
+      "utf8CodepointGuard": "PASS",
+      "actionCount": 78,
+      "unsignedSha256": "5ef126af9e7c5571f28068ebe2b74accdaaa6292c6eae34324fd5d1f516ae356",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-thousand-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-thousand-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "thousand",
+      "expectedVerdict": "P15_EXPORT_THOUSAND_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "compiledStatus": "PASS",
+      "sourceSha256": "367ebc58d0102a7947ecc3686c49842fe0f851d9fdc46ee6124a328423097086",
+      "utf8CodepointGuard": "NOT_APPLICABLE",
+      "actionCount": 78,
+      "unsignedSha256": "6ba624b82d99bf79acdc2dc8f72f07051c512b18f1f3fd7115f2cba5e80b162c",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-redacted-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-redacted-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "redacted",
+      "expectedVerdict": "P15_EXPORT_REDACTED_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "compiledStatus": "PASS",
+      "sourceSha256": "bebbc9b77dc72706b7c44c465b792cab73300224520d86e48574e00a7e5244b6",
+      "utf8CodepointGuard": "PASS",
+      "actionCount": 61,
+      "unsignedSha256": "cfbac8f98acbb13a2ba54821d664f95597f9dcaf065a756666d40ebf31e4edcc",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-unsupported-file-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unsupported-file-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "unsupported-file",
+      "expectedVerdict": "P15_EXPORT_UNSUPPORTED_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "compiledStatus": "PASS",
+      "sourceSha256": "812c540065afcbf32b7229233028d168400b2b4d0f02002d5645059a4f832750",
+      "utf8CodepointGuard": "NOT_APPLICABLE",
+      "actionCount": 66,
+      "unsignedSha256": "1dd944725ea7447a5f030046f875352660eb6cbdadfe07eb61c76af874c89fa4",
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "id": "qa-export-text-file-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-text-file-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "text-file",
+      "expectedVerdict": "P15_EXPORT_TEXT_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED",
+      "compiledStatus": "PASS",
+      "sourceSha256": "0fe58b609d0369afb11d2e3a03f27765c2441f4ebeb5dccaec45ec947f4657b8",
+      "utf8CodepointGuard": "PASS",
+      "actionCount": 52,
+      "unsignedSha256": "8355d7d6925d3351b9ad51547c2ff6aae654c3a75adf0555f71c60e9c37f74da",
+      "exactNativeActionRoundtrip": true
+    }
+  ]
+}
