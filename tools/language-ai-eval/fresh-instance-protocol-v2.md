@@ -1,8 +1,9 @@
 # AI01 profile v2: Sonnet 5.5 transport and native compiler calibration
 
-Status: the exact reviewed R7 Linux ARM64 compiler is pinned. Actual twelve-case
-baseline calibration and final independent review remain required before any
-real evaluation bundle. No fresh evaluation seed, provider request or measured
+Status: the exact reviewed R7 Linux ARM64 compiler is pinned and all twelve
+original public baseline compilations and graph replays passed. Final
+independent source/protocol review and frozen-source execution handoff remain
+required before any real evaluation bundle. No fresh evaluation seed, provider request or measured
 quality outcome is part of this change. The historical v1 protocol and receipts
 remain unchanged.
 
@@ -72,8 +73,8 @@ The exact native binary SHA256 is
 It was built from a clean canonical R7 clone with Go1.24.13, CGO disabled,
 Linux/ARM64 and embedded unmodified R7 VCS identity. The actual pair receipt
 has SHA256 `d3bae0c50203bf0237289f8d18b242db1997d95feac5ebcbb2f2beee721fdcfc`.
-This pins identity; actual twelve-case calibration is still required before a
-real seed. Preparation and loading continue to reject an absent compiler pin
+Identity pinning and the actual twelve-case calibration below are separate
+requirements before a real seed. Preparation and loading reject an absent compiler pin
 with `UNREVIEWED_PROFILE_COMPILER`; no environment or CLI override bypasses it.
 
 The bundle retains the existing `compiler.exe` filename as its envelope.
@@ -94,6 +95,14 @@ bytes, commands, binary/VCS identity, streams, plists and every failure.
 Independently replay the same graph oracle against those actual outputs.
 Preserve the S3/S4 calibration originals separately. Any demonstrated mismatch
 must be repaired and reviewed before freezing a new evaluation implementation.
+
+The actual R7 calibration ran at clean implementation
+`752c41b74f64fd633e63792fd4685156fabe913c`: twelve original source files,
+twelve compiler exits0 and twelve graph replays PASS in0.808499 seconds.
+All source and binary bytes remained unchanged. See the
+[original calibration packet](../../docs/language-v2/evidence/p15-ai01-v2-r7-calibration-20261123/README.md).
+This documentation follow-up changes no executable calibration producer.
+No real evaluation seed, provider request or model-quality measurement occurred.
 
 ## Budget and authorization
 
