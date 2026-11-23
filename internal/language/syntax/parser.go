@@ -1119,11 +1119,12 @@ func (p *Parser) parseBlockStmt() *BlockStmt {
 
 func (p *Parser) parseIfStmt() *IfStmt {
 	startTok := p.advance() // if
-	modern := false
-	if p.curr.Type == TokenIdent && p.curr.Text == "modern" && p.peek.Type == TokenColon {
-		p.advance() // modern
+	modern, legacy := false, false
+	if p.curr.Type == TokenIdent && p.peek.Type == TokenColon &&
+		(p.curr.Text == "modern" || p.curr.Text == "legacy") {
+		modern, legacy = p.curr.Text == "modern", p.curr.Text == "legacy"
+		p.advance() // explicit native comparison mode
 		p.advance() // :
-		modern = true
 	}
 	cond := p.parseControlExpression()
 	thenBlock := p.parseBlockStmt()
@@ -1145,6 +1146,7 @@ func (p *Parser) parseIfStmt() *IfStmt {
 	return &IfStmt{
 		Span:      span,
 		Modern:    modern,
+		Legacy:    legacy,
 		Condition: cond,
 		ThenBlock: thenBlock,
 		ElseBlock: elseBlock,

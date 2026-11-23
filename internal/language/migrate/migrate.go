@@ -145,7 +145,7 @@ func migrateSourceWithDiagnostics(input, includeRoot string, isEntry bool) (stri
 		}
 		return "", lexicalDiags, fmt.Errorf("migration produced invalid V2 syntax (Legacy lexical input)")
 	}
-	var comparisonModes []bool
+	var comparisonModes []string
 	lexical.text, comparisonModes = prepareMigrationComparisonModes(lexical.text, migrationComparisonCanonicalSource(input))
 	reg := schema.DefaultRegistry()
 	lines := strings.Split(lexical.text, "\n")

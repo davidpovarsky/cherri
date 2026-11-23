@@ -312,6 +312,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == textComparisonRequirement {
+		return textComparisonTestIDs()
+	}
 	if id == "CI03" {
 		return []string{ciIdentityTestID}
 	}
@@ -532,6 +535,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == textComparisonRequirement {
+		return append([]string{}, textComparisonEvidence.SourcePaths...)
+	}
 	if id == "CI03" {
 		return append([]string{}, ciIdentitySources...)
 	}

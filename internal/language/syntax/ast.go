@@ -256,6 +256,7 @@ func (s *BlockStmt) statementNode()        {}
 type IfStmt struct {
 	Span      source.Span
 	Modern    bool
+	Legacy    bool // Explicit native true flag; unmarked Text equality is authored exact intent.
 	Condition Expression
 	ThenBlock *BlockStmt
 	ElseBlock Statement // *BlockStmt or *IfStmt

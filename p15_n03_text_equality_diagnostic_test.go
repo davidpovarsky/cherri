@@ -78,6 +78,47 @@ type p15N03Cursor struct {
 	groups  map[string]bool
 }
 
+// Native plist control integers decode as uint64; the retained diagnostic's
+// JSON projection decodes the same integers as float64. Only these two control
+// keys admit those exact integral representations. Real values, booleans,
+// strings, containers, missing fields and extra fields retain exact equality.
+func p15N03ControlInteger(value any) (uint64, bool) {
+	switch number := value.(type) {
+	case uint64:
+		return number, true
+	case float64:
+		if number >= 0 && number <= 9007199254740991 && float64(uint64(number)) == number {
+			return uint64(number), true
+		}
+	}
+	return 0, false
+}
+
+func p15N03WireFieldsEqual(actual, expected map[string]any) bool {
+	if len(actual) != len(expected) {
+		return false
+	}
+	for key, want := range expected {
+		got, found := actual[key]
+		if !found {
+			return false
+		}
+		switch key {
+		case "WFCondition", "WFControlFlowMode":
+			gotInteger, gotOK := p15N03ControlInteger(got)
+			wantInteger, wantOK := p15N03ControlInteger(want)
+			if !gotOK || !wantOK || gotInteger != wantInteger {
+				return false
+			}
+		default:
+			if !reflect.DeepEqual(got, want) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 // Only generated identities are read from the result. Every action, field,
 // operand, branch value, variable store and producer edge is independently specified.
 func (c *p15N03Cursor) take(identifier, outputName string, fields map[string]any, hasUUID bool) map[string]any {
@@ -97,12 +138,15 @@ func (c *p15N03Cursor) take(identifier, outputName string, fields map[string]any
 			return nil
 		}
 		fields["UUID"] = uuid
-		ref = map[string]any{"Type": "ActionOutput", "OutputUUID": uuid, "OutputName": outputName}
+		ref = map[string]any{"Type": "ActionOutput", "OutputUUID": uuid}
+		if outputName != "" {
+			ref["OutputName"] = outputName
+		}
 	}
 	if outputName != "" {
 		fields["CustomOutputName"] = outputName
 	}
-	if c.actions[c.index]["WFWorkflowActionIdentifier"] != "is.workflow.actions."+identifier || !reflect.DeepEqual(params, fields) {
+	if c.actions[c.index]["WFWorkflowActionIdentifier"] != "is.workflow.actions."+identifier || !p15N03WireFieldsEqual(params, fields) {
 		c.err = fmt.Errorf("N03 action %d differs from independent %s/%s contract: got %#v, want %#v", c.index, identifier, outputName, params, fields)
 		return nil
 	}
@@ -128,12 +172,58 @@ func (c *p15N03Cursor) start(input map[string]any, code float64, rhsKey string, 
 	return group
 }
 
-func (c *p15N03Cursor) valueComparison(name string, left map[string]any, code float64, right any) map[string]any {
-	var group = c.start(left, code, "WFConditionalActionString", right)
+func p15N03AffixedTokenString(prefix string, ref map[string]any, suffix string) map[string]any {
+	return map[string]any{"WFSerializationType": "WFTextTokenString", "Value": map[string]any{
+		"string": prefix + "\uFFFC" + suffix,
+		"attachmentsByRange": map[string]any{
+			fmt.Sprintf("{%d, 1}", len(utf16.Encode([]rune(prefix)))): ref,
+		},
+	}}
+}
+
+// This complete sequence is independently specified from the authored operands.
+// It validates wire transport and Boolean polarity; it does not execute Apple.
+func (c *p15N03Cursor) exactValueComparison(name string, left map[string]any, code float64, right any) map[string]any {
+	var lhs = c.take("gettext", "_n03_exact_left", map[string]any{
+		"WFTextActionText": p15N03AffixedTokenString("~", left, ""),
+	}, true)
+	var rightPayload any
+	switch value := right.(type) {
+	case string:
+		rightPayload = "~" + value
+	case map[string]any:
+		rightPayload = p15N03AffixedTokenString("~", value, "")
+	default:
+		c.err = fmt.Errorf("independent exact-comparison fixture has an invalid right operand")
+		return nil
+	}
+	var rhs = c.take("gettext", "_n03_exact_right", map[string]any{"WFTextActionText": rightPayload}, true)
+	var quoted = c.take("text.replace", "_n03_exact_quote", map[string]any{
+		"WFReplaceTextFind": "\\E", "WFReplaceTextReplace": "\\E\\\\E\\Q",
+		"WFInput": p15N03TokenString(rhs), "WFReplaceTextCaseSensitive": true,
+		"WFReplaceTextRegularExpression": false,
+	}, true)
+	var matches = c.take("text.match", "_n03_exact_match", map[string]any{
+		"WFMatchTextPattern": p15N03AffixedTokenString("\\A\\Q", quoted, "\\E\\z"),
+		"text":               p15N03TokenString(lhs), "WFMatchTextCaseSensitive": true,
+	}, true)
+	var count = c.take("count", "_n03_exact_count", map[string]any{"Input": p15N03Attachment(matches)}, true)
+	var group = c.start(count, code, "WFNumberValue", float64(1))
 	c.take("number", "", map[string]any{"WFNumberActionNumber": float64(1)}, false)
 	c.take("conditional", "", map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": float64(1)}, false)
 	c.take("number", "", map[string]any{"WFNumberActionNumber": float64(0)}, false)
 	return c.take("conditional", name, map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": float64(2)}, true)
+}
+
+func (c *p15N03Cursor) exactFlag(name string, left map[string]any, code float64, right string) map[string]any {
+	var no = c.take("gettext", "Text", map[string]any{"WFTextActionText": "N"}, true)
+	c.take("setvariable", "", map[string]any{"WFVariableName": name, "WFInput": p15N03Attachment(no)}, false)
+	var result = c.exactValueComparison("", left, code, right)
+	var group = c.start(result, 4, "WFNumberValue", float64(1))
+	var yes = c.take("gettext", "Text", map[string]any{"WFTextActionText": "Y"}, true)
+	c.take("setvariable", "", map[string]any{"WFVariableName": name, "WFInput": p15N03Attachment(yes)}, false)
+	c.take("conditional", "", map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": float64(2)}, false)
+	return map[string]any{"Type": "Variable", "VariableName": name}
 }
 
 func (c *p15N03Cursor) flag(name string, input map[string]any, code float64, rhsKey string, rhs any) map[string]any {
@@ -196,7 +286,7 @@ func p15N03ValidateGraph(actions p15DiagnosticGraph) error {
 			}{{"Eq", 4}, {"Ne", 5}} {
 				var stem = "n03" + mode + pair.kind + op.name
 				if mode == "If" {
-					observations = append(observations, c.flag(stem+"Flag", refs["n03Left"], op.code, "WFConditionalActionString", pair.literal))
+					observations = append(observations, c.exactFlag(stem+"Flag", refs["n03Left"], op.code, pair.literal))
 					continue
 				}
 				var value map[string]any
@@ -207,7 +297,7 @@ func p15N03ValidateGraph(actions p15DiagnosticGraph) error {
 					}
 					value = c.take("number", stem+"Value", map[string]any{"WFNumberActionNumber": result}, true)
 				} else {
-					value = c.valueComparison(stem+"Value", refs["n03Left"], op.code, p15N03TokenString(refs[pair.rhs]))
+					value = c.exactValueComparison(stem+"Value", refs["n03Left"], op.code, refs[pair.rhs])
 				}
 				observations = append(observations, c.flag(stem+"Flag", value, 4, "WFNumberValue", float64(1)))
 			}
@@ -346,7 +436,7 @@ func TestP15N03TextEqualityDiagnosticRejectsGraphFaults(t *testing.T) {
 			case "folded_result":
 				named("n03FoldCaseEqValue")["WFNumberActionNumber"] = float64(1)
 			case "dynamic_rhs":
-				p15DiagnosticParams(actions, dynamic)["WFConditionalActionString"] = p15N03TokenString(originalSame)
+				p15DiagnosticParams(actions, dynamic-4)["WFTextActionText"] = p15N03AffixedTokenString("~", originalSame, "")
 			case "inequality_code":
 				p15DiagnosticParams(actions, p15N03NamedIndex(actions, "n03DynCaseNeValue")-4)["WFCondition"] = float64(4)
 			case "numeric_yields":

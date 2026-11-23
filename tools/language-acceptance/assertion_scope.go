@@ -21,7 +21,6 @@ var incompleteLocalAssertions = map[string]string{
 	"B01": "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
 	"T05": "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
 	"L01": "Nonempty lowering does not assert nested shape, cardinality, or order.",
-	"N03": "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F04": "A repeat-end UUID does not prove one semantic collected element per iteration.",
 
 	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",

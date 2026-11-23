@@ -202,7 +202,7 @@ func (r *scopedBlockRenamer) statement(statement syntax.Statement, names map[str
 				return nil, err
 			}
 		}
-		return &syntax.IfStmt{Span: s.Span, Modern: s.Modern, Condition: condition, ThenBlock: thenBody, ElseBlock: elseBody}, nil
+		return &syntax.IfStmt{Span: s.Span, Modern: s.Modern, Legacy: s.Legacy, Condition: condition, ThenBlock: thenBody, ElseBlock: elseBody}, nil
 	case *syntax.ForStmt:
 		iterable, err := r.expression(s.Iterable, names)
 		if err != nil {

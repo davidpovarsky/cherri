@@ -44,6 +44,16 @@ func (l *Lowerer) restoreNativeInputAfterLiteralCarriers(target *ir.NativeAction
 	if _, explicit := target.Parameters["WFInput"]; explicit {
 		return nil
 	}
+	// Text's established source is its explicit WFTextActionText payload, not
+	// Previous input. Do not resolve a deferred opaque Previous cursor solely
+	// because a new exact-comparison snapshot precedes this self-contained
+	// action. This finite exception does not infer input contracts for other
+	// identifiers, arbitrary custom parameters or omitted Text payloads.
+	if l.hasCurrentExactTextSnapshot() && target.AppleIdentifier == "is.workflow.actions.gettext" {
+		if _, explicit := target.Parameters["WFTextActionText"]; explicit {
+			return nil
+		}
+	}
 	if session, ok := l.session.(interface {
 		CurrentLiteralCarrierInput() (*backend.Reference, bool, error)
 	}); ok {

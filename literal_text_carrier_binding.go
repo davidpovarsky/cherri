@@ -8,8 +8,9 @@ import (
 )
 
 type literalCarrierInputBinding struct {
-	reference *backend.Reference
-	failure   error
+	reference         *backend.Reference
+	failure           error
+	exactTextSnapshot bool
 }
 
 // The canonical emitted sequence includes resolved actions and macro expansion;
@@ -25,6 +26,13 @@ func (s *CanonicalBackendSession) BindLiteralTextCarrierInput(carrierUUID, refer
 		carrier.WFWorkflowActionParameters["UUID"] != carrierUUID || !plain || !strings.ContainsRune(literal, '\uFFFC') {
 		return fmt.Errorf("S01_LITERAL_CARRIER_INTERNAL: emitted literal carrier identity differs")
 	}
+	return s.bindTextCarrierPreviousInput(carrierUUID, referenceUUID, defaultUUID, knownOutput)
+}
+
+// Both callers enroll an exact compiler-owned Text action before using this
+// canonical sequence/cursor implementation. Existing literal behavior is unchanged.
+func (s *CanonicalBackendSession) bindTextCarrierPreviousInput(carrierUUID, referenceUUID, defaultUUID string, knownOutput func(string) bool) error {
+	actions := s.shortcut.WFWorkflowActions
 	if s.literalCarrierInputs == nil {
 		s.literalCarrierInputs = make(map[string]literalCarrierInputBinding)
 	}

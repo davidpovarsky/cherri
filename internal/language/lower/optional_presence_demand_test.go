@@ -101,3 +101,37 @@ func TestImportedOptionalPresenceDemandRetainsRealConsumers(t *testing.T) {
 		})
 	}
 }
+
+func TestLoopResultItemsCountPresenceDemand(t *testing.T) {
+	cases := []struct {
+		name, text string
+		needed     bool
+	}{
+		{"unused_inline_repeat", "var candidate:Text?=none;var unused:Text?=none;count(repeat 2 {yield candidate})", true},
+		{"unused_inline_for", "var candidate:Text?=none;var unused:Text?=none;count(for _ in [1,2] {yield candidate})", true},
+		{"named_mode_keeps_boundary", "var candidate:Text?=none;var unused:Text?=none;count(repeat 2 {yield candidate},type:\"Characters\")", false},
+		{"aliased_collection_keeps_boundary", "var candidate:Text?=none;var unused:Text?=none;let values=repeat 2 {yield candidate};count(values)", false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			parser := syntax.NewParser(source.NewFile("loop-cell-demand.cherri", "loop-cell-demand.cherri", 1, tc.text))
+			program := parser.ParseProgram()
+			if len(parser.Errors()) != 0 {
+				t.Fatal(parser.Errors())
+			}
+			before := syntax.Format(program)
+			lowerer := NewLowerer(nil)
+			lowerer.prepareOptionalPresenceDemand(program)
+			seen := map[string]bool{}
+			for binding, needed := range lowerer.optionalPresenceDemand {
+				seen[binding.Name] = needed
+			}
+			if seen["candidate"] != tc.needed || seen["unused"] {
+				t.Fatalf("closed consumer presence demand: %v, candidate want %v", seen, tc.needed)
+			}
+			if syntax.Format(program) != before {
+				t.Fatal("presence collection changed authored syntax")
+			}
+		})
+	}
+}

@@ -87,6 +87,7 @@ type Analyzer struct {
 	diagnostics            []Diagnostic
 	currentFn              *syntax.FunctionDecl
 	inValueBlk             bool
+	loopResultCountBody    *syntax.BlockStmt
 	topLevelVars           map[string]source.Span
 	yieldedTypes           []types.Type
 	importStack            []string
@@ -926,7 +927,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if !a.inValueBlk {
 			a.error(CodeYieldContext, s.Span, "'yield' statement is only permitted inside value-producing if/menu/for/repeat blocks")
 		}
-		yt := a.analyzeExpression(s.Value, scope)
+		yt := a.analyzeLoopResultYield(s, scope)
 		if isVoidValue(yt) {
 			a.error(CodeYieldContext, s.Span, "yield requires a value; a Void action has no result")
 		}
@@ -1728,7 +1729,10 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
 				}
 			}
+			previousLoopResultBody := a.loopResultCountBody
+			a.loopResultCountBody = schema.LoopResultItemsCountBody(call, actionSchema)
 			argType := unwrapDynamicOptional(a.analyzeSetupArgument(actionSchema, primParam, call.PrimaryArg, scope, callName))
+			a.loopResultCountBody = previousLoopResultBody
 			if isVoidValue(argType) {
 				a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "Void cannot be passed as an argument value")
 			} else if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {

@@ -96,6 +96,8 @@ type Lowerer struct {
 	typeAnnotations                map[syntax.TypeAnnotation]types.Type
 	enumValues                     map[syntax.Expression]string
 	inExprStmt                     bool
+	nativeTextComparisons          map[syntax.Expression]bool
+	exactTextSnapshots             map[*ir.NativeActionNode]bool
 	hasImportProvenance            bool
 	provenanceUUIDs                map[string]string
 	provenanceSymbols              map[string]bool
@@ -108,6 +110,8 @@ type Lowerer struct {
 	importedOptionalPresenceDemand map[string]bool
 	optionalJoinDemand             map[syntax.Expression]bool
 	optionalJoinYields             map[*syntax.YieldStmt]bool
+	loopResultFrames               map[syntax.Expression]*loopResultFrame
+	loopResultYields               map[*syntax.YieldStmt]*loopResultFrame
 	knownDictionaryIndexes         map[syntax.Expression]bool
 	literalTextCarriers            map[*ir.NativeActionNode]bool
 	nativeResultReferences         map[*ir.NativeActionNode]*ir.AttachmentToken
@@ -1550,6 +1554,9 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	case *syntax.MenuStmt:
 		return l.lowerMenu(s)
 	case *syntax.YieldStmt:
+		if frame := l.loopResultYields[s]; frame != nil {
+			return l.lowerLoopResultYield(s, frame)
+		}
 		if l.optionalJoinYields[s] {
 			return l.lowerOptionalJoinYield(s)
 		}
@@ -3020,6 +3027,9 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.AttachmentToken, error) {
 	bindingName := l.detachBindingName()
 	groupUUID := l.GenerateUUID()
+	if stmt.Modern || stmt.Legacy {
+		l.markNativeTextComparisonScope(stmt.Condition)
+	}
 
 	// Check if Condition is a compound BinaryExpr (&& or ||)
 	if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok && (binExpr.Op == syntax.TokenAnd || binExpr.Op == syntax.TokenOr) {
@@ -3102,6 +3112,12 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 	}
 	if presenceCondition {
 		input, condCode, compareVal, opType = presenceInput, presenceCode, "0", backend.OperandString
+	} else if l.exactTextPredicate(stmt.Condition) {
+		value, err := l.lowerCallValue(stmt.Condition)
+		if err != nil {
+			return nil, err
+		}
+		input, condCode, compareVal, opType = l.materializeToAttachment(value), 4, 1.0, backend.OperandNumber
 	} else if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
 		var code int
 		isComp := true
@@ -3393,6 +3409,8 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 		}
 	}
 
+	l.initializeLoopResultCells(stmt)
+
 	l.repeatDepth++
 	defer func() { l.repeatDepth-- }()
 	l.emitRepeatCountStart(groupUUID, countVal)
@@ -3440,8 +3458,12 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 		}
 	}
 
-	endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+	frame := l.loopResultFrames[stmt]
+	endUUID := l.generateControlEndOutputUUID(withOutput && frame == nil, bindingName)
 	l.emitLoopEnd(groupUUID, endUUID, false)
+	if frame != nil {
+		return l.readLoopResultCells(frame), nil
+	}
 	if withOutput {
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
 	}
@@ -3463,6 +3485,8 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 	}
 
 	iterToken := l.materializeToAttachment(iterVal)
+
+	l.initializeLoopResultCells(stmt)
 
 	l.repeatDepth++
 	defer func() { l.repeatDepth-- }()
@@ -3540,8 +3564,12 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 		}
 	}
 
-	endUUID := l.generateControlEndOutputUUID(withOutput, bindingName)
+	frame := l.loopResultFrames[stmt]
+	endUUID := l.generateControlEndOutputUUID(withOutput && frame == nil, bindingName)
 	l.emitLoopEnd(groupUUID, endUUID, true)
+	if frame != nil {
+		return l.readLoopResultCells(frame), nil
+	}
 	if withOutput {
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
 	}
@@ -3719,8 +3747,14 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 		return l.lowerIfWithOutput(e, true)
 	case *syntax.RepeatStmt:
+		if l.loopResultNeedsCells(e) && l.loopResultFrames[e] == nil {
+			return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: List/Optional loop result requires its closed Items Count consumer at %s", e.NodeSpan())
+		}
 		return l.lowerRepeatWithOutput(e, true)
 	case *syntax.ForStmt:
+		if l.loopResultNeedsCells(e) && l.loopResultFrames[e] == nil {
+			return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: List/Optional loop result requires its closed Items Count consumer at %s", e.NodeSpan())
+		}
 		return l.lowerForWithOutput(e, true)
 	case *syntax.MenuStmt:
 		if l.optionalJoinNeeded(e) {
@@ -4337,6 +4371,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 
 	case *syntax.BinaryExpr:
+		if l.exactTextComparison(e) {
+			return l.lowerExactTextComparison(e)
+		}
 		left, err := l.lowerExpression(e.Left)
 		if err != nil {
 			return nil, err
@@ -5535,6 +5572,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			OutputName:      l.currentBindingName,
 			Parameters:      params,
 		}
+		if err := l.restoreExactTextSnapshotForDeclaredAction(node); err != nil {
+			return nil, err
+		}
 		l.emitAction(node)
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 	}
@@ -5683,6 +5723,12 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			return nil, fmt.Errorf("action %q is not available on macOS", actionName)
 		}
 	}
+
+	restoreLoopResultCount, loopResultError := l.beginLoopResultItemsCount(call, actionSchema)
+	if loopResultError != nil {
+		return nil, loopResultError
+	}
+	defer restoreLoopResultCount()
 
 	var visualOrigin *backend.VisualSourceOrigin
 	if l.visualSourceCalls != nil {

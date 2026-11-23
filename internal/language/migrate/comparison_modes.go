@@ -42,30 +42,30 @@ func migrationComparisonCanonicalSource(text string) bool {
 // ignores protected comments/literals and recognizes inline/nested Ifs too.
 // Removing only the actual legacy keyword keeps the existing !contains,
 // between and date rewrites independent of the later V2 mode prefix.
-func prepareMigrationComparisonModes(text string, canonical bool) (string, []bool) {
+func prepareMigrationComparisonModes(text string, canonical bool) (string, []string) {
 	if canonical {
 		return text, nil
 	}
 	var tokens = migrationComparisonTokens(text)
 	var body strings.Builder
-	var modes []bool
+	var modes []string
 	var last int
 	for index, token := range tokens {
 		if token.Type != syntax.TokenIf {
 			continue
 		}
-		var modern = true
+		mode := "modern"
 		if index+1 < len(tokens) && tokens[index+1].Type == syntax.TokenIdent {
 			var next = tokens[index+1]
-			if next.Text == "legacy" {
-				modern = false
+			if (next.Text == "modern" || next.Text == "legacy") && index+2 < len(tokens) && tokens[index+2].Type == syntax.TokenColon {
+				mode = "" // an explicit V2 mode is already present
+			} else if next.Text == "legacy" {
+				mode = "legacy"
 				body.WriteString(text[last:next.Span.Start.ByteOffset])
 				last = next.Span.End.ByteOffset
-			} else if next.Text == "modern" && index+2 < len(tokens) && tokens[index+2].Type == syntax.TokenColon {
-				modern = false // the explicit V2 prefix is already in the text
 			}
 		}
-		modes = append(modes, modern)
+		modes = append(modes, mode)
 	}
 	body.WriteString(text[last:])
 	return body.String(), modes
@@ -74,7 +74,7 @@ func prepareMigrationComparisonModes(text string, canonical bool) (string, []boo
 // Compatibility rewrites retain the ordered If inventory. Fail closed if a
 // future rewrite changes it, rather than attaching a captured mode to another
 // condition. Literal/comment restoration happens only after this pass.
-func restoreMigrationComparisonModes(text string, modes []bool) (string, error) {
+func restoreMigrationComparisonModes(text string, modes []string) (string, error) {
 	if modes == nil {
 		return text, nil
 	}
@@ -87,10 +87,10 @@ func restoreMigrationComparisonModes(text string, modes []bool) (string, error) 
 		if count >= len(modes) {
 			return "", fmt.Errorf("conditional-mode identity gained an If")
 		}
-		if modes[count] {
+		if modes[count] != "" {
 			var end = token.Span.End.ByteOffset
 			body.WriteString(text[last:end])
-			body.WriteString(" modern:")
+			body.WriteString(" " + modes[count] + ":")
 			last = end
 		}
 		count++

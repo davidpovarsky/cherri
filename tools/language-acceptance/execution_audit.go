@@ -413,6 +413,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
 			row.Scope = scenario.Scope
 		}
+		if row.ID == textComparisonRequirement {
+			row.TestNames = append([]string{}, textComparisonEvidence.Tests...)
+			row.ProductionPath = append([]string{}, textComparisonEvidence.SourcePaths...)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = textComparisonScope
+		}
 		if scenario, found := combinedArithmeticScenarios[row.ID]; found {
 			row.TestNames = scenario.tests()
 			row.ProductionPath = append([]string{}, combinedArithmeticEvidence.SourcePaths...)

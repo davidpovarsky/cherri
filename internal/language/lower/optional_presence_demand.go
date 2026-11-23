@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
@@ -95,6 +96,11 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 				name = callee.Property
 			case *syntax.EnumMemberExpr:
 				name = callee.Member
+			}
+			if action, found := l.registry.LookupAction(name); found && schema.LoopResultItemsCountBody(value, action) != nil {
+				// Private loop cells consume presence even if Count's Number
+				// result is not subsequently returned or compared with None.
+				seed(value.PrimaryArg)
 			}
 			if functions[name] {
 				// Include every written argument of a user-function call.

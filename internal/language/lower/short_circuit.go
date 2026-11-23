@@ -92,6 +92,9 @@ func (l *Lowerer) nativePredicateClauses(clauses []syntax.Expression, allowPrese
 		}
 		switch e := expr.(type) {
 		case *syntax.BinaryExpr:
+			if l.exactTextComparison(e) {
+				return false
+			}
 			// These operators have no native inverse in lowerConditionClause.
 			// Compute and negate their Boolean result in the lazy branch instead.
 			if negated && (e.Op == syntax.TokenBeginsWith || e.Op == syntax.TokenEndsWith) {

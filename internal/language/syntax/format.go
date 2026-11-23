@@ -396,6 +396,8 @@ func (f *Formatter) formatIfStmt(s *IfStmt, withIndent bool) {
 	f.buf.WriteString("if ")
 	if s.Modern {
 		f.buf.WriteString("modern: ")
+	} else if s.Legacy {
+		f.buf.WriteString("legacy: ")
 	}
 	f.formatControlExpression(s.Condition)
 	f.buf.WriteString(" ")

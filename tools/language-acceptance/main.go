@@ -955,6 +955,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateCombinedArithmeticRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateTextComparisonRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateCaptureOrderRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1766,11 +1769,8 @@ func (r *Runner) runNumbers() {
 	n02Passed := hasDivZero && hasModZero && hasTextAdd
 	r.Record("N02", "numbers", "Known zero divisor and text-plus-number are rejected", "unit", []string{"unit"}, n02Passed, "PASSED", "Analyzer rejects literal /0 and %0 with E_ARGUMENT_TYPE and Text+Number with E_ARGUMENT_TYPE")
 
-	// N03: Exact case-sensitive text equality
-	srcN03 := "let same = \"abc\" == \"abc\"\nlet diff = \"abc\" == \"ABC\""
-	wfN03, errN03 := lowerSrc(r.reg, srcN03)
-	n03Passed := errN03 == nil && len(wfN03.Actions) > 0
-	r.Record("N03", "numbers", "Exact case-sensitive text equality and legacy comparison migration", "unit+native", []string{"unit", "native"}, n03Passed, "PASSED", "Equality operators lowered to case-sensitive comparison logic")
+	// N03 owns one complete source-bound unit/native-structure scenario.
+	r.runTextComparisonRequirement("N03", "numbers", "Exact case-sensitive text equality and legacy comparison migration", "unit+native")
 }
 
 // Group 10: Control Flow
