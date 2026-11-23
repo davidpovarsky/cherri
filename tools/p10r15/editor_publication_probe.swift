@@ -2,6 +2,11 @@ import Foundation
 
 // Controlled backend payloads for exercising the exact extracted production
 // publication methods. These are not compiler, SwiftUI or Apple runtime results.
+enum CherriBuildProfile: String, Sendable {
+    case debug
+    case release
+}
+
 struct CompilationDiagnostic: Error, Sendable {
     let message: String
     let line: Int
@@ -105,6 +110,7 @@ struct ProbeCompletionPlan: Sendable {
     var languageMode = Mode.v2
     var isSigning = false
     var isCompiling = false
+    var isApplyingPreviewEdit = false
     var compiled: CompiledShortcut?
     var diagnostic: CompilationDiagnostic?
     var diagnostics: [CompilationDiagnostic] = []

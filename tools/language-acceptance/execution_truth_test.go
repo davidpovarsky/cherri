@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -185,6 +186,124 @@ func TestExecutionAuditOnlyReferencesRecordedSmoke(t *testing.T) {
 			after := runner.results["CI01"]
 			if after.Status != "NOT_RUN" || after.Passed || len(after.ExecutedLevels) != 0 {
 				t.Fatalf("metadata audit changed original CI01 result: %+v", after)
+			}
+		})
+	}
+}
+
+// These synthetic metadata fixtures exercise the real report/audit writers;
+// their declared local tiers are not evidence of native or runtime execution.
+func TestPendingExternalDetailReportAuditConsistency(t *testing.T) {
+	const id = "SYNTHETIC_PENDING_DETAIL"
+	const diagnostic = "Executed production tests: fixture-only branch and callback; values=\"quoted\", [bracketed]\nUnicode: שלום; actual runtime remains required."
+	for _, tc := range []struct {
+		name     string
+		recorded bool
+		detail   string
+	}{
+		{"recorded_production_detail", true, diagnostic},
+		{"direct_production_detail", false, diagnostic},
+		{"empty_original_detail", false, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var spec = CaseSpec{ID: id, Group: "synthetic", Requirement: "Synthetic pending detail preservation", MinimumTestLevel: "unit+native+iOS"}
+			var contract = &ContractFile{CaseCount: 1, Cases: []CaseSpec{spec}}
+			var contracts = &ContractsSet{Acceptance: contract, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
+			var runner = NewRunner()
+			var levels = []string{"unit", "native"}
+			if tc.recorded {
+				runner.Record(spec.ID, spec.Group, spec.Requirement, spec.MinimumTestLevel, levels, true, "PASSED", tc.detail)
+			} else {
+				runner.results[id] = CaseResult{ID: id, Group: spec.Group, Requirement: spec.Requirement, TestLevel: spec.MinimumTestLevel, ExecutedLevels: levels, Passed: false, Status: "PENDING_EXTERNAL", Detail: tc.detail}
+			}
+			var original = runner.results[id]
+			if original.Passed || original.Status != "PENDING_EXTERNAL" || !reflect.DeepEqual(original.ExecutedLevels, levels) {
+				t.Fatalf("fixture did not preserve the missing runtime: %+v", original)
+			}
+			var before, err = json.Marshal([]any{runner.results, runner.records})
+			if err != nil {
+				t.Fatal(err)
+			}
+			var report, aggregateErr = ValidateAndAggregateWithPhase(contract, runner.results, "synthetic", "local")
+			if aggregateErr != nil {
+				t.Fatal(aggregateErr)
+			}
+			if report.TotalCases != 1 || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != 1 || report.ClosureComplete {
+				t.Fatalf("pending aggregation changed the counters or closure: %+v", report)
+			}
+			var dir = t.TempDir()
+			var reportPath = filepath.Join(dir, "acceptance-report.json")
+			var auditPath = filepath.Join(dir, "acceptance-execution-audit.json")
+			var reportBytes, marshalErr = json.MarshalIndent(report, "", "  ")
+			if marshalErr != nil {
+				t.Fatal(marshalErr)
+			}
+			if err := os.WriteFile(reportPath, append(reportBytes, '\n'), 0600); err != nil {
+				t.Fatal(err)
+			}
+			if err := writeExecutionAudit(runner, contracts, auditPath); err != nil {
+				t.Fatal(err)
+			}
+			var actualReport AcceptanceReport
+			var actualAudit struct {
+				SourceSHA       string              `json:"source_sha"`
+				ClosureComplete bool                `json:"closure_complete"`
+				Rows            []ExecutionAuditRow `json:"rows"`
+			}
+			var readReport, readErr = os.ReadFile(reportPath)
+			if readErr != nil {
+				t.Fatal(readErr)
+			}
+			if err := json.Unmarshal(readReport, &actualReport); err != nil {
+				t.Fatal(err)
+			}
+			var readAudit, auditErr = os.ReadFile(auditPath)
+			if auditErr != nil {
+				t.Fatal(auditErr)
+			}
+			if err := json.Unmarshal(readAudit, &actualAudit); err != nil {
+				t.Fatal(err)
+			}
+			if len(actualReport.Results) != 1 || len(actualAudit.Rows) != 1 {
+				t.Fatalf("serialized writers changed the obligation inventory: report=%d audit=%d", len(actualReport.Results), len(actualAudit.Rows))
+			}
+			var result = actualReport.Results[0]
+			var row = actualAudit.Rows[0]
+			if result.Detail != original.Detail || row.Detail != original.Detail {
+				t.Fatalf("pending report/audit discarded producer detail: report=%q audit=%q original=%q", result.Detail, row.Detail, original.Detail)
+			}
+			if !reflect.DeepEqual(result, original) {
+				t.Fatalf("pending report changed another producer field: got=%+v original=%+v", result, original)
+			}
+			if row.ID != id || row.Requirement != spec.Requirement || row.Status != "BLOCKED_EXTERNAL" || !reflect.DeepEqual(row.Tier, levels) || !reflect.DeepEqual(row.RequiredTiers, parseRequiredTiers(spec.MinimumTestLevel)) || row.SourceSHA != runner.implSHA || actualAudit.SourceSHA != runner.implSHA || actualAudit.ClosureComplete {
+				t.Fatalf("audit changed identity, pending status, tiers, or closure: %+v", actualAudit)
+			}
+			var evidenceBytes, evidenceErr = os.ReadFile(filepath.Join(dir, "acceptance-local-evidence.json"))
+			if evidenceErr != nil {
+				t.Fatal(evidenceErr)
+			}
+			var evidence []EvidenceRecord
+			if err := json.Unmarshal(evidenceBytes, &evidence); err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(evidence, runner.records) || len(row.Evidence) != len(evidence) {
+				t.Fatal("audit changed the original evidence records or reference count")
+			}
+			for i, record := range evidence {
+				if record.Detail != original.Detail || record.Assertions["assertion"] != original.Detail || record.Tier == "ios-runtime" || row.Evidence[i] != "acceptance-local-evidence.json#"+record.EvidenceID {
+					t.Fatalf("audit lost diagnostics or invented runtime evidence: %+v", record)
+				}
+			}
+			var final, finalErr = ValidateAndAggregateWithPhase(contract, runner.results, "synthetic", "final")
+			if finalErr == nil || final.ClosureComplete || final.PassedCases != 0 || final.FailedCases != 1 || len(final.Results) != 1 || final.Results[0].Status != "FAILED" {
+				t.Fatalf("missing runtime unexpectedly satisfied final closure: report=%+v err=%v", final, finalErr)
+			}
+			var after, afterErr = json.Marshal([]any{runner.results, runner.records})
+			if afterErr != nil {
+				t.Fatal(afterErr)
+			}
+			if string(before) != string(after) {
+				t.Fatal("report or audit writer mutated the authoritative producer result or evidence")
 			}
 		})
 	}

@@ -672,7 +672,6 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 				skipped++
 				res.Passed = false
 				res.Status = "PENDING_EXTERNAL"
-				res.Detail = fmt.Sprintf("Local assertions verified; pending external tier: %v", missingTiers)
 			} else {
 				// Missing tier in final phase or missing required local tier -> FAILS
 				failed++

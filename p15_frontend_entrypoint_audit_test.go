@@ -268,13 +268,26 @@ const p15RP52ApprovedSwiftBridge = `private static func callCompileBridge(source
             }
         }
     }
+
     let response = try decodeBridgeResponse(resultPointer)
+
     guard let plistBase64 = response.plistBase64,
           let plist = Data(base64Encoded: plistBase64) else {
         throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
     }
+
+    guard let actualMode = response.mode, actualMode == "v2" || actualMode == "legacy" else {
+        throw CompilationDiagnostic(message: "Compiler response did not identify its selected language mode.", line: 1, column: 1)
+    }
     let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
-    return CompiledShortcut(name: response.name ?? name, plist: plist, signedShortcut: signedData)
+    return CompiledShortcut(
+        name: response.name ?? name,
+        actualMode: actualMode,
+        plist: plist,
+        signedShortcut: signedData,
+        sourceRequest: CherriEditorBuildRequest(source: source, mode: mode, name: name, buildProfile: buildProfile),
+        previewSourceMap: response.previewSourceMap
+    )
 }`
 
 func p15RP52SwiftEntryError(raw []byte) error {

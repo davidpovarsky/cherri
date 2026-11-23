@@ -812,3 +812,24 @@ func TestFinalProvenanceWindowsReceiptPrimaryState(t *testing.T) {
 		})
 	}
 }
+
+func TestFinalProvenanceRejectsAuditDetailDrift(t *testing.T) {
+	var fixture = finalProvenanceFixtureNew(t)
+	var baseline = fixture.evaluate()
+	if baseline.Status != "PASSED" {
+		t.Fatalf("unchanged synthetic delivery fixture was rejected: %s: %s", baseline.Status, baseline.Detail)
+	}
+	var audit = fixture.object(t, "audit")
+	var first = audit["rows"].([]any)[0].(map[string]any)
+	var id = first["id"].(string)
+	first["detail"] = first["detail"].(string) + "; coherently pinned audit-only diagnostic"
+	fixture.put(t, "audit", audit)
+	// Rebind the original and both outer contexts so a stale digest cannot
+	// mask removal of the canonical report/audit detail comparison.
+	fixture.pin(t)
+	var result = fixture.evaluate()
+	var want = "original report/audit/contract disagreement at requirement " + id
+	if result.Status != "FAILED" || result.Detail != want {
+		t.Fatalf("audit-only detail drift was not rejected at its exact predicate: status=%s detail=%q want=%q", result.Status, result.Detail, want)
+	}
+}
