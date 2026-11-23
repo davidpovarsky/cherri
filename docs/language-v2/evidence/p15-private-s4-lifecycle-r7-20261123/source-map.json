@@ -1,0 +1,149 @@
+{
+  "schema": "cherri-private-corpus-source-dependency-map/v1",
+  "source": "ca316a3dee252456c4bec751594cf249c709b331",
+  "historicalAcceptedSource": "9c8daf721aa241127df8d1e3f91bbadf90110e73",
+  "historicalFailedSource": "b791ce0616d1821cebfc57909a6bc50a195ca68c",
+  "historicalAcceptedProofCommit": "a892b0e6c1b71c0da039aca608c549e3bad3a7b9",
+  "historicalAcceptedArchiveSHA256": "6d0cdaab9a22d1afc7c9545588d52b7be11642de700515f886eaecf0d6fd17d0",
+  "historicalAcceptedAggregateSHA256": "cf9df9e48ced135325549e6187006a686d145ce22a6e4ff28a6b93d4507106f6",
+  "privateInputManifestSHA256": "766ac82ef7d92f50a894e50bc84d3fed9cc2d375f81ffe2771dbe8a5a6de5f39",
+  "allFiveAcceptedAtR7": false,
+  "passedParentsAtR7": 1,
+  "remainingDistinctParentsAtR7": 4,
+  "testBindings": [
+    {
+      "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+      "file": "p12_complex_params_test.go",
+      "line": 856,
+      "r7FileSHA256": "86172facc402af313872a2412e6dcd2d1dbd50f9f125d88a102acf21088db1ed",
+      "sameFileAsS3": true,
+      "sameFileAsS4": true
+    },
+    {
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "file": "p13_fidelity_promotion_test.go",
+      "line": 382,
+      "r7FileSHA256": "8163a5d80ef4ee23423fff2eef54599b5289c73e44337b02e006b2e47b9d6279",
+      "sameFileAsS3": true,
+      "sameFileAsS4": true
+    },
+    {
+      "test": "TestP10R10CorpusMeasure",
+      "file": "p10r10_corpus_test.go",
+      "line": 22,
+      "r7FileSHA256": "a6188a41ff23fd43f25308b8547391d9186d3c1b6ad92dbaea9ae514d865a761",
+      "sameFileAsS3": true,
+      "sameFileAsS4": true
+    },
+    {
+      "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+      "file": "p12_baseline_truth_test.go",
+      "line": 338,
+      "r7FileSHA256": "eb8b70716337cba945409df4d60edb23063c2998330bc15da8c1ec8e08c87658",
+      "sameFileAsS3": true,
+      "sameFileAsS4": true
+    },
+    {
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "file": "p11_wire_fidelity_test.go",
+      "line": 23,
+      "r7FileSHA256": "c4ab56f1ee4f1eea58e4075da0965f525f85e8f1efc30452d2dc3703b34b8f67",
+      "sameFileAsS3": true,
+      "sameFileAsS4": true
+    }
+  ],
+  "changedProductionDependencies": [
+    {
+      "file": "shortcutgen.go",
+      "s3SHA256": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e",
+      "s4SHA256": "152989dad903a76fb378b1ecc0089d83c5e23f595ae6e1fa16f87b66c48f78d4",
+      "r7SHA256": "152989dad903a76fb378b1ecc0089d83c5e23f595ae6e1fa16f87b66c48f78d4"
+    },
+    {
+      "file": "functions.go",
+      "s3SHA256": "2edc499d643130123331e3baa0b6662cae7124d7443ebde526bd5f7e0dd9ca63",
+      "s4SHA256": "2edc499d643130123331e3baa0b6662cae7124d7443ebde526bd5f7e0dd9ca63",
+      "r7SHA256": "e8473d0fac595f107563c5d2f524630f1d407791aea0f24f986ab73635760d28"
+    },
+    {
+      "file": "internal/language/lower/lower.go",
+      "s3SHA256": "6dc79f139f44199051d1bd5e18d284cd6b663305711ec28190bfeb35c0ba88e7",
+      "s4SHA256": "6dc79f139f44199051d1bd5e18d284cd6b663305711ec28190bfeb35c0ba88e7",
+      "r7SHA256": "74f561735682cf12fe171c3550b2f4681b09f4b0969b27392bc582d13b778125"
+    }
+  ],
+  "gates": [
+    {
+      "mode": "00-p12-par",
+      "name": "Complex parameters and zero-demotion aggregate",
+      "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+      "s3Status": "ACCEPTED_AT_S3",
+      "s3ReceiptSHA256": "ff3b82d0159d5f9d45b22267938ea49193eae53112f331b52bc41b9bd3c8878f",
+      "s4Status": "SUPERVISOR_TIMEOUT",
+      "s4OriginalReceiptAvailable": true,
+      "s4OriginalReceiptSHA256": "d96c6aab9829878939265b89999bc5e8afe9cd6ae39f321cdf0f5fa530e8b826",
+      "s4StdoutSHA256": "68aef6c7aff29c7e3c1dbc106fd7fd49cb3c5b1cd25ae3810d468673194c6c2b",
+      "r7Status": "VERIFY_REGRESSION",
+      "r7ActualParentExecuted": false,
+      "distinctContract": "Shared fresh dual-compile verification plus explicit aggregate classification, natural minimum, nonzero unsupported-third-party preservation and zero Stage-3 demotions."
+    },
+    {
+      "mode": "01-p13",
+      "name": "Fidelity and source-size audit",
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "s3Status": "ACCEPTED_AT_S3",
+      "s3ReceiptSHA256": "597d3f5f94832ebc5d69d9ee44dc11bba6a29e03b8b0deead389887e3213211c",
+      "s4Status": "SUPERVISOR_TIMEOUT",
+      "s4OriginalReceiptAvailable": true,
+      "s4OriginalReceiptSHA256": "1ab67c6fe60d0a01062b627a4f6e301b9a6af15576718fe067e220de855faf19",
+      "s4StdoutSHA256": "3b69012cbd190f4b14537aeb4e0bd3f69f5aaa994af029bbbb682a9dd06ca642",
+      "r7Status": "VERIFY_REGRESSION",
+      "r7ActualParentExecuted": false,
+      "distinctContract": "Sequential formatter/compile audit with current schema fingerprint, source-component accounting, allocation/timing observations and natural minimum."
+    },
+    {
+      "mode": "02-p10-measure",
+      "name": "Sequential plan/render measurement",
+      "test": "TestP10R10CorpusMeasure",
+      "s3Status": "ACCEPTED_AT_S3",
+      "s3ReceiptSHA256": "54a56b3692ca731bd14f0f693e473a4725ef5666ef3a1695e33590822e485b0a",
+      "s4Status": "SUPERVISOR_TIMEOUT",
+      "s4OriginalReceiptAvailable": true,
+      "s4OriginalReceiptSHA256": "2e5b9606f72154e28793afaf1e27bb49820134988b835b4fcec572c8095dabd4",
+      "s4StdoutSHA256": "c6ae839e6f6172ed2fd85022e2856f7ebf95b44cc5afbf68944d430e26db0f60",
+      "r7Status": "VERIFY_REGRESSION",
+      "r7ActualParentExecuted": false,
+      "distinctContract": "Sequential planner and both renderers with explicit reason and fallback inventory; lifecycle pass B plans without these render calls."
+    },
+    {
+      "mode": "03-p11-fresh38x2",
+      "name": "Explicit 38x2 native action wire",
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "s3Status": "ACCEPTED_AT_S3",
+      "s3ReceiptSHA256": "efdae4298e89126f1a3136b7cd542c3430aec989cb06910dd75370614716640f",
+      "s4Status": "TIMEOUT_EXTERNAL_NO_TERMINAL_RECEIPT",
+      "s4OriginalReceiptAvailable": false,
+      "s4OriginalReceiptSHA256": null,
+      "s4StdoutSHA256": "401f508478df97a929d6384c449848d04210a720a5d40b755375025e77aae248",
+      "r7Status": "VERIFY_REGRESSION",
+      "r7ActualParentExecuted": false,
+      "distinctContract": "Explicit pre/post-overlay action counts, identifiers, parameter parity and corpus wire totals; overlapping helper checks do not create this parent's receipt."
+    },
+    {
+      "mode": "04-p12-lifecycle",
+      "name": "Lifecycle and fresh/sequential reconciliation",
+      "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+      "s3Status": "ACCEPTED_AT_S3",
+      "s3ReceiptSHA256": "089df53d00a1bdc02d3709ffd3354b4600e58c63c6b7872aad75a5e1cb53ec9a",
+      "s4Status": "GO_TIMEOUT",
+      "s4OriginalReceiptAvailable": true,
+      "s4OriginalReceiptSHA256": "973e7c03012b9fa257ea42c71dfaf9a720df925667d8f88e8acbef4f154df3a4",
+      "s4StdoutSHA256": "31b7309adf3b5c0dec446502570ad3c1010e4e0cc9b7f2b915427adf19ab05a0",
+      "r7Status": "PASSED",
+      "r7ActualParentExecuted": true,
+      "distinctContract": "Fresh dual-compile and natural pre-overlay verification, lifecycle transition accounting and sequential per-file reconciliation."
+    }
+  ],
+  "reuseDecision": "The test files and private inputs are unchanged, but three shared production dependencies changed since accepted S3. Historical receipts remain accepted only at S3; no exact-dependency transfer or accepted parent substitution proves the four remaining R7 parents.",
+  "rawPrivateFilesIncluded": false
+}
