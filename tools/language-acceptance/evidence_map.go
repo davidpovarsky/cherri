@@ -217,6 +217,16 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			}
 			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-final-provenance-END01"}
 		}
+		if c.ID == "CI03" {
+			mapping.TestIDs = []string{ciIdentityTestID}
+			mapping.RequiredAssertions = map[string]string{"scope": ciIdentityScope, "closure_complete": "false"}
+			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-ci03-identity-repository", "acceptance-local-evidence.json#ev-ci03-identity-ci"}
+		}
+		if c.ID == "CI04" {
+			mapping.TestIDs = []string{publicationSecurityTestID}
+			mapping.RequiredAssertions = map[string]string{"scope": publicationSecurityScope, "closure_complete": "false"}
+			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-ci04-publication-security", "acceptance-local-evidence.json#ev-ci04-publication-repository"}
+		}
 		doc.Mappings[c.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
 	}
@@ -297,6 +307,12 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "CI03" {
+		return []string{ciIdentityTestID}
+	}
+	if id == "CI04" {
+		return []string{publicationSecurityTestID}
+	}
 	if id == "END01" {
 		return []string{finalProvenanceTestID}
 	}
@@ -511,6 +527,12 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == "CI03" {
+		return append([]string{}, ciIdentitySources...)
+	}
+	if id == "CI04" {
+		return append([]string{}, publicationSecuritySources...)
+	}
 	if id == "END01" {
 		return append([]string{}, finalProvenanceSources...)
 	}

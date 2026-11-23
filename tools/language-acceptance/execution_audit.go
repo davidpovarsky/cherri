@@ -544,6 +544,8 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL" || res.Passed
 		}
 		applyFinalProvenanceAudit(&row, runner)
+		applyCIIdentityAudit(&row, runner)
+		applyPublicationSecurityAudit(&row, runner)
 		rows = append(rows, row)
 	}
 	var doc = map[string]any{

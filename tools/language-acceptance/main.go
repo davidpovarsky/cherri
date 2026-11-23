@@ -168,15 +168,17 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
-	artifactDir         string
-	reg                 *schema.Registry
-	implSHA             string
-	results             map[string]CaseResult
-	records             []EvidenceRecord
-	observations        []LocalSmokeObservation
-	stateRace           *stateRaceExecution
-	aiMeasurementResult *aiMeasurementExecution
-	finalDelivery       *finalProvenanceResult
+	artifactDir                  string
+	reg                          *schema.Registry
+	implSHA                      string
+	results                      map[string]CaseResult
+	records                      []EvidenceRecord
+	observations                 []LocalSmokeObservation
+	stateRace                    *stateRaceExecution
+	aiMeasurementResult          *aiMeasurementExecution
+	finalDelivery                *finalProvenanceResult
+	ciIdentityEvaluated          bool
+	publicationSecurityEvaluated bool
 }
 
 func resolveRepoRoot() string {
@@ -1062,6 +1064,12 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateFinalProvenanceRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateCIIdentityRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+			if err := validatePublicationSecurityRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateAIMeasurementRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1497,6 +1505,7 @@ func main() {
 		runner.runDelivery()
 		runner.runRepairCases(contracts.Repair)
 		runner.runRecoveryGates(contracts.Gates)
+		runner.runPublicationSecurityRequirement()
 		runner.runCIVerification()
 
 		// Explicit report destinations include every local evidence artifact.
@@ -1891,14 +1900,9 @@ func (r *Runner) runVerification() {
 	ci02Passed := errPoc == nil && errPocWf == nil && len(pocWf.Actions) > 0
 	r.Record("CI02", "verification", "Selected real iOS language fixtures", "iOS", []string{"native"}, ci02Passed, "PASSED", "CherriRuntimePOC fixture lowers to valid Apple Shortcuts actions")
 
-	// CI03: Final required workflows use exact final SHA
-	ci03Passed := len(r.implSHA) == 40
-	r.Record("CI03", "verification", "Final required workflows use exact final SHA", "repository+CI", []string{"repository"}, ci03Passed, "PASSED", fmt.Sprintf("Verified current commit SHA: %s", r.implSHA))
-
-	// CI04: No private raw corpus or unrequested signing
-	_, errKey := os.Stat(resolveRepoPath("private_key.pem"))
-	ci04Passed := os.IsNotExist(errKey)
-	r.Record("CI04", "verification", "No private raw corpus or unrequested signing", "security+repository", []string{"security", "repository"}, ci04Passed, "PASSED", "No credentials or private signing materials in repository")
+	// CI03 consumes original independently authenticated source observations.
+	// CI04 follows repair/recovery so it can reuse the actual RP43 producer once.
+	r.runCIIdentityRequirement()
 }
 
 // Group 21: Evaluation
@@ -2060,7 +2064,7 @@ func (r *Runner) runCIVerification() {
 			return
 		}
 	}
-	for _, reqID := range []string{"CI03", "RP49", "BRG31"} {
+	for _, reqID := range []string{"RP49", "BRG31"} {
 		r.records = append(r.records, EvidenceRecord{
 			EvidenceID:        fmt.Sprintf("ev-ci-%s-ci", reqID),
 			Requirements:      []string{reqID},
@@ -2077,11 +2081,5 @@ func (r *Runner) runCIVerification() {
 			},
 			Detail: fmt.Sprintf("All 4 required GitHub Actions workflows succeeded on exact SHA %s", r.implSHA),
 		})
-	}
-	if res, ok := r.results["CI03"]; ok && res.Status != "NOT_RUN" {
-		res.ExecutedLevels = append(res.ExecutedLevels, "ci")
-		res.Passed = true
-		res.Status = "PASSED"
-		r.results["CI03"] = res
 	}
 }
