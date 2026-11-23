@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.7 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 28 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.8 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 29 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1944,3 +1944,69 @@ and full repaired F01 need actual final-source results. RemoteBuilder's
 39/58/8 qualification, fresh final-K AI calibration/cohort and full179 remain.
 Latest complete formal179 is still K8:114PASS/0FAIL/26NOT_RUN/
 38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN; closure_complete=false.
+
+
+## 29. Actual derived ledgers and56 release gates — 2026-11-23
+
+### Current source and milestone board
+
+Clean C0 was c76d3437625cabe85b3d70e0f99e952d53b5c8bc. The unchanged
+seven-output generator ran once there and its outputs were committed as C1
+7658e25ba434db6dda249e28b0341f58a3f14b3f. This checkpoint adopts actual56
+results and metadata as C2, the intended frozen verification source K.
+Compiler S remains57b6d919757e1d0262993c6f11c6dc1cd17d6177; published Docs
+D12 remainsce98fa542785fe4298d3acbf38da120b32bd5029.
+
+### Acceptance matrix and evidence log
+
+[Derived generation](evidence/p15-derived-ledgers-s57b6-20261123/README.md)
+exited0 after51.817472s under the original600-second limit, with all22 checks
+passing. Seven outputs were produced; six tracked paths changed and the15-action
+pack output remained byte-identical. Both595 broad raw inputs and597 generator
+dependencies stayed stable. Headers retain the actual generatorC0; the raw
+evidence remains a new actual measurement atS. No505 producer was replayed.
+
+[Actual56 gates](evidence/p15-actual56-s57b6-20261123/README.md)
+ran once at cleanC1 with the original1800-second limit and TERM5/KILL5.
+All56 identities were present:54PASS, R23FAIL, R22BLOCKED_PLATFORM.
+Elapsed117.897445s; actual exit1; no timeout; verdictNOT_READY.
+The full original report SHA256
+97286bf4fd551850e3d2fd97c2da1e713db364f4a08211f285f3c18fd9fa181f
+was copied without edits. All source/dependency witnesses stayed unchanged.
+The original nonzero result is preserved and is not an aggregate-green result.
+
+One metadata-only --verify-commit check then passed in0.164871s. It verified
+actualC1 report/C0 generator ancestry and fingerprint
+995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e.
+No report source was relabelled to C2, and no gate was rerun by this check.
+
+### Decisions and open defects
+
+R23v1 remains active with baseline76d7225; its protected iOS source difference
+is an actual failing gate. The two empty owner-input responses grant neither
+approval nor rejection of v2. Linux's R22 platform limitation remains separate
+from missing physical iPad evidence. No fixed gate or deadline is weakened.
+
+The fresh final-source native, AI, RemoteBuilder and full179 plans preserve
+their original contracts. Current capacity requires a reviewed sequential
+working-copy plan; two simultaneous K copies plus Remote staging would not
+preserve the provisional2GiB operating reserve. That reserve is not a frozen
+179 acceptance condition. Original evidence, source clones and active caches
+are retained; no storage claim replaces actual admission.
+
+### Next work and closure
+
+Publish frozenK through the existing workflow-capable Windows account and
+retain exact remote SHA/tree/ref evidence. Bind the automatic Build run and
+dispatch the original OpenMinis,D03,full iOS,RuntimePoC and repaired fullF01
+once each. D03 uses the unchanged original1537-byte D12 publication receipt ZIP.
+
+Use one clean ordinary canonical-origin K clone for new-S public AI calibration,
+fresh authenticated model metadata, one sealed12-outcome cohort and later
+full179. The original authenticated Asana anchors and distinct BEFORE/AFTER
+observations are mandatory. Run RemoteBuilder's original39/58/8 qualification
+under its real UID1002 with source/tuple and private evidence boundaries intact.
+
+Latest complete formal179 remains K8:114PASS/0FAIL/26NOT_RUN/
+38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN; closure_complete=false.
+C2 and successful metadata do not authorize aggregate release or erase R23.
