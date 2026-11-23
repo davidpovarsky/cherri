@@ -649,10 +649,29 @@ func (r *Runner) executeAIBoundHarness() ([]EvidenceArtifact, string, error) {
 	if rawErr != nil {
 		return artifacts, "", rawErr
 	}
+	var detail, detailErr = aiBoundHarnessExecutionDetail(raw)
+	return artifacts, detail, detailErr
+}
+
+func aiBoundHarnessExecutionDetail(raw []byte) (string, error) {
 	if err := validateAIBoundHarnessOutput(raw); err != nil {
-		return artifacts, "", err
+		return "", err
 	}
-	return artifacts, "Actual fixed Go child executed all fifteen Python harness controls; originals and immutable source witnesses retained", nil
+	var observed []string
+	for _, line := range bytes.Split(raw, []byte{'\n'}) {
+		if len(bytes.TrimSpace(line)) == 0 {
+			continue
+		}
+		var event struct{ Action, Test string }
+		if err := json.Unmarshal(line, &event); err != nil {
+			return "", err
+		}
+		if event.Action == "pass" && event.Test != "" {
+			observed = append(observed, event.Test)
+		}
+	}
+	sort.Strings(observed)
+	return "Actual fixed Go child " + strings.Join(observed, ", ") + " executed all fifteen Python harness controls; originals and immutable source witnesses retained", nil
 }
 
 func validateAIBoundHarnessOutput(raw []byte) error {

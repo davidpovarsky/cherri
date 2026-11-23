@@ -136,6 +136,11 @@ func TestAIEvaluationHarnessEvidenceRetainsExternalRequirement(t *testing.T) {
 		!reflect.DeepEqual(record.Requirements, []string{"RP50"}) {
 		t.Fatalf("actual local control execution produced invalid evidence: %+v", record)
 	}
+	for _, name := range aiEvaluationHarnessScenario.TestNames {
+		if !strings.Contains(record.Detail, name) {
+			t.Fatalf("production discovery receipt missing %s: %+v", name, record)
+		}
+	}
 	if err := validateAIEvaluationHarnessRecord("RP50", record); err != nil {
 		t.Fatal(err)
 	}

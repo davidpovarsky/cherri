@@ -472,3 +472,45 @@ func TestAIMeasurementOriginalAnnouncementCannotContradictSummary(t *testing.T) 
 		})
 	}
 }
+
+func TestAIBoundHarnessDetailRequiresObservedEvents(t *testing.T) {
+	// Synthetic shape controls only; these bytes are never production evidence.
+	var scenario = aiEvaluationHarnessScenario
+	var discovery = map[string]any{
+		"selection_complete": true, "found": aiEvaluationPythonTests, "passed": aiEvaluationPythonTests,
+		"tests_run": len(aiEvaluationPythonTests), "failures": 0, "errors": 0, "skipped": 0,
+		"expected_failures": 0, "unexpected_successes": 0,
+	}
+	var events = []map[string]any{
+		{"Action": "start"},
+		{"Action": "run", "Test": scenario.TestNames[0]},
+		{"Action": "output", "Test": scenario.TestNames[0], "Output": "Untrusted prose names TestInventedHarness\nP15_RP50_HARNESS_CONTROL_DISCOVERY:" + string(p15AIMeasurementRaw(t, discovery)) + "\n"},
+		{"Action": "pass", "Test": scenario.TestNames[0], "Elapsed": 1.0},
+		{"Action": "pass", "Elapsed": 1.0},
+	}
+	var raw []byte
+	for _, event := range events {
+		event["Time"] = "2026-11-23T02:00:00Z"
+		event["Package"] = scenario.ModulePath
+		raw = append(raw, p15AIMeasurementRaw(t, event)...)
+		raw = append(raw, '\n')
+	}
+	var detail, err = aiBoundHarnessExecutionDetail(raw)
+	if err != nil || !strings.Contains(detail, scenario.TestNames[0]) || strings.Contains(detail, "TestInventedHarness") {
+		t.Fatalf("detail did not identify only the validated pass event: %q %v", detail, err)
+	}
+	for _, control := range []struct {
+		name string
+		raw  []byte
+	}{
+		{"foreign_test_identity", bytes.ReplaceAll(raw, []byte(scenario.TestNames[0]), []byte("TestInventedHarness"))},
+		{"absent_test_pass", bytes.Replace(raw, []byte(`"Action":"pass"`), []byte(`"Action":"skip"`), 1)},
+		{"missing_python_discovery", bytes.ReplaceAll(raw, []byte("P15_RP50_HARNESS_CONTROL_DISCOVERY:"), []byte("UNOBSERVED_PYTHON_CONTROLS:"))},
+	} {
+		t.Run(control.name, func(t *testing.T) {
+			if detail, err := aiBoundHarnessExecutionDetail(control.raw); err == nil || detail != "" {
+				t.Fatalf("unverified execution produced discovery detail: %q %v", detail, err)
+			}
+		})
+	}
+}
