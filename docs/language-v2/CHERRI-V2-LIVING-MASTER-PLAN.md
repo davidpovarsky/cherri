@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.0 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 22 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.1 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 23 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1295,3 +1295,100 @@ AI quality remains unmeasured at this checkpoint.
 
 No main merge, live Remote Builder promotion, full179 completion or project
 closure is claimed by this checkpoint.
+
+
+## 23. K11 complete-source preparation and terminal K10 diagnosis — 2026-11-23
+
+Checkpoint: 2026-11-23T03:45:22.844432+00:00. The source immediately before this documentation
+checkpoint is `b89574b5474656e5498987c636565d65438e3955` on
+`agent/cherri-p10r15-k11-integration-20261123`. This checkpoint precedes the
+separate immutable freeze/publication receipt. No K11 execution result or
+formal closure is asserted here.
+
+### Milestone board and current source
+
+Compiler S remains R7 `ca316a3dee252456c4bec751594cf249c709b331`; published
+Docs D remains D11 `365b08c5b4c71c6d22b591babb8d1ab852e5a3b9`.
+The reviewed assembly preserves all236 compiler/module/embedded-input
+bindings, the three immutable contracts and the protected iOS test bytes.
+Its previously reviewed fixes cover exact terminal Nothing observations,
+BRG32 installed inventory, the D03 search toolbar and explicit RemoteBuilder
+observer CI registration. The final additional source patch inserts only two
+existing full-suite scheduling hooks in the K04 parents
+(source `2ac6e23aab3d69fe445ef018864d734d37183274`, integrated as
+`171faf12580f6e5f1f918ca6cea77234673f098d`).
+
+### Acceptance matrix and open defects
+
+| Scope | Actual latest evidence | Remaining acceptance |
+|---|---|---|
+| Complete formal179 | K8:114 PASSED,0 FAILED,26 NOT_RUN,38 PENDING_EXTERNAL,1 AI_EVAL_NOT_RUN | No new complete report; closure=false |
+| K10 Build & Test45100706965 | FAILURE; Linux inventory defect, macOS inventory defect and900s root-package deadline; Nix PASS | Final same-source full CI, unchanged15m/35m limits |
+| K10 required encoding | Real23/23 positive and restored observations; exact intended negative control | Component only; failed overall run is formally ineligible |
+| K04 scheduling repair | Two added statements; original bodies/deadlines unchanged; independent isolation review | Actual full macOS scheduling effect is NOT VERIFIED |
+| K10 full iOS45100858894 | 56/57 PASS; D03 toolbar failure retained | Final full iOS after production toolbar fix |
+| K10 Bool/List45100952614 | CANCELLED during simulator preflight; compiled phase observed, runtimeContractVerified=false | Incomplete acquisition; no assertion defect or cancelling actor established |
+| Other original native lanes | Existing sole-owner runs/observers continue | Keep exact source and scope; no duplicate dispatch |
+| RemoteBuilder | K10 packages passed,39 rows38 PASS/1 observer FAIL,58 signing-fault rows PASS;8smoke not started | New tuple-bound stage/packages/39/58/8 at final K11 |
+| AI quality | K10 cohort retired without generation; successful metadata and public calibration remain scoped | Fresh final-source commitment and real twelve-outcome run, then canonical intake |
+| Release/physical/history | R23 remains FAIL; physical developer transport and historical untracked payload evidence remain unavailable | No waiver, synthetic backup or platform PASS |
+
+The original macOS ordinary invocation lasted911.673s; the root package alarm
+was900s. Its only remaining parent was CanonicalBehaviorSourcePropagation
+(52s), with the codec child2s old. Original successful phases, timeout stack and
+restoration still pending at interruption are retained. This establishes
+cumulative deadline exhaustion, not an observed individual child timeout or
+cleanup deadlock. The two formerly serial K04 bodies consumed121.97s.
+Approximately60.985s of ideal overlap is only an estimate under comparable
+runtime and balanced scheduling.
+
+The authoritative Bool/List run conclusion supersedes the initial nonzero
+watcher interpretation: GitHub reports CANCELLED. The original terminal
+receipt says INCOMPLETE_COLLECTION at COMPILED; phaseExpired=false and runtime,
+trace and callback are NOT_RUN. Job elapsed13m58s does not establish the45m
+job limit expiring. Distinct sample IDs have distinct concurrency keys, and
+no extra same-ref QA run was found in the bounded inventory. No production
+change is justified solely by this incomplete simulator-preflight run.
+
+### Evidence log and decision log
+
+The new bounded packet
+`evidence/p15-k10-macos-terminal-20261123/` has33 files/183,200bytes.
+Manifest SHA256:
+`98ddde596e7741ccb4d69c4535e0cb008b0977859e7690a13842f8b5743588c0`.
+Root independently verified all32 listed members against committed Git blobs.
+Large original logs remain unchanged on Oracle. Linux's prior intake remains
+preserved alongside its separate BOM-aware correction:1,426 ordinary PASS/
+8SKIP and240 acceptance PASS/3SKIP/3FAIL. No test rerun produced that correction.
+
+The K04 hooks share the existing root-package two-slot scheduler; this does
+not cap every OS subprocess. Owned temporary paths and child environments,
+serial mutation children and mutex-protected immutable compiler-byte reuse
+were reviewed by two real subagents and root. Existing direct-shell cleanup
+semantics were not strengthened. Selected `-run` deliberately disables this
+hook, so replaying selected K04 bodies would not validate concurrency. The
+new execution gate is the original full macOS CI, not a guard bypass.
+
+The reconstructible Go cache migration completed with6,416 files,
+999,217,603content bytes and259 directories verified before and after.
+Result SHA256:
+`2cc32fa79021416154573a2bd940aca1ca1de95d1e313eb12fd294d7bf3a6b91`.
+Only task-owned reproducible cache/source copies use the dedicated tmpfs.
+Unique evidence, corpus originals, module cache and live RemoteBuilder remain
+persistent. The completed S4 execution checkout was retired through ordinary
+Git worktree removal after its clean R7 identity and all five original PASS
+receipts were checked; its named branch and all private evidence remain.
+
+### Next work
+
+Freeze the complete reviewed K11 source once, publish only its new named
+verification ref through the existing Windows credential, and independently
+verify the remote commit/tree. Bind the automatic Build run and dispatch one
+OpenMinis and one D03-docs run. Final native requests are exactly one complete
+iOS run and one required RuntimePoC; original K10 QA lanes retain their own
+scope. Perform the fresh inactive RemoteBuilder tuple exactly once with its
+original budgets and public signing controls. After the required evidence
+boundaries are ready, perform the fresh final-source AI cohort and one combined
+Oracle full179/canonical intake. Reconcile the remaining requirements from
+their actual contracts; do not classify every unexecuted requirement as a
+platform blocker. No main merge, live activation or R23 waiver occurred.
