@@ -301,18 +301,27 @@ final class CherriPreviewEditTransactionTests: XCTestCase {
     }
 
     func testAutoLegacyRoutesByActualModeAndKeepsRequestedAutoContext() async throws {
-        // Existing RP52 public auto-Legacy fixture, unchanged.
+        // Existing RP52 public auto-Legacy fixture, unchanged. An ordinary
+        // action edit must not rely on newly added #define metadata for Auto.
         let source = "// cherri: legacy\nconst route = text(\"RP52_LEGACY_REFERENCE\")\nshow(route)\n"
         let compiled = try await CherriCompiler.compile(source: source, name: "  LegacyPreview  ", mode: "auto")
         XCTAssertEqual(compiled.actualMode, "legacy")
         XCTAssertEqual(compiled.sourceRequest.mode, "auto")
         XCTAssertNil(compiled.previewSourceMap)
+        let actions = try nativeActions(compiled.plist)
+        let indices = actions.indices.filter {
+            actions[$0]["WFWorkflowActionIdentifier"] as? String == "is.workflow.actions.gettext"
+                && ((actions[$0]["WFWorkflowActionParameters"] as? [String: Any])?["WFTextActionText"] as? String) == "RP52_LEGACY_REFERENCE"
+        }
+        XCTAssertEqual(indices.count, 1)
+        let index = try XCTUnwrap(indices.first)
         let transaction = CherriPreviewEditTransaction(original: compiled, buildGeneration: 0, editGeneration: 0)
         var result: CompiledShortcut?
         var publications = 0
         let published = try await transaction.perform(
-            .workflowType(value: "QuickActions", enabled: true), operations: .live,
-            isCurrent: { true }, publish: { _, rebuilt in result = rebuilt; publications += 1 }
+            .actionParameter(actionIndex: index, key: "WFTextActionText", value: .string("RP52_LEGACY_UPDATED")),
+            operations: .live, isCurrent: { true },
+            publish: { _, rebuilt in result = rebuilt; publications += 1 }
         )
         XCTAssertTrue(published)
         XCTAssertEqual(publications, 1)
@@ -320,9 +329,15 @@ final class CherriPreviewEditTransactionTests: XCTestCase {
         XCTAssertEqual(rebuilt.actualMode, "legacy")
         XCTAssertEqual(rebuilt.sourceRequest.mode, "auto")
         XCTAssertEqual(rebuilt.sourceRequest.name, "  LegacyPreview  ")
-        let object = try PropertyListSerialization.propertyList(from: rebuilt.plist, options: [], format: nil)
-        let types = try XCTUnwrap((object as? [String: Any])?["WFWorkflowTypes"] as? [String])
-        XCTAssertTrue(types.contains("QuickActions"))
+        XCTAssertEqual(rebuilt.sourceRequest.buildProfile, compiled.sourceRequest.buildProfile)
+        XCTAssertTrue(rebuilt.sourceRequest.source.hasPrefix("// cherri: legacy\n"))
+        let after = try nativeActions(rebuilt.plist)
+        let values = after.compactMap { action -> String? in
+            guard action["WFWorkflowActionIdentifier"] as? String == "is.workflow.actions.gettext" else { return nil }
+            return (action["WFWorkflowActionParameters"] as? [String: Any])?["WFTextActionText"] as? String
+        }
+        XCTAssertEqual(values.filter { $0 == "RP52_LEGACY_UPDATED" }.count, 1)
+        XCTAssertFalse(values.contains("RP52_LEGACY_REFERENCE"))
     }
 
     func testMultilineUnicodePreviewValueUsesCherriLiteralEscapes() async throws {

@@ -45,7 +45,11 @@ struct CherriPreviewEditTransaction {
         let source: String
         if original.actualMode == "legacy" {
             let edited = try ShortcutPlistEditor.applying(edit, to: original.plist)
-            source = try await operations.decompile(edited, original.name)
+            let decompiled = try await operations.decompile(edited, original.name)
+            // Semantic Legacy decompilation need not emit a dialect directive.
+            // Preserve its already selected dialect when rebuilding a raw Auto request.
+            source = original.sourceRequest.mode == "auto"
+                ? "// cherri: legacy\n" + decompiled : decompiled
         } else {
             guard case .actionParameter(let index, let key, let value) = edit else {
                 throw CompilationDiagnostic(
