@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "kind": "Independent read-only original macOS terminal intake",
+  "observedUTC": "2026-11-23T03:29:30.795823+00:00",
+  "implementationSha": "4feadab9db4d351628f78593304373631693869a",
+  "runId": 45100706965,
+  "jobId": 137450662143,
+  "jobConclusion": "failure",
+  "runConclusion": "failure",
+  "originalLog": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k10-frozen-ci-20261123/build-test-failure-intake/macos-attempt-01/job-137450662143.original.log",
+    "bytes": 10441353,
+    "sha256": "70bd9d3aff3f1c6108dea802893f0a174042dcf7eb5ce02cee1383c08c41f827"
+  },
+  "originalSuiteReceipt": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-k10-frozen-ci-20261123/build-test-failure-intake/macos-attempt-01/cherri-full-go-suite.original.json",
+    "sha256": "22ea901423dc1ab83710772383e8b42fc24b8578de82dc7dde3308a61af4280d",
+    "observedUTC": "2026-11-23T03:17:37.888475+00:00",
+    "sourceCleanBeforeAfter": true
+  },
+  "packageInventory": {
+    "allPackages": 30,
+    "ordinary": 29,
+    "acceptance": 1,
+    "exactInvocationCoverage": true,
+    "allTestsCompleted": false
+  },
+  "ordinary": {
+    "topLevelRunCount": 1434,
+    "topLevelResults": {
+      "PASS": 1423,
+      "SKIP": 10
+    },
+    "failedParents": [],
+    "packages": [
+      {
+        "line": 23925,
+        "result": "FAIL",
+        "package": "github.com/electrikmilk/cherri",
+        "goResult": "900.089s"
+      },
+      {
+        "line": 23926,
+        "result": "?",
+        "package": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+        "goResult": "[no test files]"
+      },
+      {
+        "line": 23934,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/icloudshortcut",
+        "goResult": "0.017s"
+      },
+      {
+        "line": 24014,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+        "goResult": "0.626s"
+      },
+      {
+        "line": 24030,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/assets",
+        "goResult": "0.086s"
+      },
+      {
+        "line": 24058,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/backend",
+        "goResult": "0.012s"
+      },
+      {
+        "line": 24059,
+        "result": "?",
+        "package": "github.com/electrikmilk/cherri/internal/language/enums",
+        "goResult": "[no test files]"
+      },
+      {
+        "line": 24093,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/ir",
+        "goResult": "0.012s"
+      },
+      {
+        "line": 24249,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/lower",
+        "goResult": "0.329s"
+      },
+      {
+        "line": 24375,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+        "goResult": "0.572s"
+      },
+      {
+        "line": 24415,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/migrate",
+        "goResult": "0.014s"
+      },
+      {
+        "line": 24416,
+        "result": "?",
+        "package": "github.com/electrikmilk/cherri/internal/language/modules",
+        "goResult": "[no test files]"
+      },
+      {
+        "line": 24424,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/protocol",
+        "goResult": "0.014s"
+      },
+      {
+        "line": 24497,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/schema",
+        "goResult": "0.030s"
+      },
+      {
+        "line": 24833,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/service",
+        "goResult": "4.120s"
+      },
+      {
+        "line": 24837,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/source",
+        "goResult": "0.012s"
+      },
+      {
+        "line": 24919,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/syntax",
+        "goResult": "0.009s"
+      },
+      {
+        "line": 24923,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/types",
+        "goResult": "0.007s"
+      },
+      {
+        "line": 24951,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/language/workspace",
+        "goResult": "0.025s"
+      },
+      {
+        "line": 25117,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/internal/shortcutcompare",
+        "goResult": "1.522s"
+      },
+      {
+        "line": 25129,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+        "goResult": "0.229s"
+      },
+      {
+        "line": 25130,
+        "result": "?",
+        "package": "github.com/electrikmilk/cherri/tools/inventory",
+        "goResult": "[no test files]"
+      },
+      {
+        "line": 25164,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+        "goResult": "0.021s"
+      },
+      {
+        "line": 25190,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/language-docs",
+        "goResult": "0.616s"
+      },
+      {
+        "line": 25194,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/language-migrate",
+        "goResult": "0.013s"
+      },
+      {
+        "line": 25206,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/language-schema",
+        "goResult": "0.437s"
+      },
+      {
+        "line": 25207,
+        "result": "?",
+        "package": "github.com/electrikmilk/cherri/tools/language-stdlib",
+        "goResult": "[no test files]"
+      },
+      {
+        "line": 25241,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/legacy-parity",
+        "goResult": "0.571s"
+      },
+      {
+        "line": 25332,
+        "result": "ok",
+        "package": "github.com/electrikmilk/cherri/tools/shortcut-corpus",
+        "goResult": "0.027s"
+      }
+    ]
+  },
+  "acceptance": {
+    "topLevelRunCount": 246,
+    "topLevelResults": {
+      "PASS": 240,
+      "SKIP": 3,
+      "FAIL": 3
+    },
+    "failedParents": [
+      {
+        "line": 33133,
+        "result": "FAIL",
+        "test": "TestP15BRG32InstalledAIHarness",
+        "goParentElapsedSeconds": 0.01
+      },
+      {
+        "line": 33170,
+        "result": "FAIL",
+        "test": "TestSupplementalObligationHarnessProductionEvidence",
+        "goParentElapsedSeconds": 8.13
+      },
+      {
+        "line": 36687,
+        "result": "FAIL",
+        "test": "TestSupplementalAcceptanceProductionEvidence",
+        "goParentElapsedSeconds": 242.75
+      }
+    ],
+    "packages": [
+      {
+        "line": 37246,
+        "result": "FAIL",
+        "package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+        "goResult": "1651.444s"
+      }
+    ]
+  },
+  "monotonicInvocations": [
+    {
+      "packages": 29,
+      "timeout": "15m",
+      "exitCode": 1,
+      "elapsedSeconds": 911.673
+    },
+    {
+      "packages": 1,
+      "timeout": "35m",
+      "exitCode": 1,
+      "elapsedSeconds": 1658.569
+    }
+  ],
+  "githubStepWallTimes": {
+    "startedUTC": "2026-11-23T02:34:46Z",
+    "completedUTC": "2026-11-23T03:23:20Z",
+    "seconds": 2914.0
+  },
+  "timeout": {
+    "classification": "Cumulative root-package 15m deadline expired during a progressing isolated canonical codec rebuild; no individual child timeout or blocked-cleanup event is observed.",
+    "outerPackageSeconds": 900.089,
+    "activeTests": [
+      "TestP15CanonicalBehaviorSourcePropagation (52s)",
+      "TestP15CanonicalBehaviorSourcePropagation/codec (2s)"
+    ],
+    "originalStackSha256": "c6723a88dfcb4bd1ca21622ef2c1cf8079b675f75e9d0206e63fc487b8c3c005",
+    "originalStackLineRange": [
+      23811,
+      23925
+    ],
+    "completedActualCanonicalPhases": [
+      {
+        "line": 23792,
+        "text": "p15_canonical_source_propagation_test.go:117: phase=baseline actual child Go JSON SHA256=13409d50aea951a2a2da92b70a9ea491ae8d40f2619687ffa4d6468c29ee6685 emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95"
+      },
+      {
+        "line": 23795,
+        "text": "p15_canonical_source_propagation_test.go:187: phase=static actual child Go JSON SHA256=4661a366e9625bd7b20ef9de83a084838f82c08153d665a8409e733cd15265b4 emitted native tree SHA256=0547a19e6220811eecec4fb8fb6996577f116e1b9b7bec2f8d3a33f4ad06ea87"
+      },
+      {
+        "line": 23796,
+        "text": "p15_canonical_source_propagation_test.go:216: phase=static-restored actual child Go JSON SHA256=de8ef82cd64e0543a5844eb84d4a4285529e3edcca241a0037c909b057311d86 emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95"
+      },
+      {
+        "line": 23807,
+        "text": "p15_canonical_source_propagation_test.go:187: phase=callback actual child Go JSON SHA256=2ee2568141e8d8769faec639f587702ff98407d921ae1b97a54340fdaa112d9a emitted native tree SHA256=3b126933d07bbd2c8899aa213114f203f8230994e29476c36f329ae0c69999f4"
+      },
+      {
+        "line": 23808,
+        "text": "p15_canonical_source_propagation_test.go:216: phase=callback-restored actual child Go JSON SHA256=60e68955c4ec72027c36d9dc9859912a6014f3ce7111ff428047432df7141b4a emitted native tree SHA256=fa4eaafac7a50cabf515a8dca0ff8cbac3ad1377f5b9fd4e7067d2c40d97be95"
+      }
+    ],
+    "stackCallChain": [
+      "TestP15CanonicalBehaviorSourcePropagation/codec",
+      "p15CanonicalRebuildRead",
+      "p15SchemaCommand",
+      "os/exec.(*Cmd).CombinedOutput",
+      "os/exec.(*Cmd).Wait"
+    ],
+    "unchangedChildLimits": {
+      "probeGoSeconds": 90,
+      "schemaSupervisorSeconds": 120
+    },
+    "canonicalParentPassClaimed": false,
+    "existingPausedParents": 27,
+    "schedulerSlots": 2,
+    "completedSerialParentSecondsSum": 531.74,
+    "completedParallelParentSecondsSum": 674.1,
+    "k04StillSerialOriginalResults": [
+      {
+        "line": 21517,
+        "result": "PASS",
+        "test": "TestP15K04OfflineCacheProduction",
+        "goParentElapsedSeconds": 31.67
+      },
+      {
+        "line": 21522,
+        "result": "PASS",
+        "test": "TestP15K04OfflineOracleRejectsBypasses",
+        "goParentElapsedSeconds": 90.3
+      }
+    ]
+  },
+  "brg32": {
+    "classification": "Installed harness tracked inventory omits existing fresh-instance-protocol-v2.md and test_process_group_cleanup.py; same retained Linux cause.",
+    "directFailure": "TestP15BRG32InstalledAIHarness",
+    "propagatedFailures": [
+      "TestSupplementalObligationHarnessProductionEvidence",
+      "TestSupplementalAcceptanceProductionEvidence"
+    ],
+    "knownSeparateRepair": "d5b82e3a4e21416556d4a6c81ed12b05b1365b2f"
+  },
+  "aiHarness": {
+    "standaloneOriginalParentsPassed": 154,
+    "standaloneReportedSeconds": 5.646,
+    "rp50OriginalParent": {
+      "line": 25339,
+      "result": "PASS",
+      "test": "TestP15RP50AIHarnessControlFlow",
+      "goParentElapsedSeconds": 4.14
+    },
+    "rp50SelectedPythonParents": 15,
+    "rp50Failures": 0,
+    "rp50Errors": 0,
+    "rp50Skipped": 0,
+    "providerGenerationCalls": 0,
+    "qualityEvidence": false
+  },
+  "requiredEncoding": {
+    "originalProcessControlsPassed": 12,
+    "processControlsReportedSeconds": 0.84,
+    "artifactId": 14785316588,
+    "componentReceiptSha256": "684e5a9bf89ee29eca1c56274079a7a31d9a451768c9b118d938fbc37eecb2dd",
+    "status": "PASS_COMPONENT_ONLY",
+    "formalCredit": false,
+    "reason": "Whole Build & Test run failed; unchanged canonical aggregator rejects non-success run references."
+  },
+  "postFailureCollector": {
+    "originalControlsPassed": 8,
+    "controlSeconds": 0.013,
+    "status": "CAPTURED",
+    "publicFiles": 69,
+    "publicBytes": 1684464,
+    "innerArchiveSha256": "43dba1fc936ad6ad0a967ff8a065d50328e07887d3f66f583106785b199afdfe",
+    "artifactDownloadedInThisIntake": false
+  },
+  "parserScope": "Remove only optional leading BOM and GitHub timestamp for anchored plain-Go result parsing. Original bytes remain unchanged. Nested JSON event excerpts are not counted again.",
+  "limitations": [
+    "The ordinary root timeout interrupted one parent; package invocation coverage is not complete test coverage.",
+    "Go parent elapsed sums are diagnostic work totals, not elapsed suite wall time; parallel parents overlap.",
+    "GitHub log timestamps are buffered and cannot determine original per-test execution time. Use original monotonic invocation durations and Go-emitted elapsed fields as labeled.",
+    "No new native producer, Go test, full suite, or workflow was executed during this intake."
+  ],
+  "sourceEdits": 0,
+  "newTests": 0,
+  "newWorkflowDispatches": 0,
+  "closureAllowed": false
+}

@@ -1,0 +1,115 @@
+2026-11-23T03:23:19.4796390Z panic: test timed out after 15m0s
+2026-11-23T03:23:19.4796980Z 	running tests:
+2026-11-23T03:23:19.4797430Z 		TestP15CanonicalBehaviorSourcePropagation (52s)
+2026-11-23T03:23:19.4797990Z 		TestP15CanonicalBehaviorSourcePropagation/codec (2s)
+2026-11-23T03:23:19.4798200Z 
+2026-11-23T03:23:19.4798380Z goroutine 45830 [running]:
+2026-11-23T03:23:19.4798720Z testing.(*M).startAlarm.func1()
+2026-11-23T03:23:19.4799330Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:2484 +0x308
+2026-11-23T03:23:19.4799770Z created by time.goFunc
+2026-11-23T03:23:19.4804660Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/time/sleep.go:215 +0x38
+2026-11-23T03:23:19.4805020Z 
+2026-11-23T03:23:19.4805230Z goroutine 1 [chan receive, 4 minutes]:
+2026-11-23T03:23:19.4805780Z testing.tRunner.func1()
+2026-11-23T03:23:19.4806330Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1753 +0x43c
+2026-11-23T03:23:19.4806890Z testing.tRunner(0x1400008b340, 0x140001a3be8)
+2026-11-23T03:23:19.4810720Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1798 +0x120
+2026-11-23T03:23:19.4814870Z testing.runTests(0x140000ea660, {0x1063b56a0, 0x49c, 0x49c}, {0x14000128460?, 0x105b72700?, 0x1063bf720?})
+2026-11-23T03:23:19.4816040Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:2277 +0x3ec
+2026-11-23T03:23:19.4816530Z testing.(*M).Run(0x140001da1e0)
+2026-11-23T03:23:19.4817100Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:2142 +0x588
+2026-11-23T03:23:19.4817720Z github.com/electrikmilk/cherri.TestMain(0x105c8e090?)
+2026-11-23T03:23:19.4818210Z 	/Users/runner/work/cherri/cherri/fork_roundtrip_test.go:45 +0x1c
+2026-11-23T03:23:19.4818620Z main.main()
+2026-11-23T03:23:19.4818950Z 	_testmain.go:2407 +0x98
+2026-11-23T03:23:19.4819140Z 
+2026-11-23T03:23:19.4819330Z goroutine 23210 [chan receive]:
+2026-11-23T03:23:19.4819870Z testing.(*T).Run(0x14000591a40, {0x105769d26?, 0x1057c0ed9?}, 0x14002a73810)
+2026-11-23T03:23:19.4820570Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1859 +0x388
+2026-11-23T03:23:19.4821340Z github.com/electrikmilk/cherri.TestP15CanonicalBehaviorSourcePropagation(0x14000591a40)
+2026-11-23T03:23:19.4824960Z 	/Users/runner/work/cherri/cherri/p15_canonical_source_propagation_test.go:162 +0x63c
+2026-11-23T03:23:19.4825640Z testing.tRunner(0x14000591a40, 0x105c669d0)
+2026-11-23T03:23:19.4826160Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1792 +0xe4
+2026-11-23T03:23:19.4826720Z created by testing.(*T).Run in goroutine 1
+2026-11-23T03:23:19.4827400Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1851 +0x374
+2026-11-23T03:23:19.4827760Z 
+2026-11-23T03:23:19.4827860Z goroutine 45828 [IO wait]:
+2026-11-23T03:23:19.4828300Z internal/poll.runtime_pollWait(0x14d299d28, 0x72)
+2026-11-23T03:23:19.4828990Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/runtime/netpoll.go:351 +0xa0
+2026-11-23T03:23:19.4829560Z internal/poll.(*pollDesc).wait(0x1400162e480?, 0x140002e9800?, 0x1)
+2026-11-23T03:23:19.4830270Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/internal/poll/fd_poll_runtime.go:84 +0x28
+2026-11-23T03:23:19.4830870Z internal/poll.(*pollDesc).waitRead(...)
+2026-11-23T03:23:19.4831410Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/internal/poll/fd_poll_runtime.go:89
+2026-11-23T03:23:19.4832310Z internal/poll.(*FD).Read(0x1400162e480, {0x140002e9800, 0x200, 0x200})
+2026-11-23T03:23:19.4833590Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/internal/poll/fd_unix.go:165 +0x1fc
+2026-11-23T03:23:19.4834120Z os.(*File).read(...)
+2026-11-23T03:23:19.4834540Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/file_posix.go:29
+2026-11-23T03:23:19.4835190Z os.(*File).Read(0x140034789b8, {0x140002e9800?, 0x14000dccd58?, 0x104afe038?})
+2026-11-23T03:23:19.4835850Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/file.go:124 +0x6c
+2026-11-23T03:23:19.4836470Z bytes.(*Buffer).ReadFrom(0x14002a7b050, {0x105c7b888, 0x14001593448})
+2026-11-23T03:23:19.4837150Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/bytes/buffer.go:211 +0x90
+2026-11-23T03:23:19.4838010Z io.copyBuffer({0x105c7ba60, 0x14002a7b050}, {0x105c7b888, 0x14001593448}, {0x0, 0x0, 0x0})
+2026-11-23T03:23:19.4838720Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/io/io.go:415 +0x14c
+2026-11-23T03:23:19.4839080Z io.Copy(...)
+2026-11-23T03:23:19.4839520Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/io/io.go:388
+2026-11-23T03:23:19.4840150Z os.genericWriteTo(0x14000cc7880?, {0x105c7ba60, 0x14002a7b050})
+2026-11-23T03:23:19.4840660Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/file.go:275 +0x58
+2026-11-23T03:23:19.4841320Z os.(*File).WriteTo(0x14000dccfa8?, {0x105c7ba60?, 0x14002a7b050?})
+2026-11-23T03:23:19.4842230Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/file.go:253 +0x60
+2026-11-23T03:23:19.4842900Z io.copyBuffer({0x105c7ba60, 0x14002a7b050}, {0x105c7b980, 0x140034789b8}, {0x0, 0x0, 0x0})
+2026-11-23T03:23:19.4843520Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/io/io.go:411 +0x98
+2026-11-23T03:23:19.4843950Z io.Copy(...)
+2026-11-23T03:23:19.4844310Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/io/io.go:388
+2026-11-23T03:23:19.4844800Z os/exec.(*Cmd).writerDescriptor.func1()
+2026-11-23T03:23:19.4845560Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:596 +0x44
+2026-11-23T03:23:19.4846040Z os/exec.(*Cmd).Start.func2(0x14000afbe00?)
+2026-11-23T03:23:19.4846590Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:749 +0x34
+2026-11-23T03:23:19.4847160Z created by os/exec.(*Cmd).Start in goroutine 45814
+2026-11-23T03:23:19.4847670Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:748 +0x76c
+2026-11-23T03:23:19.4847990Z 
+2026-11-23T03:23:19.4848170Z goroutine 45814 [syscall]:
+2026-11-23T03:23:19.4848830Z syscall.syscall6(0x1011dc980?, 0x14d64d8f0?, 0x1064fc108?, 0x90?, 0x1063c16a0?, 0x140016303f0?, 0x14001d736d8?)
+2026-11-23T03:23:19.4849540Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/runtime/sys_darwin.go:60 +0x50
+2026-11-23T03:23:19.4850160Z syscall.wait4(0x14001d73708?, 0x104b0b274?, 0x90?, 0x105c49d40?)
+2026-11-23T03:23:19.4850830Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/syscall/zsyscall_darwin_arm64.go:44 +0x4c
+2026-11-23T03:23:19.4851560Z syscall.Wait4(0x140001cc070?, 0x14001d7373c, 0x140011dc980?, 0x140001d7f10?)
+2026-11-23T03:23:19.4852180Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/syscall/syscall_bsd.go:144 +0x28
+2026-11-23T03:23:19.4852760Z os.(*Process).pidWait.func1(...)
+2026-11-23T03:23:19.4853280Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec_unix.go:68
+2026-11-23T03:23:19.4853710Z os.ignoringEINTR2[...](...)
+2026-11-23T03:23:19.4854240Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/file_posix.go:261
+2026-11-23T03:23:19.4854790Z os.(*Process).pidWait(0x140011dca80)
+2026-11-23T03:23:19.4855320Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec_unix.go:67 +0xa4
+2026-11-23T03:23:19.4855830Z os.(*Process).wait(0x3?)
+2026-11-23T03:23:19.4856420Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec_unix.go:30 +0x24
+2026-11-23T03:23:19.4856850Z os.(*Process).Wait(...)
+2026-11-23T03:23:19.4857340Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec.go:358
+2026-11-23T03:23:19.4857840Z os/exec.(*Cmd).Wait(0x14000758a80)
+2026-11-23T03:23:19.4858390Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:922 +0x38
+2026-11-23T03:23:19.4858990Z os/exec.(*Cmd).Run(0x14000758a80)
+2026-11-23T03:23:19.4859780Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:626 +0x38
+2026-11-23T03:23:19.4860270Z os/exec.(*Cmd).CombinedOutput(0x14000758a80)
+2026-11-23T03:23:19.4860840Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:1039 +0x84
+2026-11-23T03:23:19.4861820Z github.com/electrikmilk/cherri.p15SchemaCommand(0x14001d73ae8?, {0x140001d8480, 0x71}, {0x14001d73bc8, 0x1, 0x10540384c?}, {0x1400085def0, 0x9, 0x9})
+2026-11-23T03:23:19.4862590Z 	/Users/runner/work/cherri/cherri/p15_schema_production_test.go:88 +0x508
+2026-11-23T03:23:19.4863600Z github.com/electrikmilk/cherri.p15CanonicalRebuildRead(0x1400008b500, {0x140001d8480, 0x71}, {0x105769d26, 0x5})
+2026-11-23T03:23:19.4864460Z 	/Users/runner/work/cherri/cherri/p15_canonical_source_propagation_test.go:22 +0x19c
+2026-11-23T03:23:19.4865210Z github.com/electrikmilk/cherri.TestP15CanonicalBehaviorSourcePropagation.func4(0x1400008b500)
+2026-11-23T03:23:19.4865980Z 	/Users/runner/work/cherri/cherri/p15_canonical_source_propagation_test.go:187 +0x4c8
+2026-11-23T03:23:19.4866610Z testing.tRunner(0x1400008b500, 0x14002a73810)
+2026-11-23T03:23:19.4867210Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1792 +0xe4
+2026-11-23T03:23:19.4867770Z created by testing.(*T).Run in goroutine 23210
+2026-11-23T03:23:19.4876060Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/testing/testing.go:1851 +0x374
+2026-11-23T03:23:19.4876430Z 
+2026-11-23T03:23:19.4876580Z goroutine 1762 [select, 14 minutes]:
+2026-11-23T03:23:19.4877200Z database/sql.(*DB).connectionOpener(0x140006d44e0, {0x105c83d18, 0x14000a28370})
+2026-11-23T03:23:19.4877870Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/database/sql/sql.go:1261 +0x80
+2026-11-23T03:23:19.4878610Z created by database/sql.OpenDB in goroutine 1620
+2026-11-23T03:23:19.4879240Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/database/sql/sql.go:841 +0x124
+2026-11-23T03:23:19.4879560Z 
+2026-11-23T03:23:19.4879720Z goroutine 45829 [select]:
+2026-11-23T03:23:19.4880090Z os/exec.(*Cmd).watchCtx(0x14000758a80, 0x14000cc7c70)
+2026-11-23T03:23:19.4880650Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:789 +0x78
+2026-11-23T03:23:19.4881250Z created by os/exec.(*Cmd).Start in goroutine 45814
+2026-11-23T03:23:19.4881780Z 	/Users/runner/hostedtoolcache/go/1.24.13/arm64/src/os/exec/exec.go:775 +0x738
+2026-11-23T03:23:19.4882790Z FAIL	github.com/electrikmilk/cherri	900.089s

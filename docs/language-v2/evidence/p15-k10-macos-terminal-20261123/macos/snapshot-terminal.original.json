@@ -1,0 +1,84 @@
+{
+  "observedUTC": "2026-11-23T03:23:39.689057+00:00",
+  "source": "4feadab9db4d351628f78593304373631693869a",
+  "completed": 3,
+  "total": 3,
+  "runs": [
+    {
+      "observedUTC": "2026-11-23T03:23:39.365593+00:00",
+      "run": 45100706965,
+      "source": "4feadab9db4d351628f78593304373631693869a",
+      "workflow": "build-test.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "id": 137450661884,
+          "name": "build-test-linux",
+          "status": "completed",
+          "conclusion": "failure",
+          "activeSteps": [],
+          "failedSteps": [
+            "Full Go Test Suite"
+          ]
+        },
+        {
+          "id": 137450662114,
+          "name": "build-test-nix",
+          "status": "completed",
+          "conclusion": "success",
+          "activeSteps": [],
+          "failedSteps": []
+        },
+        {
+          "id": 137450662143,
+          "name": "build-test-macos",
+          "status": "completed",
+          "conclusion": "failure",
+          "activeSteps": [],
+          "failedSteps": [
+            "Full Go Test Suite"
+          ]
+        }
+      ]
+    },
+    {
+      "observedUTC": "2026-11-23T02:37:44.044461+00:00",
+      "run": 45100808090,
+      "source": "4feadab9db4d351628f78593304373631693869a",
+      "workflow": "openminis-skill.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "id": 137450984720,
+          "name": "build-test-package",
+          "status": "completed",
+          "conclusion": "failure",
+          "activeSteps": [],
+          "failedSteps": [
+            "Validate bounded GET pagination"
+          ]
+        }
+      ]
+    },
+    {
+      "observedUTC": "2026-11-23T02:33:50.418793+00:00",
+      "run": 45100819514,
+      "source": "4feadab9db4d351628f78593304373631693869a",
+      "workflow": "p10r15-documentation-consumers.yml",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 137451021109,
+          "name": "installed-public-documentation",
+          "status": "completed",
+          "conclusion": "success",
+          "activeSteps": [],
+          "failedSteps": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "Supplemental count correction only; earlier original intake and raw log preserved",
+  "originalLogSha256": "e1ff3221db3334f9ad2d0791f1575f5dd099d3d557e3262a7e2ef178f57a9b83",
+  "reason": "Five original GitHub log segments carry a leading UTF-8 BOM. The previous anchored counter missed one PASS line in each invocation; optional-BOM normalization includes those actual original PASS lines. No test was rerun.",
+  "ordinaryTopLevelRuns": 1434,
+  "ordinaryTopLevelResults": {
+    "PASS": 1426,
+    "SKIP": 8
+  },
+  "acceptanceTopLevelRuns": 246,
+  "acceptanceTopLevelResults": {
+    "PASS": 240,
+    "SKIP": 3,
+    "FAIL": 3
+  },
+  "unchangedFindings": "Same three BRG32-derived acceptance failures, RP50 PASS and ordinary package PASS; no timing restamping.",
+  "bomPrefixedLines": [
+    1,
+    6564,
+    10771,
+    21088,
+    25564
+  ]
+}

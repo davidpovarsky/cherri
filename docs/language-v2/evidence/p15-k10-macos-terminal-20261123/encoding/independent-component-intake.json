@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "kind": "Independent read-only component intake; no producer or Go execution",
+  "observedUTC": "2026-11-23T03:24:52.629707+00:00",
+  "implementationSha": "4feadab9db4d351628f78593304373631693869a",
+  "runId": "45100706965",
+  "jobId": 137450662143,
+  "artifactId": 14785316588,
+  "status": "PASS_COMPONENT_ONLY",
+  "checks": 1589,
+  "failures": [],
+  "originalZipSha256": "11c062e73f1d75ecba80b52b4627af1500857e62861e3ba45daf3958bba94c5d",
+  "originalMembers": 15,
+  "originalBytes": 111452,
+  "phaseResults": [
+    {
+      "phase": "positive",
+      "exitCode": 0,
+      "reportStatus": "PASS",
+      "discovery": {
+        "appIntentStateClasses": 20,
+        "parameterStateClasses": 95,
+        "uniqueStateClasses": 50
+      },
+      "matrixObservations": 350,
+      "requiredObservations": 23,
+      "requiredPassed": 23,
+      "failures": [],
+      "reportSha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088"
+    },
+    {
+      "phase": "corrupt",
+      "exitCode": 1,
+      "reportStatus": "FAIL",
+      "discovery": {
+        "appIntentStateClasses": 20,
+        "parameterStateClasses": 95,
+        "uniqueStateClasses": 50
+      },
+      "matrixObservations": 350,
+      "requiredObservations": 23,
+      "requiredPassed": 22,
+      "failures": [
+        {
+          "actual": "accept",
+          "code": "E_REQUIRED_ENCODING_EXPECTATION",
+          "expected": "reject",
+          "id": "plainString.WFStringParameterState.string"
+        }
+      ],
+      "reportSha256": "e43502de0d8d76cb022df3ca51a011fd25c1fcc5eddd87138c5a98d4c73785a8"
+    },
+    {
+      "phase": "restored",
+      "exitCode": 0,
+      "reportStatus": "PASS",
+      "discovery": {
+        "appIntentStateClasses": 20,
+        "parameterStateClasses": 95,
+        "uniqueStateClasses": 50
+      },
+      "matrixObservations": 350,
+      "requiredObservations": 23,
+      "requiredPassed": 23,
+      "failures": [],
+      "reportSha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088"
+    }
+  ],
+  "requiredCases": 23,
+  "originalExpectedRejections": 1,
+  "independentlyBoundInputs": [
+    {
+      "identity": "tools/shortcut-runtime/jxa/verify_encodings.js",
+      "bytes": 8536,
+      "sha256": "ea16f22360d2af239effee2ced4b80e55b7e42b6e57dce99e7834059ffbde41a"
+    },
+    {
+      "identity": "tools/shortcut-runtime/required-encoding-expectations.json",
+      "bytes": 4793,
+      "sha256": "fe521c4c782ccb74a7c3327d28dcc48c358f2943bd5f070a1f2a20bc63e2ce38"
+    },
+    {
+      "identity": "tools/shortcut-runtime/required_encoding_gate.py",
+      "bytes": 17280,
+      "sha256": "50a8f32d4e6f2e51d369b093b8cec2dc7b4cb255db7b780370689f53452b45af"
+    },
+    {
+      "identity": "frontboat/shortcutkit@ee52c32937053268e4a035eba4b372fe77ec6411:tools/jxa-prelude.js",
+      "bytes": 6596,
+      "sha256": "d6fbcaad5104562b04004b39ca098486449399c15c83176c49b2ac28f47a3461"
+    },
+    {
+      "identity": "docs/apple-runtime/parameter-encodings.json",
+      "bytes": 520474,
+      "sha256": "27c0a367f9856d83445fbad83a333b5aa5e82717846c0c5c34e72d656457b546"
+    },
+    {
+      "identity": "docs/apple-runtime/encoding-table.json",
+      "bytes": 31463,
+      "sha256": "b9dd843f63ba90e24739027017178cbf09ef602538b1f9337d92e4407d5138fc"
+    }
+  ],
+  "artifactReferencesReconciled": 26,
+  "emittedRecordRequirements": [
+    "CI01",
+    "RP47"
+  ],
+  "emittedTier": "negative-ci",
+  "appleEngineExecuted": true,
+  "shortcutRuntimeExecuted": false,
+  "nativeShortcutRuntimeCredit": false,
+  "formalAggregateAdmissionExecuted": false,
+  "formalEvidenceCredit": false,
+  "closureAllowed": false,
+  "formalEligibilityAtObservation": {
+    "buildStatus": "completed",
+    "buildConclusion": "failure",
+    "knownFailedJobs": [
+      137450661884,
+      137450662143
+    ],
+    "reason": "Existing canonical aggregator rejects all non-success manifest runs and their artifact references. This component receipt does not waive that rule or rebind K10 evidence to K11."
+  },
+  "limitations": [
+    "No canonical Go intake or producer was rerun. This is independent mechanical reconciliation against retained original bytes and the exact committed validator source.",
+    "The existing upload glob omits assembled verify.js; its committed assembly recipe and both exact constituent source blobs are independently verified.",
+    "Phase receipts contain no monotonic duration; GitHub step wall times do not establish individual phase runtimes.",
+    "WorkflowKit parameter-state execution is not Shortcut runtime execution. No BRG31 encoding record exists."
+  ],
+  "sourceCleanBeforeAfter": true,
+  "newTests": 0,
+  "newWorkflowDispatches": 0,
+  "newNativeExecutions": 0,
+  "providerGenerationCalls": 0
+}

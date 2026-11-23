@@ -1,0 +1,224 @@
+{
+  "RP50": {
+    "discovery": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "found": [
+        "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+        "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+        "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+        "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+        "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+        "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+        "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+        "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+        "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+        "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+        "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+        "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+        "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+        "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+        "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+      ],
+      "passed": [
+        "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+        "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+        "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+        "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+        "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+        "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+        "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+        "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+        "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+        "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+        "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+        "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+        "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+        "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+        "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+      ],
+      "selection_complete": true,
+      "skipped": 0,
+      "tests_run": 15,
+      "unexpected_successes": 0
+    },
+    "elapsedSeconds": 2.71,
+    "expectedOriginalInventory": [
+      "test_runner.EvaluationHarnessTests.test_absent_external_configuration_is_not_model_quality",
+      "test_runner.EvaluationHarnessTests.test_duplicate_task_and_missing_arm_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_external_configuration_requires_explicit_execution_flag",
+      "test_runner.EvaluationHarnessTests.test_fake_subprocess_covers_both_arms_without_quality_score",
+      "test_runner.EvaluationHarnessTests.test_hung_adapter_times_out",
+      "test_runner.EvaluationHarnessTests.test_identity_model_and_actual_usage_are_enforced",
+      "test_runner.EvaluationHarnessTests.test_malformed_process_json_and_oversized_stdout_fail_closed",
+      "test_runner.EvaluationHarnessTests.test_malformed_suite_replaces_stale_success_with_failure",
+      "test_runner.EvaluationHarnessTests.test_nonfinite_timeout_replaces_stale_receipt_without_starting",
+      "test_runner.EvaluationHarnessTests.test_nonzero_secret_stderr_is_never_in_error",
+      "test_runner.EvaluationHarnessTests.test_output_cannot_overwrite_a_task_suite",
+      "test_runner.EvaluationHarnessTests.test_request_identity_binds_all_model_inputs_and_excludes_oracle",
+      "test_runner.EvaluationHarnessTests.test_response_types_are_rejected_without_attribute_errors",
+      "test_runner.EvaluationHarnessTests.test_timeout_stops_a_spawned_worker",
+      "test_runner.EvaluationHarnessTests.test_validator_requires_exact_source_identity_and_oracle_coverage"
+    ],
+    "originalDiscoveryLineSHA256": "a6a042b65c06cb30ccfceb6792f0a55158ff4984a1613364eb32129ebcc03f53",
+    "originalPassLine": "--- PASS: TestP15RP50AIHarnessControlFlow (2.71s)",
+    "qualityEvaluation": false,
+    "testSourceSHA256": "7f740d3dd909a5fae02a624fdc44ad3300f0e02d36a814668dcc2dfa94593252"
+  },
+  "acceptancePackage": {
+    "elapsedSecondsEmittedByGo": 1008.023,
+    "failedParents": [
+      "--- FAIL: TestP15BRG32InstalledAIHarness (0.00s)",
+      "--- FAIL: TestSupplementalObligationHarnessProductionEvidence (6.32s)",
+      "--- FAIL: TestSupplementalAcceptanceProductionEvidence (164.09s)"
+    ],
+    "plainTopLevelEventCounts": {
+      "FAIL": 3,
+      "PASS": 239,
+      "SKIP": 3
+    },
+    "status": "FAIL"
+  },
+  "newExecutions": 0,
+  "ordinaryPackages": {
+    "discovered": 29,
+    "fail": 0,
+    "noTestFiles": 5,
+    "pass": 24,
+    "plainTopLevelEventCounts": {
+      "PASS": 1425,
+      "SKIP": 8
+    },
+    "rootPackageElapsedSeconds": 490.124,
+    "summaries": [
+      {
+        "line": 23729,
+        "text": "ok  \tgithub.com/electrikmilk/cherri\t490.124s"
+      },
+      {
+        "line": 23730,
+        "text": "?   \tgithub.com/electrikmilk/cherri/cmd/cherri-migrate\t[no test files]"
+      },
+      {
+        "line": 23738,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/icloudshortcut\t0.004s"
+      },
+      {
+        "line": 23818,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/analysis\t0.872s"
+      },
+      {
+        "line": 23834,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/assets\t0.077s"
+      },
+      {
+        "line": 23862,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/backend\t0.010s"
+      },
+      {
+        "line": 23863,
+        "text": "?   \tgithub.com/electrikmilk/cherri/internal/language/enums\t[no test files]"
+      },
+      {
+        "line": 23897,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/ir\t0.003s"
+      },
+      {
+        "line": 24053,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/lower\t0.445s"
+      },
+      {
+        "line": 24179,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/lsp\t0.637s"
+      },
+      {
+        "line": 24219,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/migrate\t0.010s"
+      },
+      {
+        "line": 24220,
+        "text": "?   \tgithub.com/electrikmilk/cherri/internal/language/modules\t[no test files]"
+      },
+      {
+        "line": 24228,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/protocol\t0.015s"
+      },
+      {
+        "line": 24301,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/schema\t0.010s"
+      },
+      {
+        "line": 24637,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/service\t3.973s"
+      },
+      {
+        "line": 24641,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/source\t0.002s"
+      },
+      {
+        "line": 24723,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/syntax\t0.004s"
+      },
+      {
+        "line": 24727,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/types\t0.002s"
+      },
+      {
+        "line": 24755,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/language/workspace\t0.004s"
+      },
+      {
+        "line": 24921,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/internal/shortcutcompare\t1.845s"
+      },
+      {
+        "line": 24933,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/ci-test-discovery\t0.297s"
+      },
+      {
+        "line": 24934,
+        "text": "?   \tgithub.com/electrikmilk/cherri/tools/inventory\t[no test files]"
+      },
+      {
+        "line": 24968,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/ios-runtime-verifier\t0.014s"
+      },
+      {
+        "line": 24994,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/language-docs\t0.749s"
+      },
+      {
+        "line": 24998,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/language-migrate\t0.011s"
+      },
+      {
+        "line": 25010,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/language-schema\t0.448s"
+      },
+      {
+        "line": 25011,
+        "text": "?   \tgithub.com/electrikmilk/cherri/tools/language-stdlib\t[no test files]"
+      },
+      {
+        "line": 25045,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/legacy-parity\t0.629s"
+      },
+      {
+        "line": 25136,
+        "text": "ok  \tgithub.com/electrikmilk/cherri/tools/shortcut-corpus\t0.016s"
+      }
+    ]
+  },
+  "originalLogBytes": 10462939,
+  "originalLogPath": "/mnt/development/projects/evidence/cherri-p10r15-k10-frozen-ci-20261123/build-test-failure-intake/linux-attempt-01/job-137450661884.original.log",
+  "originalLogSHA256": "e1ff3221db3334f9ad2d0791f1575f5dd099d3d557e3262a7e2ef178f57a9b83",
+  "reviewClarification": {
+    "priorDerivedIntakeSHA256": "b858b251738903748732c163be435846cc69c27d88147fce5c223752dc457d35",
+    "reason": "GitHub log publication timestamps are batched: the acceptance launch line and1008.023s of test output appear within0.448s of log timestamps. Those intervals cannot serve as per-process execution durations. Original monotonic suite JSON was not read in this review.",
+    "retainedVerifiedTiming": "Go emitted root package490.124s, acceptance package1008.023s and RP50 parent2.71s. No per-phase or aggregate monotonic duration is inferred from the log timestamps."
+  },
+  "sourceEdits": 0,
+  "sourceSHA": "4feadab9db4d351628f78593304373631693869a",
+  "status": "CONFIRMED_RP50_AND_ORDINARY_PACKAGE_RESULTS_ONLY"
+}
