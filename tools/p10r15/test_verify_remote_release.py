@@ -82,6 +82,16 @@ class SyntheticWorkflowTests(unittest.TestCase):
                 actions = fixture("v2")[:-1] + [terminal]
                 self.assertFalse(synthetic_workflow_matches(actions, "v2"))
 
+    def test_terminal_nothing_cannot_hide_annotation_or_unknown_metadata(self):
+        for metadata in ({"WFWorkflowActionComment": "annotation"},
+                         {"unreviewed": {"payload": "unexpected"}}):
+            with self.subTest(metadata=metadata):
+                actions = fixture("v2")
+                actions[-1].update(metadata)
+                original = copy.deepcopy(actions)
+                self.assertFalse(synthetic_workflow_matches(actions, "v2"))
+                self.assertEqual(actions, original)
+
     def test_no_extra_or_interior_action_is_hidden(self):
         original = fixture("v2")
         for name in ("nothing", "gettext", "downloadurl", "showresult"):

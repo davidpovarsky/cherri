@@ -57,6 +57,7 @@ def synthetic_workflow_matches(actions, dialect):
             return False
         terminal = actions[-1]
         if (not isinstance(terminal, dict)
+                or set(terminal) - {"WFWorkflowActionIdentifier", "WFWorkflowActionParameters"}
                 or terminal.get("WFWorkflowActionIdentifier") != "is.workflow.actions.nothing"
                 or terminal.get("WFWorkflowActionParameters", {}) != {}):
             return False
