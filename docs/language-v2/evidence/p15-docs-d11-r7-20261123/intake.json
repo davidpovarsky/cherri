@@ -1,0 +1,390 @@
+{
+  "artifacts": [
+    {
+      "bytes": 596207,
+      "id": 14780711722,
+      "members": 105,
+      "name": "docs-generator-evidence",
+      "sha256": "849739c7e2b4a0d51e6cb1c08276d3af664c6ad1baa0390d77573d0da95f7d08"
+    },
+    {
+      "bytes": 16136279,
+      "id": 14780359135,
+      "members": 100,
+      "name": "docs-built-site",
+      "sha256": "f37daebf335a0bb380ee690ca3f03e990534f6cda03153d52dc71e3645a5f47a"
+    },
+    {
+      "bytes": 25782,
+      "id": 14780342856,
+      "members": 1,
+      "name": "docs-snippet-evidence",
+      "sha256": "e761d658542b224647661988ff25cc8d88c13450c7729abbee5e9b553551aa68"
+    }
+  ],
+  "cache": {
+    "cacheAcquireReleasePairs": 6,
+    "cacheSeconds": 26.248,
+    "cacheSourcePreserved": true,
+    "cacheTestNames": [
+      "test_actual_valid_check_and_native_plist",
+      "test_corrupt_binary_digest_rejected_and_bytes_preserved",
+      "test_dirty_tracked_source_rejected_and_preserved",
+      "test_exact_invalid_diagnostic_and_no_output",
+      "test_failed_fetch_cleans_only_the_owned_stage",
+      "test_missing_receipt_does_not_rebuild_or_delete_binary",
+      "test_occupied_empty_directory_is_not_used",
+      "test_unmanaged_directory_is_not_deleted_or_modified",
+      "test_untracked_source_rejected_and_preserved",
+      "test_valid_cache_reuses_verified_binary_without_rebuild",
+      "test_wrong_expected_diagnostic_does_not_pass",
+      "test_wrong_real_binary_rejected_even_with_matching_digest_receipt"
+    ],
+    "cacheTests": 12,
+    "cacheWitnessHashesReconcileToOriginalGitStreams": true,
+    "linuxBinarySha256": "a73ca6028f14f9bc0da5ca81cb4acbe4028e625c324908aba1a2879881ae872a",
+    "originalJobLogSha256": "45e7a7caad5f894582d7ca7ca81bcd873c28aeb1b8919ce3e21b57bce8980994",
+    "sourceWitnessEvents": 18
+  },
+  "compilerSource": "ca316a3dee252456c4bec751594cf249c709b331",
+  "docsSource": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+  "generation": {
+    "generatedBytes": 243289,
+    "generatedSha256": "8f8a953a14fd65c9bfe6024ea065524d76a8f0549bd1d2e45502cda00dd4d0be",
+    "generationSeconds": 5.53274,
+    "originalProcesses": 33,
+    "originalStreams": 66,
+    "processRecordsAndByteBindingsChecked": true,
+    "reference": {
+      "compiler_macros": 15,
+      "complete_byte_equality": true,
+      "frontmatter_bytes": 119,
+      "headings": 520,
+      "native_actions": 505,
+      "reference_sha256": "8f8a953a14fd65c9bfe6024ea065524d76a8f0549bd1d2e45502cda00dd4d0be"
+    },
+    "unchangedCheckSeconds": 0.064231
+  },
+  "go": {
+    "eachRunAndPassExactlyOnce": true,
+    "mutations": [
+      "optional_primary",
+      "typed_default",
+      "callable_identity",
+      "wire_key",
+      "return_type",
+      "macro_identity",
+      "missing_category",
+      "extra_section"
+    ],
+    "nanosecondTimeAndElapsedChecks": true,
+    "originalEvents": 52,
+    "parents": [
+      "TestGeneratedReferenceIncludesSeparateMacroContracts",
+      "TestP15D01PrimaryParameterContract",
+      "TestP15D01AllGeneratedSignaturesAndCategories",
+      "TestP15D01CheckGateProducesAndRejectsFaults"
+    ],
+    "processSeconds": 2.273645
+  },
+  "jobs": {
+    "site": 137416400562,
+    "snippetGenerator": 137416400372
+  },
+  "packet": {
+    "archive": "d11-r7-selected-originals.zip",
+    "archiveBytes": 963171,
+    "archiveSha256": "066a5d539a588e1877224b8ed6a392b96cb95510c5edc4c6bc85823a19adf52a",
+    "boundFiles": 145,
+    "compilerSource": "ca316a3dee252456c4bec751594cf249c709b331",
+    "docsSource": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+    "fullBuiltSiteArchiveIncluded": false,
+    "historicalArchivesIncluded": false,
+    "immutableSourceFiles": 19,
+    "manifest": "selected-originals-manifest.json",
+    "manifestSha256": "eeaa7b92798911bc0e58cf64d1b99ca586d0e65ffbfa2bc085cecba8d980389b",
+    "originalApiAndLogRecords": 5,
+    "originalArtifactMembers": 121,
+    "runId": 45089752299,
+    "schema": "cherri.docs-d11-proof-packet/1"
+  },
+  "run": {
+    "conclusion": "success",
+    "created_at": "2026-11-23T00:36:24Z",
+    "event": "workflow_dispatch",
+    "head_branch": "audit/cherri-p10r15-docs-d11-20261123",
+    "head_sha": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+    "html_url": "https://github.com/davidpovarsky/cherrilang.org/actions/runs/45089752299",
+    "id": 45089752299,
+    "path": ".github/workflows/docs-smoke-test.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-11-23T00:37:55Z",
+    "workflow_id": 411647719
+  },
+  "schema": "cherri.docs-d11-independent-intake/1",
+  "scope": {
+    "appleRuntimeProved": false,
+    "formalAcceptanceGranted": false,
+    "installedConsumerProved": false,
+    "newCiRuns": 0,
+    "newTestsRun": 0,
+    "pagesPublished": false,
+    "sourceChanged": false,
+    "windowsBinaryEquivalenceClaimed": false
+  },
+  "site": {
+    "historicalProofMembersExcluded": 7,
+    "originalSiteJobLogSha256": "911f2bb24f59a6a1abb5220bbce4f3c0d00e9f80d9b8f6d765df49ac65f10d18",
+    "originalTopLevelControls": {
+      "artifactsRestoredExactly": true,
+      "compilerCommit": "ca316a3dee252456c4bec751594cf249c709b331",
+      "controls": [
+        {
+          "diagnostic": "Default search includes a historical route: /language/raw-actions",
+          "name": "historical-route-in-default-search",
+          "rejected": true
+        },
+        {
+          "diagnostic": "Search result URL does not match its project-base route",
+          "name": "search-result-without-project-base",
+          "rejected": true
+        },
+        {
+          "diagnostic": "Search client does not load and use the verified project URLs",
+          "name": "client-search-request-without-project-base",
+          "rejected": true
+        },
+        {
+          "diagnostic": "Home page lacks its unique current-guide entry point",
+          "name": "missing-home-authoring-entry",
+          "rejected": true
+        },
+        {
+          "diagnostic": "Built site is missing a unique page: /assets/missing-control.png",
+          "name": "missing-home-image",
+          "rejected": true
+        },
+        {
+          "diagnostic": "rendered action page lost canonical metadata: fingerprints=['dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5'], signatures=[]",
+          "name": "damaged-canonical-action-fingerprint",
+          "rejected": true
+        }
+      ],
+      "docsCommit": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+      "failed": 0,
+      "formatVersion": 1,
+      "passed": 6,
+      "skipped": 0
+    },
+    "originalTopLevelReceipt": {
+      "actionSearchEntries": 21,
+      "baseUrl": "/cherrilang.org",
+      "compilerCommit": "ca316a3dee252456c4bec751594cf249c709b331",
+      "currentSearchRoutes": [
+        "/cherrilang.org",
+        "/cherrilang.org/fork-language",
+        "/cherrilang.org/fork-language/actions",
+        "/cherrilang.org/fork-language/guide",
+        "/cherrilang.org/fork-language/migration"
+      ],
+      "docsCommit": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+      "formatVersion": 2,
+      "historicalSearchEntries": 0,
+      "nativeActionCount": 505,
+      "publicationOrigin": "https://davidpovarsky.github.io",
+      "renderedActionPage": "fork-language/actions.html",
+      "renderedActionPageSha256": "c863ebd0ec9535fd6da10b82d7e3da8c8366f4b07de0ce4855c51e524c5b29fc",
+      "renderedReferenceSignatures": 520,
+      "schemaFingerprints": [
+        "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+        "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c"
+      ],
+      "searchEntries": 50,
+      "searchIndexSha256": "2387c2c2f8da9996a48c3373e05117b8238bec93bd575c5aec3dcd0f237428a0",
+      "sitePublished": false,
+      "sourceReferenceSha256": "d1a5dfe3762109caeb7ddf8e1beaba5f17de4b5231de342ce99fa039d76090cd",
+      "sourceTreeClean": true,
+      "verifiedLocalLinks": 87
+    },
+    "readOnlyReceiptReproductionExact": true,
+    "selectedCurrentFiles": 13,
+    "siteControlsSourceSha256": "af386ae2ba9a40ba49de3341dcde5e1d76bb19a7a6dc2235f1c70e62db70c653",
+    "siteVerifierSourceSha256": "e0a51da0c337dbc5a90dd43f1eec05152fca499fc9f98e94bc123938bdcc0959"
+  },
+  "snippets": {
+    "counts": {
+      "cherri-legacy": 4,
+      "diagnostic": 3,
+      "generated-signature": 520,
+      "runnable": 36
+    },
+    "diagnostics": [
+      {
+        "actualErrors": [
+          "E_ASSIGN_IMMUTABLE"
+        ],
+        "block": 2,
+        "checkExit": 1,
+        "compileExit": 1,
+        "file": "fork-language/guide.md",
+        "sourceSha256": "ff0c9fcffe6a67c24a1ef7fc0488484229cad04f7aa7bb31dfc6d229ebd505e3"
+      },
+      {
+        "actualErrors": [
+          "E_TARGET_VALUE_SHAPE"
+        ],
+        "block": 15,
+        "checkExit": 1,
+        "compileExit": 1,
+        "file": "fork-language/guide.md",
+        "sourceSha256": "eacefa37bce1134127e6df1d99a06ef0defda48d6ab9dcc56e6a9f1560230d2d"
+      },
+      {
+        "actualErrors": [
+          "E_LEGACY_SYNTAX"
+        ],
+        "block": 9,
+        "checkExit": 1,
+        "compileExit": 1,
+        "file": "fork-language/migration.md",
+        "sourceSha256": "59abe97fbaefeb4e483f8aff7b7b5011d9d6f552d6e7ef2930d7455e018e707f"
+      }
+    ],
+    "executed": 39,
+    "originalRecordAndLogCountsMatch": true,
+    "records": 563,
+    "referenceOnly": 524,
+    "sourceDigestRule": "Executed snippet = trimmed Markdown fence plus final LF; reference-only fence = trimmed source without added LF.",
+    "sourceFiles": [
+      {
+        "bytes": 2078,
+        "path": "index.md",
+        "sha256": "84376027a4f3619e7fd7e5416a2d22df63925d6faee2bfecbdae97534fee1cfd"
+      },
+      {
+        "bytes": 8365,
+        "path": "fork-language/guide.md",
+        "sha256": "38637c6a0406e33bcc470c2a4a604ab5cd3d837934422b26954d7582e8f0bd81"
+      },
+      {
+        "bytes": 3314,
+        "path": "fork-language/migration.md",
+        "sha256": "1946a6f87406aef1ea7250325d0b8679fe68eeaa6eda8907b5cb0059bb5a2de6"
+      },
+      {
+        "bytes": 243408,
+        "path": "fork-language/actions.md",
+        "sha256": "d1a5dfe3762109caeb7ddf8e1beaba5f17de4b5231de342ce99fa039d76090cd"
+      },
+      {
+        "bytes": 7357,
+        "path": "language/functions.md",
+        "sha256": "d625f4714c7dadaaed00f8a77beeb64078e83c2d59bab056c6e0b208824208f4"
+      },
+      {
+        "bytes": 4429,
+        "path": "language/variables-constants-globals.md",
+        "sha256": "01e8033ffeca60093547befef8b50d220354f55e1fac1c767371047604eb22f2"
+      }
+    ]
+  },
+  "source": {
+    "boundSourceFiles": [
+      {
+        "bytes": 243289,
+        "gitBlob": "cc6aa89af2399a8a28cc824ab63c34875c9cece9",
+        "path": "docs/language-v2/actions-reference.md",
+        "repository": "compiler",
+        "sha256": "8f8a953a14fd65c9bfe6024ea065524d76a8f0549bd1d2e45502cda00dd4d0be"
+      },
+      {
+        "bytes": 1618,
+        "gitBlob": "0bc0002815d1779cf4f094bbe141df03557d37ed",
+        "path": "go.mod",
+        "repository": "compiler",
+        "sha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+      },
+      {
+        "bytes": 11884,
+        "gitBlob": "00552c157626f542aee6906578955f7ded0ebf4c",
+        "path": "go.sum",
+        "repository": "compiler",
+        "sha256": "8128f7aca3ed35d26eced1b2b2e3fc2f0e942f1c46b94c27d6c023991e1d3f5c"
+      },
+      {
+        "bytes": 927,
+        "gitBlob": "61dc3aab84ebff30cd91407528969a4c581121dc",
+        "path": "tools/language-docs/macro_metadata_test.go",
+        "repository": "compiler",
+        "sha256": "c6b3d1d72dffd1ed56e391b72bb3514c99f29049679597256202fc25f0311f6a"
+      },
+      {
+        "bytes": 7430,
+        "gitBlob": "ad492193cd8dc6014059f2b2bb8e968bb8889622",
+        "path": "tools/language-docs/main.go",
+        "repository": "compiler",
+        "sha256": "ee2038a8bbd5d0c475b9824e8a12abf5e2a0be2e529eb8da1486e1de4f184573"
+      },
+      {
+        "bytes": 7736,
+        "gitBlob": "7b351ac9391ce587366323a1c2bc1f2c0be5c6fc",
+        "path": "tools/language-docs/p15_contract_test.go",
+        "repository": "compiler",
+        "sha256": "cfa03d777f1103975f845e90723730b0a46971ffba6dc88ecf20c1eba4503782"
+      },
+      {
+        "bytes": 3996,
+        "gitBlob": "e40d9dc0f678550e42c996400e7e609a3f9f769f",
+        "path": ".github/workflows/docs-smoke-test.yml",
+        "repository": "docs",
+        "sha256": "3b46fc4ee7280b4d353005e33e010a39cf074d4fd38881ef7e9cddc49a2aa524"
+      },
+      {
+        "bytes": 243408,
+        "gitBlob": "9e3b5ff3b4820932a17a407e30274906f1e57628",
+        "path": "fork-language/actions.md",
+        "repository": "docs",
+        "sha256": "d1a5dfe3762109caeb7ddf8e1beaba5f17de4b5231de342ce99fa039d76090cd"
+      },
+      {
+        "bytes": 13765,
+        "gitBlob": "dc79f901f5d1ecef28039ccc9feec0910607fc2c",
+        "path": "scripts/smoke_test_snippets.py",
+        "repository": "docs",
+        "sha256": "836d3017f4e4f3449a35b87be51f61b85bc2c361a0146a5baa1c891412bd0b17"
+      },
+      {
+        "bytes": 18101,
+        "gitBlob": "72b56c2730d95681cda353a955cc6b1060bbf469",
+        "path": "scripts/test_smoke_test_snippets.py",
+        "repository": "docs",
+        "sha256": "6a6ec4ad22c3492910854417fb10cd798cec8979a149e441bdf6ca9bd3fb4359"
+      },
+      {
+        "bytes": 22581,
+        "gitBlob": "ce3e6c37288c75ecbac7a9ea937ede7c13d6e8db",
+        "path": "scripts/verify_generated_reference.py",
+        "repository": "docs",
+        "sha256": "a787707498141f1d30de1c903dc0b39c3c90ebab036a32ddcdf99bf9fe8fa79f"
+      }
+    ],
+    "fullTrackedTrees": {
+      "compiler": {
+        "files": 6456,
+        "flagsSha256": "0ef8baff7330212370d162c733e3951fde34dc3e9113a06fd78f551e357401be",
+        "stageSha256": "a9836dcf88faab57ebb27d18e2718ce81ab154dedf91e9a59420ba3a25d44f59"
+      },
+      "docs": {
+        "files": 107,
+        "flagsSha256": "9a585e8329ac18113b469a28095551fed945f2bd58e46a0b1f6efac5ec350300",
+        "stageSha256": "36f79999a004ce5c94a725e2484fe10d9f3fa5142281d114ed369bf8afac8d94"
+      }
+    },
+    "sourceFilesUnchanged": true,
+    "sourceIdentityBytesEqual": true,
+    "sourceIdentitySha256": "b434c0d0d8e1c34bbc86d42a8170a57f26cbaab896b862cb467c40b4c18341aa"
+  },
+  "status": "PASS",
+  "verifiedUtc": "2026-11-23T00:57:16.515229+00:00"
+}
