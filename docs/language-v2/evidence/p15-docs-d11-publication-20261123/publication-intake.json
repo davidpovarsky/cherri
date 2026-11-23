@@ -1,0 +1,102 @@
+{
+  "acceptanceLimits": {
+    "AppleRuntime": false,
+    "appIntegration": false,
+    "formal179Complete": false,
+    "installedConsumer": false,
+    "originalPrepublicationEvidenceRewritten": false
+  },
+  "artifacts": [
+    {
+      "bytes": 1535,
+      "completeOriginalZipIncluded": true,
+      "id": 14782045537,
+      "name": "published-docs-build-evidence",
+      "sha256": "a3319aa0b3e5d268e794f8d54d6ff3353b86e7111e60de0c3540c2b1ceadb7fa"
+    },
+    {
+      "bytes": 15961918,
+      "completeOriginalZipIncluded": false,
+      "id": 14781473315,
+      "name": "github-pages",
+      "retainedOnOracle": true,
+      "selectedCurrentFiles": 13,
+      "sha256": "50127e2afec6b5a78a96302f7fca0b4ae83faa62a54ceafcf0cb0f0598b9cdeb",
+      "tarBytes": 18954240,
+      "tarFileCount": 98,
+      "tarSha256": "677f0e5f9ee2e2f22ef2a151056a59a9ab1186e2091d09488e71ab9ec95640e6"
+    }
+  ],
+  "automaticDocsSmoke": {
+    "conclusion": "success",
+    "docsSource": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+    "runId": 45091966841,
+    "status": "completed"
+  },
+  "compilerSource": "ca316a3dee252456c4bec751594cf249c709b331",
+  "consumerDispatchContract": {
+    "dispatchPerformedByThisIntake": false,
+    "inputs": {
+      "docs_deployment_run_id": "45091966838",
+      "publication_evidence_zip_base64": "Base64 of the exact included published-docs-build-evidence.original.zip"
+    },
+    "source": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+    "workflowPath": ".github/workflows/p10r15-documentation-consumers.yml"
+  },
+  "docsSource": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+  "frozenCherriCandidate": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+  "newTestExecutions": 0,
+  "packet": {
+    "boundMembers": 28,
+    "bytes": 205874,
+    "file": "publication-proof.zip",
+    "manifest": "publication-manifest.json",
+    "manifestSha256": "099fde31118e12013730a89e1b67937a0630e2a03487e4a648292694ca3a1602",
+    "sha256": "c4f51695a00af611675f60e6403e2d991447138788c558d161191de7edced8f8"
+  },
+  "pages": {
+    "attempt": 1,
+    "branch": "main",
+    "buildJobId": 137423327721,
+    "conclusion": "success",
+    "deployJobId": 137423543766,
+    "deployedArtifactId": 14781473315,
+    "deploymentId": 7987863190,
+    "deploymentLogArtifactAndCommitBinding": true,
+    "deploymentSuccessStatusId": 22885740769,
+    "event": "push",
+    "publishedUrl": "https://davidpovarsky.github.io/cherrilang.org/",
+    "runId": 45091966838,
+    "status": "completed",
+    "workflowId": 376511374,
+    "workflowPath": ".github/workflows/pages.yml"
+  },
+  "prepublicationIntakeCommit": "c82e4a6ba8498f84439652617be11db53ccb8b19",
+  "publication": {
+    "allBodiesExactlyMatchPublishedArtifact": true,
+    "allStatus200": true,
+    "basis": "successful exact-source GitHub Pages deployment plus seven exact live HTTPS body comparisons",
+    "completeSiteLiveFetchClaim": false,
+    "sitePublished": true,
+    "tlsDefaultCertificateVerification": true,
+    "verifiedHttpsBodies": 7
+  },
+  "publishedBuildReceipt": {
+    "actionSearchEntries": 21,
+    "historicalSearchEntries": 0,
+    "nativeActionCount": 505,
+    "originalReceiptUnmodified": true,
+    "originalSitePublishedField": false,
+    "readOnlyCurrentSiteVerifierReproducedOriginalReceipt": true,
+    "renderedActionPageSha256": "c863ebd0ec9535fd6da10b82d7e3da8c8366f4b07de0ce4855c51e524c5b29fc",
+    "renderedReferenceSignatures": 520,
+    "searchEntries": 50,
+    "searchIndexSha256": "2387c2c2f8da9996a48c3373e05117b8238bec93bd575c5aec3dcd0f237428a0",
+    "siteControlsPassed": 6,
+    "siteControlsRerun": false,
+    "verifiedLocalLinks": 87
+  },
+  "result": "PASS",
+  "schema": "cherri.docs-d11-publication-intake/1",
+  "sourceMutation": false
+}
