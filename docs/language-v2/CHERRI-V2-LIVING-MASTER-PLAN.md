@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.8.1 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 21 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.0 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 22 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1144,3 +1144,154 @@ neither original R6 nor K8 report is rewritten.
 The next frozen combined candidate must still obtain its actual platform CI,
 installed-consumer, signed runtime and evaluation evidence. R23 remains a real
 failure, physical-device proof remains unavailable, and closure remains false.
+
+
+## 22. K10 verification and K11 repair assembly — 2026-11-23
+
+Checkpoint recorded at 2026-11-23T03:22:05.206718+00:00. This is component verification and next-source
+assembly, not a new full179 run or a closure claim. The latest complete local
+report remains the exact K8 report in Chapter 21: 114 PASSED, 0 FAILED,
+26 NOT_RUN, 38 PENDING_EXTERNAL and 1 AI_EVAL_NOT_RUN; closure remains false.
+
+### Current source and milestone board
+
+| Surface | Exact identity and actual state |
+|---|---|
+| Compiler S | R7 ca316a3dee252456c4bec751594cf249c709b331; production compiler bytes remain unchanged by this assembly |
+| Documentation D | D11 365b08c5b4c71c6d22b591babb8d1ab852e5a3b9; published source and public bytes retain their separate original proof |
+| Frozen tested tooling K | K10 4feadab9db4d351628f78593304373631693869a, tree b53b53b9671b682944c8c5609ae66755b4635c1f |
+| K10 publication | Existing Windows account published a create-only named branch; independent remote ref/commit and ordinary Oracle source-clone receipts matched |
+| Next source | Development branch agent/cherri-p10r15-k11-integration-20261123; no frozen or published K11 is claimed at this checkpoint |
+| Three immutable contracts | All original bytes and 179 identities/tiers remain unchanged |
+| Protected iOS test | SHA256 9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8 remains unchanged |
+
+The root session integrated independently reviewed patches from three real
+subagents. Source commits, actual executions and later metadata commits remain
+distinct; no K10 result is relabeled as K11.
+
+### Actual K10 platform and consumer evidence
+
+| Lane | Observed outcome and remaining scope |
+|---|---|
+| Build & Test 45100706965 | Linux failed the BRG32 installed-package inventory; Nix passed. macOS: in_progress at 2026-11-23T03:21:21.724806+00:00. The original required WorkflowKit encoding step passed, but a non-success overall run is ineligible for canonical encoding acceptance. |
+| OpenMinis 45100808090 | Failed at the Pagination Python macro allowlist. The original Go Pagination parent and repaired debug-export step passed. All original failures remain retained. |
+| D03 consumers 45100819514 | Workflow succeeded; actual public/installed docs producer accepted. Original D03 aggregate is literally FAILED because the separately required app integration tier is absent. |
+| Full iOS 45100858894 | 57 unique original methods, 56 PASS and one D03 FAIL at line 542; xcodebuild exit 65. No complete iOS or D03 closure. |
+| Required Runtime PoC 45101192445 | Last native-owner observation: queued on xcode-27, no steps; no runtime outcome. |
+| Four runtime QA lanes | 45100894957 functional Legacy, 45100952614 Bool/List, 45101024573 typed defaults and 45101081393 original F01. Last observation: all queued, no steps; original watchers remain sole owners. |
+
+[The publication/docs/AI packet](evidence/p15-k10-publication-docs-ai-20261123/README.md)
+preserves the exact K10 source and consumer scope. D03 independent intake checked
+50 archive members, 34 artifact references, 22 package Git blobs, eight installed
+searches, seven HTTP 200 public resources and six original causal controls.
+The 50-entry public search index and 21-entry action index matched their source.
+The actual Go intake passed, but docs acceptance does not supply the missing
+application tier.
+
+[The K10 iOS packet](evidence/p15-k10-ios-full-20261123/README.md) preserves
+both complete published original artifacts and source-bound diagnostics. In
+this run, the repaired compact switch turned on, preserved the exact @count
+query and exposed the migration result. The original assertions at lines 531
+and 537 passed. The next compound assertion at line 542 cannot distinguish a
+missing Done button from a present but non-hittable button. The final dismissal
+and editor-source preservation checkpoint was not reached.
+
+The original five native queue observations establish allocation delay, not a
+stalled local watcher or a proven label mismatch. No label, assertion, deadline
+or pool setting was changed to manufacture a native result.
+
+### Narrow repairs and actual component acceptance
+
+| Repair | Source and verification |
+|---|---|
+| Pagination macro/main boundary | a8402e05127b87d13b18b960891df3b0a5013de2; seven focused controls and one original full producer PASS: 32 CLI cases, 32 full-action roundtrips, 144 model cases, 44 invalid sources and seven causal faults. Native executions zero. |
+| BRG32 installed package | d5b82e3a4e21416556d4a6c81ed12b05b1365b2f; four added inventory lines include precisely the two already tracked files. Original parent and eight corruption controls passed; three scoped records, one-of-one report PASS, closure false. |
+| Remote Builder observers | e780fefa113ab441440b040f0cc3d118c7eeaa85 and c697476374ef3e6659be62ec390594cdb609f8bd; exact V2 terminal Nothing and two consumer predicates repaired, Legacy unchanged. Sixteen control methods then six affected strict-boundary methods passed. |
+| D03 dismissal | f79ee85a6cf5b8691684d141c0127420b5e59a80; native search toolbar visibility policy with iOS 17.1 availability guard. Production-only, protected tests unchanged. Source/API review passed; native effectiveness remains unverified. |
+
+The Pagination repair verifies the macro's actual List binding while keeping
+the terminal V2 void action in the full lossless roundtrip. It does not add
+Nothing to the macro allowlist or admit extra effects. Its full producer took
+12.902 seconds; all 200 retained originals and every full graph comparison were
+independently checked. [Source, original failures and proof](evidence/p15-paginate-observer-20261123/README.md).
+
+The BRG32 original Go process exited zero in 65.355598 seconds, including
+compilation; the parent reported 25.51 seconds. The outer observer incorrectly
+reported FAILED_OR_INCOMPLETE because a long receipt crossed Go Output events.
+Independent reconstruction of the 12 original parent events recovered the
+complete receipt without rerunning a test. Both original observer failure and
+actual producer success remain visible. Nested raw streams/hash maps that the
+parent did not export are not invented; the 17 installed files have a separate
+immutable source review. [Actual receipts and scope](evidence/p15-brg32-installed-inventory-20261123/README.md).
+
+Apple's documented search-toolbar policy supports the D03 dismissal repair as
+a causal hypothesis. It does not establish that the original Done assertion
+now passes; the next frozen-source full iOS run must prove that. The iOS 17.0
+fallback retains its previous behavior without a new 17.0 runtime claim.
+
+### Inactive Remote Builder and signing
+
+[The original K10 inactive intake](p15-k10-inactive-remote-20261123.md) records
+stage PASS, source package 23 members PASS, runtime/unpacked 29 members PASS,
+and a complete 39-row entrypoint result of 38 PASS / 1 FAIL / 0 NOT_RUN.
+The required installed runner Go row passed in 67.435 seconds. The single
+failed row was the V2 observer's stale two-action expectation.
+
+The original 58-row signing matrix passed in 245.627 seconds: five controls
+and 53 expected nonzero rejections with no artifact. It consumed zero canonical
+public signatures. The eight-operation smoke remains NOT_STARTED. Live files,
+ownership/modes, the registered Legacy route and default remained unchanged.
+No activation, rollback, reapplication or release closure was attempted.
+
+Existing gates require exact-tuple reports; they contain no partial-report
+reuse exception. The next frozen tuple therefore needs its own package integrity,
+one complete 39-row entrypoint run, one 58-row matrix and one eight-operation
+smoke with exactly two canonical signing attempts and no retry. Prior successes
+remain useful history but cannot be restamped. The new observer controls are
+explicitly registered in OpenMinis CI.
+
+### AI chronology and strict source binding
+
+Exact K10 calibration passed all 12 unchanged public inputs and 48 graph checks
+in 0.775526 seconds using the verified R7 ARM64 compiler. It made no model call.
+One sealed K10 cohort was subsequently committed to Asana story
+1220774207004664 and independently observed twice before any provider request.
+
+The cohort was retired at 02:49:56Z, with zero provider requests, zero outcomes
+and no generation credential forwarded, after the qualification defect required
+a different source identity. The seed, original commitment and observations
+remain private and unchanged. Disposition story 1220774509663352 records
+RETIRED_WITHOUT_GENERATION. No replacement arose from observing model outcomes.
+
+The current-source equality guards remain intact. A future actual cohort must
+follow a separately frozen source, actual public calibration, new commitment
+and independent BEFORE/AFTER observations. It must not resume or restamp K10.
+AI quality remains unmeasured at this checkpoint.
+
+### Decisions, open requirements and next work
+
+1. Finish original macOS terminal intake, preserve all actual failures, and
+   include any causally demonstrated repair before the next source freeze.
+2. Publish the next exact source through the existing workflow-capable Windows
+   account, prepare an ordinary independent source clone, and run only the
+   required exact-source CI and consumer producers under single ownership.
+3. Complete the real sealed evaluation and one combined Oracle local179 plus
+   canonical Go AI intake. Retain the original 80-minute production envelope
+   and separate native/consumer tiers. Cheap metadata-only final intake is
+   distinct from rerunning the expensive producer.
+4. Preserve the actual R23 FAIL against fixed baseline
+   76d722502e20db977e84a095444d0172442655b8. The inactive policy proposal is
+   neither applied nor an acceptance waiver. Do not alter protected tests to
+   make the historical isolation rule appear green.
+5. Physical Apple evidence still requires an actual developer transport; the
+   observed Bluetooth/audio iPad presence does not provide one. Successful
+   signing, simulator builds, prerequisite checks and source reviews do not
+   satisfy physical-device requirements.
+6. The 26 local NOT_RUN and 38 external-pending obligations retain their exact
+   required tiers. Container/null/loop transport gaps and the historical
+   unpublished-backup gap remain distinct from platform allocation. The
+   existing repository-preservation scout cannot reconstruct missing original
+   unpublished payloads, and no present-day snapshot grants B01/BRG01 credit.
+
+No main merge, live Remote Builder promotion, full179 completion or project
+closure is claimed by this checkpoint.
