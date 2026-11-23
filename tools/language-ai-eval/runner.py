@@ -102,6 +102,37 @@ def atomic_json(path, value):
             os.unlink(temporary)
 
 
+def wait_for_posix_group_exit(group, deadline):
+    # SIGKILL delivery is asynchronous. Waiting for the direct child does not
+    # establish that its descendants released their resources.
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise ValueError("adapter process-group cleanup deadline expired")
+        try:
+            observed = subprocess.run(["ps", "-A", "-o", "pgid=,stat="],
+                                      stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                      text=True, encoding="ascii", errors="strict",
+                                      env={"PATH": os.defpath, "LC_ALL": "C"},
+                                      timeout=min(1.0, remaining), check=False)
+        except (OSError, subprocess.TimeoutExpired, UnicodeError):
+            raise ValueError("adapter process-group state could not be observed") from None
+        if observed.returncode != 0 or not observed.stdout.strip() or len(observed.stdout) > MAX_ADAPTER_BYTES:
+            raise ValueError("adapter process-group state could not be observed")
+        active = False
+        for line in observed.stdout.splitlines():
+            fields = line.split()
+            if len(fields) != 2 or not re.fullmatch(r"[0-9]+", fields[0]) or not re.fullmatch(r"[DIKPRSTUWXYZtx][<>AELNSVWXsl+]*", fields[1]):
+                raise ValueError("adapter process-group state was malformed")
+            if int(fields[0]) == group:
+                # Linux can report a zombie group leader with live threads as Zl.
+                active = active or fields[1][0] != "Z" or "l" in fields[1]
+        if time.monotonic() >= deadline:
+            raise ValueError("adapter process-group cleanup deadline expired")
+        if not active:
+            return
+
+
 def run_process(command, request, timeout, originals=None):
     # No shell interpolation. stderr can contain provider credentials, so it is
     # hashed and counted, never included in the distributable receipt.
@@ -109,6 +140,7 @@ def run_process(command, request, timeout, originals=None):
         options = {"start_new_session": True} if os.name != "nt" else {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
         result = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=stdout, stderr=stderr, **options)
         timed_out = None
+        cleanup_error = None
         try:
             result.communicate(json.dumps(request).encode(), timeout=timeout)
         except subprocess.TimeoutExpired as error:
@@ -118,9 +150,21 @@ def run_process(command, request, timeout, originals=None):
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5, check=False)
                 finally:
                     result.kill()
+                result.communicate()
             else:
-                os.killpg(result.pid, signal.SIGKILL)
-            result.communicate()
+                deadline = time.monotonic() + 5
+                try:
+                    try:
+                        os.killpg(result.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise ValueError("adapter process-group cleanup deadline expired")
+                    result.communicate(timeout=remaining)
+                    wait_for_posix_group_exit(result.pid, deadline)
+                except (OSError, ValueError, subprocess.TimeoutExpired):
+                    cleanup_error = "adapter process-group cleanup could not establish termination"
             timed_out = error
         stdout.seek(0)
         output = stdout.read(MAX_ADAPTER_BYTES + 1)
@@ -141,6 +185,8 @@ def run_process(command, request, timeout, originals=None):
         (originals / "stdout.captured").write_bytes(output)
         (originals / "stderr.captured").write_bytes(diagnostic)
         atomic_json(originals / "process.json", receipt)
+    if cleanup_error is not None:
+        raise ValueError(cleanup_error)
     if timed_out is not None:
         raise timed_out
     if result.returncode != 0:
