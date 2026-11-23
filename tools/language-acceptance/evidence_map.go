@@ -208,6 +208,15 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			Assertions:           assertions,
 			ResultReferences:     resultRefs,
 		}
+		if c.ID == "END01" {
+			mapping.RequiredAssertions = map[string]string{
+				"same_source_finalized_ledger":       "true",
+				"all_179_original_results_preserved": "true",
+				"formal_acceptance_granted":          "false",
+				"ci_checkout_provenance_granted":     "false",
+			}
+			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-final-provenance-END01"}
+		}
 		doc.Mappings[c.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
 	}
@@ -288,6 +297,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "END01" {
+		return []string{finalProvenanceTestID}
+	}
 	if id == "FN05" {
 		return functionTransportTestIDs()
 	}
@@ -499,6 +511,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == "END01" {
+		return append([]string{}, finalProvenanceSources...)
+	}
 	if id == "FN05" {
 		return append([]string{}, functionTransportProductionPaths...)
 	}

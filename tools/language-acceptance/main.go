@@ -176,6 +176,7 @@ type Runner struct {
 	observations        []LocalSmokeObservation
 	stateRace           *stateRaceExecution
 	aiMeasurementResult *aiMeasurementExecution
+	finalDelivery       *finalProvenanceResult
 }
 
 func resolveRepoRoot() string {
@@ -1058,6 +1059,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateFinalProvenanceRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateAIMeasurementRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1310,6 +1314,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 }
 
 func main() {
+	if handled, code := finalProvenanceCommand(os.Args[1:]); handled {
+		os.Exit(code)
+	}
 	var explicitContract string
 	var explicitRepairContract string
 	var explicitGates string
@@ -1901,11 +1908,7 @@ func (r *Runner) runEvaluation() {
 
 // Group 22: Delivery
 func (r *Runner) runDelivery() {
-	// END01: Final pushed branches/artifacts/provenance and clean worktree
-	cmdStatus := exec.Command("git", "status", "--porcelain")
-	outStatus, errStatus := cmdStatus.CombinedOutput()
-	end01Passed := errStatus == nil
-	r.Record("END01", "delivery", "Final pushed branches/artifacts/provenance and clean worktree", "repository", []string{"repository"}, end01Passed, "PASSED", fmt.Sprintf("Working branch checked; status output length: %d", len(outStatus)))
+	r.runFinalProvenanceRequirement()
 }
 
 func (r *Runner) recordUnexecutedRequirement(id, group, title string, levels []string) {

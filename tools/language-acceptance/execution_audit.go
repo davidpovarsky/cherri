@@ -543,6 +543,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.TestNames = append([]string{}, f01RequiredTests...)
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL" || res.Passed
 		}
+		applyFinalProvenanceAudit(&row, runner)
 		rows = append(rows, row)
 	}
 	var doc = map[string]any{
