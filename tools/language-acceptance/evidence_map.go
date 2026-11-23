@@ -34,6 +34,11 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// The joined RP41 scenario still needs its own actual rendered UI proof.
+	// Historical generic E07 metadata cannot supply that external tier.
+	if id == "RP41" {
+		return
+	}
 	if id == "RP24" || id == "RP25" || id == "BRG11" {
 		// The historical function trace does not execute this complete joined source.
 		return
@@ -127,8 +132,8 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		reqUIAssertions["formatter_idempotent_comments"] = "true"
 		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics")
 	case "RP39":
-		reqUIAssertions["scoped_rename"] = "true"
-		*testIDs = append(*testIDs, "CherriUITests/testE03EditorActionsHoverRenameUI", "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics")
+		// Separate E03/E04 tests do not execute the complete same-document
+		// format/rename/stale-response UI scenario. Its UI tier stays pending.
 	case "E05":
 		reqUIAssertions["versioned_edits_isolated"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE05EditorResponsivenessStaleEditsUI", "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits")
@@ -576,6 +581,12 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP41" {
+		return previewEditTestIDs()
+	}
+	if id == "RP39" {
+		return combinedEditorTestIDs()
+	}
 	if id == "RP24" {
 		return functionReturnTestIDs()
 	}
@@ -676,6 +687,12 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP41" {
+		return append([]string{}, previewEditProductionPaths...)
+	}
+	if id == "RP39" {
+		return append([]string{}, combinedEditorProductionPaths...)
+	}
 	if id == "RP24" {
 		return append([]string{}, functionReturnProductionPaths...)
 	}

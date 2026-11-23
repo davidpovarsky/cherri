@@ -277,6 +277,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = functionTransportScope
 		}
+		if row.ID == "RP41" {
+			row.TestNames = append([]string{}, previewEditTests...)
+			row.ProductionPath = append([]string{}, previewEditProductionPaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = previewEditScope
+		}
 		if row.ID == "RP24" {
 			row.TestNames = append([]string{}, functionReturnTests...)
 			row.ProductionPath = append([]string{}, functionReturnProductionPaths...)
@@ -318,6 +324,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = append([]string{}, numberWireProductionPaths...)
 			row.PositiveAndNegative = res.Passed
 			row.Scope = numberWireScope
+		}
+		if row.ID == "RP39" {
+			row.TestNames = append([]string{}, combinedEditorTests...)
+			row.ProductionPath = append([]string{}, combinedEditorProductionPaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = combinedEditorScope
 		}
 		if row.ID == "RP52" {
 			row.TestNames = append([]string{}, publicFrontendTests...)

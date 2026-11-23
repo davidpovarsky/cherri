@@ -961,6 +961,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateEditorContractRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validatePreviewEditRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1020,6 +1023,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+			if err := validateCombinedEditorRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
 			if err := validatePublicFrontendRecord(reqID, rec); err != nil {
@@ -1930,6 +1936,12 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runPreviewEditRequirement(c) {
+			continue
+		}
+		if r.runCombinedEditorRequirement(c) {
+			continue
+		}
 		if r.runFunctionReturnRequirement(c) {
 			continue
 		}
