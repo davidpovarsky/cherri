@@ -1,0 +1,696 @@
+{
+  "kind": "FOCUSED_F01_AFTER_REVIEWED_PRODUCTION_FIX",
+  "sourceBase": "10ce26debb0fb96da705a3578523e006c0e30c98",
+  "reviewPatchSHA256": "c733763d781523fc746af15f70f7cc966eaf066e049b63a2108b6d0ed01df10f",
+  "sourceSHA256": {
+    "internal/language/lower/lower.go": "cd47a8d2b4ee3c2d59577f8d9aad612ccb95dd6f4052ae3aac450f490b592166",
+    "internal/language/lower/predicate_value.go": "c95c98f1232e844d6867c51bb8450d817b16a4f6b8dd86c74da6a970de15ca3e",
+    "internal/language/lower/short_circuit.go": "47ade169dbc1a714ae8d8668e2f66ad47760d6133860aafe94219376afa38531",
+    "p15_negated_predicates_test.go": "4f166e8343467ad5859a6a439def56709c721567e4d04b1c94402a85f6f4a1d2",
+    "p15_boolean_helper_import_test.go": "b358846bb2a959da5adbd505ac9206322517a9e9be3db8538547c3b5dd201ca1",
+    "tests/language-v2/v2-short-circuit-runtime.cherri": "6424d99f972447749235d5be9b38bc317dd8d41e7f10e7b046a3033bd39598d0",
+    "tools/shortcuts-simulator-qa/fixtures/qa-short-circuit-v2.cherri": "ac71d4b09360e8793f167bb5b58b5df161ada9e5da15906c81735efff1de3147",
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+    "ios/CherriUITests/CherriEditorUITests.swift": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8"
+  },
+  "command": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "-run",
+    "^TestP15F01",
+    "."
+  ],
+  "startedAt": "2026-11-23T06:01:23.678189+00:00",
+  "goTestTimeoutSeconds": 90,
+  "outerBuildAndTestTimeoutSeconds": 300,
+  "retries": 0,
+  "nativeExecution": false,
+  "independentStaticReview": "asana_inventory cleared exactv3",
+  "requiredTopLevelParents": 19,
+  "finishedAt": "2026-11-23T06:01:46.998139+00:00",
+  "elapsedSeconds": 23.3197651905939,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdoutSHA256": "52e60bbb0349eab58138f97a2016e3dbd72c6a0fd2e762425536e91518a46148",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "eventCounts": {
+    "pass": 110
+  },
+  "parents": [
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates",
+      "Elapsed": 0.56
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons",
+      "Elapsed": 0.7
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural",
+      "Elapsed": 0.62
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NestedProducerWrappersRemainLazy",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticFixturesPreserveIsolation",
+      "Elapsed": 0.06
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticOracleRejectsCausalMutations",
+      "Elapsed": 0.14
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01HybridEditedPredicateGuardsRHS",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues",
+      "Elapsed": 0.3
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01PredicateValuesRemainTypedAndLazy",
+      "Elapsed": 0.16
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedAuthoredPredicatesInImportedWorkflow",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01FullRuntimeFixtureBooleanComparisons",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalRuntimeWrapperPreservesCounterProof",
+      "Elapsed": 0.08
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterFixtureNativeGraph",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS",
+      "Elapsed": 0.08
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StaticSkipsMissingTarget",
+      "Elapsed": 0.05
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01BooleanStatementUsesValueNotPresence",
+      "Elapsed": 0.05
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01GuardOracleRejectsMutations",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01RuntimeFixtureCompiles",
+      "Elapsed": 0.02
+    }
+  ],
+  "testResults": [
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_4/compound_false",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_4/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_5/compound_false",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_5/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_4/compound_false",
+      "Elapsed": 0.06
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_4/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_5/compound_false",
+      "Elapsed": 0.06
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_5/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates",
+      "Elapsed": 0.56
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_var/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_var/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_var/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_var/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_let/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_let/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_let/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/numeric_let/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_direct/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_direct/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_direct/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_direct/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_let/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_let/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_let/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_let/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_var/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_var/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_var/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_var/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_snapshot/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_snapshot/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_snapshot/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_snapshot/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_second_subject/isTrue/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_second_subject/isTrue/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_second_subject/isFalse/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/native_second_subject/isFalse/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/compound/",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons/compound/modern:_",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01AuthoredBooleanHelpersMatchExplicitComparisons",
+      "Elapsed": 0.7
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/coercion",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/property",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/dictionary-key",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-output-name",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-aggrandizements",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/token-string-rhs",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-presence",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/presence-with-boolean-coercion",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural/presence-with-coercion",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedCompoundOperandsPreserveNatural",
+      "Elapsed": 0.62
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NestedProducerWrappersRemainLazy",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticFixturesPreserveIsolation/counter",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticFixturesPreserveIsolation/predicate",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticFixturesPreserveIsolation/control",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticFixturesPreserveIsolation/logic",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticFixturesPreserveIsolation",
+      "Elapsed": 0.06
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01DiagnosticOracleRejectsCausalMutations",
+      "Elapsed": 0.14
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01HybridEditedPredicateGuardsRHS/and",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01HybridEditedPredicateGuardsRHS/or",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01HybridEditedPredicateGuardsRHS",
+      "Elapsed": 0.13
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isTrue(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isTrue(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isTrue(flag)_&&_isFalse(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isTrue(flag)_&&_isFalse(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isFalse(flag)_||_isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isFalse(flag)_||_isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_&&_!(right_beginsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_&&_!(right_beginsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_||_!(right_endsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_||_!(right_endsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_&&_!isTrue(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_&&_!isTrue(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_&&_!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_&&_!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isToday(CurrentDate)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isToday(CurrentDate)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isBetween(n,_1,_3)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isBetween(n,_1,_3)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues",
+      "Elapsed": 0.3
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01PredicateValuesRemainTypedAndLazy",
+      "Elapsed": 0.16
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedAuthoredPredicatesInImportedWorkflow",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01FullRuntimeFixtureBooleanComparisons",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalRuntimeWrapperPreservesCounterProof",
+      "Elapsed": 0.08
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterFixtureNativeGraph",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/eager_rhs",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/wrong_increment",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/crosswired_store",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/missing_control",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/external_target",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/hidden_counter",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations/wrong_success_marker",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01LocalCounterOracleRejectsMutations",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/and_statement",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/or_statement",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/and_comparison",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/or_comparison",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/and_expression",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/or_expression",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS/mixed_statement",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StatementAndExpressionGuardRHS",
+      "Elapsed": 0.08
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01StaticSkipsMissingTarget",
+      "Elapsed": 0.05
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01BooleanStatementUsesValueNotPresence",
+      "Elapsed": 0.05
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01GuardOracleRejectsMutations",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01RuntimeFixtureCompiles",
+      "Elapsed": 0.02
+    }
+  ],
+  "sourceBytesUnchanged": true,
+  "headUnchanged": true
+}

@@ -1,0 +1,177 @@
+{
+  "kind": "REGRESSION_BEFORE_PRODUCTION_FIX",
+  "head": "eb2d0d38a45cb4f7dc0740a63916397fbb995000",
+  "sourceSHA256": {
+    "internal/language/lower/lower.go": "74f561735682cf12fe171c3550b2f4681b09f4b0969b27392bc582d13b778125",
+    "internal/language/lower/predicate_value.go": "d9e0133488b8595482343258306a6d66aa90ace70e2b88fdb2ad12208c778364",
+    "internal/language/lower/short_circuit.go": "47ade169dbc1a714ae8d8668e2f66ad47760d6133860aafe94219376afa38531",
+    "p15_negated_predicates_test.go": "4f166e8343467ad5859a6a439def56709c721567e4d04b1c94402a85f6f4a1d2",
+    "tests/language-v2/v2-short-circuit-runtime.cherri": "6424d99f972447749235d5be9b38bc317dd8d41e7f10e7b046a3033bd39598d0"
+  },
+  "command": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "-run",
+    "^TestP15F01(NegatedComputedPredicatesUseBooleanValues|PredicateValuesRemainTypedAndLazy|NegatedAuthoredPredicatesInImportedWorkflow|FullRuntimeFixtureBooleanComparisons)$",
+    "."
+  ],
+  "startedAt": "2026-11-23T05:47:26.845647+00:00",
+  "goTestTimeoutSeconds": 90,
+  "outerBuildAndTestTimeoutSeconds": 300,
+  "retries": 0,
+  "nativeExecution": false,
+  "expectedFailure": "missing authored Boolean helper comparison operand",
+  "finishedAt": "2026-11-23T05:49:01.187339+00:00",
+  "elapsedSeconds": 94.34153615869582,
+  "exitCode": 1,
+  "timedOut": false,
+  "stdoutSHA256": "6f7cc01843838c600f86eaafc320fbbffe9c2276eeeae1004b33e1a2dad1228f",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "testResults": [
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isTrue(flag)",
+      "Elapsed": 0.03
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isTrue(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isTrue(flag)_&&_isFalse(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isTrue(flag)_&&_isFalse(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/isFalse(flag)_||_isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_isFalse(flag)_||_isTrue(truth)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_&&_!(right_beginsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_&&_!(right_beginsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_||_!(right_endsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_||_!(right_endsWith_\"x\")",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_&&_!isTrue(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_&&_!isTrue(flag)",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_\"left\"_&&_!isFalse(flag)",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_\"left\"_&&_!isFalse(flag)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isToday(CurrentDate)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isToday(CurrentDate)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/!isBetween(n,_1,_3)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isBetween(n,_1,_3)",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedComputedPredicatesUseBooleanValues",
+      "Elapsed": 0.33
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01PredicateValuesRemainTypedAndLazy",
+      "Elapsed": 0.16
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01NegatedAuthoredPredicatesInImportedWorkflow",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15F01FullRuntimeFixtureBooleanComparisons",
+      "Elapsed": 0.02
+    }
+  ],
+  "sourceBytesUnchanged": true
+}

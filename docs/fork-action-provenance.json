@@ -3318,6 +3318,20 @@
       "reason": "Clean tests-only606042a1 reproduced13 analysis/service/check acceptance cases whose actual compilation already failed E_NESTED_NATIVE_LIST, with26 corresponding failing leaves. Original raw and the separate Map-default test-authoring error are retained.",
       "evidence": "Original baseline stdout SHA256291cf48ece4a362326d95d4bc1a7d9f67f8772266b43c1515cdb6c510b81b88c; first corrected precommit39 exact named passes. Clean final replay and source-bound proof are retained separately.",
       "note": "No new native List encoding or payload/cardinality claim. Existing inline reference rows and opaque native values remain explicitly unverified at runtime. L01/T05/F04/FN05 and Apple/final179 obligations remain open."
+    },
+    {
+      "name": "P10R15 authored Boolean helper value comparisons",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "internal/language/lower/predicate_value.go",
+        "p15_negated_predicates_test.go",
+        "p15_boolean_helper_import_test.go"
+      ],
+      "firstForkCommit": "5411d526ca807eb5120b80d09c43338d2ddffa41",
+      "change": "Emit explicit numeric true operands for authored statically Bool isTrue/isFalse helpers in single and compound conditions, matching ordinary equality/inequality. Preserve imported no-RHS predicates and explicit native Boolean coercions.",
+      "reason": "Original full F01 run45101081393 returned P15_NEGATED_IS_TRUE. A separately labelled R7 reconstruction and actual pre-fix regression exposed the missing inner helper RHS; the original native condition values were not retained.",
+      "evidence": "docs/language-v2/evidence/p15-f01-boolean-helper-20261123: actual RED4parents and16subcases; pre-fix8-case exact natural import baseline; independently reviewed fix; focused GREEN19parents/110namedpasses,0fail/skip,23.319765s. Original stdout SHA25652e60bbb0349eab58138f97a2016e3dbd72c6a0fd2e762425536e91518a46148.",
+      "note": "Separate non-circular provenance after immutable implementation. Native causality and repaired fullF01 remain pending actual Apple verification; no old R7 receipt is promoted to the new source and no formal or physical acceptance is granted."
     }
   ]
 }

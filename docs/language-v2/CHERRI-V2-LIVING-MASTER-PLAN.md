@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.3 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 24 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.4 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 25 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1667,3 +1667,63 @@ Protected Swift files, all three179 contracts, the compatibility manifest and
 the entire ios/ tree remained unchanged. This PoC follow-up changes only
 documentation. R23 still has no policy authorization; release freeze, full
 acceptance and live promotion remain pending.
+
+## 25. Full F01 semantic failure and reviewed Boolean helper repair — 2026-11-23
+
+The original full F01 run45101081393/attempt1 at exact K10
+4feadab9db4d351628f78593304373631693869a completed FAILURE at05:32:36UTC.
+Four acquisition XCTest tests passed and one fresh correlated callback reported
+SUCCESS, but its semantic result was P15_NEGATED_IS_TRUE rather than P15_F01_OK.
+The unchanged runtime and trace gates correctly remain FAIL_RUNTIME. Prior
+verdict assignments may be overwritten; no earlier branch is inferred passed.
+
+[The complete original failure intake](evidence/p15-k10-qa-short-circuit-20261123/README.md)
+retains both original artifacts,25 published payload hashes,11 exact source
+bindings, and the existing private prerequisite verification23members/3commands/
+21sourcefiles. Only fixed private verification fields left Windows. Original
+native condition/input values and executable digest are UNOBSERVED; the
+156-action projected key list is not a complete original graph. Root integrated
+the seven proof files byte-for-byte at10ce26debb0fb96da705a3578523e006c0e30c98.
+
+[The separate compiler repair](evidence/p15-f01-boolean-helper-20261123/README.md)
+is committed at5411d526ca807eb5120b80d09c43338d2ddffa41. One explicitly labelled
+local unsigned R7 reconstruction exposed a missing numeric comparison operand
+inside Boolean helpers; it is not the original signed payload. Actual RED
+failed4parents and16detailed subcases before production edits. Eight synthetic
+native-import controls passed before the fix. Independent review then cleared
+the two-file lowering correction, with authored comparisons matching ==true/
+!=true while imported original predicates and explicit native Boolean coercions
+retain their wire representation.
+
+The single focused GREEN run passed all19F01parents and91subcases (110PASS,
+0FAIL,0SKIP) in23.319765s including compilation. It retains the unchanged90s
+Go-test limit, original fixture, existing lazy/mutation/wrapper tests, and all
+source hashes. No reviewer duplicated its execution. This is a locally verified
+source correction; the repaired full native F01 has not yet run.
+
+The separate non-circular provenance registry test passed once in5.532021s
+including compilation, with no timeout. Independent packet review verified
+all27 original members, unchanged prior registry entries and all11 green-run
+source bindings against implementation5411d526; no tests were replayed.
+
+The compiler's production source is now changed from R7. Existing R7 binaries,
+private S4 and505 producer receipts remain historical and cannot be restamped.
+New compiler/migrator provenance, genuine S4 qualification and coordinated
+Docs/Skill pins are next. Read-only Docs preparation found only two compiler pin
+literals require the forthcoming qualified source; current R7/D11 consumer pins
+remain unchanged until the new tuple is actually produced and verified.
+
+Separately, the new cherri-ios-xcresult-summary/1 implementation completed static
+review in an isolated branch. Its local qualification is separate and no new iOS
+workflow has run. The original K11 Runtime PoC completed workflow SUCCESS at
+06:07:54UTC; its exact-source artifact intake is still in progress here. Original
+K11 Linux metadata failure, macOS900s timeout and full iOS53/57 outcome retain
+their source identities; the two schema scheduling hooks have not yet received
+a new full macOS run.
+
+R23's proposed policy remains inactive: the earlier owner-input tool returned
+an empty selection, which grants no approval or rejection. The frozen179
+contracts and latest complete K8 report (114PASS/0FAIL/26NOT_RUN/38PENDING_EXTERNAL/
+1AI_EVAL_NOT_RUN; closure_complete=false) are unchanged. No new AI cohort,
+RemoteBuilder promotion, aggregate success or physical-device acceptance is
+claimed by this checkpoint.

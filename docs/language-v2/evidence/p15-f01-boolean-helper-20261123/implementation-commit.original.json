@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "COMMITTED_REVIEWED_F01_FIX",
+  "implementationCommit": "5411d526ca807eb5120b80d09c43338d2ddffa41",
+  "parent": "10ce26debb0fb96da705a3578523e006c0e30c98",
+  "committedAt": "2026-11-23T06:03:24.510291+00:00",
+  "files": [
+    {
+      "path": "internal/language/lower/lower.go",
+      "bytes": 190140,
+      "sha256": "cd47a8d2b4ee3c2d59577f8d9aad612ccb95dd6f4052ae3aac450f490b592166",
+      "blob": "727fbb8c4cb2727eee44da49611b5f7fb3580c4d"
+    },
+    {
+      "path": "internal/language/lower/predicate_value.go",
+      "bytes": 1835,
+      "sha256": "c95c98f1232e844d6867c51bb8450d817b16a4f6b8dd86c74da6a970de15ca3e",
+      "blob": "36b587b86069884e11272bca0232f80a7036190d"
+    },
+    {
+      "path": "p15_negated_predicates_test.go",
+      "bytes": 3966,
+      "sha256": "4f166e8343467ad5859a6a439def56709c721567e4d04b1c94402a85f6f4a1d2",
+      "blob": "fd07445ea292b3b7c78407b9a31824d82c187020"
+    },
+    {
+      "path": "p15_boolean_helper_import_test.go",
+      "bytes": 6558,
+      "sha256": "b358846bb2a959da5adbd505ac9206322517a9e9be3db8538547c3b5dd201ca1",
+      "blob": "3dabaa4e4ff96232481af4f47d6c8c1315dc6229"
+    }
+  ],
+  "exactGreenTestedBytes": true,
+  "greenReceiptSHA256": "7dc47c57dec23bcbf74fafde873a2545fb109320e887d72525549bd1c892cd09",
+  "redReceiptSHA256": "170c558af081467cff0512f62f8b53e597548803f279aa3f3f38a9bef38f46dc",
+  "importBaselineReceiptSHA256": "d43a949999850a6c48e9222a63052880432333a0bea403cf04bea9a11cded0b4",
+  "reviewReceiptSHA256": "0d5a8833c379e5a9264b6297a4a77b0b624655567ba3ce8146e976a3a2df42a4",
+  "cleanAfter": true,
+  "nativeFixVerified": false,
+  "formalAcceptanceGranted": false,
+  "provenanceFollowupPending": true
+}

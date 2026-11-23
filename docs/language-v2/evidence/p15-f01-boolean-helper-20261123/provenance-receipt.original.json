@@ -1,0 +1,34 @@
+{
+  "kind": "REQUIRED_NON_CIRCULAR_PROVENANCE_VALIDATION",
+  "sourceHead": "5411d526ca807eb5120b80d09c43338d2ddffa41",
+  "registrySHA256": "d4793d68f398773ac92b8cf8114481576ae8629bb839161b5c1c94dfacff584a",
+  "command": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "-run",
+    "^TestForkActionProvenanceRegistry$",
+    "."
+  ],
+  "startedAt": "2026-11-23T06:06:17.767770+00:00",
+  "goTestTimeoutSeconds": 90,
+  "outerTimeoutSeconds": 300,
+  "retries": 0,
+  "finishedAt": "2026-11-23T06:06:23.299967+00:00",
+  "elapsedSeconds": 5.532020633108914,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdoutSHA256": "5718fc2459cd2f324cd53ef63f1e9023b1f655b975013abed13f9c327af0afea",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "results": [
+    {
+      "Action": "pass",
+      "Test": "TestForkActionProvenanceRegistry",
+      "Elapsed": 2.64
+    }
+  ],
+  "registryUnchanged": true
+}

@@ -1,0 +1,156 @@
+{
+  "formalAcceptanceGranted": false,
+  "greenSourceJoins": [
+    {
+      "matchesImplementationCommit": true,
+      "path": "internal/language/lower/lower.go",
+      "sha256": "cd47a8d2b4ee3c2d59577f8d9aad612ccb95dd6f4052ae3aac450f490b592166"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "internal/language/lower/predicate_value.go",
+      "sha256": "c95c98f1232e844d6867c51bb8450d817b16a4f6b8dd86c74da6a970de15ca3e"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "internal/language/lower/short_circuit.go",
+      "sha256": "47ade169dbc1a714ae8d8668e2f66ad47760d6133860aafe94219376afa38531"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "p15_negated_predicates_test.go",
+      "sha256": "4f166e8343467ad5859a6a439def56709c721567e4d04b1c94402a85f6f4a1d2"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "p15_boolean_helper_import_test.go",
+      "sha256": "b358846bb2a959da5adbd505ac9206322517a9e9be3db8538547c3b5dd201ca1"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "tests/language-v2/v2-short-circuit-runtime.cherri",
+      "sha256": "6424d99f972447749235d5be9b38bc317dd8d41e7f10e7b046a3033bd39598d0"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-short-circuit-v2.cherri",
+      "sha256": "ac71d4b09360e8793f167bb5b58b5df161ada9e5da15906c81735efff1de3147"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    },
+    {
+      "matchesImplementationCommit": true,
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8"
+    }
+  ],
+  "master": {
+    "aggregateAcceptanceGranted": false,
+    "bytes": 179159,
+    "fullRepairedAppleF01": "PENDING",
+    "oldR7EvidenceNotRestamped": true,
+    "originalNativeFailureRetained": true,
+    "reconstructionDistinctFromOriginalPayload": true,
+    "sha256": "f20baae67c743c60847bf0317ae2064a9c528e0f65875ba079be303f902a40b4",
+    "version": "2.9.4"
+  },
+  "nativeFixVerified": false,
+  "observedImplementationHead": "5411d526ca807eb5120b80d09c43338d2ddffa41",
+  "proofPacket": {
+    "allMembersMatchManifestAndExternalOriginalBytes": true,
+    "bytes": 43411,
+    "manifest": {
+      "bytes": 5093,
+      "sha256": "7ad127e4919152ecef7f048da88806a93d7a5a544c6e491ca351b3561beb4797"
+    },
+    "path": "docs/language-v2/evidence/p15-f01-boolean-helper-20261123/original-proof-packet.zip",
+    "sha256": "561f2f205f2bac179f03d5922737133804d0c44c1e6a813cf27848cdb909cf3c",
+    "uniqueMemberCount": 27
+  },
+  "provenanceOriginal": {
+    "bytes": 973,
+    "elapsedSeconds": 5.532020633108914,
+    "exitCode": 0,
+    "originalStreamsVerified": true,
+    "path": "provenance-01/receipt.original.json",
+    "registryHashMatched": true,
+    "sha256": "9202a38e5478aaa7e5162f7739ff55b1fa5293a1df26ec118c9e25373f03a16c",
+    "timedOut": false
+  },
+  "receiptPreparationNote": "First read-only receipt construction stopped on a count-versus-list TypeError before file creation; corrected to compare the numeric required count and independently read committed test declaration names. No producer ran.",
+  "reconciledOriginalOutcomes": {
+    "green-01": {
+      "elapsedSeconds": 23.3197651905939,
+      "exactDeclaredParentSetMatched": true,
+      "exitCode": 0,
+      "namedFail": 0,
+      "namedSkip": 0,
+      "packageTerminal": "pass",
+      "parentPass": 19,
+      "receipt": {
+        "bytes": 20874,
+        "sha256": "7dc47c57dec23bcbf74fafde873a2545fb109320e887d72525549bd1c892cd09"
+      },
+      "requiredParentCountMatched": true,
+      "subcasePass": 91,
+      "timedOut": false
+    },
+    "native-import-baseline-01": {
+      "elapsedSeconds": 20.245714179240167,
+      "exitCode": 0,
+      "packageTerminal": "pass",
+      "parentPass": 1,
+      "receipt": {
+        "bytes": 2814,
+        "sha256": "d43a949999850a6c48e9222a63052880432333a0bea403cf04bea9a11cded0b4"
+      },
+      "subcasePass": 8,
+      "timedOut": false
+    },
+    "red-01": {
+      "elapsedSeconds": 94.34153615869582,
+      "exitCode": 1,
+      "packageTerminal": "fail",
+      "parentFail": 4,
+      "receipt": {
+        "bytes": 5922,
+        "sha256": "170c558af081467cff0512f62f8b53e597548803f279aa3f3f38a9bef38f46dc"
+      },
+      "subcaseFail": 16,
+      "subcasePass": 8,
+      "timedOut": false
+    }
+  },
+  "recordedAt": "2026-11-23T06:12:47.171307+00:00",
+  "registry": {
+    "appendOnly": true,
+    "appendedFirstForkCommit": "5411d526ca807eb5120b80d09c43338d2ddffa41",
+    "bytes": 232025,
+    "currentInfrastructureEntries": 121,
+    "previousInfrastructureEntries": 120,
+    "priorEntriesAndOtherKeysUnchanged": true,
+    "sha256": "d4793d68f398773ac92b8cf8114481576ae8629bb839161b5c1c94dfacff584a"
+  },
+  "reviewKind": "READ_ONLY_ORIGINAL_EVIDENCE_RECONCILIATION",
+  "reviewer": "asana_inventory",
+  "reviewerApiCalls": 0,
+  "reviewerCompilerExecutions": 0,
+  "reviewerNativeExecutions": 0,
+  "reviewerTestsExecuted": 0,
+  "rootFilesModifiedByReviewer": false,
+  "schema": "cherri-f01-independent-metadata-review/1",
+  "verdict": "METADATA_AND_ORIGINAL_PROOF_VERIFIED"
+}

@@ -1,0 +1,81 @@
+{
+  "kind": "IMPORTED_NATIVE_BOOLEAN_BASELINE_BEFORE_PRODUCTION_FIX",
+  "sourceBase": "eb2d0d38a45cb4f7dc0740a63916397fbb995000",
+  "sourceSHA256": {
+    "internal/language/lower/lower.go": "74f561735682cf12fe171c3550b2f4681b09f4b0969b27392bc582d13b778125",
+    "internal/language/lower/predicate_value.go": "d9e0133488b8595482343258306a6d66aa90ace70e2b88fdb2ad12208c778364",
+    "p15_negated_predicates_test.go": "4f166e8343467ad5859a6a439def56709c721567e4d04b1c94402a85f6f4a1d2",
+    "p15_boolean_helper_import_test.go": "46b6e82493fb26a4cac68bf3f09d6b184b9683837a1a699f0d7753def880267d"
+  },
+  "command": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "-run",
+    "^TestP15F01ImportedBooleanHelpersPreserveNativePredicates$",
+    "."
+  ],
+  "startedAt": "2026-11-23T05:51:52.137721+00:00",
+  "timeoutSeconds": 300,
+  "goTimeoutSeconds": 90,
+  "nativeExecution": false,
+  "syntheticInputs": true,
+  "retries": 0,
+  "finishedAt": "2026-11-23T05:52:12.383597+00:00",
+  "elapsedSeconds": 20.245714179240167,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdoutSHA256": "9acfc44e5aee1a8a950bfda8fcb473e8eecb2e220cefbba63842026e4f24c99f",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "results": [
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_4/compound_false",
+      "Elapsed": 0.09
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_4/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_5/compound_false",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/symbol/code_5/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_4/compound_false",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_4/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_5/compound_false",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates/global_boolean_coercion/code_5/compound_true",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "pass",
+      "Test": "TestP15F01ImportedBooleanHelpersPreserveNativePredicates",
+      "Elapsed": 0.56
+    }
+  ],
+  "sourceUnchanged": true
+}

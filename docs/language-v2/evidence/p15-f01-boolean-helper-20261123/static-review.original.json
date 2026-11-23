@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "kind": "INDEPENDENT_STATIC_REVIEW_RECORD",
+  "reviewer": "asana_inventory",
+  "reviewedPatch": "complete-fix-review-v3.patch",
+  "reviewedPatchSHA256": "c733763d781523fc746af15f70f7cc966eaf066e049b63a2108b6d0ed01df10f",
+  "observedBase": "10ce26debb0fb96da705a3578523e006c0e30c98",
+  "scope": [
+    "internal/language/lower/lower.go",
+    "internal/language/lower/predicate_value.go",
+    "p15_negated_predicates_test.go",
+    "p15_boolean_helper_import_test.go"
+  ],
+  "verdict": "CLEARED_FOR_FOCUSED_REGRESSION_RUN",
+  "productionGuardReviewed": true,
+  "importedAndExplicitNativeBooleanPreserved": true,
+  "integerAndRealEncodingMatchesExplicitComparison": true,
+  "strictGraphComparisonOnlyMapsBoundIdentities": true,
+  "subtestContextCorrectionReviewed": true,
+  "reviewerExecutedTests": false,
+  "nativeCauseConfirmed": false,
+  "fullNativeF01StillRequired": true
+}
