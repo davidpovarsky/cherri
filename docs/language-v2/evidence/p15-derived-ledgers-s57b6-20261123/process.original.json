@@ -1,0 +1,175 @@
+{
+  "source": {
+    "head": "c76d3437625cabe85b3d70e0f99e952d53b5c8bc",
+    "tree": "1a4e8631ae0746255717667320bca2848563a286",
+    "branch": "agent/cherri-p10r15-k12-integration-20261123",
+    "status": ""
+  },
+  "source_after": {
+    "head": "c76d3437625cabe85b3d70e0f99e952d53b5c8bc",
+    "tree": "1a4e8631ae0746255717667320bca2848563a286",
+    "branch": "agent/cherri-p10r15-k12-integration-20261123",
+    "status": " M docs/apple-runtime/p10/apple-discovered-not-supported.md\n M docs/apple-runtime/p10/baseline-state.json\n M docs/apple-runtime/p10/catalog-supported-by-compiler.md\n M docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json\n M docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json\n M docs/apple-runtime/p10/pure-pack-portability.md\n"
+  },
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "tools/p10r3/generate_catalog_and_pack_ledgers.py"
+  ],
+  "started_utc": "2026-11-23T07:18:59.887685+00:00",
+  "finished_utc": "2026-11-23T07:19:51.705165+00:00",
+  "elapsed_seconds": 51.81747218593955,
+  "exit_code": 0,
+  "timed_out": false,
+  "input_fingerprint_before": "995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e",
+  "input_fingerprint_after": "995e46487692e4d9cbccc59a5ddb02b41455bd1c57b4383521800cb87434b98e",
+  "changed_paths": [
+    "docs/apple-runtime/p10/apple-discovered-not-supported.md",
+    "docs/apple-runtime/p10/baseline-state.json",
+    "docs/apple-runtime/p10/catalog-supported-by-compiler.md",
+    "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+    "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+    "docs/apple-runtime/p10/pure-pack-portability.md"
+  ],
+  "outputs": [
+    {
+      "path": "docs/apple-runtime/p10/apple-discovered-not-supported.md",
+      "bytes": 13618,
+      "sha256": "d67b81f7fc6ab20a24f80503dd19611da66110d5b163a745450ce94de6a25d9f"
+    },
+    {
+      "path": "docs/apple-runtime/p10/baseline-state.json",
+      "bytes": 2845,
+      "sha256": "aaece8aef52fcc7f21a914bb7b498ad66f8168960bd61f42da9b99914072874a"
+    },
+    {
+      "path": "docs/apple-runtime/p10/catalog-supported-by-compiler.md",
+      "bytes": 101181,
+      "sha256": "5546cd7682a74a679056c8b816342a8c105707464124115f96b9ed1ce3b20381"
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+      "bytes": 1407529,
+      "sha256": "44c7a097bc52e03d2f7aa919fd3f704de7183e4c47fbe6cfc612eb7e1679c8bb"
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+      "bytes": 14529,
+      "sha256": "f02296614ea84f8563206ebca3d5e5e8ae47f4c7b8c273c5619b4ae4fab97315"
+    },
+    {
+      "path": "docs/apple-runtime/p10/p10-pack-15-go-only-audit.json",
+      "bytes": 18349,
+      "sha256": "ae672ed1b545926e1f8f2db6749d517b17c9268bd4e185878f67c82de4f6255f"
+    },
+    {
+      "path": "docs/apple-runtime/p10/pure-pack-portability.md",
+      "bytes": 3723,
+      "sha256": "ba5aa80ee060c9a201d8d4959b56d36db31f767b6ed3e740067ce3d93fee23fe"
+    }
+  ],
+  "checks": [
+    {
+      "check": "actual generator exit zero",
+      "pass": true
+    },
+    {
+      "check": "same HEAD tree branch",
+      "pass": true
+    },
+    {
+      "check": "only declared derived outputs changed",
+      "pass": true
+    },
+    {
+      "check": "all dependency bytes unchanged",
+      "pass": true
+    },
+    {
+      "check": "all595 raw input bytes unchanged",
+      "pass": true
+    },
+    {
+      "check": "fresh raw evidence unchanged",
+      "pass": true
+    },
+    {
+      "check": "p10-505-catalog-coverage-matrix.json exact source",
+      "pass": true
+    },
+    {
+      "check": "p10-505-catalog-coverage-matrix.json current dependency fingerprint",
+      "pass": true
+    },
+    {
+      "check": "p10-apple-cherri-crosswalk.json exact source",
+      "pass": true
+    },
+    {
+      "check": "p10-apple-cherri-crosswalk.json current dependency fingerprint",
+      "pass": true
+    },
+    {
+      "check": "baseline-state.json exact source",
+      "pass": true
+    },
+    {
+      "check": "baseline-state.json current dependency fingerprint",
+      "pass": true
+    },
+    {
+      "check": "catalog-supported-by-compiler.md source and fingerprint",
+      "pass": true
+    },
+    {
+      "check": "apple-discovered-not-supported.md source and fingerprint",
+      "pass": true
+    },
+    {
+      "check": "pure-pack-portability.md source and fingerprint",
+      "pass": true
+    },
+    {
+      "check": "505 distinct catalog entries",
+      "pass": true
+    },
+    {
+      "check": "505 same callable/construct scope",
+      "pass": true
+    },
+    {
+      "check": "measured local counters preserved",
+      "pass": true
+    },
+    {
+      "check": "six measured dimensions preserved",
+      "pass": true
+    },
+    {
+      "check": "native and runtime remain zero",
+      "pass": true
+    },
+    {
+      "check": "crosswalk and baseline denominators agree",
+      "pass": true
+    },
+    {
+      "check": "existing 15-action pack inventory preserved",
+      "pass": true
+    }
+  ],
+  "generation_valid": true,
+  "raw_evidence_provenance": {
+    "execution_source": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "parameter_source": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "actual_process_sha256": "c577f775fac7bdf74fb3dabb71fd586c0e357f9af19df4069a0ba635fedb4877",
+    "independent_intake_sha256": "0060985be9e4fae05e75f02734ef880edc5b969658ca454c1edc09c3d163d250",
+    "same_deterministic_bytes_as_historical": true,
+    "raw_sha256": {
+      "p10-505-execution-evidence.json": "6a99ea3f0e541b4dca416f6cfdef775a7492eef118ddc33f9cc5632398d4aeb8",
+      "p10-505-parameter-contract-evidence.json": "74c5ed6ffb65594937aefcf248cef7f1d5ed47388fc57352c148f478e14f8eb5"
+    }
+  },
+  "release_gate_execution": false,
+  "native_or_device_credit": false
+}
