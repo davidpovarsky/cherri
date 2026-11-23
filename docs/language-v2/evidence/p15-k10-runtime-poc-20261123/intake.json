@@ -1,0 +1,280 @@
+{
+  "R22": {
+    "nativeSameProducerComponentObserved": true,
+    "newAggregateRowProduced": false,
+    "originalLinux56Row": "BLOCKED_PLATFORM",
+    "originalLinux56RowUnchanged": true,
+    "physicalDeviceBlocker": "BLOCKED_DEVICE"
+  },
+  "actualOnRunnerGoEvidenceVerifierPassed": true,
+  "actualPlatform": {
+    "macOSBuild": "26A434",
+    "macOSVersion": "27.0.1",
+    "physicalDevice": false,
+    "runnerLabels": [
+      "xcode-27"
+    ],
+    "simulatorRuntime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "xcodeBuild": "27A9275",
+    "xcodeVersion": "27.1"
+  },
+  "allImmutableTiersAccepted": false,
+  "conclusion": "success",
+  "coverage": {
+    "exactOutputMatch": true,
+    "expectedByteCount": 313,
+    "expectedClipboardSha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+    "freshResetObserved": true,
+    "observedByteCount": 313,
+    "observedClipboardSha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9"
+  },
+  "coverageReplayMatched": true,
+  "descendantSourceCreditGranted": false,
+  "directF01OutcomeAtIntake": "RUNNING_LAST_LOCAL_OBSERVATION_2026-11-23T05:22:35Z",
+  "event": "workflow_dispatch",
+  "formalAcceptanceGranted": false,
+  "formalExporterReplayMatched": true,
+  "formalRequirementIds": [
+    "V01",
+    "V03",
+    "L02",
+    "L04",
+    "N01",
+    "FN01",
+    "FN02",
+    "FN03",
+    "S01",
+    "F01"
+  ],
+  "formalRuntimeFacetCount": 6,
+  "formalRuntimeFacets": [
+    {
+      "exitCode": 0,
+      "requirements": [
+        "V01",
+        "V03"
+      ],
+      "result": "passed",
+      "testId": "ios27-runtime-poc:variables"
+    },
+    {
+      "exitCode": 0,
+      "requirements": [
+        "L02",
+        "L04"
+      ],
+      "result": "passed",
+      "testId": "ios27-runtime-poc:indexing"
+    },
+    {
+      "exitCode": 0,
+      "requirements": [
+        "N01"
+      ],
+      "result": "passed",
+      "testId": "ios27-runtime-poc:numbers"
+    },
+    {
+      "exitCode": 0,
+      "requirements": [
+        "FN01",
+        "FN02",
+        "FN03"
+      ],
+      "result": "passed",
+      "testId": "ios27-runtime-poc:functions"
+    },
+    {
+      "exitCode": 0,
+      "requirements": [
+        "S01"
+      ],
+      "result": "passed",
+      "testId": "ios27-runtime-poc:coverage-s01"
+    },
+    {
+      "exitCode": 0,
+      "requirements": [
+        "F01"
+      ],
+      "result": "passed",
+      "testId": "ios27-runtime-poc:coverage-f01"
+    }
+  ],
+  "fullOriginalP15F01FixtureExecutedByThisWorkflow": false,
+  "headBranch": "agent/cherri-p10r15-k10-verification-20261123",
+  "historicalDiagnosticCount": 17,
+  "historicalDiagnosticRequirementLabelsNotPromoted": true,
+  "historicalPassedCount": 17,
+  "implementationSha": "4feadab9db4d351628f78593304373631693869a",
+  "jobCompletedAt": "2026-11-23T05:14:59Z",
+  "jobDurationSeconds": 1229,
+  "jobId": 137452178932,
+  "jobStartedAt": "2026-11-23T04:54:30Z",
+  "nativeDeadlineChanged": false,
+  "nativeReexecutionPerformed": false,
+  "nativeWorkflowDeadlineMinutes": 75,
+  "observedAt": "2026-11-23T05:21:05.651820+00:00",
+  "observerCadenceChangeOnly": true,
+  "observerHistory": [
+    {
+      "name": "original",
+      "result": {
+        "command": [
+          "gh",
+          "run",
+          "watch",
+          "45101192445",
+          "--repo",
+          "davidpovarsky/cherri",
+          "--interval",
+          "45",
+          "--exit-status"
+        ],
+        "finished": "2026-11-23T04:01:55.445042+00:00",
+        "returncode": null,
+        "started": "2026-11-23T02:36:55.409977+00:00",
+        "timedOut": true,
+        "timeoutSeconds": 5100
+      }
+    },
+    {
+      "exitCauseObserved": "HTTP403_API_RATE_LIMIT",
+      "name": "observation-2",
+      "result": {
+        "command": [
+          "gh",
+          "run",
+          "watch",
+          "45101192445",
+          "--repo",
+          "davidpovarsky/cherri",
+          "--interval",
+          "45",
+          "--exit-status"
+        ],
+        "finished": "2026-11-23T04:39:39.372636+00:00",
+        "returncode": 1,
+        "started": "2026-11-23T04:02:55.209383+00:00",
+        "timedOut": false,
+        "timeoutSeconds": 5100
+      },
+      "workflowFailureClaimed": false
+    },
+    {
+      "name": "observation-3",
+      "result": {
+        "command": [
+          "gh",
+          "run",
+          "watch",
+          "45101192445",
+          "--repo",
+          "davidpovarsky/cherri",
+          "--interval",
+          "60",
+          "--exit-status"
+        ],
+        "finished": "2026-11-23T05:15:36.237978+00:00",
+        "returncode": 0,
+        "started": "2026-11-23T04:45:06.643209+00:00",
+        "timedOut": false,
+        "timeoutSeconds": 5100
+      }
+    }
+  ],
+  "originalProducerLogProof": "native-original-log-proof.json",
+  "originalZip": {
+    "bytes": 136823,
+    "memberCount": 32,
+    "sha256": "b2d6218cbe87f343365de51782c2d7e55739eed5064127e1151a208a891d57d2"
+  },
+  "ownedSimulatorCleanupStatus": "DELETED",
+  "ownedSimulatorCreated": true,
+  "publicationReplayMatched": true,
+  "publishedPayloadCount": 31,
+  "runAttempt": 1,
+  "runId": "45101192445",
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/45101192445",
+  "schemaVersion": 1,
+  "separateDirectF01RunId": 45101081393,
+  "signedFixtureCount": 5,
+  "signingMethods": [
+    "hubsign"
+  ],
+  "sourceFiles": {
+    "tools/shortcuts-simulator-qa/debug_label_acceptance.py": {
+      "bytes": 38850,
+      "sha256": "6cdc2685482131f2193f401aa7f99f63492506b82341eb8ec0ddb64830f422e5"
+    },
+    "tools/shortcuts-simulator-qa/debug_label_preview.py": {
+      "bytes": 15837,
+      "sha256": "3ffe6e701c0cf6523ca8a0a3e32ea73777e3b3b3b25e31514162c085960b66cb"
+    },
+    "tools/shortcuts-simulator-qa/json_body_probe.py": {
+      "bytes": 38742,
+      "sha256": "afaf38f499bdcd4bc56be3a5b7958b96fb65f8eaa7ea22550248a57f678b1520"
+    },
+    "tools/shortcuts-simulator-qa/json_file_body_probe.py": {
+      "bytes": 12641,
+      "sha256": "6ecc10c7765b24957b94365e57bf81e0958136f3ba9629bb7866c98ab868c24f"
+    },
+    "tools/shortcuts-simulator-qa/nested_list_probe.py": {
+      "bytes": 32947,
+      "sha256": "b21d24eecac940ab6decd9330015a49004ccdbbb7d21e5a3b42f1b15f878d925"
+    },
+    "tools/shortcuts-simulator-qa/nested_list_runtime.py": {
+      "bytes": 14611,
+      "sha256": "1d78bc44abbd62b14f7af4a3272270736f37eb3a2c86bc43fa37f0d0ea179d8a"
+    },
+    "tools/shortcuts-simulator-qa/prepare_public_artifacts.py": {
+      "bytes": 20684,
+      "sha256": "6ac670d1dfa47725cea6270d78415134a085ad71542f82874ab02ddad4fe908e"
+    },
+    "tools/shortcuts-simulator-qa/qa_terminal_receipts.py": {
+      "bytes": 38502,
+      "sha256": "fd5c2c227a86479f20cfb315f6df6251a8d2a176eeb94c78f919ea28a3bcf188"
+    },
+    "tools/shortcuts-simulator-qa/retry_http_probe.py": {
+      "bytes": 36163,
+      "sha256": "8731f6b1fffcb4c3a84af21f6d60e0969026c67611e90bbf2789ecfb8ce03121"
+    },
+    "tools/shortcuts-simulator-qa/runtime_poc_coverage.py": {
+      "bytes": 11545,
+      "sha256": "fd1c3db20e267fe0af514b5a0909437ff728282325261941bed756ecd4d18e0b"
+    },
+    "tools/shortcuts-simulator-qa/runtime_poc_device.py": {
+      "bytes": 5666,
+      "sha256": "f4250d7cb74097fe27e8c8d3a4cf10dcbb299918264d6c8697dfaa15da83fd3d"
+    },
+    "tools/shortcuts-simulator-qa/runtime_poc_formal_evidence.py": {
+      "bytes": 12764,
+      "sha256": "05ff52dac17127d367c046729eaa64443e671e498e053ffb78b03481ef71a4ae"
+    },
+    "tools/shortcuts-simulator-qa/runtime_poc_publication.py": {
+      "bytes": 17010,
+      "sha256": "6f884a575023b42519fa08c7536bad08183cc1f286054181ce7110c215ed83c9"
+    },
+    "tools/shortcuts-simulator-qa/simulator_session_recovery.py": {
+      "bytes": 17002,
+      "sha256": "86b5585f67f7aff7e9d28dd85061f9f9df2b3f9c956c6a0dfa552273ba007a89"
+    },
+    "tools/shortcuts-simulator-qa/storage_cross_run.py": {
+      "bytes": 20494,
+      "sha256": "6f527c5e22bcd23e220f5d21d09c217abff8859fad16fd743b68183e4ced20c9"
+    },
+    "tools/shortcuts-simulator-qa/xcode_destination_diagnostic.py": {
+      "bytes": 19880,
+      "sha256": "adef5a99d7f7c41d297bbcbccabb12a229c07a7d326ecd4f97a76d52e81edf99"
+    },
+    "tools/shortcuts-simulator-qa/xcode_destination_readiness.py": {
+      "bytes": 22225,
+      "sha256": "4b973bd979e3db7b24edb18599846f8a76661bbf5ed55fc758ad753ba7e98079"
+    }
+  },
+  "sourceRestamped": false,
+  "syntheticSourceCount": 5,
+  "workflowId": 375700807,
+  "workflowName": "iOS 27 Shortcuts Runtime PoC",
+  "workflowPath": ".github/workflows/ios27-shortcuts-runtime-poc.yml"
+}
