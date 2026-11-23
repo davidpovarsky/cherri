@@ -1,0 +1,50 @@
+{
+  "collectorBindings": [
+    {
+      "bytes": 64651,
+      "gitBlob": "19e82ba3d78c09aca966529230a7905da98f45eb",
+      "path": "tools/shortcuts-simulator-qa/project_prerequisite_observation.py",
+      "sha256": "5f5bb8e4064934d291c35b9f8b8871c696ee2c56316850e9e71ba130c9e1dfec"
+    },
+    {
+      "bytes": 4717,
+      "gitBlob": "f14b1ea19959f681361411a12e9e11c877067f11",
+      "path": "tools/shortcuts-simulator-qa/project_prerequisite.py",
+      "sha256": "6c0bed088dc53e73af138221ce72a6faff0dfa0bc0279cc254ae622dd54bd843"
+    },
+    {
+      "bytes": 38502,
+      "gitBlob": "7e9d2937dfdb2ec786c084941599f8b78bc93b6c",
+      "path": "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
+      "sha256": "fd5c2c227a86479f20cfb315f6df6251a8d2a176eeb94c78f919ea28a3bcf188"
+    }
+  ],
+  "executionMode": "SUBAGENT",
+  "existingPublicValidatorMandatory": {
+    "coverage": [
+      "exact public QA schema",
+      "execution scope",
+      "exact fields",
+      "member inventory",
+      "summary bytes",
+      "ciphertext bytes and digest"
+    ],
+    "function": "verify_public",
+    "mustRunBeforeNewPrivateVerification": true,
+    "sourcePath": "tools/shortcuts-simulator-qa/project_prerequisite_observation.py"
+  },
+  "expectedOriginalMembers": 23,
+  "expectedSourceCommands": 3,
+  "expectedSourceFiles": 21,
+  "formalAcceptanceGranted": false,
+  "mixedRunOrSourceAcceptanceDefectFound": false,
+  "outputPrivacyReviewPassed": true,
+  "privateKeyAccessByReviewer": false,
+  "privateVerifierStandalonePublicValidationClaimed": false,
+  "reviewMode": "READ_ONLY_STATIC_REVIEW",
+  "reviewRecordedUtc": "2026-11-23T03:12:25.440938+00:00",
+  "reviewer": "asana_inventory",
+  "schema": "cherri-private-verifier-independent-review/1",
+  "testsOrNativeRunsExecutedByReviewer": false,
+  "verifierSha256": "c74295fffc41212ec85b2c2b2b9485094bd0234e85e0396e36e61bf81fea3401"
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-23T03:36:06.238155+00:00",
+  "reviewer": "ci_source_audit",
+  "reviewType": "READ_ONLY_STATIC_REVIEW",
+  "scriptSha256": "d22cbc252196187104dae6d044404dbad531da7f939c9fd19a4d43f174e9c4f8",
+  "status": "NO_BLOCKER_UNDER_ASSIGNED_SAME_UID_SOLE_OWNER_PROCEDURE",
+  "checked": [
+    "Fixed K10 source/branch/run/attempt/workflow identity",
+    "Exact original gh command and finished receipt",
+    "Inactive original observer PID",
+    "No same-UID matching same-run watcher",
+    "Fresh exclusive observation-2 directory",
+    "Ownership recheck after one actual metadata read",
+    "Separate retained original and continuation receipts",
+    "No new observer for already terminal run",
+    "No dispatch, cancellation or workflow/test deadline mutation"
+  ],
+  "qualifications": [
+    "Invoke as ubuntu, the same UID as original watchers; process inventory is scoped to os.getuid().",
+    "Overlap scan recognizes the approved gh run watch RUN argv form; sole-owner procedure rules out alternative wrappers.",
+    "5100 seconds bounds observation only; subprocess.run timeout kills/reaps its direct gh child, without a stronger descendant-group claim.",
+    "PID reuse or unavailable process information fails closed."
+  ],
+  "testsRun": 0,
+  "apiCalls": 0,
+  "launches": 0,
+  "edits": 0,
+  "nativeAcceptanceGranted": false
+}
