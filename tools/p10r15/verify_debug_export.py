@@ -5,6 +5,35 @@ import argparse, base64, copy, hashlib, json, os, pathlib, re, subprocess, sys, 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PREFIX = "is.workflow.actions."
 ALLOWED = {"gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname"}
+ALLOWED_IDENTIFIERS = frozenset(PREFIX + name for name in ALLOWED)
+
+def extract_export_graph(actions, *, legacy):
+    """Validate the authored fixture boundaries without modeling main output."""
+    expected_prefix = ("nothing", "setvariable", "gettext", "appendvariable")
+    if len(actions) < 5 or [
+        action.get("WFWorkflowActionIdentifier") for action in actions[:4]
+    ] != [PREFIX + name for name in expected_prefix]:
+        raise ValueError("export fixture prelude changed")
+    end = len(actions)
+    boundary = "LEGACY_UNCHANGED"
+    if not legacy:
+        terminal = actions[-1]
+        if (terminal.get("WFWorkflowActionIdentifier") != PREFIX + "nothing"
+                or terminal.get("WFWorkflowActionParameters") != {}):
+            raise ValueError("V2 main fallthrough must end with parameter-free Nothing")
+        end -= 1
+        boundary = "V2_EXPLICIT_VOID_VERIFIED"
+    graph = actions[4:end]
+    if (not graph
+            or graph[-1].get("WFWorkflowActionIdentifier") != PREFIX + "setitemname"):
+        raise ValueError("export graph must end at its named File producer")
+    unexpected = [
+        action.get("WFWorkflowActionIdentifier") for action in graph
+        if action.get("WFWorkflowActionIdentifier") not in ALLOWED_IDENTIFIERS
+    ]
+    if unexpected:
+        raise ValueError("nonlocal effect or mutation in export graph: " + repr(unexpected))
+    return graph, boundary
 
 class Value:
     def __init__(self, kind, data, name=None):
@@ -55,11 +84,12 @@ class GraphModel:
         index = start
         while index < end:
             action = actions[index]
-            ident = action["WFWorkflowActionIdentifier"].removeprefix(PREFIX)
+            wire_ident = action["WFWorkflowActionIdentifier"]
+            if wire_ident not in ALLOWED_IDENTIFIERS:
+                raise ValueError("nonlocal effect or mutation in export graph: "+wire_ident)
+            ident = wire_ident[len(PREFIX):]
             p = action["WFWorkflowActionParameters"]
             self.executed += 1
-            if ident not in ALLOWED:
-                raise ValueError("nonlocal effect or mutation in export graph: "+ident)
             if ident in {"repeat.each", "conditional"} and p["WFControlFlowMode"] == 0:
                 group = p["GroupingIdentifier"]
                 closing = next(i for i in range(index+1,end) if actions[i]["WFWorkflowActionParameters"].get("GroupingIdentifier") == group and actions[i]["WFWorkflowActionParameters"].get("WFControlFlowMode") == 2)
@@ -210,8 +240,7 @@ def main():
          assert actions[1]["WFWorkflowActionIdentifier"] == PREFIX+"setvariable"
          assert actions[1]["WFWorkflowActionParameters"].get("WFVariableName") == "__cherri_debug_log"
          assert "WFInput" not in actions[0]["WFWorkflowActionParameters"] and "WFInput" not in actions[1]["WFWorkflowActionParameters"], "clear retained native input"
-         graph=actions[4:]
-         assert all(a["WFWorkflowActionIdentifier"].removeprefix(PREFIX) in ALLOWED for a in graph)
+         graph, main_boundary = extract_export_graph(actions, legacy=legacy)
          imported=out/(ident+"-import.cherri");recompiled=out/(ident+"-recompiled.shortcut")
          result=run([exe,"import",target,"--mode=v2","--lossless","-o",imported])
          if result.returncode:raise RuntimeError(ident+" import")
@@ -227,7 +256,7 @@ def main():
            "native-type-matrix":[Value("Text",tricky),Value("Number",12.5),Value("Bool",False),Value("Null",None),Value("Dictionary",{"secret":"SYNTHETIC_SECRET"}),Value("List",["x",1]),Value("Date","2026-11-18"),Value("File",b"\x00\xff"),Value("Image",b"\x00\xff")],
          }
          models={name:inspect_artifact(graph,items,fmt,redact,include_types) for name,items in samples.items()}
-         checks.append({"id":ident,"status":"PASS","sourceSha256":hashlib.sha256(source.read_bytes()).hexdigest(),"actionCount":len(actions),"exportActionCount":len(graph),"exactNativeActionRoundtrip":True,"models":models})
+         checks.append({"id":ident,"status":"PASS","sourceSha256":hashlib.sha256(source.read_bytes()).hexdigest(),"actionCount":len(actions),"exportActionCount":len(graph),"mainFallthroughBoundary":main_boundary,"exactNativeActionRoundtrip":True,"models":models})
          graphs[(legacy,fmt,redact,include_types)]=graph
     negatives=[]
     for legacy in (False,True):
@@ -305,7 +334,7 @@ def main():
       "sourceFingerprint":before,"compilerSha256":hashlib.sha256(exe.read_bytes()).hexdigest(),
       "schemaFingerprint":caps.get("schemaFingerprint"),"macroFingerprint":caps.get("macroFingerprint"),
       "nativeMetadata":verify_native_metadata(),
-      "scope":["one returned File; no provider save/share/network","default full payload redaction","opt-in Text payloads explicitly base64-utf8","non-Text payloads explicitly unsupported","dates/labels not collected"],
+      "scope":["macro produces one File; main fallthrough is verified separately; no provider save/share/network","default full payload redaction","opt-in Text payloads explicitly base64-utf8","non-Text payloads explicitly unsupported","dates/labels not collected"],
       "nativeAssumptionsStillRequiringSignedRuntime":["empty cleared log Repeat cardinality","native Text Base64 UTF-8 including empty Text and controls","Text envelope Base64 Encode/Decode byte conversion","Set Name on newly produced File","Repeat and If result collection for 0/1/1000 items"],
       "summary":{"cliCompiles":len(checks),"exactNativeActionRoundtrips":len(checks),"independentModelCases":sum(len(c["models"]) for c in checks),"cliNegatives":len(negatives),"causalFaults":len(faults),"nativeProbeCompiles":len(native_probes),"nativeExecuted":0,"elapsedSeconds":round(time.monotonic()-started,3)},
       "compiles":checks,"cliNegatives":negatives,"causalFaults":faults,"nativeProbes":native_probes,

@@ -13,6 +13,15 @@ Quick captures that still need classification.
 Potential improvements, features, optimizations, or architectural ideas.
 
 ## Discoveries & Tips
+
+### V2 main output and bounded export graphs (2026-11-23)
+
+V2 main fallthrough emits a parameter-free Nothing after the macro's named File
+producer. Export validators must check that terminal boundary explicitly while
+preserving every macro action and the complete native roundtrip. The boundary
+does not justify allowing Nothing or other effects inside the export graph, and
+a local graph model remains separate from Apple File/runtime acceptance.
+
 ### Cherri investigation notes (2026-10-06)
 
 - **Named Magic Variable optimization:** Real Shortcut evidence shows that an action output can use `CustomOutputName`, and subsequent references can point directly to the original `ActionOutput`, allowing some usages of `Set Variable` to potentially be eliminated. Investigate compiler/decompiler support and when this transformation is semantically safe. This may affect the compiler, decompiler, corpus analyzer, structural comparator, generated action metadata/docs, Skill behavior, and iOS/app consumers if shared metadata needs extension. This is an investigation opportunity, not an implemented optimization.

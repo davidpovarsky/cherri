@@ -157,6 +157,7 @@ jobs:
 
       - name: Validate bounded local debug export
         run: |
+          python3 -B -m unittest discover -s tools/p10r15 -p 'test_verify_debug_export.py' -v
           go test -count=1 -timeout=5m -run '^TestP15DebugExport' .
           python3 tools/p10r15/verify_debug_export.py --report dist/debug-export-validation.json
 
