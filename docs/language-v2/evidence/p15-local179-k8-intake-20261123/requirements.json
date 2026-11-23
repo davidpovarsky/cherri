@@ -1,0 +1,4127 @@
+[
+  {
+    "id": "B01",
+    "group": "baseline",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "repository"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "repository"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Verify isolated base/remote HEAD and keep unrelated agent work unchanged"
+  },
+  {
+    "id": "B02",
+    "group": "baseline",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "repository"
+    ],
+    "executedTiers": [
+      "repository"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-B02-repository"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Capture baseline catalog, definition identities and representative native outputs"
+  },
+  {
+    "id": "U01",
+    "group": "upstream",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "repository"
+    ],
+    "executedTiers": [
+      "repository"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-U01-repository"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [],
+    "requirement": "Preserve upstream declaration files when build-time adapters suffice"
+  },
+  {
+    "id": "U02",
+    "group": "upstream",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "generation"
+    ],
+    "executedTiers": [
+      "generation",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-U02-unit",
+      "ev-local-U02-generation"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Regenerate assembled schema from original declarations and narrow facets"
+  },
+  {
+    "id": "U03",
+    "group": "upstream",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-U03-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Simulate an upstream parameter change used by a facet"
+  },
+  {
+    "id": "U04",
+    "group": "upstream",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-U04-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Check normal public binary does not invoke a legacy script parser"
+  },
+  {
+    "id": "P01",
+    "group": "parser",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-P01-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables"
+  },
+  {
+    "id": "P02",
+    "group": "parser",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-P02-unit",
+      "ev-local-P02-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Unterminated string/comment and partial named call recover"
+  },
+  {
+    "id": "P03",
+    "group": "parser",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-P03-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Pratt precedence, parentheses and short-circuit tree are correct"
+  },
+  {
+    "id": "P04",
+    "group": "parser",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-P04-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Semicolon/newline handling and bare return are unambiguous"
+  },
+  {
+    "id": "P05",
+    "group": "parser",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-P05-unit",
+      "ev-local-P05-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Unicode identifiers and tokenizer/completion agree"
+  },
+  {
+    "id": "V01",
+    "group": "binding",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-V01-unit",
+      "ev-local-V01-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "let captures current var value before later assignment"
+  },
+  {
+    "id": "V02",
+    "group": "binding",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-V02-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Scope, shadowing, immutable reassignment and read-before-init"
+  },
+  {
+    "id": "V03",
+    "group": "binding",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-V03-unit",
+      "ev-local-V03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "System clipboard read captured once"
+  },
+  {
+    "id": "V04",
+    "group": "binding",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-V04-unit",
+      "ev-local-V04-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "let binds lists/maps/action outputs without old const restrictions"
+  },
+  {
+    "id": "C01",
+    "group": "calls",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-C01-unit",
+      "ev-local-C01-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Named arguments out of declaration order evaluate in source order"
+  },
+  {
+    "id": "C02",
+    "group": "calls",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-C02-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Duplicate, missing, unknown labels and extra positional arguments"
+  },
+  {
+    "id": "C03",
+    "group": "calls",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-C03-unit",
+      "ev-local-C03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Variadic source API migrates to explicit named list"
+  },
+  {
+    "id": "C04",
+    "group": "calls",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-C04-unit",
+      "ev-local-C04-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Enum contextual and qualified members resolve"
+  },
+  {
+    "id": "C05",
+    "group": "calls",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-C05-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Unknown enum wire value survives native import"
+  },
+  {
+    "id": "T01",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-T01-unit",
+      "ev-local-T01-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission"
+  },
+  {
+    "id": "T02",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T02-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Runtime immutable output does not satisfy literal-required slot"
+  },
+  {
+    "id": "T03",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T03-unit",
+      "ev-local-T03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Semantic Number with number-as-text wire codec"
+  },
+  {
+    "id": "T04",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T04-unit",
+      "ev-local-T04-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Unknown differs from AnyContent and Void"
+  },
+  {
+    "id": "T05",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Optional presence differs from optional value and JSON null"
+  },
+  {
+    "id": "T06",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T06-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "User record annotation is not runtime JSON validation"
+  },
+  {
+    "id": "T07",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T07-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Per-platform versions compare components rather than floats"
+  },
+  {
+    "id": "T08",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T08-unit",
+      "ev-local-T08-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Variant-dependent output type inferred from literal mode"
+  },
+  {
+    "id": "T09",
+    "group": "types",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-T09-unit",
+      "ev-local-T09-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Known Content Graph conversions vs unverified coercion"
+  },
+  {
+    "id": "S01",
+    "group": "text",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-S01-unit",
+      "ev-local-S01-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks"
+  },
+  {
+    "id": "S02",
+    "group": "text",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-S02-unit",
+      "ev-local-S02-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes"
+  },
+  {
+    "id": "S03",
+    "group": "text",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "service",
+      "benchmark"
+    ],
+    "executedTiers": [
+      "benchmark",
+      "service"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-S03-service",
+      "ev-local-S03-benchmark"
+    ],
+    "explicitArtifactCount": 8,
+    "missingTiers": [],
+    "requirement": "Large embedded local asset remains cached across unrelated edits"
+  },
+  {
+    "id": "L01",
+    "group": "collections",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: Nonempty lowering does not assert nested shape, cardinality, or order. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Nested lists/maps preserve shape, cardinality and element order"
+  },
+  {
+    "id": "L02",
+    "group": "collections",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-L02-unit",
+      "ev-local-L02-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Zero-based first/last/empty/out-of-range/negative indexing"
+  },
+  {
+    "id": "L03",
+    "group": "collections",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-L03-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Duplicate literal keys and invalid index type"
+  },
+  {
+    "id": "L04",
+    "group": "collections",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-L04-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Dynamic bounds checking does not execute unsafe native lookup"
+  },
+  {
+    "id": "N01",
+    "group": "numbers",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-N01-unit",
+      "ev-local-N01-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Fractional arithmetic including 5/2 and constraints"
+  },
+  {
+    "id": "N02",
+    "group": "numbers",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-N02-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Known zero divisor and text-plus-number are rejected"
+  },
+  {
+    "id": "N03",
+    "group": "numbers",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: Nonempty IR does not prove case-sensitive equality or comparison migration. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Exact case-sensitive text equality and legacy comparison migration"
+  },
+  {
+    "id": "F01",
+    "group": "control",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-F01-unit",
+      "ev-local-F01-native"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Mixed AND/OR short-circuits observable branch effects"
+  },
+  {
+    "id": "F02",
+    "group": "control",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-F02-unit",
+      "ev-local-F02-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Nested for/repeat scope and zero-based indices"
+  },
+  {
+    "id": "F03",
+    "group": "control",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-F03-unit",
+      "ev-local-F03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Value if/menu yield typing and normal-path coverage"
+  },
+  {
+    "id": "F04",
+    "group": "control",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "localDetail": "The complete F04 scenario is NOT_RUN: nested List and Optional loop elements have no verified native one-element/no-flatten/presence transport. Supported scalar and for-item graphs plus current target rejection are bounded observations only. Supported process: Bounded supported facets only: actual zero/multiple repeat and for-item sources retain typed Text/Number/Bool results, exact complete native graphs and causal corruption controls. Nested List/Optional target rejection is explicitly observed and is not cardinality fulfillment. No complete F04 tier credit or Apple execution.",
+    "requirement": "Value loop collects one semantic element per iteration"
+  },
+  {
+    "id": "F05",
+    "group": "control",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit"
+    ],
+    "executedTiers": [
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-F05-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Stop Shortcut is not substituted for break"
+  },
+  {
+    "id": "FN01",
+    "group": "functions",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-FN01-unit",
+      "ev-local-FN01-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "AST-defined function call returns then caller continues"
+  },
+  {
+    "id": "FN02",
+    "group": "functions",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-FN02-unit",
+      "ev-local-FN02-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Presence-tagged argument defaults include false/0/empty"
+  },
+  {
+    "id": "FN03",
+    "group": "functions",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-FN03-unit",
+      "ev-local-FN03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "No implicit runtime capture; terminating recursive call"
+  },
+  {
+    "id": "FN04",
+    "group": "functions",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-FN04-native-structure"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Caller input vs internal dispatcher envelope"
+  },
+  {
+    "id": "FN05",
+    "group": "functions",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-FN05-unit",
+      "ev-local-FN05-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "localDetail": "Independent FN05 typed source and complete native graphs for bound numeric List, empty List/Map, nested Map with reserved keys and ordered empty/false/zero values, Optional None versus present empty Text/List/Map, false, zero and nonempty structured values. Every argument carrier, child return, caller decoder and final consumer is checked with causal corruptions. Nested native Lists and Optional absence inside ordinary containers retain exact source-bound target limitations and emit no artifact. This supplies unit/native-structure only; it does not execute Apple or grant T05/L01/F04/RP20/RP24/RP25/RP26/BRG11/BRG15 credit.",
+    "requirement": "Structured argument/result transport"
+  },
+  {
+    "id": "M01",
+    "group": "metadata",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-M01-unit",
+      "ev-local-M01-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Header target/input/output/no-input/icon/source surfaces"
+  },
+  {
+    "id": "M02",
+    "group": "metadata",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-M02-native-structure"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Main body explicit return and Void fallthrough"
+  },
+  {
+    "id": "M03",
+    "group": "metadata",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-M03-unit",
+      "ev-local-M03-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Setup question binds by node/parameter through lowering"
+  },
+  {
+    "id": "M04",
+    "group": "metadata",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-M04-unit",
+      "ev-local-M04-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Invalid setup use/reuse and Ask Each Time insertion"
+  },
+  {
+    "id": "M05",
+    "group": "metadata",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-M05-unit",
+      "ev-local-M05-native"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Seven existing trigger families migrate without install claims"
+  },
+  {
+    "id": "IM01",
+    "group": "modules",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "service"
+    ],
+    "executedTiers": [
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-IM01-unit",
+      "ev-local-IM01-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Relative aliases, duplicate imports and import cycle"
+  },
+  {
+    "id": "IM02",
+    "group": "modules",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "migration"
+    ],
+    "executedTiers": [
+      "migration",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-IM02-unit",
+      "ev-local-IM02-migration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Module top-level runtime initialization"
+  },
+  {
+    "id": "IM03",
+    "group": "modules",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-IM03-unit",
+      "ev-local-IM03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Existing stdfunc behavior migrated from preserved upstream source"
+  },
+  {
+    "id": "IM04",
+    "group": "modules",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "security"
+    ],
+    "executedTiers": [
+      "security"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-IM04-security"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Local workspace resource traversal and symlink escape"
+  },
+  {
+    "id": "IM05",
+    "group": "modules",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "security",
+      "service"
+    ],
+    "executedTiers": [
+      "security",
+      "service"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-IM05-security",
+      "ev-local-IM05-service"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Analysis with unresolved/remote package"
+  },
+  {
+    "id": "AC01",
+    "group": "schema",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "generation"
+    ],
+    "executedTiers": [
+      "generation"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-AC01-generation"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "All baseline definitions/variants/constructs accounted for"
+  },
+  {
+    "id": "AC02",
+    "group": "schema",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-AC02-unit",
+      "ev-local-AC02-native"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Public custom action declaration feeds same schema/codecs"
+  },
+  {
+    "id": "AC03",
+    "group": "schema",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "generation"
+    ],
+    "executedTiers": [
+      "generation"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-AC03-generation"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Unregistered codec, duplicate enum/label or stale facet"
+  },
+  {
+    "id": "R01",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R01-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Unknown action and unknown nested/top-level fields round-trip"
+  },
+  {
+    "id": "R02",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R02-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Known identifier with unmodeled value/static variant"
+  },
+  {
+    "id": "R03",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R03-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Coercion-only/property-only/chained aggrandizements"
+  },
+  {
+    "id": "R04",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R04-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Original missing parameters not default-filled"
+  },
+  {
+    "id": "R05",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R05-unit",
+      "ev-local-R05-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Opaque/native regions, exports and workflow fallback"
+  },
+  {
+    "id": "R06",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R06-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake"
+  },
+  {
+    "id": "R07",
+    "group": "native",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-R07-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Intended single-property edit vs collateral structural change"
+  },
+  {
+    "id": "E01",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "service",
+      "ios-ui"
+    ],
+    "executedTiers": [
+      "service"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-E01-service"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [
+      "ios-ui"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-ui]",
+    "requirement": "Contextual labels/enums/compatible variables completion"
+  },
+  {
+    "id": "E02",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "service",
+      "ios-ui"
+    ],
+    "executedTiers": [
+      "service"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-E02-service"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [
+      "ios-ui"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-ui]",
+    "requirement": "Multiple diagnostics and full ranges on incomplete code"
+  },
+  {
+    "id": "E03",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "service",
+      "ios-ui"
+    ],
+    "executedTiers": [
+      "service"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-E03-service"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [
+      "ios-ui"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-ui]",
+    "requirement": "Hover/signature/definition/semantic rename"
+  },
+  {
+    "id": "E04",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "unit",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-E04-unit",
+      "ev-local-E04-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Formatter idempotence and literal/comment preservation"
+  },
+  {
+    "id": "E05",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "service",
+      "ios-ui"
+    ],
+    "executedTiers": [
+      "service"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-E05-service"
+    ],
+    "explicitArtifactCount": 13,
+    "missingTiers": [
+      "ios-ui"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-ui]",
+    "requirement": "Rapid edits, cancellation and stale responses"
+  },
+  {
+    "id": "E06",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "protocol",
+      "ios-ui"
+    ],
+    "executedTiers": [
+      "protocol"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-E06-protocol"
+    ],
+    "explicitArtifactCount": 16,
+    "missingTiers": [
+      "ios-ui"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-ui]",
+    "requirement": "LSP UTF-16/default negotiation and Cocoa offsets"
+  },
+  {
+    "id": "E07",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration",
+      "ios-ui"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-E07-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-ui"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-ui]",
+    "requirement": "Visual source edit changes intended node only"
+  },
+  {
+    "id": "E08",
+    "group": "editor",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "benchmark"
+    ],
+    "executedTiers": [
+      "benchmark"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-E08-benchmark"
+    ],
+    "explicitArtifactCount": 4,
+    "missingTiers": [],
+    "requirement": "Performance fixtures small/large and embedded assets"
+  },
+  {
+    "id": "CL01",
+    "group": "cli",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-CL01-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "JSON commands emit parseable response and reliable exit status"
+  },
+  {
+    "id": "CL02",
+    "group": "cli",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "security",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "security"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-CL02-security",
+      "ev-local-CL02-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Analysis never emits/signs/executes/installs"
+  },
+  {
+    "id": "CL03",
+    "group": "cli",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-CL03-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Normal production path rejects legacy public syntax"
+  },
+  {
+    "id": "D01",
+    "group": "docs",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "generation",
+      "docs"
+    ],
+    "executedTiers": [
+      "docs",
+      "generation"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-D01-generation",
+      "ev-local-D01-docs"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "All generated action signatures match assembled schema"
+  },
+  {
+    "id": "D02",
+    "group": "docs",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "docs"
+    ],
+    "executedTiers": [
+      "docs"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-D02-docs"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Runnable and deliberately-invalid docs examples tested"
+  },
+  {
+    "id": "D03",
+    "group": "docs",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "docs",
+      "integration"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "docs",
+      "integration"
+    ],
+    "localDetail": "Requires final-tuple public site bytes and installed Skill searches plus the same-run exact app unit, negative and UI tests. Local file existence or modeled receipts do not establish either consumer tier.",
+    "requirement": "Active fork docs separated from upstream reference"
+  },
+  {
+    "id": "K01",
+    "group": "skill",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "skill-package"
+    ],
+    "executedTiers": [
+      "skill-package"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-K01-skill-package"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Complete updated package and unpacked self-test"
+  },
+  {
+    "id": "K02",
+    "group": "skill",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-K02-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Fresh install and incompatible cached/bundled binary"
+  },
+  {
+    "id": "K03",
+    "group": "skill",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-K03-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Exact commit install and checksum/atomic update"
+  },
+  {
+    "id": "K04",
+    "group": "skill",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-K04-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Offline compatible cache and docs mismatch"
+  },
+  {
+    "id": "K05",
+    "group": "skill",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "FAILED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-K05-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "localDetail": "Executed production tests: TestP15K05LiveSigning, TestP15K05BuildPreservesExistingFiles, TestP15K05PreparePreservesOriginal, TestP15K05RepairBuildImportEdit, TestP15K05SigningGateAndExactInput, TestP15K05PrepareRequiresComparator, TestP15K05CopiedImportRequiresPolicy",
+    "requirement": "Structured repair/build/import/edit/sign workflow"
+  },
+  {
+    "id": "CI01",
+    "group": "verification",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "negative-ci"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "negative-ci"
+    ],
+    "localDetail": "Requires the source-bound macOS WorkflowKit REQUIRED encoding gate: correct set, one isolated corrupted EXPECT with exact nonzero diagnostic, restored set. Local process fixtures do not execute Apple code.",
+    "requirement": "Encoding EXPECT intentionally broken in test"
+  },
+  {
+    "id": "CI02",
+    "group": "verification",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "ios-runtime"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: Nonempty IR for a runtime fixture is not an iOS runtime execution. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Selected real iOS language fixtures"
+  },
+  {
+    "id": "CI03",
+    "group": "verification",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "repository",
+      "ci"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "repository",
+      "ci"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: A 40-character local SHA does not prove final workflow head/checkout provenance. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Final required workflows use exact final SHA"
+  },
+  {
+    "id": "CI04",
+    "group": "verification",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "security",
+      "repository"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "security",
+      "repository"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: Absence of private_key.pem is not a private-corpus, credentials, or signing audit. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "No private raw corpus or unrequested signing"
+  },
+  {
+    "id": "AI01",
+    "group": "evaluation",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "external-eval"
+    ],
+    "executedTiers": [],
+    "status": "AI_EVAL_NOT_RUN",
+    "baselineStatus": "AI_EVAL_NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "external-eval"
+    ],
+    "localDetail": "No independently pinned real evaluation bundle is configured; RP50 fake harness controls do not measure quality",
+    "requirement": "Held-out equal-budget old/new model evaluation harness"
+  },
+  {
+    "id": "END01",
+    "group": "delivery",
+    "contract": "acceptance-contract.json",
+    "requiredTiers": [
+      "repository"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "repository"
+    ],
+    "localDetail": "Formal scope UNVERIFIED: Successful git status does not establish a clean tree, pushed branches, artifacts, or delivery provenance. Observed smoke passed=true; see acceptance-local-observations.json.",
+    "requirement": "Final pushed branches/artifacts/provenance and clean worktree"
+  },
+  {
+    "id": "RP01",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "FAILED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP01-unit",
+      "ev-local-RP01-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "localDetail": "Executed production tests: TestMeta_AssertionReturnsFalse, TestMeta_ContradictoryPassedStatus, TestMeta_MissingRequiredID, TestMeta_UnknownIDInjected, TestMeta_DuplicateEvidenceID, TestEndToEndAggregator_All12AdversarialAttacks, TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs",
+    "requirement": "Verification aggregator"
+  },
+  {
+    "id": "RP02",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "FAILED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP02-unit",
+      "ev-local-RP02-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "localDetail": "Executed production tests: TestP15RP02ParserOnlyAndForeignSHA, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestMeta_FalsePassedClaimWithMissingTiersRejected, TestMeta_WeakTestLevelRejection",
+    "requirement": "Required evidence levels"
+  },
+  {
+    "id": "RP03",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP03-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Portable contract intake"
+  },
+  {
+    "id": "RP04",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "cli",
+      "embedded"
+    ],
+    "executedTiers": [
+      "cli",
+      "embedded",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP04-unit",
+      "ev-local-RP04-cli",
+      "ev-local-RP04-embedded"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Compile cannot bypass analysis"
+  },
+  {
+    "id": "RP05",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "cli",
+      "embedded"
+    ],
+    "executedTiers": [
+      "cli",
+      "embedded",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP05-unit",
+      "ev-local-RP05-cli",
+      "ev-local-RP05-embedded"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Literal legacy-looking text"
+  },
+  {
+    "id": "RP06",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "generation",
+      "integration"
+    ],
+    "executedTiers": [
+      "generation",
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP06-generation",
+      "ev-local-RP06-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Current declaration propagation"
+  },
+  {
+    "id": "RP07",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "generation",
+      "negative-integration"
+    ],
+    "executedTiers": [
+      "generation",
+      "negative-integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP07-generation",
+      "ev-local-RP07-negative-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Facet conflict is detected"
+  },
+  {
+    "id": "RP08",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "generation",
+      "unit"
+    ],
+    "executedTiers": [
+      "generation",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP08-generation",
+      "ev-local-RP08-unit"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Schema fingerprint and typed facts"
+  },
+  {
+    "id": "RP09",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "native-differential"
+    ],
+    "executedTiers": [
+      "native-differential"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP09-native-differential"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Static action variants"
+  },
+  {
+    "id": "RP10",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "native-differential"
+    ],
+    "executedTiers": [
+      "native-differential"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP10-native-differential"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Custom callbacks and App Intents"
+  },
+  {
+    "id": "RP11",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-differential"
+    ],
+    "executedTiers": [
+      "native-differential",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP11-unit",
+      "ev-local-RP11-native-differential"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Number-as-text and reference forms"
+  },
+  {
+    "id": "RP12",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP12-unit",
+      "ev-local-RP12-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Named argument effect order"
+  },
+  {
+    "id": "RP13",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP13-unit",
+      "ev-local-RP13-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Variadic list API"
+  },
+  {
+    "id": "RP14",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP14-unit",
+      "ev-local-RP14-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Binding capture and native types"
+  },
+  {
+    "id": "RP15",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP15-unit",
+      "ev-local-RP15-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Compound assignment"
+  },
+  {
+    "id": "RP16",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-negative"
+    ],
+    "executedTiers": [
+      "native-negative",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP16-unit",
+      "ev-local-RP16-native-negative"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Exhaustive node handling"
+  },
+  {
+    "id": "RP17",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP17-unit",
+      "ev-local-RP17-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Comparisons and arithmetic"
+  },
+  {
+    "id": "RP18",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP18-unit",
+      "ev-local-RP18-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Observable short circuit"
+  },
+  {
+    "id": "RP19",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP19-unit",
+      "ev-local-RP19-native-roundtrip"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Literal and Unicode f-strings"
+  },
+  {
+    "id": "RP20",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Container and optional shape"
+  },
+  {
+    "id": "RP21",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP21-unit",
+      "ev-local-RP21-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Safe zero-based indexing"
+  },
+  {
+    "id": "RP22",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP22-unit",
+      "ev-local-RP22-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Loop item and index bindings"
+  },
+  {
+    "id": "RP23",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP23-unit",
+      "ev-local-RP23-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "localDetail": "Distinct local joined scenario: Number if yields, Bool menu yields, zero/multiple Text loop yields, two-item for results and one final consumer. Exact semantic types, all native branch/result edges and absence of overwritten outputs are independently checked; missing/illegal/overwritten yields have causal source-bound diagnostics and no emitted artifact. This local supported scenario supplies no F04 nested List/Optional or Apple result evidence.",
+    "requirement": "Value block and loop yields"
+  },
+  {
+    "id": "RP24",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP24-unit",
+      "ev-local-RP24-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Function return and recursion"
+  },
+  {
+    "id": "RP25",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP25-unit",
+      "ev-local-RP25-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Function default and transport"
+  },
+  {
+    "id": "RP26",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "native-structure",
+      "ios-runtime"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Caller input and Void"
+  },
+  {
+    "id": "RP27",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "service",
+      "migration"
+    ],
+    "executedTiers": [
+      "migration",
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP27-unit",
+      "ev-local-RP27-service",
+      "ev-local-RP27-migration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Real module resolution"
+  },
+  {
+    "id": "RP28",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "generation",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "generation",
+      "native-structure"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP28-generation",
+      "ev-local-RP28-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Generated existing stdfunc"
+  },
+  {
+    "id": "RP29",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "security",
+      "service",
+      "benchmark"
+    ],
+    "executedTiers": [
+      "benchmark",
+      "security",
+      "service"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP29-security",
+      "ev-local-RP29-service",
+      "ev-local-RP29-benchmark"
+    ],
+    "explicitArtifactCount": 12,
+    "missingTiers": [],
+    "requirement": "Asset and path authorization"
+  },
+  {
+    "id": "RP30",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP30-unit",
+      "ev-local-RP30-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Header metadata roundtrip"
+  },
+  {
+    "id": "RP31",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "service",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP31-unit",
+      "ev-local-RP31-service",
+      "ev-local-RP31-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Setup indices and askEachTime"
+  },
+  {
+    "id": "RP32",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP32-unit",
+      "ev-local-RP32-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Existing triggers and declarations"
+  },
+  {
+    "id": "RP33",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "migration",
+      "native-differential"
+    ],
+    "executedTiers": [
+      "migration",
+      "native-differential"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP33-migration",
+      "ev-local-RP33-native-differential"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Syntax-aware migration"
+  },
+  {
+    "id": "RP34",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration",
+      "negative"
+    ],
+    "executedTiers": [
+      "integration",
+      "negative"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP34-integration",
+      "ev-local-RP34-negative"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Atomic failed migration"
+  },
+  {
+    "id": "RP35",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP35-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Native forms and unknown values"
+  },
+  {
+    "id": "RP36",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration"
+    ],
+    "executedTiers": [
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP36-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Shared intake formats"
+  },
+  {
+    "id": "RP37",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration",
+      "negative"
+    ],
+    "executedTiers": [
+      "integration",
+      "negative"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP37-integration",
+      "ev-local-RP37-negative"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Allowed edit and fail-closed gate"
+  },
+  {
+    "id": "RP38",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "service",
+      "protocol"
+    ],
+    "executedTiers": [
+      "protocol",
+      "service"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP38-service",
+      "ev-local-RP38-protocol"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Contextual service and LSP"
+  },
+  {
+    "id": "RP39",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "unit",
+      "service",
+      "ios-ui"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "service",
+      "ios-ui"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Format, rename and stale edits"
+  },
+  {
+    "id": "RP40",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "app-integration",
+      "ios-ui"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "app-integration",
+      "ios-ui"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Actual Swift integration"
+  },
+  {
+    "id": "RP41",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration",
+      "ios-ui"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "integration",
+      "ios-ui"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Preview bounded source edit"
+  },
+  {
+    "id": "RP42",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "cli",
+      "skill-package"
+    ],
+    "executedTiers": [
+      "cli",
+      "skill-package"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP42-cli",
+      "ev-local-RP42-skill-package"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Real public CLI and installed tools"
+  },
+  {
+    "id": "RP43",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration",
+      "security"
+    ],
+    "executedTiers": [
+      "integration",
+      "security"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP43-integration",
+      "ev-local-RP43-security"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Output/signing failure behavior"
+  },
+  {
+    "id": "RP44",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "skill-package",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "skill-package"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP44-integration",
+      "ev-local-RP44-skill-package"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Skill compatibility rejection"
+  },
+  {
+    "id": "RP45",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "skill-package",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "skill-package"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP45-integration",
+      "ev-local-RP45-skill-package"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Exact install and rollback"
+  },
+  {
+    "id": "RP46",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "docs",
+      "integration"
+    ],
+    "executedTiers": [
+      "docs",
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP46-docs",
+      "ev-local-RP46-integration"
+    ],
+    "explicitArtifactCount": 8,
+    "missingTiers": [],
+    "localDetail": "Executed original pinned documentation/package producers with complete required event inventory; original subprocess evidence is retained beside this receipt",
+    "requirement": "Docs and Skill retrieval coherence"
+  },
+  {
+    "id": "RP47",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "negative-ci"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "negative-ci"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Native encoding negative gate"
+  },
+  {
+    "id": "RP48",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "ios-runtime"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Real runtime computed assertions"
+  },
+  {
+    "id": "RP49",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "repository",
+      "ci",
+      "skill-package"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "repository",
+      "ci",
+      "skill-package"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Final SHA and artifact binding"
+  },
+  {
+    "id": "RP50",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "harness-unit",
+      "external-eval"
+    ],
+    "executedTiers": [
+      "harness-unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-RP50-harness-unit"
+    ],
+    "explicitArtifactCount": 3,
+    "missingTiers": [
+      "external-eval"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [external-eval]",
+    "requirement": "Executable AI evaluation harness"
+  },
+  {
+    "id": "RP51",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "benchmark",
+      "race"
+    ],
+    "executedTiers": [
+      "benchmark",
+      "race"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP51-benchmark",
+      "ev-local-RP51-race"
+    ],
+    "explicitArtifactCount": 9,
+    "missingTiers": [],
+    "requirement": "Performance and race evidence"
+  },
+  {
+    "id": "RP52",
+    "group": "repair",
+    "contract": "repair-regression-plan.json",
+    "requiredTiers": [
+      "integration",
+      "repository"
+    ],
+    "executedTiers": [
+      "integration",
+      "repository"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-RP52-integration",
+      "ev-local-RP52-repository"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "No accidental second user frontend"
+  },
+  {
+    "id": "BRG01",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "repository"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "repository"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Takeover preserves interrupted work"
+  },
+  {
+    "id": "BRG02",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG02-unit",
+      "ev-local-BRG02-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Strict comparator rejects wrong reference edges"
+  },
+  {
+    "id": "BRG03",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG03-unit",
+      "ev-local-BRG03-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Strict comparator retains tree and text meaning"
+  },
+  {
+    "id": "BRG04",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "FAILED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG04-unit",
+      "ev-local-BRG04-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "localDetail": "Executed production tests: TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs, TestMeta_ContractHashMismatch, TestMeta_AssertionReturnsFalse, TestMeta_WeakTestLevelRejection, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestSupplementalAcceptanceMissingProducerFailsClosed, TestLocalReportIncludesAll179WithoutInheritedClosure, TestEndToEndAggregator_All12AdversarialAttacks",
+    "requirement": "Evidence validator derives actual tiers"
+  },
+  {
+    "id": "BRG05",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "native-structure",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG05-unit",
+      "ev-local-BRG05-native-structure",
+      "ev-local-BRG05-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Canonical action builder is really invoked"
+  },
+  {
+    "id": "BRG06",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "integration",
+      "security"
+    ],
+    "executedTiers": [
+      "integration",
+      "security",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG06-unit",
+      "ev-local-BRG06-integration",
+      "ev-local-BRG06-security"
+    ],
+    "explicitArtifactCount": 13,
+    "missingTiers": [],
+    "requirement": "Backend state and error isolation"
+  },
+  {
+    "id": "BRG07",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "native-structure",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "native-structure"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG07-native-structure",
+      "ev-local-BRG07-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Direct reference transformations survive"
+  },
+  {
+    "id": "BRG08",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG08-unit",
+      "ev-local-BRG08-native-roundtrip"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Inline text references share canonical codec"
+  },
+  {
+    "id": "BRG09",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "native-structure",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "native-structure"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG09-native-structure",
+      "ev-local-BRG09-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Semantic containers and native templates stay distinct"
+  },
+  {
+    "id": "BRG10",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG10-unit",
+      "ev-local-BRG10-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Capture and written-order evaluation"
+  },
+  {
+    "id": "BRG11",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG11-unit",
+      "ev-local-BRG11-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Parameter forms and typed defaults"
+  },
+  {
+    "id": "BRG12",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "PENDING_EXTERNAL",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG12-unit",
+      "ev-local-BRG12-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Nested and mixed loop identity"
+  },
+  {
+    "id": "BRG13",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG13-unit",
+      "ev-local-BRG13-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Typed conditions and dynamic short circuit"
+  },
+  {
+    "id": "BRG14",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG14-unit",
+      "ev-local-BRG14-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Value blocks, loop results and return"
+  },
+  {
+    "id": "BRG15",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Function transport and recursion"
+  },
+  {
+    "id": "BRG16",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-structure",
+      "ios-runtime"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "unit"
+    ],
+    "status": "PENDING_EXTERNAL",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "evidenceIDs": [
+      "ev-local-BRG16-unit",
+      "ev-local-BRG16-native-structure"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [
+      "ios-runtime"
+    ],
+    "localDetail": "Local assertions verified; pending external tier: [ios-runtime]",
+    "requirement": "Bounds and numeric semantics"
+  },
+  {
+    "id": "BRG17",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "native-roundtrip",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG17-unit",
+      "ev-local-BRG17-native-roundtrip"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Metadata, setup and trigger preservation"
+  },
+  {
+    "id": "BRG18",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "native-roundtrip",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG18-native-roundtrip",
+      "ev-local-BRG18-integration"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Native action/block/full workflow paths"
+  },
+  {
+    "id": "BRG19",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "integration",
+      "native-roundtrip"
+    ],
+    "executedTiers": [
+      "integration",
+      "native-roundtrip"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG19-integration",
+      "ev-local-BRG19-native-roundtrip"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Safe import editing and structural migration"
+  },
+  {
+    "id": "BRG20",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "service",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "native-structure",
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG20-unit",
+      "ev-local-BRG20-service",
+      "ev-local-BRG20-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Modules and existing standard functions"
+  },
+  {
+    "id": "BRG21",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "security",
+      "integration",
+      "service"
+    ],
+    "executedTiers": [
+      "integration",
+      "security",
+      "service"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG21-security",
+      "ev-local-BRG21-integration",
+      "ev-local-BRG21-service"
+    ],
+    "explicitArtifactCount": 9,
+    "missingTiers": [],
+    "requirement": "Authorized resource access and pure services"
+  },
+  {
+    "id": "BRG22",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "generation",
+      "integration"
+    ],
+    "executedTiers": [
+      "generation",
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG22-generation",
+      "ev-local-BRG22-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Live schema and generation failure handling"
+  },
+  {
+    "id": "BRG23",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "repository",
+      "integration",
+      "generation"
+    ],
+    "executedTiers": [
+      "generation",
+      "integration",
+      "repository"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG23-repository",
+      "ev-local-BRG23-integration",
+      "ev-local-BRG23-generation"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Real upstream declaration propagation"
+  },
+  {
+    "id": "BRG24",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "repository",
+      "integration",
+      "native-structure"
+    ],
+    "executedTiers": [
+      "integration",
+      "native-structure",
+      "repository"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG24-repository",
+      "ev-local-BRG24-integration",
+      "ev-local-BRG24-native-structure"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Real canonical behavior propagation"
+  },
+  {
+    "id": "BRG25",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "integration",
+      "ios-build",
+      "ios-ui"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "integration",
+      "ios-build",
+      "ios-ui"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "One checked public CLI/mobile route"
+  },
+  {
+    "id": "BRG26",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "integration",
+      "ios-runtime"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "unit",
+      "integration",
+      "ios-runtime"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Exact explicit signing payload"
+  },
+  {
+    "id": "BRG27",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "service",
+      "integration",
+      "ios-ui"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "service",
+      "integration",
+      "ios-ui"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Real editor ranges, completion and stale edits"
+  },
+  {
+    "id": "BRG28",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "integration",
+      "ios-ui",
+      "benchmark"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "integration",
+      "ios-ui",
+      "benchmark"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Preview bounded edit and measured performance"
+  },
+  {
+    "id": "BRG29",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "generation",
+      "docs",
+      "integration"
+    ],
+    "executedTiers": [
+      "docs",
+      "generation",
+      "integration"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG29-generation",
+      "ev-local-BRG29-docs",
+      "ev-local-BRG29-integration"
+    ],
+    "explicitArtifactCount": 12,
+    "missingTiers": [],
+    "localDetail": "Executed original pinned documentation/package producers with complete required event inventory; original subprocess evidence is retained beside this receipt",
+    "requirement": "Generated active docs and executable examples"
+  },
+  {
+    "id": "BRG30",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "skill-package",
+      "integration"
+    ],
+    "executedTiers": [
+      "integration",
+      "skill-package"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG30-integration",
+      "ev-local-BRG30-skill-package"
+    ],
+    "explicitArtifactCount": 6,
+    "missingTiers": [],
+    "requirement": "Complete extracted Skill and immutable compatibility"
+  },
+  {
+    "id": "BRG31",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "ci",
+      "ios-runtime",
+      "repository",
+      "security"
+    ],
+    "executedTiers": [],
+    "status": "NOT_RUN",
+    "baselineStatus": "NOT_RUN",
+    "auditStatus": "UNVERIFIED",
+    "evidenceIDs": [],
+    "explicitArtifactCount": 0,
+    "missingTiers": [
+      "ci",
+      "ios-runtime",
+      "repository",
+      "security"
+    ],
+    "localDetail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+    "requirement": "Actual encoding negative gate and exact-SHA CI"
+  },
+  {
+    "id": "BRG32",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "integration",
+      "repository"
+    ],
+    "executedTiers": [
+      "integration",
+      "repository",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG32-unit",
+      "ev-local-BRG32-integration",
+      "ev-local-BRG32-repository"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Full obligation accounting and executable AI harness"
+  },
+  {
+    "id": "BRG33",
+    "group": "recovery_gate",
+    "contract": "backend-recovery-gates.json",
+    "requiredTiers": [
+      "unit",
+      "analysis",
+      "service",
+      "integration"
+    ],
+    "executedTiers": [
+      "analysis",
+      "integration",
+      "service",
+      "unit"
+    ],
+    "status": "PASSED",
+    "baselineStatus": "PASSED",
+    "auditStatus": "PASS",
+    "evidenceIDs": [
+      "ev-local-BRG33-unit",
+      "ev-local-BRG33-analysis",
+      "ev-local-BRG33-service",
+      "ev-local-BRG33-integration"
+    ],
+    "explicitArtifactCount": 0,
+    "missingTiers": [],
+    "requirement": "Approved frontend semantics remain enforced"
+  }
+]

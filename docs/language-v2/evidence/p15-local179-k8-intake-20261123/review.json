@@ -1,0 +1,240 @@
+{
+  "schema": "cherri-local179-independent-intake/v1",
+  "reviewedUTC": "2026-11-23T01:44:22.094895+00:00",
+  "source": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+  "sourceTuple": {
+    "S": "ca316a3dee252456c4bec751594cf249c709b331",
+    "D": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9",
+    "K": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903"
+  },
+  "runId": 45092775647,
+  "runAttempt": 1,
+  "zipSHA256": "287c29fdf9b08618d185f0a9b13254fe90de6b807221f286fd1356dc2986d9e7",
+  "zipBytes": 46717208,
+  "zipMembers": 2178,
+  "zipUncompressedBytes": 102725239,
+  "allMemberCRCRead": true,
+  "reportSHA256": "3a35c908d81313a7e6a419a4e9f4ae4473534ba36767776454aab68836fb5f39",
+  "rootProcess": {
+    "member": "process-result.json",
+    "sha256": "cb50e6d1d11a8075468d6193d2ba4f0b418bd6e75da96764bfba6b5a842fdd6b",
+    "startedUTC": "2026-11-23T01:08:58.657099+00:00",
+    "finishedUTC": "2026-11-23T01:23:36.658717+00:00",
+    "elapsedSeconds": 878.001618,
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "docsUnchanged": true,
+    "documentationCompilerUnchanged": true
+  },
+  "contracts": {
+    "acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+  },
+  "all179UniqueIdsMatched": true,
+  "all179RequiredTiersUnchanged": true,
+  "counts": {
+    "NOT_RUN": 26,
+    "PASSED": 114,
+    "PENDING_EXTERNAL": 38,
+    "AI_EVAL_NOT_RUN": 1
+  },
+  "closureComplete": false,
+  "baseline": {
+    "source": "d90b69a92e83b5034728c22e062a3dd96153a2a8",
+    "runId": 44938764062,
+    "zipSHA256": "ee4d0b529908b1c5c9f7820d85923c2571719dfe9c3317e5d616c59d2d3d1228",
+    "reportSHA256": "fb937213e9e088dc1899663c5b898b131b571296158ff76983b918234be31c6a",
+    "counts": {
+      "NOT_RUN": 45,
+      "PASSED": 106,
+      "PENDING_EXTERNAL": 23,
+      "FAILED": 4,
+      "AI_EVAL_NOT_RUN": 1
+    }
+  },
+  "transitions": {
+    "NOT_RUN -> PASSED": [
+      "FN05",
+      "RP23",
+      "RP46",
+      "BRG29"
+    ],
+    "FAILED -> PASSED": [
+      "K05",
+      "RP01",
+      "RP02",
+      "BRG04"
+    ],
+    "NOT_RUN -> PENDING_EXTERNAL": [
+      "RP12",
+      "RP14",
+      "RP15",
+      "RP17",
+      "RP18",
+      "RP19",
+      "RP21",
+      "RP24",
+      "RP25",
+      "BRG08",
+      "BRG10",
+      "BRG11",
+      "BRG13",
+      "BRG14",
+      "BRG16"
+    ]
+  },
+  "unchangedStatuses": 156,
+  "evidence": {
+    "records": 270,
+    "rawRecords": 270,
+    "allCurrentSource": true,
+    "recordsWithExplicitArtifacts": 92,
+    "explicitArtifactReferences": 317,
+    "uniqueExplicitArtifacts": 181,
+    "sourceBoundProcessReceipts": 53,
+    "directGoProcessReceipts": 51,
+    "portableSwiftProcessReceipts": 2,
+    "directGoRequiredEvents": 3920,
+    "sourceBoundFileOccurrences": 3968,
+    "uniqueSourceBindings": 499,
+    "raceEventAudit": {
+      "eventCount": 32,
+      "runCount": 6,
+      "parentCount": 4,
+      "requiredInventoryMode": "exact",
+      "packagePassCount": 1,
+      "errors": []
+    },
+    "nestedSubprocessReceipts": 382,
+    "nestedSubprocessExitCounts": {
+      "0": 362,
+      "1": 18,
+      "2": 2
+    },
+    "nestedStreamReferences": 764,
+    "nestedArchives": [
+      {
+        "member": "brg29-3857111558/brg29-nested.zip",
+        "sha256": "eddeaaa446151708404aa52bb806c456099eefe92cca891a921b67f73d02534c",
+        "members": 992,
+        "outerCopiesMatched": 991
+      },
+      {
+        "member": "rp46-1409176836/rp46-nested.zip",
+        "sha256": "cd290f03ea1cf1569b5265f6d974e18cc6a6fb2317b2544d65c927f7d2b9225d",
+        "members": 972,
+        "outerCopiesMatched": 971
+      }
+    ],
+    "directGoObservedTestRuns": 3972,
+    "directGoEventLines": 23212,
+    "processesWithExactEventInventory": 47,
+    "processesWithRequiredParentsAndObservedDescendants": 4
+  },
+  "limitations": [
+    "This is read-only intake of the original run, not a new test execution.",
+    "178 of 270 accepted local records have no individual explicit artifact array; generic producers retain source-bound runner assertions, not standalone raw subprocess streams.",
+    "38 requirements still require an external tier; AI01 is separately AI_EVAL_NOT_RUN. No Apple runtime, UI, deployment, private corpus, final179 or general release credit is inferred.",
+    "Nonzero nested documentation subprocess exits include intentional negative examples and wrapper rejection controls; source report semantics remain distinct from process exit."
+  ],
+  "testsExecutedByThisIntake": 0,
+  "issueCount": 1,
+  "issues": [
+    "audit evidence ref CI01"
+  ],
+  "intakeAccepted": false,
+  "originalMembers": [
+    {
+      "member": "process-start.json",
+      "bytes": 1440,
+      "sha256": "da63ca5d33def73961d85cf7063bc668d326a709a54b5b2a4cfffa2492d53bbf"
+    },
+    {
+      "member": "process-result.json",
+      "bytes": 1984,
+      "sha256": "cb50e6d1d11a8075468d6193d2ba4f0b418bd6e75da96764bfba6b5a842fdd6b"
+    },
+    {
+      "member": "acceptance-report.json",
+      "bytes": 84028,
+      "sha256": "3a35c908d81313a7e6a419a4e9f4ae4473534ba36767776454aab68836fb5f39"
+    },
+    {
+      "member": "acceptance-execution-audit.json",
+      "bytes": 449791,
+      "sha256": "a0d6bbf4f74962fd4d4fc5704d4b067e9d53959a31851cf4fe31f3bcdc5113e8"
+    },
+    {
+      "member": "acceptance-local-evidence.json",
+      "bytes": 1005844,
+      "sha256": "9ba86b316548a49a98b5a9d514affe355dd555cd5d54c7fea6955f19e9d3389b"
+    },
+    {
+      "member": "acceptance-local-observations.json",
+      "bytes": 5155,
+      "sha256": "80a7bfee7b7ae10caa70a4bafdf2535bcac7d278adeb1b7add3ccc18158df160"
+    },
+    {
+      "member": "local-runner-evidence.json",
+      "bytes": 1005843,
+      "sha256": "4bb9e108b9deb51424e7848c67c80e44c8a1ee3e3f1f0cc989d48f3306a4e6cc"
+    },
+    {
+      "member": "requirements-evidence-map.json",
+      "bytes": 716587,
+      "sha256": "721f36330c1ba96061cdad400d2e87d5974e544429be657661a3b554f6dab46e"
+    },
+    {
+      "member": "runner.log",
+      "bytes": 486,
+      "sha256": "4ac274cce2ee06f53b8032c28677a93effa632607b43e42f410c7df9302a3bf1"
+    },
+    {
+      "member": "toolchains/toolchain-identity.json",
+      "bytes": 639,
+      "sha256": "1132a5c06fb4cfe30562231c5bd6f89a5f104152f4aaa8a3efe8f1a4b119be7a"
+    }
+  ],
+  "workflow": {
+    "runId": 45092775647,
+    "attempt": 1,
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/45092775647",
+    "workflow": ".github/workflows/p10r15-local-acceptance.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "artifactId": 14782187815,
+    "artifactName": "p10r15-local-acceptance-45092775647",
+    "artifactExpiresAt": "2026-12-07T01:23:37Z"
+  },
+  "findings": [
+    {
+      "id": "CI01_UNRESOLVED_OBSERVATION_REFERENCE",
+      "severity": "metadata",
+      "presentInBaselineR6": true,
+      "reference": "acceptance-local-observations.json#CI01",
+      "requirementStatus": "NOT_RUN",
+      "auditStatus": "UNVERIFIED",
+      "acceptedEvidenceRecords": 0,
+      "changesReportedCounts": false,
+      "detail": "Current and R6 audits refer to an observation absent from both original observation files. No CI01 pass or closure credit is granted. Original reports remain unchanged."
+    }
+  ],
+  "reportIdentityAndCountsVerified": true,
+  "acceptedEvidenceArtifactReferencesVerified": true,
+  "allLogicalAuditReferencesResolve": false,
+  "intakeVerdict": "VERIFIED_ORIGINAL_REPORT_WITH_METADATA_FINDING",
+  "releaseAccepted": false,
+  "componentIntakeSHA256": "2c9ce68e4787f74d4a5363e553d4c89d41dbce795070fc0d31530fd68026da3c",
+  "finalizedUTC": "2026-11-23T01:48:42.369265+00:00",
+  "auditorSources": [
+    {
+      "file": "audit-new179.py",
+      "sha256": "b9241def55448521aa3ba629aa7c5fcacbd61191c28b129aeaf516447ba8c778"
+    },
+    {
+      "file": "audit-doc-components.py",
+      "sha256": "a4cb38adf413042c38080d6829e8a885c8c4f19166bf2ba8a376fbe37e996d7e"
+    }
+  ]
+}
