@@ -1,0 +1,46 @@
+{
+  "schema": "cherri-canonical-contract-binding-correction/v1",
+  "observedUTC": "2026-11-23T02:10:41.247318+00:00",
+  "originalReceipt": "/mnt/development/projects/evidence/cherri-p10r15-k9-frozen-ci-20261123/candidate-source.json",
+  "originalReceiptSHA256": "ac9ccbc1fa51126095de5b161bda873759138d255d1566721623fa2aa9676db1",
+  "correction": "The original unchangedContracts field used an overly broad docs glob and is not the canonical contract inventory. It is preserved. This supplemental three-path inventory supersedes that field only. No source or contract bytes were changed.",
+  "sourcePins": {
+    "R7": "ca316a3dee252456c4bec751594cf249c709b331",
+    "K8": "2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+    "K9": "dd6d1ed3eca4cb3a34fb24eaf5b5d7c715847426"
+  },
+  "canonicalContracts": [
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "observations": {
+        "R7": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+        "K8": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+        "K9": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "observations": {
+        "R7": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+        "K8": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+        "K9": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "observations": {
+        "R7": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+        "K8": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+        "K9": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+      },
+      "unchanged": true
+    }
+  ],
+  "statusPorcelain": "",
+  "formalAcceptanceGranted": false
+}
