@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 1,
+  "kind": "READ_ONLY_ORIGINAL_INTAKE",
+  "observedUtc": "2026-11-23T04:58:59.933955+00:00",
+  "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "runId": "45108200176",
+  "linuxJobId": "137474256318",
+  "newProducerExecutions": 0,
+  "newWorkflowDispatches": 0,
+  "newRemotePollers": 0,
+  "linuxJobConclusion": "failure",
+  "actualFailure": {
+    "step": {
+      "name": "P10 SSoT, Coverage Ledgers, Pack & Release Gates",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 17,
+      "started_at": "2026-11-23T04:48:33Z",
+      "completed_at": "2026-11-23T04:48:36Z"
+    },
+    "stage": "--verify-commit",
+    "fingerprintDrift": [
+      {
+        "line": 38789,
+        "text": "ERROR: inputDependencyFingerprint drift in docs/apple-runtime/p10/p10r3-gate-results.json: recorded e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0 != current 0c704ae9a25933ba3ece1e4017af0afe922e6b3899fa7886a57ad965b4ca3c97"
+      },
+      {
+        "line": 38790,
+        "text": "ERROR: inputDependencyFingerprint drift in docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json: recorded e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0 != current 0c704ae9a25933ba3ece1e4017af0afe922e6b3899fa7886a57ad965b4ca3c97"
+      },
+      {
+        "line": 38791,
+        "text": "ERROR: inputDependencyFingerprint drift in docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json: recorded e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0 != current 0c704ae9a25933ba3ece1e4017af0afe922e6b3899fa7886a57ad965b4ca3c97"
+      },
+      {
+        "line": 38792,
+        "text": "ERROR: inputDependencyFingerprint drift in docs/apple-runtime/p10/baseline-state.json: recorded e29b07449bd5f3758128bbef51466196a14f2179246b48ba1b3df58c75e784f0 != current 0c704ae9a25933ba3ece1e4017af0afe922e6b3899fa7886a57ad965b4ca3c97"
+      }
+    ],
+    "actualRunAllExecuted": false,
+    "actualR23ExecutedInThisJob": false,
+    "gateArtifactsMissing": [
+      {
+        "line": 38816,
+        "text": "##[warning]No files were found with the provided path: /tmp/p10r4-gate-results.json"
+      },
+      {
+        "line": 38817,
+        "text": "/tmp/p10r4-ci-attestation.json. No artifacts will be uploaded."
+      }
+    ],
+    "registeredGatesVerified": 56,
+    "coverageAndGateFixtureParentTestsPassed": 22,
+    "coverageAndGateFixtureElapsedSeconds": 0.848
+  },
+  "fullGoSuite": {
+    "originalReport": "artifacts/14790368224/cherri-full-go-suite.json",
+    "success": true,
+    "sourceCleanBeforeAndAfter": true,
+    "exactPackagesOnce": 30,
+    "packagesWithTests": 25,
+    "packagesWithoutTestFiles": 5,
+    "passEvents": 16861,
+    "skipEvents": 11,
+    "failEvents": 0,
+    "parentPassEvents": 1667,
+    "parentSkipEvents": 11,
+    "subcasePassEvents": 15194,
+    "originalStep": {
+      "name": "Full Go Test Suite",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-23T03:50:14Z",
+      "completed_at": "2026-11-23T04:48:13Z"
+    },
+    "phases": [
+      {
+        "name": "ordinary",
+        "logLinesInclusive": [
+          1158,
+          25146
+        ],
+        "counts": {
+          "PASS": 10836,
+          "SKIP": 8
+        },
+        "parentCounts": {
+          "PASS": 1425,
+          "SKIP": 8
+        },
+        "subcaseCounts": {
+          "PASS": 9411
+        },
+        "uniqueNamedEvents": 10844,
+        "skipped": [
+          {
+            "line": 1447,
+            "status": "SKIP",
+            "test": "TestCherri",
+            "durationText": "0.00s",
+            "originalReason": "    cherri_test.go:23: local shortcut signing is only supported on macOS; use TestCherriNoSign on other platforms"
+          },
+          {
+            "line": 2993,
+            "status": "SKIP",
+            "test": "TestP10R10CorpusMeasure",
+            "durationText": "0.00s",
+            "originalReason": "    p10r10_corpus_test.go:24: set CHERRI_P10R10_CORPUS=1 to run"
+          },
+          {
+            "line": 3265,
+            "status": "SKIP",
+            "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+            "durationText": "0.00s",
+            "originalReason": "    p11_wire_fidelity_test.go:25: NOT_RUN_PRIVATE_CORPUS: set CHERRI_P10R10_CORPUS=1 to run against full 38-shortcut private corpus"
+          },
+          {
+            "line": 9655,
+            "status": "SKIP",
+            "test": "TestP15DocumentationRecoveryConsumers",
+            "durationText": "0.00s",
+            "originalReason": "    p15_documentation_recovery_test.go:81: requires explicit immutable compiler source, docs checkout and genuine compiler binary; no documentation acceptance is granted"
+          },
+          {
+            "line": 9658,
+            "status": "SKIP",
+            "test": "TestP15DocumentationRecoveryGeneration",
+            "durationText": "0.00s",
+            "originalReason": "    p15_documentation_recovery_test.go:121: requires explicit immutable compiler source, docs checkout and genuine compiler binary; no documentation acceptance is granted"
+          },
+          {
+            "line": 19153,
+            "status": "SKIP",
+            "test": "TestP15RP43EncodingFaultProcessHelper",
+            "durationText": "0.00s",
+            "originalReason": "    p15_output_signing_security_test.go:29: only the owned encoding-fault subprocess invokes this helper"
+          },
+          {
+            "line": 19480,
+            "status": "SKIP",
+            "test": "TestP15ParserRecoveryChild",
+            "durationText": "0.00s",
+            "originalReason": "    p15_parser_acceptance_test.go:162: internal bounded production probe"
+          },
+          {
+            "line": 21534,
+            "status": "SKIP",
+            "test": "TestP15K05LiveSigning",
+            "durationText": "0.00s",
+            "originalReason": "    p15_skill_edit_zlive_test.go:22: requires explicit CHERRI_K05_LIVE_SIGNING=1; no external signing attempted"
+          }
+        ],
+        "packageSummaries": [
+          {
+            "line": 23739,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri",
+            "detail": "659.094s"
+          },
+          {
+            "line": 23740,
+            "status": "?",
+            "package": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+            "detail": "[no test files]"
+          },
+          {
+            "line": 23748,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/icloudshortcut",
+            "detail": "0.004s"
+          },
+          {
+            "line": 23828,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+            "detail": "1.243s"
+          },
+          {
+            "line": 23844,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/assets",
+            "detail": "0.116s"
+          },
+          {
+            "line": 23872,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/backend",
+            "detail": "0.010s"
+          },
+          {
+            "line": 23873,
+            "status": "?",
+            "package": "github.com/electrikmilk/cherri/internal/language/enums",
+            "detail": "[no test files]"
+          },
+          {
+            "line": 23907,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/ir",
+            "detail": "0.003s"
+          },
+          {
+            "line": 24063,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/lower",
+            "detail": "0.628s"
+          },
+          {
+            "line": 24189,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+            "detail": "1.014s"
+          },
+          {
+            "line": 24229,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/migrate",
+            "detail": "0.015s"
+          },
+          {
+            "line": 24230,
+            "status": "?",
+            "package": "github.com/electrikmilk/cherri/internal/language/modules",
+            "detail": "[no test files]"
+          },
+          {
+            "line": 24238,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/protocol",
+            "detail": "0.014s"
+          },
+          {
+            "line": 24311,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/schema",
+            "detail": "0.017s"
+          },
+          {
+            "line": 24647,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/service",
+            "detail": "5.619s"
+          },
+          {
+            "line": 24651,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/source",
+            "detail": "0.002s"
+          },
+          {
+            "line": 24733,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/syntax",
+            "detail": "0.006s"
+          },
+          {
+            "line": 24737,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/types",
+            "detail": "0.002s"
+          },
+          {
+            "line": 24765,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/language/workspace",
+            "detail": "0.011s"
+          },
+          {
+            "line": 24931,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/internal/shortcutcompare",
+            "detail": "2.079s"
+          },
+          {
+            "line": 24943,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+            "detail": "0.301s"
+          },
+          {
+            "line": 24944,
+            "status": "?",
+            "package": "github.com/electrikmilk/cherri/tools/inventory",
+            "detail": "[no test files]"
+          },
+          {
+            "line": 24978,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+            "detail": "0.009s"
+          },
+          {
+            "line": 25004,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/language-docs",
+            "detail": "0.785s"
+          },
+          {
+            "line": 25008,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/language-migrate",
+            "detail": "0.016s"
+          },
+          {
+            "line": 25020,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/language-schema",
+            "detail": "0.574s"
+          },
+          {
+            "line": 25021,
+            "status": "?",
+            "package": "github.com/electrikmilk/cherri/tools/language-stdlib",
+            "detail": "[no test files]"
+          },
+          {
+            "line": 25055,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/legacy-parity",
+            "detail": "1.059s"
+          },
+          {
+            "line": 25146,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/shortcut-corpus",
+            "detail": "0.027s"
+          }
+        ],
+        "originalInvocation": {
+          "packages": [
+            "github.com/electrikmilk/cherri",
+            "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+            "github.com/electrikmilk/cherri/internal/icloudshortcut",
+            "github.com/electrikmilk/cherri/internal/language/analysis",
+            "github.com/electrikmilk/cherri/internal/language/assets",
+            "github.com/electrikmilk/cherri/internal/language/backend",
+            "github.com/electrikmilk/cherri/internal/language/enums",
+            "github.com/electrikmilk/cherri/internal/language/ir",
+            "github.com/electrikmilk/cherri/internal/language/lower",
+            "github.com/electrikmilk/cherri/internal/language/lsp",
+            "github.com/electrikmilk/cherri/internal/language/migrate",
+            "github.com/electrikmilk/cherri/internal/language/modules",
+            "github.com/electrikmilk/cherri/internal/language/protocol",
+            "github.com/electrikmilk/cherri/internal/language/schema",
+            "github.com/electrikmilk/cherri/internal/language/service",
+            "github.com/electrikmilk/cherri/internal/language/source",
+            "github.com/electrikmilk/cherri/internal/language/syntax",
+            "github.com/electrikmilk/cherri/internal/language/types",
+            "github.com/electrikmilk/cherri/internal/language/workspace",
+            "github.com/electrikmilk/cherri/internal/shortcutcompare",
+            "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+            "github.com/electrikmilk/cherri/tools/inventory",
+            "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+            "github.com/electrikmilk/cherri/tools/language-docs",
+            "github.com/electrikmilk/cherri/tools/language-migrate",
+            "github.com/electrikmilk/cherri/tools/language-schema",
+            "github.com/electrikmilk/cherri/tools/language-stdlib",
+            "github.com/electrikmilk/cherri/tools/legacy-parity",
+            "github.com/electrikmilk/cherri/tools/shortcut-corpus"
+          ],
+          "timeout": "15m",
+          "argv": [
+            "go",
+            "test",
+            "-count=1",
+            "-timeout=15m",
+            "-parallel=2",
+            "-v",
+            "github.com/electrikmilk/cherri",
+            "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+            "github.com/electrikmilk/cherri/internal/icloudshortcut",
+            "github.com/electrikmilk/cherri/internal/language/analysis",
+            "github.com/electrikmilk/cherri/internal/language/assets",
+            "github.com/electrikmilk/cherri/internal/language/backend",
+            "github.com/electrikmilk/cherri/internal/language/enums",
+            "github.com/electrikmilk/cherri/internal/language/ir",
+            "github.com/electrikmilk/cherri/internal/language/lower",
+            "github.com/electrikmilk/cherri/internal/language/lsp",
+            "github.com/electrikmilk/cherri/internal/language/migrate",
+            "github.com/electrikmilk/cherri/internal/language/modules",
+            "github.com/electrikmilk/cherri/internal/language/protocol",
+            "github.com/electrikmilk/cherri/internal/language/schema",
+            "github.com/electrikmilk/cherri/internal/language/service",
+            "github.com/electrikmilk/cherri/internal/language/source",
+            "github.com/electrikmilk/cherri/internal/language/syntax",
+            "github.com/electrikmilk/cherri/internal/language/types",
+            "github.com/electrikmilk/cherri/internal/language/workspace",
+            "github.com/electrikmilk/cherri/internal/shortcutcompare",
+            "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+            "github.com/electrikmilk/cherri/tools/inventory",
+            "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+            "github.com/electrikmilk/cherri/tools/language-docs",
+            "github.com/electrikmilk/cherri/tools/language-migrate",
+            "github.com/electrikmilk/cherri/tools/language-schema",
+            "github.com/electrikmilk/cherri/tools/language-stdlib",
+            "github.com/electrikmilk/cherri/tools/legacy-parity",
+            "github.com/electrikmilk/cherri/tools/shortcut-corpus"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 674.641
+        }
+      },
+      {
+        "name": "acceptance",
+        "logLinesInclusive": [
+          25147,
+          37375
+        ],
+        "counts": {
+          "PASS": 6025,
+          "SKIP": 3
+        },
+        "parentCounts": {
+          "PASS": 242,
+          "SKIP": 3
+        },
+        "subcaseCounts": {
+          "PASS": 5783
+        },
+        "uniqueNamedEvents": 6028,
+        "skipped": [
+          {
+            "line": 25897,
+            "status": "SKIP",
+            "test": "TestDocumentationConsumerCIActualIntake",
+            "durationText": "0.00s",
+            "originalReason": "    documentation_consumer_ci_test.go:71: actual installed/public D03 consumer collection is an explicit external CI job"
+          },
+          {
+            "line": 26062,
+            "status": "SKIP",
+            "test": "TestDocumentationRecoveryActualProductionEvidence",
+            "durationText": "0.00s",
+            "originalReason": "    documentation_recovery_execution_test.go:258: actual external immutable tuple must be supplied; no documentation acceptance granted"
+          },
+          {
+            "line": 35986,
+            "status": "SKIP",
+            "test": "TestSkillEditProductionEvidence",
+            "durationText": "0.00s",
+            "originalReason": "    skill_edit_execution_test.go:11: dedicated K05 formal evidence requires an explicit real synthetic signing run"
+          }
+        ],
+        "packageSummaries": [
+          {
+            "line": 37375,
+            "status": "ok",
+            "package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+            "detail": "1342.317s"
+          }
+        ],
+        "originalInvocation": {
+          "packages": [
+            "github.com/electrikmilk/cherri/tools/language-acceptance"
+          ],
+          "timeout": "35m",
+          "argv": [
+            "go",
+            "test",
+            "-count=1",
+            "-timeout=35m",
+            "-v",
+            "github.com/electrikmilk/cherri/tools/language-acceptance"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 1346.726
+        }
+      }
+    ],
+    "timingQualification": "Original monotonic invocation times674.641s and1346.726s (sum2021.367s) differ from GitHub step wall time3479s and log delivery timestamps. Original report observed_utc04:23:56.228983Z precedes late log deliveries. Cause is not established; timings are kept separate without restamping. Go package elapsed root659.094s and acceptance1342.317s are independently retained."
+  },
+  "requiredEncoding": {
+    "artifactId": "14789316187",
+    "componentStatus": "PASS",
+    "componentPlatform": {
+      "system": "Darwin",
+      "machine": "arm64",
+      "macOSVersion": "26.7.2"
+    },
+    "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+    "runId": "45108200176",
+    "phases": [
+      {
+        "phase": "positive",
+        "exitCode": 0,
+        "requiredCases": 23,
+        "passedRequiredCases": 23,
+        "exactFailures": [],
+        "matrixStateClasses": 50,
+        "matrixForms": 7,
+        "allProcessAndPerFormBindingsVerified": true
+      },
+      {
+        "phase": "corrupt",
+        "exitCode": 1,
+        "requiredCases": 23,
+        "passedRequiredCases": 22,
+        "exactFailures": [
+          {
+            "code": "E_REQUIRED_ENCODING_EXPECTATION",
+            "id": "plainString.WFStringParameterState.string",
+            "expected": "reject",
+            "actual": "accept"
+          }
+        ],
+        "matrixStateClasses": 50,
+        "matrixForms": 7,
+        "allProcessAndPerFormBindingsVerified": true
+      },
+      {
+        "phase": "restored",
+        "exitCode": 0,
+        "requiredCases": 23,
+        "passedRequiredCases": 23,
+        "exactFailures": [],
+        "matrixStateClasses": 50,
+        "matrixForms": 7,
+        "allProcessAndPerFormBindingsVerified": true
+      }
+    ],
+    "positiveAndRestoredBytesIdentical": true,
+    "all26FormalArtifactReferencesVerified": true,
+    "allSixSourceInputHashesVerified": true,
+    "formalRecordsProduced": [
+      "CI01:negative-ci",
+      "RP47:negative-ci"
+    ],
+    "formalAcceptanceGranted": false,
+    "formalIneligibility": "The same Build & Test workflow contains a terminal failed Linux job; it cannot conclude success. Existing main.go842-846 rejects non-success run evidence. This is genuine WorkflowKit parameter-state evidence only, not Shortcut runtime, BRG31, successful CI or later-source credit. No canonical Go intake was executed by this audit."
+  },
+  "sourceBindings": "source-bindings.json",
+  "archiveBindings": "artifact-download-intake.json",
+  "originalsPreserved": true
+}

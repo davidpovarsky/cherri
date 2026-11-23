@@ -1,0 +1,196 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-required-encoding-ci01",
+      "requirements": [
+        "CI01"
+      ],
+      "tier": "negative-ci",
+      "implementation_sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+      "test_id": "tools/shortcut-runtime:required-encoding-ci01",
+      "exit_code": 0,
+      "result": "passed",
+      "fixture_sha256": "fe521c4c782ccb74a7c3327d28dcc48c358f2943bd5f070a1f2a20bc63e2ce38",
+      "command": [
+        "python3",
+        "tools/shortcut-runtime/required_encoding_gate.py",
+        "--source-sha",
+        "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "--run-id",
+        "45108200176"
+      ],
+      "assertions": {
+        "required_expect_nonzero": "true",
+        "exact_corruption_rejected": "true",
+        "expected_rejection_passed": "true",
+        "per_form_outcomes_preserved": "true",
+        "restored_required_set_passed": "true",
+        "apple_engine_executed": "true"
+      },
+      "artifacts": [
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/required-encoding-gate.json",
+          "sha256": "e644462014835e2baa899346e12d903c253fcbb0b9d7046ff4f1bba4ebb85b6a",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.json",
+          "sha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.process.json",
+          "sha256": "93c82d4d2ebb4f0a1d1007f9306894e9d34159aea3ef6dd401eb0fe770e3506b",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.stderr.log",
+          "sha256": "ff98afd4e099d94fd6aa8476bfe090a0134f9219ea06c4a967c1d0282e15ea03",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.json",
+          "sha256": "e43502de0d8d76cb022df3ca51a011fd25c1fcc5eddd87138c5a98d4c73785a8",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.process.json",
+          "sha256": "f2bbac67f62fbe5608e8a665ba4bf4fdaed7a03326424f1a76e989531b71cad3",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.stderr.log",
+          "sha256": "a72f4408ed43e86edf26d12618f82a1d6e35740932379c5447fe062409b6bdd4",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.json",
+          "sha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.process.json",
+          "sha256": "c8e3cdc6adb54e4dcc4e3c7a8dc1e18086ea42c6f9b1a4394718a040b44770ae",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.stderr.log",
+          "sha256": "ff98afd4e099d94fd6aa8476bfe090a0134f9219ea06c4a967c1d0282e15ea03",
+          "run_id": "45108200176"
+        }
+      ],
+      "detail": "Real WorkflowKit parameter-state process: correct set, one corrupted REQUIRED EXPECT, restored set; no Shortcut runtime execution"
+    },
+    {
+      "evidence_id": "ev-required-encoding-rp47",
+      "requirements": [
+        "RP47"
+      ],
+      "tier": "negative-ci",
+      "implementation_sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+      "test_id": "tools/shortcut-runtime:required-encoding-rp47",
+      "exit_code": 0,
+      "result": "passed",
+      "fixture_sha256": "fe521c4c782ccb74a7c3327d28dcc48c358f2943bd5f070a1f2a20bc63e2ce38",
+      "command": [
+        "python3",
+        "tools/shortcut-runtime/required_encoding_gate.py",
+        "--source-sha",
+        "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "--run-id",
+        "45108200176"
+      ],
+      "assertions": {
+        "required_expect_nonzero": "true",
+        "exact_corruption_rejected": "true",
+        "expected_rejection_passed": "true",
+        "per_form_outcomes_preserved": "true",
+        "restored_required_set_passed": "true",
+        "apple_engine_executed": "true"
+      },
+      "artifacts": [
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/required-encoding-gate.json",
+          "sha256": "e644462014835e2baa899346e12d903c253fcbb0b9d7046ff4f1bba4ebb85b6a",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.json",
+          "sha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.process.json",
+          "sha256": "93c82d4d2ebb4f0a1d1007f9306894e9d34159aea3ef6dd401eb0fe770e3506b",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/positive.stderr.log",
+          "sha256": "ff98afd4e099d94fd6aa8476bfe090a0134f9219ea06c4a967c1d0282e15ea03",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.json",
+          "sha256": "e43502de0d8d76cb022df3ca51a011fd25c1fcc5eddd87138c5a98d4c73785a8",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.process.json",
+          "sha256": "f2bbac67f62fbe5608e8a665ba4bf4fdaed7a03326424f1a76e989531b71cad3",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/corrupt.stderr.log",
+          "sha256": "a72f4408ed43e86edf26d12618f82a1d6e35740932379c5447fe062409b6bdd4",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.json",
+          "sha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.process.json",
+          "sha256": "c8e3cdc6adb54e4dcc4e3c7a8dc1e18086ea42c6f9b1a4394718a040b44770ae",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_id": "45108200176"
+        },
+        {
+          "path": "artifacts/backend-recovery/ci-artifacts/required-encoding-gate/restored.stderr.log",
+          "sha256": "ff98afd4e099d94fd6aa8476bfe090a0134f9219ea06c4a967c1d0282e15ea03",
+          "run_id": "45108200176"
+        }
+      ],
+      "detail": "Real WorkflowKit parameter-state process: correct set, one corrupted REQUIRED EXPECT, restored set; no Shortcut runtime execution"
+    }
+  ]
+}
