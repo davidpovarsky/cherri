@@ -1,0 +1,61 @@
+{
+  "mode": "red",
+  "source": "e66db33f929f86857024ce695371081dcc7091b9",
+  "statusBefore": "M tools/language-acceptance/execution_truth_test.go",
+  "sourceSHA256": {
+    "tools/language-acceptance/execution_audit.go": "d1f016a39ffa9b00360720a4a3831b5bc6ac8c811f54ae0976c5d2ba27472695",
+    "tools/language-acceptance/execution_truth_test.go": "76356202d20fb6b4570c63f3a6bc19d5c43e97b03846e8ea8b0b423e11273b4f"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^TestExecutionAuditOnlyReferencesRecordedSmoke$",
+    "./tools/language-acceptance"
+  ],
+  "goBudgetSeconds": 120,
+  "driverBudgetSeconds": 180,
+  "startedUTC": "2026-11-23T01:55:39.608261+00:00",
+  "goVersion": "go version go1.24.13 linux/arm64",
+  "finishedUTC": "2026-11-23T01:55:51.058180+00:00",
+  "elapsedSeconds": 11.377,
+  "exitCode": 1,
+  "driverTimedOut": false,
+  "sourceAfter": "e66db33f929f86857024ce695371081dcc7091b9",
+  "statusAfter": "M tools/language-acceptance/execution_truth_test.go",
+  "sourceBytesUnchanged": true,
+  "stdoutSHA256": "d8cfd266d4b4da8b65a107027786198e0ff66b351a6bb80a90d7da2259232e64",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "eventCount": 34,
+  "terminals": [
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestExecutionAuditOnlyReferencesRecordedSmoke/CI01_without_observation",
+      "Action": "fail",
+      "Elapsed": 0.02
+    },
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestExecutionAuditOnlyReferencesRecordedSmoke/CI01_with_retained_smoke",
+      "Action": "fail",
+      "Elapsed": 0.01
+    },
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestExecutionAuditOnlyReferencesRecordedSmoke",
+      "Action": "fail",
+      "Elapsed": 0.04
+    },
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": null,
+      "Action": "fail",
+      "Elapsed": 0.053
+    }
+  ],
+  "actualInvocations": 1,
+  "scope": "Selected metadata regression only; no native encoding producer, full179, private corpus or Apple work."
+}

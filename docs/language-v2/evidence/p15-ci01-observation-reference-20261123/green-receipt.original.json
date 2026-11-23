@@ -1,0 +1,61 @@
+{
+  "mode": "green",
+  "source": "1f619b6ef640e0a71d89558564eddb9ea6bdfbe3",
+  "statusBefore": "",
+  "sourceSHA256": {
+    "tools/language-acceptance/execution_audit.go": "b4abf03643a039ed069d856e942dbbb7d738629615dc359ef7eea7915fb8a54d",
+    "tools/language-acceptance/execution_truth_test.go": "76356202d20fb6b4570c63f3a6bc19d5c43e97b03846e8ea8b0b423e11273b4f"
+  },
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^TestExecutionAuditOnlyReferencesRecordedSmoke$",
+    "./tools/language-acceptance"
+  ],
+  "goBudgetSeconds": 120,
+  "driverBudgetSeconds": 180,
+  "startedUTC": "2026-11-23T01:56:21.852968+00:00",
+  "goVersion": "go version go1.24.13 linux/arm64",
+  "finishedUTC": "2026-11-23T01:56:28.308030+00:00",
+  "elapsedSeconds": 6.444,
+  "exitCode": 0,
+  "driverTimedOut": false,
+  "sourceAfter": "1f619b6ef640e0a71d89558564eddb9ea6bdfbe3",
+  "statusAfter": "",
+  "sourceBytesUnchanged": true,
+  "stdoutSHA256": "a4cc47d66139fa945431652e275c5e1f38394ce5f45658ed3716e46f8e570784",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "eventCount": 16,
+  "terminals": [
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestExecutionAuditOnlyReferencesRecordedSmoke/CI01_without_observation",
+      "Action": "pass",
+      "Elapsed": 0.02
+    },
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestExecutionAuditOnlyReferencesRecordedSmoke/CI01_with_retained_smoke",
+      "Action": "pass",
+      "Elapsed": 0.01
+    },
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestExecutionAuditOnlyReferencesRecordedSmoke",
+      "Action": "pass",
+      "Elapsed": 0.04
+    },
+    {
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": null,
+      "Action": "pass",
+      "Elapsed": 0.047
+    }
+  ],
+  "actualInvocations": 1,
+  "scope": "Selected metadata regression only; no native encoding producer, full179, private corpus or Apple work."
+}

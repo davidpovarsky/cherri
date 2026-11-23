@@ -1,0 +1,54 @@
+{
+  "schema": "cherri-ci01-observation-reference-causal-review/v1",
+  "reviewedUTC": "2026-11-23T01:57:37.722981+00:00",
+  "fixedSource": "1f619b6ef640e0a71d89558564eddb9ea6bdfbe3",
+  "originalK8WriterSHA256": "d1f016a39ffa9b00360720a4a3831b5bc6ac8c811f54ae0976c5d2ba27472695",
+  "fixedWriterSHA256": "b4abf03643a039ed069d856e942dbbb7d738629615dc359ef7eea7915fb8a54d",
+  "unchangedCausalTestSHA256": "76356202d20fb6b4570c63f3a6bc19d5c43e97b03846e8ea8b0b423e11273b4f",
+  "test": "TestExecutionAuditOnlyReferencesRecordedSmoke",
+  "phases": [
+    {
+      "phase": "red",
+      "receiptSHA256": "2c026fe5a81cbfcd7ac560bbc2e2ac75c59e00eb8d45df986153979131face48",
+      "source": "e66db33f929f86857024ce695371081dcc7091b9",
+      "sourceClean": false,
+      "elapsedSeconds": 11.377,
+      "exitCode": 1,
+      "eventCount": 34,
+      "testRuns": 3,
+      "testTerminalCounts": {
+        "fail": 3
+      },
+      "packageTerminal": "fail",
+      "noIncompleteOrOrphanOrSkip": true,
+      "stdoutSHA256": "d8cfd266d4b4da8b65a107027786198e0ff66b351a6bb80a90d7da2259232e64",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "green",
+      "receiptSHA256": "106be3791e27da30d02e6a46a67f42b2ebd8a4b222c254e356a128cd33a3928b",
+      "source": "1f619b6ef640e0a71d89558564eddb9ea6bdfbe3",
+      "sourceClean": true,
+      "elapsedSeconds": 6.444,
+      "exitCode": 0,
+      "eventCount": 16,
+      "testRuns": 3,
+      "testTerminalCounts": {
+        "pass": 3
+      },
+      "packageTerminal": "pass",
+      "noIncompleteOrOrphanOrSkip": true,
+      "stdoutSHA256": "a4cc47d66139fa945431652e275c5e1f38394ce5f45658ed3716e46f8e570784",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "causeReproduced": true,
+  "fixConfirmed": true,
+  "unexecutedCI01Status": "NOT_RUN",
+  "unexecutedCI01AuditStatus": "UNVERIFIED",
+  "unexecutedCI01AcceptedEvidenceRecords": 0,
+  "formalRequirementsProved": [],
+  "originalK8AndR6ReportsModified": false,
+  "full179Rerun": false,
+  "scope": "Future audit metadata only. Actual smoke references remain; no nonexistent observation is invented. No macOS encoding, Apple, corpus or release acceptance is granted."
+}
