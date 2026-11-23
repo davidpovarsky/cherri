@@ -1,0 +1,289 @@
+{
+  "operation": "CREATE_STANDALONE_ORDINARY_K11_TMPFS_SOURCE",
+  "source": "/mnt/development/projects/worktrees/cherri-p10r15-ai-integration-20261123",
+  "target": "/dev/shm/cherri-p10r15-runtime-20261123/cherri-k11-source",
+  "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "sourceTree": "d3688f219f7454e80778cbcb3013967b6d339aad",
+  "branch": "agent/cherri-p10r15-k11-verification-20261123",
+  "startedUTC": "2026-11-23T03:50:41.194408+00:00",
+  "uniqueEvidencePersistent": true,
+  "status": "READY_STANDALONE_ORDINARY_K11_SOURCE",
+  "cloneFiles": 6691,
+  "cloneBytes": 328404062,
+  "reachableCommits": 3591,
+  "ownerUid": 1001,
+  "hasAlternates": false,
+  "isShallow": false,
+  "hardlinkedFiles": [],
+  "sourceUnchanged": true,
+  "clean": true,
+  "independentRemoteRef": "9b4135e705b08f765b7304e01212d3b9658806fb\trefs/heads/agent/cherri-p10r15-k11-verification-20261123",
+  "freeTmpfsAfter": 4640534528,
+  "finishedUTC": "2026-11-23T03:50:47.653332+00:00",
+  "steps": [
+    {
+      "name": "01-source-head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:41.194455+00:00",
+      "finishedUTC": "2026-11-23T03:50:41.199838+00:00",
+      "elapsedSeconds": 0.005390590988099575,
+      "exitCode": 0,
+      "stdoutSHA256": "5352da7d6d5a67f355a667bd7ee2ab9b25c6a3fb1fe0739ff5cefe02fdf27f58",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "02-source-tree",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "startedUTC": "2026-11-23T03:50:41.200034+00:00",
+      "finishedUTC": "2026-11-23T03:50:41.203756+00:00",
+      "elapsedSeconds": 0.0037251822650432587,
+      "exitCode": 0,
+      "stdoutSHA256": "19de244ee47b83cc4f34f874c5d88d5be5cbf6bff4adeda146e8a2c8c13c37e6",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "03-source-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "startedUTC": "2026-11-23T03:50:41.203916+00:00",
+      "finishedUTC": "2026-11-23T03:50:41.234109+00:00",
+      "elapsedSeconds": 0.030200855806469917,
+      "exitCode": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "04-source-count",
+      "argv": [
+        "git",
+        "rev-list",
+        "--count",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:41.234307+00:00",
+      "finishedUTC": "2026-11-23T03:50:41.270063+00:00",
+      "elapsedSeconds": 0.03576420806348324,
+      "exitCode": 0,
+      "stdoutSHA256": "49191acf81f6bedc3a6e28efa3ba7ada89ba634a1e5045c82550e116653608b7",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "05-clone",
+      "argv": [
+        "git",
+        "-c",
+        "pack.threads=1",
+        "clone",
+        "--no-local",
+        "--no-hardlinks",
+        "--single-branch",
+        "--branch",
+        "agent/cherri-p10r15-k11-verification-20261123",
+        "/mnt/development/projects/worktrees/cherri-p10r15-ai-integration-20261123",
+        "/dev/shm/cherri-p10r15-runtime-20261123/cherri-k11-source"
+      ],
+      "startedUTC": "2026-11-23T03:50:41.270582+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.383237+00:00",
+      "elapsedSeconds": 5.112661529332399,
+      "exitCode": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "85681fa04a3f3541cab9304f4846e794e761ec0ad47560be7a365b84ca549df4"
+    },
+    {
+      "name": "06-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/davidpovarsky/cherri.git"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.383467+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.385623+00:00",
+      "elapsedSeconds": 0.002158012241125107,
+      "exitCode": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "07-head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.385783+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.387313+00:00",
+      "elapsedSeconds": 0.0015324074774980545,
+      "exitCode": 0,
+      "stdoutSHA256": "5352da7d6d5a67f355a667bd7ee2ab9b25c6a3fb1fe0739ff5cefe02fdf27f58",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "08-tree",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.387449+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.389362+00:00",
+      "elapsedSeconds": 0.0019142907112836838,
+      "exitCode": 0,
+      "stdoutSHA256": "19de244ee47b83cc4f34f874c5d88d5be5cbf6bff4adeda146e8a2c8c13c37e6",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "09-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.389494+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.893656+00:00",
+      "elapsedSeconds": 0.5041698161512613,
+      "exitCode": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "10-shallow",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--is-shallow-repository"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.893868+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.895641+00:00",
+      "elapsedSeconds": 0.0017757304012775421,
+      "exitCode": 0,
+      "stdoutSHA256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "11-count",
+      "argv": [
+        "git",
+        "rev-list",
+        "--count",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.895788+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.917740+00:00",
+      "elapsedSeconds": 0.021960408426821232,
+      "exitCode": 0,
+      "stdoutSHA256": "49191acf81f6bedc3a6e28efa3ba7ada89ba634a1e5045c82550e116653608b7",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "12-branch",
+      "argv": [
+        "git",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.917950+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.919820+00:00",
+      "elapsedSeconds": 0.0018733302131295204,
+      "exitCode": 0,
+      "stdoutSHA256": "d76ec66e31a8ead6d61930ec0d1526622a2491cf2faaceaeb7767c722a4b1376",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "13-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.919995+00:00",
+      "finishedUTC": "2026-11-23T03:50:46.922119+00:00",
+      "elapsedSeconds": 0.002127491869032383,
+      "exitCode": 0,
+      "stdoutSHA256": "42297efb7e5b0808301458532988fd3db681e75d0c3b539058442b57d00a58c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "14-independent-remote",
+      "argv": [
+        "git",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!gh auth git-credential",
+        "ls-remote",
+        "--exit-code",
+        "--refs",
+        "origin",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "startedUTC": "2026-11-23T03:50:46.922334+00:00",
+      "finishedUTC": "2026-11-23T03:50:47.357468+00:00",
+      "elapsedSeconds": 0.4351426139473915,
+      "exitCode": 0,
+      "stdoutSHA256": "6358b9bfb05c6393066385497a4db46b9a5fbaf1ea37d3c8b32a81655c129cf0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "15-connectivity",
+      "argv": [
+        "git",
+        "fsck",
+        "--connectivity-only",
+        "--no-reflogs",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:47.357719+00:00",
+      "finishedUTC": "2026-11-23T03:50:47.468261+00:00",
+      "elapsedSeconds": 0.11058020405471325,
+      "exitCode": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "16-source-final-head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "startedUTC": "2026-11-23T03:50:47.598895+00:00",
+      "finishedUTC": "2026-11-23T03:50:47.601054+00:00",
+      "elapsedSeconds": 0.002147812396287918,
+      "exitCode": 0,
+      "stdoutSHA256": "5352da7d6d5a67f355a667bd7ee2ab9b25c6a3fb1fe0739ff5cefe02fdf27f58",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "17-source-final-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "startedUTC": "2026-11-23T03:50:47.601233+00:00",
+      "finishedUTC": "2026-11-23T03:50:47.629991+00:00",
+      "elapsedSeconds": 0.028765328228473663,
+      "exitCode": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

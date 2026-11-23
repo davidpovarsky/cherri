@@ -1,0 +1,547 @@
+{
+  "operation": "EXACT_K11_CREATE_ONLY_PUBLICATION",
+  "startedAtUtc": "2026-11-23T03:49:11.150529+00:00",
+  "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "sourceTree": "d3688f219f7454e80778cbcb3013967b6d339aad",
+  "ref": "refs/heads/agent/cherri-p10r15-k11-verification-20261123",
+  "bundleSHA256": "2b7523dba10e8c4a3043b89e28404282259b366ab4fe1fe7b98d2db7bd42e319",
+  "bundleBytes": 312997,
+  "prerequisites": [
+    "4feadab9db4d351628f78593304373631693869a"
+  ],
+  "repo": "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+  "destinationMustBeAbsent": true,
+  "pushAttemptLimit": 1,
+  "primaryMutationAuthorized": false,
+  "validation": {
+    "validatedAtUtc": "2026-11-23T03:49:13.850570+00:00",
+    "bundleSHA256": "2b7523dba10e8c4a3043b89e28404282259b366ab4fe1fe7b98d2db7bd42e319",
+    "bundleBytes": 312997,
+    "handoffSHA256": "1efd864efd077cfe8655ea705535627d44e89a813f9e7c4a1a0a31c35a726a65",
+    "prerequisites": [
+      "4feadab9db4d351628f78593304373631693869a"
+    ],
+    "heads": [
+      [
+        "9b4135e705b08f765b7304e01212d3b9658806fb",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ]
+    ],
+    "importedCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+    "importedTree": "d3688f219f7454e80778cbcb3013967b6d339aad",
+    "remoteRefAbsent": true,
+    "localRefs": [
+      "refs/heads/agent/cherri-p10r15-k10-verification-20261123 4feadab9db4d351628f78593304373631693869a",
+      "refs/heads/agent/cherri-p10r15-k11-verification-20261123 9b4135e705b08f765b7304e01212d3b9658806fb",
+      "refs/preparation/k8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903",
+      "refs/remotes/origin/agent/cherri-p10r15-k10-verification-20261123 4feadab9db4d351628f78593304373631693869a"
+    ],
+    "primaryBefore": {
+      "head": "3fdf58c53f9a5acbe09cfbc58ad5770701d5bb3b",
+      "status": "?? tests/decomp-me.cherri",
+      "preservedFixtureSHA256": "8df55a3ffdd76ca7fa9b360e0e7ec8c2d88bf7d807141517ad05a759c1212503"
+    }
+  },
+  "pushExitCode": 0,
+  "pushTimedOut": false,
+  "pushAttempted": true,
+  "remoteRefReadback": {
+    "code": 0,
+    "stdout": "9b4135e705b08f765b7304e01212d3b9658806fb\trefs/heads/agent/cherri-p10r15-k11-verification-20261123",
+    "timedOut": false
+  },
+  "remoteBinding": {
+    "ref": {
+      "ref": "refs/heads/agent/cherri-p10r15-k11-verification-20261123",
+      "sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+      "type": "commit"
+    },
+    "commit": {
+      "parents": [
+        "b89574b5474656e5498987c636565d65438e3955"
+      ],
+      "sha": "9b4135e705b08f765b7304e01212d3b9658806fb",
+      "tree": "d3688f219f7454e80778cbcb3013967b6d339aad"
+    },
+    "verifiedAtUtc": "2026-11-23T03:49:18.007447+00:00"
+  },
+  "status": "PUBLISHED_REMOTE_VERIFIED",
+  "primaryAfter": {
+    "head": "3fdf58c53f9a5acbe09cfbc58ad5770701d5bb3b",
+    "status": "?? tests/decomp-me.cherri",
+    "preservedFixtureSHA256": "8df55a3ffdd76ca7fa9b360e0e7ec8c2d88bf7d807141517ad05a759c1212503"
+  },
+  "primaryUnchanged": true,
+  "steps": [
+    {
+      "name": "01-origin",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:11.157039+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:11.205437+00:00",
+      "seconds": 0.046,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "42297efb7e5b0808301458532988fd3db681e75d0c3b539058442b57d00a58c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 44,
+      "stderrBytes": 0
+    },
+    {
+      "name": "02-base-refs",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:11.210488+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:11.250757+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "cf574ae59f733119f19e165411be52b7405e87b165316aaef476938225054bbf",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 266,
+      "stderrBytes": 0
+    },
+    {
+      "name": "03-primary-head-before",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:11.255339+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:11.294602+00:00",
+      "seconds": 0.032,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "9d09facbbb0a64a7a068abc62308417603ac51049d2395544a1daeab302b4ccd",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "04-primary-status-before",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:11.299629+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:11.351276+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "91eb0e2b9daf5a832295e5f93869ef02b5651aa04e22a5074bad1e7092827b18",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 26,
+      "stderrBytes": 0
+    },
+    {
+      "name": "05-transfer",
+      "argv": [
+        "C:\\WINDOWS\\System32\\OpenSSH\\scp.exe",
+        "-B",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=12",
+        "torah-dev:/mnt/development/projects/evidence/cherri-p10r15-k11-frozen-ci-20261123/publication/cherri-k11.bundle",
+        "torah-dev:/mnt/development/projects/evidence/cherri-p10r15-k11-frozen-ci-20261123/publication/bundle-handoff.json",
+        "."
+      ],
+      "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k11-20261123\\attempt-02\\incoming",
+      "startedAtUtc": "2026-11-23T03:49:11.356276+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:12.460038+00:00",
+      "seconds": 1.109,
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "06-bundle-heads",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "bundle",
+        "list-heads",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k11-20261123\\attempt-02\\incoming\\cherri-k11.bundle"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:12.464497+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:12.508353+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "bdffe95cac8ebc998bf2c106b1698578c3da774911aa5b7de3dd52984b964966",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 98,
+      "stderrBytes": 0
+    },
+    {
+      "name": "07-bundle-verify",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "bundle",
+        "verify",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k11-20261123\\attempt-02\\incoming\\cherri-k11.bundle"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:12.516064+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:12.605028+00:00",
+      "seconds": 0.078,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "d2782a7b0b956bed86e4c6ad26a67f07ba6a5f1c9ddbdcf228eccbdaceb840d0",
+      "stderrSHA256": "48f88ec145976bd0c1151c8a7aa80f41eb21e45c1933c3f2461b426725eab66a",
+      "stdoutBytes": 242,
+      "stderrBytes": 105
+    },
+    {
+      "name": "08-import",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "fetch",
+        "--no-tags",
+        "--no-recurse-submodules",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k11-20261123\\attempt-02\\incoming\\cherri-k11.bundle",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123:refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:12.619205+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:12.982168+00:00",
+      "seconds": 0.359,
+      "exitCode": 0,
+      "timeoutSeconds": 60,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "54f8b5374bd65fb73893bf8defa69ab2e4348edc556bb6665b616267206217ee",
+      "stdoutBytes": 0,
+      "stderrBytes": 218
+    },
+    {
+      "name": "09-commit",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "rev-parse",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:12.997313+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:13.036826+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "5352da7d6d5a67f355a667bd7ee2ab9b25c6a3fb1fe0739ff5cefe02fdf27f58",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "10-tree",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "rev-parse",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123^{tree}"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:13.048426+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:13.093934+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "19de244ee47b83cc4f34f874c5d88d5be5cbf6bff4adeda146e8a2c8c13c37e6",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "11-ancestry",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "merge-base",
+        "--is-ancestor",
+        "4feadab9db4d351628f78593304373631693869a",
+        "9b4135e705b08f765b7304e01212d3b9658806fb"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:13.102669+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:13.142694+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "12-connectivity",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "fsck",
+        "--connectivity-only",
+        "--no-reflogs",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:13.144282+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:13.252974+00:00",
+      "seconds": 0.109,
+      "exitCode": 0,
+      "timeoutSeconds": 60,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "13-imported-refs",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:13.254939+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:13.291952+00:00",
+      "seconds": 0.032,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "8c207fcaf6cda5c1a410309b2618610a24ec55c8ca781c98c85bcf8a4a540025",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 364,
+      "stderrBytes": 0
+    },
+    {
+      "name": "14-remote-before",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "ls-remote",
+        "--exit-code",
+        "--refs",
+        "origin",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:13.302686+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:13.847022+00:00",
+      "seconds": 0.547,
+      "exitCode": 2,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "name": "15-push",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "push",
+        "--porcelain",
+        "--force-with-lease=refs/heads/agent/cherri-p10r15-k11-verification-20261123:",
+        "origin",
+        "9b4135e705b08f765b7304e01212d3b9658806fb:refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:13.857611+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:16.641702+00:00",
+      "seconds": 2.797,
+      "exitCode": 0,
+      "timeoutSeconds": 120,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "f33b5a9e943ed1193ead5e05a9e1da4c7436af414d37d045d5644aa3f74406dc",
+      "stderrSHA256": "8315b2429e74ac6067ac694e01b8775413339e9312c0b39bd15d4a68458518fc",
+      "stdoutBytes": 165,
+      "stderrBytes": 247
+    },
+    {
+      "name": "16-remote-after",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "ls-remote",
+        "--exit-code",
+        "--refs",
+        "origin",
+        "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:16.663793+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:17.151018+00:00",
+      "seconds": 0.484,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "6358b9bfb05c6393066385497a4db46b9a5fbaf1ea37d3c8b32a81655c129cf0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 98,
+      "stderrBytes": 0
+    },
+    {
+      "name": "17-api-ref",
+      "argv": [
+        "C:\\Program Files\\GitHub CLI\\gh.exe",
+        "api",
+        "-H",
+        "Cache-Control: no-cache",
+        "repos/davidpovarsky/cherri/git/ref/heads/agent/cherri-p10r15-k11-verification-20261123",
+        "--jq",
+        "{ref: .ref, sha: .object.sha, type: .object.type}"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:17.161977+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:17.578551+00:00",
+      "seconds": 0.421,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "c58d23906dde1ffa5edf8fc11f7939f7462f07930a350acf57cc7fe6f8486400",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 132,
+      "stderrBytes": 0
+    },
+    {
+      "name": "18-api-commit",
+      "argv": [
+        "C:\\Program Files\\GitHub CLI\\gh.exe",
+        "api",
+        "-H",
+        "Cache-Control: no-cache",
+        "repos/davidpovarsky/cherri/git/commits/9b4135e705b08f765b7304e01212d3b9658806fb",
+        "--jq",
+        "{sha: .sha, tree: .tree.sha, parents: [.parents[].sha]}"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:17.590151+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:17.997812+00:00",
+      "seconds": 0.407,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "8d7344e9f12d04875cc55741255c2e4d74225c1ff7c02ec9fff6287d4f252a90",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 156,
+      "stderrBytes": 0
+    },
+    {
+      "name": "19-primary-head-after",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:18.007447+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:18.048553+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "9d09facbbb0a64a7a068abc62308417603ac51049d2395544a1daeab302b4ccd",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "20-primary-status-after",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:49:18.053068+00:00",
+      "finishedAtUtc": "2026-11-23T03:49:18.111144+00:00",
+      "seconds": 0.063,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "91eb0e2b9daf5a832295e5f93869ef02b5651aa04e22a5074bad1e7092827b18",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 26,
+      "stderrBytes": 0
+    }
+  ],
+  "finishedAtUtc": "2026-11-23T03:49:18.115648+00:00",
+  "liveRemoteBuilderTouched": false,
+  "actionsDispatches": 0
+}

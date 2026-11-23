@@ -1,0 +1,118 @@
+{
+  "operation": "EXACT_K11_CREATE_ONLY_PUBLICATION",
+  "startedAtUtc": "2026-11-23T03:47:07.698323+00:00",
+  "sourceCommit": "9b4135e705b08f765b7304e01212d3b9658806fb",
+  "sourceTree": "d3688f219f7454e80778cbcb3013967b6d339aad",
+  "ref": "refs/heads/agent/cherri-p10r15-k11-verification-20261123",
+  "bundleSHA256": "2b7523dba10e8c4a3043b89e28404282259b366ab4fe1fe7b98d2db7bd42e319",
+  "bundleBytes": 312997,
+  "prerequisites": [
+    "4feadab9db4d351628f78593304373631693869a"
+  ],
+  "repo": "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+  "destinationMustBeAbsent": true,
+  "pushAttemptLimit": 1,
+  "primaryMutationAuthorized": false,
+  "pushAttempted": false,
+  "status": "FAILED_BEFORE_PUSH",
+  "error": "AssertionError: ",
+  "primaryAfter": {
+    "head": "3fdf58c53f9a5acbe09cfbc58ad5770701d5bb3b",
+    "status": "?? tests/decomp-me.cherri"
+  },
+  "primaryReadbackError": "NameError",
+  "steps": [
+    {
+      "name": "01-origin",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:47:07.700831+00:00",
+      "finishedAtUtc": "2026-11-23T03:47:07.741877+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "42297efb7e5b0808301458532988fd3db681e75d0c3b539058442b57d00a58c0",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 44,
+      "stderrBytes": 0
+    },
+    {
+      "name": "02-base-refs",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-publication-k10-20261123\\repo.git",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:47:07.774372+00:00",
+      "finishedAtUtc": "2026-11-23T03:47:07.818250+00:00",
+      "seconds": 0.047,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "cf574ae59f733119f19e165411be52b7405e87b165316aaef476938225054bbf",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 266,
+      "stderrBytes": 0
+    },
+    {
+      "name": "19-primary-head-after",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:47:07.828929+00:00",
+      "finishedAtUtc": "2026-11-23T03:47:07.894028+00:00",
+      "seconds": 0.063,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "9d09facbbb0a64a7a068abc62308417603ac51049d2395544a1daeab302b4ccd",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 41,
+      "stderrBytes": 0
+    },
+    {
+      "name": "20-primary-status-after",
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "-C",
+        "C:\\Users\\DAVID\\Code\\cherri",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": null,
+      "startedAtUtc": "2026-11-23T03:47:07.903173+00:00",
+      "finishedAtUtc": "2026-11-23T03:47:08.005316+00:00",
+      "seconds": 0.109,
+      "exitCode": 0,
+      "timeoutSeconds": 30,
+      "timedOut": false,
+      "ownedTreeKillExit": null,
+      "stdoutSHA256": "91eb0e2b9daf5a832295e5f93869ef02b5651aa04e22a5074bad1e7092827b18",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 26,
+      "stderrBytes": 0
+    }
+  ],
+  "finishedAtUtc": "2026-11-23T03:47:08.015442+00:00",
+  "liveRemoteBuilderTouched": false,
+  "actionsDispatches": 0
+}

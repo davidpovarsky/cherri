@@ -1,0 +1,21 @@
+{
+  "name": "14-independent-remote",
+  "argv": [
+    "git",
+    "-c",
+    "credential.helper=",
+    "-c",
+    "credential.helper=!gh auth git-credential",
+    "ls-remote",
+    "--exit-code",
+    "--refs",
+    "origin",
+    "refs/heads/agent/cherri-p10r15-k11-verification-20261123"
+  ],
+  "startedUTC": "2026-11-23T03:50:46.922334+00:00",
+  "finishedUTC": "2026-11-23T03:50:47.357468+00:00",
+  "elapsedSeconds": 0.4351426139473915,
+  "exitCode": 0,
+  "stdoutSHA256": "6358b9bfb05c6393066385497a4db46b9a5fbaf1ea37d3c8b32a81655c129cf0",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
