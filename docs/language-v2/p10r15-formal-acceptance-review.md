@@ -32,6 +32,39 @@ Relative to the R6 106/4/45/23/1 snapshot, K05/RP01/RP02/BRG04 changed FAILED→
 
 Current defects, evidence links, ownership and next work are in [living master chapter 21](CHERRI-V2-LIVING-MASTER-PLAN.md#21-p10r15-oracle-continuation-and-frozen-k8-evidence--2026-11-23). The snapshot below preserves the earlier source's results; it is historical, not the current acceptance count.
 
+
+### Verified follow-up after the 01:52 checkpoint
+
+Recorded at 2026-11-23T01:59:29.525899+00:00. The frozen K8 report and its original failures above remain
+unchanged. These later component results have separate immutable sources.
+
+The complete debug-export CLI/model replay passed at clean
+05854a2e78df7d6b7b215bf104a628830cc6bdad: 16 CLI cases, 16 complete-action
+roundtrips, 80 model cases, 16 invalid-source cases, seven causal faults,
+and 12 public probe compiles with 12 additional complete-action roundtrips.
+Actual process exit 0, 4.130 seconds, no timeout, unchanged source.
+Native executions remain zero.
+[Originals and scope](../ai-team/evidence/p15-debug-export-boundary-20261123/README.md)
+preserve the earlier failures and omitted-empty-parameter diagnosis.
+
+The explicit AI profile v2 now pins the verified R7 Linux ARM64 compiler.
+All 12 unchanged public calibration inputs compiled and passed their graph
+oracles at clean 752c41b74f64fd633e63792fd4685156fabe913c. The run made exactly
+12 compiler calls, took 0.808499 seconds, retained the original limits, and
+changed no source or binary bytes. This is calibration, not live model quality.
+No real seed or provider generation had occurred at this follow-up.
+The historical v1 profile and receipts remain unchanged.
+
+[The CI01 observation-reference repair](p15-ci01-observation-reference-20261123.md)
+is independently reproduced and verified at clean
+1f619b6ef640e0a71d89558564eddb9ea6bdfbe3. Future audits link only observations
+that actually exist. CI01 remains NOT_RUN / UNVERIFIED with no accepted tier;
+neither original R6 nor K8 report is rewritten.
+
+The next frozen combined candidate must still obtain its actual platform CI,
+installed-consumer, signed runtime and evaluation evidence. R23 remains a real
+failure, physical-device proof remains unavailable, and closure remains false.
+
 ## Historical result — 2026-11-18 at 8c42876a
 
 The fresh local runner at `8c42876a49081c961d6dce8344cc9879ff8f4a0f` executed all registered local producers and reports **179 obligations: 20 passed, 0 failed, 159 pending or unexecuted**. The independent audit contains **20 PASS, 156 UNVERIFIED and 3 BLOCKED_EXTERNAL**, with all 179 distinct IDs bound to that exact source SHA. The runner exited 0; `closure_complete` remains false. Generated at `2026-11-18T16:44:43Z`, job `job_3a30fa58f468`.

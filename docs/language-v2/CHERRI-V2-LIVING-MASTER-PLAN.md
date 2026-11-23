@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.8.0 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 21 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.8.1 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 21 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1112,3 +1112,35 @@ The 26 NOT_RUN obligations are B01, T05, L01, N03, F04, D03, CI01–CI04, END01,
 4. Repair the pre-existing CI01 metadata link truthfully: both K8 and R6 audit files point to a nonexistent CI01 observation. CI01 remains NOT_RUN/UNVERIFIED with no accepted record. Omit the nonexistent link or encode absence in a future report; never fabricate the missing observation or rewrite originals.
 5. Continue the exact 26 local gaps and 38 external requirements using per-ID obligations. Signed Apple runtime, application UI, installed consumers, required macOS encoding, CI security, delivery, and eligible external AI evaluation remain separate gates.
 6. Only after the actual required source-bound evidence is accepted may final179 and release closure be claimed. Current closure remains false.
+
+### Verified follow-up after the 01:52 checkpoint
+
+Recorded at 2026-11-23T01:59:29.525899+00:00. The frozen K8 report and its original failures above remain
+unchanged. These later component results have separate immutable sources.
+
+The complete debug-export CLI/model replay passed at clean
+05854a2e78df7d6b7b215bf104a628830cc6bdad: 16 CLI cases, 16 complete-action
+roundtrips, 80 model cases, 16 invalid-source cases, seven causal faults,
+and 12 public probe compiles with 12 additional complete-action roundtrips.
+Actual process exit 0, 4.130 seconds, no timeout, unchanged source.
+Native executions remain zero.
+[Originals and scope](../ai-team/evidence/p15-debug-export-boundary-20261123/README.md)
+preserve the earlier failures and omitted-empty-parameter diagnosis.
+
+The explicit AI profile v2 now pins the verified R7 Linux ARM64 compiler.
+All 12 unchanged public calibration inputs compiled and passed their graph
+oracles at clean 752c41b74f64fd633e63792fd4685156fabe913c. The run made exactly
+12 compiler calls, took 0.808499 seconds, retained the original limits, and
+changed no source or binary bytes. This is calibration, not live model quality.
+No real seed or provider generation had occurred at this follow-up.
+The historical v1 profile and receipts remain unchanged.
+
+[The CI01 observation-reference repair](p15-ci01-observation-reference-20261123.md)
+is independently reproduced and verified at clean
+1f619b6ef640e0a71d89558564eddb9ea6bdfbe3. Future audits link only observations
+that actually exist. CI01 remains NOT_RUN / UNVERIFIED with no accepted tier;
+neither original R6 nor K8 report is rewritten.
+
+The next frozen combined candidate must still obtain its actual platform CI,
+installed-consumer, signed runtime and evaluation evidence. R23 remains a real
+failure, physical-device proof remains unavailable, and closure remains false.
