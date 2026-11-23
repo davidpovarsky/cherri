@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.8 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 29 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.9 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete K12 local execution: **112/179 PASSED, 2 FAILED, 28 NOT_RUN, 37 PENDING_EXTERNAL**. Separate retained-native reconciliation: **122/179 PASSED, 27 FAILED, 30 NOT_RUN** under different aggregator status semantics; **closure_complete=false**. Chapter 30 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2010,3 +2010,174 @@ under its real UID1002 with source/tuple and private evidence boundaries intact.
 Latest complete formal179 remains K8:114PASS/0FAIL/26NOT_RUN/
 38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN; closure_complete=false.
 C2 and successful metadata do not authorize aggregate release or erase R23.
+
+
+## 30. Oracle installation, K12 reconciliation and K14 repair work — 2026-11-23, 10:19 UTC
+
+### Current source and milestone board
+
+This checkpoint replaces the stale latest-status pointer in version 2.9.8.
+Chapters 1–29 remain historical records. The [bounded evidence packet](evidence/p15-oracle-checkpoint-20261123/README.md)
+distinguishes copied original receipts from newly generated public projections.
+No producer was rerun to prepare this checkpoint.
+
+| Role | Exact source / result |
+|---|---|
+| Frozen K12 verification source | `7e0c7b0425fd43bab231de76dd35484668ad9e73`; tree `dda68b071986be2611c8ea39689fb23542048226` |
+| Compiler S | `57b6d919757e1d0262993c6f11c6dc1cd17d6177`; tree `370d85f75d8fb5bba5f9c8afe438208d97a525c8` |
+| Published Docs D12 | `ce98fa542785fe4298d3acbf38da120b32bd5029`; tree `8982b8dcc92208b58265ff4caa7f65ecf233cf39` |
+| Published and installed Remote helper K13 | `d81e232241e257ca1126be76ebf4fe95239fb170`; tree `833b60bb3f7271d84fe1721cd8c2f842fa06d829`; branch `agent/cherri-p10r15-remote-canonical-home-20261123` |
+| K14 label and race-retention changes | `c4b6190be09b4a2f7dce166ffe0ab1d99302b074`; tree `3d3dbe91f2d47d69da8f3bba8029611409dcbf72` |
+| Actual RP41 RED source, checkpoint predecessor | `90d92eef2017216f79df0cecfe7f934abd174290`; tree `91bcdd20ce3b5b04b645fb79910320d8d6611c67` |
+| Current continuation | Isolated Oracle branch `agent/cherri-p10r15-k14-closure-persistent-20261123`; corrective Go/Swift proposals are not yet deployed or verified at this cutoff |
+
+K13 changes exactly the canonical-home containment helper, its negative controls
+and the OpenMinis workflow test selection. All tracked Go, go.mod and go.sum
+bytes remain equal to S; native workflow paths remain equal to K12. This byte
+comparison does not transfer native or full-acceptance credit to a descendant.
+
+### Acceptance matrix and evidence log
+
+#### Complete K12 local execution and retained-native reconciliation
+
+The original complete 179-row execution finished with actual exit 1 after
+1,698.942073 seconds: **112 PASSED, 2 FAILED, 28 NOT_RUN and 37 PENDING_EXTERNAL**.
+Its report remains unchanged, SHA256
+`a162757bd6d9d6495b1bab9d77d1de9bdc0c49ec7ed105e95bcde180ee45b06b`.
+The two failures are AI01 and RP50. All **179 identities = 94 acceptance +
+52 repair + 33 supplemental gates** remain present.
+
+A separate metadata-only canonical intake joined the original 269 records with
+six already produced Runtime PoC records. It changed only local artifact
+locators where necessary and retained the original source/run identities,
+ordering, result values and failure evidence. The first intake lacked the
+required Docs repository locator; that failed intake remains retained. A second
+intake supplied the verified clean D12 locator and wrote to a fresh directory.
+Neither intake executed a test, compiler, provider request or native producer.
+
+The configured intake exited 1 after 4.791115 seconds and produced
+**122 PASSED, 27 FAILED and 30 NOT_RUN**, report SHA256
+`30740ff97a0a90079f3b745811d40964c1af996e8ea67d21e72be5da9bf0af18`.
+All original 112 passing rows remain passing. The ten newly satisfied rows are
+**F01, FN01, FN02, FN03, L02, L04, N01, S01, V01 and V03**.
+
+The status categories differ between the original execution aggregator and the
+strict joined-manifest intake. Its 27 FAILED rows comprise the same two actual
+AI failures plus 25 requirements with unsatisfied local tiers; they are not 27
+new failing test executions. The original 269-record manifest contains 267
+`passed` records and two `rejected` AI records, whose requirement rows are
+FAILED. Both reports keep `closure_complete=false`. The public packet includes
+the exact ID/status projections and original hashes, not private AI task data.
+
+#### Actual K12 Apple outcomes
+
+| Workflow | Run / actual result | Accepted scope and remaining limits |
+|---|---|---|
+| Full repaired F01 | [45132864056](https://github.com/davidpovarsky/cherri/actions/runs/45132864056), SUCCESS | Original callback `P15_F01_OK`, four XCTest passes, four trace records and 156 native actions. Typed per-action coverage remains unknown; editor capture is partial; no physical-device credit. |
+| Full iOS Build | [45132777379](https://github.com/davidpovarsky/cherri/actions/runs/45132777379), FAILURE, native exit 65 | 55 passed, two failed, zero skipped out of 57. E01 palette and E06 Hebrew/emoji fail the original startup assertion before document creation or input. No app-production root cause is established. |
+| Runtime PoC | [45132919828](https://github.com/davidpovarsky/cherri/actions/runs/45132919828), SUCCESS | Six real runtime facets cover the ten reconciled requirement IDs. Five signed fixtures and 17 diagnostic cases remain distinct from the full F01 fixture. Owned simulator was deleted. |
+
+The private prerequisite archives were verified in place on Windows using the
+existing owner-held recipient. No key or plaintext archive was exported.
+Original public/private joins and all prior failures remain retained. The
+startup trace does not justify changing a protected UI test or extending a
+deadline. D03's passing current-documentation UI component does not make the
+failed full iOS workflow successful.
+
+#### Installed RemoteBuilder milestone: COMPLETED_VERIFIED within its original scope
+
+K13 fixes the real canonical-HOME comparison defect while preserving rejection
+of an escaping jobs root. The original local 39-parent observer qualification
+passed. All nine original Remote qualification inputs were accepted, including
+39 entrypoint cases, 58 signing fault cases and eight candidate smoke checks.
+
+The actual installed cycle then completed: install, eight smoke checks,
+rollback to the previous route, reapply and eight more smoke checks. It recorded
+33 events, one rollback, actual exit 0, 85.115910 seconds and four public signing
+commands with zero retry. A fresh installed-state fault matrix then passed
+**58/58**: five positive controls and 53 intended rejections, with 53 loopback
+multipart requests and 22 exact Remote preflight joins. It executed no public
+signing command and left installed source and protected metadata unchanged.
+
+The active tuple is S `57b6d919…` / D12 `ce98fa54…` / K13 `d81e2322…`, with
+compiler SHA256 `5a1c0922925a8f3fb001052c7077f3a1df242c4cb8f04609d06f432d84683f5a`
+and migrator SHA256 `348c1acf59f1eebb8f93c380d0e5ed442bcf520e2562452733fa6a56248da0bd`.
+Legacy remains the default. The registered link is preserved.
+[The Remote Asana task](https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1219604454669950)
+was completed at 09:41:31 UTC on the evidence of this original milestone.
+
+This milestone does not establish Apple cryptographic validation, physical
+execution, whole-transaction/power-loss atomicity or global release acceptance.
+The prior K12 failed promotion remains FAILED_RESTORED.
+
+#### K13 CI and K14 component work
+
+| Evidence | Actual result / scope |
+|---|---|
+| [K13 OpenMinis 45145823868](https://github.com/davidpovarsky/cherri/actions/runs/45145823868) | SUCCESS, all 44 workflow steps and eight artifact ZIPs. Hosted observer step has 25 parents; this is distinct from the local 39-parent suite. |
+| [K13 Build 45143015128](https://github.com/davidpovarsky/cherri/actions/runs/45143015128) | FAILURE. Linux Full Go passed, then original R23 failed. Nix succeeded. macOS ordinary root package reached its original cumulative 900-second alarm; its acceptance package subsequently passed in 1,902.097 seconds. All 30 package selections were attempted once. |
+| K14 label component at `c4b6190…` | Actual three-process qualification PASS: original 19 macro compiles/14 causal controls, separate 12 label mode compiles/314 mutations, and 61 verifier processes (31 healthy, 30 intended negative). 24.538791 seconds; no deadline change. |
+| K14 race-evidence retention at `c4b6190…` | Linux workflow now retains the existing producer's five original race-evidence file types under a fresh run-specific directory. No second race producer is added. Hosted validation of this retention change remains pending. |
+| RP41 at `90d92eef…` | Actual focused RED: two subcases pass and one fails. A selected native Wait at index 4 wrongly edits the later authored `wait(5)` instead of `wait(2)`. The exact original test, JSONL and process receipt are preserved. |
+
+The label ledger now represents **PARTIAL_IMPLEMENTATION** with actual source
+bound CLI identities; all eleven macro children remain OPEN. Historical Go
+label evidence was reused without rerunning unchanged tests. Native acceptance
+for all twelve label modes and full macro closure are not granted.
+
+K12's Linux production race test did pass, but its five raw receipt files were
+not uploaded. Those missing originals cannot be reconstructed from a summary or
+digest. The retention change addresses future evidence and grants no retroactive
+RP51/BRG06 credit.
+
+K13's macOS timeout did not show a prior assertion failure or a demonstrated
+cleanup deadlock. K12/K13 Go sources are equal; timing variance affects several
+parents. A source audit found repeated same-source setup builds that bypass the
+existing immutable-byte cache. A bounded reuse proposal is being prepared;
+savings and success under 900 seconds remain unmeasured.
+
+### Open defects, decisions and next work
+
+1. **RP41 — OPEN_BUG.** Compile-time origin mapping must bind actual emitted
+   actions to original authored arguments after all native expansion/backfills.
+   Only proven unique direct primitive bindings may be editable. Generated,
+   ambiguous and custom-builder fields must remain read-only. The existing
+   AST-index API stays unchanged; the new native-preview route must carry the
+   compiler-owned immutable source/plist/mode witness. Swift must publish source,
+   preview and signed state only after successful guarded recompilation and
+   restore the committed rendered preview on rejection. Original RED evidence
+   remains, including a disclosed minimal test-route adaptation.
+2. **Required CI — OPEN_EVIDENCE/OPEN_IMPLEMENTATION.** Review and verify the
+   narrow setup-build reuse patch without changing test selection, assertions,
+   concurrency or original deadlines. Run required hosted verification only on
+   the genuinely changed frozen source; do not rerun K13 unchanged for a green
+   outcome. R23v1 remains active and FAILED.
+3. **Native dated label — PENDING.** One new `qa-debug-label-dated-v2` dispatch,
+   [45153254005](https://github.com/davidpovarsky/cherri/actions/runs/45153254005),
+   attempt 1 on exact K13, was accepted at 10:07:52 UTC. It was still nonterminal
+   at this cutoff. The original 177-action fixture and exact 51-field golden
+   remain unchanged; both DateDelta fields must equal zero. One existing
+   observer owns intake. Public validation must pass before the separately
+   reviewed run-specific Windows private intake. No success is inferred here.
+4. **Final provenance/privacy — OPEN_IMPLEMENTATION.** CI03, CI04, RP49, BRG31
+   and END01 guards remain. Implement actual clean-source, remote publication,
+   original workflow/artifact and truthful report binding, with independent
+   expected context. A candidate's own digest is not authority. Missing proof
+   remains NOT_RUN; mismatch fails; an honestly failed or pending delivery may
+   satisfy integrity without closing the project.
+5. **Other product and native gaps remain real.** Optional nested/value-loop
+   transport, dynamic Text native coverage, combined editor/function producers
+   and full computed-runtime coverage remain open at their required tiers.
+   Historical baseline proof cannot be manufactured. A source audit does not
+   turn these into external blockers.
+6. **External prerequisites remain bounded.** The sealed AI cohort was consumed:
+   12 count-token HTTP 400 low-credit outcomes, zero generations and no retry.
+   No replacement cohort, provider/account change or billing action is
+   authorized by this checkpoint. Physical-device evidence is absent; missing
+   transport does not establish that no device exists. Two earlier empty owner
+   responses do not approve or reject the R23v2 proposal.
+
+Project health remains off track and `closure_complete=false`. No mainline merge
+or global release is claimed. Preserve all 179 IDs, original policies,
+thresholds, time limits and stopped attempts. Complete the genuine internal
+repairs and their evidence before treating the remaining work as blocked.

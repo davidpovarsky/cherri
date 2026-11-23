@@ -1,0 +1,121 @@
+{
+  "candidateSigningCommands": 2,
+  "createdAt": "2026-11-23T10:19:01.445211+00:00",
+  "formalAcceptanceGranted": false,
+  "globalR23OrFull179AcceptanceGranted": false,
+  "installedCycle": {
+    "actualRollbackAndReapply": true,
+    "additionalCanonicalSigningCommands": 4,
+    "automaticRetries": 0,
+    "eventCount": 33,
+    "exitCode": 0,
+    "finishedAtUtc": "2026-11-23T09:20:30.058761+00:00",
+    "guardFilesUnchanged": true,
+    "installedSmoke": {
+      "first-smoke": {
+        "sha256": "414208a580fd2bd8097b7e58fb7453bf18efbd5d325d6b752466748232adb99f",
+        "signingCommandAttempts": 2,
+        "summary": {
+          "checks": 8,
+          "failed": 0,
+          "passed": 8
+        }
+      },
+      "reapplied-smoke": {
+        "sha256": "0e57d60abbbe58455ffc2b037d095404c9f1f16728d26e3a1804cd94bca5f776",
+        "signingCommandAttempts": 2,
+        "summary": {
+          "checks": 8,
+          "failed": 0,
+          "passed": 8
+        }
+      }
+    },
+    "legacyDefaultPreserved": true,
+    "originalSourceUnchanged": true,
+    "registeredLinkPreserved": true,
+    "seconds": 85.11591047793627,
+    "startedAtUtc": "2026-11-23T09:19:04.936816+00:00",
+    "status": "COMPLETED_AND_POSTFLIGHT_VERIFIED"
+  },
+  "installedFaults": {
+    "appleCryptographicValidation": "NOT_TESTED",
+    "independentStatus": "PASS_ACTUAL_INSTALLED_58_WITH_COMPLETED_CYCLE",
+    "localMultipartRequests": 53,
+    "privateCorpusUsed": false,
+    "process": {
+      "exitCode": 0,
+      "finishedAtUtc": "2026-11-23T09:32:21.075832+00:00",
+      "liveUnchanged": true,
+      "seconds": 224.967,
+      "sourceInputsUnchanged": true,
+      "startedAtUtc": "2026-11-23T09:28:36.058788+00:00",
+      "timedOut": false
+    },
+    "publicSigningCommands": 0,
+    "remoteExactPreflightRequests": 22,
+    "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+    "summary": {
+      "checks": 58,
+      "controlsPassed": 5,
+      "failures": 0,
+      "negativesRejected": 53
+    }
+  },
+  "limitations": [
+    "Per-file atomic replacement only; no power-loss, concurrent-reader or whole-transaction guarantee.",
+    "Original candidate qualification and installed cycle/fault evidence keep their separate sources and scopes.",
+    "Projection exposes an allowlist of public metadata and original digests; private configuration and plaintext archives remain in place."
+  ],
+  "originalNineGatesValidated": true,
+  "originals": [
+    {
+      "bytes": 3502,
+      "relativeOriginal": "strict-qualification.result.original.json",
+      "sha256": "7603f28db2f9dc439a25086de1327933debc8bbf1191cf1e45d69f334149728f"
+    },
+    {
+      "bytes": 6030,
+      "relativeOriginal": "promotion-execution-01/process.result.original.json",
+      "sha256": "3d44dc8862236f1d0996221066318a24b2ca692c71ee348e32d23a6e48e166ae"
+    },
+    {
+      "bytes": 11494,
+      "relativeOriginal": "post-install-negatives-01/signing-faults.process.result.json",
+      "sha256": "0ec98924d399b9f7e3d4acc2fa192c5c8cdc74548b8b5fe2d3ac5bead0cddc5f"
+    },
+    {
+      "bytes": 144328,
+      "relativeOriginal": "post-install-negatives-01/signing-faults.json",
+      "sha256": "e575901806ac7390876a0999f6fc324fea2cefb7cb82d77e4a76679af1802c75"
+    },
+    {
+      "bytes": 14500,
+      "relativeOriginal": "independent-apple-installed-cycle-review.original.json",
+      "sha256": "1c2c2c1a422477fbee85438c51ab734459d34f7f68a473949d0442921355b381"
+    },
+    {
+      "bytes": 25157,
+      "relativeOriginal": "independent-apple-installed-faults-review.original.json",
+      "sha256": "80bb7f96bf1ad2fe203552dc7b2c962393f632bb61527ba5ad442e0352d80a9a"
+    }
+  ],
+  "physicalDeviceExecution": "NOT_TESTED",
+  "projectionOnly": true,
+  "qualificationStatus": "PASS_ALL_ORIGINAL_REMOTE_QUALIFICATION_GATES",
+  "schema": "cherri-remote-installed-public-projection/1",
+  "sourceCommit": "d81e232241e257ca1126be76ebf4fe95239fb170",
+  "sourceTree": "833b60bb3f7271d84fe1721cd8c2f842fa06d829",
+  "tuple": {
+    "codecFingerprint": "eb550a69bd2e0413369d6b0c0863448c755724b4103c5e4a3617125a72ee3122",
+    "compilerCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "compilerSHA256": "5a1c0922925a8f3fb001052c7077f3a1df242c4cb8f04609d06f432d84683f5a",
+    "docsCommit": "ce98fa542785fe4298d3acbf38da120b32bd5029",
+    "label": "p15-s57b6-d12-k13-20261123",
+    "macroFingerprint": "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c",
+    "migrationSHA256": "348c1acf59f1eebb8f93c380d0e5ed442bcf520e2562452733fa6a56248da0bd",
+    "schemaFingerprint": "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+    "skillSourceHead": "d81e232241e257ca1126be76ebf4fe95239fb170",
+    "sourceBranch": "agent/cherri-p10r15-remote-canonical-home-20261123"
+  }
+}

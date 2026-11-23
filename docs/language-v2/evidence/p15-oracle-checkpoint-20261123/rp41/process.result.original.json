@@ -1,0 +1,60 @@
+{
+  "schema": "cherri-rp41-red-process/1",
+  "argv": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=60s",
+    "-run",
+    "^TestP15RP41NativePreviewIndexSourceEdit$",
+    "."
+  ],
+  "startedAt": "2026-11-23T10:00:45.919026+00:00",
+  "finishedAt": "2026-11-23T10:01:08.532977+00:00",
+  "elapsedSeconds": 22.61394389346242,
+  "exitCode": 1,
+  "timedOut": false,
+  "signals": [],
+  "sourceBefore": {
+    "head": "90d92eef2017216f79df0cecfe7f934abd174290",
+    "tree": "91bcdd20ce3b5b04b645fb79910320d8d6611c67",
+    "status": "",
+    "testSHA256": "d0abd754ca884ae54c2cd19ce45677e053608178134b06d7c0590eb7952cd8b1"
+  },
+  "sourceAfter": {
+    "head": "90d92eef2017216f79df0cecfe7f934abd174290",
+    "tree": "91bcdd20ce3b5b04b645fb79910320d8d6611c67",
+    "status": "",
+    "testSHA256": "d0abd754ca884ae54c2cd19ce45677e053608178134b06d7c0590eb7952cd8b1"
+  },
+  "sourceUnchanged": true,
+  "terminalTestEvents": [
+    {
+      "Test": "TestP15RP41NativePreviewIndexSourceEdit/mapped_without_expansion",
+      "Action": "pass",
+      "Elapsed": 0.03
+    },
+    {
+      "Test": "TestP15RP41NativePreviewIndexSourceEdit/mapped_after_native_expansion",
+      "Action": "fail",
+      "Elapsed": 0.02
+    },
+    {
+      "Test": "TestP15RP41NativePreviewIndexSourceEdit/generated_condition_value_read_only",
+      "Action": "pass",
+      "Elapsed": 0.01
+    },
+    {
+      "Test": "TestP15RP41NativePreviewIndexSourceEdit",
+      "Action": "fail",
+      "Elapsed": 0.09
+    }
+  ],
+  "syntheticOnly": true,
+  "nativeExecuted": false,
+  "formalAcceptanceGranted": false,
+  "stdoutSHA256": "eabea718d48d1b9fe26bdebfb176faffd04e443cc0d18b78b3677491dbc2cf92",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

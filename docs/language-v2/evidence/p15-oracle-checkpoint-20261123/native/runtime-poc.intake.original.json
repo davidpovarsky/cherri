@@ -1,0 +1,288 @@
+{
+  "R22": {
+    "nativeSameProducerComponentObserved": true,
+    "newAggregateRowProduced": false,
+    "originalLinux56RowUnchanged": true
+  },
+  "actualOnRunnerGoEvidenceVerifierPassed": true,
+  "actualPlatform": {
+    "environmentObservedInOriginalLog": true,
+    "ownedSimulatorDeviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-16",
+    "ownedSimulatorRuntime": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+    "physicalDevice": false,
+    "runnerLabels": [
+      "xcode-27"
+    ]
+  },
+  "all32OriginalMemberHashesVerified": true,
+  "allImmutableTiersAccepted": false,
+  "conclusion": "success",
+  "coverageExactSha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+  "coverageExpectedBytes": 313,
+  "coverageObservedBytes": 313,
+  "coverageReplayMatched": true,
+  "descendantSourceCreditGranted": false,
+  "event": "workflow_dispatch",
+  "formalAcceptanceGranted": false,
+  "formalExporterReplayMatched": true,
+  "formalRequirementIds": [
+    "F01",
+    "FN01",
+    "FN02",
+    "FN03",
+    "L02",
+    "L04",
+    "N01",
+    "S01",
+    "V01",
+    "V03"
+  ],
+  "formalRuntimeFacets": [
+    {
+      "requirements": [
+        "V01",
+        "V03"
+      ],
+      "result": "passed",
+      "test_id": "ios27-runtime-poc:variables"
+    },
+    {
+      "requirements": [
+        "L02",
+        "L04"
+      ],
+      "result": "passed",
+      "test_id": "ios27-runtime-poc:indexing"
+    },
+    {
+      "requirements": [
+        "N01"
+      ],
+      "result": "passed",
+      "test_id": "ios27-runtime-poc:numbers"
+    },
+    {
+      "requirements": [
+        "FN01",
+        "FN02",
+        "FN03"
+      ],
+      "result": "passed",
+      "test_id": "ios27-runtime-poc:functions"
+    },
+    {
+      "requirements": [
+        "S01"
+      ],
+      "result": "passed",
+      "test_id": "ios27-runtime-poc:coverage-s01"
+    },
+    {
+      "requirements": [
+        "F01"
+      ],
+      "result": "passed",
+      "test_id": "ios27-runtime-poc:coverage-f01"
+    }
+  ],
+  "freshResetVerified": true,
+  "fullOriginalP15F01FixtureExecutedByThisWorkflow": false,
+  "headBranch": "agent/cherri-p10r15-k12-verification-20261123",
+  "helperClosureBindingScope": "All 17 known public validator closure files bound to current Git before intake; actual lazy imports reported separately.",
+  "historicalDiagnosticCount": 17,
+  "historicalDiagnosticRequirementLabelsNotPromoted": true,
+  "historicalPassedCount": 17,
+  "implementationSha": "7e0c7b0425fd43bab231de76dd35484668ad9e73",
+  "importedHelpersAfter": [
+    "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_coverage.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_device.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_formal_evidence.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_publication.py"
+  ],
+  "importedHelpersBefore": [
+    "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_coverage.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_device.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_formal_evidence.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_publication.py"
+  ],
+  "initialCallerStop": {
+    "nativeProducerRepeated": false,
+    "originalArtifactUnchanged": true,
+    "originalScriptPreserved": true,
+    "reason": "Assumed all 17 lazy helper modules were imported before invoking any pure validator; actual initial imports were five.",
+    "scope": "INTAKE_CALLER_ONLY"
+  },
+  "jobCompletedAt": "2026-11-23T08:35:01Z",
+  "jobId": 137552325090,
+  "jobStartedAt": "2026-11-23T07:57:45Z",
+  "nativeDeadlineChanged": false,
+  "nativeReexecutionPerformed": false,
+  "nativeWorkflowDeadlineMinutes": 75,
+  "observedAt": "2026-11-23T08:43:19.681950+00:00",
+  "observer": {
+    "attempt": 1,
+    "command": [
+      "gh",
+      "run",
+      "watch",
+      "45132919828",
+      "--repo",
+      "davidpovarsky/cherri",
+      "--interval",
+      "60",
+      "--exit-status"
+    ],
+    "finished": "2026-11-23T08:35:26.620792+00:00",
+    "returncode": 0,
+    "runId": 45132919828,
+    "sourceCommit": "7e0c7b0425fd43bab231de76dd35484668ad9e73",
+    "started": "2026-11-23T07:41:31.242836+00:00",
+    "timedOut": false,
+    "timeoutSeconds": 5100
+  },
+  "originalArtifact": {
+    "bytes": 136857,
+    "id": 14801227729,
+    "name": "ios27-shortcuts-runtime-poc-artifacts",
+    "original": "artifacts/14801227729-ios27-shortcuts-runtime-poc-artifacts.original.zip",
+    "sha256": "93af1af79b6f30362229c76634f45fd886506be235de2d41b953de6510651148"
+  },
+  "ownedSimulatorCleanupStatus": "DELETED",
+  "physicalDeviceAcceptance": false,
+  "publicationComparedFields": [
+    "schemaVersion",
+    "publicationGatePassed",
+    "syntheticOnly",
+    "implementationSha",
+    "runId",
+    "runAttempt",
+    "rasterPublicationAllowed",
+    "systemLogPublicationAllowed",
+    "formalEvidenceBytesUnchanged",
+    "policy",
+    "published"
+  ],
+  "publicationReplayMatched": true,
+  "publishedPayloadCount": 31,
+  "quarantineDifferenceScope": "Already-public originals only; raw private quarantine files were not acquired or reconstructed.",
+  "quarantineListReplayCompared": false,
+  "runAttempt": 1,
+  "runId": 45132919828,
+  "schema": "cherri-k12-runtime-poc-intake/1",
+  "separateDirectF01Result": "CHERRI_QA_F01_RESULT:P15_F01_OK",
+  "separateDirectF01RunId": 45132864056,
+  "signedFixtureCount": 5,
+  "signingMethods": [
+    "hubsign"
+  ],
+  "sourceFiles": [
+    {
+      "blobId": "1a90c16e8ad13afb7305d1f075a89e5cf36fa95a",
+      "bytes": 38850,
+      "path": "tools/shortcuts-simulator-qa/debug_label_acceptance.py",
+      "sha256": "6cdc2685482131f2193f401aa7f99f63492506b82341eb8ec0ddb64830f422e5"
+    },
+    {
+      "blobId": "6dafb64ede3827a074e26967d684b187e554179e",
+      "bytes": 15837,
+      "path": "tools/shortcuts-simulator-qa/debug_label_preview.py",
+      "sha256": "3ffe6e701c0cf6523ca8a0a3e32ea73777e3b3b3b25e31514162c085960b66cb"
+    },
+    {
+      "blobId": "e99733d88f25c4662752a4a2c8a128989fae4f11",
+      "bytes": 38742,
+      "path": "tools/shortcuts-simulator-qa/json_body_probe.py",
+      "sha256": "afaf38f499bdcd4bc56be3a5b7958b96fb65f8eaa7ea22550248a57f678b1520"
+    },
+    {
+      "blobId": "45b041ed1421e81e038b05362ba640a5d4da16eb",
+      "bytes": 12641,
+      "path": "tools/shortcuts-simulator-qa/json_file_body_probe.py",
+      "sha256": "6ecc10c7765b24957b94365e57bf81e0958136f3ba9629bb7866c98ab868c24f"
+    },
+    {
+      "blobId": "25b8f8de61b6f01b713186f4667581358d95a366",
+      "bytes": 32947,
+      "path": "tools/shortcuts-simulator-qa/nested_list_probe.py",
+      "sha256": "b21d24eecac940ab6decd9330015a49004ccdbbb7d21e5a3b42f1b15f878d925"
+    },
+    {
+      "blobId": "bfcca113c8ed103ec619099b70b20ef0c7d2b76c",
+      "bytes": 14611,
+      "path": "tools/shortcuts-simulator-qa/nested_list_runtime.py",
+      "sha256": "1d78bc44abbd62b14f7af4a3272270736f37eb3a2c86bc43fa37f0d0ea179d8a"
+    },
+    {
+      "blobId": "f2d53cc1889a402c6625a7b53a756867898b3f5d",
+      "bytes": 20684,
+      "path": "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+      "sha256": "6ac670d1dfa47725cea6270d78415134a085ad71542f82874ab02ddad4fe908e"
+    },
+    {
+      "blobId": "7e9d2937dfdb2ec786c084941599f8b78bc93b6c",
+      "bytes": 38502,
+      "path": "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
+      "sha256": "fd5c2c227a86479f20cfb315f6df6251a8d2a176eeb94c78f919ea28a3bcf188"
+    },
+    {
+      "blobId": "d14bd53521a8f68081c365d3e25164d3e2d4edbf",
+      "bytes": 36163,
+      "path": "tools/shortcuts-simulator-qa/retry_http_probe.py",
+      "sha256": "8731f6b1fffcb4c3a84af21f6d60e0969026c67611e90bbf2789ecfb8ce03121"
+    },
+    {
+      "blobId": "bbe5d4244b86623543964ef3c6919baaa116e36b",
+      "bytes": 11545,
+      "path": "tools/shortcuts-simulator-qa/runtime_poc_coverage.py",
+      "sha256": "fd1c3db20e267fe0af514b5a0909437ff728282325261941bed756ecd4d18e0b"
+    },
+    {
+      "blobId": "9eb3aade2aa9b2c00626bd315ac5774f656a83e1",
+      "bytes": 5666,
+      "path": "tools/shortcuts-simulator-qa/runtime_poc_device.py",
+      "sha256": "f4250d7cb74097fe27e8c8d3a4cf10dcbb299918264d6c8697dfaa15da83fd3d"
+    },
+    {
+      "blobId": "e80d2573b6b0aa51e5b62cbdb28d01311285fba4",
+      "bytes": 12764,
+      "path": "tools/shortcuts-simulator-qa/runtime_poc_formal_evidence.py",
+      "sha256": "05ff52dac17127d367c046729eaa64443e671e498e053ffb78b03481ef71a4ae"
+    },
+    {
+      "blobId": "8e119bf160b3d5174dff35746d7f4f1aa975bef3",
+      "bytes": 17010,
+      "path": "tools/shortcuts-simulator-qa/runtime_poc_publication.py",
+      "sha256": "6f884a575023b42519fa08c7536bad08183cc1f286054181ce7110c215ed83c9"
+    },
+    {
+      "blobId": "49a4aec125102dcb702ce90d3a9d6adff9ebc403",
+      "bytes": 17002,
+      "path": "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
+      "sha256": "86b5585f67f7aff7e9d28dd85061f9f9df2b3f9c956c6a0dfa552273ba007a89"
+    },
+    {
+      "blobId": "64a79635aa94bf61055c2595119c5f22215d5bd0",
+      "bytes": 20494,
+      "path": "tools/shortcuts-simulator-qa/storage_cross_run.py",
+      "sha256": "6f527c5e22bcd23e220f5d21d09c217abff8859fad16fd743b68183e4ced20c9"
+    },
+    {
+      "blobId": "479ef530719ba93da17ea30869eb6b148d3a8b9f",
+      "bytes": 19880,
+      "path": "tools/shortcuts-simulator-qa/xcode_destination_diagnostic.py",
+      "sha256": "adef5a99d7f7c41d297bbcbccabb12a229c07a7d326ecd4f97a76d52e81edf99"
+    },
+    {
+      "blobId": "29fb06f9ab121c086caa7cc3e1b4dbcdba7fc212",
+      "bytes": 22225,
+      "path": "tools/shortcuts-simulator-qa/xcode_destination_readiness.py",
+      "sha256": "4b973bd979e3db7b24edb18599846f8a76661bbf5ed55fc758ad753ba7e98079"
+    }
+  ],
+  "sourceRestamped": false,
+  "workflowId": 375700807,
+  "workflowName": "iOS 27 Shortcuts Runtime PoC",
+  "workflowPath": ".github/workflows/ios27-shortcuts-runtime-poc.yml"
+}
