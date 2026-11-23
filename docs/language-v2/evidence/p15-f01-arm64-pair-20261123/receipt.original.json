@@ -1,0 +1,162 @@
+{
+  "kind": "GENUINE_ORDINARY_CLONE_ARM64_PAIR",
+  "sourceCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "source": "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123",
+  "startedAt": "2026-11-23T06:15:12.577232+00:00",
+  "freeBytesBefore": 2443665408,
+  "cloneCommand": [
+    "git",
+    "-c",
+    "credential.helper=",
+    "-c",
+    "credential.helper=!gh auth git-credential",
+    "clone",
+    "--depth",
+    "1",
+    "--single-branch",
+    "--no-tags",
+    "--branch",
+    "audit/cherri-p10r15-f01-compiler-20261123",
+    "https://github.com/davidpovarsky/cherri.git",
+    "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123"
+  ],
+  "cloneTimeoutSeconds": 120,
+  "eachBuildTimeoutSeconds": 600,
+  "retries": 0,
+  "finishedAt": "2026-11-23T06:16:27.177998+00:00",
+  "status": "PASS",
+  "error": null,
+  "steps": [
+    {
+      "command": [
+        "git",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!gh auth git-credential",
+        "clone",
+        "--depth",
+        "1",
+        "--single-branch",
+        "--no-tags",
+        "--branch",
+        "audit/cherri-p10r15-f01-compiler-20261123",
+        "https://github.com/davidpovarsky/cherri.git",
+        "/mnt/development/projects/releases/cherri-p10r15-f01-compiler-source-20261123"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "elapsedSeconds": 16.856272246688604,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "201022f985aa779aea6fa689c3ef9d1c8b9efdfeb30462a761c3dd6658791a98"
+    },
+    {
+      "command": [
+        "/mnt/development/tooling/cherri-go/mod/golang.org/toolchain@v0.0.1-go1.24.13.linux-arm64/bin/go",
+        "build",
+        "-p=1",
+        "-buildvcs=true",
+        "-trimpath",
+        "-ldflags=-s -w",
+        "-o",
+        "/mnt/development/projects/evidence/cherri-p10r15-f01-arm64-pair-20261123/cherri",
+        "."
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "elapsedSeconds": 55.764451671391726,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/mnt/development/tooling/cherri-go/mod/golang.org/toolchain@v0.0.1-go1.24.13.linux-arm64/bin/go",
+        "build",
+        "-p=1",
+        "-buildvcs=true",
+        "-trimpath",
+        "-ldflags=-s -w",
+        "-o",
+        "/mnt/development/projects/evidence/cherri-p10r15-f01-arm64-pair-20261123/cherri-migrate",
+        "./cmd/cherri-migrate"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "elapsedSeconds": 1.3204997852444649,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "cherri",
+      "bytes": 16777400,
+      "sha256": "5a1c0922925a8f3fb001052c7077f3a1df242c4cb8f04609d06f432d84683f5a",
+      "mode": "0o775",
+      "build": {
+        "command": [
+          "/mnt/development/tooling/cherri-go/mod/golang.org/toolchain@v0.0.1-go1.24.13.linux-arm64/bin/go",
+          "build",
+          "-p=1",
+          "-buildvcs=true",
+          "-trimpath",
+          "-ldflags=-s -w",
+          "-o",
+          "/mnt/development/projects/evidence/cherri-p10r15-f01-arm64-pair-20261123/cherri",
+          "."
+        ],
+        "exitCode": 0,
+        "timedOut": false,
+        "elapsedSeconds": 55.764451671391726,
+        "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "productionPackageIdentity": {
+        "compilerCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+        "sha256": "5a1c0922925a8f3fb001052c7077f3a1df242c4cb8f04609d06f432d84683f5a",
+        "goos": "linux",
+        "goarch": "arm64",
+        "vcsModified": false,
+        "modulePath": "github.com/electrikmilk/cherri"
+      },
+      "goVersionMetadataSHA256": "64c5ff6b903dddf908a93975fef934d91fd3fecf24af1d19e2d6da85aeba1813"
+    },
+    {
+      "name": "cherri-migrate",
+      "bytes": 5505208,
+      "sha256": "348c1acf59f1eebb8f93c380d0e5ed442bcf520e2562452733fa6a56248da0bd",
+      "mode": "0o775",
+      "build": {
+        "command": [
+          "/mnt/development/tooling/cherri-go/mod/golang.org/toolchain@v0.0.1-go1.24.13.linux-arm64/bin/go",
+          "build",
+          "-p=1",
+          "-buildvcs=true",
+          "-trimpath",
+          "-ldflags=-s -w",
+          "-o",
+          "/mnt/development/projects/evidence/cherri-p10r15-f01-arm64-pair-20261123/cherri-migrate",
+          "./cmd/cherri-migrate"
+        ],
+        "exitCode": 0,
+        "timedOut": false,
+        "elapsedSeconds": 1.3204997852444649,
+        "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "productionPackageIdentity": {
+        "compilerCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+        "sha256": "348c1acf59f1eebb8f93c380d0e5ed442bcf520e2562452733fa6a56248da0bd",
+        "goos": "linux",
+        "goarch": "arm64",
+        "vcsModified": false,
+        "modulePath": "github.com/electrikmilk/cherri/cmd/cherri-migrate"
+      },
+      "goVersionMetadataSHA256": "9e592b962d74eb03ab33ed4327580c861b08d4bc68a3c10dbf490dfef33eff89"
+    }
+  ],
+  "sourceHeadAfter": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "statusPorcelainAfter": "",
+  "freeBytesAfter": 1817563136,
+  "scope": "Actual clean source-bound Linux ARM64 pair only; no signing, S4, Apple runtime or release promotion claim."
+}

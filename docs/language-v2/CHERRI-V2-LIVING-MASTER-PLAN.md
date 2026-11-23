@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.4 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 25 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
+> **Plan version:** 2.9.5 | **Current audit:** 2026-11-23 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **114/179 PASSED, 0 FAILED, 26 NOT_RUN, 38 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN** at immutable K8 2c54ebd50fa30597cbdd6337e6ecc6b65274a903; **closure_complete=false**. Chapter 26 is the latest timestamped checkpoint. Earlier chapters retain their exact historical sources and outcomes.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1727,3 +1727,79 @@ contracts and latest complete K8 report (114PASS/0FAIL/26NOT_RUN/38PENDING_EXTER
 1AI_EVAL_NOT_RUN; closure_complete=false) are unchanged. No new AI cohort,
 RemoteBuilder promotion, aggregate success or physical-device acceptance is
 claimed by this checkpoint.
+
+## 26. Corrected compiler source, D12 compatibility and qualified diagnostics — 2026-11-23
+
+The corrected compiler source is now immutable S
+57b6d919757e1d0262993c6f11c6dc1cd17d6177, containing implementation5411d526
+and its separately verified provenance metadata. It was published once to
+its isolated audit branch, then cloned as a genuine ordinary clean Git
+checkout. [The actual ARM64 pair](evidence/p15-f01-arm64-pair-20261123/README.md)
+contains exact-S clean VCS metadata and passed the existing production binary
+identity validator. Original R7 binaries and qualification receipts remain
+historical and unchanged.
+
+Docs D12 ce98fa542785fe4298d3acbf38da120b32bd5029 changes only the two
+reviewed compiler pin literals. [Original run45123477520 passed](evidence/p15-docs-d12-s57b6-20261123/README.md)
+against S: all563 snippet records reconcile, with36 runnable examples and
+3 exact diagnostics actually executed;524 remain reference-only. The original
+12 cache controls,4 generator parents/8 mutations and6 site controls passed.
+All33 process records/66 streams, complete source inventories and original
+witnesses were independently reconciled. The505-action/15-macro reference
+is byte-identical; the current site has50 search entries and87 checked links.
+
+Root verified all64 packet members, all3 complete original artifact digests
+and20 exact Git file bindings before adopting the seven-file proof plus its
+root intake. The full16MB site archive stays external. The compatibility
+manifest now names exact S and D12; its schema/codec/macro values and all other
+fields are unchanged. This is a candidate consumer-pin update, with Pages,
+actual installed consumers and live Remote Builder promotion still pending.
+
+[The K11 Runtime PoC](evidence/p15-k11-runtime-poc-20261123/README.md)
+completed SUCCESS at exact9b4135e7 and was integrated at3af87f6b after root
+verified15 packet members,17 helper bindings,4 producer snapshots and19
+selected original native-log lines. Its six runtime facets remain K11
+evidence. The original full F01 failure remains unchanged, and the corrected
+full F01 has not yet executed on Apple.
+
+[The new iOS summary protocol](evidence/p15-ios-xcresult-summary-20261123/README.md)
+completed22/22 offline controls at exactadf78c82. Two prior attempts remain
+unaltered: inherited setgid blocked initial preparation, then the new
+setgid control needed its own primary group. The narrow fd-bound0700 fix
+and one-line synthetic fixture correction preserve the original native
+exit sequence and75-minute job limit. Root integrated the three source
+commits through72c23106 and all34 original proof files atce347667.
+Removing only29 inserted workflow lines restores the exact old workflow.
+No original helper, Swift assertion, protected absent path or compiler
+source was changed. Actual Xcode issue capture remains a future native
+observation; these offline controls grant no native acceptance.
+
+Fresh private S4 qualification is now running sequentially on the clean
+ordinary S checkout. The first original parent passed at06:34:08UTC in
+232.970 seconds:38 inputs,27,652 actions,23,353 natural,4,298 fallback,
+one retained invalid input,zero demotions and137 third-party actions.
+Its source/tree and all input bytes remained unchanged. The remaining
+parents and independent full intake are still pending at this checkpoint.
+Every parent keeps its original Go900s/driver930s bounds; the four existing
+owner routes retain970s, and lifecycle retains its direct driver route.
+The original2GiB admission condition is unchanged. Raw corpus data stays private.
+
+The changed lowering requires fresh raw505 evidence. The existing R7 raw
+reports are not current-source results. The next catalog-generation and
+release-gate plan must bind the new actual raw producer and preserve each
+report's source and original commands. Final K, mandatory Linux/macOS/Nix,
+full iOS and repaired full F01 verification remain to be produced.
+
+The explicit R23 follow-up input again returned an empty selection. This
+is neither approval nor rejection; active v1 and the inactive v2 proposal
+remain unchanged. All13 protected UI test identities remain present.
+No acceptance criterion, original56-gate identity or frozen179 contract
+was relaxed. Latest complete179 remains the original K8 report:
+114PASS/0FAIL/26NOT_RUN/38PENDING_EXTERNAL/1AI_EVAL_NOT_RUN, closure_complete=false.
+No new provider cohort, physical-device result or final release is claimed.
+
+Completed Apple and diagnostic worktrees were normally retired only after
+source/proof integration and byte-exact preservation of all209 ignored
+originals. The common Git object store, source branches, private inputs,
+new S clone, original compiler artifacts and all receipts remain available.
+The original K11 worktree was retained when current capacity proved sufficient.

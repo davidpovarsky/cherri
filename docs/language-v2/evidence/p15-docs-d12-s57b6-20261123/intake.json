@@ -1,0 +1,404 @@
+{
+  "actualRunConclusion": "success",
+  "cacheControls": {
+    "binarySha256": "2a3812c98f1d0ca337c455017a943c6d8490ea787cc6b5cc750d154c3734e69e",
+    "elapsedSeconds": 25.808,
+    "leases": [
+      {
+        "acquireLine": 296,
+        "case": "test_corrupt_binary_digest_rejected_and_bytes_preserved",
+        "releaseLine": 297,
+        "sourceStateEqual": true
+      },
+      {
+        "acquireLine": 299,
+        "case": "test_dirty_tracked_source_rejected_and_preserved",
+        "releaseLine": 303,
+        "sourceStateEqual": true
+      },
+      {
+        "acquireLine": 308,
+        "case": "test_missing_receipt_does_not_rebuild_or_delete_binary",
+        "releaseLine": 309,
+        "sourceStateEqual": true
+      },
+      {
+        "acquireLine": 313,
+        "case": "test_untracked_source_rejected_and_preserved",
+        "releaseLine": 317,
+        "sourceStateEqual": true
+      },
+      {
+        "acquireLine": 319,
+        "case": "test_valid_cache_reuses_verified_binary_without_rebuild",
+        "releaseLine": 320,
+        "sourceStateEqual": true
+      },
+      {
+        "acquireLine": 323,
+        "case": "test_wrong_real_binary_rejected_even_with_matching_digest_receipt",
+        "releaseLine": 324,
+        "sourceStateEqual": true
+      }
+    ],
+    "mutationWitnesses": [
+      {
+        "case": "test_dirty_tracked_source_rejected_and_preserved",
+        "event": "same-byte-replacement-rejected",
+        "path": "go.mod"
+      },
+      {
+        "case": "test_dirty_tracked_source_rejected_and_preserved",
+        "event": "remove-owned-file",
+        "mutationSha256": "c0ac2382f31003691eacac24e8a6f91ba36eb2b75a71d8416acfdc4b70dc805a",
+        "path": "go.mod"
+      },
+      {
+        "case": "test_dirty_tracked_source_rejected_and_preserved",
+        "event": "restore-owned-file",
+        "mutationSha256": "c0ac2382f31003691eacac24e8a6f91ba36eb2b75a71d8416acfdc4b70dc805a",
+        "path": "go.mod",
+        "restoredSha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c"
+      },
+      {
+        "case": "test_untracked_source_rejected_and_preserved",
+        "event": "same-byte-replacement-rejected",
+        "path": "docs-cache-local.go"
+      },
+      {
+        "case": "test_untracked_source_rejected_and_preserved",
+        "event": "remove-owned-file",
+        "mutationSha256": "df1d036cbbf3df46e2045071e082245ece204c7f53ecf0a4e022bff9bb228f47",
+        "path": "docs-cache-local.go"
+      },
+      {
+        "case": "test_untracked_source_rejected_and_preserved",
+        "event": "remove-owned-file",
+        "mutationSha256": "df1d036cbbf3df46e2045071e082245ece204c7f53ecf0a4e022bff9bb228f47",
+        "path": "docs-cache-local.go"
+      }
+    ],
+    "sourceState": {
+      "autocrlf": "false",
+      "goModSha256": "a7c75fd79aaf8691d08ad70fdb03fdeb024bc324d18bd36ddc99ee28059d948c",
+      "origin": "https://github.com/davidpovarsky/cherri.git",
+      "revision": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+      "status": "",
+      "trackedFlagsSha256": "6a7fa43966eb85d70a047c1d144f868ef5872faeeae5c0323783865c3438389e",
+      "trackedStageSha256": "982e6b308f4be007b25ab99820d32003f8bf440d9208b0c7c8479f1d430a406f"
+    },
+    "sourceWitnesses": 18,
+    "testCount": 12
+  },
+  "compilerSource": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "docsSource": "ce98fa542785fe4298d3acbf38da120b32bd5029",
+  "docsTree": "8982b8dcc92208b58265ff4caa7f65ecf233cf39",
+  "event": "workflow_dispatch",
+  "generator": {
+    "actualCommands": {
+      "check": {
+        "budgetSeconds": 180,
+        "command": [
+          "go",
+          "run",
+          "-p=2",
+          "./tools/language-docs",
+          "--check",
+          "/home/runner/work/_temp/cherri-docs-generation/actions-reference.generated.md"
+        ],
+        "elapsedSeconds": 0.064087,
+        "finishedAt": "2026-11-23T06:22:02.187626+00:00",
+        "label": "check",
+        "returncode": 0,
+        "startedAt": "2026-11-23T06:22:02.123468+00:00",
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 152,
+          "sha256": "b12e2d61a9b9bdcaceae6fe7cd924aa9cfca08c5ce0aa37dd877f0b02b7885e8"
+        }
+      },
+      "generate": {
+        "budgetSeconds": 180,
+        "command": [
+          "go",
+          "run",
+          "-p=2",
+          "./tools/language-docs",
+          "/home/runner/work/_temp/cherri-docs-generation/actions-reference.generated.md"
+        ],
+        "elapsedSeconds": 4.931113,
+        "finishedAt": "2026-11-23T06:22:02.122736+00:00",
+        "label": "generate",
+        "returncode": 0,
+        "startedAt": "2026-11-23T06:21:57.191590+00:00",
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 116,
+          "sha256": "1457977ef071fed7fe6567525992e205226345ecb76597e2210470c704e23e7d"
+        }
+      },
+      "go-controls": {
+        "budgetSeconds": 90,
+        "command": [
+          "go",
+          "test",
+          "-p=2",
+          "-count=1",
+          "-json",
+          "-timeout=60s",
+          "./tools/language-docs",
+          "-run",
+          "^(TestGeneratedReferenceIncludesSeparateMacroContracts|TestP15D01PrimaryParameterContract|TestP15D01AllGeneratedSignaturesAndCategories|TestP15D01CheckGateProducesAndRejectsFaults)$"
+        ],
+        "elapsedSeconds": 1.869614,
+        "finishedAt": "2026-11-23T06:22:04.062752+00:00",
+        "label": "go-controls",
+        "returncode": 0,
+        "startedAt": "2026-11-23T06:22:02.193060+00:00",
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 11576,
+          "sha256": "75ac8bbc8f51a10e31e7c01b6f02226d63034bffc605f42fdc8db9567b09eccf"
+        }
+      }
+    },
+    "allCommandsAndStreamsJoined": true,
+    "goControls": {
+      "mutations": [
+        "optional_primary",
+        "typed_default",
+        "callable_identity",
+        "wire_key",
+        "return_type",
+        "macro_identity",
+        "missing_category",
+        "extra_section"
+      ],
+      "package": "github.com/electrikmilk/cherri/tools/language-docs",
+      "package_pass": true,
+      "parents": [
+        "TestGeneratedReferenceIncludesSeparateMacroContracts",
+        "TestP15D01PrimaryParameterContract",
+        "TestP15D01AllGeneratedSignaturesAndCategories",
+        "TestP15D01CheckGateProducesAndRejectsFaults"
+      ],
+      "passed_once": [
+        "TestGeneratedReferenceIncludesSeparateMacroContracts",
+        "TestP15D01AllGeneratedSignaturesAndCategories",
+        "TestP15D01CheckGateProducesAndRejectsFaults",
+        "TestP15D01CheckGateProducesAndRejectsFaults/callable_identity",
+        "TestP15D01CheckGateProducesAndRejectsFaults/extra_section",
+        "TestP15D01CheckGateProducesAndRejectsFaults/macro_identity",
+        "TestP15D01CheckGateProducesAndRejectsFaults/missing_category",
+        "TestP15D01CheckGateProducesAndRejectsFaults/optional_primary",
+        "TestP15D01CheckGateProducesAndRejectsFaults/return_type",
+        "TestP15D01CheckGateProducesAndRejectsFaults/typed_default",
+        "TestP15D01CheckGateProducesAndRejectsFaults/wire_key",
+        "TestP15D01PrimaryParameterContract"
+      ],
+      "run_once": [
+        "TestGeneratedReferenceIncludesSeparateMacroContracts",
+        "TestP15D01AllGeneratedSignaturesAndCategories",
+        "TestP15D01CheckGateProducesAndRejectsFaults",
+        "TestP15D01CheckGateProducesAndRejectsFaults/callable_identity",
+        "TestP15D01CheckGateProducesAndRejectsFaults/extra_section",
+        "TestP15D01CheckGateProducesAndRejectsFaults/macro_identity",
+        "TestP15D01CheckGateProducesAndRejectsFaults/missing_category",
+        "TestP15D01CheckGateProducesAndRejectsFaults/optional_primary",
+        "TestP15D01CheckGateProducesAndRejectsFaults/return_type",
+        "TestP15D01CheckGateProducesAndRejectsFaults/typed_default",
+        "TestP15D01CheckGateProducesAndRejectsFaults/wire_key",
+        "TestP15D01PrimaryParameterContract"
+      ],
+      "skipped": 0
+    },
+    "processes": 33,
+    "reference": {
+      "compiler_macros": 15,
+      "complete_byte_equality": true,
+      "frontmatter_bytes": 119,
+      "headings": 520,
+      "native_actions": 505,
+      "reference_sha256": "8f8a953a14fd65c9bfe6024ea065524d76a8f0549bd1d2e45502cda00dd4d0be"
+    },
+    "streams": 66
+  },
+  "intakeExecution": {
+    "compilerTestBuildNetworkCalls": 0,
+    "generatorSnippetCache": {
+      "finishedAt": "2026-11-23T06:33:33.346506+00:00",
+      "returncode": 0,
+      "scope": "Read-only original and Git-object verification; no test/build/API execution.",
+      "scriptSha256": "3291c7bf7e1bf61c0f5aee08e59c4c57fe24ee2b009b78ad5a7be040748cc917",
+      "startedAt": "2026-11-23T06:33:33.001783+00:00",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "ea7e60fd2b925085328c1dc1953222cad38a3ab1a21cf17ce7c03842ad5a32f8"
+    },
+    "site": {
+      "finishedAt": "2026-11-23T06:34:35.606634+00:00",
+      "returncode": 0,
+      "scope": "Read original selected site bytes and replay existing positive validator; no build or negative-control rerun.",
+      "scriptSha256": "4e26ff36945d22acfe9cda70e45753abfcce7aacbd90420d66db230d4fc2d972",
+      "startedAt": "2026-11-23T06:34:34.802508+00:00",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "97b546cae3b072f22fdd7bfb61861e1cdace9598f5386d1be9ed4ae1b09c5c7a"
+    }
+  },
+  "limits": {
+    "completeBuiltSiteZipRepublished": false,
+    "docsD12MainOrPagesPromoted": false,
+    "formalAcceptanceGranted": false,
+    "full179Accepted": false,
+    "fullF01HelperCorrectionAccepted": false,
+    "historicalSiteProofsReused": false,
+    "nativeAppleRuntimeProved": false,
+    "originalUnsignedSnippetOutputsRetained": false,
+    "rawCacheBinaryRetainedInArtifacts": false,
+    "s4AcceptedByThisPacket": false
+  },
+  "originalArtifacts": [
+    {
+      "bytes": 25775,
+      "id": 14795155193,
+      "members": 1,
+      "name": "docs-snippet-evidence",
+      "original": "artifacts/14795155193-docs-snippet-evidence.original.zip",
+      "sha256": "852e08cdd6b8a9a90e7e9975943b55871111cce8d6517efe6c75065969de95d7"
+    },
+    {
+      "bytes": 16136281,
+      "id": 14795031258,
+      "members": 100,
+      "name": "docs-built-site",
+      "original": "artifacts/14795031258-docs-built-site.original.zip",
+      "sha256": "7347ec71da8cfc4727553bb8a629a15c11e96cc9a4cb9d0a0c64bf44c89f8404"
+    },
+    {
+      "bytes": 643279,
+      "id": 14794308986,
+      "members": 105,
+      "name": "docs-generator-evidence",
+      "original": "artifacts/14794308986-docs-generator-evidence.original.zip",
+      "sha256": "2de8947a2597f342ba89cf9384a5284998db3b599cbc896daf1e57a9568ea9d9"
+    }
+  ],
+  "originalJobLogs": [
+    {
+      "bytes": 53217,
+      "file": "docs-job-137522372007.original.log",
+      "jobId": 137522372007,
+      "sha256": "7e322d4d18a5c198d65cc735abe61d33694986cbd419ffa4571bdd02c07eb4a7"
+    },
+    {
+      "bytes": 81118,
+      "file": "docs-job-137522372573.original.log",
+      "jobId": 137522372573,
+      "sha256": "59af209d58896b633d497018f2c27dca60da89dc6194e86e4bebae5e4ca16ba9"
+    }
+  ],
+  "packet": {
+    "bytes": 1010511,
+    "file": "original-proof.zip",
+    "members": 64,
+    "sha256": "032769f97a5654bde505bbd24386f9ef01b8eed4e1561b002bb672c4f4461a0d"
+  },
+  "recordedAt": "2026-11-23T06:35:53.608844+00:00",
+  "repository": "davidpovarsky/cherrilang.org",
+  "runAttempt": 1,
+  "runId": 45123477520,
+  "schema": "cherri.p15-docs-d12-intake/1",
+  "site": {
+    "actualOriginalPositiveReplay": true,
+    "historicalReceiptCreditGranted": false,
+    "originalControls": 6,
+    "receipt": {
+      "actionSearchEntries": 21,
+      "baseUrl": "/cherrilang.org",
+      "compilerCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+      "currentSearchRoutes": [
+        "/cherrilang.org",
+        "/cherrilang.org/fork-language",
+        "/cherrilang.org/fork-language/actions",
+        "/cherrilang.org/fork-language/guide",
+        "/cherrilang.org/fork-language/migration"
+      ],
+      "docsCommit": "ce98fa542785fe4298d3acbf38da120b32bd5029",
+      "formatVersion": 2,
+      "historicalSearchEntries": 0,
+      "nativeActionCount": 505,
+      "publicationOrigin": "https://davidpovarsky.github.io",
+      "renderedActionPage": "fork-language/actions.html",
+      "renderedActionPageSha256": "c863ebd0ec9535fd6da10b82d7e3da8c8366f4b07de0ce4855c51e524c5b29fc",
+      "renderedReferenceSignatures": 520,
+      "schemaFingerprints": [
+        "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+        "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c"
+      ],
+      "searchEntries": 50,
+      "searchIndexSha256": "2387c2c2f8da9996a48c3373e05117b8238bec93bd575c5aec3dcd0f237428a0",
+      "sitePublished": false,
+      "sourceReferenceSha256": "d1a5dfe3762109caeb7ddf8e1beaba5f17de4b5231de342ce99fa039d76090cd",
+      "sourceTreeClean": true,
+      "verifiedLocalLinks": 87
+    },
+    "selectedBytes": 1332557,
+    "selectedFiles": 13
+  },
+  "snippets": {
+    "actualRecords": 563,
+    "binarySha256": "2a3812c98f1d0ca337c455017a943c6d8490ea787cc6b5cc750d154c3734e69e",
+    "classifications": {
+      "cherri-legacy": 4,
+      "diagnostic": 3,
+      "generated-signature": 520,
+      "runnable": 36
+    },
+    "diagnostic": 3,
+    "executed": 39,
+    "referenceOnly": 524,
+    "runnable": 36,
+    "sourceRecordsReconciled": 563
+  },
+  "sourceBindings": {
+    "beforeAfterIdentityBytesEqual": true,
+    "completeSourceTreesCompared": 2,
+    "files": 20,
+    "originalGeneratorWitnessFiles": 11,
+    "sourceInventories": {
+      "compiler": {
+        "flagsSha256": "e3db7f5a444930d18a98a33ef0995a4465e8ccab988fd18455384a76b84bd351",
+        "stageSha256": "b2ec14c0a62ae7eed8561ce709b32d0d8e75a08883393222bf9ab942bbbef8f6",
+        "trackedEntries": 7021,
+        "witnessFiles": 6
+      },
+      "docs": {
+        "flagsSha256": "9a585e8329ac18113b469a28095551fed945f2bd58e46a0b1f6efac5ec350300",
+        "stageSha256": "8d9b36b36ed1d681772ea99bc9a66ad2c8f3c6247eec7e64fda33fb7dbd60510",
+        "trackedEntries": 107,
+        "witnessFiles": 5
+      }
+    }
+  },
+  "sourceChange": {
+    "change": "Two immutable compiler pin literals only; documentation text and fixture contracts unchanged.",
+    "changedPaths": [
+      "scripts/smoke_test_snippets.py",
+      "scripts/verify_generated_reference.py"
+    ],
+    "diffSha256": "c8127ebfbf9c4439664f47b4a7de1cdaa88579b2fdb4781a383395be91e8fee7",
+    "parentDocsSource": "365b08c5b4c71c6d22b591babb8d1ab852e5a3b9"
+  },
+  "status": "PASS_BOUNDED_DOCS_GENERATOR_SNIPPET_CACHE_SITE",
+  "verdict": "Actual D12 workflow succeeded on the published S57b6 compiler. Original command/source/event/snippet/cache/site evidence independently reconciles. This is compiler-bound Docs compatibility evidence; native behavior, S4, installed consumers, publication and full acceptance remain separate.",
+  "workflowId": 411647719,
+  "workflowPath": ".github/workflows/docs-smoke-test.yml"
+}

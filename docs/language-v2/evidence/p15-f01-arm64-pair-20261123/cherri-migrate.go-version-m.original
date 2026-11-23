@@ -1,0 +1,15 @@
+/mnt/development/projects/evidence/cherri-p10r15-f01-arm64-pair-20261123/cherri-migrate: go1.24.13
+	path	github.com/electrikmilk/cherri/cmd/cherri-migrate
+	mod	github.com/electrikmilk/cherri	v0.0.0-20261123061315-57b6d919757e	
+	dep	howett.net/plist	v1.0.1	h1:37GdZ8tP09Q35o9ych3ehygcsL+HqKSwzctveSlarvM=
+	build	-buildmode=exe
+	build	-compiler=gc
+	build	-trimpath=true
+	build	CGO_ENABLED=0
+	build	GOARCH=arm64
+	build	GOOS=linux
+	build	GOARM64=v8.0
+	build	vcs=git
+	build	vcs.revision=57b6d919757e1d0262993c6f11c6dc1cd17d6177
+	build	vcs.time=2026-11-23T06:13:15Z
+	build	vcs.modified=false

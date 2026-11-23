@@ -1,0 +1,403 @@
+{
+  "actualPositiveValidatorReplay": true,
+  "actualSixOriginalControls": {
+    "artifactsRestoredExactly": true,
+    "compilerCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "controls": [
+      {
+        "diagnostic": "Default search includes a historical route: /language/raw-actions",
+        "name": "historical-route-in-default-search",
+        "rejected": true
+      },
+      {
+        "diagnostic": "Search result URL does not match its project-base route",
+        "name": "search-result-without-project-base",
+        "rejected": true
+      },
+      {
+        "diagnostic": "Search client does not load and use the verified project URLs",
+        "name": "client-search-request-without-project-base",
+        "rejected": true
+      },
+      {
+        "diagnostic": "Home page lacks its unique current-guide entry point",
+        "name": "missing-home-authoring-entry",
+        "rejected": true
+      },
+      {
+        "diagnostic": "Built site is missing a unique page: /assets/missing-control.png",
+        "name": "missing-home-image",
+        "rejected": true
+      },
+      {
+        "diagnostic": "rendered action page lost canonical metadata: fingerprints=['dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5'], signatures=[]",
+        "name": "damaged-canonical-action-fingerprint",
+        "rejected": true
+      }
+    ],
+    "docsCommit": "ce98fa542785fe4298d3acbf38da120b32bd5029",
+    "failed": 0,
+    "formatVersion": 1,
+    "passed": 6,
+    "skipped": 0
+  },
+  "attempt": 1,
+  "compilerSource": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "docsSource": "ce98fa542785fe4298d3acbf38da120b32bd5029",
+  "formalAcceptanceGranted": false,
+  "fullSiteZipRepublished": false,
+  "negativeControlsRerun": false,
+  "originalLogJoins": [
+    {
+      "firstLine": 246,
+      "lastLine": 275,
+      "lineCount": 30,
+      "originalLines": [
+        {
+          "line": 246,
+          "sha256": "cb43d7c77327fc083fa7f85872ace2ac5a916d43b5651b778df73f876ac0f3fa"
+        },
+        {
+          "line": 247,
+          "sha256": "fd7d9fffc5c95c56a5411c14ff314430edbf7afc88a179da31b609c5cbba169d"
+        },
+        {
+          "line": 248,
+          "sha256": "50e562fbc44a05d8e4140573da423a0093bdd747f7ded7d47e86ecb111ac1154"
+        },
+        {
+          "line": 249,
+          "sha256": "bf9b42ec976b84bc0ffc8d0be7508e9a648927f2af93298003e43e5a1dd7fba6"
+        },
+        {
+          "line": 250,
+          "sha256": "8e0154b5f144bcfddf598000f225ba9d778eeaaa1688464c5d4caf95c2fa8fd5"
+        },
+        {
+          "line": 251,
+          "sha256": "45255d82fa5ea1fb2dc84dbce6cec499c6ff419e9394500cccf204ab7de52890"
+        },
+        {
+          "line": 252,
+          "sha256": "b16daa24a736e6bb232adc090b94f3bf8b0c1334a45d9f54dcd22caac2c77d05"
+        },
+        {
+          "line": 253,
+          "sha256": "e15e69718ecea63a1cb379793f7cf05e110a72e31c4bd1b87d73b6c993eb6982"
+        },
+        {
+          "line": 254,
+          "sha256": "a786e4cf9a9808237e35b5f76da34734b71a4abab3b35dfe66f63a72a73fb7fa"
+        },
+        {
+          "line": 255,
+          "sha256": "89d0d8ce17512c011d37d596785d84f9f1b073ed9a8dae76ac0d18a649896515"
+        },
+        {
+          "line": 256,
+          "sha256": "5d6185048cb7c7be248bb27bfd1aeefd173992295e5b086162649a0369257965"
+        },
+        {
+          "line": 257,
+          "sha256": "89d61ed619a3852540e7f75192c7880dfb21b9aadaf0c460bc05d335c0d0d32b"
+        },
+        {
+          "line": 258,
+          "sha256": "4a2dd4216aad21be01d31391c1114b2c96e9c8335258dc604f8e5c919ed2f8ce"
+        },
+        {
+          "line": 259,
+          "sha256": "558738982a7bd30e39a902dbb14732faf5104b91e64f3635863ffdf7e4a8f046"
+        },
+        {
+          "line": 260,
+          "sha256": "fac26af89d7ec9dc5ff5e9bd4b8001931cfd317bb8702d5675ef98657c5b06f7"
+        },
+        {
+          "line": 261,
+          "sha256": "a09e07fb99a886e8c07be74ab2a5fcbaf2c1dd3080c550adcaff7e5c5119ea41"
+        },
+        {
+          "line": 262,
+          "sha256": "2e90195c9b71cfbeb39ec5435873ca0ba9f7b92a51ec46c8adf770ed7dda65a1"
+        },
+        {
+          "line": 263,
+          "sha256": "c3c48a09bd55277bc41f9f98a0835a837f4ca07a5538715325999517d7424dfd"
+        },
+        {
+          "line": 264,
+          "sha256": "d2f60ac0524c94a0e186ff7a99cd2a5249de2baea51cf67e46a9148bd44da493"
+        },
+        {
+          "line": 265,
+          "sha256": "11173581a59680a72869582d7d1473201e8731df400867d45b8e300b5cbb0057"
+        },
+        {
+          "line": 266,
+          "sha256": "24c489ec741e4f1c9db728b2082dadf15b4a64c45fa7cf86112c52a710c6aff7"
+        },
+        {
+          "line": 267,
+          "sha256": "66e92df53f1f18d9cc813ff3e1a47281d91a988f6a3b0dac90df9ba66296ec83"
+        },
+        {
+          "line": 268,
+          "sha256": "e6f86bb5f6f4792af3e52e6425a30c62499b914ab66d6237636871b5f5f577bd"
+        },
+        {
+          "line": 269,
+          "sha256": "72cfec2a685ff493a1ade6cc64400948b9bc1ad03f916b2838f57b4430c53dbb"
+        },
+        {
+          "line": 270,
+          "sha256": "f2779e9ec1668fde594514acf6d7995f99594647bad0b8ee969c58d7bd10ea48"
+        },
+        {
+          "line": 271,
+          "sha256": "36ceeb452cab6d89cc67a58147f9abfa0f391cc337279a015c86dddac70d08b3"
+        },
+        {
+          "line": 272,
+          "sha256": "66b277495310e87a87f00fef3ee005aeedfcf16323e55da02c92c8617c01a202"
+        },
+        {
+          "line": 273,
+          "sha256": "5a24d0bf025032ca6bafc9a6baa9f2ecb71586c8b5af56bf47fd19c93ac8e207"
+        },
+        {
+          "line": 274,
+          "sha256": "c6e78f6a201d18274b4d30958d5484680b409a83b5bd82fd9dde445b3329e3b5"
+        },
+        {
+          "line": 275,
+          "sha256": "992a36553fe122ef18d87db3f3d1ced99dfe36077c01ce8945d2a5c38087b775"
+        }
+      ],
+      "reconstructedJsonSha256": "da172c7e060f2e3e2620c0664ce6d9589e35e9a9d7206d971590e50086e50d3a",
+      "step": "Verify rendered action reference and generated search",
+      "timestampFirst": "2026-11-23T06:21:25.0819820Z",
+      "timestampLast": "2026-11-23T06:21:25.0832882Z"
+    },
+    {
+      "firstLine": 283,
+      "lastLine": 323,
+      "lineCount": 41,
+      "originalLines": [
+        {
+          "line": 283,
+          "sha256": "ac500f960b2cc87ced32887f3fbec3c3b55341b1300ecd125ad5fd325db91ee0"
+        },
+        {
+          "line": 284,
+          "sha256": "bfc36359bab0069ebf8fb7df8843264631a193a87ec1aa1a70ec5703a15302e7"
+        },
+        {
+          "line": 285,
+          "sha256": "bb948d0206e04e8f9e2272810ef4028897355fb4f5a1f620f25816eb9fb0853e"
+        },
+        {
+          "line": 286,
+          "sha256": "9fa213c9742d61669a3aaee62f81f593a7cf5484350851e325cb9750c82df965"
+        },
+        {
+          "line": 287,
+          "sha256": "f1d50d1a96e444e8328d39bae6f1f444c834016eb4645892525c0b7159c8dbe1"
+        },
+        {
+          "line": 288,
+          "sha256": "444a9c3b49ee0e1cc6ac483a13f60f3dc58f9e32d37bf664f1a85952676096c8"
+        },
+        {
+          "line": 289,
+          "sha256": "0c14fc948115cdc95cd985fc72a04a43eb9c554b34b202ba99fbfb37604a0c20"
+        },
+        {
+          "line": 290,
+          "sha256": "20f818985dd0f3558b0c8ee2d52cedaed2fc291fd91323d23909b3384fa6adda"
+        },
+        {
+          "line": 291,
+          "sha256": "98527563a585d4eb35eb662245390f8f3b7613eb521bda53fdcb4343a8f76553"
+        },
+        {
+          "line": 292,
+          "sha256": "eeac87ad8f86c52915d5b53f849199d760a76fa45d7c458c4f3027fe3118d384"
+        },
+        {
+          "line": 293,
+          "sha256": "eb0e5842ca40778068707fa0d083b08a3a167c5272ac4b8c4422892d6dd2c862"
+        },
+        {
+          "line": 294,
+          "sha256": "8d3f509b4c641568d86f06beb2b480eb63a9039bb06909b6c55dfdf2dc915d37"
+        },
+        {
+          "line": 295,
+          "sha256": "e95240f5843599eda587ac726562511208f73a7ddaf845e4c286b20095a252f7"
+        },
+        {
+          "line": 296,
+          "sha256": "7ae2972a979152c112fd3b7e5e6043238393e18a5a8f10a6764a067fb654204d"
+        },
+        {
+          "line": 297,
+          "sha256": "f4a891e7854f2b4cf832f599889ddfea365f171896d606b502b2b7420ac44fac"
+        },
+        {
+          "line": 298,
+          "sha256": "e94d2a0fef31f5a964cbf019fc9539236b0e15c44485e0ddf8eebecd97cae86c"
+        },
+        {
+          "line": 299,
+          "sha256": "e21f1fa825355c7d42f8a73fa02169c8a67ab9abd4277ca49761888efe8a1b19"
+        },
+        {
+          "line": 300,
+          "sha256": "c9de584b75f6ee3c7a82e21ee042c77a273fa068f55a57b5bb07c4bd670eabb9"
+        },
+        {
+          "line": 301,
+          "sha256": "38571c65bf949fa62f9f73734ae94632d4bf2cd588f13e1f3bb8d0650d8ed4d0"
+        },
+        {
+          "line": 302,
+          "sha256": "4d085a547fff2ad718b0b67136484d7bb46bf39fb6eadfa8ce9b6d368b19505a"
+        },
+        {
+          "line": 303,
+          "sha256": "a8d034dc72e880bbf45c0aa134ef3b919917cdc284986bd48364b86a2f0b9c03"
+        },
+        {
+          "line": 304,
+          "sha256": "10f3f0e6184b753ad6565fdf35a7d36bd08123d7086e235870a0821575c757ec"
+        },
+        {
+          "line": 305,
+          "sha256": "13bec79ab1282962199432c8ccdf3884db60e819f9090613a9376798bcd87956"
+        },
+        {
+          "line": 306,
+          "sha256": "127c66a3590084bddcde3d920bd4fb06b547b0424f6c031f659ebc1c8388949d"
+        },
+        {
+          "line": 307,
+          "sha256": "a746b06d4c7d5ca69d355ca520d7cdcc55991bf15de68e2d8d45e166fb3fa7ac"
+        },
+        {
+          "line": 308,
+          "sha256": "ac6073eb0b559802df59542ca05aae799cbf25983af49fc9da8147ffef51b461"
+        },
+        {
+          "line": 309,
+          "sha256": "01ffbd5208e4da05c9e9d7dfe6ff90144dc2ddf465e67b1b26f6cc1069f2aea9"
+        },
+        {
+          "line": 310,
+          "sha256": "6e9e4de0be08ccb4dcae5efc8992b4c6c312e9c823af867322e6f94aa075168b"
+        },
+        {
+          "line": 311,
+          "sha256": "c4fb8329f20a2fcf33b2bd050004cd126ea79880d421369e675dff648f38b3fd"
+        },
+        {
+          "line": 312,
+          "sha256": "f2a6b5bb804cdaa193b57aaa9fd24b3326c5f9c22873e8d0ff814d462ee7a6d8"
+        },
+        {
+          "line": 313,
+          "sha256": "a08ba93a09c7e92a4d53b48c41bafeb25c0c9f17291224f870f8040a1c28a45c"
+        },
+        {
+          "line": 314,
+          "sha256": "722089714b361f4b13213202b073c355279aacc8e3bcf906680ccd14c9cc3da9"
+        },
+        {
+          "line": 315,
+          "sha256": "69d426deb4c14dfac75d1f16375b13b48351febf927fc69a727302f820d44c22"
+        },
+        {
+          "line": 316,
+          "sha256": "f46431f2310392be8c729fa5fac0f69211f0b7955c444fba44b576fe91ab5dd5"
+        },
+        {
+          "line": 317,
+          "sha256": "da6a631f5b9f8aa0f7f5d7ea3df1fb303d444a3ce424aab2da2a759744378a16"
+        },
+        {
+          "line": 318,
+          "sha256": "080e22b6740810e24900600653bc09aca6c6973bbb79b5a376dddc5d811c7ff5"
+        },
+        {
+          "line": 319,
+          "sha256": "b83acebad1d657fa5c1a96f5762f4c1098b3e971b760d894da6a2da57e85b4f7"
+        },
+        {
+          "line": 320,
+          "sha256": "4e52a410a5da98c038170ded391625b1a56d0ffaf3880ddba452223343fac9af"
+        },
+        {
+          "line": 321,
+          "sha256": "6349be97e9a1acf97c1af320ef38bc89cc5fc0fef38fe53f258ba0145b84bcfd"
+        },
+        {
+          "line": 322,
+          "sha256": "d650ab729ac819aa47f1d8ae82c73f4305acb5d97da9f298d0904b3f16e00ce5"
+        },
+        {
+          "line": 323,
+          "sha256": "219bf303348c33ac80cd0685fe092790fe395847bacd76a53210cfa865e7aadc"
+        }
+      ],
+      "reconstructedJsonSha256": "ad13ce7f7a020259f1c639cead2310f4da22ebb742ea2828a8cbf252d7a86a4a",
+      "step": "Reject corrupted real site and search artifacts",
+      "timestampFirst": "2026-11-23T06:21:26.8888639Z",
+      "timestampLast": "2026-11-23T06:21:26.8907663Z"
+    }
+  ],
+  "receipt": {
+    "actionSearchEntries": 21,
+    "baseUrl": "/cherrilang.org",
+    "compilerCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+    "currentSearchRoutes": [
+      "/cherrilang.org",
+      "/cherrilang.org/fork-language",
+      "/cherrilang.org/fork-language/actions",
+      "/cherrilang.org/fork-language/guide",
+      "/cherrilang.org/fork-language/migration"
+    ],
+    "docsCommit": "ce98fa542785fe4298d3acbf38da120b32bd5029",
+    "formatVersion": 2,
+    "historicalSearchEntries": 0,
+    "nativeActionCount": 505,
+    "publicationOrigin": "https://davidpovarsky.github.io",
+    "renderedActionPage": "fork-language/actions.html",
+    "renderedActionPageSha256": "c863ebd0ec9535fd6da10b82d7e3da8c8366f4b07de0ce4855c51e524c5b29fc",
+    "renderedReferenceSignatures": 520,
+    "schemaFingerprints": [
+      "dc6548076b8320b15e062439f0d8e7b032e1fd62d032b19b06ab6c79a54890a5",
+      "acb4dd5035ee20786c68a01d323f565e880d2a0b8eedb151145181a4960d455c"
+    ],
+    "searchEntries": 50,
+    "searchIndexSha256": "2387c2c2f8da9996a48c3373e05117b8238bec93bd575c5aec3dcd0f237428a0",
+    "sitePublished": false,
+    "sourceReferenceSha256": "d1a5dfe3762109caeb7ddf8e1beaba5f17de4b5231de342ce99fa039d76090cd",
+    "sourceTreeClean": true,
+    "verifiedLocalLinks": 87
+  },
+  "recordedAt": "2026-11-23T06:34:35.588649+00:00",
+  "runId": 45123477520,
+  "schema": "cherri.docs-d12-current-site-intake/1",
+  "selectedSiteBytes": 1332557,
+  "selectedSiteFiles": 13,
+  "sitePublished": false,
+  "siteRebuilt": false,
+  "sourceBoundHelper": {
+    "bytes": 11300,
+    "gitBlob": "8b5463d535591a041f5e78a266f129f1783f50ca",
+    "path": "scripts/verify_site_artifacts.py",
+    "role": "docs",
+    "sha256": "e0a51da0c337dbc5a90dd43f1eec05152fca499fc9f98e94bc123938bdcc0959",
+    "source": "ce98fa542785fe4298d3acbf38da120b32bd5029"
+  }
+}

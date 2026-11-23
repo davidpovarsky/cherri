@@ -1,0 +1,63 @@
+{
+  "sourceCommit": "57b6d919757e1d0262993c6f11c6dc1cd17d6177",
+  "ref": "refs/heads/audit/cherri-p10r15-f01-compiler-20261123",
+  "startedAt": "2026-11-23T06:13:48.649460+00:00",
+  "policy": "new isolated source branch; no force; no main or deployment change",
+  "automaticBuildExpected": false,
+  "finishedAt": "2026-11-23T06:14:00.960485+00:00",
+  "steps": [
+    {
+      "command": [
+        "git",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!gh auth git-credential",
+        "ls-remote",
+        "--heads",
+        "origin",
+        "refs/heads/audit/cherri-p10r15-f01-compiler-20261123"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.4216359546408057,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!gh auth git-credential",
+        "push",
+        "--porcelain",
+        "origin",
+        "57b6d919757e1d0262993c6f11c6dc1cd17d6177:refs/heads/audit/cherri-p10r15-f01-compiler-20261123"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 11.460021323524415,
+      "stdout": "To https://github.com/davidpovarsky/cherri.git\n*\t57b6d919757e1d0262993c6f11c6dc1cd17d6177:refs/heads/audit/cherri-p10r15-f01-compiler-20261123\t[new branch]\nDone\n",
+      "stderr": "remote: \nremote: Create a pull request for 'audit/cherri-p10r15-f01-compiler-20261123' on GitHub by visiting:        \nremote:      https://github.com/davidpovarsky/cherri/pull/new/audit/cherri-p10r15-f01-compiler-20261123        \nremote: \n"
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!gh auth git-credential",
+        "ls-remote",
+        "--heads",
+        "origin",
+        "refs/heads/audit/cherri-p10r15-f01-compiler-20261123"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.4290713183581829,
+      "stdout": "57b6d919757e1d0262993c6f11c6dc1cd17d6177\trefs/heads/audit/cherri-p10r15-f01-compiler-20261123\n",
+      "stderr": ""
+    }
+  ],
+  "status": "PASS",
+  "sourceCleanAfter": true
+}
