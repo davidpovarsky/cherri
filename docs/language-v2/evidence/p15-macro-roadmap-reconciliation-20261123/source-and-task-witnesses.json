@@ -1,0 +1,474 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-11-23T00:32:59.264529+00:00",
+  "source": "ca316a3dee252456c4bec751594cf249c709b331",
+  "observed_head": "d835da1e4b4042c3dd0c31624b0683ae00bc3919",
+  "source_files_unchanged": true,
+  "source_status": "",
+  "new_test_or_native_execution": false,
+  "source_file_witnesses": [
+    {
+      "path": "actions/storage.cherri",
+      "bytes": 768,
+      "sha256": "15dbcdeb85bd8d864b22a63cdc5a677cee4d50656e4a7172b0cf3d194857e76e",
+      "git_blob": "554ff641f9e524bee55c497116578e3348e71e03"
+    },
+    {
+      "path": "actions/web.cherri",
+      "bytes": 5175,
+      "sha256": "96c52949f4f3b6549c9df607c08961b6a710b0af7697d72e6dda08a4f33fb711",
+      "git_blob": "bb0456da678d49c4a56a3762deadd8304416c8dc"
+    },
+    {
+      "path": "debug_labels.go",
+      "bytes": 17361,
+      "sha256": "bd430b672b594525f6e1c7d8d7b087651bfa75622804b226f5cc23178119ef0a",
+      "git_blob": "06ad647adb1ebb3d455d97aedce1eb63daf61b76"
+    },
+    {
+      "path": "debug_stdlib.go",
+      "bytes": 52742,
+      "sha256": "b6ccb989cd957223d4c00eef90870b1d2742b03806ea229df73fb384d6135c18",
+      "git_blob": "002ae36ce1cc2061007168068d07eefaae7c0906"
+    },
+    {
+      "path": "debug_export.go",
+      "bytes": 8694,
+      "sha256": "4978ef9fe1e660d9222b4ac26bb4803b780aa39d25841e7a0e135a2bb0b909a4",
+      "git_blob": "64c00341d61d8fc914c7b065d0ee025f06975773"
+    },
+    {
+      "path": "require_macro.go",
+      "bytes": 10064,
+      "sha256": "be4b6cf540f92bf69f296051ea24f4c77b653e58a4fa0d0279cebc61c6be6c27",
+      "git_blob": "5f957107590738fc40d5984d7ef58c9667a64b86"
+    },
+    {
+      "path": "paginate_macro.go",
+      "bytes": 12322,
+      "sha256": "77dc889c1238c1fe91a9e0b5250bef7e802ec4967ec0d44fc23ed4cac2d34076",
+      "git_blob": "751c22970f1c4c2d96b7bc386743505b5d06a053"
+    },
+    {
+      "path": "build_profile.go",
+      "bytes": 6151,
+      "sha256": "d08f397a3d1c2978ce10969c05534f4809c2d4d99b87cee7d765c101eef4945b",
+      "git_blob": "f6636d666a999fef64d04c4bf34672f958f08413"
+    },
+    {
+      "path": "parser.go",
+      "bytes": 58691,
+      "sha256": "fbb8e1c5843821957b4d64a8420b11c78b0072f20a223f152823484f3c28a853",
+      "git_blob": "74b127561830cc6bc9b92dade7aad36f4606e214"
+    },
+    {
+      "path": "scoped_blocks_legacy.go",
+      "bytes": 17359,
+      "sha256": "4dabbceb4121bca8ac9cff622b22817f0bc34de4b2734fbe5536b9231e7ce354",
+      "git_blob": "660fdbf73562a0dccc0b1140200a16659ce518f6"
+    },
+    {
+      "path": "p15_scoped_blocks_legacy_test.go",
+      "bytes": 19661,
+      "sha256": "36a35c67c74de95099e5d5ba0deaf778f157895a138676b6b9dabb3df35fe956",
+      "git_blob": "435150a06d38336805f0d967ccb778da6abbb4d3"
+    },
+    {
+      "path": "p15_scoped_blocks_test.go",
+      "bytes": 15059,
+      "sha256": "11b9af9662bae768a08eb59a989889fc1f6405399145c5b957c862236607eaef",
+      "git_blob": "8be6e12461a98c51b6ca24b7d1c0a1ae041675d4"
+    },
+    {
+      "path": "p15_collect_list_boundary_test.go",
+      "bytes": 3730,
+      "sha256": "9a9fe445033ab43c7cb8c6de23442d632fff99bfb6a5f72f9814b808c95f7cc6",
+      "git_blob": "bb8f4ca330ff35fa25dcacd7d17b9b58519f824d"
+    },
+    {
+      "path": "internal/language/syntax/ast.go",
+      "bytes": 11243,
+      "sha256": "1d3722b5a41b207d4b38c846ad3e933e4ad65018738efb4597e32b59d80da55f",
+      "git_blob": "aec8fd6921022e65ad666fec8c2e551d6caea2c4"
+    },
+    {
+      "path": "internal/language/analysis/scoped_blocks.go",
+      "bytes": 5413,
+      "sha256": "4789cb4b08272cecbc61e101bd96ee74c823c4f0c45c72957396809fa6e3bab8",
+      "git_blob": "a47781e3dc3cb09341f3c8efa535ec174983294e"
+    },
+    {
+      "path": "internal/language/analysis/loop_result_shape.go",
+      "bytes": 1073,
+      "sha256": "abb3c7f15f8aa1b559e5e6740e12b25b6a778958a827e9c20360a09be20e3520",
+      "git_blob": "c2db237079920fd6231e30b7a350b15b9f21a24b"
+    },
+    {
+      "path": "internal/language/lower/scoped_blocks.go",
+      "bytes": 13057,
+      "sha256": "af88f52f8739be3123e51a63f734b481c9af2c887211b459e0025f376993fc56",
+      "git_blob": "7a1a6fbcd8852f0605c25a8fd61889783b725ee4"
+    },
+    {
+      "path": "internal/language/schema/schema.go",
+      "bytes": 27984,
+      "sha256": "90e4f6df90c69b9e7ca2bd5b04c8d276e2aeaeecc7cf64208857a4a0f8857919",
+      "git_blob": "e87bad77aed204964e11bb103ac5beda1ec0e6ce"
+    },
+    {
+      "path": "internal/language/schema/scoped_blocks.go",
+      "bytes": 1134,
+      "sha256": "b94ca99092691fb585ba8be5d6c42deb7f5254726f1ffa6cf72ac67a43322cb2",
+      "git_blob": "f6e729a91f64a8405e0d968145fe240c567f96dd"
+    },
+    {
+      "path": "internal/language/schema/debug_export.go",
+      "bytes": 2380,
+      "sha256": "72fcaa107a9d865b6ff2a3e4b0290b5395dffd73a6a8aba5ceb60d5d5728caf2",
+      "git_blob": "82bf548b6fc57496acbcf20c8a9f57ec0ac15cf0"
+    },
+    {
+      "path": "internal/language/schema/require.go",
+      "bytes": 1852,
+      "sha256": "7f92660483d5593b291c7696a797b9825a5d2034d2ee78dfb13f4e1394a30498",
+      "git_blob": "4d024124dea6df2fed721803a3ef557d66bafb3d"
+    },
+    {
+      "path": "internal/language/schema/paginate.go",
+      "bytes": 5418,
+      "sha256": "fb6e1b0a18294e5714f43d4069003000f19b64e7c62da756f4f68c785c7aa2ed",
+      "git_blob": "24943c6bb236d732e8c9f81ce9a386034f021dd0"
+    }
+  ],
+  "task_metadata_and_content_digests": [
+    {
+      "gid": "1220544718902445",
+      "name": "[P0][MACROS][OPEN] Cherri ? debugLog(label:) ? ????? ?????? ??? ????? ?????????",
+      "modified_at": "2026-11-20T12:52:40.752Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544718902445",
+      "comments": [
+        {
+          "gid": "1220731430405781",
+          "created_at": "2026-11-20T06:29:42.600Z",
+          "text_sha256": "644ac2d188e0edbb6be8a27e020ac4f343a20835840b1f47ad93d8bd2c687850"
+        },
+        {
+          "gid": "1220732248464914",
+          "created_at": "2026-11-20T07:14:54.986Z",
+          "text_sha256": "ffc7a2a5b8c304765f0011af8b65d3fd389ffa2f743e6f646540b17745d1fb82"
+        },
+        {
+          "gid": "1220732632926888",
+          "created_at": "2026-11-20T07:49:48.713Z",
+          "text_sha256": "d171d45c01ce8f83c3993146fc423aa78ec0f11f9ef1885216a98a16d741a5fd"
+        },
+        {
+          "gid": "1220733536733597",
+          "created_at": "2026-11-20T08:29:11.775Z",
+          "text_sha256": "f7449fe7779ea3ebc6223d755649fdf63c6792906a0ce8a63311d49296a27611"
+        },
+        {
+          "gid": "1220734207573596",
+          "created_at": "2026-11-20T09:01:13.182Z",
+          "text_sha256": "6865d2b20b175ac625f2f069618cc64e51971afe023fcab45febe3ef27cff2ec"
+        },
+        {
+          "gid": "1220735132207220",
+          "created_at": "2026-11-20T09:38:58.358Z",
+          "text_sha256": "68f03fcac264dae11f3afa7d752ebe086e52434c4cc0398e19b970eacff962f1"
+        },
+        {
+          "gid": "1220736305416713",
+          "created_at": "2026-11-20T10:32:42.814Z",
+          "text_sha256": "5ef7a027c344798f349fb7472fac0ca6a5eb9230f1a45401f22a490d346c02f1"
+        },
+        {
+          "gid": "1220737501189896",
+          "created_at": "2026-11-20T11:42:40.912Z",
+          "text_sha256": "6136bb5d9d4f7cba1c0d221f99add486723ab07acaecb3169443ab5a7b780531"
+        },
+        {
+          "gid": "1220738166028454",
+          "created_at": "2026-11-20T12:03:25.845Z",
+          "text_sha256": "d10827bcb0df8c05ba1e303056b3a967f4e6477eedb5297a8979dcb68b43d753"
+        },
+        {
+          "gid": "1220739012476304",
+          "created_at": "2026-11-20T12:52:40.752Z",
+          "text_sha256": "1ae05a94c6e96863f2a9fe12bf9d853ca8103a02ac538ef503a44d38f24930b0"
+        }
+      ],
+      "notes_sha256": "cfbaf840962acf6d475257538abd988b61da98973884bb94a59efeaa36b9b434"
+    },
+    {
+      "gid": "1220544665232213",
+      "name": "[P0][MACROS][OPEN] Cherri ? debugExport() ? ???? ??? JSON/TXT ?????? ?? ????? ???? ????",
+      "modified_at": "2026-11-20T02:06:18.620Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232213",
+      "comments": [
+        {
+          "gid": "1220721816534748",
+          "created_at": "2026-11-19T20:24:50.568Z",
+          "text_sha256": "30f5b884e2ce8b86ba0e8ffc66408cc38b9a8fac3d65538d22cd54bb191c0e78"
+        },
+        {
+          "gid": "1220722869791180",
+          "created_at": "2026-11-19T20:59:47.240Z",
+          "text_sha256": "9a68e56fed34444f76ce9372d9baca1c6de1eaed3820c631faa2d1e572591a2d"
+        },
+        {
+          "gid": "1220722943446898",
+          "created_at": "2026-11-19T21:11:46.268Z",
+          "text_sha256": "80812539ab2e738200b3f2d2abef39cac6842ce9bffac03cd18dddc610e9e95c"
+        },
+        {
+          "gid": "1220723588293550",
+          "created_at": "2026-11-19T21:25:24.077Z",
+          "text_sha256": "4823ffee5293939993ebd13c65f8d66e356347310a971256f5c5c392e814e723"
+        },
+        {
+          "gid": "1220724138435181",
+          "created_at": "2026-11-19T21:48:59.585Z",
+          "text_sha256": "89a001cdf6823e3076d76464a2fbb64ac57fa7164ca121ed63e843480e8d31bd"
+        },
+        {
+          "gid": "1220726668013968",
+          "created_at": "2026-11-19T23:57:29.261Z",
+          "text_sha256": "a9153c470c241f7920fc52788a76dee4acc41f5238ebc40a57996866955f6218"
+        },
+        {
+          "gid": "1220726973289707",
+          "created_at": "2026-11-20T00:17:21.463Z",
+          "text_sha256": "1ce7e8a37e98fb1b9d57b9699a213a7bb9ba53014f78aa55b6374477ce2d77f9"
+        },
+        {
+          "gid": "1220727357605538",
+          "created_at": "2026-11-20T00:54:25.621Z",
+          "text_sha256": "18dc4e772fc538ea55b85ea4e5365cf6f883304da0f106fa8f44ee03a5a05459"
+        },
+        {
+          "gid": "1220728106090716",
+          "created_at": "2026-11-20T01:32:07.371Z",
+          "text_sha256": "1317b65af6fa2abf375d0a6a696e21bd3cb1fb084a8c7267f35e6acc3fe81298"
+        },
+        {
+          "gid": "1220728550124722",
+          "created_at": "2026-11-20T02:06:18.620Z",
+          "text_sha256": "fe060f50bb45985583aefa3da689bd5c31d3663ce15ad4a7993a6b44ec7a29c6"
+        }
+      ],
+      "notes_sha256": "8b0781c1875d03e7db314c50ff2a77139d3f3fc45bcc6a3ebdb8325f51f8b955"
+    },
+    {
+      "gid": "1220544599477512",
+      "name": "[P0][MACROS][OPEN] Cherri ? require() ? ????? ????/?????/??? ?????? ?? ????? ????",
+      "modified_at": "2026-11-19T19:24:52.473Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544599477512",
+      "comments": [
+        {
+          "gid": "1220674945599477",
+          "created_at": "2026-11-18T16:08:14.262Z",
+          "text_sha256": "4354c0648d35e56c349b787edb7696ed87d71aa3f3d94e290adbe5d535f90952"
+        },
+        {
+          "gid": "1220679553017312",
+          "created_at": "2026-11-18T17:51:42.918Z",
+          "text_sha256": "fa813439291708ba5eb0abaa1062721c4393e10c424865a30721fffc95e3e1ae"
+        },
+        {
+          "gid": "1220687052624869",
+          "created_at": "2026-11-18T21:49:55.864Z",
+          "text_sha256": "9a16b7e97a7fb7774cf89e7988a2f4e5663f39c83178ca9c190dccb7a21497b8"
+        },
+        {
+          "gid": "1220687569380079",
+          "created_at": "2026-11-18T22:11:56.023Z",
+          "text_sha256": "bade748866bf017b699344844428184b04d64f389fc15ae4e3b8e62f42816dfc"
+        },
+        {
+          "gid": "1220688707503093",
+          "created_at": "2026-11-18T22:58:14.869Z",
+          "text_sha256": "056ae064ccaeb4ceba0ce858154087251daaa8b105c2650b7a3d9cb4f30699d5"
+        }
+      ],
+      "notes_sha256": "82e3df6e29f8d38451d51c99a6e7738e65e73de75434fe7d694dea670a79aff7"
+    },
+    {
+      "gid": "1220544607463126",
+      "name": "[P1][MACROS][OPEN] Cherri ? DEBUG/RELEASE ? ???? ????? ???? ????????? ??? ???? ????",
+      "modified_at": "2026-11-18T03:35:06.987Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544607463126",
+      "comments": [],
+      "notes_sha256": "9248bd339a23ad83328158f325e320c525eb28f838f318e9a15d3e76cf3343f7"
+    },
+    {
+      "gid": "1220544718901241",
+      "name": "[P1][MACROS][OPEN] Cherri ? ????? ???????? ?? ???? ??? ?????? ????? ? parser/AST/IR",
+      "modified_at": "2026-11-18T21:25:53.188Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544718901241",
+      "comments": [
+        {
+          "gid": "1220676580183281",
+          "created_at": "2026-11-18T16:39:57.580Z",
+          "text_sha256": "9485bdb55ceca3aa1b6817e058cbc1dd3881c693f80fadb3f3aafec69f280df8"
+        },
+        {
+          "gid": "1220686563118428",
+          "created_at": "2026-11-18T21:25:53.188Z",
+          "text_sha256": "3d31e07e6257f0aac237a17662b523bf9054492e38426ced54acae70f96d3d0e"
+        }
+      ],
+      "notes_sha256": "98f217f45f375e864aac21fe14f94626632de6094945f1772adb2487f3101a4d"
+    },
+    {
+      "gid": "1220544665232149",
+      "name": "[P1][MACROS][OPEN] Cherri ? measure() ? ????? ???? ??? ????? ????? ??????",
+      "modified_at": "2026-11-19T19:24:52.370Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232149",
+      "comments": [
+        {
+          "gid": "1220667670373853",
+          "created_at": "2026-11-18T14:26:54.692Z",
+          "text_sha256": "62fadced6d9b870eaf2a7647c570157e684c2101d42d5c4c52e8ca0269f00f54"
+        }
+      ],
+      "notes_sha256": "b5901b7a2b6d33c5d92a2f68529f67eb113a0906ee76d7bbe9e6a2ccc5476ac5"
+    },
+    {
+      "gid": "1220544651247337",
+      "name": "[P1][MACROS][OPEN] Cherri ? collect() ? Repeat Results ????? Add to Variable ?????",
+      "modified_at": "2026-11-19T19:24:52.408Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544651247337",
+      "comments": [
+        {
+          "gid": "1220666366792816",
+          "created_at": "2026-11-18T06:30:15.609Z",
+          "text_sha256": "d84d2c8325bb32e6e3a38e5a2b9c8d0f627b25232c464669c356f44170e3f340"
+        },
+        {
+          "gid": "1220665911846046",
+          "created_at": "2026-11-18T14:16:59.008Z",
+          "text_sha256": "30a6817bd5f3a4abd815c557ab0cec7f10fd357dad9431f99f979452b517a277"
+        },
+        {
+          "gid": "1220686370490899",
+          "created_at": "2026-11-18T21:25:51.269Z",
+          "text_sha256": "8c7367a4d1bbb2b413f5918621172954221f8322bd8057e7c54ddd0abff8c937"
+        },
+        {
+          "gid": "1220688039681294",
+          "created_at": "2026-11-18T22:26:14.080Z",
+          "text_sha256": "08155e857f73ad7261900eb45bc6ba9cfde9dd870f49efad6de9333f35bf623a"
+        },
+        {
+          "gid": "1220689277871372",
+          "created_at": "2026-11-18T23:22:55.327Z",
+          "text_sha256": "4a519b9fa9eeaaee2a5e44f650dda871ed27f1fc900d2fc9389da0b9402f2a62"
+        }
+      ],
+      "notes_sha256": "7d416cfc176586880e96187b880cedc8bc9e4b01bf2c6d2de5da45c49f2b86fa"
+    },
+    {
+      "gid": "1220544665232085",
+      "name": "[P1][MACROS][OPEN] Cherri ? cache() ? TTL + iOS 27 Stored Content ?? roundtrip ???????",
+      "modified_at": "2026-11-19T19:20:24.465Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232085",
+      "comments": [
+        {
+          "gid": "1220676819980904",
+          "created_at": "2026-11-18T16:47:24.890Z",
+          "text_sha256": "32aaa3a0796c342874688097290719efd337360cf61a56495d83a8412df00f3d"
+        },
+        {
+          "gid": "1220690486673501",
+          "created_at": "2026-11-19T00:33:54.747Z",
+          "text_sha256": "ad9651924efb6928180449fe92fdd7b1e3641fc079e3d6db0e8e3443ef688216"
+        },
+        {
+          "gid": "1220690794706164",
+          "created_at": "2026-11-19T00:58:41.733Z",
+          "text_sha256": "414d412386626ec16071f4ad814b9b0c0a243e83aeec61185e79d0ea049d55eb"
+        }
+      ],
+      "notes_sha256": "6940efcd3c117ae5ef08a5437a72208e73d5f68699404f6f04c7cafa54f92617"
+    },
+    {
+      "gid": "1220544651247273",
+      "name": "[P2][MACROS][OPEN] Cherri ? retry() ? ???? HTTP ?????? ?????? ??backoff ?????",
+      "modified_at": "2026-11-19T19:20:24.516Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544651247273",
+      "comments": [
+        {
+          "gid": "1220681482626574",
+          "created_at": "2026-11-18T18:48:20.910Z",
+          "text_sha256": "c24e7246bd5cbde069ec9feb597c6b170f2de4312c9141f560c083c943c58eee"
+        },
+        {
+          "gid": "1220683197872348",
+          "created_at": "2026-11-18T19:36:29.754Z",
+          "text_sha256": "53aff570e87ddbda9aacd361307c676adec3e9802d3636ea027915d304a67086"
+        }
+      ],
+      "notes_sha256": "d39de1c4ac757114b35d11b9c30555adf8307810cc5345e0c908d895dd157ff0"
+    },
+    {
+      "gid": "1220544665232021",
+      "name": "[P2][MACROS][OPEN] Cherri ? paginate() ? ????? API ?? maxPages ?????? ????? ????????",
+      "modified_at": "2026-11-20T14:31:14.136Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232021",
+      "comments": [
+        {
+          "gid": "1220742371791173",
+          "created_at": "2026-11-20T14:31:14.135Z",
+          "text_sha256": "0fb0eb46235e021f372cf68fc083dc15b8d9063fd8589c4975a41800d1918802"
+        }
+      ],
+      "notes_sha256": "23f22d8910452b20580dd4ddb2de15140416858670041ff488c36a8719185d9b"
+    },
+    {
+      "gid": "1220544718902349",
+      "name": "[P1][MACROS][OPEN] Cherri ? QA/Docs/Skill/iOS Bridge/CI ? ??? ???? ?????????",
+      "modified_at": "2026-11-19T23:19:35.335Z",
+      "completed": false,
+      "url": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544718902349",
+      "comments": [
+        {
+          "gid": "1220668548463151",
+          "created_at": "2026-11-18T14:34:28.062Z",
+          "text_sha256": "701072898849e8138075819d640bb335603be279eaeca96258364222c40f3d52"
+        },
+        {
+          "gid": "1220722596931402",
+          "created_at": "2026-11-19T20:48:27.734Z",
+          "text_sha256": "e36ef1e5e502e86ca68481269a162d5f127ea7054ed21f4aa33dc57b91fc829a"
+        },
+        {
+          "gid": "1220724646327965",
+          "created_at": "2026-11-19T22:07:46.299Z",
+          "text_sha256": "ab2faa8f8707e99c2556f02e73d568f27d355575d25275a450268a12fa459cbf"
+        },
+        {
+          "gid": "1220724872093621",
+          "created_at": "2026-11-19T22:22:49.703Z",
+          "text_sha256": "aea2e4508e3e94532d1a15197ec224a2dfb6992096b42a618d1979bc5494da67"
+        },
+        {
+          "gid": "1220726108635412",
+          "created_at": "2026-11-19T23:19:35.335Z",
+          "text_sha256": "f6af815f2039fdbd118139086dda495b8418f3b9f32e1ca56aed8a08379eb467"
+        }
+      ],
+      "notes_sha256": "d6ec2649a5728be5b54647e3a73bc91f54ca2453421c50e6449cc3cfa85e3536"
+    }
+  ]
+}
