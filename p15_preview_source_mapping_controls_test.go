@@ -200,6 +200,40 @@ func TestP15RP41PreviewSourceMapOriginBoundaries(t *testing.T) {
 			t.Fatalf("actual native checkbox did not edit only its explicit Boolean argument: %v\n%s", err, updated)
 		}
 	})
+	t.Run("callback_transformed_scalar_read_only", func(t *testing.T) {
+		const source = "containsText(\"haystack needle\", text: \"needle\")\nshow(\"untouched\")\nwait(2)\n"
+		preview, actions := rp41PreviewControlCompile(t, source, CompileOptions{})
+		indices := make(map[string]int)
+		for index, action := range actions {
+			if action.WFWorkflowActionIdentifier == "is.workflow.actions.text.match" ||
+				action.WFWorkflowActionIdentifier == "is.workflow.actions.showresult" ||
+				action.WFWorkflowActionIdentifier == waitID {
+				if _, exists := indices[action.WFWorkflowActionIdentifier]; exists {
+					t.Fatal("nonunique native callback fixture target")
+				}
+				indices[action.WFWorkflowActionIdentifier] = index
+			}
+		}
+		if len(indices) != 3 {
+			t.Fatal("actual callback/healthy fixture inventory is incomplete")
+		}
+		transformed := indices["is.workflow.actions.text.match"]
+		if actions[transformed].WFWorkflowActionParameters["WFMatchTextPattern"] != "^needle" {
+			t.Fatal("fixture did not exercise the actual canonical regex-prefix transformation")
+		}
+		updated, err := rp41ApplyPreviewEdit(t, source, preview, transformed, "WFMatchTextPattern", "\"^changed\"")
+		if err == nil || !strings.Contains(err.Error(), "read-only") || updated != source {
+			t.Fatalf("transformed native scalar acquired an unsupported inverse edit: %v\n%s", err, updated)
+		}
+		updated, err = rp41ApplyPreviewEdit(t, source, preview, indices["is.workflow.actions.showresult"], "Text", "\"changed\"")
+		if err != nil || updated != strings.Replace(source, "show(\"untouched\")", "show(\"changed\")", 1) {
+			t.Fatalf("callback exclusion changed the healthy direct Show argument: %v\n%s", err, updated)
+		}
+		updated, err = rp41ApplyPreviewEdit(t, source, preview, indices[waitID], waitKey, "9")
+		if err != nil || updated != strings.Replace(source, "wait(2)", "wait(9)", 1) {
+			t.Fatalf("callback exclusion changed the healthy direct Wait argument: %v\n%s", err, updated)
+		}
+	})
 	const backfill = "debugClearLogs()\nlet retained=base64Decode(\"AQ==\")\ndebugLog()\nwait(2)\ndebugShowLogs(withDates:true)\n"
 	for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
 		t.Run("backfill_"+string(profile), func(t *testing.T) {

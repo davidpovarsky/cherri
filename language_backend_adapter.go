@@ -105,8 +105,12 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	// Prepare arguments for canonical action matching definition parameters
 	var args []actionArgument
 	providedIndices := make(map[int]bool)
+	// Callback builders/checks may transform a displayed scalar or choose a
+	// dynamic key. No inverse transformation is implied by an authored span.
+	capturePreviewOrigin := call.VisualSourceOrigin != nil &&
+		def.check == nil && def.appendParamsFunc == nil && def.makeParams == nil
 	var previewPositions []int
-	if call.VisualSourceOrigin != nil {
+	if capturePreviewOrigin {
 		previewPositions = make([]int, len(call.Arguments))
 		for index := range previewPositions {
 			previewPositions[index] = -1
@@ -140,9 +144,13 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 					return "", fmt.Errorf("unknown parameter %q for canonical action %q", callArg.ParameterID, ident)
 				}
 			}
-			if previewPositions != nil && !callArg.Omitted && !callArg.Value.Omitted &&
-				callArg.Value.Kind != backend.ValNil && !def.parameters[pos].infinite {
-				previewPositions[callIndex] = pos
+			if previewPositions != nil && !callArg.Omitted && !callArg.Value.Omitted && !def.parameters[pos].infinite {
+				// These kinds serialize directly as scalar values. References, raw
+				// native values, containers and composed text remain read-only.
+				switch callArg.Value.Kind {
+				case backend.ValString, backend.ValInt, backend.ValFloat, backend.ValBool:
+					previewPositions[callIndex] = pos
+				}
 			}
 			if pos < len(def.parameters) && def.parameters[pos].infinite && providedIndices[pos] {
 				args = append(args, convertCallArgForCanonicalParameter(callArg, def.parameters[pos].key))
@@ -200,7 +208,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	// builder has no such writes and remains read-only in the native preview.
 	var previewWrites []previewParameterWrite
 	var observeParameter func(int, string)
-	if call.VisualSourceOrigin != nil {
+	if capturePreviewOrigin {
 		observeParameter = func(position int, key string) {
 			previewWrites = append(previewWrites, previewParameterWrite{position: position, key: key})
 		}
@@ -259,7 +267,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		WFWorkflowActionParameters: params,
 	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, action)
-	if call.VisualSourceOrigin != nil {
+	if capturePreviewOrigin {
 		s.rememberPreviewSourceCall(call, params, fullIdent, previewPositions, previewWrites)
 	}
 	if len(s.importQuestionBindings) > 0 && call.NodeID != "" {
