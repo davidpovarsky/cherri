@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.15 | **Current audit:** 2026-11-24 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter 36 records adopted and independently accepted source **84101b2e27344cfbfff97298f309c70efe679d5d**, the actual **53-name Oracle-route qualification**, and its first publication failure: **one push, exit 128, no timeout, gh not found**. A separate read-only reconciliation observed the target absent and source unchanged; the original failed status remains intact. The narrow CLI-path correction, its qualification, next source and publication remain future at this cutoff. Checkpoint 35 and all earlier outcomes retain their original sources and cutoffs.
+> **Plan version:** 2.9.16 | **Current audit:** 2026-11-24 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter 37 records published source **64f7c6ecbf528f64c066b64b403dba4bb71108c9**, its preserved failed automatic Build, and the independently accepted **154-test Linux-only AI harness fixture qualification**. The next AI-only source/CI remain future; the separate F04 mutable-alias proposal is unqualified. Free space remains below the original focused/producer gates. Chapters 0–36 and their continuation/projection originals retain their historical cutoffs.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2692,3 +2692,42 @@ Original references below are relative to `/mnt/development/projects/evidence/ch
 | `oracle-atomic-publication-failure-independent-intake-01/intake.original.json` | 14,158 | `f4ce559d0fe1fc5fdafa4096eff013c6688be4be6486692b2abb638d100f6754` |
 
 The earlier failed S Build, the historical K476 **111 PASSED / 4 FAILED / 28 NOT_RUN / 36 PENDING_EXTERNAL**, `closure_complete=false`, and all semantic/native/provider/historical/final-delivery gaps remain unchanged. The original P10 production sequence, full-suite children, publication limits and all 2 GiB producer floors remain in force. No new full producer, S4 result or consumer promotion follows from source adoption or this documentation checkpoint.
+
+## 37. Published S64 and the qualified AI harness fixture correction — 2026-11-24
+
+This checkpoint ends at the independent intake's **03:39:54 UTC** observation. The CLI-path follow-up was adopted as **`64f7c6ecbf528f64c066b64b403dba4bb71108c9`**, tree **`903a1c4e69f467b94dc433883c73bdb3fb52fb39`**, and its actual Oracle publication was independently accepted. Chapter 36's first failed `84101b2` push and separate target-absence reconciliation remain their original records; subsequent success does not rewrite either result or the chapter's cutoff.
+
+### Actual CI failure and bounded fixture repair
+
+Automatic Build [45315840573](https://github.com/davidpovarsky/cherri/actions/runs/45315840573), attempt 1, failed the AI harness step on **both Linux and macOS**. Each original log reports **154 tests and eight failure records across three observer methods**; the Go setup, build and full-suite steps were skipped. Both real timeout/cancellation tests passed within those failed runs. The empty editor artifact retained `NOT_RUN`, with no Go or native execution credit.
+
+The three synthetic observer methods used fictitious PGID 42 and mocked the process-table command while leaving `os.killpg(42, 0)` real. The accepted kernel-absence path could return before the mocked table, matching the logs' missing expected errors and zero table calls. This causal diagnosis joins the retained logs with pinned runner/test source; it does not claim a separately recorded historical kernel probe. The correction mocks that existing probe in four fixture contexts and preserves production `runner.py`, every assertion, the six absence/liveness controls, actual cancellation tests and all existing timeout values.
+
+One external-overlay Python run on S64 then passed **all 154 exact IDs across seven modules**, with **zero failures, errors or skips** and no provider calls. Actual host time was **7.43 seconds**; owner time **7.322 seconds**. The independent intake accepted one child/two original streams, verified **19 source plus 19 overlay input pins unchanged**, and observed the owner and child group absent. Its status is `ACCEPTED_ACTUAL_154_PYTHON_QUALIFICATION_LINUX_ONLY`. The original 30-second child, 45-second owner, 5+5-second cleanup and 60-second host limits were preserved. The 35-second owner signal point was newly selected for this run to reserve cleanup time. This small Python-only run used its separately selected 256 MiB admission; it did not lower any Go or producer floor.
+
+The prior cleanup qualification executed **two named methods plus six embedded controls** and did not run the affected observer module. The static comparison's **19 unchanged function definitions** is not a test count; `test_runner.py` contains **15 test methods**. Neither earlier focused evidence nor this new Linux qualification supplies new macOS execution, a passing Build, Go/native acceptance or AI provider measurements.
+
+### Exact next-source scope and separate F04 preparation
+
+The qualified test candidate is `tools/language-ai-eval/test_process_group_cleanup.py`, **4,945 bytes / SHA-256 `a7f5350ef6fe9ea4ee07719f2114ac9da0c49f776fe610fbeef3de7537201233`**. The next normal source freeze selects only that file, `PROJECT_BOARD.md` and this masterplan, under `agent/cherri-p10r15-k17-ai-harness-source-20261124`. The actual child commit/tree, publication and new CI remain future at this cutoff. Production runner code is outside this three-file change.
+
+The separate F04 proposal admits only explicitly typed top-level mutable `List<T>` aliases from immutable compiler-owned identifiers and straight-line whole `=` assignments, with reaching-origin versions and immutable snapshots. Its nine-file external packet specifies **330 future test names / 27 parents**; **none has executed against this proposed mutable-alias candidate**, and no source adoption is implied. The earlier 246-name qualification remains separate prior evidence. Its environment supplement explicitly corrects the sealed inactive summary's `GOTOOLCHAIN=local` to the full genuinely qualified Oracle environment: pinned Go 1.24.13, `GOTOOLCHAIN=go1.24.13`, `GOFLAGS=-p=2`, `GOENV/GOWORK/GOTELEMETRY=off` and the remaining exact recorded values. The 56 original payloads and manifest remain unchanged. This proposal is excluded from the AI-only freeze and does not close general F04, T05, L01 or Apple runtime requirements.
+
+### Capacity and retained completion boundary
+
+At the root intake, free space was **934,244,352 bytes**. Its deficits were **139,497,472 bytes** against the unchanged **1,073,741,824-byte focused Go floor**, **1,213,239,296 bytes** against the **2,147,483,648-byte producer floor**, and **1,615,994,880 bytes** against the last selected S64 ordinary-clone requirement of **2,550,239,232 bytes**. These are dated observations, not future admission. No Go qualification or production was authorized by this Python success; each future owner needs fresh capacity/source/process checks. The earlier 100 GiB device/ext4 equality and zero reserve/growth-gap observation supplies no additional free space or cloud-resize result.
+
+The original K476 **111 PASSED / 4 FAILED / 28 NOT_RUN / 36 PENDING_EXTERNAL**, `closure_complete=false`, and its original contradictions remain unchanged. Preserve the existing source → raw505 → C0 → C1 → C2 → actual56 chain, source-bound compiler/migrator pair, full Go/full179, five S4 receipts, native/UI/context evidence, installed compatibility/Skill checks and documentation promotion gates. T05/L01/general F04, missing joined scenarios, historical originals, actual AI01/RP50 and final delivery remain open. Provider no-reseed/no-retry, privacy, R23v1/R22, all acceptance criteria and existing producer deadlines are unchanged.
+
+Original paths below are relative to `/mnt/development/projects/evidence/cherri-p10r15-k17-semantic-completion-20261123/`:
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `oracle-atomic-publication-independent-root-intake-02/intake.original.json` | 16,030 | `17fe1225b61d42326375b57ad6d9b7e893bdcbf0d5b266285ff8470b8728ee53` |
+| `post-cli-build-failure-diagnosis-01/diagnosis.original.json` | 14,266 | `40313b98a6a8b8053565280060282bb413ae3136b4a92dabb5d1c6282dc0f62f` |
+| `ai-harness-ci-followup-qualification-01/result.original.json` | 5,618 | `50df91946cb1922d03982b29197bbe1ec0a99aa9dad74954ea29f5b239a6f4f6` |
+| `ai-harness-ci-followup-qualification-01/discovery-result.original.json` | 17,939 | `1c561e67fe0348c9bb7f4cd63180f41978ba64ed580bdb51c0eeabf4e03c1038` |
+| `ai-harness-ci-followup-qualification-independent-root-intake-01/intake.original.json` | 3,418 | `3edceece2b18caf7cdd17ad6a5e2a03b206c9d149a6d4bc716c9cf6c447682ab` |
+| `f04-mutable-local-alias-proposal-01/MANIFEST.json` | 10,466 | `41a8ea903b6d4e431cadc0c7efb10354c8141ea5f37251efee2b9be254475259` |
+| `f04-mutable-local-alias-environment-supplement-01/environment-correction.original.json` | 4,362 | `85969a49cd1c7a776259d0ba9a9c24fad1efcc14be8e2e1ca223ec88c04fcf12` |
+| `f04-mutable-local-alias-environment-supplement-01/MANIFEST.json` | 735 | `5284e57832a6310d443d6b650089e9627b6e614e5888f37dfbeb92c6e0a5bd00` |

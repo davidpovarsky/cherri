@@ -16,9 +16,12 @@ class ProcessGroupCleanupTests(unittest.TestCase):
         return subprocess.CompletedProcess(["synthetic-state-observer"], code, text)
 
     def test_waits_for_observed_group_exit(self):
+        # The table fixtures represent an existing synthetic owned group.
+        # Mock its kernel existence probe as well as its process-table state.
         # Other groups cannot block or satisfy the owned group's cancellation.
         replies = [self.observed("8 Ss\n42 R\n42 Z\n"), self.observed("8 Ss\n42 Z+\n")]
-        with patch.object(runner.subprocess, "run", side_effect=replies) as observe:
+        with patch.object(runner.os, "killpg", return_value=None), \
+             patch.object(runner.subprocess, "run", side_effect=replies) as observe:
             runner.wait_for_posix_group_exit(42, runner.time.monotonic() + 5)
         self.assertEqual(observe.call_count, 2)
         for call in observe.call_args_list:
@@ -28,7 +31,8 @@ class ProcessGroupCleanupTests(unittest.TestCase):
             self.assertEqual(set(call.kwargs["env"]), {"PATH", "LC_ALL"})
 
     def test_live_threads_under_zombie_leader_exhaust_the_bound(self):
-        with patch.object(runner.time, "monotonic", side_effect=[0.0, 0.01, 5.0]), \
+        with patch.object(runner.os, "killpg", return_value=None), \
+             patch.object(runner.time, "monotonic", side_effect=[0.0, 0.01, 5.0]), \
              patch.object(runner.subprocess, "run", return_value=self.observed("42 Zsl\n")) as observe:
             with self.assertRaisesRegex(ValueError, "cleanup deadline expired"):
                 runner.wait_for_posix_group_exit(42, 5.0)
@@ -39,10 +43,12 @@ class ProcessGroupCleanupTests(unittest.TestCase):
                       self.observed("42 Z unexpected\n"), self.observed("42 Zgarbage\n"),
                       self.observed("PGID STAT\n")):
             with self.subTest(observation=reply.stdout, exit_code=reply.returncode):
-                with patch.object(runner.subprocess, "run", return_value=reply):
+                with patch.object(runner.os, "killpg", return_value=None), \
+                     patch.object(runner.subprocess, "run", return_value=reply):
                     with self.assertRaises(ValueError):
                         runner.wait_for_posix_group_exit(42, runner.time.monotonic() + 5)
-        with patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(["ps"], 1)):
+        with patch.object(runner.os, "killpg", return_value=None), \
+             patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(["ps"], 1)):
             with self.assertRaisesRegex(ValueError, "could not be observed"):
                 runner.wait_for_posix_group_exit(42, runner.time.monotonic() + 5)
 
