@@ -2214,7 +2214,7 @@ func finalProvenanceOracleCommands(source string, s finalProvenanceSource) ([]st
 		return append(local("-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential"), a...)
 	}
 	api := func(endpoint, projection string) []string {
-		return []string{"/usr/bin/gh", "api", "--method", "GET", "-H", "Cache-Control: no-cache", endpoint, "--jq", projection}
+		return []string{"/usr/local/bin/gh", "api", "--method", "GET", "-H", "Cache-Control: no-cache", endpoint, "--jq", projection}
 	}
 	commands := map[string][]string{
 		"01-origin": local("remote", "get-url", "--all", "origin"), "02-push-origin": local("remote", "get-url", "--push", "--all", "origin"),
