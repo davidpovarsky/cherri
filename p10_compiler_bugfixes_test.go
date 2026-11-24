@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"howett.net/plist"
 )
 
 func compileV2Helper(t *testing.T, name, code string) (*CanonicalBackendSession, error) {
@@ -232,9 +234,9 @@ func TestP10_JSONBracesInStringNotParsedAsInlineVars(t *testing.T) {
 }
 
 // 6. Task 1219750434313969 (A): Conditional getValue(job, "server") string comparison
-// must emit WFConditionalActionString (never WFNumberValue) and attach
-// WFCoercionVariableAggrandizement -> WFStringContentItem so Apple Shortcuts UI
-// and runtime do not interpret WFCondition=4/5 as a numeric comparison.
+// keeps native String coercion for the five dynamically typed lookups. The
+// explicitly typed .text comparison uses N03's exact Text producer and its
+// authored Boolean guard; numeric and missing-value cases retain their routes.
 func TestP10_ConditionalGetValueStringComparison_EmitsStringCoercionAndStringTarget(t *testing.T) {
 	v2Code := `let job = {"server": "General Context Server", "retries": 3}
 let srv = getValue(job, key: "server")
@@ -288,6 +290,28 @@ if !missingVal {
 	}
 	defer session.Close()
 
+	// Inspect the actual serialization of this same compiled session. No
+	// second compiler invocation is needed to validate the N03 native region.
+	encoded, err := plist.Marshal(session.shortcut, plist.XMLFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var document map[string]any
+	if _, err := plist.Unmarshal(encoded, &document); err != nil {
+		t.Fatal(err)
+	}
+	var native []map[string]any
+	for _, action := range document["WFWorkflowActions"].([]any) {
+		native = append(native, action.(map[string]any))
+	}
+	if err := p10ConditionalExplicitTextError(native); err != nil {
+		t.Fatal(err)
+	}
+	regions, err := p15N03ExactNativeRegions(native, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	var condStarts []ShortcutAction
 	for _, act := range session.shortcut.WFWorkflowActions {
 		if act.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" {
@@ -296,8 +320,10 @@ if !missingVal {
 			}
 		}
 	}
-	if len(condStarts) != 8 {
-		t.Fatalf("expected 8 conditional start actions, got %d", len(condStarts))
+	// Eight authored Ifs plus the single independently validated inner
+	// exact-Text value comparison. The extra guard is not an authored case.
+	if len(condStarts) != 8+len(regions) {
+		t.Fatalf("expected eight authored Ifs and one connected exact-Text guard, got %d", len(condStarts))
 	}
 
 	assertHasCoercionClass := func(caseIdx int, act ShortcutAction, wantClass string) {
@@ -347,8 +373,9 @@ if !missingVal {
 		}
 	}
 
-	// Cases 1..6: string comparisons (WFCondition=4, WFConditionalActionString present, WFNumberValue nil, WFStringContentItem coercion)
-	for i := 0; i < 6; i++ {
+	// Cases 1..5 retain their dynamically typed native String comparison.
+	// Case 6 is checked as the complete exact Text region above.
+	for i := 0; i < 5; i++ {
 		act := condStarts[i]
 		params := act.WFWorkflowActionParameters
 		if params["WFCondition"] != 4 {
@@ -365,7 +392,7 @@ if !missingVal {
 
 	// Case 7: numeric comparison (WFCondition=4, WFNumberValue=3, WFConditionalActionString nil, WFNumberContentItem coercion)
 	{
-		act := condStarts[6]
+		act := condStarts[7]
 		params := act.WFWorkflowActionParameters
 		if params["WFNumberValue"] == nil {
 			t.Errorf("case 7: expected WFNumberValue to be populated, got nil")
@@ -378,10 +405,109 @@ if !missingVal {
 
 	// Case 8: missing key / empty check (WFCondition=101)
 	{
-		act := condStarts[7]
+		act := condStarts[8]
 		params := act.WFWorkflowActionParameters
 		if params["WFCondition"] != 101 {
 			t.Errorf("case 8: expected WFCondition == 101 (Does Not Have Any Value), got %v", params["WFCondition"])
 		}
 	}
+
+	for _, fault := range []string{"wrong_text_source", "casefold_match", "wrong_match_count", "inverted_exact_operator", "detached_authored_if", "orphan_quote", "wrong_branch_body"} {
+		t.Run(fault, func(t *testing.T) {
+			bad := p15SCClone(t, native)
+			if err := p10ConditionalExplicitTextError(bad); err != nil {
+				t.Fatal("unchanged serialized clone rejected", err)
+			}
+			region := regions[0]
+			switch fault {
+			case "wrong_text_source":
+				wrong := p15SCCopy(region.Left).(map[string]any)
+				for _, action := range bad {
+					if p15Param(action)["CustomOutputName"] == "job" {
+						wrong["OutputUUID"] = p15Param(action)["UUID"]
+					}
+				}
+				p15Param(bad[region.LeftSnapshot])["WFTextActionText"] = p15N03AffixedTokenString("~", wrong, "")
+			case "casefold_match":
+				p15Param(bad[region.Match])["WFMatchTextCaseSensitive"] = false
+			case "wrong_match_count":
+				p15Param(bad[region.Count])["Input"] = p15N03Attachment(region.Left.(map[string]any))
+			case "inverted_exact_operator":
+				p15Param(bad[region.InnerStart])["WFCondition"] = uint64(5)
+			case "detached_authored_if":
+				p15Param(bad[region.Next])["WFInput"] = map[string]any{"Type": "Variable", "Variable": p15N03Attachment(region.Left.(map[string]any))}
+			case "orphan_quote":
+				orphan := p15SCCopy(bad[region.Quote]).(map[string]any)
+				p15Param(orphan)["UUID"] = "4fe62a08-dbd6-4f58-afd0-000000000099"
+				bad = append(bad, orphan)
+			case "wrong_branch_body":
+				p15Param(bad[region.Next+1])["WFAlertActionMessage"] = "WRONG_EXPLICIT_TEXT_BRANCH"
+			}
+			if err := p15SCReferences(bad); err != nil {
+				t.Fatal("mutation broke producer identity before its intended semantic gate", err)
+			}
+			if err := p10ConditionalExplicitTextError(bad); err == nil {
+				t.Fatal("damaged exact Text route accepted")
+			}
+		})
+	}
+}
+
+func p10ConditionalExplicitTextError(actions []map[string]any) error {
+	if err := p15SCReferences(actions); err != nil {
+		return err
+	}
+	if err := p15N03ExactControlGroupsError(actions); err != nil {
+		return err
+	}
+	regions, err := p15N03ExactNativeRegions(actions, 1)
+	if err != nil {
+		return err
+	}
+	region := regions[0]
+	job, srv := "", ""
+	jobIndex, srvIndex := -1, -1
+	for index, action := range actions {
+		parameters := p15Param(action)
+		switch parameters["CustomOutputName"] {
+		case "job":
+			if job != "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.dictionary" {
+				return fmt.Errorf("explicit Text fixture dictionary producer differs")
+			}
+			job, _ = parameters["UUID"].(string)
+			jobIndex = index
+		case "srv":
+			if srv != "" || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvalueforkey" || parameters["WFDictionaryKey"] != "server" {
+				return fmt.Errorf("explicit Text fixture lookup producer differs")
+			}
+			srv, _ = parameters["UUID"].(string)
+			srvIndex = index
+		}
+	}
+	if job == "" || srv == "" || jobIndex >= srvIndex || srvIndex >= region.Start {
+		return fmt.Errorf("explicit Text fixture source producer order differs")
+	}
+	input, err := p15N03ExactToken(p15Param(actions[srvIndex])["WFInput"])
+	if err != nil || input != job {
+		return fmt.Errorf("explicit Text lookup does not read the authored dictionary")
+	}
+	left := map[string]any{"Type": "ActionOutput", "OutputUUID": srv, "OutputName": "srv",
+		"Aggrandizements": []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}}}
+	if region.Operator != 4 || !reflect.DeepEqual(region.Left, left) || region.Right != "General Context Server" || len(region.Result) != 2 {
+		return fmt.Errorf("explicit .text comparison lost its source/coercion/operator/literal binding")
+	}
+	group, err := p15N03ExactResultGuard(actions, region, region.Next)
+	if err != nil {
+		return err
+	}
+	if region.Next+2 >= len(actions) || actions[region.Next+1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.alert" ||
+		p15Param(actions[region.Next+1])["WFAlertActionMessage"] != "Matched explicit .text" {
+		return fmt.Errorf("exact Text true branch lost its authored alert")
+	}
+	end := actions[region.Next+2]
+	if end["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" ||
+		!reflect.DeepEqual(p15Param(end), map[string]any{"GroupingIdentifier": group, "WFControlFlowMode": uint64(2)}) {
+		return fmt.Errorf("exact Text authored branch end differs")
+	}
+	return nil
 }

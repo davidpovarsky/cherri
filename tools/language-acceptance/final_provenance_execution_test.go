@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -832,4 +833,727 @@ func TestFinalProvenanceRejectsAuditDetailDrift(t *testing.T) {
 	if result.Status != "FAILED" || result.Detail != want {
 		t.Fatalf("audit-only detail drift was not rejected at its exact predicate: status=%s detail=%q want=%q", result.Status, result.Detail, want)
 	}
+}
+
+// These fixtures model a failed publication followed by a separate read-only
+// observation. They are never originals or network publication evidence.
+type finalProvenanceReconciledFixture struct {
+	f                    *finalProvenanceFixture
+	p                    finalProvenancePublication
+	original, supplement map[string]any
+}
+
+func finalProvenanceReconciledFixtureNew(t *testing.T) *finalProvenanceReconciledFixture {
+	t.Helper()
+	f := &finalProvenanceFixture{originals: t.TempDir(), expected: finalProvenanceExpected{Sources: map[string]finalProvenanceSource{}, Files: map[string]finalProvenanceFile{}, Publications: map[string]finalProvenancePublication{}}, manifest: finalProvenanceManifest{Files: map[string]string{}}}
+	s := finalProvenanceSource{Repository: "davidpovarsky/cherri", SHA: strings.Repeat("a", 40), Tree: strings.Repeat("b", 40), LocalRef: "refs/heads/synthetic-source", PublishedRef: "refs/heads/synthetic-source"}
+	f.expected.Sources["compiler"] = s
+	r := &finalProvenanceReconciliation{Result: "reconciliation-result", OriginalArchive: "publication-archive", Archive: "reconciliation-archive", OriginalReceipts: map[string]string{}, Streams: map[string]finalProvenanceStreams{}, Receipts: map[string]string{}}
+	p := finalProvenancePublication{Format: "windows-create-only-reconciled/1", Result: "publication-result", Streams: map[string]finalProvenanceStreams{}, Reconciliation: r}
+	git, repo, primary, gh := "C:/synthetic/Git/git.exe", "C:/synthetic/publication.git", "C:/synthetic/unrelated-primary", "C:/synthetic/GitHub/gh.exe"
+	bundle, prerequisite := "C:/synthetic/source.bundle", strings.Repeat("d", 40)
+	gitArgs := func(args ...string) []string { return append([]string{git, "-C", repo}, args...) }
+	primaryArgs := func(args ...string) []string { return append([]string{git, "-C", primary}, args...) }
+	apiRef := []string{gh, "api", "-H", "Cache-Control: no-cache", "repos/" + s.Repository + "/git/ref/heads/synthetic-source", "--jq", "{ref: .ref, sha: .object.sha, type: .object.type}"}
+	apiCommit := []string{gh, "api", "-H", "Cache-Control: no-cache", "repos/" + s.Repository + "/git/commits/" + s.SHA, "--jq", "{sha: .sha, tree: .tree.sha, parents: [.parents[].sha]}"}
+	refsArgs := gitArgs("for-each-ref", "--format=%(refname) %(objectname)")
+	remoteArgs := gitArgs("ls-remote", "--exit-code", "--refs", "origin", s.PublishedRef)
+	state := map[string]any{"head": strings.Repeat("3", 40), "status": "?? synthetic-preserved.cherri", "preservedFixtureSHA256": strings.Repeat("8", 64)}
+	origin, readback := "https://github.com/"+s.Repository+".git", s.SHA+"\t"+s.PublishedRef
+	base := []string{"refs/preparation/base " + prerequisite}
+	imported := append(append([]string{}, base...), s.PublishedRef+" "+s.SHA)
+	final := append(append([]string{}, imported...), "refs/remotes/origin/synthetic-source "+s.SHA)
+	ref := map[string]any{"ref": s.PublishedRef, "sha": s.SHA, "type": "commit"}
+	commit := map[string]any{"sha": s.SHA, "tree": s.Tree, "parents": []string{prerequisite}}
+	refJSON, _ := json.Marshal(ref)
+	commitJSON, _ := json.Marshal(commit)
+	oldNames := []string{"01-origin", "02-base-refs", "03-primary-head-before", "04-primary-status-before", "05-transfer", "06-bundle-heads", "07-bundle-verify", "08-import", "09-commit", "10-tree", "11-ancestry", "12-connectivity", "13-imported-refs", "14-remote-before", "15-push", "16-remote-after", "17-api-ref", "19-primary-head-after", "20-primary-status-after"}
+	newNames := []string{"01-origin", "02-primary-head-before", "03-primary-status-before", "04-remote-readback", "05-api-ref", "06-api-commit", "07-final-refs", "08-primary-head-after", "09-primary-status-after"}
+	oldArgs := map[string][]string{
+		"01-origin": gitArgs("remote", "get-url", "origin"), "02-base-refs": refsArgs,
+		"03-primary-head-before": primaryArgs("rev-parse", "HEAD"), "04-primary-status-before": primaryArgs("status", "--porcelain=v1"),
+		"05-transfer":     {"C:/synthetic/scp.exe", "-B", "-o", "BatchMode=yes", "-o", "ConnectTimeout=12", "torah-dev:/synthetic/source.bundle", "torah-dev:/synthetic/bundle-handoff.json", "."},
+		"06-bundle-heads": gitArgs("bundle", "list-heads", bundle), "07-bundle-verify": gitArgs("bundle", "verify", bundle),
+		"08-import": gitArgs("fetch", "--no-tags", "--no-recurse-submodules", bundle, s.PublishedRef+":"+s.PublishedRef),
+		"09-commit": gitArgs("rev-parse", s.PublishedRef), "10-tree": gitArgs("rev-parse", s.PublishedRef+"^{tree}"),
+		"11-ancestry": gitArgs("merge-base", "--is-ancestor", prerequisite, s.SHA), "12-connectivity": gitArgs("fsck", "--connectivity-only", "--no-reflogs", s.PublishedRef),
+		"13-imported-refs": refsArgs, "14-remote-before": remoteArgs,
+		"15-push":         gitArgs("push", "--porcelain", "--force-with-lease="+s.PublishedRef+":", "origin", s.SHA+":"+s.PublishedRef),
+		"16-remote-after": remoteArgs, "17-api-ref": apiRef,
+		"19-primary-head-after": primaryArgs("rev-parse", "HEAD"), "20-primary-status-after": primaryArgs("status", "--porcelain=v1"),
+	}
+	newArgs := map[string][]string{
+		"01-origin": gitArgs("remote", "get-url", "origin"), "02-primary-head-before": primaryArgs("rev-parse", "HEAD"), "03-primary-status-before": primaryArgs("status", "--porcelain=v1"),
+		"04-remote-readback": remoteArgs, "05-api-ref": apiRef, "06-api-commit": apiCommit, "07-final-refs": refsArgs,
+		"08-primary-head-after": primaryArgs("rev-parse", "HEAD"), "09-primary-status-after": primaryArgs("status", "--porcelain=v1"),
+	}
+	oldOutput := map[string]string{"01-origin": origin + "\n", "02-base-refs": strings.Join(base, "\n") + "\n", "03-primary-head-before": state["head"].(string) + "\n", "04-primary-status-before": state["status"].(string) + "\n", "06-bundle-heads": s.SHA + " " + s.PublishedRef + "\n", "09-commit": s.SHA + "\n", "10-tree": s.Tree + "\n", "13-imported-refs": strings.Join(imported, "\n") + "\n", "15-push": "To " + origin + "\n*\t" + s.SHA + ":" + s.PublishedRef + "\t[new branch]\nDone\n", "16-remote-after": readback + "\n", "19-primary-head-after": state["head"].(string) + "\n", "20-primary-status-after": state["status"].(string) + "\n"}
+	newOutput := map[string]string{"01-origin": origin + "\n", "02-primary-head-before": state["head"].(string) + "\n", "03-primary-status-before": state["status"].(string) + "\n", "04-remote-readback": readback + "\n", "05-api-ref": string(refJSON) + "\n", "06-api-commit": string(commitJSON) + "\n", "07-final-refs": strings.Join(final, "\n") + "\n", "08-primary-head-after": state["head"].(string) + "\n", "09-primary-status-after": state["status"].(string) + "\n"}
+	makeSteps := func(names []string, args map[string][]string, outputs map[string]string, streams map[string]finalProvenanceStreams, receipts map[string]string, isOriginal bool) []any {
+		var steps []any
+		start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+		prefix := "old-"
+		if !isOriginal {
+			start = start.Add(2 * time.Minute)
+			prefix = "new-"
+		}
+		for i, name := range names {
+			pair := finalProvenanceStreams{prefix + name + ".stdout", prefix + name + ".stderr"}
+			f.putBytes(t, pair.Stdout, []byte(outputs[name]))
+			f.putBytes(t, pair.Stderr, []byte{})
+			streams[name], receipts[name] = pair, prefix+name+".receipt"
+			seconds, duration, limit, code, timedOut := i*2, 1, 30, 0, false
+			var kill any
+			if isOriginal {
+				switch name {
+				case "05-transfer", "15-push":
+					limit = 120
+				case "08-import", "12-connectivity":
+					limit = 60
+				case "14-remote-before":
+					code = 2
+				case "17-api-ref":
+					code = 1
+					timedOut = true
+					duration = 31
+					kill = 0
+				}
+				if i > 16 {
+					seconds += 30
+				}
+			}
+			cwd := any(nil)
+			if isOriginal && name == "05-transfer" {
+				cwd = "C:/synthetic"
+			}
+			steps = append(steps, map[string]any{"name": name, "argv": args[name], "cwd": cwd, "startedAtUtc": start.Add(time.Duration(seconds) * time.Second).Format(time.RFC3339), "finishedAtUtc": start.Add(time.Duration(seconds+duration) * time.Second).Format(time.RFC3339), "seconds": duration, "exitCode": code, "timeoutSeconds": limit, "timedOut": timedOut, "ownedTreeKillExit": kill, "stdoutSHA256": f.expected.Files[pair.Stdout].SHA256, "stderrSHA256": f.expected.Files[pair.Stderr].SHA256, "stdoutBytes": len(outputs[name]), "stderrBytes": 0})
+		}
+		return steps
+	}
+	oldSteps := makeSteps(oldNames, oldArgs, oldOutput, p.Streams, r.OriginalReceipts, true)
+	newSteps := makeSteps(newNames, newArgs, newOutput, r.Streams, r.Receipts, false)
+	var allowlist []any
+	for _, name := range newNames {
+		allowlist = append(allowlist, map[string]any{"name": name, "argv": newArgs[name], "timeoutSeconds": 30})
+	}
+	original := map[string]any{"startedAtUtc": "2020-01-01T00:00:00Z", "finishedAtUtc": "2020-01-01T00:01:30Z", "sourceCommit": s.SHA, "sourceTree": s.Tree, "ref": s.PublishedRef, "repo": repo, "prerequisites": []string{prerequisite}, "status": "PUSH_ATTEMPTED_REMOTE_OUTCOME_UNVERIFIED", "remoteVerificationError": "RuntimeError: 17-api-ref failed; exit=1 timeout=True", "pushAttempted": true, "pushTimedOut": false, "liveRemoteBuilderTouched": false, "pushAttemptLimit": 1, "pushExitCode": 0, "actionsDispatches": 0, "destinationMustBeAbsent": true, "primaryMutationAuthorized": false, "primaryUnchanged": true, "validation": map[string]any{"primaryBefore": state, "prerequisites": []string{prerequisite}, "importedCommit": s.SHA, "importedTree": s.Tree, "remoteRefAbsent": true, "localRefs": imported}, "primaryAfter": state, "remoteRefReadback": map[string]any{"code": 0, "timedOut": false, "stdout": readback}, "steps": oldSteps}
+	supplement := map[string]any{"schema": "cherri-windows-publication-readonly-reconciliation/1", "startedAtUtc": "2020-01-01T00:02:00Z", "finishedAtUtc": "2020-01-01T00:02:20Z", "sourceCommit": s.SHA, "sourceTree": s.Tree, "ref": s.PublishedRef, "status": "READ_ONLY_REMOTE_IDENTITY_VERIFIED", "error": nil, "reconciliationAttemptLimit": 1, "pushPerformed": false, "importPerformed": false, "actionsDispatches": 0, "privatePayloadExported": false, "originalsUnchanged": true, "primaryUnchanged": true, "publicationOriginalStatusRewritten": false, "canonicalPublicationAcceptanceGranted": false, "origin": origin, "primaryBefore": state, "primaryAfter": state, "remoteRefReadback": map[string]any{"code": 0, "timedOut": false, "stdout": readback}, "remoteBinding": map[string]any{"ref": ref, "commit": commit, "verifiedAtUtc": "2020-01-01T00:02:19Z"}, "finalRefs": final, "readOnlyAllowlist": allowlist, "steps": newSteps}
+	x := &finalProvenanceReconciledFixture{f: f, p: p, original: original, supplement: supplement}
+	x.save(t)
+	// Decode separate JSON objects so an adversarial change cannot accidentally
+	// mutate all observations through a shared synthetic map.
+	x.original = f.object(t, p.Result)
+	x.supplement = f.object(t, r.Result)
+	return x
+}
+
+func (x *finalProvenanceReconciledFixture) step(o map[string]any, name string) map[string]any {
+	for _, raw := range finalProvenanceArray(o, "steps") {
+		if s, ok := raw.(map[string]any); ok && finalProvenanceString(s, "name") == name {
+			return s
+		}
+	}
+	return nil
+}
+
+func (x *finalProvenanceReconciledFixture) archive(t *testing.T, original bool, mutate func(map[string][]byte)) {
+	t.Helper()
+	r := x.p.Reconciliation
+	archive, result, resultMember, streams, receipts := r.Archive, r.Result, "reconciliation.result.json", r.Streams, r.Receipts
+	files := map[string][]byte{"reconciliation.start.json": []byte("{\"synthetic\":true}\n")}
+	if original {
+		archive, result, resultMember, streams, receipts = r.OriginalArchive, x.p.Result, "publication.result.json", x.p.Streams, r.OriginalReceipts
+		files = map[string][]byte{}
+		for _, name := range []string{"preflight-context.original.json", "publication.push-attempt.json", "publication.start.json", "publication.validation.json"} {
+			files[name] = []byte("{\"synthetic\":true}\n")
+		}
+	}
+	read := func(id string) []byte {
+		b, err := os.ReadFile(x.f.manifest.Files[id])
+		if err != nil {
+			t.Fatal(err)
+		}
+		return b
+	}
+	files[resultMember] = read(result)
+	for name, pair := range streams {
+		files[name+".stdout.original"] = read(pair.Stdout)
+		files[name+".stderr.original"] = read(pair.Stderr)
+		files[name+".receipt.json"] = read(receipts[name])
+	}
+	if mutate != nil {
+		mutate(files)
+	}
+	data, inventory := ciTestZIP(t, files, zip.Deflate)
+	if original {
+		r.OriginalMembers = inventory
+	} else {
+		r.Members = inventory
+	}
+	x.f.putBytes(t, archive, data)
+}
+
+func (x *finalProvenanceReconciledFixture) save(t *testing.T) {
+	t.Helper()
+	r := x.p.Reconciliation
+	for _, phase := range []struct {
+		o        map[string]any
+		receipts map[string]string
+	}{{x.original, r.OriginalReceipts}, {x.supplement, r.Receipts}} {
+		for _, raw := range finalProvenanceArray(phase.o, "steps") {
+			step := raw.(map[string]any)
+			if id := phase.receipts[finalProvenanceString(step, "name")]; id != "" {
+				x.f.put(t, id, step)
+			}
+		}
+	}
+	x.f.put(t, x.p.Result, x.original)
+	x.archive(t, true, nil)
+	x.saveSupplementArchive(t)
+	x.f.expected.Publications["compiler"] = x.p
+}
+
+func (x *finalProvenanceReconciledFixture) saveSupplementArchive(t *testing.T) {
+	t.Helper()
+	r := x.p.Reconciliation
+	x.supplement["originalPublication"] = map[string]any{"status": x.original["status"], "finishedAtUtc": x.original["finishedAtUtc"], "result": x.f.expected.Files[x.p.Result], "archive": x.f.expected.Files[r.OriginalArchive]}
+	x.f.put(t, r.Result, x.supplement)
+	x.archive(t, false, nil)
+}
+
+func (x *finalProvenanceReconciledFixture) stream(t *testing.T, original bool, name, field string, b []byte) {
+	t.Helper()
+	o, streams := x.supplement, x.p.Reconciliation.Streams
+	if original {
+		o, streams = x.original, x.p.Streams
+	}
+	id := streams[name].Stdout
+	if field == "stderr" {
+		id = streams[name].Stderr
+	}
+	x.f.putBytes(t, id, b)
+	step := x.step(o, name)
+	step[field+"SHA256"] = finalProvenanceDigest(b)
+	step[field+"Bytes"] = len(b)
+}
+
+func (x *finalProvenanceReconciledFixture) inputs(t *testing.T) *finalProvenanceInputs {
+	t.Helper()
+	in := &finalProvenanceInputs{Expected: x.f.expected, Manifest: x.f.manifest, JSON: map[string]map[string]any{}, Bytes: map[string][]byte{}}
+	for id, pin := range x.f.expected.Files {
+		b, err := finalProvenanceRead(x.f.manifest.Files[id], pin, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		in.Bytes[id] = b
+	}
+	return in
+}
+
+func TestFinalProvenanceReconciledWindowsPublication(t *testing.T) {
+	cases := []struct {
+		name, want string
+		mutate     func(*finalProvenanceReconciledFixture)
+		after      func(*finalProvenanceReconciledFixture)
+	}{
+		{name: "separate_failed_original_and_successful_read_only_supplement"},
+		{name: "legacy_format_does_not_accept_failed_original", want: "Windows publication did not establish", after: func(x *finalProvenanceReconciledFixture) {
+			p := x.f.expected.Publications["compiler"]
+			p.Format = "windows-create-only/1"
+			x.f.expected.Publications["compiler"] = p
+		}},
+		{name: "missing_supplement_binding", want: "requires separate", after: func(x *finalProvenanceReconciledFixture) {
+			p := x.f.expected.Publications["compiler"]
+			p.Reconciliation = nil
+			x.f.expected.Publications["compiler"] = p
+		}},
+		{name: "missing_archive", want: "missing a pinned", after: func(x *finalProvenanceReconciledFixture) {
+			delete(x.f.expected.Files, x.p.Reconciliation.OriginalArchive)
+		}},
+		{name: "rewritten_original_status", want: "narrow original API-timeout", mutate: func(x *finalProvenanceReconciledFixture) { x.original["status"] = "PUBLISHED_REMOTE_VERIFIED" }},
+		{name: "different_original_failure", want: "narrow original API-timeout", mutate: func(x *finalProvenanceReconciledFixture) { x.original["remoteVerificationError"] = "other failure" }},
+		{name: "failed_original_push", want: "exactly one successful original push", mutate: func(x *finalProvenanceReconciledFixture) { x.original["pushExitCode"] = 1 }},
+		{name: "original_push_timeout", want: "narrow original API-timeout", mutate: func(x *finalProvenanceReconciledFixture) { x.original["pushTimedOut"] = true }},
+		{name: "second_push_allowed", want: "exactly one successful original push", mutate: func(x *finalProvenanceReconciledFixture) { x.original["pushAttemptLimit"] = 2 }},
+		{name: "wrong_supplement_schema", want: "schema or terminal outcome", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["schema"] = "made-up/1" }},
+		{name: "supplement_not_verified", want: "schema or terminal outcome", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["status"] = "PENDING" }},
+		{name: "supplement_repush", want: "operation or original-preservation scope", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["pushPerformed"] = true }},
+		{name: "supplement_import", want: "operation or original-preservation scope", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["importPerformed"] = true }},
+		{name: "originals_rewritten", want: "operation or original-preservation scope", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["originalsUnchanged"] = false }},
+		{name: "invented_acceptance_in_supplement", want: "operation or original-preservation scope", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.supplement["canonicalPublicationAcceptanceGranted"] = true
+		}},
+		{name: "different_source", want: "source tuple differs", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["sourceCommit"] = strings.Repeat("f", 40) }},
+		{name: "different_ref", want: "source tuple differs", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["ref"] = "refs/heads/other" }},
+		{name: "different_tree", want: "source tuple differs", mutate: func(x *finalProvenanceReconciledFixture) { x.original["sourceTree"] = strings.Repeat("f", 40) }},
+		{name: "wrong_original_digest", want: "different original result or archive", after: func(x *finalProvenanceReconciledFixture) {
+			o := x.f.object(t, x.p.Reconciliation.Result)
+			finalProvenanceObject(finalProvenanceObject(o, "originalPublication"), "result")["sha256"] = strings.Repeat("0", 64)
+			x.f.put(t, x.p.Reconciliation.Result, o)
+		}},
+		{name: "wrong_original_archive_bytes", want: "different original result or archive", after: func(x *finalProvenanceReconciledFixture) {
+			o := x.f.object(t, x.p.Reconciliation.Result)
+			finalProvenanceObject(finalProvenanceObject(o, "originalPublication"), "archive")["bytes"] = 1
+			x.f.put(t, x.p.Reconciliation.Result, o)
+		}},
+		{name: "different_original_finish", want: "original status and finish", after: func(x *finalProvenanceReconciledFixture) {
+			o := x.f.object(t, x.p.Reconciliation.Result)
+			finalProvenanceObject(o, "originalPublication")["finishedAtUtc"] = "2020-01-01T00:01:31Z"
+			x.f.put(t, x.p.Reconciliation.Result, o)
+		}},
+		{name: "replayed_supplement_time", want: "operation chronology", mutate: func(x *finalProvenanceReconciledFixture) { x.supplement["startedAtUtc"] = "2020-01-01T00:01:00Z" }},
+		{name: "missing_original_step", want: "inventory is incomplete", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.original["steps"] = finalProvenanceArray(x.original, "steps")[:18]
+		}},
+		{name: "missing_supplement_step", want: "inventory is incomplete", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.supplement["steps"] = finalProvenanceArray(x.supplement, "steps")[:8]
+		}},
+		{name: "reordered_supplement_steps", want: "identity or order differs", mutate: func(x *finalProvenanceReconciledFixture) {
+			steps := finalProvenanceArray(x.supplement, "steps")
+			steps[4], steps[5] = steps[5], steps[4]
+		}},
+		{name: "missing_original_stream", want: "inventory is incomplete", after: func(x *finalProvenanceReconciledFixture) { delete(x.p.Streams, "17-api-ref") }},
+		{name: "replayed_receipt_identity", want: "absent or replayed", after: func(x *finalProvenanceReconciledFixture) {
+			x.p.Reconciliation.Receipts["06-api-commit"] = x.p.Reconciliation.Receipts["05-api-ref"]
+		}},
+		{name: "changed_process_receipt", want: "differs from the original process receipt", after: func(x *finalProvenanceReconciledFixture) {
+			id := x.p.Reconciliation.Receipts["05-api-ref"]
+			o := x.f.object(t, id)
+			o["seconds"] = 99
+			x.f.put(t, id, o)
+		}},
+		{name: "changed_stream_hash", want: "not bound to original bytes", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.step(x.supplement, "05-api-ref")["stdoutSHA256"] = strings.Repeat("0", 64)
+		}},
+		{name: "raised_original_timeout", want: "original timeout budget differs", mutate: func(x *finalProvenanceReconciledFixture) { x.step(x.original, "17-api-ref")["timeoutSeconds"] = 60 }},
+		{name: "nonempty_original_timeout_output", want: "empty-stream cleaned-up failure", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.stream(t, true, "17-api-ref", "stdout", []byte("partial response"))
+		}},
+		{name: "uncleaned_original_timeout", want: "empty-stream cleaned-up failure", mutate: func(x *finalProvenanceReconciledFixture) { x.step(x.original, "17-api-ref")["ownedTreeKillExit"] = 1 }},
+		{name: "unverified_absent_ref", want: "original timeout budget differs", mutate: func(x *finalProvenanceReconciledFixture) { x.step(x.original, "14-remote-before")["exitCode"] = 0 }},
+		{name: "second_timed_out_step", want: "original timeout budget differs", mutate: func(x *finalProvenanceReconciledFixture) { x.step(x.supplement, "05-api-ref")["timedOut"] = true }},
+		{name: "different_create_only_lease", want: "single-source protocol", mutate: func(x *finalProvenanceReconciledFixture) {
+			a, _ := finalProvenanceStrings(x.step(x.original, "15-push")["argv"])
+			a[5] = "--force"
+			x.step(x.original, "15-push")["argv"] = a
+		}},
+		{name: "hidden_push_in_transfer_step", want: "bounded two-public-file copy", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.step(x.original, "05-transfer")["argv"] = x.step(x.original, "15-push")["argv"]
+		}},
+		{name: "verification_before_observations_finish", want: "verification time is outside", mutate: func(x *finalProvenanceReconciledFixture) {
+			finalProvenanceObject(x.supplement, "remoteBinding")["verifiedAtUtc"] = "2020-01-01T00:02:01Z"
+		}},
+		{name: "malformed_supplement_archive", want: "reconciled publication archive:", after: func(x *finalProvenanceReconciledFixture) {
+			x.f.putBytes(t, x.p.Reconciliation.Archive, []byte("not a ZIP"))
+		}},
+		{name: "swapped_supplement_archive", want: "reconciled publication archive:", after: func(x *finalProvenanceReconciledFixture) {
+			b, _ := os.ReadFile(x.f.manifest.Files[x.p.Reconciliation.OriginalArchive])
+			x.f.putBytes(t, x.p.Reconciliation.Archive, b)
+		}},
+		{name: "original_archive_result_drift", want: "archive member differs from independent original", after: func(x *finalProvenanceReconciledFixture) {
+			x.archive(t, true, func(files map[string][]byte) {
+				files["publication.result.json"] = append(files["publication.result.json"], '\n')
+			})
+			x.saveSupplementArchive(t)
+		}},
+		{name: "supplement_archive_receipt_drift", want: "archive member differs from independent original", after: func(x *finalProvenanceReconciledFixture) {
+			x.archive(t, false, func(files map[string][]byte) {
+				files["05-api-ref.receipt.json"] = append(files["05-api-ref.receipt.json"], '\n')
+			})
+		}},
+		{name: "supplement_archive_stream_drift", want: "archive member differs from independent original", after: func(x *finalProvenanceReconciledFixture) {
+			x.archive(t, false, func(files map[string][]byte) {
+				files["05-api-ref.stdout.original"] = append(files["05-api-ref.stdout.original"], '\n')
+			})
+		}},
+		{name: "missing_verification_time", want: "verification time is outside", mutate: func(x *finalProvenanceReconciledFixture) {
+			delete(finalProvenanceObject(x.supplement, "remoteBinding"), "verifiedAtUtc")
+		}},
+		{name: "verification_after_supplement_finish", want: "verification time is outside", mutate: func(x *finalProvenanceReconciledFixture) {
+			finalProvenanceObject(x.supplement, "remoteBinding")["verifiedAtUtc"] = "2020-01-01T00:02:21Z"
+		}},
+		{name: "wrong_read_only_allowlist", want: "allowlisted commands or limits", mutate: func(x *finalProvenanceReconciledFixture) {
+			finalProvenanceArray(x.supplement, "readOnlyAllowlist")[4].(map[string]any)["timeoutSeconds"] = 60
+		}},
+		{name: "mutating_api_command", want: "not the exact GET", mutate: func(x *finalProvenanceReconciledFixture) {
+			a, _ := finalProvenanceStrings(x.step(x.supplement, "05-api-ref")["argv"])
+			a = append(a, "--method", "POST")
+			x.step(x.supplement, "05-api-ref")["argv"] = a
+			finalProvenanceArray(x.supplement, "readOnlyAllowlist")[4].(map[string]any)["argv"] = a
+		}},
+		{name: "api_ref_wrong_source", want: "expected source and tree", mutate: func(x *finalProvenanceReconciledFixture) {
+			o := map[string]any{"ref": x.f.expected.Sources["compiler"].PublishedRef, "sha": strings.Repeat("e", 40), "type": "commit"}
+			b, _ := json.Marshal(o)
+			x.stream(t, false, "05-api-ref", "stdout", b)
+		}},
+		{name: "changed_api_projection", want: "changed the raw API binding", mutate: func(x *finalProvenanceReconciledFixture) {
+			finalProvenanceObject(finalProvenanceObject(x.supplement, "remoteBinding"), "commit")["tree"] = strings.Repeat("e", 40)
+		}},
+		{name: "changed_primary_fixture", want: "preserved primary checkout", mutate: func(x *finalProvenanceReconciledFixture) {
+			finalProvenanceObject(x.supplement, "primaryAfter")["preservedFixtureSHA256"] = strings.Repeat("e", 64)
+		}},
+		{name: "different_primary_stream", want: "primary checkout commands or original streams", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.stream(t, false, "09-primary-status-after", "stdout", []byte(" M tracked.txt\n"))
+		}},
+		{name: "extra_final_ref", want: "beyond the sole source tracking ref", mutate: func(x *finalProvenanceReconciledFixture) {
+			id := x.p.Reconciliation.Streams["07-final-refs"].Stdout
+			b, _ := os.ReadFile(x.f.manifest.Files[id])
+			x.stream(t, false, "07-final-refs", "stdout", append(b, []byte("refs/heads/unrelated "+strings.Repeat("e", 40)+"\n")...))
+		}},
+		{name: "missing_final_tracking_ref", want: "beyond the sole source tracking ref", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.stream(t, false, "07-final-refs", "stdout", []byte("refs/preparation/base "+strings.Repeat("d", 40)+"\n"+x.f.expected.Sources["compiler"].PublishedRef+" "+strings.Repeat("a", 40)+"\n"))
+		}},
+		{name: "changed_final_inventory_projection", want: "inventory disagrees", mutate: func(x *finalProvenanceReconciledFixture) {
+			x.supplement["finalRefs"] = []string{"refs/heads/substitute " + strings.Repeat("e", 40)}
+		}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			x := finalProvenanceReconciledFixtureNew(t)
+			if tc.mutate != nil {
+				tc.mutate(x)
+			}
+			x.save(t)
+			if tc.after != nil {
+				tc.after(x)
+			}
+			err := finalProvenanceValidatePublication(x.inputs(t), "compiler")
+			if tc.want == "" {
+				if err != nil {
+					t.Fatal(err)
+				}
+				return
+			}
+			if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("causal reconciliation boundary: got %v, want %q", err, tc.want)
+			}
+		})
+	}
+}
+
+// An explicit external invocation can exercise real hash-pinned originals. The
+// ordinary suite has no dependency on an operator's retained evidence directory.
+func TestFinalProvenanceReconciledWindowsOriginalIntake(t *testing.T) {
+	path, digest := os.Getenv("CHERRI_RECONCILED_PUBLICATION_EXPECTED"), os.Getenv("CHERRI_RECONCILED_PUBLICATION_EXPECTED_SHA256")
+	if path == "" && digest == "" {
+		t.Skip("no independently pinned original publication intake selected")
+	}
+	var spec struct {
+		Schema      string                         `json:"schema"`
+		Source      finalProvenanceSource          `json:"source"`
+		Publication finalProvenancePublication     `json:"publication"`
+		Files       map[string]finalProvenanceFile `json:"files"`
+		Paths       map[string]string              `json:"paths"`
+	}
+	if err := finalProvenanceReadContext(path, digest, &spec); err != nil {
+		t.Fatal(err)
+	}
+	if spec.Schema != "cherri-reconciled-publication-original-intake/1" || spec.Publication.Format != "windows-create-only-reconciled/1" || len(spec.Files) != len(spec.Paths) {
+		t.Fatal("invalid external original-intake specification")
+	}
+	in := &finalProvenanceInputs{Expected: finalProvenanceExpected{Sources: map[string]finalProvenanceSource{"compiler": spec.Source}, Publications: map[string]finalProvenancePublication{"compiler": spec.Publication}, Files: spec.Files}, JSON: map[string]map[string]any{}, Bytes: map[string][]byte{}}
+	for id, pin := range spec.Files {
+		b, err := finalProvenanceRead(spec.Paths[id], pin, true)
+		if err != nil {
+			t.Fatalf("%s: %v", id, err)
+		}
+		in.Bytes[id] = b
+	}
+	if err := finalProvenanceValidatePublication(in, "compiler"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// These authored receipts are test-only controls. They are never represented as
+// an actual publication, a Windows receipt, or authenticated remote evidence.
+type finalProvenanceOracleFixture struct {
+	f *finalProvenanceFixture
+	p finalProvenancePublication
+	o map[string]any
+}
+
+func finalProvenanceOracleFixtureNew(t *testing.T) *finalProvenanceOracleFixture {
+	t.Helper()
+	f := &finalProvenanceFixture{originals: t.TempDir(), expected: finalProvenanceExpected{Sources: map[string]finalProvenanceSource{}, Files: map[string]finalProvenanceFile{}, Publications: map[string]finalProvenancePublication{}}, manifest: finalProvenanceManifest{Files: map[string]string{}}}
+	s := finalProvenanceSource{Repository: "davidpovarsky/cherri", SHA: strings.Repeat("a", 40), Tree: strings.Repeat("b", 40), LocalRef: "refs/heads/agent/synthetic-source", PublishedRef: "refs/heads/agent/synthetic-publication"}
+	f.expected.Sources["compiler"] = s
+	p := finalProvenancePublication{Format: "oracle-atomic-create-only/1", Result: "oracle-result", PublisherRef: s.LocalRef, Streams: map[string]finalProvenanceStreams{}, Receipts: map[string]string{}}
+	source, origin := "/mnt/development/projects/worktrees/synthetic-source", "https://github.com/davidpovarsky/cherri.git"
+	names := []string{"01-origin", "02-push-origin", "03-head-before", "04-tree-before", "05-branch-before", "06-status-before", "07-local-refs-before", "08-remote-refs-before", "09-destination-before", "10-push", "11-destination-after", "12-api-ref", "13-api-commit", "14-remote-refs-after", "15-local-refs-after", "16-head-after", "17-tree-after", "18-branch-after", "19-status-after", "20-origin-after", "21-push-origin-after"}
+	// Independently authored command inventory, not generated by the validator.
+	git := func(a ...string) []string {
+		return append([]string{"/usr/bin/git", "-C", source, "-c", "push.followTags=false", "-c", "push.recurseSubmodules=no", "-c", "remote.origin.mirror=false"}, a...)
+	}
+	auth := func(a ...string) []string {
+		return append(git("-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential"), a...)
+	}
+	commands := map[string][]string{
+		"01-origin": git("remote", "get-url", "--all", "origin"), "02-push-origin": git("remote", "get-url", "--push", "--all", "origin"),
+		"03-head-before": git("rev-parse", "HEAD"), "04-tree-before": git("rev-parse", "HEAD^{tree}"), "05-branch-before": git("branch", "--show-current"), "06-status-before": git("status", "--porcelain=v1", "--untracked-files=all"),
+		"07-local-refs-before": git("for-each-ref", "--format=%(refname) %(objectname)"), "08-remote-refs-before": auth("ls-remote", "--refs", "origin"), "09-destination-before": auth("ls-remote", "--exit-code", "--refs", "origin", s.PublishedRef),
+		"10-push": auth("push", "--porcelain", "--force-with-lease="+s.PublishedRef+":", "origin", s.SHA+":"+s.PublishedRef), "11-destination-after": auth("ls-remote", "--exit-code", "--refs", "origin", s.PublishedRef),
+		"12-api-ref":           {"/usr/bin/gh", "api", "--method", "GET", "-H", "Cache-Control: no-cache", "repos/davidpovarsky/cherri/git/ref/heads/agent/synthetic-publication", "--jq", "{ref: .ref, sha: .object.sha, type: .object.type}"},
+		"13-api-commit":        {"/usr/bin/gh", "api", "--method", "GET", "-H", "Cache-Control: no-cache", "repos/davidpovarsky/cherri/git/commits/" + s.SHA, "--jq", "{sha: .sha, tree: .tree.sha, parents: [.parents[].sha]}"},
+		"14-remote-refs-after": auth("ls-remote", "--refs", "origin"), "15-local-refs-after": git("for-each-ref", "--format=%(refname) %(objectname)"),
+		"16-head-after": git("rev-parse", "HEAD"), "17-tree-after": git("rev-parse", "HEAD^{tree}"), "18-branch-after": git("branch", "--show-current"), "19-status-after": git("status", "--porcelain=v1", "--untracked-files=all"),
+		"20-origin-after": git("remote", "get-url", "--all", "origin"), "21-push-origin-after": git("remote", "get-url", "--push", "--all", "origin"),
+	}
+	local := s.LocalRef + " " + s.SHA + "\n"
+	remote := strings.Repeat("d", 40) + "\trefs/heads/main\n"
+	ref := map[string]any{"ref": s.PublishedRef, "sha": s.SHA, "type": "commit"}
+	commit := map[string]any{"sha": s.SHA, "tree": s.Tree, "parents": []string{strings.Repeat("d", 40)}}
+	refBytes, _ := json.Marshal(ref)
+	commitBytes, _ := json.Marshal(commit)
+	outputs := map[string]string{
+		"01-origin": origin + "\n", "02-push-origin": origin + "\n", "03-head-before": s.SHA + "\n", "04-tree-before": s.Tree + "\n", "05-branch-before": "agent/synthetic-source\n", "07-local-refs-before": local,
+		"08-remote-refs-before": remote, "10-push": "To " + origin + "\n*\t" + s.SHA + ":" + s.PublishedRef + "\t[new branch]\nDone\n", "11-destination-after": s.SHA + "\t" + s.PublishedRef + "\n", "12-api-ref": string(refBytes) + "\n", "13-api-commit": string(commitBytes) + "\n",
+		"14-remote-refs-after": remote + s.SHA + "\t" + s.PublishedRef + "\n", "15-local-refs-after": local + "refs/remotes/origin/agent/synthetic-publication " + s.SHA + "\n", "16-head-after": s.SHA + "\n", "17-tree-after": s.Tree + "\n", "18-branch-after": "agent/synthetic-source\n", "20-origin-after": origin + "\n", "21-push-origin-after": origin + "\n",
+	}
+	var processes []any
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	for i, name := range names {
+		pair := finalProvenanceStreams{"oracle-" + name + ".stdout", "oracle-" + name + ".stderr"}
+		f.putBytes(t, pair.Stdout, []byte(outputs[name]))
+		f.putBytes(t, pair.Stderr, []byte{})
+		p.Streams[name], p.Receipts[name] = pair, "oracle-"+name+".process"
+		limit, code := 30, 0
+		if name == "10-push" {
+			limit = 120
+		}
+		if name == "09-destination-before" {
+			code = 2
+		}
+		pins := map[string]any{}
+		for field, id := range map[string]string{"stdout": pair.Stdout, "stderr": pair.Stderr} {
+			pin := f.expected.Files[id]
+			pins[field] = map[string]any{"path": f.manifest.Files[id], "bytes": pin.Bytes, "sha256": pin.SHA256}
+		}
+		processes = append(processes, map[string]any{"label": name, "argv": commands[name], "cwd": source, "startedAt": start.Add(time.Duration(i*2) * time.Second).Format(time.RFC3339), "finishedAt": start.Add(time.Duration(i*2+1) * time.Second).Format(time.RFC3339), "seconds": 1, "limitSeconds": limit, "pid": 100 + i, "exitCode": code, "timedOut": false, "overflow": false, "signals": []any{}, "cleanup": map[string]any{"groupGone": true, "signals": []any{}}, "stdout": pins["stdout"], "stderr": pins["stderr"]})
+	}
+	state := map[string]any{"head": s.SHA, "tree": s.Tree, "branch": "agent/synthetic-source", "status": "", "origin": origin, "pushOrigin": origin}
+	o := map[string]any{"schema": "cherri-oracle-atomic-create-only-publication/1", "status": "PUBLISHED_REMOTE_VERIFIED", "sourceDirectory": source, "sourceCommit": s.SHA, "sourceTree": s.Tree, "localRef": s.LocalRef, "ref": s.PublishedRef, "startedAt": start.Format(time.RFC3339), "finishedAt": start.Add(time.Minute + 125*time.Millisecond).Format(time.RFC3339Nano), "elapsedSeconds": 60.125, "signals": []any{}, "bounds": map[string]any{"readSeconds": 30, "pushSeconds": 120, "ownerAlarmSeconds": 690, "ownerBudgetSeconds": 700, "hostSeconds": 720, "termCleanupSeconds": 5, "killCleanupSeconds": 5}, "destinationMustBeAbsent": true, "pushAttempted": true, "pushTimedOut": false, "sourceUnchanged": true, "sourceInputsUnchanged": true, "credentialPersisted": false, "privatePayloadExported": false, "liveRemoteBuilderTouched": false, "pushAttemptLimit": 1, "pushAttempts": 1, "pushExitCode": 0, "retries": 0, "actionsDispatches": 0, "credentialMode": "command-scoped-gh-helper", "sourceBefore": state, "sourceAfter": state, "remoteBinding": map[string]any{"ref": ref, "commit": commit, "verifiedAtUtc": "2020-01-01T00:00:26Z"}, "processes": processes}
+	x := &finalProvenanceOracleFixture{f: f, p: p, o: o}
+	x.save(t)
+	x.o = f.object(t, p.Result)
+	return x
+}
+
+func (x *finalProvenanceOracleFixture) save(t *testing.T) {
+	t.Helper()
+	for _, raw := range finalProvenanceArray(x.o, "processes") {
+		step := raw.(map[string]any)
+		x.f.put(t, x.p.Receipts[finalProvenanceString(step, "label")], step)
+	}
+	x.f.put(t, x.p.Result, x.o)
+	x.f.expected.Publications["compiler"] = x.p
+}
+func (x *finalProvenanceOracleFixture) step(name string) map[string]any {
+	for _, raw := range finalProvenanceArray(x.o, "processes") {
+		if step := raw.(map[string]any); finalProvenanceString(step, "label") == name {
+			return step
+		}
+	}
+	return nil
+}
+func (x *finalProvenanceOracleFixture) stream(t *testing.T, name, field string, b []byte) {
+	t.Helper()
+	pair := x.p.Streams[name]
+	id := pair.Stdout
+	if field == "stderr" {
+		id = pair.Stderr
+	}
+	x.f.putBytes(t, id, b)
+	pin := x.f.expected.Files[id]
+	x.step(name)[field] = map[string]any{"path": x.f.manifest.Files[id], "bytes": pin.Bytes, "sha256": pin.SHA256}
+}
+
+func TestFinalProvenanceOracleAtomicPublication(t *testing.T) {
+	cases := []struct {
+		name, want string
+		mutate     func(*finalProvenanceOracleFixture)
+		after      func(*finalProvenanceOracleFixture)
+	}{
+		{name: "one_actual_shape_with_atomic_absence_and_independent_readback"},
+		{name: "publisher_branch_may_differ_from_canonical_checkout", mutate: func(x *finalProvenanceOracleFixture) {
+			s := x.f.expected.Sources["compiler"]
+			s.LocalRef = s.PublishedRef
+			x.f.expected.Sources["compiler"] = s
+		}},
+		{name: "publisher_branch_snapshot_drift", want: "source snapshot changed", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(x.o, "sourceBefore")["branch"] = "agent/other-publisher-branch"
+		}},
+		{name: "outer_owner_signal", want: "outer process outcome", mutate: func(x *finalProvenanceOracleFixture) { x.o["signals"] = []string{"SIGTERM"} }},
+		{name: "outer_idle_gap_exceeds_budget", want: "outer process outcome", mutate: func(x *finalProvenanceOracleFixture) {
+			x.o["finishedAt"] = "2020-01-01T00:11:41.125Z"
+			x.o["elapsedSeconds"] = 701.125
+		}},
+		{name: "source_commit_changed", want: "source, platform", mutate: func(x *finalProvenanceOracleFixture) { x.o["sourceCommit"] = strings.Repeat("e", 40) }},
+		{name: "source_tree_changed", want: "source, platform", mutate: func(x *finalProvenanceOracleFixture) { x.o["sourceTree"] = strings.Repeat("e", 40) }},
+		{name: "published_ref_changed", want: "source, platform", mutate: func(x *finalProvenanceOracleFixture) { x.o["ref"] = "refs/heads/main" }},
+		{name: "failed_original_cannot_pass", want: "source, platform", mutate: func(x *finalProvenanceOracleFixture) { x.o["status"] = "PUSH_ATTEMPTED_REMOTE_OUTCOME_UNVERIFIED" }},
+		{name: "windows_source_directory_cannot_be_relabeled", want: "source, platform", mutate: func(x *finalProvenanceOracleFixture) { x.o["sourceDirectory"] = "C:/synthetic" }},
+		{name: "absence_requirement_removed", want: "scope flag", mutate: func(x *finalProvenanceOracleFixture) { x.o["destinationMustBeAbsent"] = false }},
+		{name: "second_push_not_admitted", want: "attempt or operation", mutate: func(x *finalProvenanceOracleFixture) { x.o["pushAttempts"] = 2 }},
+		{name: "retry_not_admitted", want: "attempt or operation", mutate: func(x *finalProvenanceOracleFixture) { x.o["retries"] = 1 }},
+		{name: "credential_persistence_not_admitted", want: "scope flag", mutate: func(x *finalProvenanceOracleFixture) { x.o["credentialPersisted"] = true }},
+		{name: "missing_process", want: "inventory is incomplete", mutate: func(x *finalProvenanceOracleFixture) { x.o["processes"] = finalProvenanceArray(x.o, "processes")[:20] }},
+		{name: "missing_receipt", want: "inventory is incomplete", after: func(x *finalProvenanceOracleFixture) {
+			p := x.f.expected.Publications["compiler"]
+			delete(p.Receipts, "10-push")
+			x.f.expected.Publications["compiler"] = p
+		}},
+		{name: "replayed_stream_identity", want: "absent or replayed", after: func(x *finalProvenanceOracleFixture) {
+			p := x.f.expected.Publications["compiler"]
+			p.Streams["02-push-origin"] = p.Streams["01-origin"]
+			x.f.expected.Publications["compiler"] = p
+		}},
+		{name: "process_receipt_drift", want: "original receipt", after: func(x *finalProvenanceOracleFixture) {
+			r := x.f.object(t, x.p.Receipts["10-push"])
+			r["pid"] = 999
+			x.f.put(t, x.p.Receipts["10-push"], r)
+		}},
+		{name: "stream_byte_drift", want: "independently pinned bytes", after: func(x *finalProvenanceOracleFixture) {
+			x.f.putBytes(t, x.p.Streams["10-push"].Stdout, []byte("changed\n"))
+		}},
+		{name: "failed_push_process", want: "process result", mutate: func(x *finalProvenanceOracleFixture) { x.step("10-push")["exitCode"] = 1 }},
+		{name: "timed_out_process", want: "process result", mutate: func(x *finalProvenanceOracleFixture) { x.step("12-api-ref")["timedOut"] = true }},
+		{name: "surviving_owned_group", want: "process result", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(x.step("10-push"), "cleanup")["groupGone"] = false
+		}},
+		{name: "cleanup_signal_on_claimed_success", want: "process result", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(x.step("10-push"), "cleanup")["signals"] = []string{"SIGTERM"}
+		}},
+		{name: "read_deadline_widened", want: "original deadline", mutate: func(x *finalProvenanceOracleFixture) { x.step("12-api-ref")["limitSeconds"] = 31 }},
+		{name: "push_deadline_widened", want: "original deadline", mutate: func(x *finalProvenanceOracleFixture) { x.step("10-push")["limitSeconds"] = 121 }},
+		{name: "overlapping_process_chronology", want: "process chronology", mutate: func(x *finalProvenanceOracleFixture) { x.step("10-push")["startedAt"] = "2020-01-01T00:00:00Z" }},
+		{name: "empty_lease_removed", want: "exact command", mutate: func(x *finalProvenanceOracleFixture) {
+			a, _ := finalProvenanceStrings(x.step("10-push")["argv"])
+			for i, v := range a {
+				if strings.HasPrefix(v, "--force-with-lease=") {
+					a = append(a[:i], a[i+1:]...)
+					break
+				}
+			}
+			x.step("10-push")["argv"] = a
+		}},
+		{name: "nonempty_lease_not_create_only", want: "exact command", mutate: func(x *finalProvenanceOracleFixture) {
+			a, _ := finalProvenanceStrings(x.step("10-push")["argv"])
+			for i, v := range a {
+				if strings.HasPrefix(v, "--force-with-lease=") {
+					a[i] += strings.Repeat("d", 40)
+				}
+			}
+			x.step("10-push")["argv"] = a
+		}},
+		{name: "extra_refspec", want: "exact command", mutate: func(x *finalProvenanceOracleFixture) {
+			a, _ := finalProvenanceStrings(x.step("10-push")["argv"])
+			x.step("10-push")["argv"] = append(a, "HEAD:refs/heads/extra")
+		}},
+		{name: "different_credential_helper", want: "exact command", mutate: func(x *finalProvenanceOracleFixture) {
+			a, _ := finalProvenanceStrings(x.step("10-push")["argv"])
+			for i, v := range a {
+				if v == "credential.helper=!gh auth git-credential" {
+					a[i] = "credential.helper=store"
+				}
+			}
+			x.step("10-push")["argv"] = a
+		}},
+		{name: "push_destination_changed", want: "snapshot does not join", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "02-push-origin", "stdout", []byte("https://github.com/other/repository.git\n"))
+		}},
+		{name: "source_dirty_after", want: "source snapshot changed", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(x.o, "sourceAfter")["status"] = " M tracked.go"
+		}},
+		{name: "destination_already_present", want: "destination absence", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "09-destination-before", "stdout", []byte(strings.Repeat("a", 40)+"\trefs/heads/agent/synthetic-publication\n"))
+		}},
+		{name: "full_inventory_already_contains_destination", want: "destination was present", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "08-remote-refs-before", "stdout", []byte(strings.Repeat("d", 40)+"\trefs/heads/main\n"+strings.Repeat("a", 40)+"\trefs/heads/agent/synthetic-publication\n"))
+		}},
+		{name: "remote_ref_changed_outside_destination", want: "full remote inventory", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "14-remote-refs-after", "stdout", []byte(strings.Repeat("e", 40)+"\trefs/heads/main\n"+strings.Repeat("a", 40)+"\trefs/heads/agent/synthetic-publication\n"))
+		}},
+		{name: "duplicate_full_remote_ref", want: "duplicate original ref", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "08-remote-refs-before", "stdout", []byte(strings.Repeat("d", 40)+"\trefs/heads/main\n"+strings.Repeat("d", 40)+"\trefs/heads/main\n"))
+		}},
+		{name: "unrelated_local_ref_created", want: "unrelated local refs", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "15-local-refs-after", "stdout", []byte("refs/heads/agent/synthetic-source "+strings.Repeat("a", 40)+"\nrefs/heads/extra "+strings.Repeat("e", 40)+"\n"))
+		}},
+		{name: "wrong_tracking_ref_target", want: "unrelated local refs", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "15-local-refs-after", "stdout", []byte("refs/heads/agent/synthetic-source "+strings.Repeat("a", 40)+"\nrefs/remotes/origin/agent/synthetic-publication "+strings.Repeat("e", 40)+"\n"))
+		}},
+		{name: "push_reports_existing_branch", want: "selected new branch", mutate: func(x *finalProvenanceOracleFixture) {
+			x.stream(t, "10-push", "stdout", []byte("Everything up-to-date\n"))
+		}},
+		{name: "different_api_endpoint", want: "exact command", mutate: func(x *finalProvenanceOracleFixture) {
+			a, _ := finalProvenanceStrings(x.step("12-api-ref")["argv"])
+			a[6] = "repos/davidpovarsky/cherri/git/ref/heads/main"
+			x.step("12-api-ref")["argv"] = a
+		}},
+		{name: "api_tree_differs", want: "independent API", mutate: func(x *finalProvenanceOracleFixture) {
+			b, _ := json.Marshal(map[string]any{"sha": strings.Repeat("a", 40), "tree": strings.Repeat("e", 40), "parents": []string{strings.Repeat("d", 40)}})
+			x.stream(t, "13-api-commit", "stdout", b)
+		}},
+		{name: "remote_binding_changed", want: "remote binding", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(finalProvenanceObject(x.o, "remoteBinding"), "ref")["sha"] = strings.Repeat("e", 40)
+		}},
+		{name: "verification_time_missing", want: "verification time", mutate: func(x *finalProvenanceOracleFixture) {
+			delete(finalProvenanceObject(x.o, "remoteBinding"), "verifiedAtUtc")
+		}},
+		{name: "verification_precedes_api_commit", want: "verification time", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(x.o, "remoteBinding")["verifiedAtUtc"] = "2020-01-01T00:00:24Z"
+		}},
+		{name: "verification_after_operation", want: "verification time", mutate: func(x *finalProvenanceOracleFixture) {
+			finalProvenanceObject(x.o, "remoteBinding")["verifiedAtUtc"] = "2020-01-01T00:01:01Z"
+		}},
+		{name: "oracle_receipt_not_windows_publication", want: "Windows publication", after: func(x *finalProvenanceOracleFixture) {
+			p := x.f.expected.Publications["compiler"]
+			p.Format = "windows-create-only/1"
+			x.f.expected.Publications["compiler"] = p
+		}},
+		{name: "oracle_receipt_not_legacy_publication", want: "source publication result", after: func(x *finalProvenanceOracleFixture) {
+			p := x.f.expected.Publications["compiler"]
+			p.Format = "source-create-only/1"
+			x.f.expected.Publications["compiler"] = p
+		}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			x := finalProvenanceOracleFixtureNew(t)
+			if tc.mutate != nil {
+				tc.mutate(x)
+			}
+			x.save(t)
+			if tc.after != nil {
+				tc.after(x)
+			}
+			in := (&finalProvenanceReconciledFixture{f: x.f}).inputs(t)
+			err := finalProvenanceValidatePublication(in, "compiler")
+			if tc.want == "" {
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("want rejection %q; got %v", tc.want, err)
+			}
+		})
+	}
+}
+
+func TestFinalProvenancePublicationFormatDispatch(t *testing.T) {
+	f := finalProvenanceFixtureNew(t)
+	in := (&finalProvenanceReconciledFixture{f: f}).inputs(t)
+	for _, tc := range []struct{ name, role string }{{"existing_windows_strict", "implementation"}, {"existing_nonforce_source", "compiler"}, {"existing_docs_main", "docs"}} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := finalProvenanceValidatePublication(in, tc.role); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+	t.Run("existing_reconciled_windows", func(t *testing.T) {
+		x := finalProvenanceReconciledFixtureNew(t)
+		if err := finalProvenanceValidatePublication(x.inputs(t), "compiler"); err != nil {
+			t.Fatal(err)
+		}
+	})
 }

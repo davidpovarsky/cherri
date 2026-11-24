@@ -195,11 +195,33 @@ func p15OptionalFallthroughError(actions []map[string]any, branch bool) error {
 	envelope := g.header("echo")
 	seed := g.get("arg_0", envelope)
 	if branch {
-		// The existing declared Text parameter is decoded from a Dictionary;
-		// its ordinary Text comparison retains the canonical String coercion.
-		input := p15FunctionEdge(seed)
-		input["Value"].(map[string]any)["Aggrandizements"] = []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}}
-		group := g.conditional(4, input, "WFConditionalActionString", "RETURN")
+		// The declared Text parameter is decoded from this function's actual
+		// arg_0 producer. N03 owns the explicit Text snapshots and Boolean
+		// comparison, followed by the authored return branch.
+		region, err := p15N03ExactNativeRegionAt(actions, len(g.expected))
+		if err != nil {
+			return err
+		}
+		left := map[string]any{"Type": "ActionOutput", "OutputUUID": seed, "OutputName": "seed"}
+		if region.Operator != 4 || !reflect.DeepEqual(region.Left, left) || region.Right != "RETURN" || len(region.Result) != 2 {
+			return fmt.Errorf("optional return exact Text operand/operator/result differs")
+		}
+		inner := p15Param(actions[region.InnerStart])["GroupingIdentifier"].(string)
+		for group := range g.groups {
+			if strings.EqualFold(group, inner) {
+				return fmt.Errorf("optional return reuses an exact Text condition group")
+			}
+		}
+		g.groups[inner] = true
+		// Only a fully independently validated region is composed into the
+		// surrounding function oracle. No unvalidated operation is adopted.
+		for _, action := range actions[region.Start:region.Next] {
+			g.expected = append(g.expected, p15SCCopy(action).(map[string]any))
+		}
+		if _, err := p15N03ExactResultGuard(actions, region, region.Next); err != nil {
+			return err
+		}
+		group := g.conditional(4, p15FunctionEdge(region.Result["OutputUUID"].(string)), "WFNumberValue", float64(1))
 		g.output(p15OptionalCarrierGraph(g, "has_value", "value", "_cherri_optional_result_v1", true, p15FunctionString("")))
 		g.boundary(group, 2, false)
 	}
@@ -239,7 +261,7 @@ func TestP15OptionalReturnCompleteness(t *testing.T) {
 			}
 			faults := []string{"changed_presence", "invented_empty_value", "lost_carrier", "stale_output", "missing_decoder"}
 			if branch {
-				faults = append(faults, "lost_text_coercion")
+				faults = append(faults, "lost_text_coercion", "wrong_text_operand", "inverted_text_operator", "detached_text_guard")
 			}
 			for _, fault := range faults {
 				t.Run(fault, func(t *testing.T) {
@@ -277,17 +299,24 @@ func TestP15OptionalReturnCompleteness(t *testing.T) {
 						p15Param(bad[output])["WFOutput"] = p15FunctionText("MUST_NOT_LEAK")
 					case "missing_decoder":
 						p15Param(bad[decoder])["WFDictionaryKey"] = "value"
-					case "lost_text_coercion":
-						found := false
-						for _, action := range bad {
-							p := p15Param(action)
-							if p["WFConditionalActionString"] == "RETURN" {
-								delete(p["WFInput"].(map[string]any)["Variable"].(map[string]any)["Value"].(map[string]any), "Aggrandizements")
-								found = true
-							}
+					case "lost_text_coercion", "wrong_text_operand", "inverted_text_operator", "detached_text_guard":
+						regions, err := p15N03ExactNativeRegions(bad, 1)
+						if err != nil {
+							t.Fatal("positive exact Text mutation target missing", err)
 						}
-						if !found {
-							t.Fatal("Text comparison coercion target missing")
+						region := regions[0]
+						switch fault {
+						case "lost_text_coercion":
+							// Preserve the historical control identity: remove the
+							// explicit Text carrier now owned by the snapshot.
+							p15Param(bad[region.LeftSnapshot])["WFTextActionText"] = region.Left
+						case "wrong_text_operand":
+							wrong := map[string]any{"Type": "ActionOutput", "OutputUUID": p15Param(bad[0])["UUID"], "OutputName": "seed"}
+							p15Param(bad[region.LeftSnapshot])["WFTextActionText"] = p15N03AffixedTokenString("~", wrong, "")
+						case "inverted_text_operator":
+							p15Param(bad[region.InnerStart])["WFCondition"] = uint64(5)
+						case "detached_text_guard":
+							p15Param(bad[region.Next])["WFInput"] = map[string]any{"Type": "Variable", "Variable": p15FunctionEdge(p15Param(bad[0])["UUID"].(string))}
 						}
 					}
 					if p15OptionalFallthroughError(bad, branch) == nil {

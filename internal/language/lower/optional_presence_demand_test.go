@@ -6,6 +6,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 func TestOptionalPresenceDemandFollowsActualConsumers(t *testing.T) {
@@ -133,5 +134,62 @@ func TestLoopResultItemsCountPresenceDemand(t *testing.T) {
 				t.Fatal("presence collection changed authored syntax")
 			}
 		})
+	}
+}
+
+func TestLoopResultCellsRequireNormalCompletion(t *testing.T) {
+	// Hold the checked element type constant while changing actual source flow.
+	// This exercises lowering's guard without analysis rejecting the source first.
+	cases := []struct {
+		name, loop, termination string
+		needed                  bool
+	}{
+		{"repeat_return", "repeat 2", "return 7", false},
+		{"for_return", "for item in [1,2]", "return 7", false},
+		{"repeat_if_all_return", "repeat 2", "if flag {return 7} else {return 8}", false},
+		{"for_menu_all_return", "for item in [1,2]", "menu(\"Pick\") {case \"A\" {return 7} case \"B\" {return 8}}", false},
+		{"repeat_if_one_return", "repeat 2", "if flag {return 7}", true},
+		{"for_menu_one_return", "for item in [1,2]", "menu(\"Pick\") {case \"A\" {return 7} case \"B\" {let kept=8}}", true},
+		{"repeat_inner_zero_return", "repeat 2", "repeat 0 {return 7}", true},
+		{"for_inner_zero_return", "for item in [1,2]", "for nested in [] {return 7}", true},
+		{"repeat_zero_normal_body", "repeat 0", "", true},
+		{"for_empty_normal_body", "for item in []", "", true},
+	}
+	for _, tc := range cases {
+		for _, payload := range []struct {
+			name, source string
+			element      types.Type
+		}{
+			{"list", "[\"tail\"]", types.NewList(types.Text)},
+			{"optional", "none", types.OptionalType{Inner: types.Number}},
+		} {
+			t.Run(tc.name+"/"+payload.name, func(t *testing.T) {
+				text := "let flag=true\nlet values=" + tc.loop + " {" + tc.termination + "\nyield " + payload.source + "}"
+				parser := syntax.NewParser(source.NewFile("loop-normal-completion.cherri", "loop-normal-completion.cherri", 1, text))
+				program := parser.ParseProgram()
+				if len(parser.Errors()) != 0 {
+					t.Fatal(parser.Errors())
+				}
+				before := syntax.Format(program)
+				binding, okay := program.Statements[len(program.Statements)-1].(*syntax.BindingStmt)
+				if !okay {
+					t.Fatal("fixture must bind the actual parsed loop")
+				}
+				lowerer := NewLowerer(nil)
+				lowerer.exprTypes = map[syntax.Expression]types.Type{binding.Value: types.NewList(payload.element)}
+				if got := lowerer.loopResultNeedsCells(binding.Value); got != tc.needed {
+					t.Fatalf("normal-completion cell demand: got %v, want %v", got, tc.needed)
+				}
+				// The same control flow never creates a cell demand for a
+				// present scalar element.
+				lowerer.exprTypes[binding.Value] = types.NewList(types.Number)
+				if lowerer.loopResultNeedsCells(binding.Value) {
+					t.Fatal("present scalar loop acquired a cell requirement")
+				}
+				if syntax.Format(program) != before {
+					t.Fatal("cell-demand check changed authored syntax")
+				}
+			})
+		}
 	}
 }

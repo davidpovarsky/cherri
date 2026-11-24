@@ -35,6 +35,19 @@ func storageProbeExpected(id string) (string, []storageProbeOperation, int) {
 	}
 }
 
+// Only statically Text type-name comparisons use the exact N03 primitive.
+// Stored AnyContent comparisons retain their existing native condition route.
+func storageProbeExactTypePairs(id string) [][2]string {
+	switch id {
+	case "qa-storage-text-same-run-v2":
+		return [][2]string{{"actualType", "expectedType"}}
+	case "qa-storage-scope-v2":
+		return [][2]string{{"globalType", "textType"}, {"localType", "textType"}}
+	default:
+		return nil
+	}
+}
+
 // Inspect the production compiler's emitted graph. This does not execute or
 // simulate storage, and cannot establish persistence or typed archival.
 func validateStorageProbeWire(id string, actions []map[string]any) error {
@@ -52,6 +65,86 @@ func validateStorageProbeWire(id string, actions []map[string]any) error {
 	clearIndex, err := validateP15DiagnosticZeroClear(typed)
 	if err != nil {
 		return err
+	}
+	// Preserve the authored comparisons and storage contract while admitting
+	// only the complete, independently checked exact-Text producer regions.
+	pairs := storageProbeExactTypePairs(id)
+	regions, err := p15N03ExactNativeRegions(actions, len(pairs))
+	if err != nil {
+		return err
+	}
+	exactActions, exactGuards := map[int]bool{}, map[int]bool{}
+	allProducers := map[string]map[string]any{}
+	producerIndexes := map[string]int{}
+	for index, action := range actions {
+		if uuid, okay := debugParamMap(action["WFWorkflowActionParameters"])["UUID"].(string); okay {
+			allProducers[uuid] = action
+			producerIndexes[uuid] = index
+		}
+	}
+	for index, region := range regions {
+		if region.Operator != 5 {
+			return fmt.Errorf("authored type-name inequality changed")
+		}
+		for side, name := range pairs[index] {
+			var found map[string]any
+			foundIndex := -1
+			for actionIndex, action := range actions {
+				parameters := debugParamMap(action["WFWorkflowActionParameters"])
+				if parameters["CustomOutputName"] == name {
+					if found != nil || action["WFWorkflowActionIdentifier"] != "is.workflow.actions.getitemtype" {
+						return fmt.Errorf("type-name comparison lost its unique real type producer")
+					}
+					found = parameters
+					foundIndex = actionIndex
+				}
+			}
+			if found == nil || foundIndex >= region.Start {
+				return fmt.Errorf("missing authored type producer %s", name)
+			}
+			operand := region.Left
+			if side == 1 {
+				operand = region.Right
+			}
+			uuid, edgeErr := p15N03ExactToken(operand)
+			wantOperand := map[string]any{"Type": "ActionOutput", "OutputUUID": found["UUID"], "OutputName": name}
+			if edgeErr != nil || uuid != found["UUID"] || !reflect.DeepEqual(operand, wantOperand) {
+				return fmt.Errorf("exact type comparison changed its authored operand %s", name)
+			}
+			sourceID, edgeErr := p15N03ExactToken(found["WFInput"])
+			producer := allProducers[sourceID]
+			if edgeErr != nil || producer == nil || producerIndexes[sourceID] >= foundIndex {
+				return fmt.Errorf("type-name observation lost its actual source")
+			}
+			parameters := debugParamMap(producer["WFWorkflowActionParameters"])
+			sourceName := ""
+			if side == 0 {
+				sourceName = map[string]string{"actualType": "restored", "globalType": "globalRead", "localType": "localRead"}[name]
+				if producer["WFWorkflowActionIdentifier"] != "is.workflow.actions.getstoredcontent" ||
+					parameters["WFStoredContentGlobalValue"] != (name != "localType") || parameters["CustomOutputName"] != sourceName {
+					return fmt.Errorf("type-name observation no longer consumes the required storage read")
+				}
+			} else {
+				sourceName = "globalValue"
+				if id == "qa-storage-text-same-run-v2" {
+					sourceName = "original"
+				}
+				if producer["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" || parameters["CustomOutputName"] != sourceName {
+					return fmt.Errorf("expected type no longer comes from the authored Text witness")
+				}
+			}
+			wantInput := p15FunctionAttachment(map[string]any{"Type": "ActionOutput", "OutputUUID": sourceID, "OutputName": sourceName})
+			if !reflect.DeepEqual(found["WFInput"], wantInput) {
+				return fmt.Errorf("type-name observation changed the authored source descriptor")
+			}
+		}
+		if _, err := p15N03ExactResultGuard(actions, region, region.Next); err != nil {
+			return err
+		}
+		exactGuards[region.Next] = true
+		for index := range region.ActionIndexes {
+			exactActions[index] = true
+		}
 	}
 	allowed := map[string]bool{
 		"comment": true, "gettext": true, "setvariable": true, "appendvariable": true,
@@ -85,13 +178,13 @@ func validateStorageProbeWire(id string, actions []map[string]any) error {
 	for index, action := range actions {
 		nativeID, _ := action["WFWorkflowActionIdentifier"].(string)
 		suffix := strings.TrimPrefix(nativeID, "is.workflow.actions.")
-		if (!allowed[suffix] && index != clearIndex) || nativeID != "is.workflow.actions."+suffix {
+		if (!allowed[suffix] && !exactActions[index] && index != clearIndex) || nativeID != "is.workflow.actions."+suffix {
 			return fmt.Errorf("unexpected effect: %s", nativeID)
 		}
 		p := debugParamMap(action["WFWorkflowActionParameters"])
 		visit(p)
-		if suffix == "conditional" && fmt.Sprint(p["WFControlFlowMode"]) == "0" {
-			if fmt.Sprint(p["WFCondition"]) != "5" {
+		if suffix == "conditional" && fmt.Sprint(p["WFControlFlowMode"]) == "0" && !exactActions[index] {
+			if !exactGuards[index] && fmt.Sprint(p["WFCondition"]) != "5" {
 				return fmt.Errorf("semantic comparison changed")
 			}
 			conditions++
@@ -227,11 +320,61 @@ func TestP15StorageProbeWireContractsAndCausalMutations(t *testing.T) {
 		if err := validateStorageProbeWire(id, actions); err != nil {
 			t.Fatalf("%s: %v", id, err)
 		}
-		for _, fault := range []string{"foreign-key", "scope", "no-cleanup", "constant-read", "comparison", "extra-network", "old-empty-seed", "clear-input", "nothing-input", "clear-target", "extra-nothing", "consumed-clear"} {
-			bytes, _ := json.Marshal(actions)
+		faults := []string{"foreign-key", "scope", "no-cleanup", "constant-read", "comparison", "extra-network", "old-empty-seed", "clear-input", "nothing-input", "clear-target", "extra-nothing", "consumed-clear", "extra-exact-effect"}
+		if len(storageProbeExactTypePairs(id)) > 0 {
+			faults = append(faults, "exact-casefold", "exact-pattern", "exact-constant-source", "exact-boolean-guard", "exact-boolean-arm", "exact-wrong-read-source", "exact-operand-descriptor", "exact-type-input-descriptor")
+		}
+		for _, fault := range faults {
+			// A JSON round trip erases native plist integer kinds. Retain the
+			// real wire kinds and prove the copied control before each fault.
+			copyBytes, err := plist.Marshal(actions, plist.XMLFormat)
+			if err != nil {
+				t.Fatal(err)
+			}
 			var altered []map[string]any
-			_ = json.Unmarshal(bytes, &altered)
+			if _, err := plist.Unmarshal(copyBytes, &altered); err != nil {
+				t.Fatal(err)
+			}
+			if err := validateStorageProbeWire(id, altered); err != nil {
+				t.Fatalf("%s: unchanged native copy failed before %s: %v", id, fault, err)
+			}
 			switch fault {
+			case "extra-exact-effect":
+				altered = append(altered, map[string]any{
+					"WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+					"WFWorkflowActionParameters": map[string]any{"WFInput": "unrelated", "WFReplaceTextFind": "x", "WFReplaceTextReplace": "y"},
+				})
+			case "exact-casefold", "exact-pattern", "exact-constant-source", "exact-boolean-guard", "exact-boolean-arm", "exact-wrong-read-source", "exact-operand-descriptor", "exact-type-input-descriptor":
+				regions, err := p15N03ExactNativeRegions(altered, len(storageProbeExactTypePairs(id)))
+				if err != nil || len(regions) == 0 {
+					t.Fatalf("%s: exact mutation precondition failed: %v", id, err)
+				}
+				region := regions[0]
+				switch fault {
+				case "exact-casefold":
+					debugParamMap(altered[region.Match]["WFWorkflowActionParameters"])["WFMatchTextCaseSensitive"] = false
+				case "exact-pattern":
+					debugParamMap(altered[region.Match]["WFWorkflowActionParameters"])["WFMatchTextPattern"] = ".*"
+				case "exact-constant-source":
+					debugParamMap(altered[region.LeftSnapshot]["WFWorkflowActionParameters"])["WFTextActionText"] = "~CONSTANT_TYPE"
+				case "exact-boolean-guard":
+					debugParamMap(altered[region.Next]["WFWorkflowActionParameters"])["WFCondition"] = uint64(5)
+				case "exact-boolean-arm":
+					debugParamMap(altered[region.TrueValue]["WFWorkflowActionParameters"])["WFNumberActionNumber"] = float64(0)
+				case "exact-wrong-read-source":
+					debugParamMap(altered[region.LeftSnapshot]["WFWorkflowActionParameters"])["WFTextActionText"] = debugParamMap(altered[region.RightSnapshot]["WFWorkflowActionParameters"])["WFTextActionText"]
+				case "exact-operand-descriptor":
+					region.Left.(map[string]any)["Aggrandizements"] = []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFNumberContentItem"}}
+				case "exact-type-input-descriptor":
+					name := storageProbeExactTypePairs(id)[0][0]
+					for _, action := range altered {
+						parameters := debugParamMap(action["WFWorkflowActionParameters"])
+						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getitemtype" && parameters["CustomOutputName"] == name {
+							input := parameters["WFInput"].(map[string]any)
+							input["Value"].(map[string]any)["Aggrandizements"] = []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFNumberContentItem"}}
+						}
+					}
+				}
 			case "foreign-key", "scope", "no-cleanup", "constant-read", "comparison":
 				for index, action := range altered {
 					name := fmt.Sprint(action["WFWorkflowActionIdentifier"])
@@ -254,7 +397,7 @@ func TestP15StorageProbeWireContractsAndCausalMutations(t *testing.T) {
 					}
 					if fault == "comparison" && name == "is.workflow.actions.conditional" &&
 						fmt.Sprint(p["WFControlFlowMode"]) == "0" {
-						p["WFCondition"] = 4
+						p["WFCondition"] = uint64(4)
 						break
 					}
 				}

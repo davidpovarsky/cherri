@@ -183,9 +183,19 @@ func p15N03AffixedTokenString(prefix string, ref map[string]any, suffix string) 
 
 // This complete sequence is independently specified from the authored operands.
 // It validates wire transport and Boolean polarity; it does not execute Apple.
-func (c *p15N03Cursor) exactValueComparison(name string, left map[string]any, code float64, right any) map[string]any {
+func (c *p15N03Cursor) exactValueComparison(name string, left any, code float64, right any) map[string]any {
+	var leftPayload any
+	switch value := left.(type) {
+	case string:
+		leftPayload = "~" + value
+	case map[string]any:
+		leftPayload = p15N03AffixedTokenString("~", value, "")
+	default:
+		c.err = fmt.Errorf("independent exact-comparison fixture has an invalid left operand")
+		return nil
+	}
 	var lhs = c.take("gettext", "_n03_exact_left", map[string]any{
-		"WFTextActionText": p15N03AffixedTokenString("~", left, ""),
+		"WFTextActionText": leftPayload,
 	}, true)
 	var rightPayload any
 	switch value := right.(type) {

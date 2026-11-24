@@ -17,6 +17,19 @@ type loopResultFrame struct {
 }
 
 func (l *Lowerer) loopResultNeedsCells(expression syntax.Expression) bool {
+	// A return-only body contributes no normally completed iteration result.
+	// Match analysis and final-yield registration before inspecting the type of
+	// an unreachable trailing yield. The loop itself may still execute zero times.
+	var body *syntax.BlockStmt
+	switch loop := expression.(type) {
+	case *syntax.RepeatStmt:
+		body = loop.BodyBlock
+	case *syntax.ForStmt:
+		body = loop.BodyBlock
+	}
+	if !optionalJoinMayContinue(body) {
+		return false
+	}
 	result, ok := l.exprTypes[expression].(types.ListType)
 	return ok && (nativeListElementType(result.Element) || types.MayBeAbsent(result.Element))
 }

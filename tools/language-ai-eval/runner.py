@@ -109,6 +109,17 @@ def wait_for_posix_group_exit(group, deadline):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise ValueError("adapter process-group cleanup deadline expired")
+        # Absence of this exact owned group is already a conclusive kernel
+        # observation. Do not require an unrelated global process-table scan
+        # after the reaped direct child was the group's last member.
+        try:
+            os.killpg(group, 0)
+        except ProcessLookupError:
+            if time.monotonic() >= deadline:
+                raise ValueError("adapter process-group cleanup deadline expired")
+            return
+        except OSError:
+            raise ValueError("adapter process-group state could not be observed") from None
         try:
             observed = subprocess.run(["ps", "-A", "-o", "pgid=,stat="],
                                       stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,

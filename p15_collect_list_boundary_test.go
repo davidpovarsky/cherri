@@ -63,3 +63,87 @@ func TestP15F04SupportedLoopResultsRemainAvailable(t *testing.T) {
 		})
 	}
 }
+
+func TestP15F04ReturnOnlyLoopBoundaries(t *testing.T) {
+	for _, tc := range []struct {
+		name, loop, termination, payload, nativeKind string
+		repeatCount                                  int
+	}{
+		{"repeat_zero_list", "repeat 0", "return 7", "[\"tail\"]", "repeat.count", 0},
+		{"for_list", "for item in [1,2]", "return 7", "[\"tail\"]", "repeat.each", -1},
+		{"for_optional", "for item in [1,2]", "return 7", "none", "repeat.each", -1},
+		{"for_zero_optional", "for item in []", "return 7", "none", "repeat.each", -1},
+		{"repeat_if_all_return", "repeat 2", "if flag {return 7} else {return 8}", "[\"tail\"]", "repeat.count", 2},
+		{"for_menu_all_return", "for item in [1,2]", "menu(\"Pick\") {case \"A\" {return 7} case \"B\" {return 8}}", "none", "repeat.each", -1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "function finished(flag:Bool)->Number {let values=" + tc.loop + " {" + tc.termination + "\nyield " + tc.payload + "}\nreturn 0}\nreturn finished(true)"
+			for _, diagnostic := range p15TypeDiagnostics(t, source) {
+				if diagnostic.Severity == analysis.SeverityError {
+					t.Fatal(diagnostic)
+				}
+			}
+			actions := p15CompiledActions(t, source)
+			starts, ends := 0, 0
+			group := ""
+			for _, action := range actions {
+				identifier := action["WFWorkflowActionIdentifier"]
+				parameters := p15Param(action)
+				if identifier == "is.workflow.actions.appendvariable" {
+					name, _ := parameters["WFVariableName"].(string)
+					if strings.Contains(name, "loopResults_") {
+						t.Fatal("return-only body acquired a result-cell append")
+					}
+				}
+				if identifier != "is.workflow.actions."+tc.nativeKind {
+					continue
+				}
+				switch p15Int(parameters["WFControlFlowMode"]) {
+				case 0:
+					starts++
+					group, _ = parameters["GroupingIdentifier"].(string)
+					if group == "" {
+						t.Fatal("loop start lost its group identity")
+					}
+					if tc.repeatCount >= 0 && p15Int(parameters["WFRepeatCount"]) != tc.repeatCount {
+						t.Fatal("ordinary loop count changed", parameters)
+					}
+				case 2:
+					ends++
+					if group == "" || parameters["GroupingIdentifier"] != group {
+						t.Fatal("loop end lost its start ancestry")
+					}
+				}
+			}
+			if starts != 1 || ends != 1 {
+				t.Fatalf("ordinary loop boundaries changed: starts=%d ends=%d", starts, ends)
+			}
+		})
+	}
+}
+
+func TestP15F04NormalContinuationKeepsShapeBoundary(t *testing.T) {
+	// Removing one guaranteed return must not admit a normally completed
+	// List/Optional result. A return inside a zero-iteration inner loop is not
+	// a guaranteed return from the outer body.
+	for _, tc := range []struct{ name, loop, termination, payload string }{
+		{"if_one_path_returns_list", "repeat 2", "if flag {return 7} else {let kept=8}", "[\"tail\"]"},
+		{"if_one_path_returns_optional", "repeat 2", "if flag {return 7} else {let kept=8}", "none"},
+		{"menu_one_path_returns_optional", "for item in [1,2]", "menu(\"Pick\") {case \"A\" {return 7} case \"B\" {let kept=8}}", "none"},
+		{"inner_zero_repeat_return", "repeat 2", "repeat 0 {return 7}", "[\"tail\"]"},
+		{"zero_repeat_normal_result", "repeat 0", "", "[\"tail\"]"},
+		{"zero_for_normal_optional", "for item in []", "", "none"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "function finished(flag:Bool)->Number {let values=" + tc.loop + " {" + tc.termination + "\nyield " + tc.payload + "}\nreturn 0}\nreturn finished(true)"
+			diagnostics := p15TypeDiagnostics(t, source)
+			if err := p15ExactLiteralDiagnostic(diagnostics, source, tc.payload, analysis.CodeTargetValueShape); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := CompileSourceToPlist("p15-f04-normal-continuation.cherri", source)
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
+				t.Fatalf("normal List/Optional result escaped the shape boundary: bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
+}

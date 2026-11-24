@@ -152,6 +152,46 @@ class EvaluationHarnessTests(unittest.TestCase):
         script.write_text("import time\ntime.sleep(2)\n", encoding="utf-8")
         with self.assertRaises(subprocess.TimeoutExpired):
             runner.run_process([sys.executable, str(script)], {}, 0.05)
+        if os.name == "nt":
+            return
+        # Synthetic observer controls do not replace the actual timed-out
+        # process above or the descendant lock/effect case below.
+        with self.subTest(observer="owned_group_absent"):
+            with patch.object(runner.os, "killpg", side_effect=ProcessLookupError) as probe, \
+                    patch.object(runner.subprocess, "run") as table, \
+                    patch.object(runner.time, "monotonic", return_value=10.0):
+                runner.wait_for_posix_group_exit(101, 11.0)
+                probe.assert_called_once_with(101, 0)
+                table.assert_not_called()
+        with self.subTest(observer="permission_failure_is_not_absence"):
+            with patch.object(runner.os, "killpg", side_effect=PermissionError), \
+                    patch.object(runner.subprocess, "run") as table, \
+                    patch.object(runner.time, "monotonic", return_value=10.0):
+                with self.assertRaisesRegex(ValueError, "could not be observed"):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+                table.assert_not_called()
+        with self.subTest(observer="absence_after_deadline_is_not_success"):
+            with patch.object(runner.os, "killpg", side_effect=ProcessLookupError), \
+                    patch.object(runner.subprocess, "run") as table, \
+                    patch.object(runner.time, "monotonic", side_effect=[10.0, 12.0]):
+                with self.assertRaisesRegex(ValueError, "deadline expired"):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+                table.assert_not_called()
+        with self.subTest(observer="live_group_still_requires_observation"):
+            with patch.object(runner.os, "killpg", return_value=None), \
+                    patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(["ps"], 1.0)), \
+                    patch.object(runner.time, "monotonic", return_value=10.0):
+                with self.assertRaisesRegex(ValueError, "could not be observed"):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+        for state in ("S", "Zl"):
+            with self.subTest(observer="live_or_threaded_zombie_must_not_return", state=state):
+                with patch.object(runner.os, "killpg", side_effect=[None, ProcessLookupError]) as probe, \
+                        patch.object(runner.subprocess, "run", return_value=subprocess.CompletedProcess(["ps"], 0, "101 " + state + "\n202 Z\n")) as table, \
+                        patch.object(runner.time, "monotonic", return_value=10.0):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+                    self.assertEqual(probe.call_count, 2)
+                    table.assert_called_once()
+                    self.assertEqual(table.call_args.kwargs["timeout"], 1.0)
 
     def test_timeout_stops_a_spawned_worker(self):
         script = self.root / "parent.py"

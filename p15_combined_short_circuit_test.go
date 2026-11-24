@@ -209,6 +209,7 @@ type p15SCView struct {
 	results                                map[string]map[string]any
 	checks                                 map[string]int
 	comparisons                            map[string]int
+	exactText                              map[string]p15N03ExactNativeRegion
 	initialCounter, finalText, finalOutput int
 }
 type p15SCCursor struct {
@@ -299,6 +300,35 @@ func (c *p15SCCursor) comparison(name string, left map[string]any, code uint64, 
 	c.boolean(0, "", false)
 	return c.end(group, name, true)
 }
+func (c *p15SCCursor) exactComparison(owner, name string, left map[string]any, code uint64, right any) map[string]any {
+	if c.err != nil {
+		return nil
+	}
+	region, err := p15N03ExactNativeRegionAt(c.actions, c.index)
+	if err != nil {
+		c.err = fmt.Errorf("native exact Text comparison differs: %w", err)
+		return nil
+	}
+	wantResult := map[string]any{"Type": "ActionOutput", "OutputUUID": region.Result["OutputUUID"]}
+	if name != "" {
+		wantResult["OutputName"] = name
+	}
+	if region.Operator != code || !reflect.DeepEqual(region.Left, left) ||
+		!reflect.DeepEqual(region.Right, right) || !reflect.DeepEqual(region.Result, wantResult) {
+		c.err = fmt.Errorf("native exact Text comparison differs: authored operand/operator/result binding %s", owner)
+		return nil
+	}
+	group := p15SCParams(c.actions[region.InnerStart])["GroupingIdentifier"].(string)
+	if c.groups[strings.ToLower(group)] {
+		c.err = fmt.Errorf("missing or reused native condition group")
+		return nil
+	}
+	c.groups[strings.ToLower(group)] = true
+	c.view.comparisons[owner] = region.InnerStart
+	c.view.exactText[owner] = region
+	c.index = region.Next
+	return region.Result
+}
 func (c *p15SCCursor) effect(marker, variable, owner string) map[string]any {
 	group := c.start(p15SCVariable(variable), 4, "WFNumberValue", float64(1))
 	for branch := 0; branch < 2; branch++ {
@@ -339,8 +369,15 @@ func (c *p15SCCursor) expression(expr *p15SCExpr, path, owner, name string) map[
 	return nil
 }
 func (c *p15SCCursor) check(name string, ref map[string]any, key string, want any) {
+	code := uint64(5)
+	if key == "WFConditionalActionString" {
+		// The authored Text inequality now produces a qualified exact Bool.
+		// Its enclosing If must consume that actual Bool as numeric true.
+		ref = c.exactComparison("check:"+name, "", ref, 5, want)
+		key, want, code = "WFNumberValue", float64(1), 4
+	}
 	c.view.checks[name] = c.index
-	group := c.start(ref, 5, key, want)
+	group := c.start(ref, code, key, want)
 	marker := c.take("gettext", "Text", map[string]any{"WFTextActionText": "FAIL_" + name}, true)
 	c.store("verdict", marker)
 	c.end(group, "", false)
@@ -357,7 +394,7 @@ func p15SCBoolNumber(value bool) float64 {
 // comparison operands and the actual returned observations. No native value is
 // executed or inferred here; Apple Bool transport and case sensitivity stay open.
 func p15SCGraph(actions []map[string]any, typed bool) (p15SCView, error) {
-	view := p15SCView{guards: map[string]int{}, effects: map[string][]int{}, results: map[string]map[string]any{}, checks: map[string]int{}, comparisons: map[string]int{}}
+	view := p15SCView{guards: map[string]int{}, effects: map[string][]int{}, results: map[string]map[string]any{}, checks: map[string]int{}, comparisons: map[string]int{}, exactText: map[string]p15N03ExactNativeRegion{}}
 	if err := p15SCReferences(actions); err != nil {
 		return view, err
 	}
@@ -383,10 +420,11 @@ func p15SCGraph(actions []map[string]any, typed bool) (p15SCView, error) {
 		refs["numberLeft"] = c.number(2, "numberLeft", true)
 		refs["numberRight"] = c.number(3, "numberRight", true)
 		for _, spec := range p15SCComparisons() {
-			right := any(p15SCAttachment(refs[spec.right]))
 			if spec.key == "WFConditionalActionString" {
-				right = p15SCRefToken(refs[spec.right])
+				c.view.results[spec.name] = c.exactComparison(spec.name, spec.name, refs[spec.left], spec.code, refs[spec.right])
+				continue
 			}
+			right := any(p15SCAttachment(refs[spec.right]))
 			c.view.results[spec.name] = c.comparison(spec.name, refs[spec.left], spec.code, spec.key, right)
 		}
 		c.view.results["foldedCaseEqual"] = c.boolean(0, "foldedCaseEqual", true)
@@ -419,6 +457,13 @@ func p15SCGraph(actions []map[string]any, typed bool) (p15SCView, error) {
 	c.take("output", "", map[string]any{"WFOutput": p15SCRefToken(result)}, false)
 	if c.err == nil && c.index != len(actions) {
 		c.err = fmt.Errorf("unexpected native actions after complete scenario")
+	}
+	if c.err == nil {
+		wanted := 1 // The final authored order inequality.
+		if typed {
+			wanted += 4 // The four authored dynamic Text value comparisons.
+		}
+		c.err = p15N03ExactPrimitiveError(actions, wanted)
 	}
 	return c.view, c.err
 }
@@ -741,8 +786,8 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 				p15SCParams(broken[view.checks["CALLS"]])["WFNumberValue"] = float64(11)
 				cause = "native conditional action differs"
 			case "order_observer":
-				p15SCParams(broken[view.checks["ORDER"]])["WFConditionalActionString"] = strings.Replace(p15SCExpectedOrder, "|MIX_A|MIX_B", "|MIX_B|MIX_A", 1)
-				cause = "native conditional action differs"
+				p15SCParams(broken[view.exactText["check:ORDER"].RightSnapshot])["WFTextActionText"] = "~" + strings.Replace(p15SCExpectedOrder, "|MIX_A|MIX_B", "|MIX_B|MIX_A", 1)
+				cause = "native exact Text comparison differs"
 			case "hidden_output":
 				p15SCParams(broken[view.finalText])["WFTextActionText"] = "P15_RP18_LOCAL_OK:calls=12"
 				cause = "native gettext action differs"
@@ -776,6 +821,10 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 			t.Run(spec.name+"/"+fault, func(t *testing.T) {
 				broken := p15SCClone(t, actions)
 				params := p15SCParams(broken[view.comparisons[spec.name]])
+				cause := "native conditional action differs"
+				if spec.key == "WFConditionalActionString" {
+					cause = "native exact Text comparison differs"
+				}
 				if fault == "operator" {
 					code := uint64(4)
 					if spec.code == code {
@@ -783,17 +832,18 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 					}
 					params["WFCondition"] = code
 				} else {
-					left := p15LocalAttachment(params["WFInput"])
 					if spec.key == "WFConditionalActionString" {
-						params[spec.key] = p15SCRefToken(left)
+						region := view.exactText[spec.name]
+						p15SCParams(broken[region.RightSnapshot])["WFTextActionText"] = p15SCCopy(p15SCParams(broken[region.LeftSnapshot])["WFTextActionText"])
 					} else {
+						left := p15LocalAttachment(params["WFInput"])
 						params[spec.key] = p15SCAttachment(left)
 					}
 				}
 				if err := p15SCReferences(broken); err != nil {
 					t.Fatal(err)
 				}
-				p15SCReject(t, broken, true, "native conditional action differs")
+				p15SCReject(t, broken, true, cause)
 			})
 		}
 	}
@@ -805,7 +855,8 @@ func p15SCNativeCorruptions(t *testing.T, actions []map[string]any, view p15SCVi
 			case "number_operand_as_text":
 				p15SCParams(broken[view.comparisons["numericLess"]])["WFNumberValue"] = "3"
 			case "text_operand_as_number":
-				p15SCParams(broken[view.comparisons["textCaseEqual"]])["WFNumberValue"] = uint64(0)
+				p15SCParams(broken[view.exactText["textCaseEqual"].RightSnapshot])["WFTextActionText"] = uint64(0)
+				cause = "native exact Text comparison differs"
 			case "comparison_as_addition":
 				index := view.comparisons["numericLess"]
 				broken[index]["WFWorkflowActionIdentifier"] = "is.workflow.actions.math"
