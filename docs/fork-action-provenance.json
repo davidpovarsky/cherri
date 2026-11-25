@@ -3332,6 +3332,22 @@
       "reason": "Original full F01 run45101081393 returned P15_NEGATED_IS_TRUE. A separately labelled R7 reconstruction and actual pre-fix regression exposed the missing inner helper RHS; the original native condition values were not retained.",
       "evidence": "docs/language-v2/evidence/p15-f01-boolean-helper-20261123: actual RED4parents and16subcases; pre-fix8-case exact natural import baseline; independently reviewed fix; focused GREEN19parents/110namedpasses,0fail/skip,23.319765s. Original stdout SHA25652e60bbb0349eab58138f97a2016e3dbd72c6a0fd2e762425536e91518a46148.",
       "note": "Separate non-circular provenance after immutable implementation. Native causality and repaired fullF01 remain pending actual Apple verification; no old R7 receipt is promoted to the new source and no formal or physical acceptance is granted."
+    },
+    {
+      "name": "P10R15 bounded cursor, page and offset pagination modes",
+      "locations": [
+        "paginate_macro.go",
+        "paginate_modes.go",
+        "internal/language/schema/paginate.go",
+        "internal/language/schema/paginate_modes.go",
+        "tools/p10r15/paginate_marker_model.py",
+        "tools/p10r15/verify_paginate_modes.py"
+      ],
+      "firstForkCommit": "dd3b5023bf020835087ae7f27fccee8236e5dc2d",
+      "change": "Add literal url/cursor/page/offset traversal options to the existing shared bounded pagination emitter. Preserve initial URL/query bytes and dynamic headers, require exact singleton native marker category, encode and verify opaque cursor bytes, and enforce integer/range/cycle guards.",
+      "reason": "Original task1220544665232021 requires configurable traversal beyond same-origin URL next markers. Exact Mac RED63 established missing arguments/schema before production.",
+      "evidence": "docs/language-v2/paginate-marker-modes-qualification-20261125.md; independent intake fa309c29eeee8964fb0cad18e0ecec28e379f58cda62602c86e8094232deed87 binds158 original passes and40 focused passes in separate actual MacGo1.27.4 runs,198 distinct identities,62+8 actual fixture products.",
+      "note": "Compiler/schema/native-structure qualification only. Original failed run retained. CLI/model producer remains pending; no native Apple execution, HTTP status/retry/cancellation/Link, callback or full release acceptance is inferred."
     }
   ]
 }
