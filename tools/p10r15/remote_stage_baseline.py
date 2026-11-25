@@ -72,8 +72,24 @@ def load_previous_stage(path, expected_sha, live_home):
     }
 
 
-def wrapper_templates(live_home, previous_receipt, previous_sha, runner, legacy):
+def wrapper_templates(live_home, previous_receipt, previous_sha, runner, legacy, *, installed=False):
     """Keep the reviewed original transformations independent of the live version."""
+    if installed:
+        require(previous_receipt is not None and previous_sha is not None and
+                runner is None and legacy is None,
+                "Installed immutable templates require a predecessor receipt/SHA and no historical wrapper options")
+        protected, previous = load_previous_stage(previous_receipt, previous_sha, live_home)
+        values, witnesses = {}, {}
+        for role in ("runner", "legacy"):
+            relative = "bin/cherri-remote-" + role + ".sh"
+            path = Path(live_home) / relative
+            expected = protected[relative]
+            values[role] = original_bytes(path, expected).decode("utf-8")
+            witnesses[role] = {
+                "path": str(path.resolve()), "sha256": expected,
+                "kind": "CURRENT_INSTALLED_IMMUTABLE",
+            }
+        return protected, previous, values, witnesses
     options = (previous_receipt, previous_sha, runner, legacy)
     require(not any(value is not None for value in options) or
             all(value is not None for value in options),
