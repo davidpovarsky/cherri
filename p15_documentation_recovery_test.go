@@ -81,13 +81,45 @@ func TestP15DocumentationRecoveryConsumers(t *testing.T) {
 	report := p15DocumentationRecoveryPipeline(t, "consumers")
 	t.Run("all_documented_examples", func(t *testing.T) {
 		var actual struct {
-			Summary struct{ Executed, Passed, Failed int }
+			Summary  struct{ Executed, Passed, Failed int }
+			Examples []struct {
+				Repository, Path, Location string
+				Ordinal                    int
+				Variant                    *int
+				Passed                     bool
+				Failures                   []json.RawMessage
+			}
 		}
 		if err := json.Unmarshal(report["examples"], &actual); err != nil {
 			t.Fatal(err)
 		}
-		if actual.Summary.Executed != 88 || actual.Summary.Passed != 88 || actual.Summary.Failed != 0 {
-			t.Fatalf("all88 compiler/docs/contextual Skill examples required: %s", report["examples"])
+		// The pipeline independently derives the exact inventory from pinned S/D/K
+		// Git blobs. Require every one of those source locations to pass once.
+		count := len(actual.Examples)
+		if count == 0 || actual.Summary.Executed != count || actual.Summary.Passed != count || actual.Summary.Failed != 0 {
+			t.Fatalf("complete source-derived compiler/docs/contextual Skill examples required: %s", report["examples"])
+		}
+		type exampleID struct {
+			repository, path, location string
+			ordinal, variant           int
+		}
+		seen := make(map[exampleID]bool, count)
+		for _, row := range actual.Examples {
+			if !row.Passed || len(row.Failures) != 0 || row.Path == "" || row.Ordinal <= 0 ||
+				(row.Repository != "compiler" && row.Repository != "docs" && row.Repository != "consumer") {
+				t.Fatal("source-derived example omitted, failed or has invalid identity")
+			}
+			variant := -1
+			if row.Location == "inline" && row.Variant != nil && *row.Variant >= 0 {
+				variant = *row.Variant
+			} else if row.Location != "fence" || row.Variant != nil {
+				t.Fatal("source-derived example has invalid alternative identity")
+			}
+			id := exampleID{row.Repository, row.Path, row.Location, row.Ordinal, variant}
+			if seen[id] {
+				t.Fatal("source-derived example identity was executed more than once")
+			}
+			seen[id] = true
 		}
 	})
 	t.Run("packaged_retrieval", func(t *testing.T) {

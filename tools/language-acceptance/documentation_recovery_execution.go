@@ -18,7 +18,7 @@ type documentationRecoveryScenario struct {
 	Tiers, Tests            []string
 }
 
-const documentationRecoveryScope = "Actual immutable S/D/K execution: all88 compiler/docs/contextual Skill examples with exact intentional diagnostics and unsigned native plist checks; original source package queried through20 real action/catalog/current/explicit-Legacy/failure wrapper calls. BRG29 additionally requires fresh canonical reference generation,520 signature contracts with8 real drift rejections, and505 schema/CLI/mobile insertion-snippet parity. Linked D01/D02/D03/K05, native runtime, publication and final179 closure are not inherited."
+const documentationRecoveryScope = "Actual immutable S/D/K execution: all source-derived compiler/docs/contextual Skill examples with exact intentional diagnostics and unsigned native plist checks; original source package queried through20 real action/catalog/current/explicit-Legacy/failure wrapper calls. BRG29 additionally requires fresh canonical reference generation,520 signature contracts with8 real drift rejections, and505 schema/CLI/mobile insertion-snippet parity. Linked D01/D02/D03/K05, native runtime, publication and final179 closure are not inherited."
 
 var documentationRecoveryScenarios = map[string]documentationRecoveryScenario{
 	"RP46": {"RP46", "Docs and Skill retrieval coherence", "repair", documentationRecoveryScope,
