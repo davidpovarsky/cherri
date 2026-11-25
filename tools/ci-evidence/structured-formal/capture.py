@@ -403,6 +403,18 @@ def validate_products(out, selection, inventory, witnesses):
                 directory/"execution-audit.original.json")}}
 
 
+def prepare_artifact_directories(out):
+    out = Path(out)
+    require(out.is_dir() and not out.is_symlink()
+            and all(not parent.is_symlink() for parent in out.parents),
+            "ARTIFACT_OWNER_ROOT")
+    paths = tuple(out/name for name in ("acceptance-artifacts", "value-artifacts"))
+    require(all(not path.exists() and not path.is_symlink() for path in paths),
+            "ARTIFACT_ROOT_COLLISION")
+    for path in paths:
+        path.mkdir(mode=0o700)
+
+
 def capacity_observation(paths):
     observed = {"observedUTC": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "observationOnly": True, "filesystems": []}
@@ -477,6 +489,7 @@ def main(argv=None):
         for key in list(env):
             if key.startswith("CHERRI_") or key in ("GH_TOKEN", "GITHUB_TOKEN"):
                 del env[key]
+        prepare_artifact_directories(out)
         env.update(GOMAXPROCS="2", GOFLAGS="-p=1 -mod=readonly", GOWORK="off",
                    GOTOOLCHAIN="local", PYTHONDONTWRITEBYTECODE="1",
                    CHERRI_STRUCTURED_ACCEPTANCE_ARTIFACTS=str(out/"acceptance-artifacts"),

@@ -172,5 +172,66 @@ class OwnedProcess(unittest.TestCase):
         self.assertTrue((out/"process-result.original.json").is_file())
 
 
+
+class ArtifactDirectories(unittest.TestCase):
+    def test_real_case_directory_consumer_requires_existing_owned_parent(self):
+        with tempfile.TemporaryDirectory() as raw:
+            out = Path(raw)
+            for name in ("acceptance-artifacts", "value-artifacts"):
+                with self.subTest(before=name), self.assertRaises(FileNotFoundError):
+                    tempfile.mkdtemp(prefix="native-", dir=out/name)
+            p.prepare_artifact_directories(out)
+            for name in ("acceptance-artifacts", "value-artifacts"):
+                with self.subTest(after=name):
+                    root = out/name
+                    self.assertTrue(root.is_dir())
+                    self.assertFalse(root.is_symlink())
+                    self.assertEqual(root.stat().st_mode & 0o777, 0o700)
+                    child = Path(tempfile.mkdtemp(prefix="native-", dir=root))
+                    expected = b"original source and graph bytes\n"
+                    p.write_new(child/"actual.original", expected)
+                    self.assertEqual((child/"actual.original").read_bytes(), expected)
+
+    def test_collision_or_symlink_rejects_before_other_root_creation(self):
+        for name in ("acceptance-artifacts", "value-artifacts"):
+            for kind in ("directory", "file", "symlink", "dangling"):
+                with self.subTest(name=name, kind=kind), tempfile.TemporaryDirectory() as raw:
+                    base = Path(raw)
+                    out = base/"owner"
+                    out.mkdir()
+                    external = base/"external"
+                    external.mkdir()
+                    marker = external/"untouched.original"
+                    marker.write_bytes(b"foreign original\n")
+                    target = out/name
+                    if kind == "directory":
+                        target.mkdir()
+                    elif kind == "file":
+                        target.write_bytes(b"preexisting original\n")
+                    elif kind == "symlink":
+                        target.symlink_to(external, target_is_directory=True)
+                    else:
+                        target.symlink_to(base/"missing", target_is_directory=True)
+                    before = sorted(path.name for path in out.iterdir())
+                    with self.assertRaisesRegex(p.Rejected, "ARTIFACT_ROOT_COLLISION"):
+                        p.prepare_artifact_directories(out)
+                    self.assertEqual(sorted(path.name for path in out.iterdir()), before)
+                    self.assertEqual(marker.read_bytes(), b"foreign original\n")
+
+    def test_missing_or_aliased_owner_root_is_not_adopted(self):
+        with tempfile.TemporaryDirectory() as raw:
+            base = Path(raw)
+            actual = base/"actual"
+            actual.mkdir()
+            alias = base/"alias"
+            alias.symlink_to(actual, target_is_directory=True)
+            (base/"file").write_bytes(b"original")
+            for root in (base/"missing", alias, base/"file"):
+                with self.subTest(root=root.name), self.assertRaisesRegex(
+                        p.Rejected, "ARTIFACT_OWNER_ROOT"):
+                    p.prepare_artifact_directories(root)
+            self.assertEqual(list(actual.iterdir()), [])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
