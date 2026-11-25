@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import plistlib
 import signal
 import subprocess
 import time
@@ -39,6 +40,59 @@ def command(args, timeout=25):
         raise RuntimeError(json.dumps({"command": args, "exit": result.returncode,
                                       "stderr": result.stderr[-1500:]}))
     return result.stdout.strip()
+
+def receiver_image_inventory(bundle):
+    info_path = bundle / "Info.plist"
+    if info_path.is_symlink() or not info_path.is_file():
+        raise ValueError("Receiver Info.plist is not a regular bundle file")
+    raw_info = info_path.read_bytes()
+    info = plistlib.loads(raw_info)
+    if not isinstance(info, dict) or info.get("CFBundleIdentifier") != "org.cherrilang.qa.Receiver":
+        raise ValueError("Receiver bundle identifier is missing or unexpected")
+    executable = info.get("CFBundleExecutable")
+    if (not isinstance(executable, str) or not executable or executable in {".", ".."}
+            or Path(executable).name != executable or "\\" in executable):
+        raise ValueError("Receiver CFBundleExecutable is not a bundle-root filename")
+    names = {executable} | {path.name for path in bundle.glob("*.dylib")}
+    images = {}
+    for name in sorted(names):
+        path = bundle / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("Receiver executable image is not a regular bundle file: " + name)
+        digest = hashlib.sha256()
+        size = 0
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+                size += len(chunk)
+        images[name] = {"bytes": size, "sha256": digest.hexdigest()}
+    return {"bundlePath": str(bundle), "bundleIdentifier": info["CFBundleIdentifier"],
+            "executable": executable, "infoPlistSHA256": hashlib.sha256(raw_info).hexdigest(),
+            "images": images}
+
+
+def receiver_image_identity(built_app, installed_app):
+    receipt = {"schemaVersion": 1, "outcome": "INVENTORY_FAILED",
+               "scope": "CFBundleExecutable and every bundle-root *.dylib; exact file set and bytes",
+               "builtApp": str(built_app), "installedApp": str(installed_app)}
+    for side, bundle in (("built", built_app), ("installed", installed_app)):
+        try:
+            receipt[side] = receiver_image_inventory(bundle)
+        except (OSError, ValueError, TypeError, plistlib.InvalidFileException) as exc:
+            receipt.update({"failedSide": side, "error": type(exc).__name__ + ": " + str(exc)})
+            return receipt
+    built, installed = receipt["built"], receipt["installed"]
+    expected, actual = built["images"], installed["images"]
+    receipt["missingImages"] = sorted(set(expected) - set(actual))
+    receipt["extraImages"] = sorted(set(actual) - set(expected))
+    receipt["changedImages"] = sorted(name for name in set(expected) & set(actual)
+                                       if expected[name] != actual[name])
+    receipt["executableNameMatches"] = built["executable"] == installed["executable"]
+    receipt["outcome"] = ("MATCH" if receipt["executableNameMatches"]
+                          and not receipt["missingImages"] and not receipt["extraImages"]
+                          and not receipt["changedImages"] else "MISMATCH")
+    return receipt
+
 
 def classify_callback(callback, case, nonce):
     if callback is None:
@@ -88,6 +142,8 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
     results = []
     process = None
     fatal = None
+    receiver_identity = None
+    receiver_identity_sha256 = None
     with (directory / "xctest.log").open("w") as log:
         try:
             process = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT,
@@ -101,6 +157,14 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
             command(install_command, timeout=90)
             atomic_json(directory / "receiver-install.json",
                         {"command": install_command, "outcome": "INSTALLED"})
+            installed_app = Path(command(["xcrun", "simctl", "get_app_container",
+                                          simulator, "org.cherrilang.qa.Receiver", "app"]))
+            receiver_identity = receiver_image_identity(receiver_app, installed_app)
+            identity_path = directory / "receiver-image-identity.json"
+            atomic_json(identity_path, receiver_identity)
+            receiver_identity_sha256 = hashlib.sha256(identity_path.read_bytes()).hexdigest()
+            if receiver_identity["outcome"] != "MATCH":
+                raise RuntimeError("Receiver executable image identity failed: " + receiver_identity["outcome"])
             receiver_command = ["xcrun", "simctl", "launch", "--terminate-running-process",
                                 simulator, "org.cherrilang.qa.Receiver"]
             receiver_launch = command(receiver_command, timeout=60)
@@ -119,6 +183,7 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                 assert signed_hash == case["signedSHA256"], "Signed input changed"
                 row = {"id": case_id, "lane": case["lane"], "name": case["name"],
                        "signedSHA256": signed_hash, "expected": case.get("expected"),
+                       "receiverImageIdentitySHA256": receiver_identity_sha256,
                        "restartShortcutsAfterImport": restart_shortcuts_after_import,
                        "startedUTC": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
                 import_id = "import-" + uuid.uuid4().hex
@@ -209,6 +274,8 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                "xctestExit": process.returncode if process else None,
                "manifestSHA256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
                "callbackContract": "raw-utf8-sha256-v1",
+               "receiverImageIdentity": (receiver_identity or {}).get("outcome", "NOT_VERIFIED"),
+               "receiverImageIdentitySHA256": receiver_identity_sha256,
                "restartShortcutsAfterImport": restart_shortcuts_after_import}
     for row in results:
         summary["counts"][row["status"]] = summary["counts"].get(row["status"], 0) + 1

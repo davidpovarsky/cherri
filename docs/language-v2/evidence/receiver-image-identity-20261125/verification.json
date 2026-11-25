@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "base_commit": "7c51c3fb3fcabdbff28376bbec1ab1016dceccde",
+  "red": {
+    "base": "7c51c3fb3fcabdbff28376bbec1ab1016dceccde",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/shortcuts-simulator-qa",
+      "-p",
+      "test_differential_batch.py",
+      "-v"
+    ],
+    "exit_code": 1,
+    "production_unmodified": true,
+    "scope": "Host-only mocked simulator/XCTest with real temporary bundle bytes; no native operations",
+    "parent_tests": 20,
+    "causal_failures": 5
+  },
+  "green": {
+    "base": "7c51c3fb3fcabdbff28376bbec1ab1016dceccde",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/shortcuts-simulator-qa",
+      "-p",
+      "test_differential_batch.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.221,
+    "scope": "Host-only mocked simulator/XCTest with real temporary bundle bytes; no native operations",
+    "parent_tests": 21
+  },
+  "image_scope": "CFBundleExecutable derived from Info.plist plus every bundle-root *.dylib; exact names, sizes, SHA256; expected receiver bundle identifier; regular files only",
+  "ordering": "Explicit install -> installed app lookup -> persist exact image comparison -> require MATCH -> fresh receiver launch -> fixture imports/runs",
+  "receipt_binding": "receiver-image-identity.json SHA256 in every row and summary",
+  "native_verification": "NOT_RUN_BY_COMPONENT; no Mac transfer, app mutation, simulator operation, or native tests",
+  "evidence_root": "/mnt/development/projects/evidence/cherri-differential-30-20261125/receiver",
+  "logs": {
+    "red-image-identity.log": "b99979d4c4b32f9cc0ef6044a7ec26f8aa34bc31be09947b292b7d20334f4159",
+    "green-image-identity.log": "39d5520548e811f064fc45c9917fcbf0d7260ae75d4b2be248dda8019c464b24"
+  }
+}

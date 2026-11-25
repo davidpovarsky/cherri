@@ -76,3 +76,40 @@ simulator action, native test, or full compiler gate was performed here.
 
 See `evidence/native-callback-20261125/verification.json` for the source pin,
 manifest audit, commands, and retained external RED/GREEN log locations.
+
+## Receiver executable image identity
+
+A root-owned native diagnostic observed the same installed/built launcher hash
+but a different `Receiver.debug.dylib` hash. Matching the main executable alone
+therefore does not establish that the installed callback implementation matches
+the selected build. A library mismatch establishes differing bytes; it does
+not identify which source commit produced the older installed library.
+
+After the explicit app installation, the host now obtains the installed app
+path using `simctl get_app_container <selected-simulator>
+org.cherrilang.qa.Receiver app`. It reads each bundle's `Info.plist`, checks the
+receiver bundle identifier and root-relative `CFBundleExecutable` filename,
+and hashes that executable plus every bundle-root `*.dylib`. Both inventories
+must have exactly the same filenames, sizes, and SHA-256 digests. Missing,
+additional, changed, non-regular, or malformed identity inputs fail closed.
+The comparison receipt is written before a fresh receiver launch or any
+fixture import. Its SHA-256 is bound into every case row and the run summary.
+
+The root-owned explicit install and fresh-process launch remain in place. This
+new proof concerns on-disk executable images at the comparison point; it does
+not claim inspection of loaded process memory or transitive frameworks outside
+the specified bundle-root image set. A mismatch does not trigger a hidden
+reinstall, weaker comparison, or callback-only fallback. Earlier receipts remain
+unchanged and receive no retroactive image-identity claim.
+
+Five controls reproduced the earlier gap on unchanged host code: a stale debug
+library with the same launcher, a changed launcher, a missing library, an extra
+library, and unsafe executable metadata all reached a mocked successful fixture
+run. The strengthened host suite passes all21 tests, including exact inventory
+receipt binding and rejection before fixture import. Real temporary bundle
+bytes are hashed; only simulator and XCTest operations are mocked. No Mac
+transfer, app change, native test, or receiver rebuild was performed in this
+component task. See
+`evidence/receiver-image-identity-20261125/verification.json` and the retained
+logs under
+`/mnt/development/projects/evidence/cherri-differential-30-20261125/receiver/`.
