@@ -767,6 +767,10 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if scenario, found := joinedPublicScenarios[id]; found {
+		return scenario.testIDs()
+	}
+
 	if id == "BRG11" {
 		return parameterFormsTestIDs()
 	}
@@ -880,6 +884,10 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if _, found := joinedPublicScenarios[id]; found {
+		return joinedPublicSourcePaths(id)
+	}
+
 	if id == "BRG11" {
 		return append([]string{}, parameterFormsProductionPaths...)
 	}

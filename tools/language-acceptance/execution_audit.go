@@ -325,6 +325,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Passed
 			row.Scope = numberWireScope
 		}
+		if scenario, found := joinedPublicScenarios[row.ID]; found {
+			row.TestNames = scenario.tests()
+			row.ProductionPath = joinedPublicSourcePaths(row.ID)
+			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
+			row.Scope = scenario.Scope
+		}
 		if row.ID == "RP39" {
 			row.TestNames = append([]string{}, combinedEditorTests...)
 			row.ProductionPath = append([]string{}, combinedEditorProductionPaths...)

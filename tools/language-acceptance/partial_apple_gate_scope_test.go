@@ -51,8 +51,9 @@ func TestPartialAppleGateProbeScopes(t *testing.T) {
 			t.Fatal("unexecuted joined UI assertions remain attached to a partial probe", gate.ID)
 		}
 	}
-	// Neither gate has an enrolled handler; this visits only the real
-	// unexecuted fallback and does not launch a compiler or native process.
+	// An absent implementation SHA cannot authorize either enrolled producer.
+	// Its real exact-source guard must leave both gates unexecuted; no compiler
+	// or native process is launched by this metadata control.
 	runner := &Runner{results: make(map[string]CaseResult)}
 	runner.runRecoveryGates(selected.Gates)
 	if len(runner.records) != 0 || len(runner.results) != 2 {

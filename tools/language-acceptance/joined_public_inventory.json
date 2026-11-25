@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "scenarios": {
+    "BRG25": {
+      "title": "One checked public CLI/mobile route",
+      "scenario": "Call actual entrypoints with email/Ask/directive-looking literals, v2 type errors and malformed functions; instrument legacy parser boundary.",
+      "expected": "No substring misrouting, no old-parser retry, no output/signature after semantic failure; precise diagnostics and installed commands match docs.",
+      "prefix": "TestBackendRecovery25",
+      "required_tiers": [
+        "integration",
+        "ios-build",
+        "ios-ui"
+      ],
+      "local_tiers": [
+        "integration"
+      ],
+      "tier_steps": {
+        "integration": "routes"
+      },
+      "scope": "Fresh actual production CLI file/compile/check and mobile omitted/V2/auto calls on the five independently authored shared literals/type-error/malformed-function fixtures. A standard Go-covered production CLI records complete original parser counters: zero real initParse entries for V2 and rejection paths, with positive explicit-Legacy controls on the same binary. Full action graphs, exact code/ranges, lexer-owned auto mode, no output/signature on rejection and local signer tripwires with healthy observer controls are required. This is the local integration tier only; actual native C ABI, app UI and final live installation remain separately proved. Related requirements receive no inherited credit.",
+      "steps": [
+        {
+          "name": "routes",
+          "package": ".",
+          "package_id": "github.com/electrikmilk/cherri",
+          "tests": [
+            "TestBackendRecovery25ActualMobileRoute",
+            "TestBackendRecovery25AutoModeLexicalBoundaries",
+            "TestBackendRecovery25ActualCLIRoute"
+          ],
+          "events": [
+            "TestBackendRecovery25ActualCLIRoute",
+            "TestBackendRecovery25ActualCLIRoute/check/ask",
+            "TestBackendRecovery25ActualCLIRoute/check/directive_literal",
+            "TestBackendRecovery25ActualCLIRoute/check/email",
+            "TestBackendRecovery25ActualCLIRoute/check/malformed_function",
+            "TestBackendRecovery25ActualCLIRoute/check/type_error",
+            "TestBackendRecovery25ActualCLIRoute/compile/default/ask",
+            "TestBackendRecovery25ActualCLIRoute/compile/default/directive_literal",
+            "TestBackendRecovery25ActualCLIRoute/compile/default/email",
+            "TestBackendRecovery25ActualCLIRoute/compile/default/malformed_function",
+            "TestBackendRecovery25ActualCLIRoute/compile/default/type_error",
+            "TestBackendRecovery25ActualCLIRoute/compile/v2/ask",
+            "TestBackendRecovery25ActualCLIRoute/compile/v2/directive_literal",
+            "TestBackendRecovery25ActualCLIRoute/compile/v2/email",
+            "TestBackendRecovery25ActualCLIRoute/compile/v2/malformed_function",
+            "TestBackendRecovery25ActualCLIRoute/compile/v2/type_error",
+            "TestBackendRecovery25ActualCLIRoute/file/default/ask",
+            "TestBackendRecovery25ActualCLIRoute/file/default/directive_literal",
+            "TestBackendRecovery25ActualCLIRoute/file/default/email",
+            "TestBackendRecovery25ActualCLIRoute/file/default/malformed_function",
+            "TestBackendRecovery25ActualCLIRoute/file/default/type_error",
+            "TestBackendRecovery25ActualCLIRoute/file/v2/ask",
+            "TestBackendRecovery25ActualCLIRoute/file/v2/directive_literal",
+            "TestBackendRecovery25ActualCLIRoute/file/v2/email",
+            "TestBackendRecovery25ActualCLIRoute/file/v2/malformed_function",
+            "TestBackendRecovery25ActualCLIRoute/file/v2/type_error",
+            "TestBackendRecovery25ActualCLIRoute/legacy_positive/compile",
+            "TestBackendRecovery25ActualCLIRoute/legacy_positive/file",
+            "TestBackendRecovery25ActualCLIRoute/signer_positive_control",
+            "TestBackendRecovery25ActualMobileRoute",
+            "TestBackendRecovery25ActualMobileRoute/auto/ask",
+            "TestBackendRecovery25ActualMobileRoute/auto/directive_literal",
+            "TestBackendRecovery25ActualMobileRoute/auto/email",
+            "TestBackendRecovery25ActualMobileRoute/auto/malformed_function",
+            "TestBackendRecovery25ActualMobileRoute/auto/type_error",
+            "TestBackendRecovery25ActualMobileRoute/explicit_legacy_control",
+            "TestBackendRecovery25ActualMobileRoute/omitted/ask",
+            "TestBackendRecovery25ActualMobileRoute/omitted/directive_literal",
+            "TestBackendRecovery25ActualMobileRoute/omitted/email",
+            "TestBackendRecovery25ActualMobileRoute/omitted/malformed_function",
+            "TestBackendRecovery25ActualMobileRoute/omitted/type_error",
+            "TestBackendRecovery25ActualMobileRoute/signer_positive_control",
+            "TestBackendRecovery25ActualMobileRoute/v2/ask",
+            "TestBackendRecovery25ActualMobileRoute/v2/directive_literal",
+            "TestBackendRecovery25ActualMobileRoute/v2/email",
+            "TestBackendRecovery25ActualMobileRoute/v2/malformed_function",
+            "TestBackendRecovery25ActualMobileRoute/v2/type_error",
+            "TestBackendRecovery25AutoModeLexicalBoundaries",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/block_comment",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/block_marker_inside_comment",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/directive_prefix_collision",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/inline_marker",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/marker_prefix_collision",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/raw_multiline",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/real_directive",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/real_legacy_marker",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/real_v1_marker",
+            "TestBackendRecovery25AutoModeLexicalBoundaries/v2_marker_first"
+          ]
+        }
+      ]
+    },
+    "BRG27": {
+      "title": "Real editor ranges, completion and stale edits",
+      "scenario": "Exercise actual Swift bridge/editor and LSP with incomplete code, UTF-16 text, multi-errors, parameter/enum replacement, rapid versioned edits, hover/rename/format.",
+      "expected": "Correct contextual edits/ranges and only newest response applied; formatter preserves literals/comments; no independent Swift semantics.",
+      "prefix": "TestBackendRecovery27",
+      "required_tiers": [
+        "service",
+        "integration",
+        "ios-ui"
+      ],
+      "local_tiers": [
+        "service",
+        "integration"
+      ],
+      "tier_steps": {
+        "service": "lsp",
+        "integration": "mobile"
+      },
+      "scope": "Fresh joined editor execution through one real framed LSP server/service session and actual mobile response JSON. The exact selected tests require incomplete UTF-16 source and multi-diagnostics, versioned newest/stale/recovery edits, authored parameter/enum replacement spans including existing suffixes, hover/definition/scoped rename, exact EOF formatting and idempotence with literal/comment preservation. Independent range/version/candidate corruption controls reject altered observations. Both process bundles are required for the local service/integration records. Actual Swift C ABI execution and editor publication are separate dedicated native/UI originals; source inspection or Go response flags cannot supply them. No related E/P/RP requirement inherits credit.",
+      "steps": [
+        {
+          "name": "lsp",
+          "package": "./internal/language/lsp",
+          "package_id": "github.com/electrikmilk/cherri/internal/language/lsp",
+          "tests": [
+            "TestBackendRecovery27LSPVersionedJoinedDocument",
+            "TestBackendRecovery27LSPCompletionEdits",
+            "TestBackendRecovery27LSPExactFormatting",
+            "TestBackendRecovery27VersionOracleRejectsChanges"
+          ],
+          "events": [
+            "TestBackendRecovery27LSPCompletionEdits",
+            "TestBackendRecovery27LSPCompletionEdits/enum_implicit_dot",
+            "TestBackendRecovery27LSPCompletionEdits/enum_member_suffix",
+            "TestBackendRecovery27LSPCompletionEdits/hebrew_interpolation",
+            "TestBackendRecovery27LSPCompletionEdits/parameter_middle_existing_colon",
+            "TestBackendRecovery27LSPCompletionEdits/parameter_prefix",
+            "TestBackendRecovery27LSPCompletionEdits/qualified_enum",
+            "TestBackendRecovery27LSPExactFormatting",
+            "TestBackendRecovery27LSPExactFormatting/crlf_no_final_newline",
+            "TestBackendRecovery27LSPExactFormatting/lf",
+            "TestBackendRecovery27LSPVersionedJoinedDocument",
+            "TestBackendRecovery27VersionOracleRejectsChanges",
+            "TestBackendRecovery27VersionOracleRejectsChanges/foreign_uri",
+            "TestBackendRecovery27VersionOracleRejectsChanges/missing_diagnostic",
+            "TestBackendRecovery27VersionOracleRejectsChanges/missing_version",
+            "TestBackendRecovery27VersionOracleRejectsChanges/newer_version",
+            "TestBackendRecovery27VersionOracleRejectsChanges/older_version",
+            "TestBackendRecovery27VersionOracleRejectsChanges/wrong_diagnostic"
+          ]
+        },
+        {
+          "name": "mobile",
+          "package": ".",
+          "package_id": "github.com/electrikmilk/cherri",
+          "tests": [
+            "TestBackendRecovery27MobileCompletionEdits",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges"
+          ],
+          "events": [
+            "TestBackendRecovery27MobileCompletionEdits",
+            "TestBackendRecovery27MobileCompletionEdits/enum_implicit_dot",
+            "TestBackendRecovery27MobileCompletionEdits/enum_member_suffix",
+            "TestBackendRecovery27MobileCompletionEdits/hebrew_interpolation",
+            "TestBackendRecovery27MobileCompletionEdits/parameter_middle_existing_colon",
+            "TestBackendRecovery27MobileCompletionEdits/parameter_prefix",
+            "TestBackendRecovery27MobileCompletionEdits/qualified_enum",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/duplicate_candidate",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/foreign_line",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/missing_candidate",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/missing_edit",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/rune_column",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/wrong_end",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/wrong_kind",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/wrong_text",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/wrong_uri",
+            "TestBackendRecovery27MobileEditOracleRejectsChanges/wrong_version"
+          ]
+        }
+      ]
+    }
+  }
+}

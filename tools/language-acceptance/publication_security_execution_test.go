@@ -904,7 +904,7 @@ func publicationTestSanitizerLog(t *testing.T) string {
 	t.Helper()
 	const target = "github.com/electrikmilk/cherri/tools/shortcut-corpus"
 	packages := []string{"github.com/electrikmilk/cherri", target}
-	plan, err := json.Marshal(map[string]any{"packages": packages, "argv": append([]string{"go", "test", "-count=1", "-timeout=15m", "-parallel=2", "-v"}, packages...), "timeout": "15m"})
+	plan, err := json.Marshal(map[string]any{"packages": packages, "argv": append([]string{"go", "test", "-count=1", "-timeout=20m", "-parallel=2", "-v"}, packages...), "timeout": "20m"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -942,7 +942,8 @@ func TestPublicationSecurityActualSanitizerEvents(t *testing.T) {
 			return strings.Replace(s, "ok\tgithub.com/electrikmilk/cherri/tools/shortcut-corpus", "ok\tgithub.com/electrikmilk/cherri/tools/other", 1)
 		}, false},
 		{"cached result", func(s string) string { return strings.Replace(s, "\t0.002s", "\t(cached)", 1) }, false},
-		{"changed original deadline", func(s string) string { return strings.ReplaceAll(s, "15m", "30m") }, false},
+		{"changed original deadline", func(s string) string { return strings.ReplaceAll(s, "20m", "30m") }, false},
+		{"historical shorter deadline", func(s string) string { return strings.ReplaceAll(s, "20m", "15m") }, false},
 	}
 	for _, control := range controls {
 		t.Run(control.name, func(t *testing.T) {

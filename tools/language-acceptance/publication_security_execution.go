@@ -1170,8 +1170,8 @@ func publicationSanitizerEvents(raw []byte, started, completed string) error {
 			if active {
 				ordinaryMarkers++
 				argv, ok := finalProvenanceStrings(object["argv"])
-				want := append([]string{"go", "test", "-count=1", "-timeout=15m", "-parallel=2", "-v"}, packages...)
-				if !ok || !reflect.DeepEqual(argv, want) || finalProvenanceString(object, "timeout") != "15m" {
+				want := append([]string{"go", "test", "-count=1", "-timeout=20m", "-parallel=2", "-v"}, packages...)
+				if !ok || !reflect.DeepEqual(argv, want) || finalProvenanceString(object, "timeout") != "20m" {
 					return fmt.Errorf("CI04_ORIGINAL_GO_COMMAND_CHANGED")
 				}
 			}

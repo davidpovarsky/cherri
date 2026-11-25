@@ -276,19 +276,12 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 			} `json:"textDocument"`
 		}
 		if s.decodeParams(msg, &p) {
-			formatted, err := s.svc.Format(p.TextDocument.URI)
+			edit, err := s.svc.FormatEdit(p.TextDocument.URI)
 			if err != nil {
 				s.sendResponse(msg.ID, []interface{}{})
 			} else {
-				// Return full document text edit
-				s.sendResponse(msg.ID, []map[string]interface{}{
-					{
-						"range": map[string]interface{}{
-							"start": map[string]int{"line": 0, "character": 0},
-							"end":   map[string]int{"line": 999999, "character": 0},
-						},
-						"newText": formatted,
-					},
+				s.sendResponse(msg.ID, []map[string]any{
+					{"range": wireRange(edit.Span), "newText": edit.NewText},
 				})
 			}
 		}
@@ -465,7 +458,7 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 }
 
 func (s *Server) publishDiagnostics(uri string) {
-	diags, _ := s.svc.Analyze(uri)
+	diags, _, version := s.svc.AnalyzeSnapshot(uri)
 	wireDiags := make([]map[string]interface{}, 0, len(diags))
 	for _, d := range diags {
 		sev := 1 // Error
@@ -495,6 +488,7 @@ func (s *Server) publishDiagnostics(uri string) {
 
 	s.sendNotification("textDocument/publishDiagnostics", map[string]interface{}{
 		"uri":         uri,
+		"version":     version,
 		"diagnostics": wireDiags,
 	})
 }

@@ -1035,6 +1035,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateCombinedEditorRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateJoinedPublicRecord(reqID, rec, manifest); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validatePublicFrontendRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -2018,6 +2021,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runJoinedPublicRequirement(g) {
+			continue
+		}
 		if r.runParameterFormsRequirement(g) {
 			continue
 		}

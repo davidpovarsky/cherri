@@ -133,11 +133,17 @@ def wait_for_posix_group_exit(group, deadline):
         active = False
         for line in observed.stdout.splitlines():
             fields = line.split()
-            if len(fields) != 2 or not re.fullmatch(r"[0-9]+", fields[0]) or not re.fullmatch(r"[DIKPRSTUWXYZtx][<>AELNSVWXsl+]*", fields[1]):
+            if not fields or not re.fullmatch(r"[0-9]+", fields[0]):
                 raise ValueError("adapter process-group state was malformed")
-            if int(fields[0]) == group:
-                # Linux can report a zombie group leader with live threads as Zl.
-                active = active or fields[1][0] != "Z" or "l" in fields[1]
+            if int(fields[0]) != group:
+                # Only this exact owned group's state establishes termination.
+                # Unrelated host processes may have platform-specific states
+                # or transient missing state fields; they cannot be survivors.
+                continue
+            if len(fields) != 2 or not re.fullmatch(r"[DIKPRSTUWXYZtx][<>AELNSVWXsl+]*", fields[1]):
+                raise ValueError("adapter process-group state was malformed")
+            # Linux can report a zombie group leader with live threads as Zl.
+            active = active or fields[1][0] != "Z" or "l" in fields[1]
         if time.monotonic() >= deadline:
             raise ValueError("adapter process-group cleanup deadline expired")
         if not active:
@@ -174,8 +180,15 @@ def run_process(command, request, timeout, originals=None):
                         raise ValueError("adapter process-group cleanup deadline expired")
                     result.communicate(timeout=remaining)
                     wait_for_posix_group_exit(result.pid, deadline)
-                except (OSError, ValueError, subprocess.TimeoutExpired):
-                    cleanup_error = "adapter process-group cleanup could not establish termination"
+                except (OSError, ValueError, subprocess.TimeoutExpired) as failure:
+                    # Publish only fixed observer categories, never arbitrary
+                    # child stderr, provider diagnostics or OS exception text.
+                    reason = {
+                        "adapter process-group cleanup deadline expired": "deadline_expired",
+                        "adapter process-group state could not be observed": "state_unobservable",
+                        "adapter process-group state was malformed": "owned_state_malformed",
+                    }.get(str(failure), "process_cleanup_error")
+                    cleanup_error = "adapter process-group cleanup could not establish termination: " + reason
             timed_out = error
         stdout.seek(0)
         output = stdout.read(MAX_ADAPTER_BYTES + 1)

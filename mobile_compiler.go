@@ -60,34 +60,78 @@ func sharedMobileService() *service.Service {
 	return mobileSharedService
 }
 
-// detectLegacySource detects whether a source file is intended for legacy Cherri.
-// It checks strictly for anchored preprocessor directives (#include, #define, etc.)
-// or explicit file directives. It NEVER treats substring tokens like "@", "Ask",
-// "const" or braces in comments/strings as legacy markers.
+// detectLegacySource selects only actual, line-anchored file directives.
+// Shared lexer tokens keep raw/triple strings and nested comments opaque; their
+// contents cannot switch the frontend. Default and explicit V2 never use auto.
 func detectLegacySource(src string) bool {
-	lines := strings.Split(src, "\n")
-	for _, l := range lines {
-		trimmed := strings.TrimSpace(l)
-		if strings.HasPrefix(trimmed, "// cherri: legacy") ||
-			strings.HasPrefix(trimmed, "// cherri: v1") ||
-			strings.HasPrefix(trimmed, "/* cherri: legacy") {
-			return true
+	file := source.NewFile("mobile-mode", "mobile-mode", 1, src)
+	lexer := syntax.NewLexer(file)
+	anchored := func(offset int) bool {
+		for i := offset - 1; i >= 0 && src[i] != '\n'; i-- {
+			switch src[i] {
+			case ' ', '\t', '\r':
+			default:
+				// The shared lexer accepts a UTF-8 BOM only at the start.
+				return i == 2 && strings.HasPrefix(src, "\ufeff")
+			}
 		}
-		if strings.HasPrefix(trimmed, "// cherri: v2") ||
-			strings.HasPrefix(trimmed, "/* cherri: v2") {
+		return true
+	}
+	marker := func(comment source.Trivia) (legacy, found bool) {
+		if !anchored(comment.Span.Start.ByteOffset) {
+			return false, false
+		}
+		var body string
+		switch comment.Kind {
+		case source.TriviaLineComment:
+			body = strings.TrimPrefix(comment.Text, "//")
+		case source.TriviaBlockComment:
+			body = strings.TrimSuffix(strings.TrimPrefix(comment.Text, "/*"), "*/")
+		default:
+			return false, false
+		}
+		parts := strings.Fields(body)
+		if len(parts) < 2 || parts[0] != "cherri:" {
+			return false, false
+		}
+		switch parts[1] {
+		case "legacy", "v1":
+			return true, true
+		case "v2":
+			return false, true
+		}
+		return false, false
+	}
+
+	fStringDepth := 0
+	for {
+		token := lexer.NextToken()
+		if fStringDepth == 0 {
+			for _, trivia := range token.Leading {
+				if legacy, found := marker(trivia); found {
+					return legacy
+				}
+			}
+			if token.Type == syntax.TokenDirective && anchored(token.Span.Start.ByteOffset) {
+				switch token.Text {
+				case "#include", "#define", "#import", "#question", "#ref", "#workflowheader", "#declare":
+					return true
+				}
+			}
+		}
+		switch token.Type {
+		case syntax.TokenFStringStart:
+			fStringDepth++
+		case syntax.TokenFStringEnd:
+			if fStringDepth > 0 {
+				fStringDepth--
+			}
+		case syntax.TokenEOF, syntax.TokenError:
+			// Invalid source remains on V2; a later substring is never a
+			// reason to retry a different parser after lexical failure.
 			return false
 		}
-		if strings.HasPrefix(trimmed, "#include") ||
-			strings.HasPrefix(trimmed, "#define") ||
-			strings.HasPrefix(trimmed, "#import") ||
-			strings.HasPrefix(trimmed, "#question") ||
-			strings.HasPrefix(trimmed, "#ref") ||
-			strings.HasPrefix(trimmed, "#workflowheader") ||
-			strings.HasPrefix(trimmed, "#declare") {
-			return true
-		}
 	}
-	return false
 }
 
 func compileForMobile(src string, requestedName string, sign bool) mobileCompileResponse {
