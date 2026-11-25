@@ -161,7 +161,8 @@ func p15RequireConditionGraph(actions []ShortcutAction, tc p15RequireConditionCa
 	g.emit("exit", nil)
 	g.boundary(group, 2, false)
 	result := g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(input)})
-	g.value("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
+	// This authored terminal consumer has no downstream edge and needs no UUID.
+	g.emit("getvariable", map[string]any{"WFVariable": p15FunctionEdge(result)})
 	if !legacy {
 		g.emit("nothing", nil)
 	}
@@ -239,6 +240,27 @@ func TestP15RequireBooleanConditionPreservesPresenceGuards(t *testing.T) {
 					}
 					if err = p15RequireConditionGraph(actions, tc, legacy); err != nil {
 						t.Fatal(err)
+					}
+					// A valid prior producer is still the wrong source here: this
+					// consumer must read the require passthrough, not bypass it.
+					raw, marshalErr := json.Marshal(actions)
+					if marshalErr != nil {
+						t.Fatal(marshalErr)
+					}
+					var wrong []ShortcutAction
+					if unmarshalErr := json.Unmarshal(raw, &wrong); unmarshalErr != nil {
+						t.Fatal(unmarshalErr)
+					}
+					consumer := len(wrong) - 1
+					if !legacy {
+						consumer--
+					}
+					wrong[consumer].WFWorkflowActionParameters["WFVariable"] = map[string]any{
+						"WFSerializationType": "WFTextTokenAttachment",
+						"Value":               map[string]any{"Type": "ActionOutput", "OutputUUID": wrong[0].WFWorkflowActionParameters["UUID"]},
+					}
+					if faultErr := p15RequireConditionGraph(wrong, tc, legacy); faultErr == nil {
+						t.Fatal("REQUIRE_CONDITION_GRAPH accepted terminal consumer bypass of require result")
 					}
 				})
 			}
