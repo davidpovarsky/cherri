@@ -186,8 +186,8 @@ func p15RP20Graph(actual []map[string]any) (map[string]int, error) {
 		"WFSerializationType": "WFDictionaryFieldValue",
 		"Value": map[string]any{"WFDictionaryFieldValueItems": []any{
 			map[string]any{"WFKey": p15FunctionText("items"), "WFItemType": 0, "WFValue": p15FunctionEdge(itemsCell)},
-			map[string]any{"WFKey": p15FunctionText("rows"), "WFItemType": 0, "WFValue": p15FunctionEdge(rowsCell)},
 			map[string]any{"WFKey": p15FunctionText("json"), "WFItemType": 0, "WFValue": p15FunctionEdge(json)},
+			map[string]any{"WFKey": p15FunctionText("rows"), "WFItemType": 0, "WFValue": p15FunctionEdge(rowsCell)},
 		}},
 	}})
 	at("count")
@@ -273,7 +273,7 @@ func TestP15RP20JoinedGraphCausalFaults(t *testing.T) {
 		"null_to_absent", "null_fake_payload", "none_to_null", "none_fake_payload",
 		"items_reordered", "items_dropped", "items_duplicated",
 		"nested_list_flattened", "empty_row_removed", "optional_slot_to_null", "true_to_false",
-		"items_join_rebound", "rows_join_rebound", "joined_key_changed", "joined_field_dropped", "joined_field_duplicated",
+		"items_join_rebound", "rows_join_rebound", "joined_key_changed", "joined_field_dropped", "joined_field_duplicated", "joined_fields_reordered",
 		"explicit_json_rebound", "count_wrong_container", "private_payload_exported", "forward_reference", "duplicate_uuid", "extra_action",
 	} {
 		t.Run(fault, func(t *testing.T) {
@@ -349,8 +349,11 @@ func TestP15RP20JoinedGraphCausalFaults(t *testing.T) {
 				setDictRows("joined", dictRows("joined")[:2])
 			case "joined_field_duplicated":
 				setDictRows("joined", append(dictRows("joined"), dictRows("joined")[0]))
+			case "joined_fields_reordered":
+				rows := dictRows("joined")
+				rows[1], rows[2] = rows[2], rows[1]
 			case "explicit_json_rebound":
-				dictRows("joined")[2].(map[string]any)["WFValue"] = p15FunctionEdge(id("none"))
+				fields("joined")["json"]["WFValue"] = p15FunctionEdge(id("none"))
 			case "count_wrong_container":
 				p15Param(broken[pos["count"]])["Input"] = p15FunctionEdge(id("items"))
 			case "private_payload_exported":
