@@ -13,6 +13,8 @@ import time
 
 ACCEPTANCE_PACKAGE = "github.com/electrikmilk/cherri/tools/language-acceptance"
 SUBPROCESS_PARALLEL_ENV = "CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL"
+ORDINARY_BUDGET = "20m"
+ACCEPTANCE_BUDGET = "50m"
 
 def execution_plan(packages):
     if not packages or any(not p or p.strip() != p for p in packages):
@@ -25,12 +27,20 @@ def execution_plan(packages):
     plan = [{"packages": group, "timeout": budget,
              "argv": ["go", "test", "-count=1", "-timeout=" + budget,
                       *(["-parallel=2"] if group == ordinary else []), "-v", *group]}
-            for group, budget in [(ordinary, "15m"), ([ACCEPTANCE_PACKAGE], "35m")]]
+            for group, budget in [(ordinary, ORDINARY_BUDGET), ([ACCEPTANCE_PACKAGE], ACCEPTANCE_BUDGET)]]
     if Counter(p for group in plan for p in group["packages"]) != Counter(packages):
         raise ValueError("Go test plan lost or duplicated a package")
     return plan
 
 def execution_environment(group):
+    # The cumulative package deadline is an owned orchestration policy. Reject
+    # detached metadata, extra flags or an unbounded timeout before spawning Go.
+    expected = ACCEPTANCE_BUDGET if group["packages"] == [ACCEPTANCE_PACKAGE] else ORDINARY_BUDGET
+    deadlines = [arg for arg in group["argv"]
+                 if arg in ("-timeout", "-test.timeout")
+                 or arg.startswith(("-timeout=", "-test.timeout="))]
+    if group["timeout"] != expected or deadlines != ["-timeout=" + expected]:
+        raise ValueError("execution requires the exact reviewed cumulative package budget")
     environment = os.environ.copy()
     environment.pop(SUBPROCESS_PARALLEL_ENV, None)
     limits = [arg for arg in group["argv"]
@@ -75,7 +85,7 @@ def main():
         "source_sha": source, "source_status_before": before, "source_status_after": after,
         "all_packages": packages, "invocations": results,
         "all_packages_executed_once": exact, "success": success,
-        "scope": "Actual complete Go package suite. Ordinary packages retain15m and opt in only reviewed top-level subprocess tests with CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL=2 and -parallel=2. Acceptance removes that marker and retains35m cumulative; selected producers stay sequential. Test selection, assertions and child budgets are unchanged.",
+        "scope": "Actual complete Go package suite. Ordinary packages have an explicit 20m cumulative package budget and opt in only reviewed top-level subprocess tests with CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL=2 and -parallel=2. Acceptance removes that marker and has an explicit 50m cumulative package budget; selected producers stay sequential. Test selection, assertions and child budgets are unchanged.",
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
