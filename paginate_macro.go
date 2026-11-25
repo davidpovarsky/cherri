@@ -15,7 +15,7 @@ func registerPaginateMacro() {
 		identifier: "getvariable", outputType: Arr,
 		doc: selfDoc{
 			title: "Paginate Bounded Dictionary Pages", category: "web",
-			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin absolute next URL or simple sibling filename. No HTTP status verification, retry, transport timeout or trailing block. Native runtime acceptance remains required.",
+			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin URL/sibling, opaque cursor, or explicit numeric page/offset next markers. Query modes replace only the configured query value, retaining other authored query bytes. No HTTP status verification, retry, transport timeout or trailing block. Native runtime acceptance remains required.",
 		},
 		parameters: []parameterDefinition{
 			{name: "startURL", key: "WFPaginateStartURL", validType: RawString},
@@ -24,10 +24,12 @@ func registerPaginateMacro() {
 			{name: "maxPages", key: "WFPaginateMaxPages", validType: Integer, optional: true, defaultValue: 20},
 			{name: "maxItems", key: "WFPaginateMaxItems", validType: Integer, optional: true, defaultValue: 1000},
 			{name: "headers", key: "WFHTTPHeaders", validType: Dict, optional: true, literal: true},
+			{name: "mode", key: "WFPaginateMode", validType: RawString, optional: true, defaultValue: "url"},
+			{name: "queryKey", key: "WFPaginateQueryKey", validType: RawString, optional: true},
 		},
 		makeParams: func(args []actionArgument) map[string]any {
 			out := make(map[string]any)
-			keys := []string{"WFPaginateStartURL", "WFPaginateItemsKey", "WFPaginateNextKey", "WFPaginateMaxPages", "WFPaginateMaxItems", "WFHTTPHeaders"}
+			keys := []string{"WFPaginateStartURL", "WFPaginateItemsKey", "WFPaginateNextKey", "WFPaginateMaxPages", "WFPaginateMaxItems", "WFHTTPHeaders", "WFPaginateMode", "WFPaginateQueryKey"}
 			for index, key := range keys {
 				if index >= len(args) {
 					break
@@ -201,11 +203,18 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 	b.set("active", b.one)
 	start := b.produce("gettext", map[string]any{"WFTextActionText": options.StartURL})
 	b.set("url", start)
+	if options.Mode != "url" {
+		b.initializeMarkers()
+	}
 
 	var sample any = map[string]any{"cherri_paginate_type_witness": true}
 	dictionary := b.produce("dictionary", map[string]any{"WFItems": makeExplicitDictionaryValue(&sample)})
 	dictionaryType := b.produce("getitemtype", map[string]any{"WFInput": dictionary})
 	textType := b.produce("getitemtype", map[string]any{"WFInput": start})
+	var numberType WFTextTokenAttachment
+	if options.Mode == "page" || options.Mode == "offset" {
+		numberType = b.produce("getitemtype", map[string]any{"WFInput": b.one})
+	}
 	itemsKey := b.produce("gettext", map[string]any{"WFTextActionText": options.ItemsKey})
 	itemsHash := b.digest(itemsKey)
 	nextKey := b.produce("gettext", map[string]any{"WFTextActionText": options.NextKey})
@@ -282,12 +291,16 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 	hasNext := b.begin(b.get("hasNext"), 4, 1, backend.OperandNumber)
 	next := b.lookup(page, options.NextKey)
 	hasValue := b.begin(b.count(next, "Items"), 2, 0, backend.OperandNumber)
-	b.requireCategory(next, textType, "PAGINATE_NEXT_TEXT_REQUIRED")
-	nonemptyNext := b.begin(b.count(next, "Characters"), 2, 0, backend.OperandNumber)
-	b.nextURL(next)
-	b.otherwise(nonemptyNext)
-	b.set("active", b.zero)
-	b.end(nonemptyNext)
+	if options.Mode == "url" {
+		b.requireCategory(next, textType, "PAGINATE_NEXT_TEXT_REQUIRED")
+		nonemptyNext := b.begin(b.count(next, "Characters"), 2, 0, backend.OperandNumber)
+		b.nextURL(next)
+		b.otherwise(nonemptyNext)
+		b.set("active", b.zero)
+		b.end(nonemptyNext)
+	} else {
+		b.nextMarker(next, textType, numberType)
+	}
 	b.otherwise(hasValue)
 	b.set("active", b.zero)
 	b.end(hasValue)

@@ -3473,6 +3473,22 @@
       "reason": "Differential native case33 passed with current original98d5191 but returned blank URL components from both fork frontends. The wrong WFTextTokenAttachment envelope was caused by a shared imported-shape allowlist overriding the default authored Text codec. Captured Apple VariableString state requires WFTextTokenString. Exact imported wire fidelity alone did not establish the correct authored default.",
       "evidence": "docs/language-v2/native-text-reference-repair-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/url-text/handoff.json. Retained production/schema RED, 72 authored observations across18 slots/both frontends/both reference kinds, five causal corruptions, unchanged FID02/FID03, mixed imported envelopes and appended authored calls, numeric/quantity/date regressions, schema/reference verification. Independent read-only marker-boundary review found no blocking issue.",
       "note": "Non-circular reachable root implementation anchor. Component3ec9e5ed12c0d7b6316e0a866e5e6be3a1de74bb retains its actual compiler and focused receipts. No marker is serialized into Apple parameters, no workflow-wide import override or semantic provenance metadata was introduced. Original/fork artifacts and PropertyUserInfo differences remain visible. Native repair acceptance and the complete final Go gate are recorded separately by the coordinating audit."
+    },
+    {
+      "name": "P10R15 bounded cursor, page and offset pagination modes",
+      "locations": [
+        "paginate_macro.go",
+        "paginate_modes.go",
+        "internal/language/schema/paginate.go",
+        "internal/language/schema/paginate_modes.go",
+        "tools/p10r15/paginate_marker_model.py",
+        "tools/p10r15/verify_paginate_modes.py"
+      ],
+      "firstForkCommit": "dd3b5023bf020835087ae7f27fccee8236e5dc2d",
+      "change": "Add literal url/cursor/page/offset traversal options to the existing shared bounded pagination emitter. Preserve initial URL/query bytes and dynamic headers, require exact singleton native marker category, encode and verify opaque cursor bytes, and enforce integer/range/cycle guards.",
+      "reason": "Original task1220544665232021 requires configurable traversal beyond same-origin URL next markers. Exact Mac RED63 established missing arguments/schema before production.",
+      "evidence": "docs/language-v2/paginate-marker-modes-qualification-20261125.md; independent intake fa309c29eeee8964fb0cad18e0ecec28e379f58cda62602c86e8094232deed87 binds158 original passes and40 focused passes in separate actual MacGo1.27.4 runs,198 distinct identities,62+8 actual fixture products.",
+      "note": "Compiler/schema/native-structure qualification only. Original failed run retained. CLI/model producer remains pending; no native Apple execution, HTTP status/retry/cancellation/Link, callback or full release acceptance is inferred."
     }
   ]
 }
