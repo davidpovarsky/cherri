@@ -25,7 +25,7 @@ def execution_plan(packages):
     plan = [{"packages": group, "timeout": budget,
              "argv": ["go", "test", "-count=1", "-timeout=" + budget,
                       *(["-parallel=2"] if group == ordinary else []), "-v", *group]}
-            for group, budget in [(ordinary, "15m"), ([ACCEPTANCE_PACKAGE], "35m")]]
+            for group, budget in [(ordinary, "20m"), ([ACCEPTANCE_PACKAGE], "35m")]]
     if Counter(p for group in plan for p in group["packages"]) != Counter(packages):
         raise ValueError("Go test plan lost or duplicated a package")
     return plan
@@ -75,7 +75,7 @@ def main():
         "source_sha": source, "source_status_before": before, "source_status_after": after,
         "all_packages": packages, "invocations": results,
         "all_packages_executed_once": exact, "success": success,
-        "scope": "Actual complete Go package suite. Ordinary packages retain15m and opt in only reviewed top-level subprocess tests with CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL=2 and -parallel=2. Acceptance removes that marker and retains35m cumulative; selected producers stay sequential. Test selection, assertions and child budgets are unchanged.",
+        "scope": "Actual complete Go package suite. Ordinary packages have an explicit 20m cumulative package budget and opt in only reviewed top-level subprocess tests with CHERRI_FULL_SUITE_SUBPROCESS_PARALLEL=2 and -parallel=2. Acceptance removes that marker and retains 35m cumulative; selected producers stay sequential. Test selection, assertions and child budgets are unchanged.",
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

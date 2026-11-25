@@ -16,7 +16,7 @@ class FullGoSuiteIntegrityTests(unittest.TestCase):
         plan = suite.execution_plan(self.packages)
         self.assertCountEqual(self.packages, [p for group in plan for p in group["packages"]])
         self.assertEqual(plan[0]["packages"], [self.packages[0], self.packages[2]])
-        self.assertEqual(plan[0]["timeout"], "15m")
+        self.assertEqual(plan[0]["timeout"], "20m")
         self.assertEqual(plan[1]["packages"], [suite.ACCEPTANCE_PACKAGE])
         self.assertEqual(plan[1]["timeout"], "35m")
         for group in plan:

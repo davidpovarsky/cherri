@@ -183,6 +183,26 @@ class EvaluationHarnessTests(unittest.TestCase):
                     patch.object(runner.time, "monotonic", return_value=10.0):
                 with self.assertRaisesRegex(ValueError, "could not be observed"):
                     runner.wait_for_posix_group_exit(101, 11.0)
+        with self.subTest(observer="cleanup_reason_is_fixed_not_exception_text"):
+            with patch.object(runner, "wait_for_posix_group_exit", side_effect=ValueError("SECRET_CLEANUP_CANARY")):
+                with self.assertRaisesRegex(ValueError, "process_cleanup_error") as failure:
+                    runner.run_process([sys.executable, str(script)], {}, 0.05)
+            self.assertNotIn("SECRET_CLEANUP_CANARY", str(failure.exception))
+        # The process-table snapshot can contain unrelated host processes whose
+        # platform-specific status is outside this adapter's owned group.
+        for unrelated in ("202 ?\n", "202\n", "202 R extra-host-field\n"):
+            with self.subTest(observer="unrelated_state_is_not_owned_group", row=unrelated):
+                with patch.object(runner.os, "killpg", return_value=None), \
+                        patch.object(runner.subprocess, "run", return_value=subprocess.CompletedProcess(["ps"], 0, "101 Z\n" + unrelated)), \
+                        patch.object(runner.time, "monotonic", return_value=10.0):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+        for malformed in ("101 ?\n202 Z\n", "101\n202 Z\n", "101 R extra\n", "unknown Z\n101 Z\n"):
+            with self.subTest(observer="owned_or_unidentifiable_state_rejected", row=malformed):
+                with patch.object(runner.os, "killpg", return_value=None), \
+                        patch.object(runner.subprocess, "run", return_value=subprocess.CompletedProcess(["ps"], 0, malformed)), \
+                        patch.object(runner.time, "monotonic", return_value=10.0):
+                    with self.assertRaisesRegex(ValueError, "state was malformed"):
+                        runner.wait_for_posix_group_exit(101, 11.0)
         for state in ("S", "Zl"):
             with self.subTest(observer="live_or_threaded_zombie_must_not_return", state=state):
                 with patch.object(runner.os, "killpg", side_effect=[None, ProcessLookupError]) as probe, \
