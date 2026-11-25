@@ -806,6 +806,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 	if id == "BRG11" {
 		return parameterFormsTestIDs()
 	}
+	if id == "BRG26" {
+		return explicitSigningTestIDs()
+	}
 	if scenario, found := combinedValueBlockScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -931,6 +934,9 @@ func deriveGateFixtures(id string) []string {
 	}
 	if id == "BRG11" {
 		return append([]string{}, parameterFormsProductionPaths...)
+	}
+	if id == "BRG26" {
+		return append([]string{}, explicitSigningProductionPaths...)
 	}
 	if _, found := combinedValueBlockScenarios[id]; found {
 		return append([]string{}, combinedValueBlockSourcePaths(id)...)

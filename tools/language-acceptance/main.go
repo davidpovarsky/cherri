@@ -1007,6 +1007,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateParameterFormsRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateExplicitSigningRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 
 			if err := validateNumberFunctionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
@@ -2037,6 +2040,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 			continue
 		}
 		if r.runParameterFormsRequirement(g) {
+			continue
+		}
+		if r.runExplicitSigningRequirement(g) {
 			continue
 		}
 		if r.runDocumentationRecoveryRequirement(g.ID, g.Title, g.MinimumEvidenceTiers) {

@@ -301,6 +301,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
 			row.Scope = parameterFormsScope
 		}
+		if row.ID == "BRG26" {
+			row.TestNames = append([]string{}, explicitSigningTests...)
+			row.ProductionPath = append([]string{}, explicitSigningProductionPaths...)
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
+			row.Scope = explicitSigningScope
+		}
 		if scenario, found := numberFunctionScenarios[row.ID]; found {
 			row.TestNames = scenario.tests()
 			row.ProductionPath = append([]string{}, scenario.ProductionPaths...)
