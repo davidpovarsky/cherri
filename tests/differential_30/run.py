@@ -14,11 +14,13 @@ import importlib.util
 import json
 import pathlib
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
 import time
 from collections import Counter
+from types import MappingProxyType
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -27,6 +29,13 @@ spec = importlib.util.spec_from_file_location(
 oracle = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(oracle)
 IDENTITY_KEYS = {"UUID", "OutputUUID", "GroupingIdentifier"}
+CONTROL_ACTIONS = {
+    "is.workflow.actions.conditional",
+    "is.workflow.actions.repeat.count",
+    "is.workflow.actions.repeat.each",
+    "is.workflow.actions.choosefrommenu",
+}
+ATTACHMENT_RANGE = re.compile(r"^\{\d+, \d+\}$")
 DISPLAY_KEYS = {"OutputName", "CustomOutputName", "WFWorkflowActionTitle"}
 MISSING = object()
 
@@ -70,7 +79,6 @@ def exact_diffs(left, right, default_keys, scope=None):
     result = []
 
     def visit(a, b, path):
-        key = str(path[-1]) if path else ""
         if type(a) is not type(b):
             kind = "added" if a is MISSING else "removed" if b is MISSING else "type_change"
             result.append({"path": path, "kind": kind, "category": category(path, default_keys),
@@ -83,14 +91,9 @@ def exact_diffs(left, right, default_keys, scope=None):
             for i in range(max(len(a), len(b))):
                 visit(a[i] if i < len(a) else MISSING, b[i] if i < len(b) else MISSING, path + [i])
         else:
-            equal = a == b
-            if scope is not None and isinstance(a, str) and key in IDENTITY_KEYS:
-                if key == "UUID":
-                    equal = scope.match_uuid(a, b)
-                elif key == "OutputUUID":
-                    equal = scope.match_reference_uuid(a, b)
-                else:
-                    equal = scope.match_group(a, b)
+            # Leaf names alone never establish identity. An ordinary dictionary
+            # may legitimately contain UUID, OutputUUID or GroupingIdentifier.
+            equal = scope.matches(path, a, b) if scope is not None and isinstance(a, str) else a == b
             if not equal:
                 result.append({"path": path, "kind": "value_change", "category": category(path, default_keys),
                                "before": typed(a), "after": typed(b)})
@@ -98,41 +101,119 @@ def exact_diffs(left, right, default_keys, scope=None):
     return result
 
 
+def native_reference_sites(parameters):
+    """Recognize native token slots, not arbitrary OutputUUID dictionary keys.
+
+    Direct attachments, inline text attachments and bare quantity magnitudes
+    are distinct native serialization contexts in the actual compiled corpus.
+    Unknown object shapes remain exact literal data; they receive no alpha
+    exemption. A malformed token in a recognized slot remains an audit error.
+    """
+    found = {}
+
+    def token(value, path):
+        if isinstance(value, dict) and (value.get("Type") == "ActionOutput" or "OutputUUID" in value):
+            found[tuple(path + ["OutputUUID"])] = value
+
+    def walk(node, path):
+        if isinstance(node, dict):
+            kind = node.get("WFSerializationType")
+            value = node.get("Value")
+            if kind == "WFTextTokenAttachment":
+                token(value, path + ["Value"])
+            elif kind == "WFTextTokenString" and isinstance(value, dict):
+                attachments = value.get("attachmentsByRange")
+                if isinstance(attachments, dict):
+                    for span, attachment in attachments.items():
+                        if isinstance(span, str) and ATTACHMENT_RANGE.fullmatch(span):
+                            token(attachment, path + ["Value", "attachmentsByRange", span])
+            elif kind == "WFQuantityFieldValue" and isinstance(value, dict):
+                token(value.get("Magnitude"), path + ["Value", "Magnitude"])
+            for key, value in node.items():
+                walk(value, path + [key])
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                walk(value, path + [index])
+    walk(parameters, [])
+    return sorted(found.items(), key=lambda item: tuple(str(p) for p in item[0]))
+
+
+def path_text(path):
+    result = ""
+    for item in path:
+        if isinstance(item, int):
+            result += f"[{item}]"
+        else:
+            result += ("." if result else "") + str(item)
+    return result
+
+
 def graph_audit(doc):
     actions = doc.get("WFWorkflowActions", [])
     producers = {}
+    groups = {}
     errors = []
     refs = []
     stack = []
     quantity_signals = []
+    if not isinstance(actions, list):
+        return {"valid": False, "errors": [{"kind": "invalid_actions"}], "producers": {},
+                "groups": {}, "references": [], "serialized_quantity_reference_signals": []}
     for i, action in enumerate(actions):
+        if not isinstance(action, dict):
+            errors.append({"kind": "invalid_action", "action": i})
+            continue
+        identifier = action.get("WFWorkflowActionIdentifier")
         params = action.get("WFWorkflowActionParameters", {})
+        if not isinstance(identifier, str) or not identifier or not isinstance(params, dict):
+            errors.append({"kind": "invalid_action_shape", "action": i})
+            continue
         uid = params.get("UUID")
-        if uid is not None:
+        if "UUID" in params:
             if not isinstance(uid, str) or not uid:
                 errors.append({"kind": "invalid_producer", "action": i})
             elif uid in producers:
                 errors.append({"kind": "duplicate_producer", "action": i, "other": producers[uid], "uuid": uid})
             else:
                 producers[uid] = i
-        for path, uid in oracle.collect_references(params):
-            refs.append({"action": i, "path": path, "uuid": uid})
-        if "WFControlFlowMode" in params:
-            mode = params["WFControlFlowMode"]
+        for path, value in native_reference_sites(params):
+            ref = {"action": i, "path": path_text(path), "path_components": list(path),
+                   "uuid": value.get("OutputUUID"), "token_type": value.get("Type")}
+            refs.append(ref)
+            if ref["token_type"] != "ActionOutput":
+                errors.append({"kind": "invalid_reference_type", **ref})
+            if not isinstance(ref["uuid"], str) or not ref["uuid"]:
+                errors.append({"kind": "invalid_reference_uuid", **ref})
+
+        # These four Apple action identifiers are native control markers.
+        # A same-named field inside another action's payload is ordinary data.
+        if identifier in CONTROL_ACTIONS:
+            mode = params.get("WFControlFlowMode")
             group = params.get("GroupingIdentifier")
-            if not isinstance(group, str) or not group:
-                errors.append({"kind": "missing_control_group", "action": i})
-                continue
-            if mode == 0:
-                if group in stack:
-                    errors.append({"kind": "duplicate_group_start", "action": i})
-                stack.append(group)
-            elif not stack or stack[-1] != group:
-                errors.append({"kind": "control_group_nesting", "action": i, "mode": mode})
-            elif mode == 2:
-                stack.pop()
-            elif mode != 1:
+            if type(mode) is not int or mode not in (0, 1, 2):
                 errors.append({"kind": "unknown_control_mode", "action": i, "mode": mode})
+            elif not isinstance(group, str) or not group:
+                errors.append({"kind": "missing_control_group", "action": i})
+            elif mode == 0:
+                if group in groups:
+                    errors.append({"kind": "duplicate_group_start", "action": i,
+                                   "other": groups[group]["start_action"], "group": group})
+                else:
+                    groups[group] = {"start_action": i, "identifier": identifier, "markers": [i]}
+                stack.append((group, identifier))
+            elif not stack or stack[-1][0] != group:
+                errors.append({"kind": "control_group_nesting", "action": i, "mode": mode, "group": group})
+            else:
+                if stack[-1][1] != identifier:
+                    errors.append({"kind": "control_action_mismatch", "action": i,
+                                   "identifier": identifier, "start_identifier": stack[-1][1], "group": group})
+                if mode == 1 and identifier not in {
+                        "is.workflow.actions.conditional", "is.workflow.actions.choosefrommenu"}:
+                    errors.append({"kind": "invalid_control_middle", "action": i, "identifier": identifier})
+                groups[group]["markers"].append(i)
+                if mode == 2:
+                    groups[group]["end_action"] = i
+                    stack.pop()
 
         def quantities(node, path):
             if isinstance(node, dict):
@@ -146,31 +227,76 @@ def graph_audit(doc):
                     quantities(value, path + [index])
         quantities(params, [])
     for ref in refs:
-        ref["producer_action"] = producers.get(ref["uuid"])
-        if ref["producer_action"] is None:
-            errors.append({"kind": "dangling_reference", **ref})
+        uid = ref["uuid"]
+        ref["producer_action"] = producers.get(uid) if isinstance(uid, str) else None
+        if isinstance(uid, str) and uid:
+            if ref["producer_action"] is None:
+                errors.append({"kind": "dangling_reference", **ref})
+            elif ref["producer_action"] >= ref["action"]:
+                # Actual Repeat Index/Repeat Item tokens are named Variables,
+                # and control result UUIDs are consumed after the end marker.
+                # No legitimate later/self producer exception is needed by the
+                # corpus or the compiler's derived_uuid_test.go fixtures.
+                errors.append({"kind": "self_reference" if ref["producer_action"] == ref["action"] else "forward_reference",
+                               **ref})
     if stack:
-        errors.append({"kind": "unclosed_control_groups", "groups": stack})
-    return {"valid": not errors, "errors": errors, "producers": producers, "references": refs,
+        errors.append({"kind": "unclosed_control_groups", "groups": [group for group, _ in stack]})
+    return {"valid": not errors, "errors": errors, "producers": producers, "groups": groups, "references": refs,
             "serialized_quantity_reference_signals": quantity_signals}
 
 
-def identity_scope(left, right):
+class NativeIdentityScope:
+    """Frozen bijections and native paths established from two valid graphs."""
+
+    def __init__(self, registered, paths):
+        self.paths = MappingProxyType(dict(paths))
+        self.producers = MappingProxyType(dict(registered.src_to_reb))
+        self.reverse_producers = MappingProxyType(dict(registered.reb_to_src))
+        self.groups = MappingProxyType(dict(registered.group_src_to_reb))
+        self.reverse_groups = MappingProxyType(dict(registered.group_reb_to_src))
+
+    def matches(self, path, before, after):
+        kind = self.paths.get(tuple(path))
+        if kind is None:
+            return before == after
+        mapping, reverse = (self.groups, self.reverse_groups) if kind == "group" else (
+            self.producers, self.reverse_producers)
+        # Never call the older oracle's match_group: it registers unknown pairs.
+        return mapping.get(before) == after and reverse.get(after) == before
+
+
+def identity_scope(left, right, graphs=None):
+    graph_left, graph_right = graphs if graphs is not None else (graph_audit(left), graph_audit(right))
+    if not graph_left["valid"] or not graph_right["valid"]:
+        return None
     la = left.get("WFWorkflowActions", [])
     ra = right.get("WFWorkflowActions", [])
     if [x.get("WFWorkflowActionIdentifier") for x in la] != [x.get("WFWorkflowActionIdentifier") for x in ra]:
         return None
-    scope = oracle.BijectiveUUIDScope()
+    registered = oracle.BijectiveUUIDScope()
+    paths = {}
     for i, (a, b) in enumerate(zip(la, ra)):
         ap = a.get("WFWorkflowActionParameters", {})
         bp = b.get("WFWorkflowActionParameters", {})
-        if isinstance(ap.get("UUID"), str) and isinstance(bp.get("UUID"), str):
-            if scope.register_action_uuid(ap["UUID"], bp["UUID"], i):
+        prefix = ("WFWorkflowActions", i, "WFWorkflowActionParameters")
+        if ("UUID" in ap) != ("UUID" in bp):
+            return None
+        if "UUID" in ap:
+            if registered.register_action_uuid(ap["UUID"], bp["UUID"], i):
                 return None
-        if isinstance(ap.get("GroupingIdentifier"), str) and isinstance(bp.get("GroupingIdentifier"), str):
-            if scope.register_group_uuid(ap["GroupingIdentifier"], bp["GroupingIdentifier"]):
+            paths[prefix + ("UUID",)] = "producer"
+        if a["WFWorkflowActionIdentifier"] in CONTROL_ACTIONS:
+            if ap["WFControlFlowMode"] != bp["WFControlFlowMode"]:
                 return None
-    return scope
+            if ap["WFControlFlowMode"] == 0 and registered.register_group_uuid(
+                    ap["GroupingIdentifier"], bp["GroupingIdentifier"]):
+                return None
+            paths[prefix + ("GroupingIdentifier",)] = "group"
+    left_refs = {(ref["action"], tuple(ref["path_components"])) for ref in graph_left["references"]}
+    right_refs = {(ref["action"], tuple(ref["path_components"])) for ref in graph_right["references"]}
+    for action, path in left_refs & right_refs:
+        paths[("WFWorkflowActions", action, "WFWorkflowActionParameters") + path] = "reference"
+    return NativeIdentityScope(registered, paths)
 
 
 def compare(left_path, right_path, default_catalog):
@@ -181,10 +307,10 @@ def compare(left_path, right_path, default_catalog):
         for index, action in enumerate(doc.get("WFWorkflowActions", [])):
             default_keys.update((index, key) for key in default_catalog.get(action.get("WFWorkflowActionIdentifier"), set()))
     raw = exact_diffs(left, right, default_keys)
-    scope = identity_scope(left, right)
-    alpha = exact_diffs(left, right, default_keys, scope)
     graph_left = graph_audit(left)
     graph_right = graph_audit(right)
+    scope = identity_scope(left, right, (graph_left, graph_right))
+    alpha = exact_diffs(left, right, default_keys, scope)
     independent = oracle.evaluate_shortcut_fidelity(left, right)
     return {
         "strict_typed_equal": not raw,
@@ -193,7 +319,8 @@ def compare(left_path, right_path, default_catalog):
         "action_count": [len(left.get("WFWorkflowActions", [])), len(right.get("WFWorkflowActions", []))],
         "action_identifiers": [[x["WFWorkflowActionIdentifier"] for x in left.get("WFWorkflowActions", [])],
                                [x["WFWorkflowActionIdentifier"] for x in right.get("WFWorkflowActions", [])]],
-        "action_tree_equal_after_uuid_alpha": not any(x["path"][:1] == ["WFWorkflowActions"] for x in alpha),
+        "action_tree_equal_after_uuid_alpha": graph_left["valid"] and graph_right["valid"]
+            and not any(x["path"][:1] == ["WFWorkflowActions"] for x in alpha),
         "graphs_valid": graph_left["valid"] and graph_right["valid"],
         "raw_difference_count": len(raw),
         "alpha_difference_count": len(alpha),
@@ -203,7 +330,7 @@ def compare(left_path, right_path, default_catalog):
         "graph": {"left": graph_left, "right": graph_right},
         "independent_oracle": independent,
         "runtime_equivalence": "NOT_RUN",
-        "interpretation": "Every difference is retained. Categories are review aids, never semantic exemptions."
+        "interpretation": "Every difference is retained. Categories and the older independent oracle are advisory; strict typed differences and valid native graphs govern equality. UUID alpha applies only to registered native producer/group/reference paths."
     }
 
 
