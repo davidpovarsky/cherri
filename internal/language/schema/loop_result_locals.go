@@ -268,6 +268,16 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 				}
 				return nil, true
 			}
+			if found {
+				if arguments, explicit := LoopResultExplicitContextArguments(value, action); explicit {
+					for _, argument := range arguments {
+						if _, okay := expression(argument, scope, false, cellIteration); !okay {
+							return nil, false
+						}
+					}
+					return nil, true
+				}
+			}
 			if !found || name.Name != "count" || !LoopResultItemsCountConsumer(value, action) || value.PrimaryArg == nil {
 				return nil, false
 			}
