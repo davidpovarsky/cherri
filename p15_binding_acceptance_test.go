@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -80,15 +81,9 @@ func p15V02TargetOffset(tc p15V02Case) int {
 	return expected
 }
 
-// JSON null remains unsupported, and it must not narrow an Optional value.
-// Both independent diagnostics are required at their own exact source spans.
+// JsonNull is a present internal value, distinct from Optional absence.
+// Comparing an Optional to null must not narrow its later unsafe read.
 func p15V02ExpectedDiagnostics(tc p15V02Case) []p15V02Case {
-	if tc.name == "guard_json_null" {
-		return []p15V02Case{
-			{name: "unsupported_json_null", source: tc.source, target: "null", code: analysis.CodeNativeJSONNull},
-			tc,
-		}
-	}
 	return []p15V02Case{tc}
 }
 
@@ -108,6 +103,9 @@ func p15V02Diagnostic(diagnostics []analysis.Diagnostic, tc p15V02Case) error {
 		matches := 0
 		for _, actual := range errors {
 			if actual.Code == want.code && actual.Span.Start.ByteOffset == start && actual.Span.End.ByteOffset == start+len(want.target) {
+				if tc.name == "guard_json_null" && actual.Message != "type Text? is not assignable to declared type Text" {
+					return fmt.Errorf("null guard lost the actual unsafe Optional read: %s", actual.Message)
+				}
 				matches++
 			}
 		}
@@ -133,20 +131,46 @@ func TestP15V02NullGuardDiagnosticOracleRejectsCorruption(t *testing.T) {
 	if err := p15V02Diagnostic(diagnostics, tc); err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"missing_null", "missing_unsafe_read", "wrong_null_code", "wrong_null_span", "unexpected_error"} {
+	p15CheckTaggedBoundary(t, p15TaggedBoundaryCase{
+		tc.name, tc.source, tc.target, analysis.CodeArgumentType,
+		"type Text? is not assignable to declared type Text",
+	})
+	// Preserve the original five null-guard corruption IDs. They now mutate
+	// the single unsafe-read diagnostic, since the literal null is supported.
+	for _, fault := range []string{"missing_null", "missing_unsafe_read", "wrong_null_code", "wrong_null_span", "unexpected_error",
+		"fabricated_raw_null_error", "null_instead_of_unsafe_read", "wrong_message", "wrong_end", "warning_only"} {
 		t.Run(fault, func(t *testing.T) {
 			changed := append([]analysis.Diagnostic(nil), diagnostics...)
 			switch fault {
 			case "missing_null":
 				changed = changed[1:]
 			case "missing_unsafe_read":
-				changed = changed[:1]
+				changed = nil
 			case "wrong_null_code":
 				changed[0].Code = analysis.CodeUnknownName
 			case "wrong_null_span":
 				changed[0].Span.Start.ByteOffset++
 			case "unexpected_error":
 				changed = append(changed, changed[0])
+			case "fabricated_raw_null_error", "null_instead_of_unsafe_read":
+				invented := changed[0]
+				invented.Code = analysis.CodeNativeJSONNull
+				invented.Span.Start.ByteOffset = strings.Index(tc.source, "null")
+				invented.Span.End.ByteOffset = invented.Span.Start.ByteOffset + len("null")
+				if fault == "fabricated_raw_null_error" {
+					changed = append(changed, invented)
+				} else {
+					changed = []analysis.Diagnostic{invented}
+				}
+			case "wrong_message":
+				changed[0].Message = "unrelated argument failure"
+			case "wrong_end":
+				changed[0].Span.End.ByteOffset--
+			case "warning_only":
+				changed[0].Severity = analysis.SeverityWarning
+			}
+			if reflect.DeepEqual(changed, diagnostics) {
+				t.Fatal("corruption did not change the diagnostic")
 			}
 			if p15V02Diagnostic(changed, tc) == nil {
 				t.Fatal("accepted " + fault)
