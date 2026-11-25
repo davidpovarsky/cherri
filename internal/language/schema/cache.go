@@ -140,7 +140,7 @@ func init() {
 			parameter("global", types.Bool, true), parameter("sensitive", types.Bool, true), parameter("allowSensitive", types.Bool, true)},
 		EvidenceStatus: EvidenceInferred, Docs: ActionDocs{
 			Title: "Cache Scalar Value with TTL", Category: "storage",
-			Description:      "Lazy iOS27 Stored Content cache for source-typed Text, Number and Bool. Literal key/ttl/scope; ttl0 bypasses storage. Versioned scalar envelope, post-body expiry, clock rollback and changed-policy misses. Sensitive values require explicit opt-in. Complex/native objects, atomic compare-and-set and recoverable native parser/storage errors are not supported; native cache acceptance remains pending.",
+			Description:      "Legacy and V2 scalar scoped block with no block parameters. Lazy iOS27 Stored Content cache for source-typed Text, Number and Bool. The body must return one supported scalar; Void and complex/native objects are rejected. Literal key/ttl/scope; ttl0 bypasses storage. Versioned scalar envelope, post-body expiry, clock rollback and changed-policy misses. Sensitive values require explicit opt-in. Complex/native objects, atomic compare-and-set and recoverable native parser/storage errors are not supported; native cache acceptance remains pending.",
 			InsertionSnippet: "cache(key:\"key\", ttl:300) { <#scalar value#> }",
 		},
 	}

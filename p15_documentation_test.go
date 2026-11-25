@@ -15,7 +15,7 @@ import (
 func TestP15D01CanonicalDocsProduction(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
-	names := []string{"TestP15D01PrimaryParameterContract", "TestP15D01AllGeneratedSignaturesAndCategories", "TestP15D01CheckGateProducesAndRejectsFaults"}
+	names := []string{"TestP15D01PrimaryParameterContract", "TestP15D01AllGeneratedSignaturesAndCategories", "TestP15D01ScopedMacroDialectAndBodyContract", "TestP15D01CheckGateProducesAndRejectsFaults"}
 	cmd := exec.CommandContext(ctx, "go", "test", "./tools/language-docs", "-count=1", "-json", "-run", "^("+strings.Join(names, "|")+")$")
 	raw, err := cmd.CombinedOutput()
 	if err != nil {
@@ -42,7 +42,7 @@ func TestP15D01CanonicalDocsProduction(t *testing.T) {
 			t.Fatalf("actual generator did not execute %s", name)
 		}
 	}
-	t.Log("D01: all505 native definitions,15 separate macros, complete categories, typed defaults/primary optionality, full canonical artifact and8 real CLI drift rejections")
+	t.Log("D01: all505 native definitions,16 separate macros including cache, complete categories, typed defaults/primary optionality, full canonical artifact, reviewed scoped-body dialects and10 real CLI drift rejections")
 }
 func p15DocsSearchFixture(t *testing.T, active bool) string {
 	t.Helper()

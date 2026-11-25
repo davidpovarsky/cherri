@@ -74,8 +74,17 @@ func TestP15D01AllGeneratedSignaturesAndCategories(t *testing.T) {
 	text := renderReference(reg)
 	all := append(reg.AllActions()[:0:0], reg.AllActions()...)
 	all = append(all, reg.CompilerMacros()...)
-	if len(reg.AllActions()) != 505 || len(reg.CompilerMacros()) != 15 {
-		t.Fatalf("catalog/control counts changed: %d native, %d macro", len(reg.AllActions()), len(reg.CompilerMacros()))
+	wantMacros := []string{
+		"cache", "debugAssert", "debugClearLogs", "debugExport", "debugExportTrace",
+		"debugFinish", "debugLog", "debugLogPrevious", "debugShowLogs", "debugStartTimer",
+		"debugStopTimer", "debugTrace", "debugTraceEvent", "measure", "paginate", "require",
+	}
+	var macroNames []string
+	for _, macro := range reg.CompilerMacros() {
+		macroNames = append(macroNames, macro.CallableName)
+	}
+	if len(reg.AllActions()) != 505 || strings.Join(macroNames, "\x00") != strings.Join(wantMacros, "\x00") {
+		t.Fatalf("catalog/control inventory changed: %d native, macros=%v", len(reg.AllActions()), macroNames)
 	}
 	if strings.Count(text, "\n### `") != len(all) {
 		t.Fatal("generated headings do not account for every native action and separate macro")
@@ -145,6 +154,60 @@ func TestP15D01AllGeneratedSignaturesAndCategories(t *testing.T) {
 	}
 }
 
+func TestP15D01ScopedMacroDialectAndBodyContract(t *testing.T) {
+	reg := schema.DefaultRegistry()
+	text := renderReference(reg)
+	for _, obsolete := range []string{
+		"Legacy rejects this syntax", "V2 scoped value block",
+		"unless a scoped block is required",
+	} {
+		if strings.Contains(text, obsolete) {
+			t.Errorf("obsolete scoped-block claim remains in generated reference: %q", obsolete)
+		}
+	}
+	contracts := []struct {
+		name    string
+		phrases []string
+	}{
+		{"measure", []string{
+			"Legacy and V2 scoped block with no block parameters.",
+			"Evaluate the body exactly once in Debug and Release.",
+			"A value body returns its original typed value; a Void body has no result and cannot be bound or consumed.",
+			"The signature below illustrates the value form.",
+			"Debug records elapsed seconds; Release preserves body effects without timer actions.",
+			"this is not a finally or cancellation guarantee.",
+			"measure(label: text) { <#body#> } -> AnyContent",
+		}},
+		{"cache", []string{
+			"Legacy and V2 scalar scoped block with no block parameters.",
+			"source-typed Text, Number and Bool.",
+			"The body must return one supported scalar; Void and complex/native objects are rejected.",
+			"ttl0 bypasses storage.",
+			"native cache acceptance remains pending.",
+			") { <#body#> } -> AnyContent",
+		}},
+	}
+	var scopedNames []string
+	for _, action := range reg.CompilerMacros() {
+		if action.ScopedBlock {
+			scopedNames = append(scopedNames, action.CallableName)
+		}
+	}
+	if strings.Join(scopedNames, ",") != "cache,measure" {
+		t.Fatalf("review dialect/body contracts for changed scoped-macro inventory: %v", scopedNames)
+	}
+	for _, contract := range contracts {
+		t.Run(contract.name, func(t *testing.T) {
+			section := p15DocsSection(t, text, contract.name)
+			for _, phrase := range contract.phrases {
+				if !strings.Contains(section, phrase) {
+					t.Errorf("missing reviewed %s contract in generated section: %q", contract.name, phrase)
+				}
+			}
+		})
+	}
+}
+
 func TestP15D01CheckGateProducesAndRejectsFaults(t *testing.T) {
 	dir := t.TempDir()
 	binary := filepath.Join(dir, "language-docs.exe")
@@ -170,6 +233,8 @@ func TestP15D01CheckGateProducesAndRejectsFaults(t *testing.T) {
 		{"wire_key", "`WFSelectMultiplePhotos`", "`WrongWireKey`"},
 		{"return_type", " -> Text\n```", " -> Number\n```"},
 		{"macro_identity", "### `debugLog`", "### `wrongDebugLog`"},
+		{"scoped_dialect", "Legacy and V2 scoped block", "V2-only scoped block"},
+		{"scoped_void_result", "a Void body has no result and cannot be bound or consumed", "a Void body returns an invented value"},
 		{"missing_category", "## Module: General", "## Absent: General"},
 		{"extra_section", "## Compiler macros", "### `duplicate`\n\n## Compiler macros"},
 	}

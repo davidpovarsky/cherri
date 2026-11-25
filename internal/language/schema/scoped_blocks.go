@@ -22,7 +22,7 @@ func init() {
 		EvidenceStatus: EvidenceInferred,
 		Docs: ActionDocs{
 			Title: "Measure Block", Category: "debug",
-			Description:      "V2 scoped value block. Evaluate once, log elapsed seconds through existing native timers, and return the original typed value. Runtime timing accuracy remains platform-dependent.",
+			Description:      "Legacy and V2 scoped block with no block parameters. Evaluate the body exactly once in Debug and Release. A value body returns its original typed value; a Void body has no result and cannot be bound or consumed. The signature below illustrates the value form. Debug records elapsed seconds; Release preserves body effects without timer actions. A workflow-stopping action can prevent the final timer action from running; this is not a finally or cancellation guarantee. Runtime timing accuracy remains platform-dependent.",
 			InsertionSnippet: "measure(\"label\") { <#expression#> }",
 		},
 	}
