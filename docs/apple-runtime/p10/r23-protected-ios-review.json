@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "baseline": "76d722502e20db977e84a095444d0172442655b8",
-  "reviewedCommit": "6dca0432e5887221ff0e4a27c70ed16025b24a8f",
-  "reason": "Owner-requested P15 iOS fixes and acceptance tests intentionally evolved the protected parallel work. Retain the original baseline and every original XCTest; freeze the reviewed result instead of rejecting its authorized integration.",
+  "reviewedCommit": "0788295f8a1dacb7ba84f14a1dc5d86bc5d5d4b7",
+  "reason": "Owner-requested P15 iOS evolution, including reviewed documentation and visual-editor readiness corrections. Retain the historical baseline and every existing XCTest while pinning the exact intentionally reviewed source.",
   "reviewEvidence": "docs/apple-runtime/p10/r23-protected-ios-review.md",
   "files": [
     {
@@ -23,8 +23,8 @@
         ]
       },
       "reviewed": {
-        "blob": "33028f1f8b53b3855382a1ab6042a2c59402f687",
-        "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+        "blob": "1ff180eba5b161183a16071f94b6e88d10c343f8",
+        "sha256": "b7187e856eb57806a051ec64152a0159680b2bb4fbbf34aa468ed26b47d81791",
         "tests": [
           "testBRG27EditorRealWorldWorkflowUI",
           "testD03CurrentDocumentationSearchUI",
