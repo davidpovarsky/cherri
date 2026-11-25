@@ -44,6 +44,27 @@ def model_pins():
 
 
 class JoinedEvidenceControls(unittest.TestCase):
+    def test_terminal_target_only_relabel_rejected(self):
+        original = model_log()
+        baseline = joined.LogGuard(ROOT)
+        for line in original.splitlines():
+            baseline.observe(line)
+        self.assertEqual(set(baseline.verified()), set(joined.PROFILES))
+        for test, profile in joined.PROFILES.items():
+            suite, method = test.split("/")
+            target = "CherriTests" if profile["producer"] == "ios-bridge" else "CherriUITests"
+            other = "CherriUITests" if target == "CherriTests" else "CherriTests"
+            terminal = f"Test Case '-[{target}.{suite} {method}]' passed (0.123 seconds)."
+            replacement = f"Test Case '-[{other}.{suite} {method}]' passed (0.123 seconds)."
+            self.assertEqual(original.count(terminal), 1)
+            changed = original.replace(terminal, replacement, 1)
+            self.assertIn(f"Test Case '-[{target}.{suite} {method}]' started.", changed)
+            guard = joined.LogGuard(ROOT)
+            for line in changed.splitlines():
+                guard.observe(line)
+            with self.subTest(test=test), self.assertRaises(joined.Rejected):
+                guard.verified()
+
     def collect(self, raw=None, *, exit_code="0", attempt="7", diagnostic_only=False):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)

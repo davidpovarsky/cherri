@@ -388,3 +388,35 @@ func TestJoinedNativeEditorOriginalCollector(t *testing.T) {
 		}
 	}
 }
+
+func TestJoinedNativeEditorTerminalTargetOnlyRelabels(t *testing.T) {
+	for _, method := range []string{joinedBRG25Bridge, joinedBRG27Bridge, joinedBRG25UI, joinedBRG27UI} {
+		t.Run(method, func(t *testing.T) {
+			m := newJoinedNativeIntakeModel(t, joinedBRG27UI)
+			if err := validateJoinedNativeEditorRecord("BRG27", m.record, m.manifest); err != nil {
+				t.Fatal("causal baseline:", err)
+			}
+			profile, _ := joinedNativeProfileFor(method)
+			parts := strings.SplitN(method, "/", 2)
+			target, other := "CherriUITests", "CherriTests"
+			if profile.Producer == "ios-bridge" {
+				target, other = other, target
+			}
+			terminal := "Test Case '-[" + target + "." + parts[0] + " " + parts[1] + "]' passed (0.123 seconds)."
+			replacement := "Test Case '-[" + other + "." + parts[0] + " " + parts[1] + "]' passed (0.123 seconds)."
+			text := string(m.raw)
+			if strings.Count(text, terminal) != 1 {
+				t.Fatal("missing unique original terminal")
+			}
+			text = strings.Replace(text, terminal, replacement, 1)
+			if !strings.Contains(text, "Test Case '-["+target+"."+parts[0]+" "+parts[1]+"]' started.") {
+				t.Fatal("start was incorrectly mutated")
+			}
+			m.changeLog(text)
+			m.seal(t)
+			if err := validateJoinedNativeEditorRecord("BRG27", m.record, m.manifest); err == nil || !strings.Contains(err.Error(), "JOINED_CASE") {
+				t.Fatalf("terminal-only target relabel was not rejected: %v", err)
+			}
+		})
+	}
+}
