@@ -1233,11 +1233,14 @@ func makeConditionalAction(t *token) {
 		if len(cond.conditions) == 0 {
 			exit("E_CONDITION_INPUT: a conditional requires at least one input")
 		}
+		if len(cond.conditions) > 1 && iosVersion < 18 {
+			exit("E_CONDITION_TARGET: old-target compound conditions must be lowered before native emission")
+		}
 		spec := ConditionSpec{
 			GroupingIdentifier: t.ident,
 			IsLegacy:           cond.legacyComparison,
 		}
-		if len(cond.conditions) == 1 || iosVersion < 18 {
+		if len(cond.conditions) == 1 {
 			var firstCondition = cond.conditions[0]
 			var firstVar = legacyConditionalReference(firstCondition.arguments)
 			var conditionCode = firstCondition.condition

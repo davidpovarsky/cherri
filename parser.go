@@ -1379,18 +1379,27 @@ func collectConditionals(identifier string) {
 
 	var group = groupStatement(Conditional, &identifier)
 
+	producerStart := len(tokens)
+	var stages [][]token
 	var conditions WFConditions
 	conditions.WFActionParameterFilterPrefix = -1
 	for char != 1 && (len(conditions.conditions) == 0 || char != '{') {
 		collectLegacyComparisonFlag(&conditions)
 
+		stageStart := len(tokens)
 		var conditional = collectConditional()
+		stages = append(stages, append([]token(nil), tokens[stageStart:]...))
 
 		collectFilterPrefix(&conditions)
 		conditions.conditions = append(conditions.conditions, conditional)
 	}
 
 	advance()
+
+	if len(conditions.conditions) > 1 && (iosVersion < 18 || legacyConditionalStagesRequireGuards(stages)) {
+		tokens = tokens[:producerStart]
+		conditions = lowerLegacyConditionalStages(conditions, stages)
+	}
 
 	tokens = append(tokens, token{
 		typeof:    Conditional,
