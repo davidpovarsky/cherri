@@ -77,30 +77,31 @@ type ActionDocs struct {
 
 // ActionSchema is the authoritative definition of an Apple Shortcut action.
 type ActionSchema struct {
-	ID                 string                           `json:"id"`              // Unique stable ID
-	CallableName       string                           `json:"callableName"`    // Cherri v2 function/action name
-	Module             string                           `json:"module"`          // Category or module
-	AppleIdentifier    string                           `json:"appleIdentifier"` // is.workflow.actions.*
-	Variant            string                           `json:"variant,omitempty"`
-	PrimaryParameterID string                           `json:"primaryParameterId,omitempty"`
-	Parameters         []ParameterSchema                `json:"parameters"`
-	EmittedKeys        []string                         `json:"emittedKeys,omitempty"`
-	OutputType         types.Type                       `json:"-"`
-	OutputTypeName     string                           `json:"outputType,omitempty"`
-	RawOutputType      string                           `json:"rawOutputType,omitempty"`
-	AppIntent          *AppIntentDescriptor             `json:"appIntent,omitempty"`
-	Docs               ActionDocs                       `json:"docs"`
-	Builtin            bool                             `json:"builtin,omitempty"`
-	Custom             bool                             `json:"custom,omitempty"`
-	CompilerConstruct  bool                             `json:"compilerConstruct,omitempty"`
-	ScopedBlock        bool                             `json:"scopedBlock,omitempty"`
-	EvidenceStatus     EvidenceStatus                   `json:"evidenceStatus,omitempty"`
-	StaticParameters   map[string]any                   `json:"staticParameters,omitempty"`
-	MacOnly            bool                             `json:"macOnly,omitempty"`
-	NonMacOnly         bool                             `json:"nonMacOnly,omitempty"`
-	MinVersion         float64                          `json:"minVersion,omitempty"`
-	MaxVersion         float64                          `json:"maxVersion,omitempty"`
-	PlatformVersions   map[string]PlatformVersionBounds `json:"platformVersions,omitempty"`
+	ID                  string                           `json:"id"`              // Unique stable ID
+	CallableName        string                           `json:"callableName"`    // Cherri v2 function/action name
+	Module              string                           `json:"module"`          // Category or module
+	AppleIdentifier     string                           `json:"appleIdentifier"` // is.workflow.actions.*
+	Variant             string                           `json:"variant,omitempty"`
+	PrimaryParameterID  string                           `json:"primaryParameterId,omitempty"`
+	Parameters          []ParameterSchema                `json:"parameters"`
+	EmittedKeys         []string                         `json:"emittedKeys,omitempty"`
+	OutputType          types.Type                       `json:"-"`
+	OutputTypeName      string                           `json:"outputType,omitempty"`
+	RawOutputType       string                           `json:"rawOutputType,omitempty"`
+	AppIntent           *AppIntentDescriptor             `json:"appIntent,omitempty"`
+	Docs                ActionDocs                       `json:"docs"`
+	Builtin             bool                             `json:"builtin,omitempty"`
+	Custom              bool                             `json:"custom,omitempty"`
+	CompilerConstruct   bool                             `json:"compilerConstruct,omitempty"`
+	ScopedBlock         bool                             `json:"scopedBlock,omitempty"`
+	ScopedBlockOptional bool                             `json:"scopedBlockOptional,omitempty"`
+	EvidenceStatus      EvidenceStatus                   `json:"evidenceStatus,omitempty"`
+	StaticParameters    map[string]any                   `json:"staticParameters,omitempty"`
+	MacOnly             bool                             `json:"macOnly,omitempty"`
+	NonMacOnly          bool                             `json:"nonMacOnly,omitempty"`
+	MinVersion          float64                          `json:"minVersion,omitempty"`
+	MaxVersion          float64                          `json:"maxVersion,omitempty"`
+	PlatformVersions    map[string]PlatformVersionBounds `json:"platformVersions,omitempty"`
 }
 
 // ParameterByLabel returns the parameter schema matching the given label.

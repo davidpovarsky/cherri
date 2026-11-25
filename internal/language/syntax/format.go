@@ -373,10 +373,18 @@ func (f *Formatter) formatStatement(stmt Statement) {
 }
 
 func (f *Formatter) formatBlockStmt(blk *BlockStmt, withIndent bool) {
+	f.formatBlockWithHeader(blk, withIndent, "")
+}
+
+func (f *Formatter) formatBlockWithHeader(blk *BlockStmt, withIndent bool, header string) {
 	if withIndent {
 		f.writeIndent()
 	}
-	f.buf.WriteString("{\n")
+	f.buf.WriteString("{")
+	if header != "" {
+		f.buf.WriteString(" " + header + " in")
+	}
+	f.buf.WriteString("\n")
 	f.indent++
 	for _, stmt := range blk.Statements {
 		f.emitCommentsBefore(stmt.NodeSpan().Start.ByteOffset)
@@ -472,7 +480,14 @@ func (f *Formatter) formatExpression(expr Expression) {
 		f.buf.WriteString(")")
 		if e.Block != nil {
 			f.buf.WriteString(" ")
-			f.formatBlockStmt(e.Block.Body, false)
+			header := ""
+			for index, parameter := range e.Block.Parameters {
+				if index > 0 {
+					header += ", "
+				}
+				header += parameter.Name
+			}
+			f.formatBlockWithHeader(e.Block.Body, false, header)
 		}
 	case *UnaryExpr:
 		opStr := "!"

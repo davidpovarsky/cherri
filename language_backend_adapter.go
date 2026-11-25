@@ -77,6 +77,14 @@ func (s *CanonicalBackendSession) Close() {
 var backendEmitHook func(call backend.ResolvedCall) error
 
 func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (string, error) {
+	return s.emitResolvedCallWithPageCallback(call, nil)
+}
+
+func (s *CanonicalBackendSession) EmitScopedPaginateCall(call backend.ResolvedCall, callback backend.ScopedPageCallback) (string, error) {
+	return s.emitResolvedCallWithPageCallback(call, &callback)
+}
+
+func (s *CanonicalBackendSession) emitResolvedCallWithPageCallback(call backend.ResolvedCall, pageCallback *backend.ScopedPageCallback) (string, error) {
 	if backendEmitHook != nil {
 		if err := backendEmitHook(call); err != nil {
 			return "", err
@@ -215,6 +223,13 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	}
 	params := getActionParametersWithOrigins(args, observeParameter)
 
+	if pageCallback != nil {
+		if ident != "paginate" || pageCallback.EmitAction == nil || pageCallback.Body == nil || pageCallback.InputName == "" {
+			return "", fmt.Errorf("E_PAGINATE_BACKEND: callback requires the canonical paginator and complete emission contract")
+		}
+		_, err := buildScopedPaginateMacroActions(params, call.OutputUUID, call.OutputName, pageCallback)
+		return call.OutputUUID, err
+	}
 	if isDebugStdlibMacro(ident) {
 		if ident == "require" {
 			for _, argument := range call.Arguments {

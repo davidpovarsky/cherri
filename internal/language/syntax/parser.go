@@ -1110,6 +1110,10 @@ func (p *Parser) parseYieldStmt() *YieldStmt {
 
 func (p *Parser) parseBlockStmt() *BlockStmt {
 	startTok, _ := p.expect(TokenLBrace)
+	return p.parseBlockContents(startTok)
+}
+
+func (p *Parser) parseBlockContents(startTok Token) *BlockStmt {
 	var stmts []Statement
 	for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
 		if p.curr.Type == TokenSemicolon {
@@ -1782,8 +1786,15 @@ func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 	p.suppressTrailingBlock = previous
 	call.Span = callee.NodeSpan().Merge(endTok.Span)
 	if !previous && p.curr.Type == TokenLBrace && !p.currHasLeadingNewline() {
-		body := p.parseBlockStmt()
-		call.Block = &ScopedBlock{Span: body.Span, Body: body}
+		startTok := p.advance()
+		var parameters []*ParameterDecl
+		if p.curr.Type == TokenIdent && p.peek.Type == TokenIn {
+			parameter := p.advance()
+			p.advance() // in
+			parameters = []*ParameterDecl{{Span: parameter.Span, Name: parameter.Text}}
+		}
+		body := p.parseBlockContents(startTok)
+		call.Block = &ScopedBlock{Span: body.Span, Body: body, Parameters: parameters}
 		call.Span = call.Span.Merge(body.Span)
 	}
 	return call

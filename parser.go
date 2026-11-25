@@ -2183,6 +2183,10 @@ func collectAction(identifier *string) (value action) {
 	value = makeActionValue(*identifier, arguments)
 
 	advance()
+	if *identifier == "paginate" && legacyPaginateBodyAhead() {
+		skipInlineWhitespace()
+		value = collectLegacyScopedBody(*identifier, value.def, value.args, nil, "paginate", true)
+	}
 	return
 }
 

@@ -17,3 +17,15 @@ Expected 67 named terminal identities: ordinary controls 5 PASS including their 
 The planned native graph oracle checks original HTTP→Dictionary identity, exact bounded control regions, full item-validation-before-body order, callback/parameter/Previous edges, exact body effects/Void boundaries, nested shadow recovery and captured storage. Further causal mutations and an independent model will qualify these rules after production; no Apple runtime claim follows from this plan.
 
 Still outside this component: general typed item selectors/returned callback items, Link/response status/error recovery/redirects, generic retry, native acceptance and full final release.
+
+## Actual capability RED and implementation checkpoint
+
+The exact published test checkpoint `dd26f4536b84dd4cd4161c3a17b02481396ab09c` ran on Oracle/Linux arm64 with the existing Go 1.24.13 toolchain. The original 67 identities produced the expected 5 PASS / 62 FAIL, zero skips, no timeout/capacity abort and unchanged full physical source. All 62 compile product records were preserved. The causal intake distinguishes 34 V2 compile syntax failures at the unsupported `in` header, 24 Legacy compile failures at the unsupported opening brace, the analyzer-only header failure and their three parent failures. The four ordinary-pagination positive products remained actual native graphs. No fixture was replaced to obtain that RED.
+
+- Original execution: `/mnt/development/projects/evidence/cherri-p10r15-paginate-callback-20261125/oracle-red-01/result.original.json`, SHA256 `03526b7f394dcad36b81a4102f520c8e4f1ff493cdce968106e073429e82558f`.
+- Causal intake: `oracle-red-causal-intake-02/result.original.json`, SHA256 `2ede1da66bd8d85fb17470d74c10c3896ef6bf6328d668643cb60e4a685f6a5b` in the same evidence root.
+- The first causal classifier attempt remains preserved: it incorrectly expected the diagnostic code in the parser error's plain `String()`; only that classifier expectation was corrected, with no Go rerun.
+
+The implementation checkpoint adds actual lexical parameter identity, shared canonical pagination argument binding and helper emission, and the same validated-page/Void lifecycle in both frontends. It preserves the ordinary no-block builder, source-order header evaluation, original source-owned cell admission, zero-or-many captured writes and a narrow canonical numeric Delay contract. It grants no name-only authority to an arbitrary user action named `wait`.
+
+**Qualification is pending at this source checkpoint.** The original 67 cases and all preauthored value-rejection sources remain unchanged. The first qualification additionally selects their 16 negative leaves, actual native-graph causal faults, exact source-identity corruption controls and helper/body error propagation boundaries. No Apple runtime or final release claim follows from this source implementation.

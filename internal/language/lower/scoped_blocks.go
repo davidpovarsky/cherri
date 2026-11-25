@@ -15,6 +15,12 @@ import (
 // second native serializer or a Run Shortcut/function invocation for the body.
 func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, error) {
 	name, simple := call.Callee.(*syntax.IdentExpr)
+	if simple && name.Name == "paginate" {
+		return l.lowerPaginateBlock(call)
+	}
+	if call.Block != nil && len(call.Block.Parameters) != 0 {
+		return nil, fmt.Errorf("E_BLOCK_PARAMETERS at %s: this scoped construct does not accept block parameters", call.Span)
+	}
 	if simple && name.Name == "cache" {
 		return l.lowerCacheBlock(call)
 	}

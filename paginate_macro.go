@@ -15,7 +15,7 @@ func registerPaginateMacro() {
 		identifier: "getvariable", outputType: Arr,
 		doc: selfDoc{
 			title: "Paginate Bounded Dictionary Pages", category: "web",
-			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin URL/sibling, opaque cursor, or explicit numeric page/offset next markers. Query modes replace only the configured query value, retaining other authored query bytes. No HTTP status verification, retry, transport timeout or trailing block. Native runtime acceptance remains required.",
+			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin URL/sibling, opaque cursor, or explicit numeric page/offset next markers. Query modes replace only the configured query value, retaining other authored query bytes. Optional immutable page/Void callback runs once per validated page in Legacy and V2. Typed selectors/returned items, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.",
 		},
 		parameters: []parameterDefinition{
 			{name: "startURL", key: "WFPaginateStartURL", validType: RawString},
@@ -50,14 +50,25 @@ func registerPaginateMacro() {
 }
 
 type paginateExpansion struct {
-	actions []ShortcutAction
-	prefix  string
-	options schema.PaginateOptions
-	zero    WFTextTokenAttachment
-	one     WFTextTokenAttachment
+	actions  []ShortcutAction
+	prefix   string
+	options  schema.PaginateOptions
+	zero     WFTextTokenAttachment
+	one      WFTextTokenAttachment
+	callback *backend.ScopedPageCallback
+	err      error
 }
 
 func (b *paginateExpansion) add(id string, params map[string]any) {
+	if b.err != nil {
+		return
+	}
+	if b.callback != nil {
+		if err := b.callback.EmitAction("is.workflow.actions."+id, params); err != nil {
+			b.err = err
+			return
+		}
+	}
 	b.actions = append(b.actions, ShortcutAction{
 		WFWorkflowActionIdentifier: "is.workflow.actions." + id,
 		WFWorkflowActionParameters: params,
@@ -186,15 +197,19 @@ func (b *paginateExpansion) finish(resultUUID, resultName string) []ShortcutActi
 }
 
 func buildPaginateMacroActions(params map[string]any, resultUUID, resultName string) ([]ShortcutAction, error) {
+	return buildScopedPaginateMacroActions(params, resultUUID, resultName, nil)
+}
+
+func buildScopedPaginateMacroActions(params map[string]any, resultUUID, resultName string, callback *backend.ScopedPageCallback) ([]ShortcutAction, error) {
 	options, err := schema.ResolvePaginateOptions(params)
 	if err != nil {
 		return nil, err
 	}
-	b := &paginateExpansion{options: options, prefix: "__cherri_paginate_" + strings.ReplaceAll(nextGeneratedUUID("paginate"), "-", "")}
+	b := &paginateExpansion{options: options, prefix: "__cherri_paginate_" + strings.ReplaceAll(nextGeneratedUUID("paginate"), "-", ""), callback: callback}
 	empty := b.produce("list", map[string]any{"WFItems": []WFDictionaryFieldValueItem{}})
 	b.set("results", empty)
 	if options.MaxPages == 0 || options.MaxItems == 0 {
-		return b.finish(resultUUID, resultName), nil
+		return b.finish(resultUUID, resultName), b.err
 	}
 	emptySeen := b.produce("list", map[string]any{"WFItems": []WFDictionaryFieldValueItem{}})
 	b.set("seen", emptySeen)
@@ -283,6 +298,7 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 	b.end(room)
 	b.eachEnd(itemLoop)
 	b.end(nonempty)
+	b.emitPageCallback(page)
 
 	full := b.begin(b.count(b.get("results"), "Items"), 3, options.MaxItems, backend.OperandNumber)
 	b.set("active", b.zero)
@@ -311,5 +327,5 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 	b.end(unvisited)
 	b.end(active)
 	b.add("repeat.count", backend.BuildLoopEnd(pages, ""))
-	return b.finish(resultUUID, resultName), nil
+	return b.finish(resultUUID, resultName), b.err
 }

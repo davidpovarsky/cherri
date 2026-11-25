@@ -1581,11 +1581,17 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return a.analyzeScopedBlockCall(call, scope)
 	}
 	if name, ok := call.Callee.(*syntax.IdentExpr); ok {
-		if action, found := a.registry.LookupAction(name.Name); found && action.ScopedBlock && !a.userFunctions[name.Name] {
+		if action, found := a.registry.LookupAction(name.Name); found && action.ScopedBlock && !action.ScopedBlockOptional && !a.userFunctions[name.Name] {
 			a.error("E_BLOCK_REQUIRED", call.Span, "this compiler construct requires a trailing scoped block on the same line")
 			return types.Unknown
 		}
 	}
+	return a.analyzeCallArguments(call, scope)
+}
+
+// Bind the original call identity for both ordinary calls and compiler-owned
+// inline callbacks. A copied call would lose source-owned type/provenance facts.
+func (a *Analyzer) analyzeCallArguments(call *syntax.CallExpr, scope *Scope) types.Type {
 	var callName string
 	switch c := call.Callee.(type) {
 	case *syntax.IdentExpr:

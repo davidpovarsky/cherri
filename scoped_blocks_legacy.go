@@ -22,14 +22,17 @@ type legacyScopedStep struct {
 }
 
 type legacyScopedBlock struct {
-	cache      *schema.CacheOptions
-	label      string
-	prefix     string
-	next       int
-	steps      []legacyScopedStep
-	result     actionArgument
-	resultStep legacyScopedStep
-	resultType tokenType
+	paginate          bool
+	pageTarget        string
+	paginateArguments []actionArgument
+	cache             *schema.CacheOptions
+	label             string
+	prefix            string
+	next              int
+	steps             []legacyScopedStep
+	result            actionArgument
+	resultStep        legacyScopedStep
+	resultType        tokenType
 }
 
 type legacyScopedFrame struct {
@@ -172,15 +175,42 @@ func collectLegacyScopedBlockAction(name string) action {
 	if char != '{' {
 		parserError("E_BLOCK_REQUIRED: measure requires a scoped body on the call's line")
 	}
+	return collectLegacyScopedBody(name, definition, arguments, cacheOptions, label, false)
+}
+
+// Both frontends retain their original parsed bodies. The optional page header
+// changes only this body's lexical environment, not the ordinary call parser.
+func collectLegacyScopedBody(name string, definition *actionDefinition, arguments []actionArgument, cacheOptions *schema.CacheOptions, label string, pageCallback bool) action {
+	definitionCopy := *definition
+	definition = &definitionCopy
 	salt := fmt.Sprintf("%s:%d:%d:%s", name, lineIdx, idx, label)
-	block := &legacyScopedBlock{cache: cacheOptions, label: label, prefix: "__cherri_block_" + strings.ReplaceAll(createUUID(&salt), "-", "")}
+	block := &legacyScopedBlock{cache: cacheOptions, label: label, prefix: "__cherri_block_" + strings.ReplaceAll(createUUID(&salt), "-", ""), paginate: pageCallback, paginateArguments: arguments}
 	advance()
+	var pageName string
+	if pageCallback {
+		skipInlineWhitespace()
+		pageName = collectIdentifier()
+		if pageName == "" || intChar([]rune(pageName)[0]) {
+			parserError("E_PAGINATE_PARAMETER: use one immutable page parameter: { page in ... }")
+		}
+		skipInlineWhitespace()
+		if !consumeKeyword("in") {
+			parserError("E_PAGINATE_PARAMETER: expected in after the page parameter")
+		}
+		availableIdentifierWithShadow(&pageName, true)
+		block.pageTarget = block.prefix + "_callback_input"
+	}
 	previousTokens, previousVars, previousState := tokens, variables, legacyScopedParsing
 	tokens = nil
 	variables = maps.Clone(variables)
 	state := &legacyScopedParseState{
 		block: block, baseDepth: groupingIdx, bindings: map[string]string{},
 		declared: map[string]bool{}, frames: map[int]legacyScopedFrame{},
+	}
+	if pageCallback {
+		page := varValue{variableType: "ActionOutput", valueType: Dict, value: block.pageTarget, constant: true}
+		variables[pageName], variables[block.pageTarget] = page, page
+		state.bindings[pageName], state.declared[pageName] = block.pageTarget, true
 	}
 	legacyScopedParsing = state
 	defer func() { tokens, variables, legacyScopedParsing = previousTokens, previousVars, previousState }()
@@ -204,7 +234,13 @@ func collectLegacyScopedBlockAction(name string) action {
 		step := legacyScopedStep{vars: maps.Clone(variables), bindings: maps.Clone(state.bindings)}
 		state.step = &step
 		start, depth := len(tokens), groupingIdx
+		if pageCallback && consumeKeyword("return") {
+			parserError("E_PAGINATE_BODY_VOID: page callbacks cannot return a value")
+		}
 		if consumeKeyword("yield") {
+			if pageCallback {
+				parserError("E_PAGINATE_BODY_VOID: page callbacks cannot yield a value")
+			}
 			if depth != state.baseDepth {
 				parserError("E_BLOCK_EARLY_YIELD: Legacy yield must be the final value of this scoped body")
 			}
@@ -287,6 +323,9 @@ func collectLegacyScopedBlockAction(name string) action {
 			lastStep := &block.steps[stepIndex]
 			lastToken := &lastStep.tokens[tokenIndex]
 			if lastToken.valueType == EndClosure && legacyScopedControlHasValue(block, lastToken.ident) {
+				if pageCallback {
+					parserError("E_PAGINATE_BODY_VOID: a page callback cannot discard a control result")
+				}
 				parserError("E_BLOCK_CONTROL_RESULT: an implicit control value requires an explicit scoped result; it cannot be discarded as Void")
 			}
 			if lastToken.typeof == Action && lastToken.valueType == Action &&
@@ -315,6 +354,12 @@ func collectLegacyScopedBlockAction(name string) action {
 		parserError("E_CACHE_VALUE_TYPE: cache supports present Text, Number or Bool; complex and native objects require a qualified persistence codec")
 	}
 	definition.outputType = block.resultType
+	if pageCallback {
+		if block.resultType != Nil {
+			parserError("E_PAGINATE_BODY_VOID: a page callback performs effects and cannot discard a typed result")
+		}
+		definition.outputType = Arr
+	}
 	advance()
 	return action{ident: name, def: definition, args: arguments, block: block}
 }
@@ -393,6 +438,9 @@ func legacyScopedValueType(argument actionArgument, environment map[string]varVa
 			return Nil
 		}
 		if call.block != nil {
+			if call.block.paginate {
+				return Arr
+			}
 			return call.block.resultType
 		}
 		if contract, found := schema.DefaultRegistry().LookupAction(call.ident); found &&
@@ -492,6 +540,10 @@ func withLegacyScopedEnvironment(step legacyScopedStep, emit func()) {
 }
 
 func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReference) {
+	if block.paginate {
+		emitLegacyPaginateBlock(block, reference)
+		return
+	}
 	if block.cache != nil {
 		emitLegacyCacheBlock(block, reference)
 		return
