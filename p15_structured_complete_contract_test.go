@@ -73,7 +73,8 @@ func p15CompleteT05Graph(actions []map[string]any) error {
 	zero := p15TaggedCellGraph(g, "number", p15OptionalJoinValue("zero"))
 	text := p15TaggedCellGraph(g, "text", p15OptionalJoinValue("empty_text"))
 	list := p15TaggedCellGraph(g, "list", p15OptionalJoinValue("empty_list"))
-	dictionary := p15TaggedCellGraph(g, "map", p15OptionalJoinValue("empty_map"))
+	emptyMap := g.value("dictionary", map[string]any{"WFItems": p15OptionalJoinValue("empty_map").value})
+	dictionary := p15TaggedCellGraph(g, "map", p15FunctionArgument{true, 0, p15FunctionEdge(emptyMap)})
 	null := p15TaggedNullCell(g)
 	values := p15CompleteCellList(g, absent, falsity, zero, text, list, dictionary, null)
 	count := g.value("count", map[string]any{"Input": p15FunctionEdge(values)})
@@ -141,9 +142,9 @@ func TestP15L01CompleteHierarchyUnit(t *testing.T) {
 		name, source string
 		want         types.Type
 	}{
-		{"nested_number", "let values=[[1,2],[]]\nreturn count(values)", types.NewList(types.NewList(types.Number))},
-		{"dictionary_arrays", "let values={\"rows\":[[false],[]]}\nreturn 1", types.NewMap(types.Text, types.NewList(types.NewList(types.Bool)))},
-		{"nested_optional", p15CompleteL01Source, types.NewList(types.NewList(types.NewOptional(types.Bool)))},
+		{"nested_number", "let values=[[1,2],[]]\nreturn count(values)", types.NewList(types.NewUnion(types.NewList(types.Number), types.NewList(types.Unknown)))},
+		{"dictionary_arrays", "let values={\"rows\":[[false],[]]}\nreturn 1", types.NewMap(types.Text, types.NewList(types.NewUnion(types.NewList(types.Bool), types.NewList(types.Unknown))))},
+		{"nested_optional", p15CompleteL01Source, types.NewList(types.NewUnion(types.NewList(types.NewUnion(types.Bool, types.OptionalType{Inner: types.Unknown})), types.NewList(types.Unknown), types.NewList(types.Bool)))},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			p, a := p15F03Analysis(t, tc.source)
@@ -156,6 +157,18 @@ func TestP15L01CompleteHierarchyUnit(t *testing.T) {
 			}
 			if !types.DefinitelyPresent(value) {
 				t.Fatal("present container inherited child absence")
+			}
+			if tc.name == "nested_optional" {
+				// The initializer keeps its exact inferred alternatives; the
+				// declared binding/alias carries the contextual Optional layout.
+				alias := a.ExprTypes()[p15BindingValue(t, p, "alias")]
+				declared := types.NewList(types.NewList(types.NewOptional(types.Bool)))
+				if alias == nil || !alias.Equals(declared) {
+					t.Fatalf("declared nested alias layout lost: %v", alias)
+				}
+			}
+			if err := p15VBTypeError(p, a, map[string]types.Type{"values": types.NewList(types.Bool)}); err == nil {
+				t.Fatal("flattened semantic expectation accepted nested source")
 			}
 		})
 	}
