@@ -9,6 +9,8 @@ import re
 import shutil
 import subprocess
 
+from remote_stage_baseline import ORIGINAL_LIVE_HASHES, wrapper_templates
+
 
 def run(args, cwd=None):
     result = subprocess.run([str(x) for x in args], cwd=cwd, check=True,
@@ -118,6 +120,10 @@ def main():
     parser.add_argument("--go", required=True)
     parser.add_argument("--label", required=True)
     parser.add_argument("--branch", required=True)
+    parser.add_argument("--previous-stage-receipt", type=Path)
+    parser.add_argument("--previous-stage-sha256")
+    parser.add_argument("--original-runner", type=Path)
+    parser.add_argument("--original-legacy", type=Path)
     args = parser.parse_args()
     if not re.fullmatch(r"p15-[a-z0-9-]+", args.label):
         raise ValueError("Expected a unique p15 release label")
@@ -152,12 +158,9 @@ def main():
                   "codecFingerprint", "macroFingerprint"):
         if capabilities.get(field) != manifest.get(field):
             raise ValueError("Compiler capability mismatch: " + field)
-    protected = {
-        "active.json": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
-        "bin/cherri-remote-runner.sh": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
-        "bin/cherri-remote-legacy.sh": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
-        "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f",
-    }
+    protected, previous, templates, template_witnesses = wrapper_templates(
+        args.live_home, args.previous_stage_receipt, args.previous_stage_sha256,
+        args.original_runner, args.original_legacy)
     for name, expected in protected.items():
         if digest(args.live_home / name) != expected:
             raise ValueError("Concurrent/unreviewed live change: " + name)
@@ -189,7 +192,7 @@ def main():
     write_runtime_pair(runtime, binary_data, migration_data, source_sha, provenance)
     (candidate / "tools").symlink_to(args.live_home / "tools", target_is_directory=True)
     (candidate / "config/default-language-mode").write_bytes(mode)
-    runner_text = (args.live_home / "bin/cherri-remote-runner.sh").read_text()
+    runner_text = templates["runner"]
     runner_text = canonicalize_source_guard(runner_text, "v2")
     # Preserve the real read/compile interfaces. Sync revalidates this immutable
     # release; it cannot fetch a moving P10/P9 branch or activate a fallback.
@@ -244,9 +247,9 @@ def main():
     runner.chmod(0o700)
     shutil.copy2(args.live_home / "bin/cherri-shortcut-lint.py",
                  candidate / "bin/cherri-shortcut-lint.py")
-    legacy_text = (args.live_home / "bin/cherri-remote-legacy.sh").read_text()
+    legacy_text = templates["legacy"]
     legacy_text = canonicalize_source_guard(legacy_text, "legacy")
-    legacy_text = legacy_text.replace(protected["bin/cherri-remote-runner.sh"], digest(runner))
+    legacy_text = legacy_text.replace(ORIGINAL_LIVE_HASHES["bin/cherri-remote-runner.sh"], digest(runner))
     legacy_text = legacy_text.replace("$BASE/p10/runtime", "$BASE/" + args.label + "/runtime")
     legacy_text = legacy_text.replace("x.get('label')!='p10'", "x.get('label')!='" + args.label + "'")
     legacy_text = legacy_text.replace("agent/cherri-p10-apple-actions-coverage", args.branch)
@@ -289,6 +292,7 @@ trap 'rm -f -- "__DOLLAR__preflight"' EXIT
                    candidateHashes={name: digest(candidate / name) for name in protected},
                    registeredEntrypoint="bin/cherri-remote-builder -> cherri-remote-legacy.sh",
                    externalToolchainDependencies=tool_hashes,
+                   previousInstalledRelease=previous, wrapperTemplates=template_witnesses,
                    activationLayout="Move only source/label and label/runtime, then replace reviewed scripts and active.json; never rename candidate-home over live-home",
                    syncPolicy="Read-only verification of installed immutable tuple; no branch fallback")
     path = args.stage / "staging-receipt.json"
