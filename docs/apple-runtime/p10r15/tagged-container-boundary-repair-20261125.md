@@ -57,3 +57,21 @@ The combined original families still require requalification on this test-alignm
 On source 00f7204170bc9326dc836821155f9edb38d70d67, the 25 selected original parents produced 360 named passes. Every original T05/L01 family and the F04 Count context passed. Only the old JsonNull guard diagnostic oracle and its binding parent failed: they still expected a second unsupported-literal error, while the actual analyzer correctly retained the precise E_ARGUMENT_TYPE at the unsafe Optional read. The failed original is preserved at original-boundary-alignment-qualification-01/receipt.original.json, SHA-256 5378ba407333fd66d51007411338705de1cffd9a49171835b8a82de3405478f2.
 
 The focused correction leaves compiler production and every source specimen unchanged. It requires exactly the unsafe-read error, its full message and span, and preserves the five original corruption IDs while adding five precise mutations for invented raw-null errors, replacement of the unsafe read, message, end span and severity. The three affected binding parents still require their narrow replay; this checkpoint does not declare a combined green run.
+
+## Qualified affected-family result
+
+The narrow replay on 204a3268abb492abf34268ac968bc95d13c8479b passed all 63 named events in 26.600 seconds, with no failures, skips, timeouts, capacity aborts or source changes. It re-executed all three original binding parents and all ten diagnostic corruption controls. The prior 25-parent run remains recorded as a failure; the transparent join covers 373 distinct passing named events across the selected families, rather than claiming one all-green execution.
+
+Only the binding oracle and this report changed between those two runs. Compiler production, the other selected original test inputs and all authored source specimens are unchanged. The joined intake verifies both original JSONL/receipt hashes, every selected parent and every originally observed event.
+
+Original narrow replay receipt:
+/mnt/development/projects/evidence/cherri-p10r15-ci-release-20261125/tagged-null-guard-oracle-replay-01/receipt.original.json
+
+SHA-256: 477766a5c995ec2482591e32e58150b8ba273ce20909cc02ab0f2d5d58fa45f8
+
+Joined engineering qualification:
+/mnt/development/projects/evidence/cherri-p10r15-ci-release-20261125/tagged-original-boundary-qualification-intake-01/result.original.json
+
+SHA-256: 61c2386e49efdf19a3e87e7004f2b4a73491be9a7a6912dc716d0cc520f93739
+
+A final integrated CI/acceptance execution still remains mandatory. Apple native carrier execution remains unproved by these tests.
