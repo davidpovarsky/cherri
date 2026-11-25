@@ -3,6 +3,7 @@ package analysis
 import (
 	"fmt"
 
+	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
@@ -57,8 +58,7 @@ func (a *Analyzer) checkTaggedExpressionBoundary(expr syntax.Expression, value t
 		if identifier, ok := node.Callee.(*syntax.IdentExpr); ok {
 			name = identifier.Name
 		}
-		if name == "count" && !action.Custom && action.AppleIdentifier == "is.workflow.actions.count" &&
-			node.PrimaryArg != nil && len(node.NamedArgs) == 0 {
+		if name == "count" && schema.LoopResultItemsCountConsumer(node, action) && node.PrimaryArg != nil {
 			if _, list := unwrapOptionalType(a.taggedExpressionType(node.PrimaryArg, scope)).(types.ListType); list {
 				return // Count observes the outer cell sequence, not its payload.
 			}

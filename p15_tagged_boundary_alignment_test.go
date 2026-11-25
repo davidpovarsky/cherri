@@ -116,7 +116,7 @@ func TestP15TaggedBoundaryAnalysisParity(t *testing.T) {
 		{"native_storage_assignment", "var data=[]\ndata=[[]]\ngetVariable(data)", "data=[[]]", analysis.CodeTargetValueShape, "assignment cannot change a native storage slot into private cells without an explicit conversion"},
 		{"widened_alias", "let original=[[1]]\nlet alias:AnyContent=original\nshow(alias)", "alias", analysis.CodeTargetValueShape, "show requires an explicit native/JSON conversion for structured values"},
 		{"raw_alias", "let original=null\nnative.action(\"com.example.raw\",{\"value\":original})", "original", analysis.CodeTargetValueShape, "raw native metadata cannot consume a private structured value"},
-		{"menu_prompt", "let original=null\nlet selected=menu original {case \"x\" {yield 1}}\nshow(selected)", "original", analysis.CodeTargetValueShape, "menu label requires an explicit text/JSON codec"},
+		{"menu_prompt", "let original=null\nlet selected=menu(original) {case \"x\" {yield 1}}\nshow(selected)", "original", analysis.CodeTargetValueShape, "menu label requires an explicit text/JSON codec"},
 		{"anycontent_null", `function echo(value:Map<Text,AnyContent>)->Map<Text,AnyContent>{return value};echo({"value":null})`, `{"value":null}`, analysis.CodeArgumentType, "argument for value expects Map<Text, AnyContent>, got Map<Text, JsonNull>"},
 	} {
 		t.Run(tc.name, func(t *testing.T) { p15CheckTaggedBoundary(t, tc) })
