@@ -287,6 +287,19 @@ class EvaluationHarnessTests(unittest.TestCase):
                 with self.subTest(observer="actual_owned_snapshot_race", mode=mode, disappear=disappear):
                     self.exercise_owned_snapshot_race(mode, disappear)
 
+        with self.subTest(observer="post_snapshot_absence_after_deadline_rejected"):
+            with patch.object(runner.os, "killpg", side_effect=[None, ProcessLookupError]), \
+                    patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(["ps"], 1.0)), \
+                    patch.object(runner.time, "monotonic", side_effect=[10.0, 12.0]):
+                with self.assertRaisesRegex(ValueError, "deadline expired"):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+        with self.subTest(observer="post_snapshot_permission_is_not_absence"):
+            with patch.object(runner.os, "killpg", side_effect=[None, PermissionError]), \
+                    patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(["ps"], 1.0)), \
+                    patch.object(runner.time, "monotonic", return_value=10.0):
+                with self.assertRaisesRegex(ValueError, "could not be observed"):
+                    runner.wait_for_posix_group_exit(101, 11.0)
+
     def test_timeout_stops_a_spawned_worker(self):
         script = self.root / "parent.py"
         marker = self.root / "worker-finished"
