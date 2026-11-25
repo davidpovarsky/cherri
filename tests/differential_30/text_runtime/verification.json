@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "fixture": "41_dynamic_text_states",
+  "recordedUTC": "2026-11-25T14:58:30.635275+00:00",
+  "initialOracleSourceCommit": "9e6de5f5c85ceac295c15c1ecef3603561102370",
+  "compiledSourceCommit": "fde7d101fcd1bf28854a99bd4e67df0ca861ebb2",
+  "sourceAdaptation": "Explicit Text interpolation materializes first, last and URL list-item values in all3lanes; independently committed output oracle and8targeted Text slots unchanged.",
+  "expected": {
+    "value": "CHERRI_QA_41|ALPHA:beta:Alpha:alpha::BETA:example.org",
+    "utf8ByteCount": 53,
+    "utf8SHA256": "7d750a1f29982ee8787c2fcba06550b132bc971518a009d0a9b2e80ce42caed5"
+  },
+  "manifestSHA256": "0169c5b1fe0492e40deb02db683345b1eb872aba7841004863199013e8c567cc",
+  "main39ManifestSHA256": "282e847654ec9edd6bfec97e4dcc5e549694dbc18b7ee526c5a56856859a23f8",
+  "main39ManifestUnchangedFromFixtureBase": true,
+  "compilerSources": {
+    "original": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+    "forkBaseline": "4ca75e763204f0d4cdcb94442985e6dd776df844",
+    "forkCandidate": "3ec9e5ed12c0d7b6316e0a866e5e6be3a1de74bb"
+  },
+  "compilerBinaries": {
+    "original": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/original/cherri-upstream-98d5191",
+      "sha256": "feda44491d942061ea70353d3120429c3fa5fa1604a2059fa03a24eca56d4ee5"
+    },
+    "fork_legacy": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/compatibility/url-text/cherri-text-3ec9e5ed",
+      "sha256": "4e5adaf688e7cda7080b0240b0bc8281fcadeecd801e32ddbac637f8f4ca0d1d"
+    },
+    "fork_v2": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/compatibility/url-text/cherri-text-3ec9e5ed",
+      "sha256": "4e5adaf688e7cda7080b0240b0bc8281fcadeecd801e32ddbac637f8f4ca0d1d"
+    }
+  },
+  "independentNativeState": {
+    "path": "/mnt/development/projects/worktrees/cherri-differential-text-runtime-20261125/docs/apple-runtime/macos-27/encoding-table.json",
+    "sha256": "b9dd843f63ba90e24739027017178cbf09ef602538b1f9337d92e4407d5138fc"
+  },
+  "checker": {
+    "path": "/mnt/development/projects/worktrees/cherri-differential-text-runtime-20261125/tests/differential_30/text_runtime/verify_contract.py",
+    "sha256": "5a75f877a15e78db684e103c831e10b7a132418b0aec6bfdb6b73bc2f17adecd"
+  },
+  "initialRejectedUpstreamCompile": {
+    "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-3ec9e5ed/results.json",
+    "sha256": "6946860dce0f028ed2468e671368e63ff00d1508ab9b3320d2efc1ba81ed6ebb"
+  },
+  "initialSourceBaselineCompile": {
+    "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/baseline-4ca75e76/results.json",
+    "sha256": "d5553c3b3fc4b2ed8f241e65983f8b7d412deb36554390850d947f72203177d3"
+  },
+  "initialSourceBaselineState": {
+    "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/baseline-text-contract.json",
+    "sha256": "3e5933e14d23f2e01b225337c3c87e56a522b4d8d2f24fb369d0aebb6d239ee7"
+  },
+  "initialSourceCandidateState": {
+    "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-initial-text-contract.json",
+    "sha256": "7ef201927cdf466c261a76c794187e98053c129c64eb5366a77a347f0fd87632"
+  },
+  "matchingSourceBaseline": {
+    "compileReceipt": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/baseline-materialized-4ca75e76/results.json",
+      "sha256": "898a8478aa7a00bd0054d4836aa1916d0020461ca617bae962f796ccd81a8ee3"
+    },
+    "checkerReceipt": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/baseline-materialized-4ca75e76-text-contract.json",
+      "sha256": "52198258df2d52c57572e7f83194b732186988b8790bf732d2a1fa6b8cfc10cd"
+    },
+    "checkerExitCode": 1,
+    "lanes": [
+      {
+        "lane": "fork_legacy",
+        "passed": false,
+        "graphValid": true,
+        "checkedSlots": 9,
+        "failedSlots": 8
+      },
+      {
+        "lane": "fork_v2",
+        "passed": false,
+        "graphValid": true,
+        "checkedSlots": 9,
+        "failedSlots": 8
+      }
+    ]
+  },
+  "candidate": {
+    "compileReceipt": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed/results.json",
+      "sha256": "21e4d9fabe0a93799a328da16af1f5c7fa449e32c0bcf986d7df97546cef8db5"
+    },
+    "checkerReceipt": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed-text-contract.json",
+      "sha256": "d3d7cefce39018c4e5151d0a23e0062b7e0af755df4fac2aeb8cec883ec6e1b7"
+    },
+    "checkerExitCode": 0,
+    "lanes": [
+      {
+        "lane": "fork_legacy",
+        "passed": true,
+        "graphValid": true,
+        "checkedSlots": 9,
+        "failedSlots": 0
+      },
+      {
+        "lane": "fork_v2",
+        "passed": true,
+        "graphValid": true,
+        "checkedSlots": 9,
+        "failedSlots": 0
+      },
+      {
+        "lane": "original",
+        "passed": true,
+        "graphValid": true,
+        "checkedSlots": 9,
+        "failedSlots": 0
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "41_dynamic_text_states_original",
+        "lane": "original",
+        "name": "CHERRI_QA_Q41_O",
+        "expected": "CHERRI_QA_41|ALPHA:beta:Alpha:alpha::BETA:example.org",
+        "expectedUTF8ByteCount": 53,
+        "expectedUTF8SHA256": "7d750a1f29982ee8787c2fcba06550b132bc971518a009d0a9b2e80ce42caed5",
+        "unsignedPath": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed/artifacts/original/CHERRI_QA_Q41_O.shortcut",
+        "unsignedSHA256": "896951cccaaecafc568fa4e2470d0e8d6e946f00cec6b1d4873394512debf8db",
+        "sourcePath": "tests/differential_30/text_runtime/CHERRI_QA_Q41_O.cherri",
+        "sourceSHA256": "2a1cdef613b6fe9551c336ea00121f8cdfd51d9c1ffd5159039e4bcca20e8d04",
+        "sourceCommit": "fde7d101fcd1bf28854a99bd4e67df0ca861ebb2",
+        "compilerSourceSHA": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+        "compilerSHA256": "feda44491d942061ea70353d3120429c3fa5fa1604a2059fa03a24eca56d4ee5",
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "41_dynamic_text_states_fork_legacy",
+        "lane": "fork_legacy",
+        "name": "CHERRI_QA_Q41_L",
+        "expected": "CHERRI_QA_41|ALPHA:beta:Alpha:alpha::BETA:example.org",
+        "expectedUTF8ByteCount": 53,
+        "expectedUTF8SHA256": "7d750a1f29982ee8787c2fcba06550b132bc971518a009d0a9b2e80ce42caed5",
+        "unsignedPath": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed/artifacts/fork_legacy/CHERRI_QA_Q41_L.shortcut",
+        "unsignedSHA256": "66795144258d47efa492146ca6fa599ce74143adc1ee4fe24e19325f6eebefee",
+        "sourcePath": "tests/differential_30/text_runtime/CHERRI_QA_Q41_L.cherri",
+        "sourceSHA256": "a9296cb0fe5aaac700cde9449a6d36042e40f1aea1832c33a7b1ca8ddabd4294",
+        "sourceCommit": "fde7d101fcd1bf28854a99bd4e67df0ca861ebb2",
+        "compilerSourceSHA": "3ec9e5ed12c0d7b6316e0a866e5e6be3a1de74bb",
+        "compilerSHA256": "4e5adaf688e7cda7080b0240b0bc8281fcadeecd801e32ddbac637f8f4ca0d1d",
+        "runtimeStatus": "NOT_RUN"
+      },
+      {
+        "id": "41_dynamic_text_states_fork_v2",
+        "lane": "fork_v2",
+        "name": "CHERRI_QA_Q41_V",
+        "expected": "CHERRI_QA_41|ALPHA:beta:Alpha:alpha::BETA:example.org",
+        "expectedUTF8ByteCount": 53,
+        "expectedUTF8SHA256": "7d750a1f29982ee8787c2fcba06550b132bc971518a009d0a9b2e80ce42caed5",
+        "unsignedPath": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed/artifacts/fork_v2/CHERRI_QA_Q41_V.shortcut",
+        "unsignedSHA256": "f729e2157b0ced3766e7e63be1d31c136f38e4b0d43a2a29f0fbad9c678ec786",
+        "sourcePath": "tests/differential_30/text_runtime/CHERRI_QA_Q41_V.cherri",
+        "sourceSHA256": "9fce04185cb2b731e4d2296056ae03a18e049a77254c9005ed0999bc462f170e",
+        "sourceCommit": "fde7d101fcd1bf28854a99bd4e67df0ca861ebb2",
+        "compilerSourceSHA": "3ec9e5ed12c0d7b6316e0a866e5e6be3a1de74bb",
+        "compilerSHA256": "4e5adaf688e7cda7080b0240b0bc8281fcadeecd801e32ddbac637f8f4ca0d1d",
+        "runtimeStatus": "NOT_RUN"
+      }
+    ]
+  },
+  "fullComparisons": [
+    {
+      "leftLane": "original",
+      "rightLane": "fork_legacy",
+      "report": {
+        "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed/comparisons/41_dynamic_text_states.original-vs-fork_legacy.json",
+        "sha256": "e910892987858acd60d52d2605f9d4e575ed0a528a307b9e950de818ae93edab"
+      },
+      "strictTypedEqual": false,
+      "strictTypedEqualAfterUUIDAlpha": false,
+      "actionTreeEqualAfterUUIDAlpha": true,
+      "graphsValid": true,
+      "rawDifferenceCount": 61,
+      "alphaDifferenceCount": 24,
+      "differenceCategories": {
+        "workflow_metadata": 24
+      },
+      "nonMetadataAlphaDifferences": []
+    },
+    {
+      "leftLane": "original",
+      "rightLane": "fork_v2",
+      "report": {
+        "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/candidate-materialized-3ec9e5ed/comparisons/41_dynamic_text_states.original-vs-fork_v2.json",
+        "sha256": "bbfc915c768679edcd6833acb2c2a76c1f7d3a49e9236a3933307e85ec1848af"
+      },
+      "strictTypedEqual": false,
+      "strictTypedEqualAfterUUIDAlpha": false,
+      "actionTreeEqualAfterUUIDAlpha": false,
+      "graphsValid": true,
+      "rawDifferenceCount": 65,
+      "alphaDifferenceCount": 28,
+      "differenceCategories": {
+        "workflow_metadata": 24,
+        "structure_or_value": 2,
+        "display_candidate": 2
+      },
+      "nonMetadataAlphaDifferences": [
+        {
+          "path": [
+            "WFWorkflowActions",
+            1,
+            "WFWorkflowActionParameters",
+            "WFSerializationType"
+          ],
+          "kind": "removed",
+          "category": "structure_or_value",
+          "before": {
+            "type": "text",
+            "value": "WFTextTokenAttachment"
+          },
+          "after": {
+            "type": "absent"
+          }
+        },
+        {
+          "path": [
+            "WFWorkflowActions",
+            13,
+            "WFWorkflowActionParameters",
+            "CustomOutputName"
+          ],
+          "kind": "value_change",
+          "category": "display_candidate",
+          "before": {
+            "type": "text",
+            "value": "Text 1"
+          },
+          "after": {
+            "type": "text",
+            "value": "Text"
+          }
+        },
+        {
+          "path": [
+            "WFWorkflowActions",
+            14,
+            "WFWorkflowActionParameters",
+            "WFInput",
+            "Value",
+            "OutputName"
+          ],
+          "kind": "value_change",
+          "category": "display_candidate",
+          "before": {
+            "type": "text",
+            "value": "Text 1"
+          },
+          "after": {
+            "type": "text",
+            "value": "Text"
+          }
+        },
+        {
+          "path": [
+            "WFWorkflowActions",
+            14,
+            "WFWorkflowActionParameters",
+            "WFSerializationType"
+          ],
+          "kind": "removed",
+          "category": "structure_or_value",
+          "before": {
+            "type": "text",
+            "value": "WFTextTokenAttachment"
+          },
+          "after": {
+            "type": "absent"
+          }
+        }
+      ]
+    }
+  ],
+  "strictComparisonInterpretation": "Full raw and alpha differences remain. Legacy action tree matches original after identity alpha; V2 additionally differs in two setvariable action-level WFSerializationType keys and paired generated Text output display names. These differences are not normalized away or promoted to native equivalence.",
+  "runtimePreparation": {
+    "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/text-runtime/runtime-preparation.json",
+    "sha256": "3e76d3a600be0ce0231e2eb7eb5a952bcb537bbb28e544d2e0326ebdfb195ff0"
+  },
+  "runtimeStatus": "NOT_RUN",
+  "nativeOwnership": "Parent signs compiler-produced bytes and records actual raw callback digest/length/value and Receiver image identity separately."
+}
