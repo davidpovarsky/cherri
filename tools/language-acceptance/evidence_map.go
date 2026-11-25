@@ -34,6 +34,11 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	// BRG26 requires its own current-artifact signing, import, and runtime proof.
+	// The generic runtime smoke assertion does not observe its original contract.
+	if id == "BRG26" {
+		return
+	}
 	if _, found := structuredValueScenarios[id]; found {
 		return
 	}
