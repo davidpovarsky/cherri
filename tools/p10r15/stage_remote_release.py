@@ -10,6 +10,7 @@ import shutil
 import subprocess
 
 from remote_stage_baseline import ORIGINAL_LIVE_HASHES, wrapper_templates
+from remote_immutable_successor import render_immutable_successor
 
 
 def run(args, cwd=None):
@@ -124,6 +125,8 @@ def main():
     parser.add_argument("--previous-stage-sha256")
     parser.add_argument("--original-runner", type=Path)
     parser.add_argument("--original-legacy", type=Path)
+    parser.add_argument("--installed-wrapper-templates", action="store_true",
+                        help="Advance exact current immutable wrappers bound to the predecessor receipt")
     args = parser.parse_args()
     if not re.fullmatch(r"p15-[a-z0-9-]+", args.label):
         raise ValueError("Expected a unique p15 release label")
@@ -160,7 +163,7 @@ def main():
             raise ValueError("Compiler capability mismatch: " + field)
     protected, previous, templates, template_witnesses = wrapper_templates(
         args.live_home, args.previous_stage_receipt, args.previous_stage_sha256,
-        args.original_runner, args.original_legacy)
+        args.original_runner, args.original_legacy, installed=args.installed_wrapper_templates)
     for name, expected in protected.items():
         if digest(args.live_home / name) != expected:
             raise ValueError("Concurrent/unreviewed live change: " + name)
@@ -192,13 +195,26 @@ def main():
     write_runtime_pair(runtime, binary_data, migration_data, source_sha, provenance)
     (candidate / "tools").symlink_to(args.live_home / "tools", target_is_directory=True)
     (candidate / "config/default-language-mode").write_bytes(mode)
-    runner_text = templates["runner"]
-    runner_text = canonicalize_source_guard(runner_text, "v2")
-    # Preserve the real read/compile interfaces. Sync revalidates this immutable
-    # release; it cannot fetch a moving P10/P9 branch or activate a fallback.
-    start = runner_text.index("# A clone managed solely by this runner.")
-    end = runner_text.index("active_env() {", start)
-    sync = """sync_release() {
+    expected_tuple = dict(label=args.label, compilerCommit=source_sha,
+                          docsCommit=docs_sha, schemaFingerprint=manifest["schemaFingerprint"],
+                          codecFingerprint=manifest["codecFingerprint"],
+                          macroFingerprint=manifest["macroFingerprint"],
+                          compilerSHA256=provenance["sha256"],
+                          migrationSHA256=provenance["migration"]["sha256"],
+                          sourceBranch=args.branch, skillSourceHead=skill_sha)
+    if args.installed_wrapper_templates:
+        rendered = render_immutable_successor(
+            templates, protected, previous["tuple"], expected_tuple,
+            tool_hashes, immutable_release_reader)
+        runner_text = rendered["runner"]
+    else:
+        runner_text = templates["runner"]
+        runner_text = canonicalize_source_guard(runner_text, "v2")
+        # Preserve the real read/compile interfaces. Sync revalidates this immutable
+        # release; it cannot fetch a moving P10/P9 branch or activate a fallback.
+        start = runner_text.index("# A clone managed solely by this runner.")
+        end = runner_text.index("active_env() {", start)
+        sync = """sync_release() {
   case "__DOLLAR__{1:-}" in
     ""|--require-p10|--require-p15) ;;
     *) die "Unknown immutable-sync option" ;;
@@ -209,66 +225,62 @@ def main():
 }
 
 """.replace("__DOLLAR__", "$")
-    runner_text = runner_text[:start] + sync + runner_text[end:]
-    runner_text = runner_text.replace("sync [--require-p10]", "sync [--require-p10|--require-p15]")
-    runner_text = runner_text.replace(
-        "P10 is enabled only after source Skill, compiler and docs agree and doctor passes.",
-        "Sync verifies the installed immutable tuple. New releases use a separately validated package.")
-    expected_tuple = dict(label=args.label, compilerCommit=source_sha,
-                          docsCommit=docs_sha, schemaFingerprint=manifest["schemaFingerprint"],
-                          codecFingerprint=manifest["codecFingerprint"],
-                          macroFingerprint=manifest["macroFingerprint"],
-                          compilerSHA256=provenance["sha256"],
-                          migrationSHA256=provenance["migration"]["sha256"],
-                          sourceBranch=args.branch, skillSourceHead=skill_sha)
-    old_reader = "x=json.load(open(sys.argv[1])); print('|'.join(x[k] for k in ('label','compilerCommit','docsCommit','schemaFingerprint','sourceBranch','skillSourceHead')))"
-    validator = immutable_release_reader(expected_tuple, tool_hashes)
-    if runner_text.count(old_reader) != 1:
-        raise ValueError("Observed runner active-release reader changed")
-    runner_text = runner_text.replace(old_reader, validator)
-    # Both language routes sign the exact native plist that passed preflight.
-    # A second compile can change UUIDs or observe a concurrent source edit.
-    old_preflight = 'preflight="__DOLLAR__BASE/tmp/__DOLLAR__{name}-__DOLLAR__{LABEL}-__DOLLAR__{stamp}-preflight.shortcut"'.replace("__DOLLAR__", "$")
-    if runner_text.count(old_preflight) != 1:
-        raise ValueError("Observed V2 preflight allocation changed")
-    exact_preflight = """preflight="__DOLLAR__(mktemp "__DOLLAR__BASE/tmp/v2-preflight-XXXXXXXX.shortcut")"
+        runner_text = runner_text[:start] + sync + runner_text[end:]
+        runner_text = runner_text.replace("sync [--require-p10]", "sync [--require-p10|--require-p15]")
+        runner_text = runner_text.replace(
+            "P10 is enabled only after source Skill, compiler and docs agree and doctor passes.",
+            "Sync verifies the installed immutable tuple. New releases use a separately validated package.")
+        old_reader = "x=json.load(open(sys.argv[1])); print('|'.join(x[k] for k in ('label','compilerCommit','docsCommit','schemaFingerprint','sourceBranch','skillSourceHead')))"
+        validator = immutable_release_reader(expected_tuple, tool_hashes)
+        if runner_text.count(old_reader) != 1:
+            raise ValueError("Observed runner active-release reader changed")
+        runner_text = runner_text.replace(old_reader, validator)
+        # Both language routes sign the exact native plist that passed preflight.
+        # A second compile can change UUIDs or observe a concurrent source edit.
+        old_preflight = 'preflight="__DOLLAR__BASE/tmp/__DOLLAR__{name}-__DOLLAR__{LABEL}-__DOLLAR__{stamp}-preflight.shortcut"'.replace("__DOLLAR__", "$")
+        if runner_text.count(old_preflight) != 1:
+            raise ValueError("Observed V2 preflight allocation changed")
+        exact_preflight = """preflight="__DOLLAR__(mktemp "__DOLLAR__BASE/tmp/v2-preflight-XXXXXXXX.shortcut")"
     trap 'rm -f -- "__DOLLAR__preflight"' EXIT""".replace("__DOLLAR__", "$")
-    runner_text = runner_text.replace(old_preflight, exact_preflight)
-    signing_start = runner_text.index('    elif [ "__DOLLAR__LABEL" = \'p9\' ]; then'.replace("__DOLLAR__", "$"))
-    signing_end = runner_text.index('    fi\n    sha256sum "__DOLLAR__out"'.replace("__DOLLAR__", "$"), signing_start)
-    exact_signing = """    else
+        runner_text = runner_text.replace(old_preflight, exact_preflight)
+        signing_start = runner_text.index('    elif [ "__DOLLAR__LABEL" = \'p9\' ]; then'.replace("__DOLLAR__", "$"))
+        signing_end = runner_text.index('    fi\n    sha256sum "__DOLLAR__out"'.replace("__DOLLAR__", "$"), signing_start)
+        exact_signing = """    else
       "__DOLLAR__CHERRI_BIN" sign "__DOLLAR__preflight" --source-file="__DOLLAR__src" --output="__DOLLAR__out" --hubsign --share=anyone --no-ansi
 """.replace("__DOLLAR__", "$")
-    runner_text = runner_text[:signing_start] + exact_signing + runner_text[signing_end:]
-    runner_text = runner_text.replace("stamp=$(date -u +%Y%m%dT%H%M%S)\n",
-                                      "stamp=$(date -u +%Y%m%dT%H%M%S)-$$\n")
+        runner_text = runner_text[:signing_start] + exact_signing + runner_text[signing_end:]
+        runner_text = runner_text.replace("stamp=$(date -u +%Y%m%dT%H%M%S)\n",
+                                          "stamp=$(date -u +%Y%m%dT%H%M%S)-$$\n")
     runner = candidate / "bin/cherri-remote-runner.sh"
     runner.write_text(runner_text)
     runner.chmod(0o700)
     shutil.copy2(args.live_home / "bin/cherri-shortcut-lint.py",
                  candidate / "bin/cherri-shortcut-lint.py")
-    legacy_text = templates["legacy"]
-    legacy_text = canonicalize_source_guard(legacy_text, "legacy")
-    legacy_text = legacy_text.replace(ORIGINAL_LIVE_HASHES["bin/cherri-remote-runner.sh"], digest(runner))
-    legacy_text = legacy_text.replace("$BASE/p10/runtime", "$BASE/" + args.label + "/runtime")
-    legacy_text = legacy_text.replace("x.get('label')!='p10'", "x.get('label')!='" + args.label + "'")
-    legacy_text = legacy_text.replace("agent/cherri-p10-apple-actions-coverage", args.branch)
-    legacy_text = legacy_text.replace(chr(36) + "{name}-p10-legacy-",
-                                      chr(36) + "{name}-" + args.label + "-legacy-")
-    legacy_text = legacy_text.replace("P10", "P10R15")
-    output_start = legacy_text.index('workdir="$(dirname -- "$source")"')
-    output_end = legacy_text.index('python3 "$VALIDATOR" "$preflight"', output_start)
-    exact_output = """preflight="__DOLLAR__(mktemp "__DOLLAR__BASE/tmp/legacy-preflight-XXXXXXXX.shortcut")"
+    if args.installed_wrapper_templates:
+        legacy_text = rendered["legacy"]
+    else:
+        legacy_text = templates["legacy"]
+        legacy_text = canonicalize_source_guard(legacy_text, "legacy")
+        legacy_text = legacy_text.replace(ORIGINAL_LIVE_HASHES["bin/cherri-remote-runner.sh"], digest(runner))
+        legacy_text = legacy_text.replace("$BASE/p10/runtime", "$BASE/" + args.label + "/runtime")
+        legacy_text = legacy_text.replace("x.get('label')!='p10'", "x.get('label')!='" + args.label + "'")
+        legacy_text = legacy_text.replace("agent/cherri-p10-apple-actions-coverage", args.branch)
+        legacy_text = legacy_text.replace(chr(36) + "{name}-p10-legacy-",
+                                          chr(36) + "{name}-" + args.label + "-legacy-")
+        legacy_text = legacy_text.replace("P10", "P10R15")
+        output_start = legacy_text.index('workdir="$(dirname -- "$source")"')
+        output_end = legacy_text.index('python3 "$VALIDATOR" "$preflight"', output_start)
+        exact_output = """preflight="__DOLLAR__(mktemp "__DOLLAR__BASE/tmp/legacy-preflight-XXXXXXXX.shortcut")"
 trap 'rm -f -- "__DOLLAR__preflight"' EXIT
 "__DOLLAR__COMPILER" "__DOLLAR__source" --legacy --load-all-actions --skip-sign "--output=__DOLLAR__preflight" --no-ansi
 [ -s "__DOLLAR__preflight" ] || fail "legacy compiler returned no exact preflight Shortcut"
 """.replace("__DOLLAR__", "$")
-    legacy_text = legacy_text[:output_start] + exact_output + legacy_text[output_end:]
-    old_sign = '"$COMPILER" "$source" --legacy --load-all-actions --hubsign --share=anyone --output="$out" --no-ansi'
-    new_sign = '"$COMPILER" sign "$preflight" --source-file="$source" --hubsign --share=anyone --output="$out" --no-ansi'
-    if legacy_text.count(old_sign) != 1:
-        raise ValueError("Observed Legacy signing command changed")
-    legacy_text = legacy_text.replace(old_sign, new_sign)
+        legacy_text = legacy_text[:output_start] + exact_output + legacy_text[output_end:]
+        old_sign = '"$COMPILER" "$source" --legacy --load-all-actions --hubsign --share=anyone --output="$out" --no-ansi'
+        new_sign = '"$COMPILER" sign "$preflight" --source-file="$source" --hubsign --share=anyone --output="$out" --no-ansi'
+        if legacy_text.count(old_sign) != 1:
+            raise ValueError("Observed Legacy signing command changed")
+        legacy_text = legacy_text.replace(old_sign, new_sign)
     legacy = candidate / "bin/cherri-remote-legacy.sh"
     legacy.write_text(legacy_text)
     legacy.chmod(0o700)
