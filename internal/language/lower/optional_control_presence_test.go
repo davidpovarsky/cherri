@@ -53,14 +53,18 @@ func TestOptionalControlPresenceDemandFollowsConsumers(t *testing.T) {
 			if syntax.Format(program) != before {
 				t.Fatal("demand analysis changed source syntax")
 			}
-			// Renamed scoped bodies retain exact positive and negative demand,
-			// together with the checked nullable type of the source expression.
+			// Actual scoped nodes retain exact positive and negative demand,
+			// without copying authority to same-text AST clones.
 			lowerer.exprTypes = map[syntax.Expression]types.Type{value: types.OptionalType{Inner: types.Text}}
-			renamer := scopedBlockRenamer{lowerer: lowerer, prefix: "test_scope"}
-			cloned, err := renamer.expression(value, map[string]string{})
-			if err != nil || cloned == value || lowerer.optionalJoinNeeded(cloned) != tc.needed {
-				t.Fatalf("renamed join lost its demand/type fact: %v", err)
+			body := &syntax.BlockStmt{Statements: []syntax.Statement{&syntax.ExprStmt{Expr: value}}}
+			restore, err := lowerer.beginScopedBlockScope(body, "test_scope")
+			if err != nil {
+				t.Fatal(err)
 			}
+			if body.Statements[0].(*syntax.ExprStmt).Expr != value || lowerer.optionalJoinNeeded(value) != tc.needed || syntax.Format(program) != before {
+				t.Fatal("actual scoped join lost its demand/type/source fact")
+			}
+			restore()
 			unknown := &syntax.IfStmt{}
 			lowerer.exprTypes[unknown] = types.OptionalType{Inner: types.Text}
 			if !lowerer.optionalJoinNeeded(unknown) {

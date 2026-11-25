@@ -1,6 +1,8 @@
 package lower
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -10,6 +12,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
+// The historical test identity is retained. Native renaming now leaves the
+// authored AST in place instead of enrolling same-text cloned nodes.
 func TestScopedBlockRenamingPreservesSourceAndLiteralValues(t *testing.T) {
 	code := `let outside = "outer"
 let result = measure("scope") {
@@ -26,27 +30,64 @@ let result = measure("scope") {
 	before := syntax.Format(program)
 	analyzer := analysis.NewAnalyzer(schema.DefaultRegistry())
 	analyzer.Analyze(program)
-	lowerer := NewLowerer(schema.DefaultRegistry())
-	lowerer.SetExprTypes(analyzer.ExprTypes())
+	if len(analyzer.Diagnostics()) != 0 {
+		t.Fatal(analyzer.Diagnostics())
+	}
+	l := NewLowerer(schema.DefaultRegistry())
+	l.SetExprTypes(analyzer.ExprTypes())
+	l.prepareOptionalPresenceDemand(program)
+	if err := l.lowerLexicalBinding(program.Statements[0].(*syntax.BindingStmt)); err != nil {
+		t.Fatal(err)
+	}
+	outer := l.bindings["outside"]
 	call := program.Statements[1].(*syntax.BindingStmt).Value.(*syntax.CallExpr)
-	renamer := scopedBlockRenamer{lowerer: lowerer, prefix: "__cherri_test_scope"}
-	body, err := renamer.block(call.Block.Body, nil)
+	body := call.Block.Body
+	first := body.Statements[0].(*syntax.BindingStmt)
+	object := body.Statements[1].(*syntax.BindingStmt)
+	originalFirstValue, originalObjectValue := first.Value, object.Value
+	restore, err := l.beginScopedBlockScope(body, "__cherri_test_scope")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if syntax.Format(program) != before {
-		t.Fatal("scope lowering mutated original source AST")
+	if err := l.lowerLexicalBinding(first); err != nil {
+		t.Fatal(err)
 	}
-	first := body.Statements[0].(*syntax.BindingStmt)
-	if !strings.HasPrefix(first.Name, "__cherri_test_scope_") || first.Value.(*syntax.LiteralExpr).Value != "outside" {
-		t.Fatal("hygienic renaming modified literal data")
+	native := l.bindings["outside"].VariableName
+	if !strings.HasPrefix(native, "__cherri_test_scope_") || native == "outside" {
+		t.Fatal("scoped native storage was not private")
 	}
-	object := body.Statements[1].(*syntax.BindingStmt).Value.(*syntax.MapExpr)
-	if object.Entries[0].Key.(*syntax.LiteralExpr).Value != "outside" || object.Entries[0].Value.(*syntax.IdentExpr).Name != first.Name {
-		t.Fatal("dictionary key/reference scope confused")
+	if err := l.lowerLexicalBinding(object); err != nil {
+		t.Fatal(err)
 	}
-	final := syntax.BlockResultExpression(body)
-	if lowerer.exprTypes[final] == nil {
-		t.Fatal("cloned expression lost its analyzed result type")
+	if call.Block.Body != body || first.Value != originalFirstValue || object.Value != originalObjectValue ||
+		syntax.Format(program) != before || first.Name != "outside" || first.Value.(*syntax.LiteralExpr).Value != "outside" {
+		t.Fatal("lexical lowering mutated authored source identities or literal data")
+	}
+	mapValue := object.Value.(*syntax.MapExpr)
+	if mapValue.Entries[0].Key.(*syntax.LiteralExpr).Value != "outside" ||
+		mapValue.Entries[0].Value.(*syntax.IdentExpr).Name != "outside" {
+		t.Fatal("dictionary key/source reference changed")
+	}
+	found := false
+	for _, action := range l.workflow.Actions {
+		if action.AppleIdentifier == "is.workflow.actions.dictionary" {
+			found = strings.Contains(fmtScopedValue(action.Parameters), native)
+		}
+	}
+	if !found {
+		t.Fatal("Dictionary did not read its actual private native variable")
+	}
+	restore()
+	if !reflect.DeepEqual(l.bindings["outside"], outer) {
+		t.Fatal("outer lexical binding was not restored")
+	}
+	if _, leaked := l.bindings["object"]; leaked {
+		t.Fatal("scoped declaration escaped")
+	}
+	if l.lexical.privatePrefix != "" {
+		t.Fatal("private scope prefix leaked")
 	}
 }
+
+// Keep graph inspection independent of the lowering encoder's map shape.
+func fmtScopedValue(value any) string { return fmt.Sprintf("%v", value) }

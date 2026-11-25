@@ -27,16 +27,18 @@ func TestScopedBlockDictionaryPresenceSurvivesRenaming(t *testing.T) {
 	l.SetKnownPresentDictionaryIndexes(a.KnownPresentDictionaryIndexes())
 	call := program.Statements[0].(*syntax.BindingStmt).Value.(*syntax.CallExpr)
 	original := call.Block.Body.Statements[1].(*syntax.BindingStmt).Value
-	renamer := scopedBlockRenamer{lowerer: l, prefix: "__cherri_dictionary_scope"}
-	body, err := renamer.block(call.Block.Body, nil)
+	kind := l.exprTypes[original]
+	restore, err := l.beginScopedBlockScope(call.Block.Body, "__cherri_dictionary_scope")
 	if err != nil {
 		t.Fatal(err)
 	}
-	cloned := body.Statements[1].(*syntax.BindingStmt).Value
-	if original == cloned || !l.knownDictionaryIndexes[original] || !l.knownDictionaryIndexes[cloned] {
-		t.Fatal("exact source index fact was lost or source node reused")
+	defer restore()
+	if call.Block.Body.Statements[1].(*syntax.BindingStmt).Value != original || !l.knownDictionaryIndexes[original] ||
+		l.exprTypes[original] == nil || !l.exprTypes[original].Equals(kind) || syntax.Format(program) != before {
+		t.Fatal("actual source index lost its presence/type fact")
 	}
-	if l.exprTypes[cloned] == nil || !l.exprTypes[cloned].Equals(l.exprTypes[original]) || syntax.Format(program) != before {
-		t.Fatal("clone lost type evidence or mutated source")
+	cloned := *original.(*syntax.IndexExpr)
+	if l.knownDictionaryIndexes[&cloned] || l.exprTypes[&cloned] != nil {
+		t.Fatal("same-text unrelated index inherited source-owned facts")
 	}
 }

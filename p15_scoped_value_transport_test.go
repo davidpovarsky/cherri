@@ -266,3 +266,215 @@ func TestP15ScopedValueTransportGraphFaults(t *testing.T) {
 		})
 	}
 }
+
+// Repeated invocations and captured writes use distinct native storage while
+// retaining each returned mutable snapshot. This checks real serialized edges.
+func p15ScopedLexicalStorageGraph(actions []map[string]any, profile BuildProfile, captured bool) error {
+	type write struct {
+		name, value string
+		at          int
+	}
+	writes := []write{}
+	producers := map[string]int{}
+	timerKeys := map[string]bool{}
+	timerCount := 0
+	for i, action := range actions {
+		p := p15Param(action)
+		if id, _ := p["UUID"].(string); id != "" {
+			if _, exists := producers[id]; exists {
+				return fmt.Errorf("duplicate producer")
+			}
+			producers[id] = i
+		}
+		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.setvariable" {
+			continue
+		}
+		name, _ := p["WFVariableName"].(string)
+		if strings.HasPrefix(name, "__cherri_debug_timer_") {
+			timerCount++
+			if timerKeys[name] {
+				return fmt.Errorf("repeated measure shares timer storage")
+			}
+			timerKeys[name] = true
+			continue
+		}
+		outs, vars := p15V02NativeReferences(p["WFInput"])
+		if len(outs) != 1 || len(vars) != 0 {
+			return fmt.Errorf("write lost explicit source value")
+		}
+		at, found := producers[outs[0]]
+		if !found || at >= i || actions[at]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+			return fmt.Errorf("write source was not original Text")
+		}
+		value, okay := p15LiteralText(p15Param(actions[at])["WFTextActionText"])
+		if !okay {
+			return fmt.Errorf("write payload changed")
+		}
+		writes = append(writes, write{name, value, i})
+	}
+	wantTimers := 2
+	if captured {
+		wantTimers = 1
+	}
+	if profile == BuildProfileRelease {
+		wantTimers = 0
+	}
+	if timerCount != wantTimers {
+		return fmt.Errorf("timer/profile count changed")
+	}
+	expected := []string{"first", "second"}
+	if captured {
+		expected = []string{"outer", "written", "inner", "branch", "changed"}
+	}
+	if len(writes) != len(expected) {
+		return fmt.Errorf("write count=%d want%d", len(writes), len(expected))
+	}
+	for i, w := range writes {
+		if w.value != expected[i] {
+			return fmt.Errorf("source write order changed at%d", i)
+		}
+		if captured && i < 2 {
+			if w.name != "value" {
+				return fmt.Errorf("captured outer write redirected")
+			}
+		} else if !strings.HasPrefix(w.name, "__cherri_block_") {
+			return fmt.Errorf("scoped storage is not private")
+		}
+	}
+	names := []string{writes[0].name, writes[1].name}
+	if captured {
+		if writes[2].name == writes[3].name || writes[3].name != writes[4].name {
+			return fmt.Errorf("branch shadow storage collided or assignment detached")
+		}
+		names = []string{writes[2].name}
+	} else if names[0] == names[1] {
+		return fmt.Errorf("repeated invocation storage collided")
+	}
+	snapshots := []string{}
+	for i, action := range actions {
+		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvariable" {
+			continue
+		}
+		p := p15Param(action)
+		outs, vars := p15V02NativeReferences(p["WFVariable"])
+		if len(vars) == 0 {
+			continue
+		}
+		if len(vars) != 1 || len(outs) != 0 || len(snapshots) >= len(names) || vars[0] != names[len(snapshots)] {
+			return fmt.Errorf("mutable snapshot read wrong lexical slot")
+		}
+		id, _ := p["UUID"].(string)
+		if id == "" {
+			return fmt.Errorf("snapshot has no producer")
+		}
+		if profile == BuildProfileDebug {
+			foundStop := false
+			for j := i + 1; j < len(actions); j++ {
+				if actions[j]["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettimebetweendates" {
+					foundStop = true
+					break
+				}
+				if actions[j]["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+					return fmt.Errorf("snapshot crossed its next source scope")
+				}
+			}
+			if !foundStop {
+				return fmt.Errorf("snapshot was not frozen before diagnostics")
+			}
+		}
+		snapshots = append(snapshots, id)
+	}
+	if len(snapshots) != len(names) {
+		return fmt.Errorf("missing immutable snapshot")
+	}
+	n := len(actions)
+	if n < 2 || actions[n-2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.list" || actions[n-1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.output" {
+		return fmt.Errorf("final list/output changed")
+	}
+	items, okay := p15Param(actions[n-2])["WFItems"].([]any)
+	if !okay || len(items) != 2 {
+		return fmt.Errorf("final output cardinality changed")
+	}
+	for i, item := range items {
+		outs, vars := p15V02NativeReferences(item)
+		if captured && i == 0 {
+			if len(outs) != 0 || !reflect.DeepEqual(vars, []string{"value"}) {
+				return fmt.Errorf("outer value was hidden by scoped binding")
+			}
+		} else {
+			index := i
+			if captured {
+				index = 0
+			}
+			if !reflect.DeepEqual(outs, []string{snapshots[index]}) || len(vars) != 0 {
+				return fmt.Errorf("returned values lost original snapshot/order")
+			}
+		}
+	}
+	outs, vars := p15V02NativeReferences(p15Param(actions[n-1])["WFOutput"])
+	id, _ := p15Param(actions[n-2])["UUID"].(string)
+	if id == "" || !reflect.DeepEqual(outs, []string{id}) || len(vars) != 0 {
+		return fmt.Errorf("final output lost actual List")
+	}
+	return nil
+}
+
+func TestP15ScopedValueTransportLexicalStorage(t *testing.T) {
+	for name, source := range map[string]string{
+		"repeated":                   "let first=measure(\"same\"){var value=\"first\"\nvalue}\nlet second=measure(\"same\"){var value=\"second\"\nvalue}\nreturn [first,second]",
+		"captured_write_then_shadow": "var value=\"outer\"\nlet measured=measure(\"scope\"){value=\"written\"\nvar value=\"inner\"\nif true {var value=\"branch\"\nvalue=\"changed\"}\nvalue}\nreturn [value,measured]",
+	} {
+		for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
+			t.Run(name+"/"+string(profile), func(t *testing.T) {
+				actual := p15ScopedTransportCompile(t, source, profile)
+				captured := name == "captured_write_then_shadow"
+				if err := p15ScopedLexicalStorageGraph(actual, profile, captured); err != nil {
+					t.Fatal(err)
+				}
+				for _, fault := range []string{"wrong_snapshot", "swap_results", "source_write_changed", "storage_collision"} {
+					t.Run(fault, func(t *testing.T) {
+						a := p15TaggedClone(t, actual)
+						switch fault {
+						case "wrong_snapshot":
+							for _, action := range a {
+								p := p15Param(action)
+								_, vars := p15V02NativeReferences(p["WFVariable"])
+								if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && len(vars) == 1 {
+									p["WFVariable"] = p15FunctionVariable("UNRELATED_SLOT")
+									break
+								}
+							}
+						case "swap_results":
+							items := p15Param(a[len(a)-2])["WFItems"].([]any)
+							items[0], items[1] = items[1], items[0]
+						case "source_write_changed":
+							for _, action := range a {
+								if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" {
+									p15Param(action)["WFTextActionText"] = "ALTERED"
+									break
+								}
+							}
+						case "storage_collision":
+							first := ""
+							for _, action := range a {
+								p := p15Param(action)
+								name, _ := p["WFVariableName"].(string)
+								if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" && strings.HasPrefix(name, "__cherri_block_") {
+									if first == "" {
+										first = name
+									} else {
+										p["WFVariableName"] = first
+										break
+									}
+								}
+							}
+						}
+						if p15ScopedLexicalStorageGraph(a, profile, captured) == nil {
+							t.Fatal("accepted " + fault)
+						}
+					})
+				}
+			})
+		}
+	}
+}
