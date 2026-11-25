@@ -8,9 +8,11 @@ function advertised(value, selector) {
 }
 
 function inspectNative(value, depth) {
-  const out = { className: cls(value), objcNil: isNil(value) };
-  if (out.objcNil) return out;
-  const methods = methodNames(out.className);
+  if (isNil(value)) return { className: null, objcNil: true };
+  // The pinned prelude documents that ObjC getters can return JS primitives.
+  // Do not send className/runtime reflection to those non-native values.
+  if (!isObj(value)) return { className: null, objcNil: false, jsType: typeof value, value: plain(value, 0) };
+  const out = { className: cls(value), objcNil: false };
   if (advertised(value, "serializedRepresentation")) {
     try {
       const serialized = value.serializedRepresentation;
@@ -75,7 +77,7 @@ function observeDictionaryAction(dictionary, journal) {
     if (!result.copied) return result;
     const state = copied.parameterStateForKey("WFItems");
     result.parameterRead = !isNil(state);
-    journal("after-parameter-read", { parameterRead: result.parameterRead, className: cls(state) });
+    journal("after-parameter-read", { parameterRead: result.parameterRead, className: isNil(state) ? null : cls(state) });
     result.parameterObservation = inspectNative(state, 0);
     journal("after-parameter-observation", { observation: result.parameterObservation });
     result.actionObservation = inspectNative(copied, 0);
