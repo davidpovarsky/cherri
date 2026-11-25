@@ -93,7 +93,7 @@ func TestP15TaggedCanonicalControlTerminals(t *testing.T) {
 				boundary("conditional", "outer", 2)
 			}
 			before, _ := json.Marshal(s.shortcut)
-			actual, err := s.CurrentNativeInputUsesPrivateValue(outputs, nil)
+			actual, err := s.CurrentNativeInputUsesPrivateValue(outputs, nil, p15TaggedFixtureValueOutput)
 			after, _ := json.Marshal(s.shortcut)
 			if !reflect.DeepEqual(before, after) {
 				t.Fatal("observer changed native source")

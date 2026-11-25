@@ -61,12 +61,12 @@ func (l *Lowerer) validateTaggedImplicitNativeInput(target *ir.NativeActionNode)
 		return nil
 	}
 	observer, okay := l.session.(interface {
-		CurrentNativeInputUsesPrivateValue(map[string]bool, map[string]bool) (bool, error)
+		CurrentNativeInputUsesPrivateValue(map[string]bool, map[string]bool, func(string) bool) (bool, error)
 	})
 	if !okay {
 		return fmt.Errorf("E_TARGET_VALUE_SHAPE: implicit native input after structured values requires the canonical value observer")
 	}
-	private, err := observer.CurrentNativeInputUsesPrivateValue(l.taggedNativeOutputs, l.taggedNativeVariables)
+	private, err := observer.CurrentNativeInputUsesPrivateValue(l.taggedNativeOutputs, l.taggedNativeVariables, l.knownNativeValueOutput)
 	if err != nil {
 		return err
 	}

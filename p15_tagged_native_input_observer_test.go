@@ -106,7 +106,7 @@ func TestP15TaggedCanonicalPreviousObserver(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got, err := s.CurrentNativeInputUsesPrivateValue(outputs, variables)
+			got, err := s.CurrentNativeInputUsesPrivateValue(outputs, variables, p15TaggedFixtureValueOutput)
 			after, marshalErr := json.Marshal(s.shortcut)
 			if marshalErr != nil || !reflect.DeepEqual(before, after) {
 				t.Fatal("observer mutated canonical native bytes", marshalErr)
@@ -149,7 +149,7 @@ func TestP15TaggedPreviousObservesResolvedOutput(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		got, err := session.CurrentNativeInputUsesPrivateValue(map[string]bool{"private-root": true}, nil)
+		got, err := session.CurrentNativeInputUsesPrivateValue(map[string]bool{"private-root": true}, nil, p15TaggedFixtureValueOutput)
 		if err != nil || got {
 			t.Fatalf("canonical macro output remained private: %t %v", got, err)
 		}
@@ -172,4 +172,13 @@ func TestP15TaggedClosedNativeBoundaryPaths(t *testing.T) {
 			}
 		})
 	}
+}
+
+func p15TaggedFixtureValueOutput(identifier string) bool {
+	switch identifier {
+	case "is.workflow.actions.gettext", "is.workflow.actions.number",
+		"is.workflow.actions.gettimebetweendates", "is.workflow.actions.count":
+		return true
+	}
+	return false
 }

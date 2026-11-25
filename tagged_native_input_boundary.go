@@ -11,7 +11,7 @@ import (
 // including resolved calls and macro expansion. It never edits a raw action or
 // assigns a UUID. The enrollment sets come from checked source values, not from
 // user Dictionary keys that resemble a compiler carrier.
-func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, variables map[string]bool) (bool, error) {
+func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, variables map[string]bool, knownOutput func(string) bool) (bool, error) {
 	if len(outputs) == 0 && len(variables) == 0 {
 		return false, nil
 	}
@@ -21,6 +21,9 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 	}
 	positions := map[string]int{}
 	parameterPositions := map[uintptr]int{}
+	controlPositions := map[string][]int{}
+	controlKinds := map[string]string{}
+	controlStack := []string{}
 	for i, action := range actions {
 		if id, ok := action.WFWorkflowActionParameters["UUID"].(string); ok && id != "" {
 			if _, duplicate := positions[id]; duplicate {
@@ -30,6 +33,40 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 		}
 		if action.WFWorkflowActionParameters != nil {
 			parameterPositions[reflect.ValueOf(action.WFWorkflowActionParameters).Pointer()] = i
+		}
+		switch action.WFWorkflowActionIdentifier {
+		case "is.workflow.actions.conditional", "is.workflow.actions.choosefrommenu",
+			"is.workflow.actions.repeat.count", "is.workflow.actions.repeat.each":
+			group, okay := action.WFWorkflowActionParameters["GroupingIdentifier"].(string)
+			if !okay || group == "" {
+				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native control has no group identity")
+			}
+			mode := fmt.Sprint(action.WFWorkflowActionParameters["WFControlFlowMode"])
+			switch mode {
+			case "0":
+				if _, duplicate := controlKinds[group]; duplicate {
+					return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native control group is reused")
+				}
+				controlKinds[group] = action.WFWorkflowActionIdentifier
+				controlStack = append(controlStack, group)
+			case "1", "2":
+				if len(controlStack) == 0 || controlStack[len(controlStack)-1] != group ||
+					controlKinds[group] != action.WFWorkflowActionIdentifier {
+					return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native control boundaries cross or differ")
+				}
+				if mode == "1" {
+					if action.WFWorkflowActionIdentifier == "is.workflow.actions.repeat.count" ||
+						action.WFWorkflowActionIdentifier == "is.workflow.actions.repeat.each" ||
+						action.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" && len(controlPositions[group]) != 1 {
+						return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native control alternative boundary is invalid")
+					}
+				} else {
+					controlStack = controlStack[:len(controlStack)-1]
+				}
+			default:
+				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native control mode is invalid")
+			}
+			controlPositions[group] = append(controlPositions[group], i)
 		}
 	}
 	privateParameters := map[uintptr]bool{}
@@ -41,7 +78,12 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 			privateParameters[reflect.ValueOf(binding.params).Pointer()] = true
 		}
 	}
+	type observation struct {
+		private bool
+		err     error
+	}
 	active := map[int]bool{}
+	memo := map[int]observation{}
 	var producer func(int) (bool, error)
 	var output func(string) (bool, error)
 	var visit func(reflect.Value, int) (bool, error)
@@ -150,7 +192,10 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 		}
 		return false, nil
 	}
-	producer = func(index int) (bool, error) {
+	producer = func(index int) (private bool, err error) {
+		if previous, found := memo[index]; found {
+			return previous.private, previous.err
+		}
 		if index < 0 || index >= len(actions) {
 			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: invalid native input producer")
 		}
@@ -158,7 +203,10 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: cyclic native input alias")
 		}
 		active[index] = true
-		defer delete(active, index)
+		defer func() {
+			delete(active, index)
+			memo[index] = observation{private, err}
+		}()
 		action := actions[index]
 		parameters := action.WFWorkflowActionParameters
 		if parameters != nil && privateParameters[reflect.ValueOf(parameters).Pointer()] {
@@ -168,7 +216,27 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 		if outputs[id] {
 			return true, nil
 		}
+		// Pure compiler Text carriers preserve the canonical previous input,
+		// including when the carrier is the terminal action of a branch.
+		if saved, found := s.literalCarrierInputs[id]; found {
+			if saved.failure != nil {
+				return false, saved.failure
+			}
+			if saved.reference == nil {
+				return false, nil
+			}
+			return visit(reflect.ValueOf(saved.reference), 0)
+		}
 		switch action.WFWorkflowActionIdentifier {
+		case "is.workflow.actions.nothing":
+			return false, nil
+		case "is.workflow.actions.comment":
+			// A comment has no value result. It cannot sanitize the actual
+			// previous native value merely by becoming the last graph node.
+			if index == 0 {
+				return false, nil
+			}
+			return producer(index - 1)
 		case "is.workflow.actions.getvariable":
 			return visit(reflect.ValueOf(parameters["WFVariable"]), 0)
 		case "is.workflow.actions.setvariable", "is.workflow.actions.appendvariable":
@@ -181,43 +249,91 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 			return visit(reflect.ValueOf(parameters["WFItems"]), 0)
 		case "is.workflow.actions.conditional", "is.workflow.actions.choosefrommenu",
 			"is.workflow.actions.repeat.count", "is.workflow.actions.repeat.each":
-			if fmt.Sprint(parameters["WFControlFlowMode"]) != "2" {
-				return false, nil
-			}
 			group, _ := parameters["GroupingIdentifier"].(string)
+			if fmt.Sprint(parameters["WFControlFlowMode"]) != "2" {
+				// Inside a checked branch, an explicit opener input establishes
+				// its input kind without inventing a result UUID for the opener.
+				start := controlPositions[group][0]
+				if input, supplied := actions[start].WFWorkflowActionParameters["WFInput"]; supplied {
+					return visit(reflect.ValueOf(input), 0)
+				}
+				if action.WFWorkflowActionIdentifier == "is.workflow.actions.repeat.count" {
+					if start == 0 {
+						return false, nil
+					}
+					return producer(start - 1)
+				}
+				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: open native control has no established input contract")
+			}
 			if group == "" {
 				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: private-input control has no group identity")
 			}
-			// A statement-only closed control can expose a branch result without
-			// a named result UUID. Reject private results in that exact region;
-			// unrelated earlier source values do not taint a later native call.
-			for i := index - 1; i >= 0; i-- {
-				p := actions[i].WFWorkflowActionParameters
-				if p["GroupingIdentifier"] == group && fmt.Sprint(p["WFControlFlowMode"]) == "0" {
-					return false, nil
+			boundaries := controlPositions[group]
+			if len(boundaries) < 2 || boundaries[len(boundaries)-1] != index {
+				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: ambiguous native control result boundary")
+			}
+			start := boundaries[0]
+			for j, position := range boundaries {
+				p := actions[position].WFWorkflowActionParameters
+				mode := "1"
+				if j == 0 {
+					mode = "0"
+				} else if j == len(boundaries)-1 {
+					mode = "2"
 				}
-				id, _ := p["UUID"].(string)
-				if outputs[id] {
-					return true, nil
-				}
-				if p != nil && privateParameters[reflect.ValueOf(p).Pointer()] {
-					return true, nil
+				if actions[position].WFWorkflowActionIdentifier != action.WFWorkflowActionIdentifier ||
+					fmt.Sprint(p["WFControlFlowMode"]) != mode {
+					return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: malformed native control result region")
 				}
 			}
-			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: private-input control has no matching start")
-		}
-		return false, nil
-	}
-	current := actions[len(actions)-1]
-	id, _ := current.WFWorkflowActionParameters["UUID"].(string)
-	if saved, found := s.literalCarrierInputs[id]; found {
-		if saved.failure != nil {
-			return false, saved.failure
-		}
-		if saved.reference == nil {
+			// Only terminal values of normal branches contribute. A private
+			// temporary followed by ordinary Text is not the branch result.
+			checkBranch := func(begin, end int) (bool, error) {
+				terminal := end - 1
+				for terminal > begin && actions[terminal].WFWorkflowActionIdentifier == "is.workflow.actions.comment" {
+					terminal--
+				}
+				if terminal <= begin {
+					return visit(reflect.ValueOf(actions[start].WFWorkflowActionParameters["WFInput"]), 0)
+				}
+				return producer(terminal)
+			}
+			switch action.WFWorkflowActionIdentifier {
+			case "is.workflow.actions.conditional":
+				if len(boundaries) > 3 {
+					return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: conditional has duplicate alternative branches")
+				}
+				for j := 1; j < len(boundaries); j++ {
+					found, failure := checkBranch(boundaries[j-1], boundaries[j])
+					if found || failure != nil {
+						return found, failure
+					}
+				}
+				if len(boundaries) == 2 {
+					return visit(reflect.ValueOf(actions[start].WFWorkflowActionParameters["WFInput"]), 0)
+				}
+			case "is.workflow.actions.choosefrommenu":
+				if len(boundaries) < 3 {
+					return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: Menu has no source-owned result branches")
+				}
+				for j := 2; j < len(boundaries); j++ {
+					found, failure := checkBranch(boundaries[j-1], boundaries[j])
+					if found || failure != nil {
+						return found, failure
+					}
+				}
+			default:
+				if len(boundaries) != 2 {
+					return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: Repeat has unexpected alternative boundaries")
+				}
+				return checkBranch(start, index)
+			}
 			return false, nil
 		}
-		return visit(reflect.ValueOf(saved.reference), 0)
+		if knownOutput == nil || !knownOutput(action.WFWorkflowActionIdentifier) {
+			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: preceding native action has no established value-output contract")
+		}
+		return false, nil
 	}
 	return producer(len(actions) - 1)
 }
