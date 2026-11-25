@@ -84,3 +84,36 @@ primary list input. It reads compiler-produced artifacts without modifying them:
 
 The earlier source and each later source revision use separate evidence output
 directories; no prior compiler failure or baseline is overwritten.
+
+
+## Recorded structural verification
+
+The common-language source revision is commit
+`fde7d101fcd1bf28854a99bd4e67df0ca861ebb2`. The fixed oracle remains identical
+to the initial fixture commit. All compilation below uses actual CLI commands
+and retained unsigned compiler output; no native plist is patched.
+
+| Compiler lane | Compile / graph | Eight Text slots | Primary list attachment |
+|---|---|---|---|
+| Fork baseline 4ca75e76, Legacy | 20 actions / valid | 8 failures | Pass |
+| Fork baseline 4ca75e76, V2 | 20 actions / valid | 8 failures | Pass |
+| Pristine upstream 98d5191 | 20 actions / valid | Pass | Pass |
+| Fork candidate 3ec9e5ed, Legacy | 20 actions / valid | Pass | Pass |
+| Fork candidate 3ec9e5ed, V2 | 20 actions / valid | Pass | Pass |
+
+The independent checker exits 1 on the matching-source baseline and 0 on all
+three candidate lanes. It also verifies the Text materialization reference
+edges. Every baseline failure is the wrong attachment envelope in a declared
+Text slot. Raw typed comparisons are retained: Legacy's action tree matches
+upstream after UUID alpha-renaming; V2 retains two action-level setvariable
+serialization-key differences and a paired generated Text output display name
+difference. Workflow metadata differences remain in both reports. None is
+silently removed from the comparison or treated as runtime proof.
+
+`verification.json` binds the exact source, binary, checker, Apple state sample,
+artifact and command-result hashes. External evidence under
+`cherri-differential-30-20261125/text-runtime/` retains both the initial rejected
+upstream compile and separate revised-source baseline/candidate receipts.
+`runtime-preparation.json` there lists the three unsigned native inputs and the
+fixed output digest. At this structural handoff, native status is NOT_RUN; the
+native owner records subsequent execution separately.
