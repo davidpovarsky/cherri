@@ -36,7 +36,7 @@ func TestP15F04ExplicitContextCapabilities(t *testing.T) {
 	for _, tc := range []struct{ name, source string }{
 		{"comment", "comment(\"explicit comment\")\n" + body + "return observed"},
 		{"text", body + "let summary=text(f\"count={observed}\")\nreturn summary"},
-		{"output", body + "output(observed)"},
+		{"output", body + "output(f\"count={observed}\")"},
 		{"trace_event", "debugTraceEvent(stage:\"before\",label:\"loop\")\n" + body + "return observed"},
 		{"trace_export", body + "let trace=debugExportTrace(runId:\"loop\")\nreturn observed"},
 		{"clear_logs", "debugClearLogs()\n" + body + "return observed"},
@@ -64,6 +64,20 @@ func TestP15F04ExplicitContextPrivateBoundary(t *testing.T) {
 			raw, err := CompileSourceToPlist("private-context-"+tc.name+".cherri", tc.source)
 			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
 				t.Fatalf("private or implicit Previous boundary changed: bytes=%d error=%v", len(raw), err)
+			}
+		})
+	}
+}
+
+func TestP15F04ExplicitContextOutputTypeContract(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"ordinary", "let observed=2\noutput(observed)"},
+		{"with_loop", "let values=repeat 2 {yield []}\nlet observed=count(values)\noutput(observed)"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			raw, err := CompileSourceToPlist("output-type-"+tc.name+".cherri", tc.source)
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), "E_ARGUMENT_TYPE") || !strings.Contains(err.Error(), "expects Text, got Number") {
+				t.Fatalf("the ordinary output Text contract changed: bytes=%d error=%v", len(raw), err)
 			}
 		})
 	}
