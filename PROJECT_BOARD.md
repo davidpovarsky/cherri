@@ -367,3 +367,35 @@ The original27-parent selectors passed260 root+70 internal named IDs on the stru
 ## F04 general mutable storage qualification — 2026-11-25
 
 Implementation `82b8201d` admits inferred/mutable-source whole assignments and direct Repeat/For producers in the source-owned local cell slice. Actual focused152, original330 exact identities, and full affected269 tests passed; original failures and all source/ID expectation changes are retained. See `docs/language-v2/p15-f04-general-mutable-candidate-20261125.md` and its verification JSON. F04 remains open for consistent ordinary/cell declaration storage, uninitialized/overwritten versions, compound append and broader interfaces; no native runtime, final179 or release credit is claimed.
+
+
+## 2026-11-25 — Dynamic quantity reference serialization
+
+Independent builds of frozen original bcc00957 and current upstream 98d5191
+preserve a bare reference in a dynamic quantity's Magnitude. Baseline fork V2
+6ce0a398 instead stringified the lowered reference while returning compile
+success. A typed quantity carrier now reaches the existing shared quantity
+builder, preserving producer identity, transforms, date conditions and argument
+evaluation order.
+
+Actual baseline failures are retained. Final focused regressions and the three
+affected language packages passed; generated coverage includes every current
+quantity parameter (four) in both Legacy and V2. The new Cherri fixtures also
+compiled to dictionary magnitudes. Apple execution and the wider differential
+suite remain separate. See [the source audit and bounded evidence](docs/language-v2/dynamic-quantity-reference-audit-20261125.md).
+
+
+## 2026-11-25 — Deterministic UUID generation across both frontends
+
+The optional derived-ID path inherited collisions for repeated array elements
+and anonymous control blocks; V2 ignored the flag, and macro expansions retained
+independent random IDs. A per-compilation domain/workflow/occurrence sequence now
+serves frontend and canonical generation with explicit V2 options and reset
+boundaries. Imported explicit IDs remain exact; default IDs remain random v4.
+
+Actual RED failures are retained. Focused affected regressions and lower/backend
+packages passed. The unchanged differential comparator accepted all 12 exact
+replay pairs from 24 separate processes for six array/control cases in both
+frontends, with valid graphs and zero raw differences. Macro UUID-valued display
+names remain visible differences between modes. [Root repair and evidence](docs/language-v2/deterministic-uuid-root-repair-20261125.md).
+Apple execution and integrated full-suite acceptance remain separate.

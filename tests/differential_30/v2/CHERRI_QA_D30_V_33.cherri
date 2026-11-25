@@ -1,0 +1,9 @@
+shortcut "CHERRI_QA_D30_V_33" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let address = "https://example.org/alpha/beta?mode=qa#section"
+let scheme = getURLDetail(address, detail: "Scheme")
+let host = getURLDetail(address, detail: "Host")
+let path = getURLDetail(address, detail: "Path")
+let query = getURLDetail(address, detail: "Query")
+let fragment = getURLDetail(address, detail: "Fragment")
+output(f"CHERRI_QA_33|{scheme}:{host}:{path}:{query}:{fragment}")

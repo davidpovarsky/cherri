@@ -1,0 +1,8 @@
+#define name CHERRI_QA_D30_O_29
+#include 'actions/text'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const results = repeat i for 3 {
+    text("x{@i}")
+}
+const joined = joinText(results, ",")
+output("CHERRI_QA_29|{joined}")

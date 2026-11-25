@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_37" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+var state = "before"
+let snapshot = state
+state = "after"
+output(f"CHERRI_QA_37|{snapshot}:{state}")

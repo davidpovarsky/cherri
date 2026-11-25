@@ -46,10 +46,10 @@ func p15StatisticInputGraph(actions []ShortcutAction, operation string) error {
 	if stat == nil || listID == "" || listIndex >= statIndex {
 		return fmt.Errorf("missing or out-of-order List -> Statistics graph")
 	}
-	if stat["WFStatisticsOperation"] != operation || stat["Input"] != nil {
+	if stat["WFStatisticsOperation"] != operation || stat["WFInput"] != nil {
 		return fmt.Errorf("statistics operation/wire key changed")
 	}
-	wrapper, ok := stat["WFInput"].(map[string]any)
+	wrapper, ok := stat["Input"].(map[string]any)
 	if !ok || wrapper["WFSerializationType"] != "WFTextTokenAttachment" {
 		return fmt.Errorf("statistics lost typed input attachment")
 	}
@@ -65,9 +65,11 @@ func p15CheckStatisticDocument(t *testing.T, doc map[string]any, operation strin
 	var actions []ShortcutAction
 	for _, raw := range doc["WFWorkflowActions"].([]any) {
 		action := raw.(map[string]any)
+		// Parameterless native actions may omit the dictionary in release output.
+		parameters, _ := action["WFWorkflowActionParameters"].(map[string]any)
 		actions = append(actions, ShortcutAction{
 			WFWorkflowActionIdentifier: action["WFWorkflowActionIdentifier"].(string),
-			WFWorkflowActionParameters: action["WFWorkflowActionParameters"].(map[string]any),
+			WFWorkflowActionParameters: parameters,
 		})
 	}
 	if err := p15StatisticInputGraph(actions, operation); err != nil {
@@ -81,7 +83,7 @@ func TestP15StatisticInputGraphRejectsCausalCorruption(t *testing.T) {
 	if err := p15StatisticInputGraph(good, "Sum"); err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"wrong_number", "wrong_operation", "retarget_consumer", "deprecated_input", "duplicate_producer"} {
+	for _, fault := range []string{"wrong_number", "wrong_operation", "retarget_consumer", "unsupported_input", "duplicate_producer"} {
 		t.Run(fault, func(t *testing.T) {
 			actions := compileDebugFixture(t, source, false)
 			numbers := p15ActionsNamed(actions, "number")
@@ -92,10 +94,10 @@ func TestP15StatisticInputGraphRejectsCausalCorruption(t *testing.T) {
 			case "wrong_operation":
 				stat["WFStatisticsOperation"] = "Maximum"
 			case "retarget_consumer":
-				stat["WFInput"].(map[string]any)["Value"].(map[string]any)["OutputUUID"] = numbers[0].WFWorkflowActionParameters["UUID"]
-			case "deprecated_input":
-				stat["Input"] = stat["WFInput"]
-				delete(stat, "WFInput")
+				stat["Input"].(map[string]any)["Value"].(map[string]any)["OutputUUID"] = numbers[0].WFWorkflowActionParameters["UUID"]
+			case "unsupported_input":
+				stat["WFInput"] = stat["Input"]
+				delete(stat, "Input")
 			case "duplicate_producer":
 				numbers[1].WFWorkflowActionParameters["UUID"] = numbers[0].WFWorkflowActionParameters["UUID"]
 			}

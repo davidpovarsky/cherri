@@ -1,0 +1,497 @@
+{
+  "scope": "Dynamic quantity reference serialization; compile/native-plist evidence only",
+  "fork_base": "6ce0a3981d2047ba5aec603f185e2d8f922fc0ee",
+  "frozen_original": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+  "latest_upstream": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+  "upstream_repository": "https://github.com/electrikmilk/cherri",
+  "source_file_sha256": {
+    "internal/language/backend/quantity.go": "567670eb063c3e6ff890c52fe38d24254510e85445d4af1a56dad2d5b8daa8ae",
+    "internal/language/lower/quantity.go": "728fa18bb0f9a91ebd5dd5508798f82e849fec2001550dd624e2450781d6f805",
+    "internal/language/lower/call_arguments.go": "98362680199fa317bb564b5a63fc5d72f7664b8eb0a8279ac8bf12a3d2c4c0b5",
+    "internal/language/lower/lower.go": "94b5cf4ea810aa103e14d120823a125197565072c9461602fa26eb50011390ea",
+    "language_quantity_adapter.go": "1184c3296add320bfda653846417109641c93038e1aa888a5982bc4f4d867689",
+    "language_backend_adapter.go": "264c04b58f179c979999c83f0967931d05dd22a35a89ff53d00123c0c77e8c60",
+    "language_emit_adapter.go": "b7e727f8e217918916adedd0b828ca217190ab756862c9c5ac903c07d8a2076f",
+    "language_value_adapter.go": "0263902d405edcdde427fcd90e467938289eb69be2d0488ef85429023c37c5f6",
+    "quantity_reference_test.go": "2e5caa0ae1742b48acd8e53d292a3c3c1a0b923f9c1aec90b6d5d3ea50cec9df",
+    "tests/qty-dynamic.cherri": "b54f9cd60d1b262f3d0333ff0f429775b3a8832dabd37a2e456365423057e78a",
+    "tests/language-v2/v2-dynamic-quantity.cherri": "df79007bc05c100ac6dcf763045540ddd77a5aadd0b7f8536b76aef55f93aa2b"
+  },
+  "evidence_root": "/mnt/development/projects/evidence/cherri-differential-30-20261125",
+  "receipts": {
+    "original/build-original.json": {
+      "sha256": "8f0e7fb1c94c2b3fee057596bdb65a5e149a3b216af05b7e67d773e7bb8b1d21",
+      "bytes": 544
+    },
+    "original/build-upstream.json": {
+      "sha256": "922ba80b077472906830c1f9dd1c66ce194f7f23297d723741308cc426c9ee0b",
+      "bytes": 601
+    },
+    "original/quantity-original-results.json": {
+      "sha256": "0671c7c17a78b88c428960b06d459679ef54805e74033f827dc7f4e69664ea3d",
+      "bytes": 12971
+    },
+    "original/quantity-fork-v2-results.json": {
+      "sha256": "afdd25ad1183da2749f9cc20f99149a3becd0bf95f7dc1c4fa92f7c935ec9979",
+      "bytes": 6092
+    },
+    "original/quantity-upstream-results.json": {
+      "sha256": "bcaf632d588d22a49edccd2a4ecbd95fa95c7bb7c3e8092407c99989df56acb7",
+      "bytes": 9971
+    },
+    "quantity/baseline-focused.json": {
+      "sha256": "539adb7c25cfcb9574d42af6444a66239e777c0de63e7bd52a08be85f5db6893",
+      "bytes": 151,
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^TestQuantity",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 56.28
+      }
+    },
+    "quantity/baseline-catalog.json": {
+      "sha256": "60af54c11cc9d0ff222a85941f39ef09d5bdc9996c7da0991a2a39f42cf13e0e",
+      "bytes": 189,
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^TestQuantityCatalogDynamicParameters$",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 21.987180893309414
+      }
+    },
+    "quantity/fixed-focused.json": {
+      "sha256": "34419a8d95bd9809512dbf24243ed369d9df6d9dc8491b75f66effabcb2037ec",
+      "bytes": 149,
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "Quantity|T04",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 3.35
+      }
+    },
+    "quantity/fixed-focused-r2.json": {
+      "sha256": "e1ba01eb4b6c6c87778d14df6efe084e24a9052b329adaeec048e6f236b7fefa",
+      "bytes": 150,
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "Quantity|T04",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 0,
+        "elapsed_seconds": 27.78
+      }
+    },
+    "quantity/focused-final.json": {
+      "sha256": "8a802aa42adc23fff3e87949a32b347a37dae06e39ec141e326437e55596b403",
+      "bytes": 209,
+      "result": {
+        "name": "focused-final",
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "Quantity|T04|TestP15C01ArgumentValueSnapshot",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 0,
+        "elapsed_seconds": 40.97
+      }
+    },
+    "quantity/affected-packages.json": {
+      "sha256": "e7e012d27aeb8972eb4f335a9feb25eb640abef6c0df328b42d4732acee0d01f",
+      "bytes": 210,
+      "result": {
+        "name": "affected-packages",
+        "command": [
+          "go",
+          "test",
+          "./internal/language/lower",
+          "./internal/language/backend",
+          "./internal/language/ir"
+        ],
+        "rc": 0,
+        "elapsed_seconds": 7.0
+      }
+    },
+    "quantity/build-fixed.json": {
+      "sha256": "b4bdc90fdf76fc662a80cf5ae53476ec9909e4b94fb19a09823fb285257d7cda",
+      "bytes": 313,
+      "result": {
+        "name": "build-fixed",
+        "command": [
+          "go",
+          "build",
+          "-o",
+          "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/cherri-quantity-fixed",
+          "."
+        ],
+        "rc": 0,
+        "elapsed_seconds": 17.33,
+        "sha256": "f574df8ee305dd8c92068404633f9a68ca6853e98461aa1e6e72f0a45a5b6bf5"
+      }
+    },
+    "quantity/fixture-legacy/compile.json": {
+      "sha256": "d539b8e2dc057ecdfe0bc1aca1d5e1c028209f17cbbbfd8e9b975fc089b54d05",
+      "bytes": 559,
+      "result": {
+        "command": [
+          "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/cherri-quantity-fixed",
+          "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/fixture-legacy/dynamic-quantity.cherri",
+          "--mode=legacy",
+          "--skip-sign",
+          "--derive-uuids",
+          "--no-ansi",
+          "--output=/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/fixture-legacy/dynamic-quantity.shortcut"
+        ],
+        "rc": 0,
+        "source_sha256": "b54f9cd60d1b262f3d0333ff0f429775b3a8832dabd37a2e456365423057e78a"
+      }
+    },
+    "quantity/fixture-v2/compile.json": {
+      "sha256": "5c4f04528248fb99d8e2e4ffc735d4e32b8460c6fe5f25ebc84a7805805c9081",
+      "bytes": 547,
+      "result": {
+        "command": [
+          "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/cherri-quantity-fixed",
+          "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/fixture-v2/dynamic-quantity.cherri",
+          "--mode=v2",
+          "--skip-sign",
+          "--derive-uuids",
+          "--no-ansi",
+          "--output=/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/fixture-v2/dynamic-quantity.shortcut"
+        ],
+        "rc": 0,
+        "source_sha256": "df79007bc05c100ac6dcf763045540ddd77a5aadd0b7f8536b76aef55f93aa2b"
+      }
+    }
+  },
+  "original_successful_quantities": [
+    {
+      "case": "literal",
+      "quantity": {
+        "Value": {
+          "Magnitude": "2",
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "dynamic-const-expression",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "OutputName": "seconds",
+            "OutputUUID": "fbb0a49c-4aaf-58f5-88f8-ed015e9cedab",
+            "Type": "ActionOutput"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "dynamic-mutable-number",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "Type": "Variable",
+            "VariableName": "seconds"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "dynamic-const-round",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "OutputName": "seconds",
+            "OutputUUID": "2e6c253c-5da4-535c-80a4-e702c78f7943",
+            "Type": "ActionOutput"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    }
+  ],
+  "latest_upstream_quantities": [
+    {
+      "case": "const-expression",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "OutputName": "seconds",
+            "OutputUUID": "d1f39f47-9d91-5644-bccf-e998abb13f5f",
+            "Type": "ActionOutput"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "mutable-number",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "Type": "Variable",
+            "VariableName": "seconds"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "global-number",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "Aggrandizements": [
+              {
+                "CoercionItemClass": "WFNumberContentItem",
+                "Type": "WFCoercionVariableAggrandizement"
+              }
+            ],
+            "Type": "ExtensionInput"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "clipboard",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "Aggrandizements": [
+              {
+                "CoercionItemClass": "WFNumberContentItem",
+                "Type": "WFCoercionVariableAggrandizement"
+              }
+            ],
+            "Type": "Clipboard"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "device-property",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "Aggrandizements": [
+              {
+                "PropertyName": "Screen Width",
+                "PropertyUserInfo": 0,
+                "Type": "WFPropertyVariableAggrandizement"
+              },
+              {
+                "CoercionItemClass": "WFNumberContentItem",
+                "Type": "WFCoercionVariableAggrandizement"
+              }
+            ],
+            "Type": "DeviceDetails"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "dict-key",
+      "quantity": {
+        "Value": {
+          "Magnitude": {
+            "Aggrandizements": [
+              {
+                "DictionaryKey": "seconds",
+                "Type": "WFDictionaryValueVariableAggrandizement"
+              },
+              {
+                "CoercionItemClass": "WFNumberContentItem",
+                "Type": "WFCoercionVariableAggrandizement"
+              }
+            ],
+            "OutputName": "data",
+            "OutputUUID": "65d583d3-569b-56a0-aaba-47eb453e8026",
+            "Type": "ActionOutput"
+          },
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    }
+  ],
+  "fork_baseline_quantities": [
+    {
+      "case": "const-expression",
+      "quantity": {
+        "Value": {
+          "Magnitude": "&{ActionOutput 5DD1C7BD-9EE3-4AFB-8255-AE6FAF1786B9 seconds []}",
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "mutable-number",
+      "quantity": {
+        "Value": {
+          "Magnitude": "&{Variable  seconds []}",
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "literal",
+      "quantity": {
+        "Value": {
+          "Magnitude": "2",
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    },
+    {
+      "case": "const-round",
+      "quantity": {
+        "Value": {
+          "Magnitude": "&{ActionOutput 98F5A729-FB33-467D-9CF3-6B5D0798D554 seconds []}",
+          "Unit": "sec"
+        },
+        "WFSerializationType": "WFQuantityFieldValue"
+      }
+    }
+  ],
+  "fixed_fixture_quantities": [
+    {
+      "mode": "legacy",
+      "artifact": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/fixture-legacy/dynamic-quantity.shortcut",
+      "sha256": "1ea1469cc837950f61dcc62aaa9de0b9977aa03adc503012aaba2fa567ca6c48",
+      "quantities": [
+        {
+          "Value": {
+            "Magnitude": {
+              "OutputName": "timerSeconds",
+              "OutputUUID": "044192df-c077-5f68-a01a-5744ebd3b055",
+              "Type": "ActionOutput"
+            },
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        {
+          "Value": {
+            "Magnitude": {
+              "Type": "Variable",
+              "VariableName": "mutableSeconds"
+            },
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        {
+          "Value": {
+            "Magnitude": {
+              "Aggrandizements": [
+                {
+                  "CoercionItemClass": "WFNumberContentItem",
+                  "Type": "WFCoercionVariableAggrandizement"
+                }
+              ],
+              "Type": "ExtensionInput"
+            },
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        }
+      ]
+    },
+    {
+      "mode": "v2",
+      "artifact": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity/fixture-v2/dynamic-quantity.shortcut",
+      "sha256": "f12b4ee21a3638da797c8af84f2750f56fef5905ef51c4f38729978b4310b937",
+      "quantities": [
+        {
+          "Value": {
+            "Magnitude": {
+              "OutputName": "timerSeconds",
+              "OutputUUID": "4E8F126C-4AE8-49B6-BDA8-349A2CBB84E5",
+              "Type": "ActionOutput"
+            },
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        {
+          "Value": {
+            "Magnitude": {
+              "Type": "Variable",
+              "VariableName": "mutableSeconds"
+            },
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        {
+          "Value": {
+            "Magnitude": {
+              "Aggrandizements": [
+                {
+                  "CoercionItemClass": "WFNumberContentItem",
+                  "Type": "WFCoercionVariableAggrandizement"
+                }
+              ],
+              "Type": "ExtensionInput"
+            },
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "No Apple native execution is assigned to these Linux results.",
+    "Catalog coverage checks all four current qty parameters in Legacy and V2.",
+    "Original failed syntax explorations and first failed catalog setup/build remain in their original receipts.",
+    "PropertyUserInfo differences in latest upstream are outside this shared quantity repair."
+  ]
+}

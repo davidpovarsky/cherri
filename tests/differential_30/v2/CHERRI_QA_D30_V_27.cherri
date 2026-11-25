@@ -1,0 +1,10 @@
+shortcut "CHERRI_QA_D30_V_27" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let animals = ["ant", "bee", "cat"]
+var trace = ""
+for animal in animals {
+    if animal contains "a" {
+        trace = f"{trace}<{animal}>"
+    }
+}
+output(f"CHERRI_QA_27|{trace}")

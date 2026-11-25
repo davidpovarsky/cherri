@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_34
+#include 'actions/web'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const encoded = urlEncode("one two")
+const decoded = urlDecode(encoded)
+output("CHERRI_QA_34|{encoded}:{decoded}")

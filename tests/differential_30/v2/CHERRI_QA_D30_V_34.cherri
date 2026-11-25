@@ -1,0 +1,5 @@
+shortcut "CHERRI_QA_D30_V_34" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let encoded = urlEncode("one two")
+let decoded = urlDecode(encoded)
+output(f"CHERRI_QA_34|{encoded}:{decoded}")

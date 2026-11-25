@@ -1,0 +1,9 @@
+#define name CHERRI_QA_D30_O_25
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@trace = ""
+repeat i for 2 {
+    repeat j for 3 {
+        @trace = "{@trace}{i}{j},"
+    }
+}
+output("CHERRI_QA_25|{@trace}")

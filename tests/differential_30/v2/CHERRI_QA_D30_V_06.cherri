@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_06" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let parts = splitText("red,green,blue", separator: ",")
+let joined = joinText(parts, glue: "/")
+let size = count(parts)
+output(f"CHERRI_QA_06|{joined}:{size}")

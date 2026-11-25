@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_07" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let sample = "hello world"
+let chars = count(sample, type: "Characters")
+let words = count(sample, type: "Words")
+output(f"CHERRI_QA_07|{chars}:{words}")

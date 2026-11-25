@@ -399,7 +399,7 @@ if @x == 1 {
 			ExtractedPlistSha256:             sha,
 			CherriVersion:                    "2.0.0",
 			EquivalentCherriFile:             "specimen.cherri",
-			ExpectedNativeParameters:         []string{"WFStatisticsOperation", "WFInput"},
+			ExpectedNativeParameters:         []string{"WFStatisticsOperation", "Input"},
 			PlatformAvailability:             []string{"macOS", "iOS", "iPadOS"},
 			EvidenceProvenance:               "Apple Shortcuts independent capture",
 			VerificationStatus:               NativeSpecimenStatusPass,
@@ -535,7 +535,7 @@ if @x == 1 {
 		mut := clonePlistMapDeep(baseDoc)
 		act := findActionByIdent(mut, "is.workflow.actions.statistics")
 		params := act["WFWorkflowActionParameters"].(map[string]any)
-		wfInput := params["WFInput"].(map[string]any)
+		wfInput := params["Input"].(map[string]any)
 		val := wfInput["Value"].(map[string]any)
 		val["OutputUUID"] = "11111111-2222-3333-4444-555555555555"
 		item := makeValidItem(dir, mut)

@@ -435,17 +435,17 @@ if @x == 2 {
 		return nil
 	}
 
-	t.Run("1_Mutate_WFInput", func(t *testing.T) {
+	t.Run("1_Mutate_StatisticsInput", func(t *testing.T) {
 		mut := clonePlistMapDeep(baseDoc)
 		statAct := findActionByIdent(mut, "is.workflow.actions.statistics")
 		params := statAct["WFWorkflowActionParameters"].(map[string]any)
-		wfInput := params["WFInput"].(map[string]any)
+		wfInput := params["Input"].(map[string]any)
 		val := wfInput["Value"].(map[string]any)
 		val["VariableName"] = "corrupted_input_var"
 
 		res := CompareShortcutDocsActionPayload(baseDoc, mut)
 		if res.Equal {
-			t.Fatal("expected WFInput mutation to fail canonical structural comparison, but it passed")
+			t.Fatal("expected statistics Input mutation to fail canonical structural comparison, but it passed")
 		}
 	})
 

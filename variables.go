@@ -146,10 +146,10 @@ func validGlobalReference(identifier *string) bool {
 	return false
 }
 
-// Checks if identifier is a variable that is not a constant.
+// Constants and loop aliases accept bare references; legacy @ loop syntax remains valid.
 func validActionReference(identifier *string) bool {
 	if v, found := variables[*identifier]; found {
-		if !v.constant {
+		if !v.constant && !v.repeatItem {
 			parserError(fmt.Sprintf("Unknown reference '%s'. Variable references must be prepended with @.", *identifier))
 		}
 		return true
@@ -265,16 +265,7 @@ func duplicateOutputName() string {
 }
 
 func createUUID(salt *string) string {
-	var deterministic = args.Using("derive-uuids")
-	if deterministic {
-		var seeds = [][]byte{
-			[]byte(workflowName),
-			[]byte(*salt),
-		}
-		return deterministicUUID(seeds...)
-	}
-
-	return uuid.New().String()
+	return nextGeneratedUUID(*salt)
 }
 
 // deterministicUUID returns a UUID derived from the given pieces.

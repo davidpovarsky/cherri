@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_15
+#include 'actions/math'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@values = [3, 5, 7]
+const sum = statistic("Sum", @values)
+const average = statistic("Average", @values)
+output("CHERRI_QA_15|{sum}:{average}")

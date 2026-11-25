@@ -30,16 +30,15 @@ func (a *Analyzer) isKnownDateDurationComparison(left types.Type, right syntax.E
 	if _, shadowed := scope.Lookup(name.Name); shadowed {
 		return false
 	}
-	arguments := make([]syntax.Expression, 0, 1+len(call.NamedArgs))
-	if call.PrimaryArg != nil {
-		arguments = append(arguments, call.PrimaryArg)
-	}
-	for _, argument := range call.NamedArgs {
-		arguments = append(arguments, argument.Value)
-	}
-	if len(arguments) != 2 || a.registry == nil {
+	bound, diagnostics := BindValueConstructorArguments(call, "qty")
+	if len(diagnostics) != 0 || a.registry == nil {
 		return false
 	}
+	var arguments [2]syntax.Expression
+	for _, argument := range bound {
+		arguments[argument.Parameter] = argument.Expression
+	}
+
 	if !quantityScalarLiteral(arguments[0]) {
 		return false
 	}

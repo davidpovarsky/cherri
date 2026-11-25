@@ -66,6 +66,7 @@ func (lineRef *lineReference) replaceLines() {
 }
 
 func initParse() {
+	configureGeneratedUUIDs(args.Using("derive-uuids"), func() string { return workflowName })
 	if args.Using("debug") {
 		fmt.Printf("Parsing %s...\n", filename)
 	}
@@ -521,7 +522,7 @@ func collectColorValue(value *any) {
 		},
 	}}
 
-	*value = collectArguments()
+	*value = collectValueConstructorArguments()
 
 	if char == ')' {
 		advance()
@@ -547,7 +548,7 @@ func collectQtyValue(value *any) {
 		},
 	}}
 
-	*value = collectArguments()
+	*value = collectValueConstructorArguments()
 
 	if char == ')' {
 		advance()

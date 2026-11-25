@@ -1,0 +1,351 @@
+{
+  "scope": "Generated UUID uniqueness and deterministic replay, compile/native-graph evidence only",
+  "source_base": "e432f7b9f5f663cc56ba8041e63d2e90317fc756",
+  "inherited_generator_baseline": "6ce0a3981d2047ba5aec603f185e2d8f922fc0ee",
+  "current_upstream_source": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+  "source_file_sha256": {
+    "generated_uuid.go": "91b1eff56a42eed23ea1f7a90e72a82203c40409931deae60d1783a6dac4abec",
+    "variables.go": "6d474fb74eccaf2b6ee35c269b7235c99158d0a44fd649e0b4fa8b94fd12e078",
+    "parser.go": "b17d12cc14eef3e71bcb799ca767d220105843cf0f6cf958a355201c571c383d",
+    "compiler_state.go": "3eabae2c8f14dd4c26f632a283a9e7e995ca47e23b4374aadc1b233bb341f246",
+    "build_profile.go": "57fc9f152dd8e2a3b4fac8e06d582216ddeb7cd604dc292c5fad385c5037f8a6",
+    "internal/language/lower/lower.go": "78ae7ee959d3428e5d527abf5bc193ecfda665de48dc6dc51644c7d7db4fef98",
+    "internal/language/lower/uuid_generator.go": "f140043fd6b9bbd9f12700059df04b37d0614c8f42e3eb311adeed4f7253d456",
+    "language_emit_adapter.go": "851b4aa444cd92e7df89680b04473b36e835eb3af1930de6c24fc26e906e2473",
+    "actions_std.go": "2ea193b105552ff19bde49a8f8e617ea4b904d32153c9a8d5da630883ba4d4f8",
+    "debug_export.go": "07750fdcefb85177c85f827114e69593ca848fee0df9093c6727fae8393bb0ad",
+    "debug_labels.go": "660cf0ebc5a987b134e1abf1bd8dddceeb864530f837cfd150aae634ce27e306",
+    "require_macro.go": "471dd1f8a9b7d85946ffe8f2971ac1af8b943b4ed48caff47a282f61459b92b7",
+    "debug_stdlib.go": "5dca904e16cf6f240e56941dcc4aa8b202fe688c43ef642d4ae0c002ca732c86",
+    "paginate_macro.go": "6e0047e25cd4260afb79a135c139e6cfa2f0c8838b64037550c24807d760a64e",
+    "derived_uuid_test.go": "c8dbdaa2f46faf59e8f639ea336ef03ec7896f247450e8641695f0d149b85a7e",
+    "tests/derive-uuids-arrays.cherri": "28a372d7c59dacd2ea5c36f74410c26dbe6c420d2fa66e09d794471be09deb0d",
+    "tests/derive-uuids-controls.cherri": "fb6df6bcf7a661499b4457b4318ecf720484499c8386d9da2563d11503bc808c",
+    "tests/derive-uuids-macros.cherri": "ee7804819bbad479fe4e6e9d01d0f8ba1c120b36a46234f14204e3dfb74bc093"
+  },
+  "evidence_root": "/mnt/development/projects/evidence/cherri-differential-30-20261125/uuid",
+  "receipts": {
+    "baseline-focused.json": {
+      "sha256": "a927831f3381a47f759ef5bc8fa4a04704d6db509082f737bd9a65d22e6afd69",
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^TestDerivedUUID",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 29.35,
+        "source_base": "e432f7b9f5f663cc56ba8041e63d2e90317fc756",
+        "production_changes": false
+      },
+      "log_sha256": "0d0fc83492e13d565b4fd7eea7f552e03de9e9706a5b53eb9f23866ad3b505e7"
+    },
+    "baseline-macros.json": {
+      "sha256": "7986412fac1e24838d42c95275eede5e255ad08869efedc207db11b04453dd7d",
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^TestDerivedUUIDGraphAndReplay/macros",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 1.38,
+        "source_base": "e432f7b9f5f663cc56ba8041e63d2e90317fc756",
+        "production_changes": false
+      },
+      "log_sha256": "4bb8b665cc395bd77e46cfed5593acd868baa1c08651548de5bb91688f830dcc"
+    },
+    "fixed-focused.json": {
+      "sha256": "dc211d6f794c407f8c80e1edb88178965fa509e02aec88f7d74fac4c7a58f497",
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^TestDerivedUUID",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 22.82,
+        "source_base": "e432f7b9f5f663cc56ba8041e63d2e90317fc756"
+      },
+      "log_sha256": "3a6e3fc87ad73fadcb7cca0b08b24731eddf9d5c9dd3828d371f09248a27b4fa"
+    },
+    "fixed-focused-r2.json": {
+      "sha256": "190288176d1eb4aacdc768dc35f3f4350c7fca662ae21543c2edcb9e9371a1f9",
+      "result": {
+        "name": "fixed-focused-r2",
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^TestDerivedUUID",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 1,
+        "elapsed_seconds": 26.41
+      },
+      "log_sha256": "292741ce789b2998fe07b24df000b08bd93d089cef4d82be687d9e1b92263d4f"
+    },
+    "affected-packages.json": {
+      "sha256": "24fa4a659e684fa311edf0baf599e59fcaed0d17e7da7834bdd4b24de4c653c9",
+      "result": {
+        "name": "affected-packages",
+        "command": [
+          "go",
+          "test",
+          "./internal/language/lower",
+          "./internal/language/backend"
+        ],
+        "rc": 0,
+        "elapsed_seconds": 4.56
+      },
+      "log_sha256": "3ecedab901b267531820b975769baa4d931dba34b171d982229f7d45a1b630be"
+    },
+    "build-fixed.json": {
+      "sha256": "17bc4af268b6c3c2a86ed4e9ea15a121f5070f8efbe5137fc042dfab128d5ced",
+      "result": {
+        "name": "build-fixed",
+        "command": [
+          "go",
+          "build",
+          "-o",
+          "/mnt/development/projects/evidence/cherri-differential-30-20261125/uuid/cherri-uuid-fixed",
+          "."
+        ],
+        "rc": 0,
+        "elapsed_seconds": 10.36,
+        "sha256": "549f21ea69154b1dccbda60c1195b99967f6aee64038fa230de88e886d763854"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-focused-affected.json": {
+      "sha256": "9fb2b0145580ff88a9270fe4983d99a0ef10e1c6ee7b2b298d6352f3d5b3def2",
+      "result": {
+        "command": [
+          "go",
+          "test",
+          "-run",
+          "^(TestDerivedUUID|TestDebug|TestP15Debug|TestP15Require|TestP15Paginate|TestP15_LegacyMeasure|TestP15LegacyInline|TestSEM03|TestSEM18|TestBuildProfile|TestQuantity|TestP15SignedFixtureExactProducerReferences)",
+          "-count=1",
+          "-v",
+          "."
+        ],
+        "rc": 0,
+        "elapsed_seconds": 44.29
+      },
+      "log_sha256": "b75264f1a6c3f9f046669c2fd3331996ca957bdfd65e858eafde576c0b6fa99e"
+    }
+  },
+  "process_replay": {
+    "receipt_sha256": "5fe39610879f03bd04a7c7fe9ab362298ee309d9d0370b70f1fadc83c73e6c51",
+    "binary": "/mnt/development/projects/evidence/cherri-differential-30-20261125/uuid/cherri-uuid-fixed",
+    "binary_sha256": "549f21ea69154b1dccbda60c1195b99967f6aee64038fa230de88e886d763854",
+    "comparator": "/mnt/development/projects/worktrees/cherri-differential-suite-20261125/tests/differential_30/run.py",
+    "comparator_sha256": "9bfcf747100c8302d7e28e17a047f1aace83444c7d5fdc9e216c810f2bc02e93",
+    "cases": 12,
+    "compilations": 24,
+    "passed": true,
+    "rows": [
+      {
+        "case": "13_list_endpoints",
+        "mode": "legacy",
+        "source_sha256": "9938d146c69d27adae22a210f6e54f6cbc46b6fc544af1bcd17503899a186fa4",
+        "artifact_sha256": [
+          "7ec131adf3b55c2ea8ce7eafa48f205001f3c6b1337b0208fb1a500e382e7312",
+          "7ec131adf3b55c2ea8ce7eafa48f205001f3c6b1337b0208fb1a500e382e7312"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 12,
+        "producers": 6,
+        "references": 6
+      },
+      {
+        "case": "13_list_endpoints",
+        "mode": "v2",
+        "source_sha256": "6614ad1d1de026e86686f5ddb1ea6b9b631f199c0250eb7791595fa99b02b85a",
+        "artifact_sha256": [
+          "79cdb559a97a5184b2d8c8d5aa446938a0bbde4fcf3a4cf48f11399964871c32",
+          "79cdb559a97a5184b2d8c8d5aa446938a0bbde4fcf3a4cf48f11399964871c32"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 5,
+        "producers": 4,
+        "references": 6
+      },
+      {
+        "case": "14_list_index_range",
+        "mode": "legacy",
+        "source_sha256": "5d9df3fd23994b4e6c115c3236395df2905427f73472bd7089109a5b7cc49f09",
+        "artifact_sha256": [
+          "d32eb70bab33f3d567424a3c02c2420663b34959b5e49cf677084749f058d8c9",
+          "d32eb70bab33f3d567424a3c02c2420663b34959b5e49cf677084749f058d8c9"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 14,
+        "producers": 7,
+        "references": 7
+      },
+      {
+        "case": "14_list_index_range",
+        "mode": "v2",
+        "source_sha256": "9c154d68cb06df01568e01792624a5e22b8dc968eae651a06b75c2d57fa4bb88",
+        "artifact_sha256": [
+          "97deb485b550fafa22b4e4ab34d09147da4aa492915b89cdd2ab5a87a32b1392",
+          "97deb485b550fafa22b4e4ab34d09147da4aa492915b89cdd2ab5a87a32b1392"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 16,
+        "producers": 9,
+        "references": 11
+      },
+      {
+        "case": "15_numeric_list_statistics",
+        "mode": "legacy",
+        "source_sha256": "8048ec59d09801558b7368805d6bb73fee1dc0ac7e95cd55cc6e72141535fc48",
+        "artifact_sha256": [
+          "e96e5606a4302f594751b3895541f848a63cbd439fdfe73b5928d23b5ad91f02",
+          "e96e5606a4302f594751b3895541f848a63cbd439fdfe73b5928d23b5ad91f02"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 11,
+        "producers": 5,
+        "references": 5
+      },
+      {
+        "case": "15_numeric_list_statistics",
+        "mode": "v2",
+        "source_sha256": "4e548ad1365e19cbd1675db711c00d036fe8b049b05f0eef838ad36c94494993",
+        "artifact_sha256": [
+          "1c0d300b2bd6d0397aecbea80b7348341159644d827710501ae51ef33b56fa20",
+          "1c0d300b2bd6d0397aecbea80b7348341159644d827710501ae51ef33b56fa20"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 7,
+        "producers": 6,
+        "references": 7
+      },
+      {
+        "case": "25_nested_repeat",
+        "mode": "legacy",
+        "source_sha256": "c456611630eba03dfca500577052d6efc2bdc5fa85395cc1d3cf66f3ddf6765b",
+        "artifact_sha256": [
+          "34f7fbdc47bb2b1667c7890e45b280c87b5af6081c6271d12e9fca908d6adcca",
+          "34f7fbdc47bb2b1667c7890e45b280c87b5af6081c6271d12e9fca908d6adcca"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 11,
+        "producers": 4,
+        "references": 2
+      },
+      {
+        "case": "25_nested_repeat",
+        "mode": "v2",
+        "source_sha256": "76b12f523b13112c055786874f8f2767406c0ae047f971923f96b6535abb9f23",
+        "artifact_sha256": [
+          "262c17e030f8df35cbbb0d6d2b8b9d039a3d6c5052cd6248f18f35d939079135",
+          "262c17e030f8df35cbbb0d6d2b8b9d039a3d6c5052cd6248f18f35d939079135"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 15,
+        "producers": 6,
+        "references": 6
+      },
+      {
+        "case": "26_nested_foreach",
+        "mode": "legacy",
+        "source_sha256": "c9786c578ba1c171ab2acfb29c1eb5661c1f8a184fe0bbdfce7702948f4c36e3",
+        "artifact_sha256": [
+          "98e0aead1f0ac4c7a3b6c2726cb1797498aa643444f1eebcc88cbd00f52ff2d4",
+          "98e0aead1f0ac4c7a3b6c2726cb1797498aa643444f1eebcc88cbd00f52ff2d4"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 23,
+        "producers": 8,
+        "references": 6
+      },
+      {
+        "case": "26_nested_foreach",
+        "mode": "v2",
+        "source_sha256": "fdbae3f7a6b81f4b0e172d5f7ef16e439dbc7ad1fd4206ef8e3e3b9696ac6414",
+        "artifact_sha256": [
+          "8ced3befb2699a64fe922fca0f1a7328dbcf4d79f78de43d09097ef6738fd737",
+          "8ced3befb2699a64fe922fca0f1a7328dbcf4d79f78de43d09097ef6738fd737"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 13,
+        "producers": 4,
+        "references": 4
+      },
+      {
+        "case": "27_foreach_filter",
+        "mode": "legacy",
+        "source_sha256": "81c621fc9932c1264e35ed29e9f2813bf81eeba113d2f268a5f6584eab5fe3ed",
+        "artifact_sha256": [
+          "884db05ad3e4b531fbb04104dbdbb7ca35d62d7389e52d4e00970cb089181aff",
+          "884db05ad3e4b531fbb04104dbdbb7ca35d62d7389e52d4e00970cb089181aff"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 20,
+        "producers": 8,
+        "references": 6
+      },
+      {
+        "case": "27_foreach_filter",
+        "mode": "v2",
+        "source_sha256": "ab57f351b547d5614f6f0e7dc39193f1b5bd50fb34cdb23271d76ac3a78aabec",
+        "artifact_sha256": [
+          "275fb565db509664b66819a9b32d63d8941ab8c54f1c9e3118a0bb47b0e6e031",
+          "275fb565db509664b66819a9b32d63d8941ab8c54f1c9e3118a0bb47b0e6e031"
+        ],
+        "strict_typed_equal": true,
+        "graphs_valid": true,
+        "raw_difference_count": 0,
+        "actions": 11,
+        "producers": 3,
+        "references": 3
+      }
+    ]
+  },
+  "limits": [
+    "No Apple runtime result is inferred.",
+    "Macro UUID-valued OutputName strings are literal differences between random and derived builds, not normalized away. Core array/control graphs pass the unchanged strict alpha comparator; macro checks establish exact derived replay, unique IDs, valid references and preserved random v4 behavior.",
+    "The first baseline macro setup passed a value to a Boolean debugLog option and was corrected before the actual macro RED. The first fixed strict macro comparison was too broad because of literal UUID display names. A later plain native parameter map was corrected to the documented uuid label/exact native.plist forms. All original receipts remain retained.",
+    "Default V2 library compilation ignores CLI-global derive state and uses explicit CompileOptions.DeriveUUIDs.",
+    "Deterministic UUID values change relative to the old colliding algorithm; imported explicit IDs and native graph edges are preserved."
+  ]
+}

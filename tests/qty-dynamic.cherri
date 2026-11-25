@@ -1,0 +1,9 @@
+// compile-only: dynamic quantity magnitudes preserve native references
+
+const timerSeconds = 1 + 1
+startTimer(qty(timerSeconds, "sec"))
+
+@mutableSeconds = 2
+startTimer(qty(@mutableSeconds, "sec"))
+
+startTimer(qty(ShortcutInput.number, "sec"))

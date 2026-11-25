@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
-	"github.com/google/uuid"
 )
 
 func registerRequireMacro() {
@@ -55,7 +54,7 @@ func (b *requireExpansion) add(id string, params map[string]any) {
 }
 
 func (b *requireExpansion) produce(id string, params map[string]any) WFTextTokenAttachment {
-	out := strings.ToUpper(uuid.NewString())
+	out := strings.ToUpper(nextGeneratedUUID("require"))
 	params["UUID"] = out
 	b.add(id, params)
 	return debugOutputRef(out)
@@ -123,7 +122,7 @@ func requireComparisonText(ref WFTextTokenAttachment) WFTextTokenString {
 }
 
 func (b *requireExpansion) begin(input any, code int, value any, kind backend.ConditionOperandType) string {
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("require"))
 	b.add("conditional", backend.BuildIfStartTyped(group, map[string]any{"Type": "Variable", "Variable": input}, code, value, nil, kind, true))
 	return group
 }

@@ -1,0 +1,9 @@
+#define name CHERRI_QA_D30_O_28
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@score = 8
+const result = if @score > 5 {
+    text("high")
+} else {
+    text("low")
+}
+output("CHERRI_QA_28|{result}")

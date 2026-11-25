@@ -1,0 +1,30 @@
+{
+  "frameworks": [
+    {
+      "path": "/System/Library/PrivateFrameworks/WorkflowKit.framework",
+      "loaded": true
+    },
+    {
+      "path": "/System/Library/PrivateFrameworks/ActionKit.framework",
+      "loaded": true
+    }
+  ],
+  "identifier": "is.workflow.actions.statistics",
+  "parameters": [
+    {
+      "key": "WFStatisticsOperation",
+      "class": "WFEnumerationParameter",
+      "stateClass": "WFStringSubstitutableState",
+      "default": "Average"
+    },
+    {
+      "key": "Input",
+      "class": "WFVariablePickerParameter",
+      "stateClass": "WFVariableParameterState"
+    }
+  ],
+  "collectionClass": "__NSArrayI_Transfer",
+  "count": 392,
+  "found": true,
+  "actionClass": "WFCalculateStatisticsAction"
+}

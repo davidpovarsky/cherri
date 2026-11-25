@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_30
+#include 'actions/calendar'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const fixed = date("2024-02-03 12:00:00")
+const formatted = formatDate(fixed, "Custom", "yyyy-MM-dd")
+output("CHERRI_QA_30|{formatted}")

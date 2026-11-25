@@ -6595,9 +6595,9 @@
     "identifier": "is.workflow.actions.statistics",
     "parameterKey": "Input",
     "disposition": "EXPOSED_PARAMETER",
-    "rationale": "WorkflowKit parameter table names the input slot 'Input' while serialized Shortcut plists and upstream Cherri bcc0095 emit wire key 'WFInput'",
-    "codePath": "actions/math.cherri:statistic (WFInput)",
-    "evidenceRef": "Upstream electrikmilk/cherri bcc0095 actions/math.cherri:statistic"
+    "rationale": "WorkflowKit's input parameter and serialized Shortcut input key are Input. Differential fixture 15 exposed the inherited WFInput spelling: upstream and fork both returned empty statistics.",
+    "codePath": "actions/math.cherri:statistic (Input)",
+    "evidenceRef": "docs/apple-runtime/statistics-input-20261125/README.md"
   },
   {
     "identifier": "is.workflow.actions.takephoto",

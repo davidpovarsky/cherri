@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
-	"github.com/google/uuid"
 )
 
 const debugLabelVariableName = "__cherri_debug_log_labels"
@@ -84,7 +83,7 @@ type debugLabelExpansion struct{ actions []ShortcutAction }
 func (b *debugLabelExpansion) add(id string, params map[string]any) WFTextTokenAttachment {
 	output, _ := params["UUID"].(string)
 	if output == "" {
-		output = strings.ToUpper(uuid.NewString())
+		output = strings.ToUpper(nextGeneratedUUID("debug-labels"))
 		params["UUID"] = output
 	}
 	b.actions = append(b.actions, ShortcutAction{
@@ -99,7 +98,7 @@ func (b *debugLabelExpansion) count(value any, kind string) WFTextTokenAttachmen
 }
 
 func (b *debugLabelExpansion) beginNumber(input any, code int, value any) string {
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("debug-labels"))
 	b.add("conditional", backend.BuildIfStartTyped(group,
 		map[string]any{"Type": "Variable", "Variable": input},
 		code, value, nil, backend.OperandNumber, true))
@@ -379,7 +378,7 @@ func buildDebugLabeledPreview(dates, text bool, resultUUID, resultName string) (
 	b := &debugLabelExpansion{}
 	metadataCount := b.count(debugLogValueRef(debugLabelVariableName), "Items")
 	hasMetadata := b.beginNumber(metadataCount, 2, 0)
-	outer := strings.ToUpper(uuid.NewString())
+	outer := strings.ToUpper(nextGeneratedUUID("debug-labels"))
 	b.add("repeat.each", backend.BuildRepeatEachStart(outer, debugLogValueRef(debugLogVariableName)))
 	// Snapshot the actual outer values before the metadata loop changes magic variables.
 	item := b.add("getvariable", map[string]any{"WFVariable": debugLogValueRef("Repeat Item")})
@@ -387,7 +386,7 @@ func buildDebugLabeledPreview(dates, text bool, resultUUID, resultName string) (
 	labelVariable := debugLabelDisplayVariablePrefix + strings.ReplaceAll(outer, "-", "")
 	empty := b.add("gettext", map[string]any{"WFTextActionText": debugLabelLiteral("")})
 	b.add("setvariable", map[string]any{"WFVariableName": labelVariable, "WFInput": empty})
-	inner := strings.ToUpper(uuid.NewString())
+	inner := strings.ToUpper(nextGeneratedUUID("debug-labels"))
 	b.add("repeat.each", backend.BuildRepeatEachStart(inner, debugLogValueRef(debugLabelVariableName)))
 	field := func(key string) WFTextTokenAttachment {
 		return b.add("getvalueforkey", map[string]any{

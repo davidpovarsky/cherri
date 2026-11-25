@@ -1,0 +1,10 @@
+#define name CHERRI_QA_D30_O_20
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@word = "kiwi"
+@verdict = "initial"
+if @word == "kiwi" {
+    @verdict = "matched"
+} else {
+    @verdict = "wrong"
+}
+output("CHERRI_QA_20|{@verdict}")

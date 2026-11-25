@@ -1,0 +1,9 @@
+shortcut "CHERRI_QA_D30_V_17" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let payload = {"meta": {"author": "Ada", "version": 2}, "tags": ["one", "two"]}
+let rawMeta = getValue(payload, key: "meta")
+let meta = getDictionary(rawMeta)
+let author = getValue(meta, key: "author")
+let tags = getValue(payload, key: "tags")
+let second = getListItem(tags, index: 2)
+output(f"CHERRI_QA_17|{author}:{second}")

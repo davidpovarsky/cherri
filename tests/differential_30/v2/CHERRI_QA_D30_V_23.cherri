@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_23" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+var sum = 0
+repeat 5 as i {
+    sum += i + 1
+}
+output(f"CHERRI_QA_23|{sum}")

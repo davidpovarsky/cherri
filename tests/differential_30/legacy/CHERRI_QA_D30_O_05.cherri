@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_05
+#include 'actions/text'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const matches = matchText("[0-9]+", "id12 x7 end305")
+const joined = joinText(matches, ",")
+output("CHERRI_QA_05|{joined}")

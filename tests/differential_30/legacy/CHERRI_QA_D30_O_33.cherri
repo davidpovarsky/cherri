@@ -1,0 +1,10 @@
+#define name CHERRI_QA_D30_O_33
+#include 'actions/web'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@address = "https://example.org/alpha/beta?mode=qa#section"
+const scheme = getURLDetail(@address, "Scheme")
+const host = getURLDetail(@address, "Host")
+const path = getURLDetail(@address, "Path")
+const query = getURLDetail(@address, "Query")
+const fragment = getURLDetail(@address, "Fragment")
+output("CHERRI_QA_33|{scheme}:{host}:{path}:{query}:{fragment}")

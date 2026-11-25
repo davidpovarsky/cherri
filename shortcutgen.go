@@ -239,7 +239,7 @@ func makeVariableInput(t *token, params map[string]any) {
 
 	makeVariableValueAction(t, &outputName, &varUUID)
 	if t.valueType != Arr && t.value != nil {
-		if (t.typeof == Variable || t.typeof == AddTo) && t.valueType == Variable {
+		if t.valueType == Variable && (t.typeof == Variable || isArrayVariable(t.ident)) {
 			params["WFInput"] = variableValue(t.value.(varValue))
 		} else {
 			params["WFInput"] = inputValue(outputName, varUUID)
@@ -401,11 +401,10 @@ func makeDictionaryValue(value *any) WFDictionaryFieldValue {
 func variableValueModifier(token *token, reference *WFActionReference) {
 	var valueType = token.valueType
 	if valueType == Variable {
-		var variable = token.value.(varValue)
-		valueType = variable.valueType
+		valueType = legacyCompoundReferenceType(token.value.(varValue))
 	}
 	switch valueType {
-	case Integer:
+	case Integer, Float:
 		var operation string
 		switch token.typeof {
 		case AddTo:
@@ -429,8 +428,13 @@ func variableValueModifier(token *token, reference *WFActionReference) {
 			"WFMathOperation": operation,
 		}, reference))
 	case String, RawString:
-		var varInput = token.value.(string)
-		wrapVariableReference(&varInput)
+		var varInput string
+		if token.valueType == Variable {
+			varInput = fmt.Sprintf("{%s}", makeVariableReferenceString(token.value.(varValue)))
+		} else {
+			varInput = token.value.(string)
+			wrapVariableReference(&varInput)
+		}
 
 		addStdAction("gettext", attachReferenceToParams(map[string]any{
 			"WFTextActionText": paramValue(actionArgument{
@@ -1173,7 +1177,7 @@ func makeOutputName(token *token) string {
 			return token.ident
 		}
 	}
-	if token.valueType == Variable && token.value != nil {
+	if token.typeof == Variable && token.valueType == Variable && token.value != nil {
 		var identifier = token.value.(varValue).value.(string)
 		if validReference(identifier) {
 			return identifier

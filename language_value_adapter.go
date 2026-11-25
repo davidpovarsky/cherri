@@ -149,6 +149,9 @@ func ConvertSemanticValueToParam(v backend.SemanticValue) any {
 		}
 		return m
 	case backend.ValRawNative:
+		if quantity, ok := v.RawNativeVal.(*backend.QuantityValue); ok {
+			return encodeQuantityValue(quantity)
+		}
 		// An opaque native parameter may still carry the lowering layer's
 		// RawPlistValue marker. Strip only carriers; preserve the native value.
 		return normalizeRawPlistData(v.RawNativeVal)

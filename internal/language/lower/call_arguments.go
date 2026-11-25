@@ -149,6 +149,8 @@ func (l *Lowerer) captureCallValue(value interface{}, writes map[string]bool) in
 		if item != nil && item.Kind == backend.RefMutableBinding && writes[item.ProducerName] {
 			return l.captureCallReference(item)
 		}
+	case *backend.QuantityValue:
+		return l.captureQuantityValue(item, writes)
 	case backend.SemanticValue:
 		return l.captureCallSemanticValue(item, writes)
 	case []interface{}:
@@ -177,6 +179,10 @@ func (l *Lowerer) captureCallSemanticValue(value backend.SemanticValue, writes m
 		return value
 	}
 	switch value.Kind {
+	case backend.ValRawNative:
+		if quantity, ok := value.RawNativeVal.(*backend.QuantityValue); ok {
+			value.RawNativeVal = l.captureQuantityValue(quantity, writes)
+		}
 	case backend.ValReference:
 		if reference := value.Ref; reference != nil && reference.Kind == backend.RefMutableBinding && writes[reference.ProducerName] {
 			return l.toSemanticValue(l.captureCallReference(reference))

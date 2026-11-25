@@ -1,0 +1,10 @@
+shortcut "CHERRI_QA_D30_V_20" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let word = "kiwi"
+var verdict = "initial"
+if word == "kiwi" {
+    verdict = "matched"
+} else {
+    verdict = "wrong"
+}
+output(f"CHERRI_QA_20|{verdict}")

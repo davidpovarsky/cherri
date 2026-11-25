@@ -91,6 +91,7 @@ type Lowerer struct {
 	functionDispatchNames          map[*syntax.FunctionDecl]string
 	WorkflowName                   string
 	uuidCounter                    int
+	uuidGenerator                  func() string
 	autoNumberProducerCount        int
 	repeatDepth                    int
 	currentBindingName             string
@@ -215,6 +216,9 @@ func (l *Lowerer) GenerateUUID() string {
 		}
 	}
 	l.uuidCounter++
+	if l.uuidGenerator != nil {
+		return l.uuidGenerator()
+	}
 	b := make([]byte, 16)
 	_, _ = rand.Read(b)
 	b[6] = (b[6] & 0x0f) | 0x40 // version 4
@@ -3030,7 +3034,7 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression, allowUnaryAnyValu
 
 func (l *Lowerer) populateTemplateRHS(tmpl map[string]any, rightVal any, isDate, isNum bool, code *int) {
 	if isDate {
-		if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+		if isQuantityValue(rightVal) {
 			tmpl["WFDuration"] = rightVal
 			if *code == 2 {
 				*code = 1000
@@ -3234,7 +3238,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			}
 
 			if l.isDateComparison(binExpr.Op, binExpr.Left, binExpr.Right) {
-				if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+				if isQuantityValue(rightVal) {
 					opType = backend.OperandQuantity
 					if condCode == 2 { // GreaterThan
 						condCode = 1000
@@ -4657,7 +4661,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (value interface{}, er
 			inputTok := l.materializeToAttachment(left)
 			var opType backend.ConditionOperandType
 			if l.isDateComparison(e.Op, e.Left, e.Right) {
-				if m, ok := right.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+				if isQuantityValue(right) {
 					opType = backend.OperandQuantity
 					if condCode == 2 {
 						condCode = 1000
@@ -5083,92 +5087,20 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 	// Built-in value constructors (qty, color)
 	if actionName == "qty" {
-		var args []interface{}
-		if call.PrimaryArg != nil {
-			v, err := l.lowerExpression(call.PrimaryArg)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		for _, a := range call.NamedArgs {
-			v, err := l.lowerExpression(a.Value)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		mag := ""
-		unit := ""
-		if len(args) > 0 {
-			mag = fmt.Sprintf("%v", args[0])
-		}
-		if len(args) > 1 {
-			unit = fmt.Sprintf("%v", args[1])
-		}
-		return map[string]interface{}{
-			"WFSerializationType": "WFQuantityFieldValue",
-			"Value": map[string]interface{}{
-				"Magnitude": mag,
-				"Unit":      unit,
-			},
-		}, nil
+		return l.lowerQuantity(call)
 	}
 
 	if actionName == "color" {
-		var args []interface{}
-		if call.PrimaryArg != nil {
-			v, err := l.lowerExpression(call.PrimaryArg)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		for _, a := range call.NamedArgs {
-			v, err := l.lowerExpression(a.Value)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		r := 0.0
-		g := 0.0
-		b := 0.0
-		alpha := 1.0
-		toFloat := func(val interface{}) float64 {
-			switch v := val.(type) {
-			case float64:
-				return v
-			case float32:
-				return float64(v)
-			case int:
-				return float64(v)
-			case int64:
-				return float64(v)
-			default:
-				var f float64
-				fmt.Sscanf(fmt.Sprintf("%v", val), "%f", &f)
-				return f
-			}
-		}
-		if len(args) > 0 {
-			r = toFloat(args[0])
-		}
-		if len(args) > 1 {
-			g = toFloat(args[1])
-		}
-		if len(args) > 2 {
-			b = toFloat(args[2])
-		}
-		if len(args) > 3 {
-			alpha = toFloat(args[3])
+		var components, diagnostics = analysis.ColorLiteralComponents(call)
+		if len(diagnostics) != 0 {
+			return nil, fmt.Errorf("%s", diagnostics[0].String())
 		}
 		return map[string]interface{}{
 			"WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
-			"redComponent":              r,
-			"greenComponent":            g,
-			"blueComponent":             b,
-			"alphaComponent":            alpha,
+			"redComponent":              components[0],
+			"greenComponent":            components[1],
+			"blueComponent":             components[2],
+			"alphaComponent":            components[3],
 		}, nil
 	}
 

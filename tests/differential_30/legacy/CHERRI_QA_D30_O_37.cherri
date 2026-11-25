@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_37
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@state = "before"
+const snapshot = "{@state}"
+@state = "after"
+output("CHERRI_QA_37|{snapshot}:{@state}")

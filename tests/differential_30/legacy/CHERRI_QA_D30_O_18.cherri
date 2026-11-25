@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_18
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@json = '{"city":"Oslo","n":12}'
+const parsed = getDictionary(@json)
+const city = getValue(parsed, "city")
+const amount = getValue(parsed, "n")
+output("CHERRI_QA_18|{city}:{amount}")

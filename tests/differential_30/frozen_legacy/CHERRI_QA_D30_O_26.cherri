@@ -1,0 +1,11 @@
+#define name CHERRI_QA_D30_O_26
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@letters = ["A","B"]
+@digits = ["1","2"]
+@trace = ""
+for letter in @letters {
+    for digit in @digits {
+        @trace = "{@trace}{@letter}{@digit};"
+    }
+}
+output("CHERRI_QA_26|{@trace}")

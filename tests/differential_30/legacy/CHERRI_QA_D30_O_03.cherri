@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_03
+#include 'actions/text'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const first = replaceText("apple", "pear", "apple-apple")
+const second = replaceText("a", "x", "aAa", false)
+output("CHERRI_QA_03|{first}:{second}")

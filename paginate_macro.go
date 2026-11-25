@@ -8,7 +8,6 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/schema"
-	"github.com/google/uuid"
 )
 
 func registerPaginateMacro() {
@@ -64,7 +63,7 @@ func (b *paginateExpansion) add(id string, params map[string]any) {
 }
 
 func (b *paginateExpansion) produce(id string, params map[string]any) WFTextTokenAttachment {
-	output := strings.ToUpper(uuid.NewString())
+	output := strings.ToUpper(nextGeneratedUUID("paginate"))
 	name := b.prefix + "_" + strconv.Itoa(len(b.actions))
 	params["UUID"], params["CustomOutputName"] = output, name
 	b.add(id, params)
@@ -93,7 +92,7 @@ func paginateText(prefix string, value WFTextTokenAttachment) any {
 }
 
 func (b *paginateExpansion) begin(input any, code int, value any, kind backend.ConditionOperandType) string {
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("paginate"))
 	b.add("conditional", backend.BuildIfStartTyped(group,
 		map[string]any{"Type": "Variable", "Variable": input}, code, value, nil, kind, true))
 	return group
@@ -123,7 +122,7 @@ func (b *paginateExpansion) digest(input any) WFTextTokenAttachment {
 }
 
 func (b *paginateExpansion) each(input any) string {
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("paginate"))
 	b.add("repeat.each", backend.BuildRepeatEachStart(group, input))
 	return group
 }
@@ -173,7 +172,7 @@ func (b *paginateExpansion) nextURL(value WFTextTokenAttachment) {
 
 func (b *paginateExpansion) finish(resultUUID, resultName string) []ShortcutAction {
 	if resultUUID == "" {
-		resultUUID = strings.ToUpper(uuid.NewString())
+		resultUUID = strings.ToUpper(nextGeneratedUUID("paginate"))
 	}
 	if resultName == "" {
 		resultName = "Paginated Items"
@@ -189,7 +188,7 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 	if err != nil {
 		return nil, err
 	}
-	b := &paginateExpansion{options: options, prefix: "__cherri_paginate_" + strings.ReplaceAll(uuid.NewString(), "-", "")}
+	b := &paginateExpansion{options: options, prefix: "__cherri_paginate_" + strings.ReplaceAll(nextGeneratedUUID("paginate"), "-", "")}
 	empty := b.produce("list", map[string]any{"WFItems": []WFDictionaryFieldValueItem{}})
 	b.set("results", empty)
 	if options.MaxPages == 0 || options.MaxItems == 0 {
@@ -212,7 +211,7 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 	nextKey := b.produce("gettext", map[string]any{"WFTextActionText": options.NextKey})
 	nextHash := b.digest(nextKey)
 
-	pages := strings.ToUpper(uuid.NewString())
+	pages := strings.ToUpper(nextGeneratedUUID("paginate"))
 	b.add("repeat.count", backend.BuildRepeatCountStart(pages, options.MaxPages))
 	active := b.begin(b.get("active"), 4, 1, backend.OperandNumber)
 	currentURL := b.get("url")

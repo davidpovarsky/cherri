@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_19" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let payload = {"state": "before"}
+let previous = getValue(payload, key: "state")
+let updated = setValue(payload, key: "state", value: "after")
+let current = getValue(updated, key: "state")
+output(f"CHERRI_QA_19|{previous}:{current}")

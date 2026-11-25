@@ -39,15 +39,38 @@ func parseStrictNamedProductionOutputInPackage(packageID string, names []string,
 		if packages != 0 {
 			return fmt.Errorf("production output continues after package completion")
 		}
-		if _, err := decodeNativeEncodingObject(scanner.Bytes()); err != nil {
+		object, err := decodeNativeEncodingObject(scanner.Bytes())
+		if err != nil {
 			return fmt.Errorf("invalid production Go JSON: %w", err)
 		}
 		var event struct {
-			Time, Action, Package, Test, Output string
-			Elapsed                             *float64
+			Time, Action, Package, Test, Output, OutputType string
+			Elapsed                                         *float64
 		}
 		if err := decodeEditorJSON(scanner.Bytes(), &event); err != nil {
 			return fmt.Errorf("invalid production event: %w", err)
+		}
+		// Go's cmd/test2json documents OutputType as an optional string on
+		// output events: blank, frame, error, or error-continue. Recognize
+		// that field without admitting arbitrary schema additions or letting
+		// error-classified output count as successful production evidence.
+		for field := range object {
+			if strings.EqualFold(field, "OutputType") && field != "OutputType" {
+				return fmt.Errorf("invalid production event field %q", field)
+			}
+		}
+		if rawType, present := object["OutputType"]; present {
+			outputType, ok := rawType.(string)
+			if !ok || event.Action != "output" {
+				return fmt.Errorf("production OutputType requires a string on an output event")
+			}
+			switch outputType {
+			case "", "frame":
+			case "error", "error-continue":
+				return fmt.Errorf("production output reports an error: %s", outputType)
+			default:
+				return fmt.Errorf("unknown production output type %q", outputType)
+			}
 		}
 		eventTime, timeErr := time.Parse(time.RFC3339Nano, event.Time)
 		if timeErr != nil || eventTime.IsZero() || !previousTime.IsZero() && eventTime.Before(previousTime) {

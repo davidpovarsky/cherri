@@ -1,0 +1,9 @@
+shortcut "CHERRI_QA_D30_V_28" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let score = 8
+let result = if score > 5 {
+    yield "high"
+} else {
+    yield "low"
+}
+output(f"CHERRI_QA_28|{result}")

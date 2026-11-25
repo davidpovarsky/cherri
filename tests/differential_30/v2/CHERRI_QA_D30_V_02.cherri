@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_02" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let upper = uppercase("alpha")
+let lower = lowercase("BETA")
+let title = capitalizeAll("red blue")
+output(f"CHERRI_QA_02|{upper}:{lower}:{title}")

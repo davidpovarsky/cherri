@@ -16,7 +16,6 @@ import (
 	"unicode/utf16"
 
 	"github.com/electrikmilk/args-parser"
-	"github.com/google/uuid"
 )
 
 const SetVariableIdentifier = "is.workflow.actions.setvariable"
@@ -69,7 +68,7 @@ var playVoiceMemoIntent = appleAppIntent("Voice Memos", "com.apple.VoiceMemos", 
 // freely; a generated placeholder keeps the emitted shape faithful without
 // pretending to know Apple's value.
 func actionInstanceUUID() map[string]any {
-	return map[string]any{"UUID": uuid.New().String()}
+	return map[string]any{"UUID": nextGeneratedUUID("app-intent")}
 }
 
 // actions is the data structure that determines every action the compiler knows about.
@@ -1839,7 +1838,7 @@ var actions = map[string]*actionDefinition{
 
 			return map[string]any{
 				"WFWorkflow": map[string]any{
-					"workflowIdentifier": uuid.New().String(),
+					"workflowIdentifier": nextGeneratedUUID("workflow-placeholder"),
 					"isSelf":             true,
 					"workflowName":       workflowName,
 				},
@@ -2702,7 +2701,7 @@ var actions = map[string]*actionDefinition{
 				// workflowIdentifier is a generated placeholder; Shortcuts resolves
 				// the target through workflowName when the identifier is unknown.
 				"WFWorkflow": map[string]any{
-					"workflowIdentifier": uuid.New().String(),
+					"workflowIdentifier": nextGeneratedUUID("workflow-placeholder"),
 					"isSelf":             false,
 					"workflowName":       name,
 				},

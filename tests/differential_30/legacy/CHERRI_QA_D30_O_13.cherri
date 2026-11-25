@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_13
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@items = ["alpha", "beta", "gamma"]
+const first = getFirstItem(@items)
+const last = getLastItem(@items)
+const size = count(@items)
+output("CHERRI_QA_13|{first}:{last}:{size}")

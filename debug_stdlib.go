@@ -13,8 +13,6 @@ import (
 	"fmt"
 	"strings"
 	"unicode/utf16"
-
-	"github.com/google/uuid"
 )
 
 const debugLogVariableName = "__cherri_debug_log"
@@ -386,7 +384,7 @@ func backfillDebugLogDates(prior []ShortcutAction) ([]ShortcutAction, int, error
 		if datedProducer[source.OutputUUID] {
 			continue
 		}
-		backfillUUID := strings.ToUpper(uuid.NewString())
+		backfillUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		recordDebugBackfilledActionUUID(backfillUUID)
 		after[producer] = append(after[producer], makeAction("detect.date", map[string]any{
 			"WFInput": debugLogDateSourceRef(source.OutputUUID, source.OutputName),
@@ -435,7 +433,7 @@ func captureDebugPreviousInput(actions []ShortcutAction) (any, error) {
 		// Only generate an ID when the predecessor has none. Do not rewrite
 		// existing UUIDs: the compiler may have already issued references to
 		// this producer, and rewriting its case breaks those references.
-		id = strings.ToUpper(uuid.NewString())
+		id = strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		previous.WFWorkflowActionParameters["UUID"] = id
 	}
 	name, _ := previous.WFWorkflowActionParameters["CustomOutputName"].(string)
@@ -784,7 +782,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			// logger output and never affects the typed original value.
 			result = append(result, add("detect.date", map[string]any{
 				"WFInput": debugLogDateSourceRef(source.OutputUUID, source.OutputName),
-				"UUID":    strings.ToUpper(uuid.NewString()),
+				"UUID":    strings.ToUpper(nextGeneratedUUID("debug-stdlib")),
 			}))
 		}
 		result = append(result, add("appendvariable", appendParams))
@@ -807,7 +805,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			// Metadata and preview must not become the implicit output observed
 			// by the next source action. Restore the exact original native token.
 			result = append(result, add("getvariable", map[string]any{
-				"WFVariable": value, "UUID": strings.ToUpper(uuid.NewString()),
+				"WFVariable": value, "UUID": strings.ToUpper(nextGeneratedUUID("debug-stdlib")),
 			}))
 		}
 		return result, nil
@@ -817,8 +815,8 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		if !ok || value == nil {
 			return nil, fmt.Errorf("debugTrace(value) requires an input")
 		}
-		nowID := strings.ToUpper(uuid.NewString())
-		formatID := strings.ToUpper(uuid.NewString())
+		nowID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
+		formatID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		currentTime := add("date", map[string]any{
 			"WFDateActionMode": "Current Date",
 			"UUID":             nowID,
@@ -842,7 +840,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		}
 		// debugTrace(value) is a SEPARATE opt-in formatting macro; unlike
 		// debugLog(), its literal argument explicitly requests a Text producer.
-		valueUUID := strings.ToUpper(uuid.NewString())
+		valueUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		rest, err := buildDebugStdlibActions("debugLog", map[string]any{"WFInput": debugOutputRefNamed(valueUUID, "Text")}, resultUUID, resultName)
 		if err != nil {
 			return nil, err
@@ -870,7 +868,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			}
 			return []ShortcutAction{alert, stop}, nil
 		}
-		group := strings.ToUpper(uuid.NewString())
+		group := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		start := add("conditional", BuildIfStart(group, map[string]any{
 			"Type":     "Variable",
 			"Variable": condition,
@@ -895,9 +893,9 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		if err != nil {
 			return nil, err
 		}
-		elapsedID := strings.ToUpper(uuid.NewString())
+		elapsedID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		if resultUUID == "" {
-			resultUUID = strings.ToUpper(uuid.NewString())
+			resultUUID = strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		}
 		paramsOut := map[string]any{
 			"WFVariable": debugOutputRefNamed(elapsedID, "Time Between Dates"),
@@ -939,7 +937,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		var input any
 		if asText && !withDates {
 			// Only the explicit text mode performs Combine Text.
-			combinedUUID := strings.ToUpper(uuid.NewString())
+			combinedUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 			body = []ShortcutAction{
 				add("text.combine", map[string]any{
 					"text":            debugLogValueRef(debugLogVariableName),
@@ -952,9 +950,9 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			// Normal object preview has zero formatting/conversion actions.
 			input = debugLogValueRef(debugLogVariableName)
 		} else {
-			group := strings.ToUpper(uuid.NewString())
-			outputUUID := strings.ToUpper(uuid.NewString())
-			itemUUID := strings.ToUpper(uuid.NewString())
+			group := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
+			outputUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
+			itemUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 			body = append(body, add("repeat.each", map[string]any{
 				"WFInput":            debugLogValueRef(debugLogVariableName),
 				"GroupingIdentifier": group,
@@ -996,7 +994,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		// spurious export entry. Match the independently verified native clear:
 		// Nothing followed by Set Variable with its input explicitly absent.
 		result := []ShortcutAction{
-			add("nothing", map[string]any{"UUID": strings.ToUpper(uuid.NewString())}),
+			add("nothing", map[string]any{"UUID": strings.ToUpper(nextGeneratedUUID("debug-stdlib"))}),
 			add("setvariable", map[string]any{
 				"WFVariableName": debugLogVariableName,
 			}),
@@ -1014,7 +1012,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		label, _ := params["WFDebugTraceLabel"].(string)
 		stepSeq, _ := params["WFDebugTraceStepSequence"].(int)
 		prevID, _ := params["WFDebugTracePrevActionID"].(string)
-		lineUUID := strings.ToUpper(uuid.NewString())
+		lineUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		appendParams := map[string]any{
 			"WFVariableName": debugQATraceVariableName,
 			"WFInput":        debugOutputRefNamed(lineUUID, "Text"),
@@ -1038,10 +1036,10 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		if strings.TrimSpace(runID) == "" {
 			runID = "cherri-qa-run"
 		}
-		combinedUUID := strings.ToUpper(uuid.NewString())
+		combinedUUID := strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		envelopeUUID := resultUUID
 		if envelopeUUID == "" {
-			envelopeUUID = strings.ToUpper(uuid.NewString())
+			envelopeUUID = strings.ToUpper(nextGeneratedUUID("debug-stdlib"))
 		}
 		envelopeParams := map[string]any{
 			"WFTextActionText": debugExportTraceEnvelopeToken(runID, combinedUUID),

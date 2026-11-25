@@ -165,7 +165,7 @@ func TestP10_IndependentOracle_UpstreamPinnedCommitComparison(t *testing.T) {
 	}
 	upstreamMath := string(upstreamMathBytes)
 
-	// Upstream must define statistic action with WFInput
+	// Preserve the pinned upstream observation, including its inherited input-key defect.
 	statRegex := regexp.MustCompile(`action\s+'statistics'\s+statistic\([^)]*variable\s+input:\s*'([^']+)'`)
 	upstreamMatches := statRegex.FindStringSubmatch(upstreamMath)
 	if len(upstreamMatches) < 2 {
@@ -178,9 +178,10 @@ func TestP10_IndependentOracle_UpstreamPinnedCommitComparison(t *testing.T) {
 	t.Logf("Independent Oracle verified: Upstream commit %s defines statistic input wire key as %q",
 		PinnedUpstreamCommit[:8], upstreamWireKey)
 
-	// Verify our fork's local actions/math.cherri matches the upstream oracle
-	cmdShowLocalMath := exec.Command("git", "show", "HEAD:actions/math.cherri")
-	localMathBytes, err := cmdShowLocalMath.Output()
+	// Runtime correctness is independent of upstream compiler parity. Apple
+	// WorkflowKit names the statistics input Input; upstream and fork compilers
+	// produced empty statistics with WFInput in native differential fixture 15.
+	localMathBytes, err := os.ReadFile(filepath.Join("actions", "math.cherri"))
 	if err != nil {
 		t.Fatalf("failed to read local actions/math.cherri: %v", err)
 	}
@@ -189,11 +190,13 @@ func TestP10_IndependentOracle_UpstreamPinnedCommitComparison(t *testing.T) {
 		t.Fatalf("failed to find statistic action definition in local actions/math.cherri")
 	}
 	localWireKey := localMatches[1]
-	if localWireKey != upstreamWireKey {
-		t.Fatalf("CRITICAL ORACLE DRIFT: local wire key %q differs from upstream oracle %q",
-			localWireKey, upstreamWireKey)
+	if want := statisticAppleInputKey(t); localWireKey != want {
+		t.Fatalf("statistics native input key = %q, Apple metadata requires %q", localWireKey, want)
 	}
-	t.Logf("Independent Oracle parity: local wire key matches upstream oracle (%q == %q)", localWireKey, upstreamWireKey)
+	if localWireKey == upstreamWireKey {
+		t.Fatal("inherited statistics input-key defect was not corrected")
+	}
+	t.Logf("Expected native correction retained: upstream %q -> fork %q", upstreamWireKey, localWireKey)
 
 	// 3. Upstream runworkflow definition inspection
 	cmdShowStd := exec.Command("git", "show", PinnedUpstreamCommit+":actions_std.go")
@@ -294,8 +297,8 @@ func TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison(t *testing.T) 
 	forkBin := roundTripBinary(t)
 	workDir := t.TempDir()
 
-	// 1. Behavioral Oracle: statistic action across operations (Average, Sum, Minimum, Maximum)
-	t.Run("statistic-plist-equality", func(t *testing.T) {
+	// 1. Preserve the observed upstream defect and require the explicit Apple input-key correction.
+	t.Run("statistic-native-input-correction", func(t *testing.T) {
 		for _, op := range []string{"Average", "Sum", "Minimum", "Maximum"} {
 			src := fmt.Sprintf("#include 'actions/math'\n@nums = [10, 20, 30]\n@res = statistic('%s', @nums)\n", op)
 			upPlist := compileWithBinary(t, upstreamBin, workDir, "up_stat_"+op, src)
@@ -304,10 +307,25 @@ func TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison(t *testing.T) 
 			upDoc := loadRoundTripDocument(t, upPlist)
 			forkLegacyDoc := loadRoundTripDocument(t, forkLegacyPlist)
 
-			// Full structural comparison of WFWorkflowActions between upstream binary and fork binary
-			assertOracleDocsEqual(t, upDoc, forkLegacyDoc, "WFWorkflow")
+			// Compare every other field against upstream after asserting this one
+			// known correction explicitly. The original document remains intact.
+			expectedForkDoc := clonePlistMapDeep(upDoc)
+			for _, raw := range expectedForkDoc["WFWorkflowActions"].([]any) {
+				action := raw.(map[string]any)
+				if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.statistics" {
+					continue
+				}
+				params := action["WFWorkflowActionParameters"].(map[string]any)
+				if params["WFInput"] == nil || params["Input"] != nil {
+					t.Fatal("pinned upstream no longer exhibits the recorded WFInput defect")
+				}
+				params["Input"] = params["WFInput"]
+				delete(params, "WFInput")
+			}
+			assertOracleDocsEqual(t, expectedForkDoc, forkLegacyDoc, "WFWorkflow")
+			t.Logf("%s: retained expected upstream WFInput -> fork Input difference", op)
 
-			// Also compile V2 syntax with fork binary and compare the statistics action parameters against upstream
+			// Compare V2 input transport while retaining the same explicit key difference.
 			v2Src := fmt.Sprintf("let nums = [10, 20, 30]\nlet res = statistic(%q, input: nums)\n", op)
 			forkV2Plist := compileWithBinary(t, forkBin, workDir, "fork_v2_stat_"+op, v2Src)
 			forkV2Doc := loadRoundTripDocument(t, forkV2Plist)
@@ -331,18 +349,19 @@ func TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison(t *testing.T) 
 				t.Errorf("statistic(%s): WFStatisticsOperation mismatch: upstream=%v vs fork-v2=%v",
 					op, upParams["WFStatisticsOperation"], v2Params["WFStatisticsOperation"])
 			}
-			if _, hasDeprecated := v2Params["Input"]; hasDeprecated {
-				t.Errorf("statistic(%s): fork-v2 emitted deprecated 'Input' wire key", op)
+			if upParams["Input"] != nil || v2Params["WFInput"] != nil {
+				t.Fatalf("statistic(%s): upstream/fork native key distinction was lost", op)
 			}
 			upInput, ok1 := upParams["WFInput"].(map[string]any)
-			v2Input, ok2 := v2Params["WFInput"].(map[string]any)
+			v2Input, ok2 := v2Params[statisticAppleInputKey(t)].(map[string]any)
 			if !ok1 || !ok2 {
-				t.Fatalf("statistic(%s): expected WFInput map in both upstream (%T) and fork-v2 (%T)", op, upParams["WFInput"], v2Params["WFInput"])
+				t.Fatalf("statistic(%s): expected upstream WFInput (%T) and corrected fork Input (%T) attachments", op, upParams["WFInput"], v2Params["Input"])
 			}
-			if upInput["WFSerializationType"] != v2Input["WFSerializationType"] {
-				t.Errorf("statistic(%s): WFInput.WFSerializationType mismatch: upstream=%v vs fork-v2=%v",
+			if upInput["WFSerializationType"] != "WFTextTokenAttachment" || v2Input["WFSerializationType"] != "WFTextTokenAttachment" {
+				t.Errorf("statistic(%s): input attachment serialization changed: upstream=%v fork-v2=%v",
 					op, upInput["WFSerializationType"], v2Input["WFSerializationType"])
 			}
+			p15CheckStatisticDocument(t, forkV2Doc, op)
 		}
 	})
 
@@ -690,7 +709,7 @@ func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
 	}
 
 	// 0. Baseline verification: unmutated copy must pass all P10 bugfix tests
-	baselinePattern := "^(TestP10_RunActionPreservesWFInput|TestP10_StatisticActionEmitsWFInputNotInput|TestP10_ArrayEqualityComparison_FailsClosed|TestP10_RegexQuantifiersPreserved|TestP10_JSONBracesInStringNotParsedAsInlineVars)$"
+	baselinePattern := "^(TestP10_RunActionPreservesWFInput|TestP10_StatisticActionEmitsInputNotWFInput|TestP10_ArrayEqualityComparison_FailsClosed|TestP10_RegexQuantifiersPreserved|TestP10_JSONBracesInStringNotParsedAsInlineVars)$"
 	if out, err := runMutatedTests(baselinePattern); err != nil {
 		t.Fatalf("mutation gate baseline failed on unmutated source copy: %v\n%s", err, out)
 	}
@@ -746,15 +765,15 @@ func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
 		"WFInput parameter is nil/missing in run action",
 	)
 
-	// 2. Real Compiler Mutation 2: Revert `statistic` in actions/math.cherri from `'WFInput'` to `'Input'`
-	// (the original bug that emitted the wrong wire parameter key).
+	// 2. Restore the inherited statistics key defect in the actual compiler.
+	// Apple WorkflowKit consumes Input; upstream's WFInput returns empty output.
 	mutateAndVerifyFailure(
-		"mutation-2-statistic-emits-Input-instead-of-WFInput",
+		"mutation-2-statistic-restores-unsupported-WFInput",
 		filepath.Join("actions", "math.cherri"),
-		"action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')",
 		"action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')",
-		"^TestP10_StatisticActionEmitsWFInputNotInput$",
-		"statistic action missing WFInput wire key",
+		"action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')",
+		"^TestP10_StatisticActionEmitsInputNotWFInput$",
+		"statistic action missing Input wire key",
 	)
 
 	// 3. Real Compiler Mutation 3: Revert `checkInlineVarRegex` in parser.go to greedy `\{(.*?)...}`

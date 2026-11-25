@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_39
+#include 'actions/calendar'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const seconds = 1 + 1
+startTimer(qty(seconds, "sec"))
+output("CHERRI_QA_39|timer:2sec")

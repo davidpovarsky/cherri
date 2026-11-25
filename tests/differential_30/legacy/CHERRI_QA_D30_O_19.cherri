@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_19
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@payload = {"state":"before"}
+const previous = getValue(@payload, "state")
+const updated = setValue(@payload, "state", "after")
+const current = getValue(updated, "state")
+output("CHERRI_QA_19|{previous}:{current}")

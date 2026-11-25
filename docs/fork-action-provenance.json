@@ -3332,6 +3332,124 @@
       "reason": "Original full F01 run45101081393 returned P15_NEGATED_IS_TRUE. A separately labelled R7 reconstruction and actual pre-fix regression exposed the missing inner helper RHS; the original native condition values were not retained.",
       "evidence": "docs/language-v2/evidence/p15-f01-boolean-helper-20261123: actual RED4parents and16subcases; pre-fix8-case exact natural import baseline; independently reviewed fix; focused GREEN19parents/110namedpasses,0fail/skip,23.319765s. Original stdout SHA25652e60bbb0349eab58138f97a2016e3dbd72c6a0fd2e762425536e91518a46148.",
       "note": "Separate non-circular provenance after immutable implementation. Native causality and repaired fullF01 remain pending actual Apple verification; no old R7 receipt is promoted to the new source and no formal or physical acceptance is granted."
+    },
+    {
+      "name": "V2 dynamic quantity reference transport",
+      "locations": [
+        "internal/language/backend/quantity.go",
+        "internal/language/lower/quantity.go",
+        "internal/language/lower/call_arguments.go",
+        "internal/language/lower/lower.go",
+        "language_quantity_adapter.go",
+        "language_backend_adapter.go",
+        "language_emit_adapter.go",
+        "language_value_adapter.go",
+        "quantity_reference_test.go",
+        "tests/qty-dynamic.cherri",
+        "tests/language-v2/v2-dynamic-quantity.cherri"
+      ],
+      "firstForkCommit": "52ffccd5683ba5dfb357745dbfe2f544c29e7bc7",
+      "change": "Retain evaluated quantity operands as semantic values until the existing canonical quantity builder serializes the bare native magnitude reference. Traverse the typed carrier for argument snapshots and date-condition conversion. Add generated Legacy/V2 checks for every catalog quantity parameter.",
+      "reason": "Fork V2 at 6ce0a398 stringified lowered reference carriers into Magnitude while returning success. Independent frozen original bcc0095754e2cc0baaeb4d93dae172b8153b4716 and current upstream 98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2 emit bare reference dictionaries. The original quantity builder and action definitions are reused unchanged.",
+      "evidence": "docs/language-v2/dynamic-quantity-reference-audit-20261125.md; docs/language-v2/evidence/dynamic-quantity-20261125/verification.json. Actual pre-fix failures retained; final Quantity|T04|TestP15C01ArgumentValueSnapshot and lower/backend/IR package tests passed. Both added Cherri fixtures compile. Generated coverage checks all four current qty parameters, including actual producer UUID and action order.",
+      "note": "Shared compiler repair for adjustDate.unit, makeSizedDiskImage.diskSize, seek.timeInterval and startTimer.duration; no native action/catalog contract was invented. This record grants no Apple runtime, broader corpus, release or project-wide acceptance. Separate non-circular metadata follows the immutable implementation."
+    },
+    {
+      "name": "Shared per-workflow deterministic generated UUID policy",
+      "locations": [
+        "generated_uuid.go",
+        "variables.go",
+        "parser.go",
+        "compiler_state.go",
+        "build_profile.go",
+        "internal/language/lower/uuid_generator.go",
+        "internal/language/lower/lower.go",
+        "language_emit_adapter.go",
+        "actions_std.go",
+        "debug_stdlib.go",
+        "debug_labels.go",
+        "debug_export.go",
+        "require_macro.go",
+        "paginate_macro.go",
+        "derived_uuid_test.go",
+        "tests/derive-uuids-arrays.cherri",
+        "tests/derive-uuids-controls.cherri",
+        "tests/derive-uuids-macros.cherri"
+      ],
+      "firstForkCommit": "ba97d7a882e6fa71521596350e38b1dd38e504b2",
+      "change": "Use a domain/workflow/salt/occurrence sequence for generated IDs when derive-uuids is selected. Configure the policy at Legacy parse and explicit V2 CompileOptions boundaries, preserve the default random generator and imported explicit identity, and route canonical native macro/instance/placeholder generation through the same policy.",
+      "reason": "Current original upstream 98d5191 and the inherited fork Legacy generator derive repeated array producers and anonymous control groups from identical salts. V2 ignored the flag, and canonical native macros generated independent random UUIDs. Original failures were reproduced at unchanged e432f7b9 before repair.",
+      "evidence": "docs/language-v2/deterministic-uuid-root-repair-20261125.md; docs/language-v2/evidence/deterministic-uuid-20261125/verification.json. Actual baseline failures retained; focused/affected root tests and lower/backend packages passed. The unchanged independent differential comparator accepted 12 exact typed replay pairs from 24 separate CLI processes for cases 13-15/25-27 in both frontends, with zero raw differences and valid graphs.",
+      "note": "Separate metadata references the immutable implementation. Imported exact native identity and default-v4 behavior are regression obligations. Macro UUID-valued display-name differences across random/derived modes remain visible; no comparator normalization was added. No Apple runtime, integrated full-suite or release result is assigned to these local proofs. Independently tested component implementation: 553fa63635343e516f11769b01e5a0f9cecefab8. The firstForkCommit pointer names its reachable root integration; original component receipts retain their source attribution."
+    },
+    {
+      "name": "Legacy loop reference arithmetic and value-constructor validation",
+      "locations": [
+        "variables.go",
+        "shortcutgen.go",
+        "legacy_compound_reference.go",
+        "parser.go",
+        "value_constructor_arguments.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/value_constructors.go",
+        "internal/language/analysis/quantity_evidence.go",
+        "internal/language/lower/lower.go",
+        "internal/language/lower/quantity.go",
+        "legacy_loop_reference_test.go",
+        "value_constructor_validation_test.go",
+        "internal/language/lower/value_constructor_validation_test.go",
+        "tests/loop-reference-compat.cherri",
+        "tests/value-constructor-defaults.cherri"
+      ],
+      "firstForkCommit": "9eb369a37c807512489055991c9dc7e9503c25f7",
+      "change": "Accept current-upstream bare loop aliases while retaining the prior @ spelling; resolve compound reference types and bind assignments to their computed native output, preserving array append and text concatenation. Share V2 qty/color argument binding and validation across analysis and lowering; preserve typed dynamic quantity magnitudes and source-order snapshots, reject unsupported color/runtime/unit/arity forms, and resolve named constructor arguments by parameter. Reuse Legacy intrinsic requiredness and declared defaults before serialization.",
+      "reason": "Current upstream 98d5191 accepted bare repeat index arithmetic that the fork rejected; the fork accepted @i but emitted an assignment from i without the required Math producer. V2 color references silently became zero, malformed quantities succeeded, and reordered named quantity arguments swapped magnitude and unit. Original and fork Legacy constructors panicked on missing required quantity arguments and omitted color defaults.",
+      "evidence": "docs/language-v2/value-constructors-loop-compatibility-audit-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/{red-receipt.json,qty-red-receipt.json,tests-red.log,tests-green.log,extended-controls.log,green-receipt.json}. Focused producer/consumer and analyzer/lowerer controls, all five prior Quantity tests, TestP15DateComparisonMigrationCLIParity, 38 exact CLI exit/artifact cases, build and diff checks passed. Baseline failures and original compiler artifacts remain retained.",
+      "note": "Integrated implementation SHA is the non-circular provenance anchor; component commit cb7fb1c16ba9c243345ab3fa4df766153310abc9 was cherry-picked. Existing canonical action definitions and quantity/color wire representations remain authoritative. No dynamic Apple color schema, unit whitelist or color range restriction was invented. This metadata grants no Apple execution, full-suite, release or project-wide acceptance. The separate current-upstream PropertyUserInfo integer-zero versus absent-field difference is retained as unknown native impact and is not normalized away."
+    },
+    {
+      "name": "statistic",
+      "identifier": "is.workflow.actions.statistics",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+      "upstreamLocation": "actions/math.cherri",
+      "forkLocations": [
+        "actions/math.cherri",
+        "internal/language/schema/generated_registry.go",
+        "statistics_native_contract_test.go",
+        "p10_compiler_bugfixes_test.go",
+        "p10_compiler_serialization_test.go",
+        "p10_independent_oracle_test.go",
+        "p15_statistic_roundtrip_test.go",
+        "docs/apple-runtime/statistics-input-20261125/README.md"
+      ],
+      "firstForkCommit": "d8c2387db6f429c80d161000b19ce6ebb4194311",
+      "change": "Corrected statistic input binding from inherited WFInput to Apple's Input key in the canonical action definition and regenerated V2 schema. The correction applies to all eight operations: Average, Minimum, Maximum, Sum, Median, Mode, Range, and Standard Deviation, in both legacy and V2.",
+      "reason": "Differential fixture 15 exposed an inherited runtime defect: both current upstream and fork V2 returned CHERRI_QA_15|\\n: instead of the independent expected CHERRI_QA_15|15:5. Live macOS 27 WorkflowKit identifies Input as the WFVariablePickerParameter of WFCalculateStatisticsAction. Corrected legacy and V2 shortcuts both returned the exact expected output on iOS Simulator.",
+      "evidence": "docs/apple-runtime/statistics-input-20261125/: live native metadata plus original OUTPUT_MISMATCH and corrected 2/2 PASS callback receipts, verified import identities, signed/unsigned artifact hashes, and native batch summary. Focused all-operation legacy/V2 round trips, typed producer graph negatives, independent Apple metadata assertions, pinned upstream expected-difference checks, and source mutation restoring WFInput pass.",
+      "notes": [
+        "All eight operations share the one corrected input key; WFStatisticsOperation enum values remain unchanged.",
+        "The expected corpus output was fixed before execution and was not changed to accommodate the original failure.",
+        "Before/after action-tree differences are retained explicitly: only WFInput removal and Input addition on the two statistics actions, with valid producer/reference graphs and unchanged action counts.",
+        "Upstream parity tests retain the pinned upstream WFInput observation and explicitly assert the fork correction; they no longer equate inherited wire parity with runtime correctness.",
+        "firstForkCommit is the integrated implementation commit, not the detached development commit or this provenance metadata record."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "Complete V2 semantic compile error reporting",
+      "locations": [
+        "semantic_compile_errors.go",
+        "language_emit_adapter.go",
+        "semantic_compile_errors_test.go"
+      ],
+      "firstForkCommit": "4ca75e763204f0d4cdcb94442985e6dd776df844",
+      "change": "Preserve all analyzer error diagnostics, in their original order, in public V2 compile errors and the existing isolation error collector. Reuse one helper based on errors.Join; retain the previous single-error text and reject before native backend creation.",
+      "reason": "New precise constructor validation exposed an existing public API defect: returning only the first semantic error concealed the independent enclosing Date comparison E_ARGUMENT_TYPE behind the qty unit E_LITERAL_REQUIRED. The unchanged T04/BRG33 original contract failed although analysis still carried both exact diagnostics. Two independently invalid declarations reproduced the same masking mechanism.",
+      "evidence": "docs/language-v2/semantic-error-retention-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/go-events/{t04-red.json,semantic-errors-red.json,semantic-errors-green.json,brg33-green.json}. RED preserves the exact T04 failure and both general masking controls. GREEN passes unchanged T04 production/service, all four constructor tests, both new public compile/isolation controls, and the clean-source BRG33 producer with all 23 required tests discovered and 10 evidence-corruption negatives rejected.",
+      "note": "Separate non-circular metadata anchors reachable root integration. Component implementation 4dcf92546ebc079d3d54f3724c9a082ac3573657 retains its own source-bound receipts. No analyzer diagnostic, original test expectation, action definition, native representation or successful compile semantics changed. Gate-only OutputType compatibility is documented separately and is not an action catalog change. No full-suite, native runtime or release acceptance is inferred."
     }
   ]
 }

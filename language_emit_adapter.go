@@ -12,6 +12,7 @@ import (
 
 	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/migrate"
@@ -234,6 +235,9 @@ func transformIRParamValue(v any) any {
 }
 
 func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
+	if quantity, ok := v.(*backend.QuantityValue); ok {
+		return encodeQuantityValue(quantity)
+	}
 	if raw, ok := v.(*ir.RawPlistValue); ok {
 		return transformIRParamValueContext(raw.Data, inAttachmentsByRange)
 	}
@@ -315,18 +319,13 @@ func collectV2CompileErrorLines(filePath string, content string) ([]int, error) 
 	analyzer.SetModuleGraph(graph)
 	analyzer.Analyze(prog)
 	var linesOut []int
-	var firstErr error
-	for _, diag := range analyzer.Diagnostics() {
-		if diag.Severity == analysis.SeverityError {
-			if firstErr == nil {
-				firstErr = fmt.Errorf("semantic error [%s]: %s at %v", diag.Code, diag.Message, diag.Span)
-			}
-			if diag.Span.Start.Line > 0 {
-				linesOut = append(linesOut, diag.Span.Start.Line)
-			}
+	diagnostics := analyzer.Diagnostics()
+	for _, diag := range diagnostics {
+		if diag.Severity == analysis.SeverityError && diag.Span.Start.Line > 0 {
+			linesOut = append(linesOut, diag.Span.Start.Line)
 		}
 	}
-	return linesOut, firstErr
+	return linesOut, semanticCompileErrors(diagnostics)
 }
 
 // CompileSourceToPlistWithModules compiles Cherri v2 source code with optional virtual modules.
@@ -361,14 +360,17 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 	analyzer := analysis.NewAnalyzer(reg)
 	analyzer.SetModuleGraph(graph)
 	analyzer.Analyze(prog)
-	for _, diag := range analyzer.Diagnostics() {
-		if diag.Severity == analysis.SeverityError {
-			return nil, fmt.Errorf("semantic error [%s]: %s at %v", diag.Code, diag.Message, diag.Span)
-		}
+	if err := semanticCompileErrors(analyzer.Diagnostics()); err != nil {
+		return nil, err
 	}
 
 	session := newSession()
 	defer session.Close()
+	if options.DeriveUUIDs {
+		// Cold canonical initialization resets globals; finish it before the
+		// workflow's generated-identity sequence begins.
+		ensureCanonicalStandardActionsLocked()
+	}
 	session.buildProfile = profile
 	session.configureAssets(filePath, options.AssetCache)
 	session.configurePlatformVersions(analyzer.Registry(), analyzer.Targets(), analyzer.MinTargetVersionString(), analyzer.MaxTargetVersionString())
@@ -377,6 +379,10 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
 	if options.mobileWorkflowName != "" {
 		lowerer.WorkflowName = options.mobileWorkflowName
+	}
+	configureGeneratedUUIDs(options.DeriveUUIDs, func() string { return lowerer.WorkflowName })
+	if options.DeriveUUIDs {
+		lowerer.SetUUIDGenerator(func() string { return strings.ToUpper(nextGeneratedUUID("v2-lowering")) })
 	}
 	lowerer.SetBaseFilePath(filePath)
 	lowerer.SetModuleGraph(graph)
@@ -420,7 +426,7 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	if profileErr != nil {
 		return profileErr
 	}
-	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile, RequireAuthoredWorkflow: args.Using("require-authored-workflow")})
+	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile, DeriveUUIDs: args.Using("derive-uuids"), RequireAuthoredWorkflow: args.Using("require-authored-workflow")})
 	if err != nil {
 		return err
 	}

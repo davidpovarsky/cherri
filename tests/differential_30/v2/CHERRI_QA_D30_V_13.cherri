@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_13" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let items = ["alpha", "beta", "gamma"]
+let first = getFirstItem(items)
+let last = getLastItem(items)
+let size = count(items)
+output(f"CHERRI_QA_13|{first}:{last}:{size}")

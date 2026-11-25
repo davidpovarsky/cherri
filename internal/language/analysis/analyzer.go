@@ -1673,13 +1673,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	// 1b. Check built-in value constructors (qty, color)
 	if callName == "qty" || callName == "color" {
-		if call.PrimaryArg != nil {
-			a.analyzeExpression(call.PrimaryArg, scope)
-		}
-		for _, nArg := range call.NamedArgs {
-			a.analyzeExpression(nArg.Value, scope)
-		}
-		return types.AnyContent
+		return a.analyzeValueConstructor(call, callName, scope)
 	}
 
 	// 1c. Check condition predicates (isToday, isTrue, isFalse, numeric, condEnum)

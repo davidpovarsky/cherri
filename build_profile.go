@@ -18,6 +18,9 @@ const (
 
 // CompileOptions is explicit per compilation so library clients do not inherit CLI state.
 type CompileOptions struct {
+	// DeriveUUIDs makes generated identities reproducible within this workflow.
+	// Imported explicit identities are preserved in either mode.
+	DeriveUUIDs    bool
 	BuildProfile   BuildProfile
 	VirtualModules map[string]string
 	// AssetCache allows the editor and compiler to share verified local file bytes.

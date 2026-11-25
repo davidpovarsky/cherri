@@ -1,0 +1,14 @@
+shortcut "CHERRI_QA_D30_V_22" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let sample = "pre-mid-end"
+var trace = ""
+if sample beginsWith "pre" {
+    trace = f"{trace}A"
+}
+if sample contains "mid" {
+    trace = f"{trace}B"
+}
+if sample endsWith "end" {
+    trace = f"{trace}C"
+}
+output(f"CHERRI_QA_22|{trace}")

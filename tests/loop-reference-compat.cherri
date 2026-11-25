@@ -1,0 +1,14 @@
+// Repeat bindings accept original @ syntax and current upstream bare names.
+@bareTotal = 0
+@prefixedTotal = 0
+repeat i for 5 {
+    @bareTotal += i
+    @prefixedTotal += @i
+}
+if @bareTotal != 15 {
+    alert("FAIL bare repeat sum: {@bareTotal}")
+}
+if @prefixedTotal != 15 {
+    alert("FAIL prefixed repeat sum: {@prefixedTotal}")
+}
+show("All repeat reference compatibility checks passed")

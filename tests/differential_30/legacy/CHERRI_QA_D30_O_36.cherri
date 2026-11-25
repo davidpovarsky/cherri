@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_36
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@json = '{"label":"coerced","value":9}'
+const label = getValue(@json.dictionary, "label")
+const amount = getValue(@json.dictionary, "value")
+output("CHERRI_QA_36|{label}:{amount}")
