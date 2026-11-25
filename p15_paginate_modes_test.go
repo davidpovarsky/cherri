@@ -16,15 +16,15 @@ import (
 )
 
 type p15PaginateTraversalCase struct {
-	name, mode, start, queryKey, prefix string
+	name, mode, start, queryKey, prefix, suffix string
 }
 
 var p15PaginateTraversalCases = []p15PaginateTraversalCase{
-	{"cursor", "cursor", "https://example.invalid/pages?filter=kept", "", "https://example.invalid/pages?filter=kept&cursor="},
-	{"cursor_custom", "cursor", "https://example.invalid/pages?filter=kept", "page[cursor]", "https://example.invalid/pages?filter=kept&page%5Bcursor%5D="},
-	{"cursor_initial", "cursor", "https://example.invalid/pages?cursor=%D7%90%2B%2F%3D&filter=kept", "", "https://example.invalid/pages?filter=kept&cursor="},
-	{"page", "page", "https://example.invalid/pages?page=1&filter=kept", "", "https://example.invalid/pages?filter=kept&page="},
-	{"offset", "offset", "https://example.invalid/pages?offset=0&filter=kept", "", "https://example.invalid/pages?filter=kept&offset="},
+	{"cursor", "cursor", "https://example.invalid/pages?filter=kept", "", "https://example.invalid/pages?filter=kept&cursor=", ""},
+	{"cursor_custom", "cursor", "https://example.invalid/pages?filter=kept", "page[cursor]", "https://example.invalid/pages?filter=kept&page%5Bcursor%5D=", ""},
+	{"cursor_initial", "cursor", "https://example.invalid/pages?cursor=%D7%90%2B%2F%3D&filter=kept", "", "https://example.invalid/pages?cursor=", "&filter=kept"},
+	{"page", "page", "https://example.invalid/pages?page=1&filter=kept", "", "https://example.invalid/pages?page=", "&filter=kept"},
+	{"offset", "offset", "https://example.invalid/pages?offset=0&filter=kept", "", "https://example.invalid/pages?offset=", "&filter=kept"},
 }
 
 func p15PaginateTraversalSource(tc p15PaginateTraversalCase, legacy, named, dynamic bool, pages, items int, consume bool) string {
@@ -134,7 +134,7 @@ func p15PaginateTraversalGraphError(actions []ShortcutAction, tc p15PaginateTrav
 			raw := debugParamMap(p["WFTextActionText"])
 			value := debugParamMap(raw["Value"])
 			if text, ok := value["string"].(string); ok && strings.HasPrefix(text, tc.prefix) && tc.prefix != "" {
-				if raw["WFSerializationType"] != "WFTextTokenString" || len(debugParamMap(value["attachmentsByRange"])) != 1 {
+				if raw["WFSerializationType"] != "WFTextTokenString" || text != tc.prefix+"￼"+tc.suffix || len(debugParamMap(value["attachmentsByRange"])) != 1 {
 					return fmt.Errorf("query URL lost exact dynamic marker attachment")
 				}
 				prefixes++
