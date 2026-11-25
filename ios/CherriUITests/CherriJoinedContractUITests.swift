@@ -131,25 +131,63 @@ final class CherriJoinedContractUITests: XCTestCase {
     }
 
     private func expectSource(_ editor: XCUIElement, _ source: String) throws {
-        try require(wait {
+        let matched = wait {
             guard editor.exists, let value = editor.value as? String else { return false }
             return value.utf16.elementsEqual(source.utf16)
-        }, "Joined editor must contain the exact current synthetic UTF-16 source")
+        }
+        if !matched {
+            // Retain bounded mismatch geometry and hashes, never arbitrary source.
+            let observed = (editor.value as? String) ?? ""
+            let expectedUnits = Array(source.utf16)
+            let observedUnits = Array(observed.utf16)
+            let commonCount = min(expectedUnits.count, observedUnits.count)
+            let mismatch = (0..<commonCount).first { expectedUnits[$0] != observedUnits[$0] }
+                ?? commonCount
+            let receipt: [String: Any] = [
+                "expectedSha256": CherriJoinedContract.digest(source),
+                "observedSha256": CherriJoinedContract.digest(observed),
+                "expectedUTF16Length": expectedUnits.count,
+                "observedUTF16Length": observedUnits.count,
+                "firstMismatchUTF16Offset": mismatch,
+                "hasGeneratedParenthesisSuffix": observed.utf16.elementsEqual((source + ")").utf16),
+            ]
+            let attachment = XCTAttachment(data: try JSONSerialization.data(withJSONObject: receipt),
+                                           uniformTypeIdentifier: "public.json")
+            attachment.name = "Joined exact source mismatch"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        try require(matched, "Joined editor must contain the exact current synthetic UTF-16 source")
     }
 
     /// No source or title is logged. Only an observed empty editor permits typing
     /// the fixed synthetic fixture; a failed reset stops this test.
-    private func replaceSource(_ editor: XCUIElement, _ source: String) throws {
+    private func replaceSource(_ editor: XCUIElement, _ source: String,
+                               generatingClosingParenthesis: Bool = false) throws {
         let clear = app.buttons["clearEditorButton"]
         try require(clear.waitForExistence(timeout: 2) && clear.isHittable,
                     "Joined requires the existing Clear action")
         clear.tap()
         try expectSource(editor, "")
+        try require(wait {
+            !self.app.staticTexts["diagnosticStatusText"].exists
+                && !self.app.staticTexts["diagnosticItem_0"].exists
+                && !self.app.staticTexts["compiledStatusText"].exists
+                && !self.app.buttons["shareSignedShortcutButton"].exists
+        }, "Clearing source must invalidate old diagnostics, compilation and signed export")
         if !source.isEmpty {
             editor.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
             try require(app.keyboards.firstMatch.waitForExistence(timeout: 2),
                         "Joined synthetic typing requires the real keyboard")
-            editor.typeText(source)
+            if generatingClosingParenthesis {
+                try require(source.hasSuffix(")"),
+                            "The authored completion fixture must include its generated parenthesis")
+                // Real keyboard input intentionally exercises the existing token
+                // completion contract. The caret stays before the generated ')'.
+                editor.typeText(String(source.dropLast()))
+            } else {
+                editor.typeText(source)
+            }
             try expectSource(editor, source)
         }
     }
@@ -218,7 +256,7 @@ final class CherriJoinedContractUITests: XCTestCase {
     }
 
     private func tapCompletion(_ label: String, editor: XCUIElement, fixture: JoinedFixture) throws {
-        try replaceSource(editor, fixture.source)
+        try replaceSource(editor, fixture.source, generatingClosingParenthesis: true)
         let candidate = app.buttons["completionItem_\(label)"]
         try require(wait(5) { candidate.exists && candidate.isHittable },
                     "A current shared-service completion must appear without a catalog fallback")

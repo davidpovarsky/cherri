@@ -198,7 +198,7 @@ class JoinedEvidenceControls(unittest.TestCase):
             path.parent.mkdir(parents=True);path.write_text(json.dumps(changed))
             with self.assertRaisesRegex(joined.Rejected, "FIXTURE_HASH"):
                 joined.load_contract(root)
-        self.assertEqual(joined.digest(raw), "67ad3e70f25a69bd737824c3f056de0b80242827fa126f1b70f54f316d020632")
+        self.assertEqual(joined.digest(raw), "8d28cbde2ad7ae1c967cb4c4e177a10cc12b10223e070b78ee44977725224474")
 
 
 if __name__ == "__main__":
