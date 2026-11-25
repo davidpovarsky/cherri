@@ -65,7 +65,7 @@ func p15TaggedLoopPayloadGraph(actions []map[string]any, nested bool) (map[strin
 	positions["count"] = len(g.expected)
 	count := g.value("count", map[string]any{"Input": p15FunctionEdge(collection)})
 	g.output(count)
-	return positions, g.finish()
+	return positions, g.compare()
 }
 
 func p15CheckTaggedLoopPayload(t *testing.T, source string, nested bool) {
