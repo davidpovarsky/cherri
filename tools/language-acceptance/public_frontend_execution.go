@@ -86,6 +86,7 @@ var publicFrontendProductionPaths = []string{
 	"tests/language-v2/acceptance-contract.json",
 	"tests/language-v2/backend-recovery-gates.json",
 	"tools/language-acceptance/public_frontend_execution.go",
+	"tools/language-acceptance/upstream_boundary_execution.go",
 	"tools/language-acceptance/public_frontend_execution_test.go",
 	"tools/language-acceptance/structural_migration_execution_test.go",
 	"tools/language-acceptance/strict_go_events.go",
@@ -130,8 +131,9 @@ func publicFrontendRequiredEvents() []string {
 			add(3, []string{route + "/" + choice})
 		}
 	}
-	add(6, []string{"missing_current_file", "extra_current_file", "missing_manifest_file", "duplicate_manifest_file", "wrong_base", "wrong_baseline_digest", "wrong_baseline_size", "rewritten_unchanged_file", "forged_recorded_hash", "wrong_correction", "false_upstream_equality", "false_unchanged_class"})
-	add(7, []string{"show", "cat_file_batch", "ls_tree", "diff"})
+	// Both consumers select the same reviewed U01 children; root tests remain independent.
+	add(6, upstreamBoundaryControls)
+	add(7, upstreamBoundaryReplacementControls)
 	add(8, []string{"metadata", "include", "reference"})
 	return names
 }
