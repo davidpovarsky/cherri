@@ -343,22 +343,28 @@ func TestStructuredValueActualProductionEvidence(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, original := range []struct {
-			name  string
-			value any
+			name     string
+			value    any
+			original []byte
 		}{
-			{"evidence-manifest.original.json", manifest},
-			{"intake-report.original.json", report},
-			{"execution-audit.original.json", json.RawMessage(raw)},
+			{"evidence-manifest.original.json", manifest, nil},
+			{"intake-report.original.json", report, nil},
+			{"execution-audit.original.json", nil, raw},
 		} {
-			encoded, err := json.MarshalIndent(original.value, "", "  ")
-			if err != nil {
-				t.Fatal(err)
+			encoded := append([]byte(nil), original.original...)
+			if original.original == nil {
+				var err error
+				encoded, err = json.MarshalIndent(original.value, "", "  ")
+				if err != nil {
+					t.Fatal(err)
+				}
+				encoded = append(encoded, '\n')
 			}
 			f, err := os.OpenFile(filepath.Join(retained, original.name), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, writeErr := f.Write(append(encoded, '\n'))
+			_, writeErr := f.Write(encoded)
 			closeErr := f.Close()
 			if writeErr != nil || closeErr != nil {
 				t.Fatalf("retain original intake: write=%v close=%v", writeErr, closeErr)
