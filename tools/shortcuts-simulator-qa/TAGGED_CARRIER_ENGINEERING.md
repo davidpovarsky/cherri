@@ -76,3 +76,18 @@ Do not substitute a rendered payload for a type witness, alias this fixture
 to a historical nested-list ID, or infer a successful native run from the
 compiler or graph controls. A decoded Text carrier, absent witness or missing
 callback remains a real unsuccessful observation.
+
+## Receiver retention boundary
+
+The existing ReceiverApp recognizes the exact versioned prefix
+CHERRI_TAGGED_VALUE_CARRIER_V1: so genuine positive and contrary public observations
+reach the independent parser. Secret and PII rejection still runs first. The
+existing 16,384-character cap, trace separation and other allowlisted prefixes
+are unchanged. A receiver built before this enrollment redacts the new summary;
+it cannot supply this observation merely because the callback status succeeds.
+
+The actual Foundation policy verifier includes version/prefix lookalikes,
+synthetic secret canaries, contrary values, trace separation and truncation
+controls. Its optional artifacts directory preserves the exact generated Swift,
+input controls and executable. Policy qualification and a successful callback
+remain separate from signed import, Apple execution and semantic acceptance.

@@ -5,6 +5,7 @@ normal trace separation, and existing private-data rejection before the new exac
 diagnostic prefix is accepted. This does not typecheck SwiftUI or run a Simulator.
 """
 import argparse
+import contextlib
 import json
 import os
 from pathlib import Path
@@ -17,6 +18,7 @@ from optional_forwarding_diagnostic import EXPECTED_OUTPUT, PREFIX
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--swiftc", default="swiftc")
+    parser.add_argument("--artifacts-dir", help="Retain exact generated policy, controls and executable in a fresh directory")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     source = (root / "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift").read_text(encoding="utf-8")
@@ -71,7 +73,69 @@ struct Control: Decodable { let raw: String?; let sanitized: String?; let summar
         add(raw, redacted, redacted)
         raw = prefix + "canary@example.invalid"
         add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
-    with tempfile.TemporaryDirectory(prefix="optional-receiver-policy-") as directory:
+    # The tagged engineering fixture has its own exact versioned public prefix.
+    # Contrary observations must remain readable; this policy never asserts them.
+    tagged = "CHERRI_TAGGED_VALUE_CARRIER_V1:"
+    for value in ("PRESENT:TYPE_MATCH", "ABSENT:TYPE_DIFFERENT"):
+        raw = tagged + value
+        add(raw, raw, raw)
+        add(raw + "\n" + trace, raw + "\n" + trace, raw, trace)
+    for raw in (tagged.replace("_V1:", "_V2:") + "PUBLIC",
+                tagged.removesuffix(":") + "PUBLIC",
+                "private-prefix " + tagged + "PUBLIC"):
+        redacted = "[REDACTED_NON_ALLOWLISTED_LEN_" + str(len(raw)) + "]"
+        add(raw, redacted, redacted)
+    for secret in ("ghp_SYNTHETIC_CANARY", "canary@example.invalid",
+                   "/Users/SYNTHETIC", "BEGIN PRIVATE KEY"):
+        add(tagged + secret, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    bounded = tagged + "A" * 20000
+    add(bounded, bounded[:16384], bounded[:16384])
+
+    # The function engineering callback retains all three CASE observations,
+    # including contrary presence/types. Interpretation belongs to its parser.
+    function = "CHERRI_FUNCTION_ENVELOPE_PRESENCE_V1:"
+    for value in ("CASE[zero]:CALLER_KEY=0", "CASE[none]:CALLER_KEY=1"):
+        raw = function + value
+        add(raw, raw, raw)
+        add(raw + "\n" + trace, raw + "\n" + trace, raw, trace)
+    for raw in (function.replace("_V1:", "_V2:") + "PUBLIC",
+                function.removesuffix(":") + "PUBLIC",
+                "private-prefix " + function + "PUBLIC"):
+        redacted = "[REDACTED_NON_ALLOWLISTED_LEN_" + str(len(raw)) + "]"
+        add(raw, redacted, redacted)
+    for secret in ("ghp_SYNTHETIC_CANARY", "canary@example.invalid",
+                   "/Users/SYNTHETIC", "BEGIN PRIVATE KEY"):
+        add(function + secret, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    bounded = function + "A" * 20000
+    add(bounded, bounded[:16384], bounded[:16384])
+
+    # A maximal local-part run is scanned once; all prior email/secret
+    # detections remain, including sensitive data after the output length cap.
+    for email in ("a@example.invalid", "9a@sub.example.invalid", "prefix-a@example.invalid",
+                  "prefix+a.b@example.invalid", "@@a@b.invalid", "אבa@example.invalid",
+                  "a@example.invalid🙂", "a-b@1.example.invalid", ".a@b.invalid",
+                  "x/a@b.invalid", "A"*128 + "@example.invalid",
+                  "a..b@example.invalid", "++++@domain.invalid"):
+        add(function + email, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    for punctuation in "._%+-":
+        raw = function + "a" + punctuation + "z@example.invalid"
+        add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    for value in ("a@b.c", "a@b.22", "a@@b.invalid", "a @b.invalid",
+                  "a@b", "a_at_b.invalid", "a＠b.invalid", "not-an-email"):
+        raw = function + value
+        add(raw, raw, raw)
+    for secret in ("ghp_SYNTHETIC_CANARY", "canary@example.invalid", "/Users/SYNTHETIC",
+                   "BEGIN PRIVATE KEY", "Bearer SYNTHETIC_CANARY"):
+        raw = function + "A"*17000 + " " + secret
+        add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+
+    if args.artifacts_dir:
+        retained = Path(args.artifacts_dir)
+        retained.mkdir(parents=False, exist_ok=False)
+        directory_context = contextlib.nullcontext(str(retained))
+    else:
+        directory_context = tempfile.TemporaryDirectory(prefix="optional-receiver-policy-")
+    with directory_context as directory:
         temp = Path(directory)
         code, cases = temp / "ReceiverPolicy.swift", temp / "controls.json"
         executable = temp / ("verify-receiver.exe" if os.name == "nt" else "verify-receiver")
