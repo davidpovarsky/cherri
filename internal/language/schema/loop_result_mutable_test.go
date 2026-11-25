@@ -75,8 +75,8 @@ func TestLoopResultMutableAliasPlanReachingOrigins(t *testing.T) {
 }
 
 // Retain the original qualification IDs and all eighteen authored sources.
-// Twelve former scope/storage limits now have positive admission expectations;
-// the six representation/enrollment boundaries keep their original rejection.
+// Sixteen former scope/storage limits now have positive admission expectations;
+// ordinary representation joins and uninitialized cell storage still reject.
 func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 	demanded := mutableLoopPlanProducers + "count(first)\ncount(next)\n"
 	initialized := demanded + mutableLoopPlanBinding
@@ -90,7 +90,7 @@ func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 		{"uninitialized_alias", demanded + "var current:List<List<Number>>\ncurrent=first\nreturn count(current)", false, 0},
 		{"mutable_rhs_initializer", initialized + "var other:List<List<Number>>=current\nreturn count(other)+count(current)", true, 2},
 		{"mutable_rhs_assignment", initialized + "var other:List<List<Number>>=next\ncurrent=other\nreturn count(other)+count(current)", true, 2},
-		{"compound_assignment", initialized + "current+=next\nreturn count(current)", false, 0},
+		{"compound_assignment", initialized + "current+=next\nreturn count(current)", true, 1},
 		{"nonidentifier_rhs", initialized + "current=repeat 1 {yield [1,2]}\nreturn count(current)", true, 1},
 		{"ordinary_list_rhs", initialized + "let ordinary=[[1,2]]\ncurrent=ordinary\nreturn count(current)", false, 0},
 		{"if_write", initialized + "if true {current=next}\nreturn count(current)", true, 1},
@@ -100,9 +100,9 @@ func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 		{"for_write", initialized + "for item in [1] {current=next}\nreturn count(current)", true, 1},
 		{"block_write", initialized + "{current=next}\nreturn count(current)", true, 1},
 		{"nested_mutable_binding", demanded + "if true {var current:List<List<Number>>=first\ncount(current)}\nreturn count(next)", true, 1},
-		{"unread_overwritten_initializer", mutableLoopPlanProducers + mutableLoopPlanBinding + "current=next\nreturn count(current)", false, 0},
-		{"unread_assigned_version", mutableLoopPlanProducers + mutableLoopPlanBinding + "let old=current\ncurrent=next\nreturn count(old)", false, 0},
-		{"other_origin_demand_is_insufficient", mutableLoopPlanProducers + "let other=repeat 1 {yield [7,8]}\n" + mutableLoopPlanBinding + "current=next\nreturn count(other)+count(current)", false, 0},
+		{"unread_overwritten_initializer", mutableLoopPlanProducers + mutableLoopPlanBinding + "current=next\nreturn count(current)", true, 1},
+		{"unread_assigned_version", mutableLoopPlanProducers + mutableLoopPlanBinding + "let old=current\ncurrent=next\nreturn count(old)", true, 1},
+		{"other_origin_demand_is_insufficient", mutableLoopPlanProducers + "let other=repeat 1 {yield [7,8]}\n" + mutableLoopPlanBinding + "current=next\nreturn count(other)+count(current)", true, 1},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

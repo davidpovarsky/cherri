@@ -2752,3 +2752,8 @@ The original compiler S627c, implementation K1e027, DocsD16, liveK18, corpus and
 ### Structured-flow follow-up: original330 current identities
 
 The original330 selectors now passed260 root/70 internal exact package+test IDs, with no failures/skips and unchanged tracked Go files during both actual bounded processes. The seven feature-evolution expectations are positive under their original full IDs; all original source cases remain. Receipt `a1c0b6e836d35e964467d6e21ee89ed26fd466358c93b377143f767cf058516e` binds published74d15 plus the sole schema-test identity restoration. This updates the above next-work state without changing the first GREEN's original schema or assigning Apple/full179 credit.
+
+
+## F04 general mutable storage qualification — 2026-11-25
+
+Implementation `82b8201d` admits inferred/mutable-source whole assignments and direct Repeat/For producers in the source-owned local cell slice. Actual focused152, original330 exact identities, and full affected269 tests passed; original failures and all source/ID expectation changes are retained. See `docs/language-v2/p15-f04-general-mutable-candidate-20261125.md` and its verification JSON. F04 remains open for consistent ordinary/cell declaration storage, uninitialized/overwritten versions, compound append and broader interfaces; no native runtime, final179 or release credit is claimed.

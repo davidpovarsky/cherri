@@ -7,8 +7,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
-// LoopResultLocalPlan is source-owned admission for one finite local consumer
-// slice. It is keyed by actual AST identities, never a carrier marker or span.
+// LoopResultLocalPlan is source-owned admission for one finite local storage
+// and consumer slice. It is keyed by actual AST identities, never a carrier marker or span.
 // Immutable and mutable bindings of source-owned values in structured flow
 // carry the private sequence only to Items Count, index and for consumers.
 // Every other use makes this optional plan absent.
@@ -281,7 +281,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 				origins, okay := expression(value.Value, scope, false, cellIteration)
 				return okay && len(origins) == 0
 			}
-			if value.Op != syntax.TokenAssign ||
+			if (value.Op != syntax.TokenAssign && value.Op != syntax.TokenPlusAssign) ||
 				target.declaration == nil || !plan.MutableBindings[target.declaration] {
 				return false
 			}
@@ -297,9 +297,14 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 				}
 			}
 			plan.Assignments[value] = target.declaration
-			plan.AssignmentSources[value] = LoopResultAssignmentSource{Value: value.Value, Source: source, Body: LoopResultLocalBody(value.Value)}
+			plan.AssignmentSources[value] = LoopResultAssignmentSource{Value: value.Value, Source: source, Body: LoopResultLocalBody(value.Value), Op: value.Op}
 			assignmentOrigins[value] = mergeLoopResultOrigins(assignmentOrigins[value], origins)
 			bindingOrigins[value.Value] = mergeLoopResultOrigins(bindingOrigins[value.Value], origins)
+			if value.Op == syntax.TokenPlusAssign {
+				// The RHS can itself write the target. Native Append reads the
+				// target after evaluating that RHS, not its earlier value.
+				origins = mergeLoopResultOrigins(scope.values[target.declaration], origins)
+			}
 			scope.values[target.declaration] = origins
 			return true
 		case *syntax.ExprStmt:
@@ -327,28 +332,34 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			return nil
 		}
 	}
-	var demanded = func(origins loopResultOriginSet) bool {
+	// A mutable declaration has one representation throughout its lifetime.
+	// Every initialized or stored version must use it, including versions
+	// overwritten before a consumer. This is storage admission, not an
+	// invented consumer demand; all closed-input/escape checks above remain.
+	var storageByBinding = map[*syntax.BindingStmt]loopResultOriginSet{}
+	for binding := range plan.MutableBindings {
+		storageByBinding[binding] = bindingOrigins[binding.Value]
+	}
+	for assignment, origins := range assignmentOrigins {
+		var target = plan.Assignments[assignment]
+		storageByBinding[target] = mergeLoopResultOrigins(storageByBinding[target], origins)
+	}
+	var storedOrigins = loopResultOriginSet{}
+	for _, origins := range storageByBinding {
 		for origin := range origins {
-			if !consumedOrigins[origin] {
+			storedOrigins[origin] = true
+		}
+	}
+	var represented = func(origins loopResultOriginSet) bool {
+		for origin := range origins {
+			if !consumedOrigins[origin] && !storedOrigins[origin] {
 				return false
 			}
 		}
 		return len(origins) != 0
 	}
-	// Every possible stored origin still needs an enrolled consumer.
-	// Representation joins never turn an unconsumed ordinary value into cells.
-	for binding := range plan.MutableBindings {
-		if !demanded(bindingOrigins[binding.Value]) {
-			return nil
-		}
-	}
-	for _, origins := range assignmentOrigins {
-		if !demanded(origins) {
-			return nil
-		}
-	}
 	for value, origins := range bindingOrigins {
-		if !demanded(origins) {
+		if !represented(origins) {
 			continue
 		}
 		plan.BindingValues[value] = true

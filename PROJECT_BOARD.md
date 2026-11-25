@@ -362,3 +362,8 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 ### F04 follow-up — current original 330 identities retained
 
 The original27-parent selectors passed260 root+70 internal named IDs on the structured-flow implementation, with exact package/test identity comparison against original streams, no failures/skips, and tracked Go source guards unchanged. Seven implemented flow forms now explicitly expect admission under their original IDs; eleven remaining boundary forms still reject. Source74d15 plus only the recorded test-layout restoration is pinned by receipt `a1c0b6e836d35e964467d6e21ee89ed26fd466358c93b377143f767cf058516e`. Original RED/GREEN snapshots remain unchanged; broader affected regression and mutable RHS/direct/inferred support remain separate next work.
+
+
+## F04 general mutable storage qualification — 2026-11-25
+
+Implementation `82b8201d` admits inferred/mutable-source whole assignments and direct Repeat/For producers in the source-owned local cell slice. Actual focused152, original330 exact identities, and full affected269 tests passed; original failures and all source/ID expectation changes are retained. See `docs/language-v2/p15-f04-general-mutable-candidate-20261125.md` and its verification JSON. F04 remains open for consistent ordinary/cell declaration storage, uninitialized/overwritten versions, compound append and broader interfaces; no native runtime, final179 or release credit is claimed.
