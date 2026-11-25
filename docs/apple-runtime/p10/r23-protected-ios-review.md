@@ -6,7 +6,7 @@ on 2026-11-25 while retaining all tests and the purpose of the protection.
 ## Exact scope
 
 - Historical baseline: 76d722502e20db977e84a095444d0172442655b8.
-- Reviewed source: 0788295f8a1dacb7ba84f14a1dc5d86bc5d5d4b7.
+- Reviewed source: 9329aa79121457fd023be45b58c8f3ad4315120e.
 - Protected paths remain ios/CherriUITests/CherriEditorUITests.swift and
   ios/CherriApp/Views/CodeEditorView.swift.
 - The editor UI suite retains all nine original XCTest methods and adds four.
@@ -79,3 +79,29 @@ application/RP40 changes are documented in
 docs/apple-runtime/p10r15/ios-ui-original-failure-repair-20261125.md.
 This source review does not claim that the repaired XCTest or simulator run
 passed. The combined native workflow must provide that separate evidence.
+
+## Review of the exact D03 checkpoint emitter
+
+Source 9329aa79121457fd023be45b58c8f3ad4315120e changes one print literal in
+the protected editor suite. The collector requires the exact
+[CHECKPOINT:D03_CURRENT_DOCS_SEARCH_VERIFIED] token; the previous emitter
+appended descriptive text and the original K workflow correctly retained
+INVALID_CHECKPOINT instead of granting D03 evidence.
+
+Independent byte comparison against the previously reviewed source proves that
+the print literal is the only protected change. All 13 XCTest methods and every
+assertion, readiness wait, test boundary and failure path are byte-for-byte
+unchanged. The other protected path remains absent. The original nine baseline
+methods remain present, and the immutable baseline itself is unchanged.
+
+The actual-source collector regression failed twice before the repair and its
+four controls passed afterward, including rejection of trailing text and a token
+outside its owned XCTest. The existing 23 documentation controls also passed.
+These controls and the source review do not supply a new native D03 execution.
+The original failed evidence is unchanged; a future native run must produce its
+own exact checkpoint, complete test outcomes and source-bound artifacts.
+
+Original review and R23 observations are retained on Oracle under
+/mnt/development/projects/evidence/cherri-p10r15-ci-release-20261125/r23-d03-reviewed-evolution-01/.
+The protected source SHA-256 is
+7f79536538fbaaf1dfe4a4a6a375332d43bf8d18f5c9c83ccbd1ac90646cba26.
