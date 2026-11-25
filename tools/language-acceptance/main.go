@@ -168,6 +168,7 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
+	baselineEvaluated            bool
 	artifactDir                  string
 	reg                          *schema.Registry
 	implSHA                      string
@@ -1075,6 +1076,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateFinalProvenanceRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateOwnedBaselineRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateCIIdentityRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1649,6 +1653,7 @@ func (r *Runner) runBaseline() {
 	b01Passed := err == nil && strings.Contains(string(ledgerBytes), "559abceadda1dbf0cd7d7deb1a26315b8ac44c3f")
 	b01Detail := "Repository on branch agent/shared-shortcuts-engine-v2-repair; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
 	r.Record("B01", "baseline", "Verify isolated base/remote HEAD and keep unrelated agent work unchanged", "repository", []string{"repository"}, b01Passed, "PASSED", b01Detail)
+	r.runOwnedBaselineRequirement()
 
 	r.runCatalogBaselineRequirement()
 }

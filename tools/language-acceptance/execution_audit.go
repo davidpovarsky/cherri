@@ -562,6 +562,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL" || res.Passed
 		}
 		applyFinalProvenanceAudit(&row, runner)
+		applyOwnedBaselineAudit(&row, runner)
 		applyCIIdentityAudit(&row, runner)
 		applyPublicationSecurityAudit(&row, runner)
 		rows = append(rows, row)

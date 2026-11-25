@@ -28,6 +28,8 @@ var finalProvenanceEnvironment = []string{
 	"CHERRI_FINAL_PROVENANCE_EXPECTED", "CHERRI_FINAL_PROVENANCE_EXPECTED_SHA256", "CHERRI_FINAL_PROVENANCE_MANIFEST",
 }
 var finalProvenanceSources = []string{
+	"tools/language-acceptance/docs_publication_execution.go",
+	"tools/language-acceptance/docs_publication_execution_test.go",
 	"tools/language-acceptance/final_provenance_execution.go",
 	"tools/language-acceptance/final_provenance_execution_test.go",
 	"tools/language-acceptance/ci_identity_execution.go",
@@ -740,6 +742,11 @@ func finalProvenanceValidatePublication(in *finalProvenanceInputs, role string) 
 		if e1 != nil || e2 != nil || end.Before(start) {
 			return fmt.Errorf("invalid source publication chronology")
 		}
+	case docsProcessPublicationFormat:
+		if role != "docs" {
+			return fmt.Errorf("docs process publication format used for another role")
+		}
+		return finalProvenanceDocsProcessPublication(in, p, s, o)
 	case "docs-main-push/1":
 		if role != "docs" || s.PublishedRef != "refs/heads/main" || p.PushStreams == nil {
 			return fmt.Errorf("docs publication format used for another source or ref")

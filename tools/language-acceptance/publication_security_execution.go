@@ -32,6 +32,8 @@ const publicationSecurityTimeout = 180 * time.Second
 const publicationSecurityScope = "Exact independently approved K/S/D source trees and declared public artifact inventories, known raw-corpus whole-file digests, actual public sanitizer controls, and the unchanged current-source RP43 signing boundary. No arbitrary-disk, unknown-private-data, Apple-signature, native or global-closure claim."
 
 var publicationSecuritySources = []string{
+	"tools/language-acceptance/docs_publication_execution.go",
+	"tools/language-acceptance/docs_publication_execution_test.go",
 	"tools/language-acceptance/publication_security_execution.go",
 	"tools/language-acceptance/publication_security_execution_test.go",
 	"tools/language-acceptance/ci_identity_execution.go",
