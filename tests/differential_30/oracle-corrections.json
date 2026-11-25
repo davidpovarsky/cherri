@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "independent_oracle_correction_ledger",
+  "corrections": [
+    {
+      "case_id": "35_object_property",
+      "number": 35,
+      "oracle_revision": 2,
+      "decision": "oracle_assumption_error",
+      "previous_manifest_commit": "4201aa785f68d4295ba3011f3a593eb35ce3d516",
+      "previous_manifest_sha256": "ea664fe90090e76ac60835f49c72abd35b9c8bf708f01d0bb1a0c1591aa31388",
+      "corrected_manifest_sha256": "282e847654ec9edd6bfec97e4dcc5e549694dbc18b7ee526c5a56856859a23f8",
+      "previous_expected": {
+        "type": "text",
+        "value": "CHERRI_QA_35|qa.txt:qa.txt"
+      },
+      "corrected_expected": {
+        "type": "text",
+        "value": "CHERRI_QA_35|qa:qa"
+      },
+      "reason": "The pre-existing naming contract separates stem and extension: setName assigns qa.txt, while getName and the Name property return the stem qa. WFDontIncludeFileExtension controls automatic extension creation, not getter output. See oracle-corrections.json.",
+      "prior_independent_audit": {
+        "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/compatibility/oracle-audit.json",
+        "sha256": "4dc1c5a2e0d5add207d1d0059e3d9b9436579bb1999a2290271722f8ccc32ccd",
+        "correction": "The initial audit wrongly inferred that preserving an extension when assigning a name means getName/Name returns that extension. Its case35 conclusion is superseded; its original bytes remain retained."
+      },
+      "preexisting_basis": [
+        {
+          "path": "docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md",
+          "commit": "b47f6816a59ac119015d777006248f788f7a00f3",
+          "section": "4.3, route C",
+          "fact": "setName(item, sample.json) followed by getName returns sample, with an explicit note that getName strips the extension.",
+          "snapshot_sha256": "14c0d5ba9bc7f7477d1f130c14340723f0987ca3937a5eaa262d778f8ab7caa2"
+        },
+        {
+          "path": "tools/shortcuts-simulator-qa/file_materialization_diagnostic.py",
+          "commit": "1c642be259a496978a201769e2ba3aa39230fee6",
+          "fact": "The diagnostic obtains namedStem through getitemname and namedExtension through File Extension, then reconstructs the full filename with a dot.",
+          "snapshot_sha256": "edbbea85d38c2332a5ad4a5393d3b90687c935776f4a9aecec9e9b7ef6a19f01"
+        },
+        {
+          "path": "docs/apple-runtime/p10r15/r2-file-materialization-20261119-audit.json",
+          "sha256": "38c648b99e0550fe56c85a7e03b747e6913230a153d63a3b5a0807383c12f13c",
+          "source_commit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+          "run_id": 44634901025,
+          "fact": "The observed NAME64 field reconstructs boundary.json exactly from the separate stem/extension route. The overall prior run remains FAIL_RUNTIME_PRESERVED for independent content-type failures."
+        },
+        {
+          "path": "docs/apple-runtime/macos-27/builtin-actions.json",
+          "sha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+          "fact": "Apple setitemname metadata describes WFDontIncludeFileExtension as controlling automatic extension creation if none is specified. getitemname has no extension-inclusion switch; its other option concerns URL web-page titles."
+        }
+      ],
+      "historical_evidence": {
+        "directory": "/mnt/development/projects/evidence/cherri-differential-30-20261125/compatibility/case35-oracle",
+        "v1_preservation_receipt_sha256": "cc33dff75d34bc38797c79577da8717fe197928e0e2b2df72d0ae136908892e0",
+        "native_results_snapshot_sha256": "74a806c54caa763787dced5f89b05ff267a5a70c768d07522fe98488300ffd37",
+        "historical_status": "Original and fork_v2 runs remain OUTPUT_MISMATCH under the previous expectation; no old result is restamped."
+      },
+      "scope": {
+        "changed_manifest_fields": [
+          "fixtures[number=35].expected.value",
+          "fixtures[number=35].oracle_reason"
+        ],
+        "other_expectations_changed": false,
+        "source_programs_changed": false,
+        "production_code_changed": false,
+        "compiled_bytes_rewritten": false,
+        "typed_differences_normalized": false
+      },
+      "native_revalidation": {
+        "status": "NOT_RUN_AT_CORRECTION",
+        "required": "Root performs fresh original, fork Legacy and fork V2 executions under unique names and verifies exact raw UTF-8 length and SHA256 against the corrected expectation."
+      },
+      "addendum": "docs/language-v2/case35-name-oracle-correction-20261125.md"
+    }
+  ]
+}
