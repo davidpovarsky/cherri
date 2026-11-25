@@ -33,6 +33,7 @@ struct WorkspaceView: View {
     @State private var isCompiling = false
     @State private var buildRequestGeneration: UInt64 = 0
     @State private var isSigning = false
+    @State private var lastBuildOutcome = ""
     @State private var isImporting = false
     @State private var isApplyingPreviewEdit = false
     @State private var previewEditGeneration = 0
@@ -98,6 +99,7 @@ struct WorkspaceView: View {
                     ShareLink(item: signedURL) {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
+                    .accessibilityIdentifier("shareSignedShortcutButton")
                 }
 
                 Menu {
@@ -121,6 +123,14 @@ struct WorkspaceView: View {
                             Label("Restore Source Before Visual Edits", systemImage: "arrow.uturn.backward")
                         }
                     }
+
+                    Button {
+                        Task { await formatSource() }
+                    } label: {
+                        Label("Format Source", systemImage: "text.alignleft")
+                    }
+                    .accessibilityIdentifier("formatSourceButton")
+                    .disabled(isBusy)
 
                     Divider()
                     Toggle("Live Preview", isOn: $livePreview)
@@ -187,6 +197,8 @@ struct WorkspaceView: View {
             diagnostic: diagnostic,
             diagnostics: diagnostics,
             actions: actionCatalog,
+            beginAction: { document.beginEditorAction() },
+            acceptsAction: { document.acceptsEditorAction($0) },
             startupObservationID: document.startupObservationID
         )
     }
@@ -264,12 +276,14 @@ struct WorkspaceView: View {
                     .foregroundStyle(.red)
                 Text("\(diagnostic.message) (\(diagnostic.locationDescription))")
                     .accessibilityIdentifier("diagnosticStatusText")
+                    .accessibilityValue(lastBuildOutcome)
                     .lineLimit(2)
             } else if compiled != nil {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
                 Text("Compiled · \(actionCatalog.count) actions · Preview editable")
                     .accessibilityIdentifier("compiledStatusText")
+                    .accessibilityValue(lastBuildOutcome)
             } else {
                 Text("Ready")
                     .accessibilityIdentifier("readyStatusText")
@@ -294,6 +308,28 @@ struct WorkspaceView: View {
     }
 
     @MainActor
+    private func formatSource() async {
+        guard !isBusy, !Task.isCancelled else { return }
+        let request = document.beginEditorAction()
+        do {
+            let formatted = try await CherriCompiler.format(source: request.source)
+            guard !Task.isCancelled, document.acceptsEditorAction(request) else { return }
+            guard !document.text.utf16.elementsEqual(formatted.utf16) else { return }
+            document.text = formatted
+            compiled = nil
+            signedURL = nil
+            diagnostic = nil
+            diagnostics = []
+        } catch let failure as CompilationDiagnostic {
+            guard !Task.isCancelled, document.acceptsEditorAction(request) else { return }
+            diagnostic = failure
+        } catch {
+            guard !Task.isCancelled, document.acceptsEditorAction(request) else { return }
+            diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+        }
+    }
+
+    @MainActor
     private func build(signed: Bool, liveBuild: Bool = false) async {
         guard !Task.isCancelled, !isApplyingPreviewEdit else { return }
         buildRequestGeneration += 1
@@ -306,6 +342,7 @@ struct WorkspaceView: View {
         // Manual builds use the same snapshot boundary as live preview.
         isSigning = signed
         isCompiling = !signed
+        lastBuildOutcome = ""
         defer {
             if generation == buildRequestGeneration {
                 isSigning = false
@@ -326,6 +363,7 @@ struct WorkspaceView: View {
             else { return }
 
             compiled = result
+            lastBuildOutcome = signed ? "Signing succeeded" : "Build succeeded"
             diagnostic = nil
             diagnostics = []
             signedURL = nil
@@ -346,6 +384,8 @@ struct WorkspaceView: View {
                   request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
             else { return }
 
+            compiled = nil
+            lastBuildOutcome = signed ? "Signing failed" : "Build failed"
             diagnostic = compilerError
             if let analysis, !analysis.valid && !analysis.diagnostics.isEmpty {
                 diagnostics = analysis.diagnostics.map {
@@ -376,6 +416,8 @@ struct WorkspaceView: View {
                 line: 1,
                 column: 1
             )
+            compiled = nil
+            lastBuildOutcome = signed ? "Signing failed" : "Build failed"
             diagnostic = diag
             diagnostics = [diag]
             signedURL = nil

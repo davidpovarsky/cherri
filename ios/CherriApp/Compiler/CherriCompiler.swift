@@ -219,6 +219,18 @@ struct CherriCompletionItem: Decodable, Identifiable, Hashable, Sendable {
     let detail: String?
     let documentation: String?
     let insertText: String?
+    let textEdit: CherriTextEditItem?
+
+    init(label: String, kind: Int, detail: String? = nil,
+         documentation: String? = nil, insertText: String? = nil,
+         textEdit: CherriTextEditItem? = nil) {
+        self.label = label
+        self.kind = kind
+        self.detail = detail
+        self.documentation = documentation
+        self.insertText = insertText
+        self.textEdit = textEdit
+    }
 }
 
 struct CherriWirePosition: Decodable, Hashable, Sendable {

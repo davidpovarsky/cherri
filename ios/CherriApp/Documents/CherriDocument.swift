@@ -9,8 +9,32 @@ struct CherriDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.cherriSource] }
     static var writableContentTypes: [UTType] { [.cherriSource] }
 
-    var text: String
+    var text: String {
+        didSet {
+            if !text.utf16.elementsEqual(oldValue.utf16) {
+                sourceRevision &+= 1
+            }
+        }
+    }
+    private let editorDocumentID = UUID()
+    private var sourceRevision: UInt64 = 0
+    private var editorActionSequence: UInt64 = 0
     let startupObservationID: String?
+
+    mutating func beginEditorAction() -> CherriEditorActionRequest {
+        editorActionSequence &+= 1
+        return CherriEditorActionRequest(
+            documentID: editorDocumentID, revision: sourceRevision,
+            sequence: editorActionSequence, source: text
+        )
+    }
+
+    func acceptsEditorAction(_ request: CherriEditorActionRequest) -> Bool {
+        request.documentID == editorDocumentID
+            && request.revision == sourceRevision
+            && request.sequence == editorActionSequence
+            && request.source.utf16.elementsEqual(text.utf16)
+    }
 
     init(text: String = CommandLine.arguments.contains("--uitesting") ? "" : "show(\"Hello from Cherri\")\n") {
         self.text = text

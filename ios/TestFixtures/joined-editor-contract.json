@@ -1,0 +1,456 @@
+{
+  "eventFields": [
+    "schema",
+    "testId",
+    "requirement",
+    "producer",
+    "stage",
+    "sequence",
+    "fixtureId",
+    "inputSha256",
+    "observedSourceSha256",
+    "contractSha256"
+  ],
+  "eventPrefix": "[CHERRI_JOINED_CONTRACT] ",
+  "eventSchema": "cherri-ios-joined-contract-event/1",
+  "fixtures": {
+    "current-source": {
+      "expectedSource": "// value comment שָׁ 🌍\nlet renamedValue = text(\"BRG27_VALUE\")\n\nlet literal = \"value remains literal\"\n\nshow(renamedValue)\n",
+      "expectedSourceSha256": "3c0bbae8000b42799700b6245a3f1d2dcb891ac458d71584d936482434a34ec3",
+      "source": "// value comment שָׁ 🌍\nlet renamedValue = text(\"BRG27_VALUE\")\n\nlet literal = \"value remains literal\"\n\nshow(renamedValue)\n",
+      "sourceSha256": "3c0bbae8000b42799700b6245a3f1d2dcb891ac458d71584d936482434a34ec3"
+    },
+    "empty": {
+      "expectedSource": "",
+      "expectedSourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "",
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "enum-midword": {
+      "completion": {
+        "caret": {
+          "character": 14,
+          "line": 2
+        },
+        "label": "Red",
+        "textEdit": {
+          "newText": "Red",
+          "range": {
+            "end": {
+              "character": 15,
+              "line": 2
+            },
+            "start": {
+              "character": 12,
+              "line": 2
+            }
+          }
+        }
+      },
+      "expectedSource": "enum Color { Red = \"native-red\", Blue = \"native-blue\" }\nfunction paint(color: Color, note: Text = \"\") -> Text { return note }\npaint(Color.Red)\n",
+      "expectedSourceSha256": "5d5925358d5e13fb69f3d978d35fe1bd41b8765664c5a52bfa229c46a71ba990",
+      "source": "enum Color { Red = \"native-red\", Blue = \"native-blue\" }\nfunction paint(color: Color, note: Text = \"\") -> Text { return note }\npaint(Color.Rex)\n",
+      "sourceSha256": "215ef55f4f29b47ca32a72eff9c994d86e90c66ed62f10ac13633ac8c6155619"
+    },
+    "enum-ui": {
+      "expectedSource": "enum Color { Red = \"native-red\", Blue = \"native-blue\" }\nfunction paint(color: Color, note: Text = \"\") -> Text { return note }\npaint(Color.Red",
+      "expectedSourceSha256": "493dac165eafda37502fc00fde378b334e4564d770555f7ed74212787863d834",
+      "source": "enum Color { Red = \"native-red\", Blue = \"native-blue\" }\nfunction paint(color: Color, note: Text = \"\") -> Text { return note }\npaint(Color.R",
+      "sourceSha256": "c5bbdab3d81e17cd3ab38434c0f69ada52471f72f120047fa032f36f6e6f5644"
+    },
+    "format": {
+      "expectedSource": "// value comment שָׁ 🌍\nlet renamedValue = text(\"BRG27_VALUE\")\n\nlet literal = \"value remains literal\"\n\nshow(renamedValue)\n",
+      "expectedSourceSha256": "3c0bbae8000b42799700b6245a3f1d2dcb891ac458d71584d936482434a34ec3",
+      "source": "// value comment שָׁ 🌍\nlet   renamedValue=text(\"BRG27_VALUE\")\nlet literal=\"value remains literal\"\nshow( renamedValue )\n",
+      "sourceSha256": "705cb47f2b342376395c660c8b22ceaea2ec510327d4222d5c8c3821e0d66c19"
+    },
+    "hover-rename": {
+      "expectedSource": "// value comment שָׁ 🌍\nlet renamedValue = text(\"BRG27_VALUE\")\nlet literal = \"value remains literal\"\nshow(renamedValue)\n",
+      "expectedSourceSha256": "bd3dd586f80ebd21ff3ce3ea7200f73eee0b01079c27699c61c794eaefa595a1",
+      "source": "// value comment שָׁ 🌍\nlet value = text(\"BRG27_VALUE\")\nlet literal = \"value remains literal\"\nshow(value)\n",
+      "sourceSha256": "7bb1e748079614fd70094628625e09033da379db8f5e5e2cefcb6b4f2253829c"
+    },
+    "incomplete-unicode": {
+      "expectedSource": "// שָׁ 🌍\nlet current = \"hello\"\nshow(",
+      "expectedSourceSha256": "85ca5002d56e7470a5f0f7f862e7bedd92731b5b377a7984be31cffd7982bc6c",
+      "source": "// שָׁ 🌍\nlet current = \"hello\"\nshow(",
+      "sourceSha256": "85ca5002d56e7470a5f0f7f862e7bedd92731b5b377a7984be31cffd7982bc6c"
+    },
+    "literal-ask": {
+      "expectedSource": "show(\"Ask\")\n",
+      "expectedSourceSha256": "139ca97c28faf319720abe07f5e460a4dc3adbc90a5d3792ab2474a223ac0b33",
+      "source": "show(\"Ask\")\n",
+      "sourceSha256": "139ca97c28faf319720abe07f5e460a4dc3adbc90a5d3792ab2474a223ac0b33"
+    },
+    "literal-directive": {
+      "expectedSource": "show(\"#define from sharesheet // cherri: legacy\")\n",
+      "expectedSourceSha256": "eecacc064c6bdb441560cd0ae005ecb44ca18ee72e0f9fae84199e445c22dc80",
+      "source": "show(\"#define from sharesheet // cherri: legacy\")\n",
+      "sourceSha256": "eecacc064c6bdb441560cd0ae005ecb44ca18ee72e0f9fae84199e445c22dc80"
+    },
+    "literal-email": {
+      "expectedSource": "show(\"owner@example.invalid\")\n",
+      "expectedSourceSha256": "844c1b3c3ba6d299f41db0ac11f356ac1ce02d58ecb2333e0793f2830d3e9d35",
+      "source": "show(\"owner@example.invalid\")\n",
+      "sourceSha256": "844c1b3c3ba6d299f41db0ac11f356ac1ce02d58ecb2333e0793f2830d3e9d35"
+    },
+    "multi-error-utf16": {
+      "diagnostics": [
+        {
+          "code": "E_UNKNOWN_ACTION",
+          "range": {
+            "end": {
+              "character": 27,
+              "line": 0
+            },
+            "start": {
+              "character": 15,
+              "line": 0
+            }
+          },
+          "severity": "ERROR"
+        },
+        {
+          "code": "E_UNKNOWN_ACTION",
+          "range": {
+            "end": {
+              "character": 26,
+              "line": 1
+            },
+            "start": {
+              "character": 16,
+              "line": 1
+            }
+          },
+          "severity": "ERROR"
+        }
+      ],
+      "expectedSource": "let a = \"🌍\" ; unknownEmoji()\nlet x = \"שָׁ\" ; unknownHeb()\n",
+      "expectedSourceSha256": "ed016057787bbbf27326d5f8b846e28ebd68a1c1075ac3077a78afbb1c3b5f2f",
+      "source": "let a = \"🌍\" ; unknownEmoji()\nlet x = \"שָׁ\" ; unknownHeb()\n",
+      "sourceSha256": "ed016057787bbbf27326d5f8b846e28ebd68a1c1075ac3077a78afbb1c3b5f2f"
+    },
+    "newest-version": {
+      "expectedSource": "show(\"BRG27_CURRENT שָׁ 🌍\")\n",
+      "expectedSourceSha256": "777bdb658a5b2c265c1f265c13e5011eeafc3306a23b6707db660a6b51665e6a",
+      "source": "show(\"BRG27_CURRENT שָׁ 🌍\")\n",
+      "sourceSha256": "777bdb658a5b2c265c1f265c13e5011eeafc3306a23b6707db660a6b51665e6a"
+    },
+    "parameter-midword": {
+      "completion": {
+        "caret": {
+          "character": 37,
+          "line": 0
+        },
+        "label": "height",
+        "textEdit": {
+          "newText": "height: ",
+          "range": {
+            "end": {
+              "character": 43,
+              "line": 0
+            },
+            "start": {
+              "character": 35,
+              "line": 0
+            }
+          }
+        }
+      },
+      "expectedSource": "resizeImage(Clipboard, width: 800, height: 600)\n",
+      "expectedSourceSha256": "31a9b7ecefb62200815a5e2cc7c0ae1130bed61248b85e57a775839b398c6a75",
+      "source": "resizeImage(Clipboard, width: 800, heighx: 600)\n",
+      "sourceSha256": "e3103d20f50275a73440cc2f3e97fc1354ffacb132721f4048ebe5b7c23643c7"
+    },
+    "parameter-ui": {
+      "expectedSource": "resizeImage(Clipboard, width: 800, height: ",
+      "expectedSourceSha256": "a8370a4676e4f15db0c47af786373df5afa28e81fcfadca467640a8441033ded",
+      "source": "resizeImage(Clipboard, width: 800, he",
+      "sourceSha256": "29b87e3fb4fc630383ccdd4697afec2ce28f8ca84aceb801a9b4b5c4065a6be7"
+    },
+    "rejected-function": {
+      "diagnostics": [
+        {
+          "code": "E_SYNTAX",
+          "range": {
+            "end": {
+              "character": 30,
+              "line": 0
+            },
+            "start": {
+              "character": 28,
+              "line": 0
+            }
+          },
+          "severity": "ERROR"
+        }
+      ],
+      "expectedSource": "function broken(value: Text -> Text {\n return value\n}\nshow(\"after\")\n",
+      "expectedSourceSha256": "d9e6325048181d0362912403bc26a7a2f7ede7ef99bcaf390025e79a94d1d32f",
+      "source": "function broken(value: Text -> Text {\n return value\n}\nshow(\"after\")\n",
+      "sourceSha256": "d9e6325048181d0362912403bc26a7a2f7ede7ef99bcaf390025e79a94d1d32f"
+    },
+    "rejected-type": {
+      "diagnostics": [
+        {
+          "code": "E_ARGUMENT_TYPE",
+          "range": {
+            "end": {
+              "character": 21,
+              "line": 0
+            },
+            "start": {
+              "character": 18,
+              "line": 0
+            }
+          },
+          "severity": "ERROR"
+        }
+      ],
+      "expectedSource": "let typed: Text = 123\nshow(typed)\n",
+      "expectedSourceSha256": "629e6656b1f38effcf94bb8947b0f3e68f921155b7a3f7cacd86177ce415857a",
+      "source": "let typed: Text = 123\nshow(typed)\n",
+      "sourceSha256": "629e6656b1f38effcf94bb8947b0f3e68f921155b7a3f7cacd86177ce415857a"
+    },
+    "stale-version": {
+      "expectedSource": "let stale: Text = 123\n",
+      "expectedSourceSha256": "bace264601ce68c6353f48e5d52776b610bcfc1b94449a7262db782cd1188611",
+      "source": "let stale: Text = 123\n",
+      "sourceSha256": "bace264601ce68c6353f48e5d52776b610bcfc1b94449a7262db782cd1188611"
+    }
+  },
+  "formalAcceptanceGrantedByContract": false,
+  "genericTestInheritanceAllowed": false,
+  "methods": {
+    "CherriJoinedBridgeTests/testBRG25ActualMobileRouteJoinedContract": {
+      "assertions": [
+        "actual CherriComplete/CherriAnalyze/compile C ABI library is linked",
+        "literal inputs compile through explicit v2 and auto with actualMode=v2 and exact source/plist literal retention",
+        "both invalid fixtures have exact diagnostic codes and zero-based UTF16 ranges",
+        "actual unsigned and signed C ABI entrypoints in v2/auto reject with no plist or signature response",
+        "Legacy invocation counts and CLI/LSP scope require independent root producers"
+      ],
+      "checkpoint": "BRG25_NATIVE_MOBILE_JOINED_VERIFIED",
+      "producer": "ios-bridge",
+      "requirement": "BRG25",
+      "stages": [
+        {
+          "fixtureId": "literal-email",
+          "id": "literal-email-v2-auto",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "literal-ask",
+          "id": "literal-ask-v2-auto",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "literal-directive",
+          "id": "literal-directive-v2-auto",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rejected-type",
+          "id": "type-all-mobile-routes-rejected",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rejected-function",
+          "id": "malformed-all-mobile-routes-rejected",
+          "observedSourceField": "source"
+        }
+      ]
+    },
+    "CherriJoinedBridgeTests/testBRG27ActualEditorBridgeJoinedContract": {
+      "assertions": [
+        "actual shared C ABI analysis, completion, hover, definition, rename and format",
+        "precise multiple UTF16 diagnostics including emoji and Hebrew combining marks",
+        "shared compiler textEdit replacement spans include identifier suffix and existing parameter colon",
+        "same URI accepts version2 then rejects stale version1 without replacing current diagnostics",
+        "document action identity rejects older operation, changed/reverted UTF16 source and different document",
+        "rename and format preserve exact literal/comment UTF16 bytes and compile current source",
+        "no LSP acceptance from C ABI"
+      ],
+      "checkpoint": "BRG27_NATIVE_EDITOR_BRIDGE_JOINED_VERIFIED",
+      "producer": "ios-bridge",
+      "requirement": "BRG27",
+      "stages": [
+        {
+          "fixtureId": "incomplete-unicode",
+          "id": "incomplete-unicode",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "multi-error-utf16",
+          "id": "multi-error-utf16",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "parameter-midword",
+          "id": "parameter-replacement",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "enum-midword",
+          "id": "enum-replacement",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "newest-version",
+          "id": "newest-and-stale-analysis",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "newest-version",
+          "id": "document-request-guards",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "hover-rename",
+          "id": "hover-definition",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "hover-rename",
+          "id": "scoped-rename",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "format",
+          "id": "format-preserved-idempotent",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "current-source",
+          "id": "current-source-compiled",
+          "observedSourceField": "source"
+        }
+      ]
+    },
+    "CherriJoinedContractUITests/testBRG25ActualAppRejectedAndLiteralRoutesUI": {
+      "assertions": [
+        "actual app creation/reset and keyboard source editing only",
+        "manual Build for each current literal fixture in default V2",
+        "exact rendered rejection spans for both invalid fixtures",
+        "actual Sign confirmation for invalid current source returns a diagnostic with no compiled/exported artifact",
+        "no test-only compiler calls or state injection"
+      ],
+      "checkpoint": "BRG25_NATIVE_APP_ROUTES_JOINED_VERIFIED",
+      "producer": "ios-ui",
+      "requirement": "BRG25",
+      "stages": [
+        {
+          "fixtureId": "empty",
+          "id": "opened-synthetic-document",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "literal-email",
+          "id": "literal-email-build",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "literal-ask",
+          "id": "literal-ask-build",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "literal-directive",
+          "id": "literal-directive-build",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rejected-type",
+          "id": "type-build-rejected",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rejected-type",
+          "id": "type-sign-rejected",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rejected-function",
+          "id": "malformed-build-rejected",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rejected-function",
+          "id": "malformed-sign-rejected",
+          "observedSourceField": "source"
+        }
+      ]
+    },
+    "CherriJoinedContractUITests/testBRG27ActualEditorJoinedWorkflowUI": {
+      "assertions": [
+        "actual editor keyboard/actions only with fixed synthetic source",
+        "current diagnostic spans rendered in app",
+        "parameter and enum completion tapped from shared contextual list and exact changed source observed",
+        "rapid actual source changes leave only current compilation and no stale hover result",
+        "actual Hover, Rename and Format Source controls preserve literals/comments",
+        "no LSP or BRG28 benchmark inheritance"
+      ],
+      "checkpoint": "BRG27_NATIVE_EDITOR_UI_JOINED_VERIFIED",
+      "producer": "ios-ui",
+      "requirement": "BRG27",
+      "stages": [
+        {
+          "fixtureId": "empty",
+          "id": "opened-synthetic-document",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "incomplete-unicode",
+          "id": "incomplete-unicode-rejected",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "multi-error-utf16",
+          "id": "multi-error-utf16-rendered",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "parameter-ui",
+          "id": "parameter-replacement-ui",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "enum-ui",
+          "id": "enum-replacement-ui",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "newest-version",
+          "id": "rapid-edits-current-only",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "hover-rename",
+          "id": "hover-current-symbol",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "hover-rename",
+          "id": "scoped-rename-ui",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "format",
+          "id": "format-current-source",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "current-source",
+          "id": "current-source-compiled",
+          "observedSourceField": "source"
+        }
+      ]
+    }
+  },
+  "positionEncoding": "zero-based-UTF16",
+  "requiresActualPassedNativeMethod": true,
+  "requiresExactOrderedStages": true,
+  "requiresSourceBoundContractAndProducer": true,
+  "schema": "cherri-joined-editor-contract/1",
+  "sourceEncoding": "UTF-8"
+}

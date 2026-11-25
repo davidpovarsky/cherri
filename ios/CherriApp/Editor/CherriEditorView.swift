@@ -8,6 +8,8 @@ struct CherriEditorView: View {
     let diagnostic: CompilationDiagnostic?
     var diagnostics: [CompilationDiagnostic] = []
     let actions: [CherriActionInfo]
+    let beginAction: () -> CherriEditorActionRequest
+    let acceptsAction: (CherriEditorActionRequest) -> Bool
     var startupObservationID: String? = nil
 
     @Environment(\.colorScheme) private var colorScheme
@@ -26,6 +28,7 @@ struct CherriEditorView: View {
     @State private var showRenameAlert = false
     @State private var renameNewName = ""
     @State private var renameTargetPosition: (line: Int, column: Int)?
+    @State private var renameRequest: CherriEditorActionRequest?
 
     var body: some View {
         let _ = CherriStartupLifecycleObserver.shared?.record(.editorBody, documentID: startupObservationID)
@@ -112,6 +115,13 @@ struct CherriEditorView: View {
         .task(id: completionRequest) {
             await refreshContextualCompletions(for: completionRequest)
         }
+        .onChange(of: completionRequest) { _, _ in
+            // Already displayed information belongs to the previous source or
+            // caret just as an in-flight response does.
+            hoverText = nil
+            signatureText = nil
+            definitionText = nil
+        }
         .sheet(isPresented: $showActionPalette, onDismiss: commitPaletteSelection) {
             ActionPaletteView(actions: actions) { action in
                 pendingPaletteAction = action
@@ -121,9 +131,15 @@ struct CherriEditorView: View {
             TextField("New Name", text: $renameNewName)
                 .accessibilityIdentifier("renameTextField")
             Button("Rename") {
-                if let pos = renameTargetPosition, !renameNewName.isEmpty {
+                if let pos = renameTargetPosition, let request = renameRequest,
+                   acceptsAction(request), !renameNewName.isEmpty {
+                    let newName = renameNewName
                     Task {
-                        if let resp = try? await CherriCompiler.rename(source: text, line: pos.line, column: pos.column, newName: renameNewName), resp.ok, let newSource = resp.source {
+                        let response = try? await CherriCompiler.rename(
+                            source: request.source, line: pos.line, column: pos.column, newName: newName
+                        )
+                        guard !Task.isCancelled, acceptsAction(request) else { return }
+                        if let response, response.ok, let newSource = response.source {
                             text = newSource
                         }
                     }
@@ -179,12 +195,13 @@ struct CherriEditorView: View {
 
                     Button {
                         let (line, col) = effectivePosition()
+                        let request = beginAction()
+                        let caret = editPosition.selections.first
                         Task {
-                            if let resp = try? await CherriCompiler.hover(source: text, line: line, column: col), let contents = resp.contents {
-                                hoverText = contents
-                            } else {
-                                hoverText = "No hover info at line \(line):\(col)"
-                            }
+                            let response = try? await CherriCompiler.hover(source: request.source, line: line, column: col)
+                            guard !Task.isCancelled, acceptsAction(request),
+                                  caret == editPosition.selections.first else { return }
+                            hoverText = response?.contents ?? "No hover info at line \(line):\(col)"
                         }
                     } label: {
                         Image(systemName: "info.circle")
@@ -194,12 +211,13 @@ struct CherriEditorView: View {
 
                     Button {
                         let (line, col) = effectiveSignaturePosition()
+                        let request = beginAction()
+                        let caret = editPosition.selections.first
                         Task {
-                            if let resp = try? await CherriCompiler.signatureHelp(source: text, line: line, column: col), let label = resp.label {
-                                signatureText = label
-                            } else {
-                                signatureText = "No signature at line \(line):\(col)"
-                            }
+                            let response = try? await CherriCompiler.signatureHelp(source: request.source, line: line, column: col)
+                            guard !Task.isCancelled, acceptsAction(request),
+                                  caret == editPosition.selections.first else { return }
+                            signatureText = response?.label ?? "No signature at line \(line):\(col)"
                         }
                     } label: {
                         Image(systemName: "function")
@@ -209,8 +227,13 @@ struct CherriEditorView: View {
 
                     Button {
                         let (line, col) = effectivePosition()
+                        let request = beginAction()
+                        let caret = editPosition.selections.first
                         Task {
-                            if let resp = try? await CherriCompiler.definition(source: text, line: line, column: col), let range = resp.range {
+                            let response = try? await CherriCompiler.definition(source: request.source, line: line, column: col)
+                            guard !Task.isCancelled, acceptsAction(request),
+                                  caret == editPosition.selections.first else { return }
+                            if let range = response?.range {
                                 definitionText = "Definition at \(range.start.line + 1):\(range.start.character + 1)"
                             } else {
                                 definitionText = "No definition found"
@@ -224,6 +247,7 @@ struct CherriEditorView: View {
 
                     Button {
                         renameTargetPosition = effectivePosition()
+                        renameRequest = beginAction()
                         renameNewName = ""
                         showRenameAlert = true
                     } label: {
@@ -233,8 +257,14 @@ struct CherriEditorView: View {
                     .buttonStyle(.borderless)
 
                     Button {
+                        let request = beginAction()
                         Task {
-                            if let resp = try? await CherriCompiler.editSourceNode(source: text, actionIndex: 0, paramLabel: "text", newExpr: "\"VisualParamUpdated\""), resp.ok, let newSource = resp.source {
+                            let response = try? await CherriCompiler.editSourceNode(
+                                source: request.source, actionIndex: 0,
+                                paramLabel: "text", newExpr: "\"VisualParamUpdated\""
+                            )
+                            guard !Task.isCancelled, acceptsAction(request) else { return }
+                            if let response, response.ok, let newSource = response.source {
                                 text = newSource
                             }
                         }
@@ -261,7 +291,7 @@ struct CherriEditorView: View {
                     HStack(spacing: 6) {
                         ForEach(currentContextualCompletions.prefix(8)) { item in
                             Button {
-                                insertItem(item, replacing: completionContext?.range)
+                                insertItem(item)
                             } label: {
                                 VStack(alignment: .leading, spacing: 1) {
                                     Text(item.label)
@@ -282,32 +312,6 @@ struct CherriEditorView: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("contextualCompletionsList")
-            } else if !completionSuggestions.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 6) {
-                        ForEach(completionSuggestions) { action in
-                            Button {
-                                insert(action: action, replacing: completionContext?.range)
-                            } label: {
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(action.name)
-                                        .font(.system(.caption, design: .monospaced, weight: .semibold))
-                                    if let title = action.title, !title.isEmpty, title != action.name {
-                                        Text(title)
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 5)
-                            }
-                            .accessibilityIdentifier("suggestionItem_\(action.name)")
-                            .buttonStyle(.bordered)
-                        }
-                    }
-                }
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityIdentifier("suggestionsList")
             }
 
         }
@@ -342,18 +346,6 @@ struct CherriEditorView: View {
 
         let range = NSRange(location: start, length: cursor - start)
         return CompletionContext(range: range, prefix: source.substring(with: range))
-    }
-
-    private var completionSuggestions: [CherriActionInfo] {
-        guard let context = completionContext else { return [] }
-        let prefix = context.prefix.lowercased()
-        guard !prefix.isEmpty else { return [] }
-
-        return Array(
-            actions.lazy
-                .filter { $0.name.lowercased().hasPrefix(prefix) }
-                .prefix(6)
-        )
     }
 
     private func isIdentifierUnit(_ value: unichar) -> Bool {
@@ -415,20 +407,12 @@ struct CherriEditorView: View {
         text = source.replacingCharacters(in: range, with: action.insertionSnippet)
     }
 
-    private func insertItem(_ item: CherriCompletionItem, replacing requestedRange: NSRange?) {
-        let source = text as NSString
-        let selection = editPosition.selections.first ?? NSRange(location: source.length, length: 0)
-        let candidate = requestedRange ?? selection
-        let range: NSRange
-
-        if candidate.location >= 0 && candidate.location + candidate.length <= source.length {
-            range = candidate
-        } else {
-            range = NSRange(location: source.length, length: 0)
-        }
-
-        let replacement = item.insertText ?? item.label
-        text = source.replacingCharacters(in: range, with: replacement)
+    private func insertItem(_ item: CherriCompletionItem) {
+        guard let request = completedRequest,
+              let edited = request.applying(item, to: completionRequest) else { return }
+        // Keep CodeEditorView's existing UIKit selection lifecycle. The source
+        // mutation uses only the shared service's validated full replacement.
+        text = edited
     }
 
     private func effectivePosition() -> (line: Int, column: Int) {
@@ -492,7 +476,9 @@ struct CherriEditorView: View {
 
     private var currentContextualCompletions: [CherriCompletionItem] {
         guard completedRequest == completionRequest else { return [] }
-        return completionRequest.matchingItems(contextualCompletions, prefix: completionContext?.prefix)
+        return completionRequest.matchingItems(
+            contextualCompletions.filter { $0.textEdit != nil }, prefix: completionContext?.prefix
+        )
     }
 
     private func refreshContextualCompletions(for request: CherriCompletionRequest) async {
