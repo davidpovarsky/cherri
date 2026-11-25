@@ -1688,6 +1688,11 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 			return types.NewOptional(inner)
 		}
 	case *syntax.GenericTypeAnnotation:
+		if ta.Name == "Optional" && len(ta.TypeArgs) == 1 {
+			if inner := l.resolveTypeAnnotation(ta.TypeArgs[0]); inner != nil {
+				return types.NewOptional(inner)
+			}
+		}
 		if ta.Name == "List" && len(ta.TypeArgs) == 1 {
 			elem := l.resolveTypeAnnotation(ta.TypeArgs[0])
 			if elem == nil {

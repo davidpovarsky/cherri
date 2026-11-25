@@ -51,7 +51,7 @@ func (l *Lowerer) beginLocalLoopResultValue(expression syntax.Expression) (types
 	if len(leaves) == 0 {
 		return nil, nothing, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require a normal final result")
 	}
-	var frame = &loopResultFrame{accumulator: l.freshLexicalName("loopResults_" + l.GenerateUUID())}
+	var frame = &loopResultFrame{accumulator: l.freshLexicalName("loopResults_" + l.GenerateUUID()), localPayload: true}
 	var oldFrames, oldYields = l.loopResultFrames, l.loopResultYields
 	l.loopResultFrames = make(map[syntax.Expression]*loopResultFrame, len(oldFrames)+1)
 	for source, old := range oldFrames {

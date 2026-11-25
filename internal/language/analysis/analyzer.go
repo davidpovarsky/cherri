@@ -1993,6 +1993,13 @@ func (a *Analyzer) resolveType(t syntax.TypeAnnotation) (resolved types.Type) {
 		return types.NewOptional(a.resolveType(ta.Inner))
 
 	case *syntax.GenericTypeAnnotation:
+		if ta.Name == "Optional" {
+			if len(ta.TypeArgs) != 1 {
+				a.error(CodeArgumentType, ta.Span, "Optional requires exactly one type argument")
+				return types.Unknown
+			}
+			return types.NewOptional(a.resolveType(ta.TypeArgs[0]))
+		}
 		if ta.Name == "List" && len(ta.TypeArgs) == 1 {
 			return types.NewList(a.resolveType(ta.TypeArgs[0]))
 		}

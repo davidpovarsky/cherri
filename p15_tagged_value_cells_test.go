@@ -112,6 +112,9 @@ func TestP15TaggedValueCellNativeGraph(t *testing.T) {
 				body := p15Param(broken[index])["WFItems"].(map[string]any)["Value"].(map[string]any)
 				rows := body["WFDictionaryFieldValueItems"].([]any)
 				for i, item := range rows {
+					if fault == "invent_null_payload" {
+						break // This mutation must not also corrupt the false cell.
+					}
 					row := item.(map[string]any)
 					actual, _ := p15LiteralText(row["WFKey"])
 					if actual != key {
@@ -155,9 +158,15 @@ func TestP15TaggedValueNativeBoundaries(t *testing.T) {
 		if err == nil || len(raw) != 0 {
 			t.Fatalf("private representation escaped without a codec: bytes=%d err=%v source=%s", len(raw), err, source)
 		}
-		if !strings.Contains(err.Error(), "E_TARGET_VALUE_SHAPE") &&
-			!strings.Contains(err.Error(), "E_NATIVE_JSON_NULL") &&
-			!strings.Contains(err.Error(), "E_ARGUMENT_TYPE") {
+		accepted := strings.Contains(err.Error(), "E_TARGET_VALUE_SHAPE") ||
+			strings.Contains(err.Error(), "E_NATIVE_JSON_NULL") ||
+			strings.Contains(err.Error(), "E_ARGUMENT_TYPE")
+		if source == "function produce()->AnyContent {return null}\nreturn produce()" {
+			// This source asserts an AnyContent return contract. The analyzer's
+			// existing dedicated return diagnostic is the earliest valid guard.
+			accepted = strings.Contains(err.Error(), "E_RETURN_TYPE")
+		}
+		if !accepted {
 			t.Fatalf("unrelated failure cannot establish a native boundary: %v", err)
 		}
 	}
