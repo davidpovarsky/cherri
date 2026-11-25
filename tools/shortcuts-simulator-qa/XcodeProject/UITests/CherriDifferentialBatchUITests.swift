@@ -123,47 +123,70 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         }
         button.tap()
         if let failure = checkAdd().failure { return stop(failure) }
-        timingReceipt["addTappedUTC"] = formatter.string(from: Date())
+        let addTappedAt = Date()
+        timingReceipt["addTappedUTC"] = formatter.string(from: addTappedAt)
+        timingReceipt["libraryContract"] = "dispatch-exit-anchored-library-v1"
         let libraryItem = shortcuts.cells.matching(
             NSPredicate(format: "label == %@ OR label BEGINSWITH %@", name, name + ", ")).firstMatch
-        let deadline = Date().addingTimeInterval(30)
+        func checkLibrary() -> QADifferentialImportTiming.LibraryDecision {
+            let dispatch = observeDispatch()
+            let now = Date()
+            let decision = timing.libraryDecision(after: dispatch, addTappedAt: addTappedAt, now: now)
+            timingReceipt["lastLibraryCheckUTC"] = formatter.string(from: now)
+            if let deadline = decision.deadline {
+                timingReceipt["libraryDeadlineUTC"] = formatter.string(from: deadline)
+            }
+            timingReceipt["libraryCanConfirm"] = decision.canConfirm
+            return decision
+        }
         var replaceTapped = false
-        while Date() < deadline {
-            if let failure = observeDispatch().failure { return stop(failure) }
+        while true {
+            var decision = checkLibrary()
+            if let failure = decision.failure { return stop(failure) }
+            if Date() >= decision.deadline! { break }
             let exists = libraryItem.exists
-            if let failure = observeDispatch().failure { return stop(failure) }
-            if Date() >= deadline { break }
+            decision = checkLibrary()
+            if let failure = decision.failure { return stop(failure) }
+            if Date() >= decision.deadline! { break }
             if exists {
                 let hittable = libraryItem.isHittable
-                let dispatch = observeDispatch()
-                if let failure = dispatch.failure { return stop(failure) }
-                if Date() >= deadline { break }
-                if hittable && dispatch.succeeded {
+                decision = checkLibrary()
+                if let failure = decision.failure { return stop(failure) }
+                if Date() >= decision.deadline! { break }
+                if hittable && decision.canConfirm {
                     capture(command.id + "-library")
-                    if let failure = observeDispatch().failure { return stop(failure) }
-                    if Date() >= deadline { break }
-                    return receipt(["outcome": "IMPORTED", "name": name, "identityVerified": identity,
-                                    "libraryIdentityVerified": true, "replaceTapped": replaceTapped])
+                    decision = checkLibrary()
+                    if let failure = decision.failure { return stop(failure) }
+                    if Date() >= decision.deadline! { break }
+                    if decision.canConfirm {
+                        return receipt(["outcome": "IMPORTED", "name": name, "identityVerified": identity,
+                                        "libraryIdentityVerified": true, "replaceTapped": replaceTapped])
+                    }
                 }
             }
             let replacement = shortcuts.buttons["Replace"].firstMatch
             let replacementExists = replacement.exists
-            if let failure = observeDispatch().failure { return stop(failure) }
-            if Date() >= deadline { break }
+            decision = checkLibrary()
+            if let failure = decision.failure { return stop(failure) }
+            if Date() >= decision.deadline! { break }
             if replacementExists {
                 let hittable = replacement.isHittable
-                if let failure = observeDispatch().failure { return stop(failure) }
-                if Date() >= deadline { break }
+                decision = checkLibrary()
+                if let failure = decision.failure { return stop(failure) }
+                if Date() >= decision.deadline! { break }
                 if hittable {
                     capture(command.id + "-replace")
-                    if let failure = observeDispatch().failure { return stop(failure) }
-                    if Date() >= deadline { break }
+                    decision = checkLibrary()
+                    if let failure = decision.failure { return stop(failure) }
+                    if Date() >= decision.deadline! { break }
                     replacement.tap()
                     replaceTapped = true
-                    if let failure = observeDispatch().failure { return stop(failure) }
+                    decision = checkLibrary()
+                    if let failure = decision.failure { return stop(failure) }
+                    if Date() >= decision.deadline! { break }
                 }
             }
-            Thread.sleep(forTimeInterval: 0.5)
+            Thread.sleep(forTimeInterval: max(0, min(0.5, decision.deadline!.timeIntervalSinceNow)))
         }
         capture(command.id + "-library-timeout")
         let debugState = shortcuts.debugDescription

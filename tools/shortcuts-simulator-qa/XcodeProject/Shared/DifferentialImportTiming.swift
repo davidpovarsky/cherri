@@ -34,6 +34,27 @@ struct QADifferentialImportTiming {
         }
     }
 
+
+    enum LibraryDecision: Equatable {
+        case inspect(deadline: Date, canConfirm: Bool)
+        case rejected(String)
+
+        var failure: String? {
+            if case .rejected(let reason) = self { return reason }
+            return nil
+        }
+
+        var deadline: Date? {
+            if case .inspect(let deadline, _) = self { return deadline }
+            return nil
+        }
+
+        var canConfirm: Bool {
+            if case .inspect(_, let canConfirm) = self { return canConfirm }
+            return false
+        }
+    }
+
     private struct Receipt: Decodable, Equatable {
         let schemaVersion: Int
         let command: [String]
@@ -161,5 +182,19 @@ struct QADifferentialImportTiming {
         }
         guard now < deadline else { return .rejected("IMPORT_BUTTON_MISSING") }
         return .search(deadline: deadline)
+    }
+
+    func libraryDecision(after dispatch: DispatchState, addTappedAt: Date,
+                         now: Date) -> LibraryDecision {
+        guard addTappedAt.timeIntervalSince1970.isFinite,
+              now.timeIntervalSince1970.isFinite,
+              addTappedAt >= searchStartedAt, now >= addTappedAt else {
+            return .rejected("IMPORT_LIBRARY_CLOCK_INVALID")
+        }
+        if let failure = dispatch.failure { return .rejected(failure) }
+        // Behavior-preserving extraction of the existing UI clock for causal tests.
+        let deadline = addTappedAt.addingTimeInterval(30)
+        return .inspect(deadline: deadline,
+                        canConfirm: dispatch.succeeded && now < deadline)
     }
 }
