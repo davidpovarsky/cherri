@@ -1381,7 +1381,7 @@ func collectConditionals(identifier string) {
 
 	var conditions WFConditions
 	conditions.WFActionParameterFilterPrefix = -1
-	for char != 1 && char != '{' {
+	for char != 1 && (len(conditions.conditions) == 0 || char != '{') {
 		collectLegacyComparisonFlag(&conditions)
 
 		var conditional = collectConditional()
@@ -1470,10 +1470,10 @@ func collectConditional() (conditional condition) {
 		advanceUntil(')')
 		advance()
 		skipWhitespace()
-		conditional.arguments = append(conditional.arguments, actionArgument{
+		conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 			valueType: variableOneType,
 			value:     variableOneValue,
-		})
+		}))
 		return
 	}
 	if consumeFuncPrefix("isFalse") {
@@ -1490,10 +1490,10 @@ func collectConditional() (conditional condition) {
 		advanceUntil(')')
 		advance()
 		skipWhitespace()
-		conditional.arguments = append(conditional.arguments, actionArgument{
+		conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 			valueType: variableOneType,
 			value:     variableOneValue,
-		})
+		}))
 		return
 	}
 
@@ -1506,10 +1506,10 @@ func collectConditional() (conditional condition) {
 	var variableOneType tokenType
 	var variableOneValue any
 	collectValue(&variableOneType, &variableOneValue, ' ')
-	conditional.arguments = append(conditional.arguments, actionArgument{
+	conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 		valueType: variableOneType,
 		value:     variableOneValue,
-	})
+	}))
 
 	skipWhitespace()
 
@@ -1602,6 +1602,10 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 	}
 	if variableType == Expression {
 		variableType = Integer
+	}
+	// Raw and interpolated text share native comparison capabilities.
+	if variableType == RawString {
+		variableType = String
 	}
 	if variableType == "" || variableType == Variable || variableType == Nil {
 		return
