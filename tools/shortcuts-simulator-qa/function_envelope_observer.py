@@ -504,7 +504,7 @@ class NativeObservation:
     def import_original(self):
         signed = self.root / "builds/signed" / (launch.WORKFLOW + ".shortcut")
         phase = "import-" + uuid.uuid4().hex
-        argv = ["/usr/bin/xcrun", "simctl", "openurl", DEVICE, signed.as_uri()]
+        argv = ["xcrun", "simctl", "openurl", DEVICE, signed.as_uri()]
         path = self.folder / ("dispatch-" + phase + ".json")
         command = {"id": phase, "operation": "import", "shortcutName": launch.WORKFLOW}
         differential.command(argv, timeout=60,
