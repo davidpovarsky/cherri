@@ -49,26 +49,40 @@ func p15PaginateResultError(actions []ShortcutAction, legacy bool) error {
 		}
 		return value, nil
 	}
-	if consumer < 3 || actions[0].WFWorkflowActionIdentifier != "is.workflow.actions.list" ||
-		actions[1].WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" {
+	// Follow the actual final aggregate read to its unique declaration. Authored
+	// input producers (for example a runtime authorization header) may precede
+	// pagination; they remain in the full graph and all ownership checks below.
+	read, err := attachment(actions[consumer-1].WFWorkflowActionParameters["WFVariable"], "Variable")
+	if err != nil {
+		return fmt.Errorf("pagination result lost its exact aggregate: %w", err)
+	}
+	name := read["VariableName"].(string)
+	storeIndex := -1
+	for index, action := range actions[:consumer-1] {
+		if action.WFWorkflowActionIdentifier != "is.workflow.actions.setvariable" ||
+			action.WFWorkflowActionParameters["WFVariableName"] != name {
+			continue
+		}
+		if storeIndex != -1 {
+			return fmt.Errorf("pagination aggregate has multiple declarations")
+		}
+		storeIndex = index
+	}
+	if storeIndex < 1 || actions[storeIndex-1].WFWorkflowActionIdentifier != "is.workflow.actions.list" {
 		return fmt.Errorf("pagination aggregate initialization order changed")
 	}
-	items := reflect.ValueOf(actions[0].WFWorkflowActionParameters["WFItems"])
+	initializer := actions[storeIndex-1].WFWorkflowActionParameters
+	items := reflect.ValueOf(initializer["WFItems"])
 	if !items.IsValid() || items.Kind() != reflect.Slice || items.IsNil() || items.Len() != 0 {
 		return fmt.Errorf("pagination aggregate must start as an actual empty List")
 	}
-	emptyID, okay := actions[0].WFWorkflowActionParameters["UUID"].(string)
-	name, named := actions[1].WFWorkflowActionParameters["WFVariableName"].(string)
-	if !okay || emptyID == "" || !named || name == "" {
+	emptyID, okay := initializer["UUID"].(string)
+	if !okay || emptyID == "" {
 		return fmt.Errorf("pagination aggregate initializer lost identity")
 	}
-	initial, err := attachment(actions[1].WFWorkflowActionParameters["WFInput"], "ActionOutput")
+	initial, err := attachment(actions[storeIndex].WFWorkflowActionParameters["WFInput"], "ActionOutput")
 	if err != nil || initial["OutputUUID"] != emptyID {
 		return fmt.Errorf("pagination aggregate does not store its original empty List")
-	}
-	read, err := attachment(actions[consumer-1].WFWorkflowActionParameters["WFVariable"], "Variable")
-	if err != nil || read["VariableName"] != name {
-		return fmt.Errorf("pagination result reads another aggregate")
 	}
 	stores, appends, emptyOwners := 0, 0, 0
 	for index, action := range actions[:consumer-1] {
