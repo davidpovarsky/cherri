@@ -27,7 +27,8 @@ type PaginateOptions struct {
 var paginateKeyPattern = regexp.MustCompile("^[A-Za-z_][A-Za-z0-9_-]{0,63}$")
 
 // ResolvePaginateOptions is shared by analysis and both canonical frontends.
-// The bounded contract has no credential/header, Link-header or catch/retry API.
+// Scalar traversal options are literal and bounded. The ordinary HTTP parameter
+// binder separately validates headers using the established Dictionary codec.
 func ResolvePaginateOptions(params map[string]any) (PaginateOptions, error) {
 	out := PaginateOptions{ItemsKey: "items", NextKey: "next", MaxPages: 20, MaxItems: 1000}
 	start, ok := params["WFPaginateStartURL"].(string)
@@ -117,11 +118,17 @@ func init() {
 			literalText("nextKey", "Next URL or sibling filename key", "WFPaginateNextKey", StringDefault("next"), true),
 			literalLimit("maxPages", "Maximum native GET invocations (0..100)", "WFPaginateMaxPages", 20),
 			literalLimit("maxItems", "Maximum returned Dictionary items (0..10000)", "WFPaginateMaxItems", 1000),
+			{
+				ID: "headers", Label: "headers", DisplayName: "Native HTTP headers",
+				Type: types.NewMap(types.Text, types.AnyContent), TypeName: "Map<Text, AnyContent>", RawType: "dictionary",
+				WireKey: "WFHTTPHeaders", Codec: "dictionary", Optional: true, Literal: true,
+				AcceptedForms: []string{"literal"}, OmissionPolicy: OmitPolicyOmit, EvidenceStatus: EvidenceConfirmed,
+			},
 		},
 		OutputType: result, OutputTypeName: result.String(), RawOutputType: "array",
 		Docs: ActionDocs{
 			Title: "Paginate Bounded Dictionary Pages", Category: "web",
-			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. No Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
 			InsertionSnippet: "paginate(\"https://example.invalid/pages/one.json\")",
 		},
 		Builtin: true, EvidenceStatus: EvidenceInferred,

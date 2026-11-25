@@ -130,5 +130,70 @@ class PaginateBoundaryTests(unittest.TestCase):
             self.assertEqual(boundary, "LEGACY_UNCHANGED" if legacy else "V2_EXPLICIT_VOID_VERIFIED")
 
 
+class PaginateHeaderWireTests(unittest.TestCase):
+    def authored_model(self, *, number=False):
+        model = PaginateGraphModel(types.SimpleNamespace(requests=[]))
+        producer = {
+            "WFWorkflowActionIdentifier": PREFIX + ("number" if number else "gettext"),
+            "WFWorkflowActionParameters": {
+                "UUID": "actual-authored-header",
+                "CustomOutputName": "authorization",
+                ("WFNumberActionNumber" if number else "WFTextActionText"):
+                    ("1" if number else "Bearer PAGINATE_SYNTHETIC_ONLY"),
+            },
+        }
+        model.run([producer])
+        return model
+
+    def native_headers(self, dynamic):
+        text = lambda value: {"WFSerializationType": "WFTextTokenString", "Value": {"string": value}}
+        value = ({"WFSerializationType": "WFTextTokenAttachment",
+                  "Value": {"Type": "ActionOutput", "OutputUUID": "actual-authored-header",
+                            "OutputName": "authorization"}}
+                 if dynamic else text("Bearer PAGINATE_SYNTHETIC_ONLY"))
+        return {"WFSerializationType": "WFDictionaryFieldValue", "Value": {
+            "WFDictionaryFieldValueItems": [
+                {"WFKey": text("Authorization"), "WFItemType": 0, "WFValue": value},
+                {"WFKey": text("X-Cherri-Client"), "WFItemType": 0, "WFValue": text("Cherri-P15")},
+            ]}}
+
+    def test_actual_literal_and_direct_attachment_forms(self):
+        for dynamic in (False, True):
+            with self.subTest(dynamic=dynamic):
+                model = self.authored_model()
+                self.assertEqual(model.http_headers(self.native_headers(dynamic)),
+                                 {"Authorization": "Bearer PAGINATE_SYNTHETIC_ONLY", "X-Cherri-Client": "Cherri-P15"})
+
+    def test_direct_attachment_requires_the_exact_supported_prior_text(self):
+        for fault in ("missing-producer", "wrong-kind", "missing-value", "coercion",
+                      "missing-identity", "wrong-wrapper", "empty-name", "extra-field"):
+            with self.subTest(fault=fault):
+                model, headers = self.authored_model(), self.native_headers(True)
+                field = headers["Value"]["WFDictionaryFieldValueItems"][0]["WFValue"]
+                ref = field["Value"]
+                if fault == "missing-producer":
+                    ref["OutputUUID"] = "unknown-output"
+                elif fault == "wrong-kind":
+                    ref["Type"] = "Variable"
+                elif fault == "missing-value":
+                    del field["Value"]
+                elif fault == "coercion":
+                    ref["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement"}]
+                elif fault == "missing-identity":
+                    del ref["OutputUUID"]
+                elif fault == "wrong-wrapper":
+                    field["WFSerializationType"] = "WFUnknownSerialization"
+                elif fault == "empty-name":
+                    ref["OutputName"] = ""
+                else:
+                    field["unknown"] = True
+                with self.assertRaises((AssertionError, KeyError, ValueError)):
+                    model.http_headers(headers)
+
+    def test_model_does_not_silently_convert_number_to_text(self):
+        with self.assertRaises(ValueError):
+            self.authored_model(number=True).http_headers(self.native_headers(True))
+
+
 if __name__ == "__main__":
     unittest.main()

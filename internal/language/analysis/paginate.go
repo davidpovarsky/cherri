@@ -13,6 +13,11 @@ import (
 func (a *Analyzer) checkPaginateArguments(call *syntax.CallExpr, arguments map[string]syntax.Expression) {
 	params := make(map[string]any)
 	for key, expression := range arguments {
+		if key == "WFHTTPHeaders" {
+			// The ordinary HTTP binder requires a literal Dictionary container
+			// and supports dynamic leaves. These are not scalar traversal options.
+			continue
+		}
 		if text, ok := literalTextValue(expression); ok {
 			params[key] = text
 			continue
