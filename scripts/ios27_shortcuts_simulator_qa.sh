@@ -1243,6 +1243,19 @@ ensure_sim_session_ready() {
     --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" --fixture-id "$TARGET_FIXTURE_ID"
 }
 
+# XCTest may finish before its simulator session has settled. Acquire the same
+# device afresh for external host operations; a getenv result from a previous
+# phase is not a current boot-state witness. A failed boundary remains a real
+# prerequisite failure, while the existing finalizer retains incomplete evidence.
+ensure_phase_session_ready() {
+  local phase="$1"
+  python3 -B "$ROOT_DIR/tools/shortcuts-simulator-qa/simulator_phase_boundary.py" \
+    --repo "$ROOT_DIR" \
+    --root "${RUNNER_TEMP:-$ARTIFACT_DIR}/cherri-qa-session-boundaries-$RUN_ID-${GITHUB_RUN_ATTEMPT:-1}/$phase" \
+    --udid "$UDID" --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" \
+    --attempt "${GITHUB_RUN_ATTEMPT:-1}" --fixture-id "$TARGET_FIXTURE_ID" --phase "$phase"
+}
+
 simctl_openurl_resilient() {
   local target_udid="$1"
   local target_url="$2"
@@ -1929,7 +1942,10 @@ PY
 
     # Stage 3.2: Pre-XCTest outside-runner signed .shortcut import so simctl openurl file:// never contends with active AX/XCTest
     if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
-      ensure_sim_session_ready "$UDID"
+      if ! ensure_phase_session_ready pre-import; then
+        echo "Pre-import selected-device session boundary was not verified."
+        exit 70
+      fi
       echo "=== Phase 3b: Pre-XCTest outside-runner signed .shortcut import openurl ==="
       run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
       sleep 4
@@ -2238,6 +2254,10 @@ PY
       fi
 
       if [ "$FOUND_NONCE" != "yes" ]; then
+        if ! ensure_phase_session_ready post-test-runtime; then
+          echo "Post-XCTest selected-device session boundary was not verified."
+          exit 70
+        fi
         echo "=== Phase 4b: Post-XCTest ReceiverApp x-callback-url dispatch ($TARGET_FIXTURE_ID) ==="
         # Outside UITests.xctrunner (automationmode=0), launch ReceiverApp so UIApplication.shared.open passes sourceApplication appIdentifier
         xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "CherriSimulatorQAReceiver" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || (process == "lsd" && (eventMessage CONTAINS[c] "cherri" || eventMessage CONTAINS[c] "org.cherrilang"))) AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults") AND NOT (category IN {"ToolKitIndexing", "ToolKitDatabase", "ToolKitScheduler", "BackgroundTaskScheduler", "ActionRegistry", "Daemon"})' --level debug --style compact > "$PHASE4_SIM_LOG" 2>&1 &
