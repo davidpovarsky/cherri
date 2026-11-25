@@ -130,6 +130,24 @@ def compilation_index(config):
     for path in config.get("candidate_compile_receipts", []):
         data = load(path)
         receipts.append(evidence(path))
+        if "candidates" in data:
+            # Clean revision candidates retain their exact public compilation
+            # command and exit code. This is distinct from the earlier dirty
+            # statistics receipt, which never recorded an exit field.
+            for row in data["candidates"]:
+                add({"number": number(row.get("fixtureID", row["id"])),
+                     "fixture_id": row.get("fixtureID", row["id"]), "lane": row["lane"],
+                     "name": row["name"], "artifact": row["unsignedPath"],
+                     "artifact_sha256": row["unsignedSHA256"],
+                     "declared_source": row["sourcePath"], "verified_source": row["sourcePath"],
+                     "source_sha256": row["sourceSHA256"], "compiler_path": data["compilerPath"],
+                     "compiler_sha256": data["compilerSHA256"], "compiler_source_sha": data["sourceCommit"],
+                     "compiler_source_state": "PINNED_CLEAN_RECEIPT_REVISION" if data.get("sourceClean") else "PINNED_RECEIPT_REVISION",
+                     "command": row["command"], "exit": row["returncode"],
+                     "receipt_chain": [evidence(path)], "expected_at_compile": row["expected"],
+                     "graph_valid_as_recorded": (row.get("graph") or {}).get("valid"),
+                     "graph_errors_as_recorded": (row.get("graph") or {}).get("errors")})
+            continue
         for row in data["cases"]:
             lane = {"v2": "fork_v2", "legacy": "fork_legacy"}.get(row["lane"], row["lane"])
             add({"number": number(row["id"]), "fixture_id": row["id"], "lane": lane,
@@ -386,7 +404,7 @@ def main():
                 "historical_nonpass_observation_ids": [r["observation_id"] for r in history if r["recorded_status"] != "PASS"],
                 "old_oracle_observation_ids": [r["observation_id"] for r in history if not r["matches_current_oracle"]],
                 "compile_block": blocked.get((n, lane)),
-                "final_compiler_binding": "PENDING_POST_URL_REPAIR_BINDING" if lane.startswith("fork_") else "ACTUAL_PINNED_ORIGINAL_ARTIFACT",
+                "final_compiler_binding": "SEPARATE_ARTIFACT_AND_SOURCE_BINDING_REQUIRED" if lane.startswith("fork_") else "ACTUAL_PINNED_ORIGINAL_ARTIFACT",
                 "historical_results_restamped": False,
             })
     summary = {}
@@ -414,7 +432,7 @@ def main():
             "A summary-only PASS is explicitly bounded by the old manifest audit, exact summary, raw byte length, and correlated callback identity. No raw digest is invented.",
             "Receiver image proof is joined only to runs carrying its exact receipt hash; older runs are not restamped.",
             "Compiler lineage uses exact unsigned artifact hashes and actual compiler/source hashes, not lane names or timestamps alone.",
-            "Fork native observations do not certify a later compiler revision. Post-URL-repair action/source bindings and fresh changed-case native proof remain required."
+            "Native observations certify the recorded artifacts. A separate final-binding report may carry their proof to byte-identical or strictly alpha-equivalent source-bound programs; it does not claim the new bytes were executed."
         ],
     }
     save(args.out / "native-evidence-ledger.json", result)
