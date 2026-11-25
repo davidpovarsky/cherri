@@ -44,6 +44,8 @@ struct DocumentationSearchView: View {
                                     }
                                     .accessibilityElement(children: .ignore)
                                     .accessibilityLabel(Text(section.title + ", " + section.documentTitle))
+                                    // Grouping the row must retain its actionable navigation role.
+                                    .accessibilityAddTraits(.isButton)
                                     .accessibilityIdentifier("docsResult_" + section.id)
                                 }
                             } footer: {
