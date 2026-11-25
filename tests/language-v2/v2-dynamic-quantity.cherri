@@ -1,0 +1,6 @@
+// compile-only: timer actions need native device verification
+let timerSeconds = 1 + 1
+startTimer(qty(timerSeconds, "sec"))
+var mutableSeconds = 2
+startTimer(qty(mutableSeconds, "sec"))
+startTimer(qty(ShortcutInput.number, "sec"))

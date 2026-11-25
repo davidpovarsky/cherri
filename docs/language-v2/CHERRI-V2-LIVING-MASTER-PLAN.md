@@ -2757,3 +2757,19 @@ The original330 selectors now passed260 root/70 internal exact package+test IDs,
 ## F04 general mutable storage qualification — 2026-11-25
 
 Implementation `82b8201d` admits inferred/mutable-source whole assignments and direct Repeat/For producers in the source-owned local cell slice. Actual focused152, original330 exact identities, and full affected269 tests passed; original failures and all source/ID expectation changes are retained. See `docs/language-v2/p15-f04-general-mutable-candidate-20261125.md` and its verification JSON. F04 remains open for consistent ordinary/cell declaration storage, uninitialized/overwritten versions, compound append and broader interfaces; no native runtime, final179 or release credit is claimed.
+
+
+## 2026-11-25 — Dynamic quantity reference serialization
+
+Independent builds of frozen original bcc00957 and current upstream 98d5191
+preserve a bare reference in a dynamic quantity's Magnitude. Baseline fork V2
+6ce0a398 instead stringified the lowered reference while returning compile
+success. A typed quantity carrier now reaches the existing shared quantity
+builder, preserving producer identity, transforms, date conditions and argument
+evaluation order.
+
+Actual baseline failures are retained. Final focused regressions and the three
+affected language packages passed; generated coverage includes every current
+quantity parameter (four) in both Legacy and V2. The new Cherri fixtures also
+compiled to dictionary magnitudes. Apple execution and the wider differential
+suite remain separate. See [the source audit and bounded evidence](dynamic-quantity-reference-audit-20261125.md).

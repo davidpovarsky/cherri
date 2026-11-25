@@ -2996,7 +2996,7 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression, allowUnaryAnyValu
 
 func (l *Lowerer) populateTemplateRHS(tmpl map[string]any, rightVal any, isDate, isNum bool, code *int) {
 	if isDate {
-		if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+		if isQuantityValue(rightVal) {
 			tmpl["WFDuration"] = rightVal
 			if *code == 2 {
 				*code = 1000
@@ -3200,7 +3200,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			}
 
 			if l.isDateComparison(binExpr.Op, binExpr.Left, binExpr.Right) {
-				if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+				if isQuantityValue(rightVal) {
 					opType = backend.OperandQuantity
 					if condCode == 2 { // GreaterThan
 						condCode = 1000
@@ -4572,7 +4572,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			inputTok := l.materializeToAttachment(left)
 			var opType backend.ConditionOperandType
 			if l.isDateComparison(e.Op, e.Left, e.Right) {
-				if m, ok := right.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+				if isQuantityValue(right) {
 					opType = backend.OperandQuantity
 					if condCode == 2 {
 						condCode = 1000
@@ -4983,36 +4983,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 	// Built-in value constructors (qty, color)
 	if actionName == "qty" {
-		var args []interface{}
-		if call.PrimaryArg != nil {
-			v, err := l.lowerExpression(call.PrimaryArg)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		for _, a := range call.NamedArgs {
-			v, err := l.lowerExpression(a.Value)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		mag := ""
-		unit := ""
-		if len(args) > 0 {
-			mag = fmt.Sprintf("%v", args[0])
-		}
-		if len(args) > 1 {
-			unit = fmt.Sprintf("%v", args[1])
-		}
-		return map[string]interface{}{
-			"WFSerializationType": "WFQuantityFieldValue",
-			"Value": map[string]interface{}{
-				"Magnitude": mag,
-				"Unit":      unit,
-			},
-		}, nil
+		return l.lowerQuantity(call)
 	}
 
 	if actionName == "color" {

@@ -288,6 +288,11 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 	}
 	val := arg.Value
 	switch val.Kind {
+	case backend.ValRawNative:
+		if quantity, ok := val.RawNativeVal.(*backend.QuantityValue); ok {
+			return actionArgument{valueType: Quantity, value: quantityActionArguments(quantity)}
+		}
+		return actionArgument{valueType: String, value: ConvertSemanticValueToParam(val)}
 	case backend.ValNil:
 		return actionArgument{valueType: Nil, value: nil}
 	case backend.ValBool:
@@ -459,6 +464,9 @@ func sanitizeRawParamValue(v any) any {
 }
 
 func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
+	if quantity, ok := v.(*backend.QuantityValue); ok {
+		return encodeQuantityValue(quantity)
+	}
 	if literal, ok := v.(backend.SemanticValue); ok {
 		return encodeTypedLiteralParam(literal)
 	}

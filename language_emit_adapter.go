@@ -12,6 +12,7 @@ import (
 
 	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/migrate"
@@ -234,6 +235,9 @@ func transformIRParamValue(v any) any {
 }
 
 func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
+	if quantity, ok := v.(*backend.QuantityValue); ok {
+		return encodeQuantityValue(quantity)
+	}
 	if raw, ok := v.(*ir.RawPlistValue); ok {
 		return transformIRParamValueContext(raw.Data, inAttachmentsByRange)
 	}
