@@ -93,7 +93,7 @@ func TestP15LegacyConditionalOperandSnapshots(t *testing.T) {
 				if err != nil {
 					t.Fatalf("explicit source-order control: %v", err)
 				}
-				want, err := p15ConditionGraphIdentity(actions)
+				want, err := p15ConditionSnapshotGraphIdentity(actions, profile)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -101,7 +101,7 @@ func TestP15LegacyConditionalOperandSnapshots(t *testing.T) {
 				if err != nil {
 					t.Fatalf("written source-order condition: %v", err)
 				}
-				got, err := p15ConditionGraphIdentity(actions)
+				got, err := p15ConditionSnapshotGraphIdentity(actions, profile)
 				if err != nil {
 					t.Fatal(err)
 				}
