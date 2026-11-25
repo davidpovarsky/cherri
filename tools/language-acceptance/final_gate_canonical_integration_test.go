@@ -116,8 +116,8 @@ func TestFinalRequiredGateCanonicalValidation(t *testing.T) {
 			report, err := ValidateEvidenceManifest(&EvidenceManifest{
 				SchemaVersion: "1", ImplementationSHA: source, Records: []EvidenceRecord{record},
 			}, contracts, "local")
-			if err != nil || report == nil {
-				t.Fatalf("canonical manifest validator failed to return its report: %v", err)
+			if err == nil || report == nil {
+				t.Fatalf("invalid candidate must return its report and validation error: %v", err)
 			}
 			found := false
 			for _, detail := range report.ValidationErrors {
