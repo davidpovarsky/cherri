@@ -27,14 +27,17 @@ func TestP15L01InferredNestedNativeListFailsClosed(t *testing.T) {
 			if _, errors := p15ParseProgram(tc.source); len(errors) != 0 {
 				t.Fatalf("shape regression must be parser-valid: %v", errors)
 			}
-			expectedCode := "E_NESTED_NATIVE_LIST"
-			expectedDetail := ""
-			if tc.name == "optional_absent" {
-				// Absence is rejected by the semantic transport boundary before
-				// the native nested-List shape guard can run.
-				expectedCode = "E_TARGET_VALUE_SHAPE"
-				expectedDetail = "current List element transport cannot preserve optional absence; use a proven present value"
+			expected := p15TaggedBoundaryCase{tc.name, tc.source, "outer",
+				"E_TARGET_VALUE_SHAPE", "getVariable requires an explicit native/JSON conversion for structured values"}
+			if tc.name == "function_parameter" {
+				expected.target = "wrap([1,2])"
 			}
+			if tc.name == "widened_known_list" {
+				expected.target, expected.code = "inner", "E_NESTED_NATIVE_LIST"
+				expected.message = "nested List-valued element has no verified native content-row encoding"
+			}
+			p15CheckTaggedBoundary(t, expected)
+			expectedCode, expectedDetail := expected.code, expected.message
 			var data, err = CompileSourceToPlist("p15-inferred-nested-list.cherri", tc.source)
 			if err == nil || len(data) != 0 || !strings.Contains(err.Error(), expectedCode) || !strings.Contains(err.Error(), expectedDetail) {
 				t.Fatalf("inferred nested shape bypassed native List boundary: bytes=%d error=%v", len(data), err)

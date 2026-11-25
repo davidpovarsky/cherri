@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
-	"github.com/electrikmilk/cherri/internal/language/service"
 )
 
 const p15T05NullCode = "E_NATIVE_JSON_NULL"
@@ -47,27 +46,30 @@ func TestP15T05AuthoredNullRejected(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			diags := p15TypeDiagnostics(t, tc.src)
-			if err := p15T05NullDiagnostic(diags, tc.src); err != nil {
-				t.Error(err)
+			switch tc.name {
+			case "binding", "default", "return", "after_raw":
+				// Preserve the exact original specimen and require its complete
+				// internal carrier graph. No native JSON-null export is granted.
+				p15CheckTaggedInternalNull(t, tc.name, tc.src)
+				return
 			}
-			raw, err := CompileSourceToPlist("p15-null.cherri", tc.src)
-			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), p15T05NullCode) {
-				t.Errorf("authored null was lost instead of rejected: bytes=%d err=%v", len(raw), err)
+			var expected *p15TaggedBoundaryCase
+			for _, boundary := range p15TaggedNullBoundaryCases() {
+				if boundary.name == tc.name {
+					copy := boundary
+					expected = &copy
+				}
 			}
-			svc := service.NewService(nil)
-			uri := "file:///p15-null-" + tc.name + ".cherri"
-			svc.OpenDocument(uri, 1, tc.src)
-			got, _ := svc.Analyze(uri)
-			if err := p15T05NullDiagnostic(got, tc.src); err != nil {
-				t.Error(err)
+			if expected == nil || expected.source != tc.src {
+				t.Fatal("original negative source is not exactly enrolled")
 			}
-			wrong := append([]analysis.Diagnostic(nil), diags...)
+			p15CheckTaggedBoundary(t, *expected)
+			wrong := append([]analysis.Diagnostic(nil), p15TypeDiagnostics(t, tc.src)...)
 			for i := range wrong {
 				wrong[i].Code = "E_UNRELATED"
 			}
-			if p15T05NullDiagnostic(wrong, tc.src) == nil {
-				t.Error("wrong diagnostic satisfied null boundary")
+			if p15TaggedExactBoundary(wrong, *expected) == nil {
+				t.Error("wrong diagnostic satisfied null consumer boundary")
 			}
 		})
 	}

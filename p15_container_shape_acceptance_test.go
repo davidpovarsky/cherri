@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
-	"strings"
 	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 )
 
 // Expected semantic kinds are authored independently from the compiler. These
@@ -280,10 +281,10 @@ func p15ContainerCloneNative(t *testing.T, original []map[string]any) []map[stri
 
 func TestP15FunctionContainerUnsupportedNullStillFailsPrecisely(t *testing.T) {
 	source := `function echo(value:Map<Text,AnyContent>)->Map<Text,AnyContent>{return value};echo({"value":null})`
-	raw, err := CompileSourceToPlist("p15-container-null.cherri", source)
-	if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), p15T05NullCode) {
-		t.Fatalf("unsupported JSON null was silently fabricated or dropped: %v", err)
-	}
+	p15CheckTaggedBoundary(t, p15TaggedBoundaryCase{
+		"anycontent_null", source, `{"value":null}`,
+		analysis.CodeArgumentType, "argument for value expects Map<Text, AnyContent>, got Map<Text, JsonNull>",
+	})
 }
 
 func TestP15FunctionMapArgumentProducerOrderAndMultiplicity(t *testing.T) {

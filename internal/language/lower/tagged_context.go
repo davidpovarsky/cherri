@@ -161,6 +161,15 @@ func (l *Lowerer) lowerTypedMapSemantic(expr *syntax.MapExpr, target types.MapTy
 }
 
 func (l *Lowerer) lowerTypedInlineValue(expr syntax.Expression, expected types.Type) (backend.SemanticValue, error) {
+	// A literal native Dictionary array does not need a uniform runtime
+	// cell payload layout. Preserve its per-element semantic kinds, including
+	// heterogeneous nested arrays and native-looking keys in authored Maps.
+	if !types.InlineDataNeedsCells(expected) && !types.InlineDataNeedsCells(l.transportType(expr)) {
+		switch expr.(type) {
+		case *syntax.ListExpr, *syntax.MapExpr:
+			return l.lowerSemanticValue(expr)
+		}
+	}
 	target, err := taggedPayloadTarget(expected, l.transportType(expr))
 	if err != nil {
 		return backend.SemanticValue{}, err
