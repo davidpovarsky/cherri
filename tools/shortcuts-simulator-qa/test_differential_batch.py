@@ -135,8 +135,12 @@ class ImportRestartTests(unittest.TestCase):
                     self.returncode = 0
                     return 0
 
-            def invoke(argv, timeout=25):
+            def invoke(argv, timeout=25, *, on_started=None, receipt_path=None):
                 calls.append((argv, timeout))
+                if on_started is not None:
+                    on_started()
+                    module.atomic_json(receipt_path, {"outcome": "EXITED", "exitCode": 0,
+                                                      "syntheticHostControl": True})
                 if argv[2] == "get_app_container":
                     return str(installed_app if argv[-1] == "app" else root / "receiver")
                 if argv[2] == "terminate":

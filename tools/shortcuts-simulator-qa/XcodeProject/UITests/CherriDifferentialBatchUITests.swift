@@ -138,6 +138,14 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             }
             XCTAssertNotNil(command.id.range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression))
             lastID = command.id
+            var started: [String: Any] = [
+                "id": command.id, "operation": command.operation, "outcome": "STARTED",
+                "timestamp": ISO8601DateFormatter().string(from: Date())
+            ]
+            if let name = command.shortcutName {
+                started["shortcutName"] = name
+            }
+            try write(started, to: "phase-started-" + command.id + ".json")
             var receipt: [String: Any]
             switch command.operation {
             case "import": receipt = try importShortcut(command)

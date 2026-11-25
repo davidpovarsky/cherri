@@ -6,7 +6,7 @@ Replaces simplistic blanket suppression sets with exact, evidence-backed disposi
   - EXPOSED_PARAMETER: Declared as an explicit parameter in Cherri signature variant(s).
   - EMITTED_IMPLICIT_CONSTANT: Handled as an emitted constant or runtime execution flag.
   - IMPLEMENTED_BY_SHARED_BUILDER: Handled by shared compiler builder (AppIntentDescriptor, filter template, etc.).
-  - INTENTIONALLY_UNREPRESENTABLE_UI_METADATA: Ephemeral editor UI layout state (e.g., ShowHeaders inspector).
+  - INTENTIONALLY_UNREPRESENTABLE_UI_METADATA: Editor layout state or evidence-bound hidden native intent fields.
   - NEEDS_RUNTIME_EVIDENCE: Device-specific or opaque picker format requiring canonical Apple export evidence.
   - OPEN_USER_PARAMETER: Genuinely open user parameter needing Cherri parameter modeling.
   - UNSUPPORTED_TARGET: Target platform/OS unsupported or deprecated.
@@ -86,12 +86,6 @@ SPECIAL_EVIDENCE_KEYS = {
         "rationale": "In macOS 26, is.workflow.actions.deletephotos was a WorkflowKit built-in with ShowWhenRun execution prompt. In macOS 27, photo deletion migrated to LinkActionProvider com.apple.Photos.DeleteAssetsAction with entities. Reconciled across OS versions as an implicit execution toggle.",
         "evidenceRef": "macOS 26 / macOS 27 historical migration evidence"
     },
-    ("is.workflow.actions.statistics", "Input"): {
-        "disposition": "EXPOSED_PARAMETER",
-        "codePath": "actions/math.cherri:statistic (WFInput)",
-        "rationale": "WorkflowKit parameter table names the input slot 'Input' while serialized Shortcut plists and upstream Cherri bcc0095 emit wire key 'WFInput'",
-        "evidenceRef": "Upstream electrikmilk/cherri bcc0095 actions/math.cherri:statistic"
-    }
 }
 
 
@@ -101,7 +95,8 @@ def classify_parameter_disposition(
     cherri_declared_keys: set,
     cherri_emitted_keys: set,
     cherri_static_keys: set,
-    is_filter_action: bool = False
+    is_filter_action: bool = False,
+    native_action_definition: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Evaluates the auditable disposition of an Apple parameter key against Cherri modeling."""
     # 1. Declared in Cherri parameters
@@ -125,6 +120,28 @@ def classify_parameter_disposition(
             "codePath": "actions/*.cherri or actions_std.go",
             "evidenceRef": "Cherri action definition"
         }
+
+    # Apple hides this exact intent field; the authored URL default has a
+    # separate native key. Missing or changed capture/catalog evidence must
+    # leave the field open rather than treating all hidden-looking names alike.
+    if action_id == "is.workflow.actions.ask" and key == "urlAnswer":
+        definition = native_action_definition if isinstance(native_action_definition, dict) else {}
+        overrides = definition.get("ParameterOverrides")
+        if isinstance(overrides, dict):
+            hidden = overrides.get("urlAnswer")
+            default = overrides.get("defaultURLAnswer")
+            if (isinstance(hidden, dict) and hidden.get("Hidden") is True
+                    and isinstance(default, dict)
+                    and default.get("Key") == "WFAskActionDefaultAnswerURL"
+                    and "WFAskActionDefaultAnswerURL" in cherri_emitted_keys):
+                return {
+                    "identifier": action_id,
+                    "parameterKey": key,
+                    "disposition": "INTENTIONALLY_UNREPRESENTABLE_UI_METADATA",
+                    "rationale": "Apple explicitly marks urlAnswer Hidden; the separate authored URL default maps to WFAskActionDefaultAnswerURL, which the current prompt builder emits. This hidden native field is not reported as an emitted constant.",
+                    "codePath": "actions_std.go:prompt (WFAskActionDefaultAnswerURL)",
+                    "evidenceRef": "docs/apple-runtime/macos-27/builtin-actions.json:is.workflow.actions.ask.ParameterOverrides"
+                }
 
     # 3. Special per-action evidence requirements
     special = SPECIAL_EVIDENCE_KEYS.get((action_id, key))

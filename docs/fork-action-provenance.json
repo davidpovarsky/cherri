@@ -1492,6 +1492,37 @@
       ],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "statistic",
+      "identifier": "is.workflow.actions.statistics",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+      "upstreamLocation": "actions/math.cherri",
+      "forkLocations": [
+        "actions/math.cherri",
+        "internal/language/schema/generated_registry.go",
+        "statistics_native_contract_test.go",
+        "p10_compiler_bugfixes_test.go",
+        "p10_compiler_serialization_test.go",
+        "p10_independent_oracle_test.go",
+        "p15_statistic_roundtrip_test.go",
+        "docs/apple-runtime/statistics-input-20261125/README.md"
+      ],
+      "firstForkCommit": "d8c2387db6f429c80d161000b19ce6ebb4194311",
+      "change": "Corrected statistic input binding from inherited WFInput to Apple's Input key in the canonical action definition and regenerated V2 schema. The correction applies to all eight operations: Average, Minimum, Maximum, Sum, Median, Mode, Range, and Standard Deviation, in both legacy and V2.",
+      "reason": "Differential fixture 15 exposed an inherited runtime defect: both current upstream and fork V2 returned CHERRI_QA_15|\\n: instead of the independent expected CHERRI_QA_15|15:5. Live macOS 27 WorkflowKit identifies Input as the WFVariablePickerParameter of WFCalculateStatisticsAction. Corrected legacy and V2 shortcuts both returned the exact expected output on iOS Simulator.",
+      "evidence": "docs/apple-runtime/statistics-input-20261125/: live native metadata plus original OUTPUT_MISMATCH and corrected 2/2 PASS callback receipts, verified import identities, signed/unsigned artifact hashes, and native batch summary. Focused all-operation legacy/V2 round trips, typed producer graph negatives, independent Apple metadata assertions, pinned upstream expected-difference checks, and source mutation restoring WFInput pass.",
+      "notes": [
+        "All eight operations share the one corrected input key; WFStatisticsOperation enum values remain unchanged.",
+        "The expected corpus output was fixed before execution and was not changed to accommodate the original failure.",
+        "Before/after action-tree differences are retained explicitly: only WFInput removal and Input addition on the two statistics actions, with valid producer/reference graphs and unchanged action counts.",
+        "Upstream parity tests retain the pinned upstream WFInput observation and explicitly assert the fork correction; they no longer equate inherited wire parity with runtime correctness.",
+        "firstForkCommit is the integrated implementation commit, not the detached development commit or this provenance metadata record."
+      ],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -3406,37 +3437,6 @@
       "reason": "Current upstream 98d5191 accepted bare repeat index arithmetic that the fork rejected; the fork accepted @i but emitted an assignment from i without the required Math producer. V2 color references silently became zero, malformed quantities succeeded, and reordered named quantity arguments swapped magnitude and unit. Original and fork Legacy constructors panicked on missing required quantity arguments and omitted color defaults.",
       "evidence": "docs/language-v2/value-constructors-loop-compatibility-audit-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/{red-receipt.json,qty-red-receipt.json,tests-red.log,tests-green.log,extended-controls.log,green-receipt.json}. Focused producer/consumer and analyzer/lowerer controls, all five prior Quantity tests, TestP15DateComparisonMigrationCLIParity, 38 exact CLI exit/artifact cases, build and diff checks passed. Baseline failures and original compiler artifacts remain retained.",
       "note": "Integrated implementation SHA is the non-circular provenance anchor; component commit cb7fb1c16ba9c243345ab3fa4df766153310abc9 was cherry-picked. Existing canonical action definitions and quantity/color wire representations remain authoritative. No dynamic Apple color schema, unit whitelist or color range restriction was invented. This metadata grants no Apple execution, full-suite, release or project-wide acceptance. The separate current-upstream PropertyUserInfo integer-zero versus absent-field difference is retained as unknown native impact and is not normalized away."
-    },
-    {
-      "name": "statistic",
-      "identifier": "is.workflow.actions.statistics",
-      "changeType": "modified-by-fork",
-      "upstreamStatus": "present-upstream-corrected",
-      "baselineSha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
-      "upstreamLocation": "actions/math.cherri",
-      "forkLocations": [
-        "actions/math.cherri",
-        "internal/language/schema/generated_registry.go",
-        "statistics_native_contract_test.go",
-        "p10_compiler_bugfixes_test.go",
-        "p10_compiler_serialization_test.go",
-        "p10_independent_oracle_test.go",
-        "p15_statistic_roundtrip_test.go",
-        "docs/apple-runtime/statistics-input-20261125/README.md"
-      ],
-      "firstForkCommit": "d8c2387db6f429c80d161000b19ce6ebb4194311",
-      "change": "Corrected statistic input binding from inherited WFInput to Apple's Input key in the canonical action definition and regenerated V2 schema. The correction applies to all eight operations: Average, Minimum, Maximum, Sum, Median, Mode, Range, and Standard Deviation, in both legacy and V2.",
-      "reason": "Differential fixture 15 exposed an inherited runtime defect: both current upstream and fork V2 returned CHERRI_QA_15|\\n: instead of the independent expected CHERRI_QA_15|15:5. Live macOS 27 WorkflowKit identifies Input as the WFVariablePickerParameter of WFCalculateStatisticsAction. Corrected legacy and V2 shortcuts both returned the exact expected output on iOS Simulator.",
-      "evidence": "docs/apple-runtime/statistics-input-20261125/: live native metadata plus original OUTPUT_MISMATCH and corrected 2/2 PASS callback receipts, verified import identities, signed/unsigned artifact hashes, and native batch summary. Focused all-operation legacy/V2 round trips, typed producer graph negatives, independent Apple metadata assertions, pinned upstream expected-difference checks, and source mutation restoring WFInput pass.",
-      "notes": [
-        "All eight operations share the one corrected input key; WFStatisticsOperation enum values remain unchanged.",
-        "The expected corpus output was fixed before execution and was not changed to accommodate the original failure.",
-        "Before/after action-tree differences are retained explicitly: only WFInput removal and Input addition on the two statistics actions, with valid producer/reference graphs and unchanged action counts.",
-        "Upstream parity tests retain the pinned upstream WFInput observation and explicitly assert the fork correction; they no longer equate inherited wire parity with runtime correctness.",
-        "firstForkCommit is the integrated implementation commit, not the detached development commit or this provenance metadata record."
-      ],
-      "supersededByUpstream": null,
-      "history": []
     },
     {
       "name": "Complete V2 semantic compile error reporting",

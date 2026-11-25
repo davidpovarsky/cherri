@@ -75,6 +75,7 @@ func p15AcceptanceCLIReuseIdentity(root string, environment []string) (string, s
 func p15AcceptanceCLIAtRoot(t *testing.T, root string, observe func(bool, []byte)) string {
 	t.Helper()
 	var bin = filepath.Join(t.TempDir(), "cherri-acceptance.exe")
+	var candidate = filepath.Join(t.TempDir(), "cherri-acceptance.exe")
 	var environment = os.Environ()
 	var source, key = p15AcceptanceCLIReuseIdentity(root, environment)
 	var seeded bool
@@ -85,7 +86,9 @@ func p15AcceptanceCLIAtRoot(t *testing.T, root string, observe func(bool, []byte
 			if err := entry.verify(); err != nil {
 				t.Fatal(err)
 			}
-			p15InstallWrite(t, bin, entry.data)
+			if err := p15StageAcceptanceCLISeed(candidate, entry.data); err != nil {
+				t.Fatal(err)
+			}
 			seeded = true
 		}
 	}
@@ -94,19 +97,25 @@ func p15AcceptanceCLIAtRoot(t *testing.T, root string, observe func(bool, []byte
 	var ctx, cancel = context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 	var buildStarted = time.Now()
-	var cmd = exec.CommandContext(ctx, "go", "build", "-o", bin, ".")
+	var cmd = exec.CommandContext(ctx, "go", "build", "-o", candidate, ".")
 	cmd.Dir, cmd.Env = root, environment
 	var out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("build current production CLI: %v (context: %v, elapsed: %s)\n%s", err, ctx.Err(), time.Since(buildStarted).Round(time.Millisecond), out)
 	}
 	if key != "" {
-		p15ExtractedRequireRole(t, bin, source, "github.com/electrikmilk/cherri")
+		p15ExtractedRequireRole(t, candidate, source, "github.com/electrikmilk/cherri")
 		var afterSource, afterKey = p15AcceptanceCLIReuseIdentity(root, os.Environ())
 		if afterSource != source || afterKey != key {
 			t.Fatal("CLI source or build environment changed during candidate validation")
 		}
-		p15InstallBuiltTools.entries[key] = p15NewInstallBuiltTool(p15InstallRead(t, bin))
+	}
+	var built = p15NewInstallBuiltTool(p15InstallRead(t, candidate))
+	if err := atomicWriteFile(bin, built.data, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if key != "" {
+		p15InstallBuiltTools.entries[key] = built
 	}
 	if observe != nil {
 		observe(seeded, append([]byte(nil), out...))
