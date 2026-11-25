@@ -72,7 +72,7 @@ func TestCacheLoopPlanKeepsLazySourceIdentity(t *testing.T) {
 			call := program.Statements[1].(*syntax.BindingStmt).Value.(*syntax.CallExpr)
 			assignment := call.Block.Body.Statements[0].(*syntax.AssignStmt)
 			plan := PlanLoopResultLocals(program, DefaultRegistry())
-			if plan == nil || plan.ScopedBodies[call] != call.Block.Body || plan.Assignments[assignment] != binding || !plan.AssignmentValueSourceMatches(assignment) {
+			if plan == nil || plan.ScopedBodies[call] != call.Block.Body || plan.Assignments[assignment] != binding || !plan.AssignmentSourceMatches(assignment) {
 				t.Fatal("lazy body, captured target or actual RHS lost source ownership")
 			}
 			if !plan.Bodies[binding.Value.(*syntax.RepeatStmt).BodyBlock] || !plan.Bodies[assignment.Value.(*syntax.RepeatStmt).BodyBlock] {
@@ -83,7 +83,7 @@ func TestCacheLoopPlanKeepsLazySourceIdentity(t *testing.T) {
 				t.Fatal("copied call acquired original body authority")
 			}
 			copiedAssignment := *assignment
-			if plan.AssignmentValueSourceMatches(&copiedAssignment) {
+			if plan.AssignmentSourceMatches(&copiedAssignment) {
 				t.Fatal("copied assignment acquired source authority")
 			}
 			if syntax.Format(program) != before {
