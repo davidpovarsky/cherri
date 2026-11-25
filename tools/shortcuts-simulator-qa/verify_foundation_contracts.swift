@@ -42,6 +42,21 @@ enum QAFoundationContracts {
         let shape = CallbackPayloadShape("CHERRI_QA_RESULT:ok\n{\"kind\":\"COLLECTOR_EVENT\"}\n{\"kind\":\"INLINE_DEBUG_ACTION\"}\n")
         try require(shape.nonemptyLineCount == 3 && shape.collectorMarkerCount == 1 &&
                     shape.inlineMarkerCount == 1 && shape.sentinelLineCount == 0, "Payload shape counts")
+        try require(CallbackPayloadShape("abc").utf8SHA256 ==
+                    "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                    "Known SHA-256 vector must use exact UTF-8 bytes")
+        try require(CallbackPayloadShape("CHERRI_QA_01|שלום 🚀").utf8SHA256 ==
+                    "6a8c96d8ef2180bfe90fa606ad80d1b21d2cf14d30fb4d82afbebf2768eb6725",
+                    "Unicode digest must match the host UTF-8 oracle")
+        let lfShape = CallbackPayloadShape("CHERRI_QA_LINE1\nשלום 🚀")
+        let crShape = CallbackPayloadShape("CHERRI_QA_LINE1\rשלום 🚀")
+        try require(lfShape.utf8ByteCount == crShape.utf8ByteCount &&
+                    lfShape.utf8SHA256 != crShape.utf8SHA256,
+                    "Equal-length CR/LF normalization must not hide a raw result difference")
+        let historical = Data("{\"utf8ByteCount\":3,\"nonemptyLineCount\":1,\"collectorMarkerCount\":0,\"inlineMarkerCount\":0,\"sentinelLineCount\":0}".utf8)
+        let historicalShape = try JSONDecoder().decode(CallbackPayloadShape.self, from: historical)
+        try require(historicalShape.utf8SHA256 == nil,
+                    "Historical receipts remain readable without inventing a digest")
         let shapeBytes = try JSONEncoder().encode(shape)
         let encoded = String(decoding: shapeBytes, as: UTF8.self)
         try require(!encoded.contains("CHERRI_QA_RESULT") && !encoded.contains("COLLECTOR_EVENT"),
