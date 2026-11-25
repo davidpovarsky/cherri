@@ -38,10 +38,13 @@ Successful rows retain the dispatch receipts and the summary identifies
 
 The existing signed-byte hash, expected name/library, receiver image,
 callback nonce/source/name/fixture, and raw UTF-8 length/digest checks remain.
-The Swift import and runtime handler bodies and their deadlines are
-byte-identical. No generic consent clicks or new polling were added. A source
-comparison receipt also verifies that callback classification and image
-validation functions are unchanged.
+At the original handshake repair, the Swift import and runtime handler bodies
+and deadlines were byte-identical. No generic consent clicks or new polling
+were added. Its source comparison receipt also verifies that callback
+classification and image validation functions were unchanged. The subsequent
+[Add-deadline repair](native-differential-add-deadline-20261125.md) addresses
+the observed import timing consequence of overlapping dispatch; it preserves
+this host protocol and the runtime handler.
 
 ## Causal host checks
 

@@ -29,4 +29,10 @@ swiftc -parse-as-library \
   -o "$QA_TEST_DIR/qa-debug-label-preview-contracts"
 "$QA_TEST_DIR/qa-debug-label-preview-contracts"
 
+swiftc -parse-as-library \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/Shared/DifferentialImportTiming.swift" \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_differential_import_timing.swift" \
+  -o "$QA_TEST_DIR/qa-differential-import-timing-contracts"
+"$QA_TEST_DIR/qa-differential-import-timing-contracts"
+
 python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_optional_receiver.py"

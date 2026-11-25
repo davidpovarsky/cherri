@@ -52,34 +52,116 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         }
         let button = shortcuts.buttons.matching(
             NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).firstMatch
-        let found = button.waitForExistence(timeout: 15)
-        capture(command.id + "-import")
-        guard found else {
-            XCTFail("No native import consent for " + name)
-            return ["outcome": "IMPORT_BUTTON_MISSING", "name": name]
+        var timing = QADifferentialImportTiming(searchStartedAt: Date())
+        let dispatchPath = runDirectory.appendingPathComponent("dispatch-" + command.id + ".json")
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var timingReceipt: [String: Any] = [
+            "contract": "dispatch-exit-anchored-add-v1",
+            "dispatchReceipt": dispatchPath.lastPathComponent,
+            "addSearchStartedUTC": formatter.string(from: timing.searchStartedAt)
+        ]
+        func observeDispatch() -> QADifferentialImportTiming.DispatchState {
+            let data = try? Data(contentsOf: dispatchPath)
+            let now = Date()
+            let state = timing.observeDispatch(data, now: now)
+            timingReceipt["lastDispatchCheckUTC"] = formatter.string(from: now)
+            switch state {
+            case .pending(let deadline):
+                timingReceipt["dispatchState"] = "PENDING"
+                timingReceipt["dispatchDeadlineUTC"] = formatter.string(from: deadline)
+            case .exited(let exit):
+                timingReceipt["dispatchState"] = "EXITED"
+                timingReceipt["dispatchExitObservedUTC"] = formatter.string(from: exit)
+            case .rejected(let reason):
+                timingReceipt["dispatchState"] = "REJECTED"
+                timingReceipt["dispatchFailure"] = reason
+            }
+            return state
         }
+        func checkAdd() -> QADifferentialImportTiming.AddDecision {
+            let dispatch = observeDispatch()
+            let now = Date()
+            let decision = timing.addDecision(after: dispatch, now: now)
+            timingReceipt["lastAddCheckUTC"] = formatter.string(from: now)
+            if let deadline = decision.deadline {
+                timingReceipt["currentSearchDeadlineUTC"] = formatter.string(from: deadline)
+            }
+            return decision
+        }
+        func receipt(_ fields: [String: Any]) -> [String: Any] {
+            var fields = fields
+            fields["importTiming"] = timingReceipt
+            return fields
+        }
+        func stop(_ outcome: String) -> [String: Any] {
+            capture(command.id + "-import")
+            XCTFail(outcome + " for " + name)
+            return receipt(["outcome": outcome, "name": name])
+        }
+
+        // AX calls can outlive their nominal wait. Read the actual process
+        // receipt and the clock again after each call, before using its result.
+        while true {
+            if let failure = checkAdd().failure { return stop(failure) }
+            let found = button.exists
+            let decision = checkAdd()
+            if let failure = decision.failure { return stop(failure) }
+            if found { break }
+            let remaining = decision.deadline!.timeIntervalSinceNow
+            Thread.sleep(forTimeInterval: max(0, min(0.2, remaining)))
+        }
+        timingReceipt["addObservedUTC"] = formatter.string(from: Date())
+        capture(command.id + "-import")
+        if let failure = checkAdd().failure { return stop(failure) }
         let snapshot = try shortcuts.snapshot()
+        if let failure = checkAdd().failure { return stop(failure) }
         let identity = hasName(snapshot, name: name)
         XCTAssertTrue(identity, "Signed import sheet must identify " + name)
         guard identity else {
-            return ["outcome": "IMPORT_IDENTITY_MISMATCH", "name": name]
+            return receipt(["outcome": "IMPORT_IDENTITY_MISMATCH", "name": name])
         }
         button.tap()
+        if let failure = checkAdd().failure { return stop(failure) }
+        timingReceipt["addTappedUTC"] = formatter.string(from: Date())
         let libraryItem = shortcuts.cells.matching(
             NSPredicate(format: "label == %@ OR label BEGINSWITH %@", name, name + ", ")).firstMatch
         let deadline = Date().addingTimeInterval(30)
         var replaceTapped = false
         while Date() < deadline {
-            if libraryItem.exists && libraryItem.isHittable {
-                capture(command.id + "-library")
-                return ["outcome": "IMPORTED", "name": name, "identityVerified": identity,
-                        "libraryIdentityVerified": true, "replaceTapped": replaceTapped]
+            if let failure = observeDispatch().failure { return stop(failure) }
+            let exists = libraryItem.exists
+            if let failure = observeDispatch().failure { return stop(failure) }
+            if Date() >= deadline { break }
+            if exists {
+                let hittable = libraryItem.isHittable
+                let dispatch = observeDispatch()
+                if let failure = dispatch.failure { return stop(failure) }
+                if Date() >= deadline { break }
+                if hittable && dispatch.succeeded {
+                    capture(command.id + "-library")
+                    if let failure = observeDispatch().failure { return stop(failure) }
+                    if Date() >= deadline { break }
+                    return receipt(["outcome": "IMPORTED", "name": name, "identityVerified": identity,
+                                    "libraryIdentityVerified": true, "replaceTapped": replaceTapped])
+                }
             }
             let replacement = shortcuts.buttons["Replace"].firstMatch
-            if replacement.exists && replacement.isHittable {
-                capture(command.id + "-replace")
-                replacement.tap()
-                replaceTapped = true
+            let replacementExists = replacement.exists
+            if let failure = observeDispatch().failure { return stop(failure) }
+            if Date() >= deadline { break }
+            if replacementExists {
+                let hittable = replacement.isHittable
+                if let failure = observeDispatch().failure { return stop(failure) }
+                if Date() >= deadline { break }
+                if hittable {
+                    capture(command.id + "-replace")
+                    if let failure = observeDispatch().failure { return stop(failure) }
+                    if Date() >= deadline { break }
+                    replacement.tap()
+                    replaceTapped = true
+                    if let failure = observeDispatch().failure { return stop(failure) }
+                }
             }
             Thread.sleep(forTimeInterval: 0.5)
         }
@@ -88,8 +170,8 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         let debugPath = runDirectory.appendingPathComponent(command.id + "-library-timeout.txt")
         try? debugState.write(to: debugPath, atomically: true, encoding: String.Encoding.utf8)
         XCTFail("No accessible native library item after import for " + name)
-        return ["outcome": "LIBRARY_IDENTITY_NOT_OBSERVED", "name": name,
-                "identityVerified": identity, "replaceTapped": replaceTapped]
+        return receipt(["outcome": "LIBRARY_IDENTITY_NOT_OBSERVED", "name": name,
+                        "identityVerified": identity, "replaceTapped": replaceTapped])
     }
 
     private func consentForRuntime(_ command: DifferentialCommand) throws -> [String: Any] {
