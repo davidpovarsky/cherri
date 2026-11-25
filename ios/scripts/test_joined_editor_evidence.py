@@ -143,6 +143,29 @@ class JoinedEvidenceControls(unittest.TestCase):
                 _, records, _ = self.collect(**kwargs)
                 self.assertEqual(records, [])
 
+    def test_failed_native_terminal_remains_failed_and_does_not_poison_next_case(self):
+        original = model_log([joined.BRG25_UI, joined.BRG27_UI])
+        raw = original.replace(" passed (", " failed (", 1)
+        diagnostic, records, output = self.collect(raw, exit_code="65")
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["testResults"], [
+            {"testId": joined.BRG25_UI, "observedStatus": "failed"},
+            {"testId": joined.BRG27_UI, "observedStatus": "passed"},
+        ])
+        retained = (output / "xcodetest.log").read_text()
+        self.assertIn(" failed (0.123 seconds).", retained)
+        self.assertIn(joined.REJECTED + "CASE_TERMINAL", retained)
+        self.assertNotIn(joined.REJECTED + "INTERLEAVED_CASE", retained)
+        self.assertIn('[CHECKPOINT:' + joined.PROFILES[joined.BRG27_UI]["checkpoint"] + ']', retained)
+        self.assertEqual(diagnostic["joinedEditorEvidence"]["status"], "NOT_VERIFIED")
+        guard = joined.LogGuard(ROOT)
+        for line in raw.splitlines():
+            guard.observe(line)
+        self.assertIsNone(guard.active)
+        self.assertEqual(guard.rejections, ["CASE_TERMINAL"])
+        with self.assertRaisesRegex(joined.Rejected, "REJECTED_LOG"):
+            guard.verified()
+
     def test_real_source_binding_rejects_false_head_and_changed_physical_bytes(self):
         with self.assertRaisesRegex(joined.Rejected, "SOURCE_HEAD"):
             joined.source_pins(ROOT, "0" * 40)

@@ -183,6 +183,10 @@ class LogGuard:
             else:
                 if test in PROFILES:
                     if self.active != test or test not in self.started or status != "passed" or test in self.passed:
+                        # A failed test still ends its actual ownership interval.
+                        # Keep the rejection while allowing later cases to retain
+                        # their independent original diagnostic boundaries.
+                        self.active = None
                         return self.reject("CASE_TERMINAL")
                     self.passed.add(test)
                 self.active = None

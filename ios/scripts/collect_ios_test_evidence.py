@@ -430,7 +430,10 @@ def bounded_log(raw_text):
         joined_line = joined_guard.observe(raw_line)
         if joined_line is not None:
             lines.append(joined_line)
-            continue
+            # A rejection must never erase an original supported test terminal:
+            # failed remains failed, and the next case keeps its own identity.
+            if CASE_LINE.fullmatch(line) is None:
+                continue
         if case := CASE_LINE.fullmatch(line):
             active_test = (case.group(1).split(".")[1] + "/" + case.group(2)) if case.group(3) == "started." else None
             original_paste_wait_observed = False
