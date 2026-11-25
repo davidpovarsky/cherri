@@ -123,6 +123,9 @@ func TestCIIdentityIndependentContext(t *testing.T) {
 		}
 	})
 	t.Run("generic successful workflows cannot override dedicated absence or failure", func(t *testing.T) {
+		for _, key := range []string{"CHERRI_FINAL_GATES_EXPECTED", "CHERRI_FINAL_GATES_EXPECTED_SHA256", "CHERRI_FINAL_GATES_MANIFEST"} {
+			t.Setenv(key, "")
+		}
 		original := ciRunDiscoveryFunc
 		t.Cleanup(func() { ciRunDiscoveryFunc = original })
 		ciRunDiscoveryFunc = func(source string) ([]CIRunRecord, error) {
@@ -138,10 +141,15 @@ func TestCIIdentityIndependentContext(t *testing.T) {
 			if result := runner.results["CI03"]; result.Status != status || result.Passed || result.Detail != "dedicated original result" {
 				t.Fatal("generic CI upgraded dedicated identity result")
 			}
+			for _, id := range []string{"RP49", "BRG31"} {
+				if result := runner.results[id]; result.Status != "NOT_RUN" || result.Passed || len(result.ExecutedLevels) != 0 {
+					t.Fatalf("generic CI acquired a dedicated final gate tier: %s %#v", id, result)
+				}
+			}
 			for _, record := range runner.records {
 				for _, id := range record.Requirements {
-					if id == "CI03" {
-						t.Fatal("generic workflow record grants CI03")
+					if id == "CI03" || finalGateTestID(id) != "" {
+						t.Fatal("generic workflow record grants dedicated identity or final gates")
 					}
 				}
 			}
@@ -155,6 +163,12 @@ func TestCIIdentityIndependentContext(t *testing.T) {
 		}
 		if err := validateCIIdentityRecord("RP49", EvidenceRecord{TestID: ciIdentityTestID}); err == nil {
 			t.Fatal("identity evidence conferred closure")
+		}
+		for _, id := range []string{"RP49", "BRG31"} {
+			runner.Record(id, "final_gate", "final gate", strings.Join(finalGateTiers(id), "+"), finalGateTiers(id), true, "PASSED", "generic green workflows")
+			if runner.results[id].Status != "NOT_RUN" || runner.results[id].Passed || len(runner.records) != 0 {
+				t.Fatalf("weak historical record acquired dedicated credit: %s", id)
+			}
 		}
 	})
 	t.Run("evidence map permits only the dedicated intake", func(t *testing.T) {

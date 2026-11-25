@@ -34,9 +34,9 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
-	// BRG26 requires its own current-artifact signing, import, and runtime proof.
-	// The generic runtime smoke assertion does not observe its original contract.
-	if id == "BRG26" {
+	// Signing and final release requirements need their dedicated original-backed
+	// producers. A generic runtime smoke assertion grants none of these tiers.
+	if id == "BRG26" || finalGateTestID(id) != "" {
 		return
 	}
 	if _, found := structuredValueScenarios[id]; found {
@@ -96,7 +96,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		return
 	}
 	switch id {
-	case "CI02", "RP48", "BRG26", "BRG31":
+	case "CI02", "RP48":
 		reqAssertions["status"] = "CHERRI_IOS27_RUNTIME_OK"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:smoke")
 	case "V01", "V03", "RP12", "RP14", "BRG10":
@@ -183,6 +183,25 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	}
 }
 
+func applyFinalRequiredGateMapping(mapping *RequirementEvidenceMapping) {
+	if finalGateTestID(mapping.ID) == "" {
+		return
+	}
+	mapping.TestIDs = []string{finalGateTestID(mapping.ID)}
+	mapping.FixtureIdentities = append([]string(nil), finalGateSources...)
+	mapping.RequiredAssertions = map[string]string{
+		"scope": finalGateScope(mapping.ID), "global_closure_complete": "false",
+		"selected_required_gates_successful": "true", "predeclared_selection": "true",
+		"stale_and_missing_candidates_rejected": "true",
+	}
+	mapping.RequiredUIAssertions = nil
+	mapping.Assertions = append(mapping.Assertions, finalGateScope(mapping.ID))
+	mapping.ResultReferences = nil
+	for _, tier := range finalGateTiers(mapping.ID) {
+		mapping.ResultReferences = append(mapping.ResultReferences, "acceptance-local-evidence.json#ev-final-required-"+mapping.ID+"-"+tier)
+	}
+}
+
 // BuildRequirementsEvidenceMap builds the complete requirements-to-evidence map covering all 94 acceptance, 52 repair, and 33 recovery gate requirements.
 func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenceMapFile, error) {
 	if contracts == nil || contracts.Acceptance == nil || contracts.Repair == nil || contracts.Gates == nil {
@@ -254,6 +273,7 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			mapping.RequiredAssertions = map[string]string{"scope": publicationSecurityScope, "closure_complete": "false"}
 			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-ci04-publication-security", "acceptance-local-evidence.json#ev-ci04-publication-repository"}
 		}
+		applyFinalRequiredGateMapping(&mapping)
 		doc.Mappings[c.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
 	}
@@ -290,6 +310,7 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			Assertions:           assertions,
 			ResultReferences:     resultRefs,
 		}
+		applyFinalRequiredGateMapping(&mapping)
 		doc.Mappings[c.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
 	}
@@ -330,6 +351,7 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			mapping.RequiredAssertions = map[string]string{"scope": takeoverScope, "closure_complete": "false"}
 			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-takeover-preservation-BRG01"}
 		}
+		applyFinalRequiredGateMapping(&mapping)
 		doc.Mappings[g.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
 	}
@@ -622,6 +644,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if finalGateTestID(id) != "" {
+		return []string{finalGateTestID(id)}
+	}
 	if _, found := structuredValueScenarios[id]; found {
 		return structuredValueTestIDs(id)
 	}
@@ -734,6 +759,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if finalGateTestID(id) != "" {
+		return append([]string(nil), finalGateSources...)
+	}
 	if _, found := structuredValueScenarios[id]; found {
 		return append([]string(nil), structuredValueInventory.SourcePaths...)
 	}
@@ -801,6 +829,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if finalGateTestID(id) != "" {
+		return []string{finalGateTestID(id)}
+	}
 	if id == "BRG28" {
 		return previewNativeTestIDs(id)
 	}
@@ -924,6 +955,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if finalGateTestID(id) != "" {
+		return append([]string(nil), finalGateSources...)
+	}
 	if id == "BRG28" {
 		return append([]string(nil), previewNativeSourcePaths...)
 	}

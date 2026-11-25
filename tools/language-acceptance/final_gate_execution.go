@@ -18,6 +18,11 @@ const finalGateRP49Scope = "Dedicated RP49: independently predeclared final even
 const finalGateBRG31Scope = "Dedicated BRG31: the full RP49 closure plus exact-source CI04 publication security, actual WorkflowKit positive/corrupt-EXPECT/restored process triplet and complete source-bound computed runtime originals. Native assertions are replayed from the selected final run's original bytes; generic PoC labels, aggregate XCTest counts and related requirement records do not grant this requirement. No global179 closure is granted."
 
 var finalGateSources = []string{
+	"tools/language-acceptance/main.go",
+	"tools/language-acceptance/evidence_map.go",
+	"tools/language-acceptance/execution_audit.go",
+	"tools/language-acceptance/final_gate_canonical_integration_test.go",
+	"tools/language-acceptance/ci_identity_execution_test.go",
 	"tools/language-acceptance/final_gate_contract.go",
 	"tools/language-acceptance/final_gate_closure.go",
 	"tools/language-acceptance/final_gate_execution.go",

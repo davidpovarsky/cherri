@@ -589,6 +589,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		applyTakeoverAudit(&row, runner)
 		applyCIIdentityAudit(&row, runner)
 		applyPublicationSecurityAudit(&row, runner)
+		applyFinalRequiredGateAudit(&row, runner)
 		if scenario, found := structuredValueScenarios[row.ID]; found && (res.Passed || res.Status == "FAILED") {
 			row.TestNames = append([]string(nil), structuredValueInventory.Tests...)
 			row.ProductionPath = append([]string(nil), structuredValueInventory.SourcePaths...)

@@ -238,6 +238,13 @@ func NewRunner() *Runner {
 }
 
 func (r *Runner) Record(id, group, req, level string, executedLevels []string, passed bool, status, detail string) {
+	if finalGateTestID(id) != "" {
+		r.recordUnexecutedRequirement(id, group, req, finalGateTiers(id))
+		result := r.results[id]
+		result.Detail = "Generic records cannot supply dedicated final gate source, artifact, and native observations"
+		r.results[id] = result
+		return
+	}
 	if r.recordIncompleteScope(id, group, req, level, executedLevels, passed, detail) {
 		return
 	}
@@ -1099,6 +1106,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validatePublicationSecurityRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateFinalRequiredGateRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateAIMeasurementRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1527,7 +1537,7 @@ func main() {
 		runner.runRepairCases(contracts.Repair)
 		runner.runRecoveryGates(contracts.Gates)
 		runner.runPublicationSecurityRequirement()
-		runner.runCIVerification()
+		runner.runFinalRequiredGateRequirements(contracts)
 
 		// Explicit report destinations include every local evidence artifact.
 		// Keep the historical path for default manifest discovery only.
@@ -1950,6 +1960,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if finalGateTestID(c.ID) != "" {
+			continue
+		}
 		if r.runStructuredValueRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -2027,6 +2040,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if finalGateTestID(g.ID) != "" {
+			continue
+		}
 		if g.ID == "BRG28" {
 			r.results[g.ID] = CaseResult{ID: g.ID, Group: "recovery_gate", Requirement: g.Title,
 				TestLevel: strings.Join(g.MinimumEvidenceTiers, "+"), Status: "NOT_RUN",
@@ -2087,42 +2103,19 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 	}
 }
 
+// Retain the historical caller while requiring the same dedicated producer as
+// the canonical runner. Generic successful workflow discovery grants no tier.
 func (r *Runner) runCIVerification() {
-	if len(r.implSHA) != 40 {
-		return
-	}
-	runs, err := ciRunDiscoveryFunc(r.implSHA)
+	contracts, err := LoadAllContracts("", "", "")
 	if err != nil {
+		for _, id := range []string{"RP49", "BRG31"} {
+			r.recordUnexecutedRequirement(id, "final_gate", id, finalGateTiers(id))
+			result := r.results[id]
+			result.Status = "FAILED"
+			result.Detail = "Dedicated final gate contracts could not be loaded"
+			r.results[id] = result
+		}
 		return
 	}
-	wfMap := make(map[string]string)
-	for _, run := range runs {
-		if (run.Conclusion == "success" || run.Conclusion == "SUCCESS") && run.HeadSHA == r.implSHA {
-			wfMap[run.WorkflowName] = run.RunID
-		}
-	}
-	required := []string{"Build & Test", "OpenMinis Skill", "iOS Build", "iOS 27 Shortcuts Runtime PoC"}
-	for _, wf := range required {
-		if wfMap[wf] == "" {
-			return
-		}
-	}
-	for _, reqID := range []string{"RP49", "BRG31"} {
-		r.records = append(r.records, EvidenceRecord{
-			EvidenceID:        fmt.Sprintf("ev-ci-%s-ci", reqID),
-			Requirements:      []string{reqID},
-			Tier:              "ci",
-			ImplementationSHA: r.implSHA,
-			TestID:            "tools/language-acceptance:runCI",
-			ExitCode:          0,
-			Result:            "passed",
-			Assertions: map[string]string{
-				"build_and_test_run":    wfMap["Build & Test"],
-				"openminis_skill_run":   wfMap["OpenMinis Skill"],
-				"ios_build_run":         wfMap["iOS Build"],
-				"ios27_runtime_poc_run": wfMap["iOS 27 Shortcuts Runtime PoC"],
-			},
-			Detail: fmt.Sprintf("All 4 required GitHub Actions workflows succeeded on exact SHA %s", r.implSHA),
-		})
-	}
+	r.runFinalRequiredGateRequirements(contracts)
 }
