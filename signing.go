@@ -254,9 +254,17 @@ func requestSignedShortcutExplicit(service *SigningService, inPath, outPath stri
 		return nil, fmt.Errorf("no shortcut data or input path available to sign")
 	}
 
-	name := basename
-	if name == "" {
+	// Explicit file paths own both the payload and its public name. The staging
+	// directory preserves the destination basename, so a previous compilation's
+	// global basename cannot rename a later file-signing request.
+	name := ""
+	switch {
+	case outPath != "":
 		name = strings.TrimSuffix(filepath.Base(outPath), ".shortcut")
+	case inPath != "":
+		name = strings.TrimSuffix(filepath.Base(inPath), ".shortcut")
+	default:
+		name = basename
 	}
 	if name == "" {
 		name = "Shortcut"
