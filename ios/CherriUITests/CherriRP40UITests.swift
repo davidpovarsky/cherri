@@ -154,6 +154,25 @@ final class CherriRP40UITests: XCTestCase {
         }
     }
 
+    private func requireManualBuildPending(_ editor: XCUIElement, source: String) throws {
+        try expectSource(editor, source)
+        let compiled = app.staticTexts["compiledStatusText"]
+        let signed = app.buttons["shareSignedShortcutButton"]
+        let diagnostic = app.staticTexts["diagnosticStatusText"]
+        let item = app.staticTexts["diagnosticItem_0"]
+        try require(wait { !compiled.exists && !signed.exists && !diagnostic.exists && !item.exists },
+                    "RP40 current source must invalidate old artifacts and stale diagnostics")
+        // Observe across the existing 650ms live-preview debounce. This is an
+        // inverted UI expectation, not a delay that assumes an outcome.
+        let automaticResult = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            compiled.exists || signed.exists || diagnostic.exists || item.exists
+        }, object: app)
+        automaticResult.isInverted = true
+        try require(XCTWaiter.wait(for: [automaticResult], timeout: 1.5) == .completed,
+                    "RP40 must publish no automatic result before its real manual Build tap")
+        try expectSource(editor, source)
+    }
+
     private func build(_ editor: XCUIElement, source: String, succeeds: Bool) throws {
         try expectSource(editor, source)
         let button = app.buttons["buildButton"]
@@ -197,11 +216,7 @@ final class CherriRP40UITests: XCTestCase {
 
         let complete = prefix + "show(value)\n"
         try replaceSource(editor, complete)
-        // A previous hole diagnostic must still be present before this manual
-        // Build. A live-preview result cannot stand in for the requested path.
-        try require(app.staticTexts["diagnosticStatusText"].exists &&
-                    !app.staticTexts["compiledStatusText"].exists,
-                    "RP40 manual Build control must retain the previous rejection until requested")
+        try requireManualBuildPending(editor, source: complete)
         try build(editor, source: complete, succeeds: true)
         stage("source-compiled")
 
@@ -247,9 +262,7 @@ final class CherriRP40UITests: XCTestCase {
         try require(alert.waitForNonExistence(timeout: 5), "RP40 Rename dialog must dismiss")
         stage("semantic-rename")
 
-        try require(app.staticTexts["diagnosticStatusText"].exists &&
-                    !app.staticTexts["compiledStatusText"].exists,
-                    "RP40 must not reuse a compiled result from before Rename")
+        try requireManualBuildPending(editor, source: renamed)
         try build(editor, source: renamed, succeeds: true)
         try require(!app.otherElements["diagnosticsBanner"].exists,
                     "RP40 successful renamed-source build must clear rendered diagnostics")

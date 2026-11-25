@@ -87,6 +87,8 @@ SOURCE_PATHS = sorted({
     "ios/CherriUITests/EditorStartupDeadline.swift",
     "ios/TestSupport/CherriJoinedContract.swift",
     "ios/WebPreview/src/main.ts", "ios/WebPreview/package.json", "ios/WebPreview/package-lock.json",
+    "ios/WebPreview/src/primitive-parameter-editing.mjs",
+    "ios/WebPreview/tests/primitive-parameter-editing.test.mjs",
     "action.go", "actions_std.go", "build_profile.go", "copy_paste.go", "functions.go",
     "includes.go", "ios_bridge.go", "language_emit_adapter.go", "mobile_compiler.go",
     "mobile_document_context.go", "native_document_legacy.go", "parser.go",
