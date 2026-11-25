@@ -602,9 +602,9 @@ func determineConfirmedForms(ap *AppleParameterEncoding, codec string) ([]string
 	}
 
 	if ap.Class == "WFTextInputParameter" || ap.SingleStateClass == "WFVariableStringParameterState" {
-		if hasVar {
-			return []string{"literal", "tokenString", "attachment(output)", "attachment(variable)"}, true
-		}
+		// variableTypes describes permitted reference contents, not the outer
+		// parameter envelope. Captured VariableString state serializes both
+		// Variable and ActionOutput inside WFTextTokenString.
 		return []string{"literal", "tokenString"}, true
 	}
 

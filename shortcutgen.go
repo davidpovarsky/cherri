@@ -909,9 +909,10 @@ func argumentValue(args []actionArgument, idx int) any {
 	}
 
 	handleAs := actionParameter.validType
-	fullIdent := getFullActionIdentifier()
-	if arg.valueType == Variable && (isAttachmentCapableTextParam(fullIdent, actionParameter.key) ||
-		((fullIdent == "is.workflow.actions.text.split" || fullIdent == "is.workflow.actions.text.combine") && idx == 1)) {
+	// Authored Text references are contents of WFTextTokenString. Numeric
+	// NumberString fields and explicitly preserved native attachment arguments
+	// retain their own carrier; imported workflow metadata cannot change this.
+	if arg.valueType == Variable && argumentUsesAttachmentCarrier(arg, actionParameter, idx) {
 		handleAs = Variable
 	}
 	return paramValue(arg, handleAs)

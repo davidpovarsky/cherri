@@ -805,6 +805,9 @@ func isNumericOrTextImageParamKey(key string) bool {
 	}
 }
 
+// isAttachmentCapableTextParam describes imported native attachment shapes.
+// It is not the default authored Text encoder; variableTypes alone cannot
+// determine whether a parameter uses an attachment or token-string envelope.
 func isAttachmentCapableTextParam(actionIdent string, paramKey string) bool {
 	if isNumericOrTextImageParamKey(paramKey) {
 		return true

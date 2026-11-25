@@ -29,6 +29,7 @@ type provenanceOutputNameSpec struct {
 
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
+	ExplicitNative         bool   // direct explicit native reference, not serialized metadata
 	IsVariable             bool   // true = setvariable/getvariable, false = direct action output token
 	TokenType              string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
 	OutputUUID             string // for action output
@@ -1821,6 +1822,7 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 				OutputUUID:      ref.OutputUUID,
 				OutputName:      effOutName,
 				Aggrandizements: ref.Aggrandizements,
+				ExplicitNative:  ref.ExplicitNative,
 			}
 			if len(ref.Aggrandizements) == 0 {
 				if _, hasProvName := l.provenanceOutputNames[b.Name]; !hasProvName {
@@ -1859,6 +1861,7 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 				OutputUUID:      uuid,
 				OutputName:      effOutName,
 				Aggrandizements: ref.Aggrandizements,
+				ExplicitNative:  ref.ExplicitNative,
 			}
 		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Clipboard" {
 			l.bindings[b.Name] = l.captureClipboardBinding(b.Name, ref)
@@ -1869,6 +1872,7 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 				OutputUUID:      ref.OutputUUID,
 				OutputName:      ref.OutputName,
 				Aggrandizements: ref.Aggrandizements,
+				ExplicitNative:  ref.ExplicitNative,
 			}
 		} else {
 			// Materialize literal or computed value based on its semantic type
@@ -3832,8 +3836,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		if ref, found := l.bindings[e.Name]; found {
 			if ref.IsVariable {
 				tok := &ir.AttachmentToken{
-					Type:       "Variable",
-					OutputName: ref.VariableName,
+					Type:           "Variable",
+					OutputName:     ref.VariableName,
+					ExplicitNative: ref.ExplicitNative,
 				}
 				if len(ref.Aggrandizements) > 0 {
 					tok.Aggrandizements = make([]map[string]interface{}, len(ref.Aggrandizements))
@@ -3846,9 +3851,10 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				tokType = "ActionOutput"
 			}
 			tok := &ir.AttachmentToken{
-				Type:       tokType,
-				OutputUUID: ref.OutputUUID,
-				OutputName: ref.OutputName,
+				Type:           tokType,
+				ExplicitNative: ref.ExplicitNative,
+				OutputUUID:     ref.OutputUUID,
+				OutputName:     ref.OutputName,
 			}
 			if len(ref.Aggrandizements) > 0 {
 				tok.Aggrandizements = make([]map[string]interface{}, len(ref.Aggrandizements))
@@ -4068,6 +4074,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 						OutputUUID:      tok.OutputUUID,
 						OutputName:      tok.OutputName,
 						Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+						ExplicitNative:  tok.ExplicitNative,
 					}
 					copy(newTok.Aggrandizements, tok.Aggrandizements)
 					isCoercedPropertyTarget := false
@@ -4355,6 +4362,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				OutputUUID:      tok.OutputUUID,
 				OutputName:      tok.OutputName,
 				Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+				ExplicitNative:  tok.ExplicitNative,
 			}
 			copy(newTok.Aggrandizements, tok.Aggrandizements)
 			if itemClass, ok := lookupContentItemClass(e.Property); ok {
@@ -4914,6 +4922,7 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 			Kind: backend.ValReference,
 			Ref: &backend.Reference{
 				Kind:            kind,
+				ExplicitNative:  v.ExplicitNative,
 				ProducerID:      v.OutputUUID,
 				ProducerName:    v.OutputName,
 				OmitOutputName:  v.Type == "ActionOutput" && v.OutputName == "",
@@ -5278,6 +5287,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			}
 			return &ir.AttachmentToken{
 				Type:            baseTok.Type,
+				ExplicitNative:  true,
 				OutputUUID:      outUUID,
 				OutputName:      outName,
 				Aggrandizements: combinedAggrs,
@@ -5291,6 +5301,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		kind = validatedKind
 
 		tok := &ir.AttachmentToken{
+			ExplicitNative:  true,
 			Type:            kind,
 			OutputUUID:      outputUUID,
 			OutputName:      outputName,

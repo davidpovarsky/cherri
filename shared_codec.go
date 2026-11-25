@@ -15,6 +15,8 @@ import (
 
 // ReferenceDescriptor is the shared pure description of a symbolic reference.
 type ReferenceDescriptor struct {
+	// ExplicitNative is source intent from rawRef/native.ref, never a plist field.
+	ExplicitNative     bool   `json:"-" plist:"-"`
 	Kind               string // "ActionOutput", "Variable", "ExtensionInput", "Ask"
 	OutputUUID         string
 	OutputName         string
@@ -83,6 +85,7 @@ func ReferenceToDescriptor(ref *backend.Reference) ReferenceDescriptor {
 		return ReferenceDescriptor{}
 	}
 	var desc ReferenceDescriptor
+	desc.ExplicitNative = ref.ExplicitNative
 	switch ref.Kind {
 	case backend.RefActionResult, backend.RefLoopResult:
 		desc.Kind = "ActionOutput"
