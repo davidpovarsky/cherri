@@ -573,6 +573,9 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/PrimaryNoInputLaunch.swift",
+    "tools/shortcuts-simulator-qa/verify_primary_no_input.py",
+    "tools/shortcuts-simulator-qa/verify_primary_no_input.swift",
     "tools/shortcuts-simulator-qa/owned_simulator_selection.py",
     "tools/shortcuts-simulator-qa/test_owned_simulator_selection.py",
     "tools/shortcuts-simulator-qa/optional_forwarding_diagnostic.py",

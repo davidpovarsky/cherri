@@ -91,6 +91,24 @@ struct Control: Decodable { let raw: String?; let sanitized: String?; let summar
     bounded = tagged + "A" * 20000
     add(bounded, bounded[:16384], bounded[:16384])
 
+    # The function engineering callback retains all three CASE observations,
+    # including contrary presence/types. Interpretation belongs to its parser.
+    function = "CHERRI_FUNCTION_ENVELOPE_PRESENCE_V1:"
+    for value in ("CASE[zero]:CALLER_KEY=0", "CASE[none]:CALLER_KEY=1"):
+        raw = function + value
+        add(raw, raw, raw)
+        add(raw + "\n" + trace, raw + "\n" + trace, raw, trace)
+    for raw in (function.replace("_V1:", "_V2:") + "PUBLIC",
+                function.removesuffix(":") + "PUBLIC",
+                "private-prefix " + function + "PUBLIC"):
+        redacted = "[REDACTED_NON_ALLOWLISTED_LEN_" + str(len(raw)) + "]"
+        add(raw, redacted, redacted)
+    for secret in ("ghp_SYNTHETIC_CANARY", "canary@example.invalid",
+                   "/Users/SYNTHETIC", "BEGIN PRIVATE KEY"):
+        add(function + secret, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    bounded = function + "A" * 20000
+    add(bounded, bounded[:16384], bounded[:16384])
+
     if args.artifacts_dir:
         retained = Path(args.artifacts_dir)
         retained.mkdir(parents=False, exist_ok=False)

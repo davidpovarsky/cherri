@@ -20,6 +20,7 @@ struct CallbackEventRecord: Codable {
 
 final class CallbackEventStore: ObservableObject {
     static let shared = CallbackEventStore()
+    let primaryNoInputLaunchGate: QAPrimaryNoInputLaunchGate
 
     @Published var events: [CallbackEventRecord] = []
     @Published var lastStatus: String = "IDLE"
@@ -58,6 +59,10 @@ final class CallbackEventStore: ObservableObject {
     }()
 
     init() {
+        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        primaryNoInputLaunchGate = QAPrimaryNoInputLaunchGate(
+            rawContract: ProcessInfo.processInfo.environment[QAPrimaryNoInputLaunchGate.environmentKey],
+            evidenceRoot: documents)
         loadExisting()
     }
 
@@ -114,6 +119,7 @@ final class CallbackEventStore: ObservableObject {
            trimmed.hasPrefix("CHERRI_NESTED_LIST_CONTROL_V1:") ||
            trimmed.hasPrefix("CHERRI_NESTED_LIST_CANDIDATE_V1:") ||
            trimmed.hasPrefix("CHERRI_TAGGED_VALUE_CARRIER_V1:") ||
+           trimmed.hasPrefix("CHERRI_FUNCTION_ENVELOPE_PRESENCE_V1:") ||
            trimmed.hasPrefix("{\"schemaVersion\":\"1.4\"") ||
            trimmed.hasPrefix("{\"schemaVersion\":\"1.0\"") ||
            trimmed.hasPrefix("===CHERRI_QA_TRACE_NDJSON_V14===") ||
@@ -300,6 +306,11 @@ struct CherriSimulatorQAReceiverApp: App {
     }
 
     private func triggerExternalShortcutURL(_ rawURL: String, source: String, delay: TimeInterval) {
+        let permit = store.primaryNoInputLaunchGate.begin(rawURL: rawURL, source: source)
+        guard permit.allowed else {
+            store.logTrigger("source=\(source) noInputLaunchRejected=\(permit.reason ?? "UNKNOWN")")
+            return
+        }
         guard let targetURL = URL(string: rawURL) else {
             store.logTrigger("source=\(source) invalidURL len=\(rawURL.count)")
             return
@@ -308,8 +319,11 @@ struct CherriSimulatorQAReceiverApp: App {
         store.logTrigger("source=\(source) scheduling open scheme=\(targetURL.scheme ?? "nil") host=\(targetURL.host ?? "nil") canOpen=\(canOpen) delay=\(delay)")
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             UIApplication.shared.open(targetURL, options: [:]) { success in
+                if !self.store.primaryNoInputLaunchGate.complete(permit, success: success) {
+                    self.store.logTrigger("source=\(source) originalReceipt=FAILED")
+                }
                 self.store.logTrigger("source=\(source) UIApplication.openCompletion=\(success)")
-                if !success {
+                if !success && permit.allowsFallback {
                     if let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
                         scene.open(targetURL, options: nil) { sceneSuccess in
                             self.store.logTrigger("source=\(source) scene.openCompletion=\(sceneSuccess)")
