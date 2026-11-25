@@ -34,6 +34,8 @@ const ciIdentityTimeout = 120 * time.Second
 const ciIdentityArchiveLimit = 256 * 1024 * 1024
 
 var ciIdentitySources = []string{
+	"tools/language-acceptance/docs_publication_execution.go",
+	"tools/language-acceptance/docs_publication_execution_test.go",
 	"tools/language-acceptance/ci_identity_execution.go",
 	"tools/language-acceptance/ci_identity_execution_test.go",
 	"tools/language-acceptance/final_provenance_execution.go",

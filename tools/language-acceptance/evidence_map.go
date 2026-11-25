@@ -221,6 +221,11 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			}
 			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-final-provenance-END01"}
 		}
+		if c.ID == "B01" {
+			mapping.TestIDs = []string{baselineTestID}
+			mapping.RequiredAssertions = map[string]string{"scope": baselineScope, "closure_complete": "false"}
+			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-owned-source-baseline-B01"}
+		}
 		if c.ID == "CI03" {
 			mapping.TestIDs = []string{ciIdentityTestID}
 			mapping.RequiredAssertions = map[string]string{"scope": ciIdentityScope, "closure_complete": "false"}
@@ -534,6 +539,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if id == "B01" {
+		return append([]string{}, baselineSources...)
+	}
 	if id == textComparisonRequirement {
 		return append([]string{}, textComparisonEvidence.SourcePaths...)
 	}
