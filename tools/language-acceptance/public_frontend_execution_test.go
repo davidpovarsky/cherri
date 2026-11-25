@@ -24,6 +24,36 @@ func publicFrontendSelectedContracts(t *testing.T, all *ContractsSet) *Contracts
 	selected.Repair.CaseCount = 1
 	return selected
 }
+
+// These six fault targets are independent of the acceptance inventory; a missing
+// shared entry must not remove the causal rejection checks as well.
+func publicFrontendStatisticsFaultTargets() []string {
+	var targets []string
+	for _, name := range []string{"statistics_reverted_input", "statistics_unrelated_math_key", "statistics_operation_drift", "statistics_action_identity", "statistics_wrong_correction", "statistics_wrong_implementation"} {
+		targets = append(targets, "TestP15U01DeclarationBoundaryControls/"+name)
+	}
+	return targets
+}
+
+func TestPublicFrontendUpstreamChildInventory(t *testing.T) {
+	var selected = map[string]bool{}
+	for _, name := range publicFrontendRequiredEvents() {
+		selected[name] = true
+	}
+	for _, name := range upstreamBoundaryRequiredEvents() {
+		if !selected[name] {
+			t.Errorf("RP52 omitted reviewed U01 event %s", name)
+		}
+	}
+	for _, target := range publicFrontendStatisticsFaultTargets() {
+		t.Run(target, func(t *testing.T) {
+			if !selected[target] {
+				t.Fatal("RP52 omitted independently selected statistics control", target)
+			}
+		})
+	}
+}
+
 func TestPublicFrontendProducerInventory(t *testing.T) {
 	all, err := LoadAllContracts("", "", "")
 	if err != nil {
@@ -34,7 +64,7 @@ func TestPublicFrontendProducerInventory(t *testing.T) {
 		t.Fatal("immutable full RP52 contract changed", row)
 	}
 	names := publicFrontendRequiredEvents()
-	if len(names) != 98 || len(publicFrontendProductionPaths) != 73 {
+	if len(names) != 131 || len(publicFrontendProductionPaths) != 74 {
 		t.Fatal("unreviewed RP52 event/source inventory", len(names), len(publicFrontendProductionPaths))
 	}
 	seen := map[string]bool{}
@@ -234,6 +264,28 @@ func TestPublicFrontendActualProductionEvidence(t *testing.T) {
 	target := publicFrontendTests[0] + "/omitted_reject_file_marker"
 	for _, actual := range runner.records {
 		t.Run(actual.Tier, func(t *testing.T) {
+			for _, target := range publicFrontendStatisticsFaultTargets() {
+				t.Run("missing_statistics/"+strings.TrimPrefix(target, "TestP15U01DeclarationBoundaryControls/"), func(t *testing.T) {
+					var changed EvidenceRecord
+					var encoded, err = json.Marshal(actual)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if err = json.Unmarshal(encoded, &changed); err != nil {
+						t.Fatal(err)
+					}
+					publicFrontendRewriteArtifacts(t, &changed, func(data map[string][]byte, _ *editorProcessReceipt) {
+						var raw = structuralMigrationCorruptRaw(t, "missing_event", target, data[names[1]])
+						if bytes.Equal(raw, data[names[1]]) {
+							t.Fatal("actual statistics event omission did not change bytes", target)
+						}
+						data[names[1]] = raw
+					})
+					if validatePublicFrontendRecord(id, changed) == nil {
+						t.Fatal("hash-reconciled actual statistics event omission accepted", target)
+					}
+				})
+			}
 			for _, fault := range faults {
 				t.Run(fault, func(t *testing.T) {
 					var broken EvidenceManifest
