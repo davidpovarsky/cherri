@@ -1,0 +1,76 @@
+name: P10R15 Structured Values Formal Evidence
+
+on:
+  push:
+    branches:
+      - probe/cherri-p10r15-structured-formal-capture-20261125
+    paths:
+      - .github/workflows/p10r15-structured-values.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p10r15-structured-formal-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  register-workflow:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - run: echo 'Registered the explicit structured-value capture; no test was executed.'
+
+  structured-formal:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOMAXPROCS: '2'
+      GOFLAGS: '-p=1 -mod=readonly'
+      GOTOOLCHAIN: local
+      GOWORK: 'off'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the separately identified capture controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: capture-controller
+
+      - name: Check out immutable compiler source 12f07521
+        uses: actions/checkout@v6
+        with:
+          ref: 12f07521b3e9612b97f4e1fc52ccbee40e3b867a
+          fetch-depth: 0
+          persist-credentials: false
+          path: compiler-source
+
+      - name: Set up the original Go toolchain
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: compiler-source/go.sum
+
+      - name: Run exact formal117 and original child1356 cohort once
+        timeout-minutes: 10
+        run: |
+          python3 -B capture-controller/tools/ci-evidence/structured-formal/capture.py \
+            --controller-root "$GITHUB_WORKSPACE/capture-controller" \
+            --controller-sha "$GITHUB_SHA" \
+            --compiler-root "$GITHUB_WORKSPACE/compiler-source" \
+            --out "$RUNNER_TEMP/cherri-structured-formal-originals"
+
+      - name: Preserve all original evidence after success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p10r15-structured-formal-12f07521-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-structured-formal-originals/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
