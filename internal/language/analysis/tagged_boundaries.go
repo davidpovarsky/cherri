@@ -59,8 +59,11 @@ func (a *Analyzer) checkTaggedExpressionBoundary(expr syntax.Expression, value t
 			name = identifier.Name
 		}
 		if name == "count" && schema.LoopResultItemsCountConsumer(node, action) && node.PrimaryArg != nil {
-			if _, list := unwrapOptionalType(a.taggedExpressionType(node.PrimaryArg, scope)).(types.ListType); list {
-				return // Count observes the outer cell sequence, not its payload.
+			switch unwrapOptionalType(a.taggedExpressionType(node.PrimaryArg, scope)).(type) {
+			case types.ListType, types.MapType:
+				// Preserve the native Items Count of the existing outer
+				// content object. No cell payload or Map-key conversion.
+				return
 			}
 		}
 		arguments := []syntax.Expression{node.PrimaryArg}
