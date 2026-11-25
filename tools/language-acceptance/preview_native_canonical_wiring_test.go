@@ -59,8 +59,10 @@ func TestPreviewNativeCanonicalManifestBoundary(t *testing.T) {
 	contracts := previewNativeCanonicalContracts(t)
 	var complete *EvidenceManifest
 	for _, test := range previewNativeTestIDs("BRG28") {
+		// The complete manifest is checked after each subtest returns. Keep
+		// its synthetic artifact directories owned by this parent test.
+		model := newPreviewNativeControlModel(t, test)
 		t.Run(test, func(t *testing.T) {
-			model := newPreviewNativeControlModel(t, test)
 			model.record.EvidenceID += "-" + model.record.Tier
 			if err := validatePreviewNativeRecord("BRG28", model.record, model.manifest); err != nil {
 				t.Fatal("independent healthy validator control rejected:", err)
