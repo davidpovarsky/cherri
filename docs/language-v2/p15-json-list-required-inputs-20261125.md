@@ -46,3 +46,21 @@ and ordinary present-value controls remain independent positive controls.
 
 No unchanged Apple probe, paid provider request, release, or acceptance run is
 started by this checkpoint.
+
+## First actual baseline and fixture correction
+
+The clean c7fa464f baseline completed in31.447 seconds with actual exit1.
+Twelve cases reached the intended semantic boundary and were rejected with
+E_NATIVE_JSON_NULL, E_TARGET_VALUE_SHAPE, or E_NESTED_NATIVE_LIST. Three new
+function fixtures instead used the wrong keyword `fn` and failed parsing;
+they are not semantic capability evidence. Only those three literals now use
+the existing `function` syntax. Their expectations are unchanged.
+
+Both unchanged positive-control parents passed16 named events, preserving
+ordinary Dictionary nested shapes and supplied/omitted/false/zero/empty/None
+parameter distinctions. The original failed baseline is retained at
+`/mnt/development/projects/evidence/cherri-p10r15-ci-release-20261125/json-list-required-inputs-red-01/receipt.original.json`,
+SHA256 `700ab089ac92878b6b1bf7e96857efd74ff640f101891d23dc80b5495305c6b2`.
+A bounded replay of only the three corrected function cases is pending;
+the twelve actual semantic failures and positive controls will not be rerun
+merely to reproduce unchanged results.

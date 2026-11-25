@@ -18,7 +18,7 @@ func TestP15JSONListRequiredAuthoredInputs(t *testing.T) {
 	}{
 		{"null_scalar", "let value:JsonNull=null\nreturn value==null", "T05: JSON null is a present value"},
 		{"null_optional", "let value:Optional<JsonValue>=null\nreturn value==none", "T05: JSON null differs from Optional absence"},
-		{"null_function", "fn echo(value:JsonValue)->JsonValue {return value}\nlet value=echo(null)\nreturn value==null", "BRG15: structured function transport preserves JSON null"},
+		{"null_function", "function echo(value:JsonValue)->JsonValue {return value}\nlet value=echo(null)\nreturn value==null", "BRG15: structured function transport preserves JSON null"},
 		{"null_map", "let value:Map<Text,JsonValue>={\"n\":null}\nreturn value[\"n\"]==null", "T05/RP20: explicit JSON null must not erase a key"},
 		{"optional_list", "let values:List<Optional<Bool>>=[none,false,true]\nreturn count(values)", "T05/RP20: Optional absence occupies its ordered List slot"},
 		{"optional_map", "let values:Map<Text,Optional<Bool>>={\"absent\":none,\"false\":false}\nreturn values[\"absent\"]==none", "T05/RP20: present Map key with None differs from missing key"},
@@ -28,8 +28,8 @@ func TestP15JSONListRequiredAuthoredInputs(t *testing.T) {
 		{"nested_checked_index", "let values=[[1,2],[]]\nlet selected=values[0]\nif selected!=none {return count(selected)} else {return 0}", "L01/RP20: checked index decodes the selected nested value"},
 		{"nested_iteration", "let values=[[1,2],[]]\nvar total=0\nfor value in values {total+=count(value)}\nreturn total", "L01: iteration preserves nested values including empty List"},
 		{"nested_mutable_snapshot", "let source=[[1,2],[]]\nvar current=source\nlet old=current\ncurrent=[[]]\nreturn count(old)*10+count(current)", "L01/RP20: immutable alias retains the before-write nested value"},
-		{"nested_function", "fn size(values:List<List<Number>>)->Number {return count(values)}\nreturn size([[1,2],[]])", "BRG15: structured function input retains nested List shape"},
-		{"optional_list_function", "fn size(values:List<Optional<Bool>>)->Number {return count(values)}\nreturn size([none,false])", "BRG15: structured function input retains Optional slots"},
+		{"nested_function", "function size(values:List<List<Number>>)->Number {return count(values)}\nreturn size([[1,2],[]])", "BRG15: structured function input retains nested List shape"},
+		{"optional_list_function", "function size(values:List<Optional<Bool>>)->Number {return count(values)}\nreturn size([none,false])", "BRG15: structured function input retains Optional slots"},
 		{"dynamic_loop_payload", "let inner=[1,2]\nlet values=repeat 2 {yield inner}\nreturn count(values)", "L01/F04: a dynamic List payload retains one result per iteration"},
 	}
 	for _, tc := range cases {
