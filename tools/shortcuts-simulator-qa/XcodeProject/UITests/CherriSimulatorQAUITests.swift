@@ -158,6 +158,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-n03-text-equality-diagnostic-v2",
         "qa-nested-list-control-v2",
         "qa-nested-list-candidate-v2",
+        "qa-tagged-value-carrier-v2",
         "qa-debug-label-plain-v2",
         "qa-debug-label-dated-v2",
         "qa-debug-label-typed-v2",

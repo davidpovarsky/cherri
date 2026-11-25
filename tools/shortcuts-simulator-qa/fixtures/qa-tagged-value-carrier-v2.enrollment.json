@@ -1,0 +1,55 @@
+{
+  "schema": "cherri-tagged-carrier-native-enrollment/1",
+  "fixture": "qa-tagged-value-carrier-v2",
+  "sourceSha256": "8abc203ba48ba97e6c3c28240dd861e3a6b8b4a0b5ac91f7e82334ca528a46ec",
+  "expectedContractSha256": "d1d4ce31aefae34870ccf4316d1cde11af08d2751597df8876f6811d0290fb4c",
+  "originalContractEnrollment": "UNENROLLED_ENGINEERING_FIXTURE",
+  "runtimeContractMode": "TAGGED_CARRIER_ENGINEERING_OBSERVATION_ONLY",
+  "nativeActionCount": 225,
+  "traceRunId": "qa-tagged-value-carrier-v2",
+  "traceLabel": "tagged-value-carrier",
+  "traceEvents": [
+    {
+      "kind": "COLLECTOR_EVENT",
+      "stage": "collector_begin"
+    },
+    {
+      "kind": "INLINE_DEBUG_ACTION",
+      "stage": "before",
+      "stepSequence": 3,
+      "actionIdentifier": "is.workflow.actions.setvariable"
+    },
+    {
+      "kind": "INLINE_DEBUG_ACTION",
+      "stage": "after",
+      "stepSequence": 218,
+      "actionIdentifier": "is.workflow.actions.comment"
+    },
+    {
+      "kind": "COLLECTOR_EVENT",
+      "stage": "collector_end"
+    }
+  ],
+  "requiredOriginals": [
+    "compiled source",
+    "unsigned shortcut",
+    "signed AEA1 shortcut",
+    "compiler manifest",
+    "signing provenance",
+    "correlated callback",
+    "exact four-event NDJSON trace"
+  ],
+  "scope": "Specified nonempty and empty List cells, Text Map payload and absent Optional Map cell only.",
+  "excludedScope": [
+    "false",
+    "JSON null",
+    "empty Map",
+    "File",
+    "arbitrary recursion",
+    "full T05/L01/F04 acceptance",
+    "physical-device acceptance"
+  ],
+  "preserveContradictoryObservations": true,
+  "diagnosticOnly": true,
+  "formalAcceptanceGranted": false
+}
