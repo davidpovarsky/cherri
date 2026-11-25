@@ -42,6 +42,11 @@ func completionWireItems(items []service.CompletionItem) []map[string]any {
 		if item.InsertText != "" {
 			value["insertText"] = item.InsertText
 		}
+		if item.TextEdit != nil {
+			value["textEdit"] = map[string]any{
+				"range": wireRange(item.TextEdit.Span), "newText": item.TextEdit.NewText,
+			}
+		}
 		wire = append(wire, value)
 	}
 	return wire

@@ -103,7 +103,7 @@ func p15E06SnapshotError(code string, messages []map[string]any) error {
 	}
 	missing := strings.Index(code, "{missing}") + 1
 	wantDiagnostics := map[string]any{"jsonrpc": "2.0", "method": "textDocument/publishDiagnostics", "params": map[string]any{
-		"uri": p15LSPURI, "diagnostics": []any{map[string]any{"code": "E_UNKNOWN_NAME", "severity": 1, "message": "unknown identifier \"missing\"", "range": p15E06Range(code, missing, len("missing"))}},
+		"uri": p15LSPURI, "version": 5, "diagnostics": []any{map[string]any{"code": "E_UNKNOWN_NAME", "severity": 1, "message": "unknown identifier \"missing\"", "range": p15E06Range(code, missing, len("missing"))}},
 	}}
 	if !p15E06JSONEqual(notifications[0], wantDiagnostics) {
 		return fmt.Errorf("diagnostic source/range/content differs: %#v", notifications[0])

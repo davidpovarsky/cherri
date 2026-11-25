@@ -33,6 +33,7 @@ type CompletionItem struct {
 	Detail        string             `json:"detail,omitempty"`
 	Documentation string             `json:"documentation,omitempty"`
 	InsertText    string             `json:"insertText,omitempty"`
+	TextEdit      *TextEdit          `json:"textEdit,omitempty"`
 }
 
 // HoverResult represents hover information at a position.
@@ -200,18 +201,8 @@ func (s *Service) SchemaFingerprint() string {
 
 // Format formats the document text using canonical Cherri v2 formatting.
 func (s *Service) Format(uri string) (string, error) {
-	s.mu.RLock()
-	doc, ok := s.documents[uri]
-	s.mu.RUnlock()
-
-	if !ok {
-		return "", fmt.Errorf("document not found: %s", uri)
-	}
-
-	if len(doc.ParseErrors) != 0 {
-		return "", fmt.Errorf("cannot format document with syntax errors")
-	}
-	return syntax.Format(doc.Program), nil
+	edit, err := s.FormatEdit(uri)
+	return edit.NewText, err
 }
 
 func completionKindPriority(kind CompletionItemKind) int {
@@ -330,6 +321,7 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 		return deduped[i].Label < deduped[j].Label
 	})
 
+	attachCompletionEdits(doc, line, col, deduped)
 	return deduped
 }
 

@@ -49,13 +49,18 @@ func completeForMobile(src string, line, column int) protocol.CompleteResponse {
 
 	wireItems := make([]protocol.CompletionItem, 0)
 	for _, it := range items {
-		wireItems = append(wireItems, protocol.CompletionItem{
+		item := protocol.CompletionItem{
 			Label:         it.Label,
 			Kind:          int(it.Kind),
 			Detail:        it.Detail,
 			Documentation: it.Documentation,
 			InsertText:    it.InsertText,
-		})
+		}
+		if it.TextEdit != nil {
+			edit := protocol.ToTextEditItem(it.TextEdit.Span, it.TextEdit.NewText)
+			item.TextEdit = &edit
+		}
+		wireItems = append(wireItems, item)
 	}
 
 	resp := protocol.CompleteResponse{

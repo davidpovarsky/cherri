@@ -4,6 +4,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/source"
 )
 
 // ProtocolVersion is the wire protocol version.
@@ -41,11 +42,12 @@ type AnalyzeResponse struct {
 
 // CompletionItem represents a completion candidate for wire protocols.
 type CompletionItem struct {
-	Label         string `json:"label"`
-	Kind          int    `json:"kind"`
-	Detail        string `json:"detail,omitempty"`
-	Documentation string `json:"documentation,omitempty"`
-	InsertText    string `json:"insertText,omitempty"`
+	Label         string        `json:"label"`
+	Kind          int           `json:"kind"`
+	Detail        string        `json:"detail,omitempty"`
+	Documentation string        `json:"documentation,omitempty"`
+	InsertText    string        `json:"insertText,omitempty"`
+	TextEdit      *TextEditItem `json:"textEdit,omitempty"`
 }
 
 // CompleteResponse contains completion results.
@@ -137,6 +139,17 @@ func ToDiagnosticItem(d analysis.Diagnostic) DiagnosticItem {
 				Character: d.Span.End.LSPCharacterColumn(),
 			},
 		},
+	}
+}
+
+// ToTextEditItem preserves the shared service's exact source span on the wire.
+func ToTextEditItem(span source.Span, newText string) TextEditItem {
+	return TextEditItem{
+		Range: Range{
+			Start: Position{Line: span.Start.LSPLine(), Character: span.Start.LSPCharacterColumn()},
+			End:   Position{Line: span.End.LSPLine(), Character: span.End.LSPCharacterColumn()},
+		},
+		NewText: newText,
 	}
 }
 
