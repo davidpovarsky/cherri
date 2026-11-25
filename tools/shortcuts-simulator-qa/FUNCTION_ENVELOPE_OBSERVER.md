@@ -140,3 +140,43 @@ Those originals are under
 /mnt/development/projects/evidence/cherri-p10r15-apple-completion-20261125.
 Actual native import and execution remain pending until the reviewed outer
 owner is invoked and its original result is independently checked.
+
+## First native import attempt and exact receipt adapter repair
+
+The first owned native attempt reached the actual Differential XCTest ready
+state. Its import process exited zero in 5.01 seconds, but the unchanged Swift
+receipt decoder rejected it as IMPORT_DISPATCH_RECEIPT_MALFORMED. The producer
+used /usr/bin/xcrun while that existing decoder requires the original
+Differential command prefix xcrun, simctl, openurl. No function launch directory
+or semantic claim was created. The original native result remains:
+7091d708c329cf58ef9098a674c5a74fd96025235bb87ae1411e9644129e99a4.
+XCTest and observer process groups were reaped and observed absent. Its bounded
+XCTest finish required SIGINT/SIGTERM; no XCTest success is claimed.
+
+Only that producer argv element is corrected. The Swift decoder, original
+Differential helper, import/UI assertions, source and signing contracts remain
+unchanged. The real production import method was exercised with synthetic
+transport receipts: its new causal assertion failed before the correction
+(receipt 024e0b87d88a3b03dc70b6a2f7c230bdc93a47e3e4b74ddf3cc29d43c192cf0e)
+and all 30 parent tests plus 87 subtests then passed with unchanged source.
+An earlier test-fixture setup error (missing its acknowledgment file) is retained
+separately and is not counted as the causal failure.
+Oracle qualification receipt:
+function-observer-import-argv-green-01/result.original.json,
+SHA256 6631211e769a24068d0691051dd96328a2d7aaec90e3af5f4d1b38af1f039ef0.
+
+The actual unchanged Foundation decoder was compiled and executed on the Mac
+against the retained import receipt. It reproduced the original rejection,
+accepted a separately retained counterfactual with only argv[0] aligned to the
+original producer, and still rejected a wrong-route control. All three controls
+passed. This replay did not invoke an import or a function. Its receipt is
+function-import-argv-foundation-01 on Oracle and
+/Users/m1/builds/cherri-function-import-argv-foundation-20261125-01/result.original.json
+on the Mac, SHA256
+1b8e3485377ac453f4193cacb96e683749f52868c7bc5926da34fb150586aac8.
+
+The previous cleanup checkpoint also passed its complete 29-parent/87-subtest
+suite on Darwin, including the real owned-child cancellation. Its unchanged
+original receipt is 68b42045499c6697181e2a1dcc8c72c65f90d92277b2dc99e40f22a822b6c69c.
+A fresh source-bound native attempt is required after this adapter correction;
+the failed first attempt is never relabeled.

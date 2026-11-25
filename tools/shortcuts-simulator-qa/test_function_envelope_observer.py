@@ -418,6 +418,33 @@ class FunctionEnvelopeObserverTests(unittest.TestCase):
                         shutil.copytree(directory,destination/name)
                 (destination/"control.original.json").write_bytes(raw(control))
 
+
+    def test_import_dispatch_uses_original_swift_receipt_command_contract(self):
+        obj = observer.NativeObservation.__new__(observer.NativeObservation)
+        obj.root = self.base / "runtime-artifacts"
+        obj.folder = self.base / "observer"
+        obj.folder.mkdir()
+        obj.summary = {}
+        obj.xctest = mock.Mock()
+        signed = obj.root / "builds/signed" / (observer.launch.WORKFLOW + ".shortcut")
+        put(signed, b"synthetic signed fixture; this test performs no import")
+        dispatched = []
+        _, dispatch, imported = import_pair()
+        put(obj.folder / "ack-import-one.json", raw(imported))
+        def command(argv, *, timeout, on_started, receipt_path):
+            dispatched.append(argv)
+            on_started()
+            put(receipt_path, raw({**dispatch, "command": argv, "timeoutSeconds": timeout}))
+        with mock.patch.object(observer.uuid, "uuid4", return_value=SimpleNamespace(hex="one")), \
+             mock.patch.object(observer.differential, "command", side_effect=command), \
+             mock.patch.object(observer.differential, "wait_file", return_value=imported), \
+             mock.patch.object(obj, "capture", return_value=({"result": "PASS", "exitCode": 0}, b"", b"")):
+            obj.import_original()
+        self.assertEqual(dispatched, [["xcrun", "simctl", "openurl", observer.DEVICE, signed.as_uri()]])
+        receipt = json.loads((obj.folder / "dispatch-import-one.json").read_bytes())
+        self.assertEqual(receipt["command"], dispatched[0])
+        self.assertTrue(obj.summary["importTransportAuthenticated"])
+
     def test_originals_are_create_only_and_symlink_safe(self):
         target = self.base / "original.json"
         observer.original(target, b"original")
