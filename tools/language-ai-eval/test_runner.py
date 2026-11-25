@@ -147,6 +147,71 @@ class EvaluationHarnessTests(unittest.TestCase):
             runner.run_process([sys.executable, str(script)], {}, 2)
         self.assertNotIn("SECRET_CANARY", str(error.exception))
 
+    def exercise_owned_snapshot_race(self, mode, disappear):
+        # This is an actual newly owned process group. Only the bounded ps
+        # snapshot is substituted; kernel probes, SIGKILL and wait are real.
+        import selectors
+        command = [sys.executable, "-c",
+                   "import sys; sys.stdout.write('READY\\n'); sys.stdout.flush(); sys.stdin.buffer.read(1)"]
+        process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                   stderr=subprocess.DEVNULL, start_new_session=True)
+        def stop_owned():
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            process.wait(timeout=1)
+        try:
+            with selectors.DefaultSelector() as selector:
+                selector.register(process.stdout, selectors.EVENT_READ)
+                self.assertTrue(selector.select(timeout=1), "owned group did not reach bounded readiness")
+                self.assertEqual(os.read(process.stdout.fileno(), 6), b"READY\n")
+            self.assertEqual(os.getpgid(process.pid), process.pid)
+            os.killpg(process.pid, 0)
+            calls = []
+            def snapshot(argv, **kwargs):
+                self.assertEqual(argv, ["ps", "-A", "-o", "pgid=,stat="])
+                self.assertGreater(kwargs["timeout"], 0)
+                self.assertLessEqual(kwargs["timeout"], 1)
+                calls.append(process.pid)
+                if disappear:
+                    stop_owned()
+                    with self.assertRaises(ProcessLookupError):
+                        os.killpg(process.pid, 0)
+                else:
+                    os.killpg(process.pid, 0)
+                if mode == "timeout":
+                    raise subprocess.TimeoutExpired(argv, kwargs["timeout"])
+                if mode == "os_error":
+                    raise OSError("SYNTHETIC_PRIVATE_OBSERVER_ERROR")
+                if mode == "unicode_error":
+                    raise UnicodeError("SYNTHETIC_PRIVATE_OBSERVER_ERROR")
+                if mode == "nonzero":
+                    return subprocess.CompletedProcess(argv, 1, "")
+                if mode == "empty":
+                    return subprocess.CompletedProcess(argv, 0, "")
+                if mode == "oversized":
+                    return subprocess.CompletedProcess(argv, 0, "0 S\n" * (runner.MAX_ADAPTER_BYTES // 4 + 1))
+                if mode == "omitted":
+                    return subprocess.CompletedProcess(argv, 0, "0 S\n")
+                raise AssertionError("unregistered snapshot control")
+            with patch.object(runner.subprocess, "run", side_effect=snapshot):
+                if disappear:
+                    runner.wait_for_posix_group_exit(process.pid, time.monotonic() + 5)
+                else:
+                    with self.assertRaisesRegex(ValueError, "could not be observed") as failure:
+                        runner.wait_for_posix_group_exit(process.pid, time.monotonic() + 5)
+                    self.assertNotIn("SYNTHETIC_PRIVATE_OBSERVER_ERROR", str(failure.exception))
+            self.assertEqual(calls, [process.pid])
+            if not disappear:
+                self.assertIsNone(process.poll(), "uncertain snapshot must not signal its observed group")
+                os.killpg(process.pid, 0)
+        finally:
+            stop_owned()
+            process.stdin.close()
+            process.stdout.close()
+
     def test_hung_adapter_times_out(self):
         script = self.root / "hang.py"
         script.write_text("import time\ntime.sleep(2)\n", encoding="utf-8")
@@ -212,6 +277,15 @@ class EvaluationHarnessTests(unittest.TestCase):
                     self.assertEqual(probe.call_count, 2)
                     table.assert_called_once()
                     self.assertEqual(table.call_args.kwargs["timeout"], 1.0)
+
+        # The owned group may disappear between the initial kernel probe and
+        # the independent process-table snapshot. An unavailable snapshot does
+        # not override a fresh conclusive ESRCH, while a missing table row alone
+        # must never certify that an actually live owned group has terminated.
+        for mode in ("timeout", "os_error", "unicode_error", "nonzero", "empty", "oversized", "omitted"):
+            for disappear in (False, True):
+                with self.subTest(observer="actual_owned_snapshot_race", mode=mode, disappear=disappear):
+                    self.exercise_owned_snapshot_race(mode, disappear)
 
     def test_timeout_stops_a_spawned_worker(self):
         script = self.root / "parent.py"
