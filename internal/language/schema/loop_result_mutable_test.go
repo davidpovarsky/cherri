@@ -86,13 +86,6 @@ func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 		{"compound_assignment", initialized + "current+=next\nreturn count(current)"},
 		{"nonidentifier_rhs", initialized + "current=repeat 1 {yield [1,2]}\nreturn count(current)"},
 		{"ordinary_list_rhs", initialized + "let ordinary=[[1,2]]\ncurrent=ordinary\nreturn count(current)"},
-		{"if_write", initialized + "if true {current=next}\nreturn count(current)"},
-		{"else_write", initialized + "if true {let scalar=0} else {current=next}\nreturn count(current)"},
-		{"menu_write", initialized + "menu(\"Pick\") {case \"A\" {current=next} case \"B\" {let scalar=0}}\nreturn count(current)"},
-		{"repeat_write", initialized + "repeat 1 {current=next}\nreturn count(current)"},
-		{"for_write", initialized + "for item in [1] {current=next}\nreturn count(current)"},
-		{"block_write", initialized + "{current=next}\nreturn count(current)"},
-		{"nested_mutable_binding", demanded + "if true {var current:List<List<Number>>=first\ncount(current)}\nreturn count(next)"},
 		{"unread_overwritten_initializer", mutableLoopPlanProducers + mutableLoopPlanBinding + "current=next\nreturn count(current)"},
 		{"unread_assigned_version", mutableLoopPlanProducers + mutableLoopPlanBinding + "let old=current\ncurrent=next\nreturn count(old)"},
 		{"other_origin_demand_is_insufficient", mutableLoopPlanProducers + "let other=repeat 1 {yield [7,8]}\n" + mutableLoopPlanBinding + "current=next\nreturn count(other)+count(current)"},
@@ -106,6 +99,42 @@ func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 			}
 			if syntax.Format(program) != before {
 				t.Fatal("rejection changed authored syntax")
+			}
+		})
+	}
+}
+
+// These exact sources were formerly rejected solely because they crossed a
+// structured scope. Keep the original cases as positive obligations instead
+// of deleting the historical boundaries when the implementation expands.
+func TestLoopResultMutableAliasPlanStructuredBoundaries(t *testing.T) {
+	var demanded = mutableLoopPlanProducers + "count(first)\ncount(next)\n"
+	var initialized = demanded + mutableLoopPlanBinding
+	var cases = []struct{ name, text string }{
+		{"if_write", initialized + "if true {current=next}\nreturn count(current)"},
+		{"else_write", initialized + "if true {let scalar=0} else {current=next}\nreturn count(current)"},
+		{"menu_write", initialized + "menu(\"Pick\") {case \"A\" {current=next} case \"B\" {let scalar=0}}\nreturn count(current)"},
+		{"repeat_write", initialized + "repeat 1 {current=next}\nreturn count(current)"},
+		{"for_write", initialized + "for item in [1] {current=next}\nreturn count(current)"},
+		{"block_write", initialized + "{current=next}\nreturn count(current)"},
+		{"nested_mutable_binding", demanded + "if true {var current:List<List<Number>>=first\ncount(current)}\nreturn count(next)"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var program = mutableLoopPlanProgram(t, tc.text)
+			var before = syntax.Format(program)
+			var plan = PlanLoopResultLocals(program, DefaultRegistry())
+			if plan == nil || len(plan.MutableBindings) != 1 {
+				t.Fatal("exact source-owned structured mutable binding was not enrolled")
+			}
+			for assignment, binding := range plan.Assignments {
+				var cloned = *assignment
+				if !plan.MutableBindings[binding] || !plan.AllowedValues[assignment.Value] || plan.Assignments[&cloned] != nil {
+					t.Fatal("structured assignment lost its original AST identity")
+				}
+			}
+			if syntax.Format(program) != before {
+				t.Fatal("planning changed authored syntax")
 			}
 		})
 	}

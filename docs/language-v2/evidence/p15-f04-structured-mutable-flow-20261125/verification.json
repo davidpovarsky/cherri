@@ -1,0 +1,49 @@
+{
+  "schema": "cherri-f04-structured-mutable-qualification/1",
+  "baseSource": "1e02755bbfaf470b4dba1802aa410f29ab4d1188",
+  "sourceAttribution": "precommit exact file hashes, not a claimed execution of a later commit",
+  "branch": "agent/cherri-p10r15-general-language-completion-20261125",
+  "sourceFiles": {
+    "p15_f04_mutable_control_flow_test.go": "36f280cffda9142cbf855252189a23614e72341b4988687f98ae4c5b9074555a",
+    "internal/language/schema/loop_result_flow_test.go": "672899228c33daa352ee93a46ce6e38ac225021c7c316aa452b42cb1137d2c41",
+    "internal/language/schema/loop_result_locals.go": "6d42c55d9ca237fb5d499815e18e5a6606a6cbfd160eb87ab0390c8f1fbbf2df",
+    "internal/language/lower/lower.go": "6a14abd25264fbbc7c92c0138e119a5946ccf61ea293e2e819657ddcec7219f4",
+    "internal/language/lower/lexical_scope.go": "d5edd859cae0435d554746b13bdb45a0cf09745815349cedbcd64c62b3183cea",
+    "internal/language/schema/loop_result_flow.go": "14e9654ca17eaa862c1a9b9d4c8ea2449a9200c78823e10fe901f1caea794add",
+    "internal/language/schema/loop_result_mutable_test.go": "3ce1a9d36a35acca6027ca02a99ac65553be167ded4b631e04341956fcfc0881"
+  },
+  "red": {
+    "resultPath": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/red-control-flow-01/result.original.json",
+    "resultSHA256": "ec72762a6fd13b9b545fb2a31a3975d44268a1ec9865e82530a9084af9ae4e79",
+    "job": "job_47f04bd2647c",
+    "plannerCasesFailed": 16,
+    "productionNativeGraphsFailed": 13
+  },
+  "green": {
+    "resultPath": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/green-control-flow-01/result.original.json",
+    "resultSHA256": "fe3ef0bca28bdc38d7fdda09892e370727199546498fd663825ead2d114db9ad",
+    "job": "job_f654584364bc",
+    "namedTestEventsPassed": 95,
+    "leafTestsPassed": 87,
+    "parentTestsPassed": 8,
+    "packagePassEvents": 3,
+    "failures": 0,
+    "skips": 0,
+    "durationSeconds": 43.10490608215332,
+    "minimumDevelopmentFreeBytes": 1494466560,
+    "minimumRootFreeBytes": 1456340992
+  },
+  "nativeExecution": false,
+  "formal179Acceptance": false,
+  "original330Requalification": "PENDING",
+  "boundaries": [
+    "mutable RHS identifiers",
+    "direct mutable producers",
+    "inferred mutable cell aliases",
+    "uninitialized cell storage",
+    "compound assignment",
+    "mixed native/cell representations",
+    "arbitrary function/import interfaces",
+    "unsupported dynamic payload shapes"
+  ]
+}

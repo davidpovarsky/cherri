@@ -1702,12 +1702,22 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 }
 
 func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
-	loopResultElement, restoreLocalCells, localCellError := l.beginLocalLoopResultBinding(b)
+	return l.lowerBindingNamed(b, b.Name)
+}
+
+// Admission and presence demand belong to the authored declaration, even when
+// lexical shadowing needs a distinct backend name. A same-text AST clone must
+// not inherit the source declaration's cell permissions.
+func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) error {
+	loopResultElement, restoreLocalCells, localCellError := l.beginLocalLoopResultBinding(source)
 	if localCellError != nil {
 		return localCellError
 	}
 	defer restoreLocalCells()
-	trackOptionalPresence := l.optionalPresenceNeeded(b)
+	trackOptionalPresence := l.optionalPresenceNeeded(source)
+	var emitted = *source
+	emitted.Name = name
+	var b = &emitted
 	if b.Value == nil {
 		// uninitialized var
 		wfVarName := l.effectiveVariableName(b.Name)

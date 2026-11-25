@@ -148,15 +148,14 @@ func (l *Lowerer) lowerLexicalBinding(binding *syntax.BindingStmt) error {
 	// Only the backend declaration name changes. The original structured RHS,
 	// source spans and expression-type/enum maps remain intact. Its references
 	// resolve before the new binding exists, including side effects in a body.
-	local := *binding
-	local.Name = l.freshLexicalName(binding.Name)
-	if err := l.lowerBinding(&local); err != nil {
+	var localName = l.freshLexicalName(binding.Name)
+	if err := l.lowerBindingNamed(binding, localName); err != nil {
 		return err
 	}
 	previous, existed := l.bindings[binding.Name]
 	l.rememberLexicalBinding(binding.Name, previous, existed)
-	l.bindings[binding.Name] = l.bindings[local.Name]
-	delete(l.bindings, local.Name)
+	l.bindings[binding.Name] = l.bindings[localName]
+	delete(l.bindings, localName)
 	delete(l.provenanceSymbols, binding.Name)
 	return nil
 }
