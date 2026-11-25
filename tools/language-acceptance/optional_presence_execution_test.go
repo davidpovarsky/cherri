@@ -27,7 +27,9 @@ func TestTypeOptionalPresenceBoundedEvidence(t *testing.T) {
 	}
 	contracts := &ContractsSet{Acceptance: selected, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
 	runner := NewRunner()
-	runner.runTypeOptionalPresenceRequirement()
+	// Exercise the retained historical three-test producer directly. The public
+	// T05 entrypoint now runs the complete, separately validated cohort.
+	runner.runTypeProduction("T05", "Optional presence differs from optional value and JSON null")
 	result := runner.results["T05"]
 	contract := selected.Cases[0]
 	if result.Passed || result.Status != "NOT_RUN" || result.Requirement != contract.Requirement || result.TestLevel != contract.MinimumTestLevel || len(runner.results) != 1 || len(runner.records) != 0 || len(runner.observations) != 1 {

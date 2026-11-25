@@ -68,7 +68,7 @@ var combinedValueBlockLocalTiers = []string{"unit", "native-structure"}
 const combinedValueBlockSourceWitnessSHA256 = "8815479e1809972ff46ad19856b708a6cef1f994137b1250e1914d18bb096f6c"
 
 const combinedValueBlockF04TestsSHA256 = "a960a6db2660a4982e5edb0b933163621cb27f45c734c7dac4e39837c3626ae3"
-const combinedValueBlockF04EventsSHA256 = "f78f50ebf43bf7da514234add79681a007bb011184d69ded560a036f7e713a67"
+const combinedValueBlockF04EventsSHA256 = "08cf4bf7caeb0a07dc2b0b0ff187c2e702617803e8a666661a6da507fe416da0"
 const combinedValueBlockF04SourceWitnessSHA256 = "9a2c6d6ca839e4249f9803404b72756a674930800507e4b1f7908d7c0f07e127"
 
 func validateCombinedValueBlockSourceInventory(names []string) error {
@@ -125,7 +125,7 @@ func validateCombinedValueBlockF04ObservationInventory(tests, events, paths []st
 	if len(tests) != 16 || editorSHA([]byte(strings.Join(tests, "\n")+"\n")) != combinedValueBlockF04TestsSHA256 {
 		return fmt.Errorf("F04 observation parent inventory changed")
 	}
-	if len(events) != 226 || !sort.StringsAreSorted(events) ||
+	if len(events) != 242 || !sort.StringsAreSorted(events) ||
 		editorSHA([]byte(strings.Join(events, "\n")+"\n")) != combinedValueBlockF04EventsSHA256 {
 		return fmt.Errorf("F04 observation named-event inventory changed")
 	}

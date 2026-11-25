@@ -401,7 +401,7 @@ func TestCombinedValueBlockF04ObservationInventory(t *testing.T) {
 	if err := validateCombinedValueBlockF04ObservationInventory(tests, events, paths); err != nil {
 		t.Fatal(err)
 	}
-	if len(paths) > 128 || len(tests) != 16 || len(events) != 226 {
+	if len(paths) > 128 || len(tests) != 16 || len(events) != 242 {
 		t.Fatal("F04 observation bounds or selected family changed")
 	}
 	for _, path := range paths {

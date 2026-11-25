@@ -663,6 +663,8 @@ func TestMeta_FalsePassedClaimWithMissingTiersRejected(t *testing.T) {
 // deliberately invalid under the strict editor intake. Positive controls must
 // use p15VerifiedEditorMetaFixture, which replaces them with actual service proof
 // and preserves the missing UI tier.
+// BRG00 is deliberately outside the original 33-gate contract. Generic model
+// records must never stand in for BRG01's dedicated takeover evidence.
 func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsSet) {
 	t.Helper()
 	artPath := filepath.Join(t.TempDir(), "clipboard-result.txt")
@@ -694,7 +696,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 		Gates: &GatesContractFile{
 			GateCount: 1,
 			Gates: []RecoveryGate{
-				{ID: "BRG01", Title: "Gate 1", Mandatory: true, MinimumEvidenceTiers: []string{"repository"}},
+				{ID: "BRG00", Title: "Synthetic gate fixture", Mandatory: true, MinimumEvidenceTiers: []string{"repository"}},
 			},
 		},
 	}
@@ -787,14 +789,14 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				Assertions:        map[string]string{"assertion": "synthetic repair fixture ok"},
 			},
 			{
-				EvidenceID:        "ev-brg01-repo",
-				Requirements:      []string{"BRG01"},
+				EvidenceID:        "ev-brg00-repo",
+				Requirements:      []string{"BRG00"},
 				Tier:              "repository",
-				TestID:            "scripts/verify-backend-recovery.sh",
+				TestID:            "tools/language-acceptance:runGates",
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
-				Assertions:        map[string]string{"assertion": "brg01 ok"},
+				Assertions:        map[string]string{"assertion": "synthetic gate validator input only"},
 			},
 		},
 	}
@@ -1091,10 +1093,10 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 	// Attack 4: Missing any single acceptance ID, repair ID, or gate ID
 	t.Run("Attack04_MissingAcceptanceRepairOrGateID", func(t *testing.T) {
 		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
-			// Drop BRG01 record
+			// Drop the synthetic BRG00 gate record
 			bm.Records = bm.Records[:len(bm.Records)-1]
 		})
-		p15AssertCausalMetaRejection(t, rep, err, "requirement BRG01 has unsatisfied required tiers in final phase")
+		p15AssertCausalMetaRejection(t, rep, err, "requirement BRG00 has unsatisfied required tiers in final phase")
 	})
 
 	// Attack 5: Injected unknown requirement ID

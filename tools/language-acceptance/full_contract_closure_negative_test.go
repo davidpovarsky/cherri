@@ -122,11 +122,6 @@ func p15AssertFullClosureGaps(t *testing.T, report *AcceptanceReport, err error,
 			if result.Status != "BLOCKED_EXTERNAL" {
 				t.Fatalf("unexecuted AI evaluation was not blocked: %+v", result)
 			}
-		case "T05":
-			if result.Status != "NOT_RUN" || !strings.HasPrefix(result.Detail, "Formal scope UNVERIFIED: ") {
-				t.Fatalf("incomplete JSON-null semantics were hidden: %+v", result)
-			}
-			expectedErrors = append(expectedErrors, "requirement T05 has incomplete JSON-null semantics")
 		default:
 			if result.Status != "FAILED" {
 				t.Fatalf("unexecuted requirement did not fail final closure: %+v", result)
