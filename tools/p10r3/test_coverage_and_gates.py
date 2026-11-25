@@ -29,6 +29,7 @@ import generate_catalog_and_pack_ledgers as gen
 import run_release_gates as gates
 import verify_ledger_consistency as consistency
 import verify_or_generate_pack as pack_ver
+from test_protected_ios import TestReviewedProtectedIOS
 
 
 class TestP10CoverageAndGates(unittest.TestCase):
@@ -264,6 +265,8 @@ class TestP10CoverageAndGates(unittest.TestCase):
                 self.assertEqual(len(baseline), 40)
                 fixture_definition = copy.deepcopy(production_definition)
                 fixture_definition["upstreamBase"] = baseline
+                # Exercise the unchanged historical mode independently of the P15 review.
+                fixture_definition.pop("protectedIOSReview", None)
 
                 def observe(expected, *, historical_changed, working_changed,
                             changed_path=None):

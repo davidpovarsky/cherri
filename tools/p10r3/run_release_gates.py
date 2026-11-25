@@ -24,6 +24,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "p10r3"))
 
 from generate_catalog_and_pack_ledgers import compute_input_dependency_fingerprint
+from protected_ios import execute_reviewed_gate
 
 # Complete required gate identifiers
 REQUIRED_R_GATES = [f"R{i:02d}" for i in range(1, 29)]
@@ -196,12 +197,13 @@ GATE_DEFINITIONS = {
         "sourceFile": "scripts/ios27_runtime_poc.sh",
     },
     "R23": {
-        "name": "Protected parallel iOS files remain untouched across P10 baseline 76d7225..HEAD and working tree",
+        "name": "Protected iOS files preserve reviewed P15 evolution and all original tests",
         "checkProtectedIOSFiles": [
             "ios/CherriUITests/CherriEditorUITests.swift",
             "ios/CherriApp/Views/CodeEditorView.swift",
         ],
         "upstreamBase": "76d722502e20db977e84a095444d0172442655b8",
+        "protectedIOSReview": "docs/apple-runtime/p10/r23-protected-ios-review.json",
         "tier": "PRODUCTION_PATH",
         "sourceFile": "git",
     },
@@ -659,6 +661,9 @@ def execute_gate(gate_id, defn):
 
     if defn.get("isPlatformSimulatorCheck"):
         return evaluate_r22_simulator_gate(gate_id, defn)
+
+    if defn.get("checkProtectedIOSFiles") and defn.get("protectedIOSReview"):
+        return execute_reviewed_gate(REPO_ROOT, gate_id, defn)
 
     if defn.get("checkProtectedIOSFiles"):
         files = defn["checkProtectedIOSFiles"]
