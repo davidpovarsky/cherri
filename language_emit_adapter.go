@@ -319,18 +319,13 @@ func collectV2CompileErrorLines(filePath string, content string) ([]int, error) 
 	analyzer.SetModuleGraph(graph)
 	analyzer.Analyze(prog)
 	var linesOut []int
-	var firstErr error
-	for _, diag := range analyzer.Diagnostics() {
-		if diag.Severity == analysis.SeverityError {
-			if firstErr == nil {
-				firstErr = fmt.Errorf("semantic error [%s]: %s at %v", diag.Code, diag.Message, diag.Span)
-			}
-			if diag.Span.Start.Line > 0 {
-				linesOut = append(linesOut, diag.Span.Start.Line)
-			}
+	diagnostics := analyzer.Diagnostics()
+	for _, diag := range diagnostics {
+		if diag.Severity == analysis.SeverityError && diag.Span.Start.Line > 0 {
+			linesOut = append(linesOut, diag.Span.Start.Line)
 		}
 	}
-	return linesOut, firstErr
+	return linesOut, semanticCompileErrors(diagnostics)
 }
 
 // CompileSourceToPlistWithModules compiles Cherri v2 source code with optional virtual modules.
@@ -365,10 +360,8 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 	analyzer := analysis.NewAnalyzer(reg)
 	analyzer.SetModuleGraph(graph)
 	analyzer.Analyze(prog)
-	for _, diag := range analyzer.Diagnostics() {
-		if diag.Severity == analysis.SeverityError {
-			return nil, fmt.Errorf("semantic error [%s]: %s at %v", diag.Code, diag.Message, diag.Span)
-		}
+	if err := semanticCompileErrors(analyzer.Diagnostics()); err != nil {
+		return nil, err
 	}
 
 	session := newSession()
