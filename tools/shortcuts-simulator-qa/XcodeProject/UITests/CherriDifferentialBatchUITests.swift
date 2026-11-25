@@ -51,7 +51,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             _ = shortcuts.wait(for: .runningForeground, timeout: 8)
         }
         let button = shortcuts.buttons.matching(
-            NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut'")).firstMatch
+            NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).firstMatch
         let found = button.waitForExistence(timeout: 15)
         capture(command.id + "-import")
         guard found else {
@@ -65,12 +65,31 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             return ["outcome": "IMPORT_IDENTITY_MISMATCH", "name": name]
         }
         button.tap()
-        let removed = XCTWaiter.wait(for: [
-            XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: button)
-        ], timeout: 10) == .completed
-        XCTAssertTrue(removed, "Import sheet did not dismiss for " + name)
-        return ["outcome": removed ? "IMPORTED" : "IMPORT_NOT_DISMISSED",
-                "name": name, "identityVerified": identity]
+        let libraryItem = shortcuts.cells.matching(
+            NSPredicate(format: "label == %@ OR label BEGINSWITH %@", name, name + ", ")).firstMatch
+        let deadline = Date().addingTimeInterval(30)
+        var replaceTapped = false
+        while Date() < deadline {
+            if libraryItem.exists && libraryItem.isHittable {
+                capture(command.id + "-library")
+                return ["outcome": "IMPORTED", "name": name, "identityVerified": identity,
+                        "libraryIdentityVerified": true, "replaceTapped": replaceTapped]
+            }
+            let replacement = shortcuts.buttons["Replace"].firstMatch
+            if replacement.exists && replacement.isHittable {
+                capture(command.id + "-replace")
+                replacement.tap()
+                replaceTapped = true
+            }
+            Thread.sleep(forTimeInterval: 0.5)
+        }
+        capture(command.id + "-library-timeout")
+        let debugState = shortcuts.debugDescription
+        let debugPath = runDirectory.appendingPathComponent(command.id + "-library-timeout.txt")
+        try? debugState.write(to: debugPath, atomically: true, encoding: String.Encoding.utf8)
+        XCTFail("No accessible native library item after import for " + name)
+        return ["outcome": "LIBRARY_IDENTITY_NOT_OBSERVED", "name": name,
+                "identityVerified": identity, "replaceTapped": replaceTapped]
     }
 
     private func consentForRuntime(_ command: DifferentialCommand) throws -> [String: Any] {
