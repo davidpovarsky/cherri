@@ -42,11 +42,21 @@ def output_id(raw):
     if raw.get("Type") == "ActionOutput": return raw.get("OutputUUID")
     return None
 
+def parameters(action):
+    raw = action.get("WFWorkflowActionParameters")
+    # Go's actual ShortcutAction JSON emits null for parameter-free Nothing.
+    # No other action may lose its required native parameter map.
+    if raw is None and action["WFWorkflowActionIdentifier"] == PREFIX+"nothing":
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError("native action parameters must be a map")
+    return raw
+
 def content_boundary(actions):
     if len(actions) < 4: raise ValueError("missing original materialization boundary")
     by_id = {}
     for index, action in enumerate(actions):
-        p = action.get("WFWorkflowActionParameters", {})
+        p = parameters(action)
         ident = action["WFWorkflowActionIdentifier"]
         if "UUID" in p:
             if p["UUID"] in by_id: raise ValueError("duplicate native producer")
@@ -145,14 +155,14 @@ class GraphModel:
             ident = action["WFWorkflowActionIdentifier"]
             if not ident.startswith(PREFIX): raise ValueError("nonlocal action")
             ident = ident[len(PREFIX):]
-            p = action.get("WFWorkflowActionParameters", {})
+            p = parameters(action)
             self.executed += 1
             if self.executed > self.max_steps: raise ValueError("bounded graph model exhausted")
             if ident in {"repeat.each", "repeat.count", "conditional"} and p.get("WFControlFlowMode") == 0:
                 group = p["GroupingIdentifier"]
                 closings = [i for i in range(index+1, end)
-                            if actions[i].get("WFWorkflowActionParameters", {}).get("GroupingIdentifier") == group
-                            and actions[i].get("WFWorkflowActionParameters", {}).get("WFControlFlowMode") == 2]
+                            if parameters(actions[i]).get("GroupingIdentifier") == group
+                            and parameters(actions[i]).get("WFControlFlowMode") == 2]
                 if len(closings) != 1: raise ValueError("unbalanced native control group")
                 closing = closings[0]
                 if ident in {"repeat.each", "repeat.count"}:
@@ -166,7 +176,7 @@ class GraphModel:
                         if actions[closing-1]["WFWorkflowActionIdentifier"] != PREFIX+"nothing":
                             raise ValueError("private cursor leaks helper Repeat Results")
                     collected = []
-                    body_ids = [a.get("WFWorkflowActionParameters", {}).get("UUID") for a in actions[index+1:closing]]
+                    body_ids = [parameters(a).get("UUID") for a in actions[index+1:closing]]
                     for iteration, item in enumerate(items, 1):
                         for producer in body_ids:
                             if producer: self.outputs.pop(producer, None)
@@ -176,8 +186,8 @@ class GraphModel:
                     previous = collected
                 else:
                     alternatives = [i for i in range(index+1, closing)
-                                    if actions[i].get("WFWorkflowActionParameters", {}).get("GroupingIdentifier") == group
-                                    and actions[i].get("WFWorkflowActionParameters", {}).get("WFControlFlowMode") == 1]
+                                    if parameters(actions[i]).get("GroupingIdentifier") == group
+                                    and parameters(actions[i]).get("WFControlFlowMode") == 1]
                     if len(alternatives) > 1: raise ValueError("duplicate else boundary")
                     alternative = alternatives[0] if alternatives else closing
                     if "WFNumberValue" in p:
@@ -195,7 +205,7 @@ class GraphModel:
                         previous = self.run(actions, index+1, alternative)
                     else:
                         previous = self.run(actions, alternative+1, closing) if alternatives else []
-                close = actions[closing].get("WFWorkflowActionParameters", {})
+                close = parameters(actions[closing])
                 if "UUID" in close: self.outputs[close["UUID"]] = list(previous)
                 index = closing+1
                 continue
@@ -433,7 +443,7 @@ def causal_faults(graphs):
         inspect(original["actions"],items,labels,original["options"])
         results.append({"id":name,"negativeRejected":True,"restoredControl":"PASS"})
     def find(actions,ident,predicate=lambda p:True):
-        return next(a for a in actions if a["WFWorkflowActionIdentifier"]==PREFIX+ident and predicate(a.get("WFWorkflowActionParameters",{})))
+        return next(a for a in actions if a["WFWorkflowActionIdentifier"]==PREFIX+ident and predicate(parameters(a)))
     def mutate_date_source(actions):
         p=find(actions,"format.date")["WFWorkflowActionParameters"]
         p["WFDate"]={"WFSerializationType":"WFTextTokenAttachment","Value":{"Type":"CurrentDate"}}
@@ -445,7 +455,7 @@ def causal_faults(graphs):
         find(actions,"setvariable")["WFWorkflowActionParameters"]["WFVariableName"]=RAW
     def mutate_rows_seed(actions):
         for i,a in enumerate(actions):
-            p=a.get("WFWorkflowActionParameters",{})
+            p=parameters(a)
             if a["WFWorkflowActionIdentifier"]==PREFIX+"setvariable" and p.get("WFVariableName","").endswith("_rows"):
                 actions[i-1]={"WFWorkflowActionIdentifier":PREFIX+"gettext","WFWorkflowActionParameters":{"WFTextActionText":""}}
                 return

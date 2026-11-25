@@ -166,7 +166,15 @@ func TestP15DebugExportLiteralOptionsAndRelease(t *testing.T) {
 				t.Fatalf("admitted date source failed: legacy=%t profile=%s: %v", legacy, profile, err)
 			}
 			if profile == BuildProfileRelease {
-				checkDebugFallthroughSequence(t, dated, legacy)
+				if legacy {
+					// Legacy has no synthetic main fallthrough action. Nil and
+					// empty Go slices are the same exact zero-action graph.
+					if len(dated) != 0 {
+						t.Fatalf("Release date export emitted %d actions: %#v", len(dated), dated)
+					}
+				} else {
+					checkDebugFallthroughSequence(t, dated, legacy)
+				}
 			} else {
 				last := -1
 				for i, action := range dated {
