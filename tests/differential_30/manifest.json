@@ -1222,9 +1222,9 @@
       "input": null,
       "expected": {
         "type": "text",
-        "value": "CHERRI_QA_35|qa.txt:qa.txt"
+        "value": "CHERRI_QA_35|qa:qa"
       },
-      "oracle_reason": "setName assigns qa.txt; action and property-aggrandizement reads must agree.",
+      "oracle_reason": "The pre-existing naming contract separates stem and extension: setName assigns qa.txt, while getName and the Name property return the stem qa. WFDontIncludeFileExtension controls automatic extension creation, not getter output. See oracle-corrections.json.",
       "runtime": {
         "enabled": true,
         "terminal": "output",
