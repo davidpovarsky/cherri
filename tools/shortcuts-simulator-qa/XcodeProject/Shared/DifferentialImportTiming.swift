@@ -209,6 +209,17 @@ struct QADifferentialImportTiming {
     }
 
 
+
+    static func inspectSheetForConsent(observe: () throws -> SheetDecision,
+                                       capture: () throws -> Void) rethrows -> SheetDecision {
+        let before = try observe()
+        guard before.canTap else { return before }
+        try capture()
+        // A screenshot can block while the import surface transitions. Consent
+        // depends on a fresh AX observation and fresh clock after it returns.
+        return try observe()
+    }
+
     func sheetDecision(after dispatch: DispatchState, now: Date,
                        buttonExists: Bool, buttonHittable: Bool,
                        identityMatches: Bool) -> SheetDecision {

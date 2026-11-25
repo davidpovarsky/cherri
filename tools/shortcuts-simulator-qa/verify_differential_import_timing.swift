@@ -348,6 +348,77 @@ enum QADifferentialImportTimingContracts {
         require(!(try sheet(&canceledAfterMatch, canceled, now: 3, identity: true)).canTap,
                 "rechecking cancellation after a matching screenshot prevents consent")
 
+
+        // The production UI invokes this same coordinator with an AX-reading
+        // closure. It must invoke that closure again after the screenshot.
+        let sequencingPolicy = QADifferentialImportTiming(searchStartedAt: at(1))
+        let matchedBefore = sequencingPolicy.sheetDecision(after: .pending(deadline: at(60)),
+            now: at(2), buttonExists: true, buttonHittable: true, identityMatches: true)
+        func sequence(_ first: QADifferentialImportTiming.SheetDecision,
+                      _ second: QADifferentialImportTiming.SheetDecision)
+                -> (QADifferentialImportTiming.SheetDecision, Int, Int) {
+            var observations = 0
+            var captures = 0
+            let values = [first, second]
+            let decision = QADifferentialImportTiming.inspectSheetForConsent(observe: {
+                defer { observations += 1 }
+                return values[observations]
+            }, capture: { captures += 1 })
+            return (decision, observations, captures)
+        }
+        let wrongAfterCapture = sequencingPolicy.sheetDecision(after: .pending(deadline: at(60)),
+            now: at(3), buttonExists: true, buttonHittable: true, identityMatches: false)
+        let wrongSequence = sequence(matchedBefore, wrongAfterCapture)
+        require(!wrongSequence.0.canTap && wrongSequence.1 == 2 && wrongSequence.2 == 1,
+                "capture transition to a wrong sheet requires a fresh observation and prevents a tap")
+        let absentAfterCapture = sequencingPolicy.sheetDecision(after: .pending(deadline: at(60)),
+            now: at(3), buttonExists: false, buttonHittable: false, identityMatches: true)
+        let absentSequence = sequence(matchedBefore, absentAfterCapture)
+        require(!absentSequence.0.canTap && absentSequence.1 == 2 && absentSequence.2 == 1,
+                "capture transition to a missing Add requires a fresh observation and prevents a tap")
+        let canceledSequence = sequence(matchedBefore, .rejected("IMPORT_DISPATCH_TIMED_OUT"))
+        require(!canceledSequence.0.canTap && canceledSequence.1 == 2 && canceledSequence.2 == 1,
+                "capture transition to canceled delivery cannot use the earlier matched sheet")
+        let expiredAfterCapture = sequencingPolicy.sheetDecision(after: .exited(at: at(2)),
+            now: at(17), buttonExists: true, buttonHittable: true, identityMatches: true)
+        let expiredSequence = sequence(matchedBefore, expiredAfterCapture)
+        require(!expiredSequence.0.canTap && expiredSequence.1 == 2 && expiredSequence.2 == 1,
+                "capture returning at the exact deadline cannot use the earlier matched sheet")
+        let matchedAfterCapture = sequencingPolicy.sheetDecision(after: .exited(at: at(2)),
+            now: at(3), buttonExists: true, buttonHittable: true, identityMatches: true)
+        let healthySequence = sequence(matchedBefore, matchedAfterCapture)
+        require(healthySequence.0 == .consent(deadline: at(17))
+                && healthySequence.1 == 2 && healthySequence.2 == 1,
+                "fresh matched sheet after capture uses the current dispatch and deadline")
+        let unreadySequence = sequence(wrongAfterCapture, matchedBefore)
+        require(!unreadySequence.0.canTap && unreadySequence.1 == 1 && unreadySequence.2 == 0,
+                "an initially unready sheet is neither captured nor authorized")
+        var captureCancelObservations = 0
+        var captureCancelPropagated = false
+        do {
+            _ = try QADifferentialImportTiming.inspectSheetForConsent(observe: {
+                captureCancelObservations += 1
+                return matchedBefore
+            }, capture: {
+                throw NSError(domain: "owned-capture-control", code: 1)
+            })
+        } catch {
+            captureCancelPropagated = true
+        }
+        require(captureCancelPropagated && captureCancelObservations == 1,
+                "capture cancellation propagates before any second observation or consent")
+        var failedObserveCaptures = 0
+        var failedObservePropagated = false
+        do {
+            _ = try QADifferentialImportTiming.inspectSheetForConsent(observe: {
+                throw NSError(domain: "owned-observe-control", code: 1)
+            }, capture: { failedObserveCaptures += 1 })
+        } catch {
+            failedObservePropagated = true
+        }
+        require(failedObservePropagated && failedObserveCaptures == 0,
+                "failed initial AX observation cannot capture or authorize consent")
+
         let failures = checks.filter { $0["outcome"] as? String == "FAIL" }
         let output: [String: Any] = [
             "schemaVersion": 1, "contract": "dispatch-exit-anchored-add-v1",

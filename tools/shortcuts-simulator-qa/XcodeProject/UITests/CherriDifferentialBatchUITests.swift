@@ -119,29 +119,34 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         }
         // AX calls can outlive their nominal wait. Read the actual process
         // receipt and the clock again after each call, before using its result.
-        // A stale Add button alone never ends this search or authorizes a tap.
+        // Every invocation reads fresh values, including after capture().
         var identity = false
-        while true {
-            if let failure = checkAdd().failure { return stop(failure) }
+        func observeSheet() throws -> QADifferentialImportTiming.SheetDecision {
+            if let failure = checkAdd().failure { return .rejected(failure) }
             let found = button.exists
-            if let failure = checkAdd().failure { return stop(failure) }
+            if let failure = checkAdd().failure { return .rejected(failure) }
             var hittable = false
             identity = false
             if found {
                 hittable = button.isHittable
-                if let failure = checkAdd().failure { return stop(failure) }
+                if let failure = checkAdd().failure { return .rejected(failure) }
                 let snapshot = try shortcuts.snapshot()
-                if let failure = checkAdd().failure { return stop(failure) }
+                if let failure = checkAdd().failure { return .rejected(failure) }
                 identity = hasName(snapshot, name: name)
             }
-            var decision = checkSheet(found: found, hittable: hittable, identity: identity)
+            return checkSheet(found: found, hittable: hittable, identity: identity)
+        }
+        while true {
+            let decision = try QADifferentialImportTiming.inspectSheetForConsent(
+                observe: observeSheet,
+                capture: {
+                    timingReceipt["addObservedUTC"] = formatter.string(from: Date())
+                    self.capture(command.id + "-import")
+                })
             if let failure = decision.failure { return stop(failure) }
             if decision.canTap {
-                timingReceipt["addObservedUTC"] = formatter.string(from: Date())
-                capture(command.id + "-import")
-                decision = checkSheet(found: found, hittable: hittable, identity: identity)
-                if let failure = decision.failure { return stop(failure) }
-                if decision.canTap { break }
+                timingReceipt["sheetMatchedAfterCaptureUTC"] = formatter.string(from: Date())
+                break
             }
             let remaining = decision.deadline!.timeIntervalSinceNow
             Thread.sleep(forTimeInterval: max(0, min(0.2, remaining)))
