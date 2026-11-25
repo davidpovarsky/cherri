@@ -218,6 +218,15 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 				if name == "" {
 					name, _ = nativeResultString(value.MapIndex(key("OutputName")))
 				}
+				// Native conditional inputs wrap a reference as
+				// {Type: Variable, Variable: <reference>}; they do not
+				// name a mutable slot. Only that exact wrapper shape
+				// may delegate to its nested reference.
+				if name == "" && value.Len() == 2 {
+					if input := value.MapIndex(key("Variable")); input.IsValid() {
+						return visit(input, depth+1, before)
+					}
+				}
 				if private, err := variable(name, before); private || err != nil {
 					return private, err
 				}
@@ -242,6 +251,11 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 				name, _ := nativeResultString(value.FieldByName("VariableName"))
 				if name == "" {
 					name, _ = nativeResultString(value.FieldByName("OutputName"))
+				}
+				if name == "" && value.NumField() == 2 {
+					if input := value.FieldByName("Variable"); input.IsValid() && input.CanInterface() {
+						return visit(input, depth+1, before)
+					}
 				}
 				if private, err := variable(name, before); private || err != nil {
 					return private, err
