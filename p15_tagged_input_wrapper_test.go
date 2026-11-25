@@ -15,12 +15,15 @@ func TestP15TaggedConditionalVariableWrappers(t *testing.T) {
 		name    string
 		private bool
 		reject  bool
+		literal bool
 	}{
-		{"map_ordinary", false, false}, {"map_private", true, false},
-		{"typed_ordinary", false, false}, {"typed_private", true, false},
-		{"missing_name", false, true}, {"empty_name", false, true},
-		{"wrong_name_kind", false, true}, {"extra_wrapper_field", false, true},
-		{"typed_missing_reference", false, true}, {"typed_wrong_name_kind", false, true},
+		{"map_ordinary", false, false, false}, {"map_private", true, false, false},
+		{"typed_ordinary", false, false, false}, {"typed_private", true, false, false},
+		{"missing_name", false, true, false}, {"empty_name", false, true, false},
+		{"wrong_name_kind", false, true, false}, {"extra_wrapper_field", false, true, false},
+		{"typed_missing_reference", false, true, false}, {"typed_wrong_name_kind", false, true, false},
+		{"dictionary_missing_name", false, false, true}, {"dictionary_empty_name", false, false, true},
+		{"dictionary_wrong_name_kind", false, false, true}, {"dictionary_extra_wrapper_field", false, false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			s := &CanonicalBackendSession{}
@@ -37,7 +40,7 @@ func TestP15TaggedConditionalVariableWrappers(t *testing.T) {
 				ref = p15FunctionEdge("private")
 			}
 			var wrapper any = map[string]any{"Type": "Variable", "Variable": ref}
-			switch tc.name {
+			switch strings.TrimPrefix(tc.name, "dictionary_") {
 			case "typed_ordinary", "typed_private":
 				wrapper = struct {
 					Type     string
@@ -59,9 +62,28 @@ func TestP15TaggedConditionalVariableWrappers(t *testing.T) {
 					VariableName int
 				}{"Variable", 17}
 			}
-			emit("conditional", map[string]any{
+			parameters := map[string]any{
 				"GroupingIdentifier": "wrapper-test", "WFControlFlowMode": 0, "WFInput": wrapper,
-			}, "")
+			}
+			if tc.literal {
+				// Authored lookalike maps are literal Dictionaries, not native
+				// descriptors. Preserve this observed behavior as a positive control.
+				emit("conditional", parameters, "")
+				input := s.shortcut.WFWorkflowActions[len(s.shortcut.WFWorkflowActions)-1].WFWorkflowActionParameters["WFInput"]
+				if _, okay := input.(WFDictionaryFieldValue); !okay {
+					t.Fatalf("lookalike did not retain its native Dictionary literal: %T", input)
+				}
+			} else {
+				// Exact imported/native parameters must reach the observer unchanged.
+				// EmitRawAction would encode malformed maps as Dictionary literals.
+				if err := s.EmitExactRawAction("is.workflow.actions.conditional", parameters, true); err != nil {
+					t.Fatal(err)
+				}
+				input := s.shortcut.WFWorkflowActions[len(s.shortcut.WFWorkflowActions)-1].WFWorkflowActionParameters["WFInput"]
+				if !reflect.DeepEqual(input, wrapper) {
+					t.Fatal("exact native wrapper changed before observation")
+				}
+			}
 			before, err := json.Marshal(s.shortcut)
 			if err != nil {
 				t.Fatal(err)
