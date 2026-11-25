@@ -201,7 +201,7 @@ def kill_group(process):
 
 
 def capture(command, allowance, *, output, error_output, hard_deadline,
-            stream_limit=STREAM_LIMIT, execution_deadline=None):
+            stream_limit=STREAM_LIMIT, execution_deadline=None, journal=None):
     """Bounded POSIX pipe capture, sharing one stage deadline with drain/wait.
 
     A zero parent exit cannot bypass held pipe descriptors or group cleanup.
@@ -235,11 +235,17 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
             with defer_cancellation_signals():
                 process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+                details["pid"] = process.pid
+                if journal is not None:
+                    journal("started", details)
         except OSError:
+            # A deferred cancellation can be raised after Popen has returned.
+            # Preserve interruption of that real owned process as interruption.
+            if process is not None:
+                raise
             result = "LAUNCH_FAILED"
             return {"result": result, "exitCode": None,
                     "elapsedMs": round((time.monotonic() - start) * 1000)}, details
-        details["pid"] = process.pid
         for name, pipe in (("stdout", process.stdout), ("stderr", process.stderr)):
             os.set_blocking(pipe.fileno(), False)
             selector.register(pipe, selectors.EVENT_READ, name)
@@ -323,6 +329,8 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
         for name in stream_targets:
             details[name]["sha256"] = hashes[name].hexdigest()
         details["finishedAt"] = utc()
+        if journal is not None:
+            journal("finished", details)
     if result == "PASS" and (not details["cleanupParentReaped"] or
             details["cleanupGroupSignal"]["state"] not in {"SENT", "ABSENT"} or
             details["groupPresentAfterCleanup"] is not False or

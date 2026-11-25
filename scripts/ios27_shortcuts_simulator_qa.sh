@@ -1203,7 +1203,16 @@ fi
 
 SHORTCUTS_BUNDLE_PRESENT="false"
 if [ "$GATE_SIMULATOR_BOOTED" = "PASS" ]; then
-  xcrun simctl listapps "$UDID" > "$QA_SCRATCH_DIR/sim-listapps.plist" 2>/dev/null || true
+  if ! python3 -B "$ROOT_DIR/tools/shortcuts-simulator-qa/simulator_listapps_observation.py" \
+    --repo "$ROOT_DIR" \
+    --root "${RUNNER_TEMP:-$ARTIFACT_DIR}/cherri-qa-session-boundaries-$RUN_ID-${GITHUB_RUN_ATTEMPT:-1}/preflight-listapps" \
+    --udid "$UDID" --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" \
+    --attempt "${GITHUB_RUN_ATTEMPT:-1}" --fixture-id "$TARGET_FIXTURE_ID" \
+    --output "$QA_SCRATCH_DIR/sim-listapps.plist"; then
+    GATE_SHORTCUTS_APP_INSTALLED="BLOCKED_RUNNER"
+    echo "SIMULATOR_LISTAPPS_OBSERVATION_BLOCKED" >&2
+    exit 70
+  fi
   if grep -q "com.apple.shortcuts" "$QA_SCRATCH_DIR/sim-listapps.plist" 2>/dev/null; then
     SHORTCUTS_BUNDLE_PRESENT="true"
     GATE_SHORTCUTS_APP_INSTALLED="PASS"
