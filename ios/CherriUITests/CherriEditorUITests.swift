@@ -549,7 +549,7 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(waitForEditorValue(editor) { Array($0.utf16) == Array(source.utf16) },
                       "Searching documentation must preserve the edited source exactly")
         recordEditorReceipt(stage: "documentation-search-completed")
-        print("[CHECKPOINT:D03_CURRENT_DOCS_SEARCH_VERIFIED] Current signature, empty state, explicit migration, and unchanged synthetic editor source verified")
+        print("[CHECKPOINT:D03_CURRENT_DOCS_SEARCH_VERIFIED]")
     }
 
     // E01 & RP40: Contextual completion display, selection, insertion, and successful compilation
