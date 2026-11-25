@@ -36,6 +36,7 @@ references in the emitted graph.
 | `nextKey` | Same key restrictions, default `next`; must differ from `itemsKey` |
 | `maxPages` | Literal integer 0–100, default 20; bounds native GET action invocations |
 | `maxItems` | Literal integer 0–10,000, default 1,000; returns the ordered bounded prefix |
+| `headers` | Optional native HTTP Dictionary; literal outer container with runtime leaf references, omitted by default |
 
 Either zero cap produces only an empty native List, Set Variable and Get
 Variable: no GET action is emitted. Analysis-only consumers and both compiler
@@ -70,6 +71,34 @@ URLs, headers, cursors, tokens or response bodies. They emit native Alert and
 Stop, following the existing guarded-macro convention. No catch/retry API or
 runtime ERROR classification is implied.
 
+## Request headers
+
+The optional sixth positional argument, `headers`, uses the existing native
+`WFHTTPHeaders` Dictionary codec. V2 can name it while omitting other options:
+
+```cherri
+let authorization = text("Bearer SYNTHETIC_EXAMPLE")
+let rows = paginate(
+    "https://example.invalid/pages/one.json",
+    headers: {"Authorization": authorization, "X-Cherri-Client": "example"}
+)
+```
+
+The token above is synthetic. The outer Dictionary is literal and may contain
+runtime leaf references. Legacy uses the same sixth argument and its existing
+inline-reference syntax, for example `{"Authorization": "{authorization}"}`
+after a `const authorization = text(...)` binding.
+
+Header values keep the same native representation used by an ordinary
+`downloadURL`. The macro adds no extra GET node and does not re-evaluate header
+producers in its loop. Omitted headers stay omitted, and zero budgets emit no
+request. Fixed runtime diagnostics contain no header values. Native redirect
+and response-status behavior remain outside the verified contract.
+
+The [request-header component evidence](paginate-request-headers-20261125.md)
+records the actual compiler, loopback HTTP and exact action-roundtrip results,
+including the preserved failed attempts and native execution limitations.
+
 ## Executed local verification
 
 Reproduce the source checks with:
@@ -91,6 +120,8 @@ decoder from `verify_debug_export.py`. The tests cover:
 
 - Both frontends and Debug/Release, custom selectors, lower/upper caps and
   zero-request paths.
+- Literal and dynamic native HTTP header values observed on real loopback
+  requests across three pages, and zero-budget header calls with no requests.
 - Three pages with a middle empty page; no-next, empty and singleton inputs;
   1,000 ordered Dictionary items with no extra GET after the cap.
 - Repeated URL cycles and case-distinct paths, maxPages and maxItems truncation.
