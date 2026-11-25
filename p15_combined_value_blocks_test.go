@@ -170,7 +170,7 @@ func (c *p15VBCursor) caller(function, name string) map[string]any {
 	}{
 		{"_cherri_caller_input", 0, p15VBAttachment(p15VBVariable("_cherri_caller_input"))},
 		{"_cherri_magic", 0, p15VBToken("__cherri_fn_envelope_v2__")},
-		{"arguments", 2, map[string]any{"WFSerializationType": "WFArrayParameterState"}},
+		{"arguments", 2, map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": []any{}}},
 		{"cherri_functions", 0, p15VBToken("1")},
 		{"function", 0, p15VBToken(function)},
 	}

@@ -210,12 +210,9 @@ func (g *p15FunctionGraph) payload(name string, args ...p15FunctionArgument) str
 		fields[fmt.Sprintf("has_arg_%d", i)] = p15FunctionString(presence)
 		values = append(values, map[string]any{"WFItemType": arg.kind, "WFValue": arg.value})
 	}
-	array := map[string]any{"WFSerializationType": "WFArrayParameterState"}
-	if len(args) != 0 {
-		array["Value"] = values
-	}
-	// The legacy positional mirror for a function with zero parameters has no
-	// rows. This is not the representation of a supplied empty List argument.
+	// A zero-parameter positional mirror still has an explicit empty Value.
+	// Omission is invalid native Dictionary-array state, not an empty List.
+	array := map[string]any{"WFSerializationType": "WFArrayParameterState", "Value": values}
 	fields["arguments"] = p15FunctionArgument{true, 2, array}
 	keys := []string{}
 	for key := range fields {
