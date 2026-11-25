@@ -2748,3 +2748,7 @@ The isolated successor of K1e027 now analyzes mutable cell values by source decl
 A genuine unchanged-K baseline failed16 planner and13 production native-graph cases. The first implementation qualification passed95 named events (87 leaves and8 parents), zero failures/skips, with original source hashes/streams/capacity samples. Seven original boundary sources intentionally become positive obligations; their old rejection semantics are not restamped as unchanged passes. The current330 identity restoration and affected regression remain next work.
 
 The original compiler S627c, implementation K1e027, DocsD16, liveK18, corpus and acceptance contracts remain unchanged. This result proves a source/native-plist increment, not Apple runtime, general T05/L01, allF04 or179/179 acceptance. Mutable RHS, direct producers and inferred types remain explicit follow-up scopes. See [the component proof](p15-f04-structured-mutable-flow-20261125.md).
+
+### Structured-flow follow-up: original330 current identities
+
+The original330 selectors now passed260 root/70 internal exact package+test IDs, with no failures/skips and unchanged tracked Go files during both actual bounded processes. The seven feature-evolution expectations are positive under their original full IDs; all original source cases remain. Receipt `a1c0b6e836d35e964467d6e21ee89ed26fd466358c93b377143f767cf058516e` binds published74d15 plus the sole schema-test identity restoration. This updates the above next-work state without changing the first GREEN's original schema or assigning Apple/full179 credit.

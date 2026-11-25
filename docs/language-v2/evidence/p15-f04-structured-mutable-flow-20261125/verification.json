@@ -35,7 +35,7 @@
   },
   "nativeExecution": false,
   "formal179Acceptance": false,
-  "original330Requalification": "PENDING",
+  "original330Requalification": "PASS_CURRENT_ORIGINAL_330_IDENTITIES",
   "boundaries": [
     "mutable RHS identifiers",
     "direct mutable producers",
@@ -45,5 +45,28 @@
     "mixed native/cell representations",
     "arbitrary function/import interfaces",
     "unsupported dynamic payload shapes"
-  ]
+  ],
+  "original330": {
+    "receiptPath": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/regression-original330-01/result.original.json",
+    "receiptSHA256": "a1c0b6e836d35e964467d6e21ee89ed26fd466358c93b377143f767cf058516e",
+    "sourceHead": "74d15da729e833d64e4df08305cf3c4da877ecff",
+    "uncommittedFile": "internal/language/schema/loop_result_mutable_test.go",
+    "uncommittedFileSHA256": "f993961ff8cd489b9d08df9808b457ea8294171bed3bbf0275ebb21c23f0c217",
+    "rootNamedPass": 260,
+    "internalNamedPass": 70,
+    "allPackageAndTestIDsMatchOriginal": true,
+    "changedExpectations": [
+      "if_write",
+      "else_write",
+      "menu_write",
+      "repeat_write",
+      "for_write",
+      "block_write",
+      "nested_mutable_binding"
+    ],
+    "sourceFilesUnchanged": true,
+    "failures": 0,
+    "skips": 0,
+    "nativeExecution": false
+  }
 }
