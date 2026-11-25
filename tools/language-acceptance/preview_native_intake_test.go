@@ -597,3 +597,32 @@ func TestPreviewNativeEquivalentFiniteJSONMeasurements(t *testing.T) {
 	m.seal(t)
 	previewNativeRequireRejected(t, m, "PREVIEW_PROOF")
 }
+
+func TestPreviewNativeTerminalTargetOnlyRelabels(t *testing.T) {
+	for _, method := range previewNativeMethods {
+		t.Run(method, func(t *testing.T) {
+			m := newPreviewNativeControlModel(t, previewNativeUI)
+			if err := validatePreviewNativeRecord("BRG28", m.record, m.manifest); err != nil {
+				t.Fatal("causal baseline:", err)
+			}
+			parts := strings.SplitN(method, "/", 2)
+			target, other := "CherriTests", "CherriUITests"
+			if method == previewNativeUI {
+				target, other = other, target
+			}
+			terminal := "Test Case '-[" + target + "." + parts[0] + " " + parts[1] + "]' passed (0.123 seconds)."
+			replacement := "Test Case '-[" + other + "." + parts[0] + " " + parts[1] + "]' passed (0.123 seconds)."
+			text := string(m.raw)
+			if strings.Count(text, terminal) != 1 {
+				t.Fatal("missing unique original terminal")
+			}
+			text = strings.Replace(text, terminal, replacement, 1)
+			if !strings.Contains(text, "Test Case '-["+target+"."+parts[0]+" "+parts[1]+"]' started.") {
+				t.Fatal("start was incorrectly mutated")
+			}
+			m.changeLog(text)
+			m.seal(t)
+			previewNativeRequireRejected(t, m, "PREVIEW_CASE")
+		})
+	}
+}

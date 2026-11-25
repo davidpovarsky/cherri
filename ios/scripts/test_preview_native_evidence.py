@@ -88,6 +88,21 @@ def synthetic_pins():
 
 
 class PreviewNativeIntakeControls(unittest.TestCase):
+    def test_terminal_target_only_relabel_rejected(self):
+        original = model_log()
+        self.assertEqual(parsed(original)["passedMethods"], preview.METHODS)
+        for method in preview.METHODS:
+            suite, test = method.split("/")
+            target = "CherriUITests" if method == preview.UI else "CherriTests"
+            other = "CherriTests" if target == "CherriUITests" else "CherriUITests"
+            terminal = f"Test Case '-[{target}.{suite} {test}]' passed (1.000 seconds)."
+            replacement = f"Test Case '-[{other}.{suite} {test}]' passed (1.000 seconds)."
+            self.assertEqual(original.count(terminal), 1)
+            changed = original.replace(terminal, replacement, 1)
+            self.assertIn(f"Test Case '-[{target}.{suite} {test}]' started.", changed)
+            with self.subTest(method=method), self.assertRaises(preview.Rejected):
+                parsed(changed)
+
     def test_original_requirement_and_exact_contract_bytes(self):
         raw, contract = preview.load_contract(ROOT)
         self.assertEqual(preview.digest((ROOT / preview.GATE_PATH).read_bytes()), preview.GATE_SHA)
