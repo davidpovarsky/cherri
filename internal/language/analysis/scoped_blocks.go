@@ -60,14 +60,19 @@ func (a *Analyzer) analyzeScopedBlockCall(call *syntax.CallExpr, scope *Scope) t
 		a.analyzeStatement(statement, blockScope)
 	}
 	if result == nil {
-		a.error("E_BLOCK_VALUE_REQUIRED", body.Span, "measure currently requires a final expression or final yield; empty/void blocks are unsupported")
 		return types.Void
 	}
 	resultType := a.analyzeExpression(result, blockScope)
 	resultType = a.scopedControlResultType(result, resultType)
 	a.exprTypes[result] = resultType
-	if resultType == nil || resultType.Kind() == types.KindVoid {
-		a.error("E_BLOCK_VALUE_REQUIRED", result.NodeSpan(), "measure requires a value-producing final expression; a void action cannot provide a result")
+	if resultType == nil {
+		a.error("E_BLOCK_VALUE_REQUIRED", result.NodeSpan(), "the scoped result has no analyzed type")
+		return types.Void
+	}
+	if resultType.Kind() == types.KindVoid {
+		if _, explicit := body.Statements[len(body.Statements)-1].(*syntax.YieldStmt); explicit {
+			a.error("E_BLOCK_VALUE_REQUIRED", result.NodeSpan(), "an explicit yield requires a value; a Void action cannot provide one")
+		}
 		return types.Void
 	}
 	return resultType
@@ -77,6 +82,9 @@ func (a *Analyzer) analyzeScopedBlockCall(call *syntax.CallExpr, scope *Scope) t
 // block require an unambiguous final yield on each path, and retain all result
 // types rather than treating the first branch's type as proof of every branch.
 func (a *Analyzer) scopedControlResultType(expr syntax.Expression, fallback types.Type) types.Type {
+	if control, value := a.scopedControlValueContract(expr); control && !value {
+		return types.Void
+	}
 	switch control := expr.(type) {
 	case *syntax.IfStmt:
 		thenType := a.scopedBranchResultType(control.ThenBlock)
@@ -131,4 +139,51 @@ func (a *Analyzer) scopedBranchResultType(body *syntax.BlockStmt) types.Type {
 		a.error("E_BLOCK_CONTROL_RESULT", last.NodeSpan(), "use a final yield for a measured control branch result; an implicit last action is not a typed return contract")
 		return types.Unknown
 	}
+}
+
+// A control tail without an authored result contract is a Void scoped body.
+// Earlier yields still establish a value contract and retain the existing
+// all-normal-path validation; they cannot be silently discarded as Void.
+func (a *Analyzer) scopedControlValueContract(expr syntax.Expression) (control, value bool) {
+	switch node := expr.(type) {
+	case *syntax.IfStmt:
+		hasValue := a.scopedBodyValueContract(node.ThenBlock)
+		switch alternate := node.ElseBlock.(type) {
+		case *syntax.BlockStmt:
+			hasValue = hasValue || a.scopedBodyValueContract(alternate)
+		case *syntax.IfStmt:
+			_, nested := a.scopedControlValueContract(alternate)
+			hasValue = hasValue || nested
+		}
+		return true, hasValue
+	case *syntax.ForStmt:
+		return true, a.scopedBodyValueContract(node.BodyBlock)
+	case *syntax.RepeatStmt:
+		return true, a.scopedBodyValueContract(node.BodyBlock)
+	case *syntax.MenuStmt:
+		for _, item := range node.Cases {
+			if a.scopedBodyValueContract(item.BodyBlock) {
+				return true, true
+			}
+		}
+		return true, false
+	default:
+		return false, false
+	}
+}
+
+func (a *Analyzer) scopedBodyValueContract(body *syntax.BlockStmt) bool {
+	if blockAnyYield(body) {
+		return true
+	}
+	result := syntax.BlockResultExpression(body)
+	if result == nil {
+		return false
+	}
+	if control, value := a.scopedControlValueContract(result); control {
+		return value
+	}
+	// Unknown or an implicit value-producing call is not proof of Void.
+	// Retain the existing explicit-yield requirement for such control tails.
+	return !isVoidValue(a.exprTypes[result])
 }

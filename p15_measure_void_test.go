@@ -10,8 +10,8 @@ import (
 
 type p15MeasureVoidCase struct {
 	name, v2, legacy, flatV2, flatLegacy string
-	legacyHeader string
-	timers int
+	legacyHeader                         string
+	timers                               int
 }
 
 func p15MeasureVoidCases() []p15MeasureVoidCase {
@@ -54,11 +54,11 @@ func p15MeasureVoidReference(value any) map[string]any {
 
 func p15MeasureVoidDateString(value any) (map[string]any, error) {
 	object, ok := value.(map[string]any)
-	if !ok || object["WFSerializationType"] != "WFTextTokenString" {
+	if !ok || len(object) != 2 || object["WFSerializationType"] != "WFTextTokenString" {
 		return nil, fmt.Errorf("date is not a native text token")
 	}
 	payload, _ := object["Value"].(map[string]any)
-	if payload["string"] != "\uFFFC" {
+	if len(payload) != 2 || payload["string"] != "\uFFFC" {
 		return nil, fmt.Errorf("date token is not one exact placeholder")
 	}
 	attachments, _ := payload["attachmentsByRange"].(map[string]any)
@@ -76,6 +76,8 @@ func p15MeasureVoidDateString(value any) (map[string]any, error) {
 func p15MeasureVoidGraphError(actual, ordinary []ShortcutAction, timers int, profile BuildProfile) error {
 	var body []ShortcutAction
 	var stack []string
+	var startOffsets []int
+	var intervals [][2]int
 	starts, stops := 0, 0
 	for i := 0; i < len(actual); i++ {
 		action := actual[i]
@@ -85,7 +87,13 @@ func p15MeasureVoidGraphError(actual, ordinary []ShortcutAction, timers int, pro
 			if profile != BuildProfileDebug {
 				return fmt.Errorf("Release retained a timer")
 			}
-			ref := p15MeasureVoidReference(params["WFInput"])
+			if err := p15MeasureVoidAllowedKeys(params, "WFVariableName", "WFInput", "UUID", "CustomOutputName"); err != nil {
+				return err
+			}
+			ref, err := p15MeasureVoidAttachment(params["WFInput"])
+			if err != nil {
+				return err
+			}
 			if len(ref) != 1 || ref["Type"] != "CurrentDate" {
 				return fmt.Errorf("timer start lost native CurrentDate")
 			}
@@ -95,12 +103,16 @@ func p15MeasureVoidGraphError(actual, ordinary []ShortcutAction, timers int, pro
 				}
 			}
 			stack = append(stack, name)
+			startOffsets = append(startOffsets, len(body))
 			starts++
 			continue
 		}
 		if action.WFWorkflowActionIdentifier == "is.workflow.actions.gettimebetweendates" {
 			if profile != BuildProfileDebug || len(stack) == 0 || i+2 >= len(actual) {
 				return fmt.Errorf("unpaired timer stop")
+			}
+			if err := p15MeasureVoidAllowedKeys(params, "WFTimeUntilFromDate", "WFInput", "WFTimeUntilUnit", "UUID", "CustomOutputName"); err != nil {
+				return err
 			}
 			start, err := p15MeasureVoidDateString(params["WFTimeUntilFromDate"])
 			if err != nil {
@@ -111,19 +123,36 @@ func p15MeasureVoidGraphError(actual, ordinary []ShortcutAction, timers int, pro
 				return err
 			}
 			key := stack[len(stack)-1]
-			if start["Type"] != "Variable" || start["VariableName"] != key || len(end) != 1 || end["Type"] != "CurrentDate" || params["WFTimeUntilUnit"] != "Seconds" {
+			if len(start) != 2 || start["Type"] != "Variable" || start["VariableName"] != key || len(end) != 1 || end["Type"] != "CurrentDate" || params["WFTimeUntilUnit"] != "Seconds" {
 				return fmt.Errorf("timer order, origin, unit, or endpoint changed")
 			}
 			id, _ := params["UUID"].(string)
 			logged, forwarded := actual[i+1], actual[i+2]
-			logref := p15MeasureVoidReference(logged.WFWorkflowActionParameters["WFInput"])
-			forwardref := p15MeasureVoidReference(forwarded.WFWorkflowActionParameters["WFVariable"])
+			if err := p15MeasureVoidAllowedKeys(logged.WFWorkflowActionParameters, "WFVariableName", "WFInput", "UUID", "CustomOutputName"); err != nil {
+				return err
+			}
+			if err := p15MeasureVoidAllowedKeys(forwarded.WFWorkflowActionParameters, "WFVariable", "UUID", "CustomOutputName"); err != nil {
+				return err
+			}
+			logref, err := p15MeasureVoidAttachment(logged.WFWorkflowActionParameters["WFInput"])
+			if err != nil {
+				return err
+			}
+			forwardref, err := p15MeasureVoidAttachment(forwarded.WFWorkflowActionParameters["WFVariable"])
+			if err != nil {
+				return err
+			}
 			if id == "" || logged.WFWorkflowActionIdentifier != "is.workflow.actions.appendvariable" || logged.WFWorkflowActionParameters["WFVariableName"] != "__cherri_debug_log" ||
-				logref["Type"] != "ActionOutput" || logref["OutputUUID"] != id ||
-				forwarded.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || forwardref["Type"] != "ActionOutput" || forwardref["OutputUUID"] != id {
+				len(logref) != 3 || logref["Type"] != "ActionOutput" || logref["OutputUUID"] != id || logref["OutputName"] != "Time Between Dates" ||
+				forwarded.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || len(forwardref) != 3 || forwardref["Type"] != "ActionOutput" || forwardref["OutputUUID"] != id || forwardref["OutputName"] != "Time Between Dates" {
 				return fmt.Errorf("timer diagnostic does not consume its exact elapsed producer")
 			}
+			if i+3 >= len(actual) || actual[i+3].WFWorkflowActionIdentifier != "is.workflow.actions.nothing" || len(actual[i+3].WFWorkflowActionParameters) != 0 {
+				return fmt.Errorf("Void timer stop must end at its exact parameter-free Nothing boundary")
+			}
+			intervals = append(intervals, [2]int{startOffsets[len(startOffsets)-1], len(body)})
 			stack = stack[:len(stack)-1]
+			startOffsets = startOffsets[:len(startOffsets)-1]
 			stops++
 			i += 2
 			continue
@@ -136,6 +165,15 @@ func p15MeasureVoidGraphError(actual, ordinary []ShortcutAction, timers int, pro
 	}
 	if starts != expected || stops != expected || len(stack) != 0 {
 		return fmt.Errorf("timer lifecycle mismatch: starts=%d stops=%d expected=%d open=%v", starts, stops, expected, stack)
+	}
+	if profile == BuildProfileDebug {
+		expectedIntervals, err := p15MeasureVoidExpectedIntervals(ordinary, timers)
+		if err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(intervals, expectedIntervals) {
+			return fmt.Errorf("timers no longer bracket their complete authored body: got %v want %v", intervals, expectedIntervals)
+		}
 	}
 	actualGraph, err := p15MeasureVoidCanonicalGraph(body)
 	if err != nil {
@@ -277,7 +315,6 @@ func TestP15MeasureVoidRetainsExistingValueControl(t *testing.T) {
 	}
 }
 
-
 func TestP15MeasureVoidLoopBoundaryGraphs(t *testing.T) {
 	for _, count := range []int{0, 1, 3} {
 		for _, following := range []bool{false, true} {
@@ -312,4 +349,84 @@ func TestP15MeasureVoidLoopBoundaryGraphs(t *testing.T) {
 			}
 		}
 	}
+}
+
+func p15MeasureVoidAllowedKeys(params map[string]any, allowed ...string) error {
+	for key := range params {
+		found := false
+		for _, want := range allowed {
+			if key == want {
+				found = true
+			}
+		}
+		if !found {
+			return fmt.Errorf("unreviewed timer parameter %q", key)
+		}
+	}
+	return nil
+}
+
+func p15MeasureVoidAttachment(value any) (map[string]any, error) {
+	object, ok := value.(map[string]any)
+	if !ok || len(object) != 2 || object["WFSerializationType"] != "WFTextTokenAttachment" {
+		return nil, fmt.Errorf("timer attachment wire type changed")
+	}
+	ref, ok := object["Value"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("timer attachment has no structured reference")
+	}
+	return ref, nil
+}
+
+func p15MeasureVoidExpectedIntervals(ordinary []ShortcutAction, timers int) ([][2]int, error) {
+	before, after, loop := -1, -1, false
+	for i, action := range ordinary {
+		if action.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
+			continue
+		}
+		switch action.WFWorkflowActionParameters["WFTextActionText"] {
+		case "CHERRI_BEFORE":
+			before = i
+		case "CHERRI_AFTER":
+			after = i
+		case "CHERRI_LOOP_BEFORE":
+			before, loop = i, true
+		case "CHERRI_LOOP_AFTER":
+			after = i
+		}
+	}
+	// Two preserved historical Legacy fixtures are bare empty/wait bodies.
+	// Their whole ordinary graph is exactly one optional delay plus Nothing.
+	if before < 0 && after < 0 && timers == 1 && (len(ordinary) == 1 || len(ordinary) == 2) {
+		last := len(ordinary) - 1
+		if ordinary[last].WFWorkflowActionIdentifier == "is.workflow.actions.nothing" && len(ordinary[last].WFWorkflowActionParameters) == 0 &&
+			(last == 0 || ordinary[0].WFWorkflowActionIdentifier == "is.workflow.actions.delay") {
+			return [][2]int{{0, last}}, nil
+		}
+	}
+	if before < 0 || after <= before {
+		return nil, fmt.Errorf("source fixture boundaries missing")
+	}
+	start, boundary := before+1, after-1
+	if loop {
+		start = -1
+		for i := before + 1; i < after; i++ {
+			if ordinary[i].WFWorkflowActionIdentifier == "is.workflow.actions.delay" {
+				start = i
+				break
+			}
+		}
+		boundary = start + 1
+	}
+	if start < 0 || boundary <= start-1 || boundary >= len(ordinary) ||
+		ordinary[boundary].WFWorkflowActionIdentifier != "is.workflow.actions.nothing" || len(ordinary[boundary].WFWorkflowActionParameters) != 0 {
+		return nil, fmt.Errorf("source fixture exact Void boundary missing")
+	}
+	if timers == 1 {
+		return [][2]int{{start, boundary}}, nil
+	}
+	if timers == 2 && !loop && boundary > 0 && ordinary[boundary-1].WFWorkflowActionIdentifier == "is.workflow.actions.nothing" && len(ordinary[boundary-1].WFWorkflowActionParameters) == 0 {
+		return [][2]int{{start, boundary - 1}, {start, boundary}}, nil
+	}
+	return nil, fmt.Errorf("fixture timer nesting has no exact source contract")
 }

@@ -255,6 +255,7 @@ func collectLegacyScopedBlockAction(name string) action {
 	if char != '}' || groupingIdx != state.baseDepth {
 		parserError("E_BLOCK_UNTERMINATED: scoped body or nested control region is not closed")
 	}
+	hasResult := explicitResult
 	if !explicitResult {
 		stepIndex, tokenIndex := -1, -1
 		for i := len(block.steps) - 1; i >= 0 && stepIndex < 0; i-- {
@@ -265,31 +266,98 @@ func collectLegacyScopedBlockAction(name string) action {
 				}
 			}
 		}
-		if stepIndex < 0 {
-			parserError("E_BLOCK_VALUE_REQUIRED: measure requires a final value-producing call or final yield")
+		if stepIndex >= 0 {
+			lastStep := &block.steps[stepIndex]
+			lastToken := &lastStep.tokens[tokenIndex]
+			if lastToken.valueType == EndClosure && legacyScopedControlHasValue(block, lastToken.ident) {
+				parserError("E_BLOCK_CONTROL_RESULT: an implicit control value requires an explicit scoped result; it cannot be discarded as Void")
+			}
+			if lastToken.typeof == Action && lastToken.valueType == Action &&
+				legacyScopedValueType(actionArgument{valueType: Action, value: lastToken.value}, lastStep.vars, nil) != Nil {
+				// Keep a value-producing call at its original position. A
+				// statement-only body has no synthetic result binding.
+				name := block.prefix + "_result"
+				definition := varValue{variableType: "Variable", valueType: Action, value: lastToken.value, constant: true}
+				lastToken.typeof, lastToken.ident = Variable, name
+				lastStep.vars[name] = definition
+				block.result = actionArgument{valueType: Variable, value: varValue{variableType: "Variable", valueType: Action, value: name, constant: true}}
+				block.resultStep = *lastStep
+				hasResult = true
+			}
 		}
-		lastStep := &block.steps[stepIndex]
-		lastToken := &lastStep.tokens[tokenIndex]
-		if lastToken.typeof != Action || lastToken.valueType != Action {
-			parserError("E_BLOCK_VALUE_REQUIRED: use a final yield for literal/reference/control results")
-		}
-		// Keep the call in its original statement position, including trailing
-		// comments. The existing constant token materializes its output once.
-		name := block.prefix + "_result"
-		definition := varValue{variableType: "Variable", valueType: Action, value: lastToken.value, constant: true}
-		lastToken.typeof, lastToken.ident = Variable, name
-		lastStep.vars[name] = definition
-		block.result = actionArgument{valueType: Variable, value: varValue{variableType: "Variable", valueType: Action, value: name, constant: true}}
-		block.resultStep = *lastStep
 	}
-
-	block.resultType = legacyScopedValueType(block.result, block.resultStep.vars, nil)
-	if block.resultType == Nil || block.result.value == nil {
-		parserError("E_BLOCK_VALUE_REQUIRED: a void action or nil cannot provide a scoped value")
+	if hasResult {
+		block.resultType = legacyScopedValueType(block.result, block.resultStep.vars, nil)
+		if block.resultType == Nil || block.result.value == nil {
+			parserError("E_BLOCK_VALUE_REQUIRED: an explicit scoped result cannot be a void action or nil")
+		}
+	} else {
+		block.resultType = Nil
 	}
 	definition.outputType = block.resultType
 	advance()
 	return action{ident: name, def: definition, args: arguments, block: block}
+}
+
+// Inspect the existing parsed control tokens and their captured type environments.
+// A possible implicit value on any branch is not a Void proof. This is a type
+// check over the original tokens, not another parser or a native-output guess.
+func legacyScopedControlHasValue(block *legacyScopedBlock, target string) bool {
+	type frame struct {
+		group                  string
+		tail, previousBranches bool
+	}
+	var stack []frame
+	for _, step := range block.steps {
+		for _, item := range step.tokens {
+			if item.typeof == Comment {
+				continue
+			}
+			control := item.typeof == Conditional || item.typeof == Repeat ||
+				item.typeof == RepeatWithEach || item.typeof == Menu
+			if control && item.valueType == EndClosure {
+				if len(stack) == 0 || stack[len(stack)-1].group != item.ident {
+					return true
+				}
+				last := stack[len(stack)-1]
+				value := last.tail || last.previousBranches
+				stack = stack[:len(stack)-1]
+				if item.ident == target {
+					return value
+				}
+				if len(stack) != 0 {
+					stack[len(stack)-1].tail = value
+				}
+				continue
+			}
+			if item.typeof == Item || (item.typeof == Conditional && item.valueType == Else) {
+				if len(stack) == 0 || stack[len(stack)-1].group != item.ident {
+					return true
+				}
+				last := &stack[len(stack)-1]
+				last.previousBranches = last.previousBranches || last.tail
+				last.tail = false
+				continue
+			}
+			if control {
+				stack = append(stack, frame{group: item.ident})
+				continue
+			}
+			if len(stack) == 0 {
+				continue
+			}
+			last := &stack[len(stack)-1]
+			switch item.typeof {
+			case Variable, AddTo, SubFrom, MultiplyBy, DivideBy:
+				last.tail = false
+			case Action:
+				last.tail = legacyScopedValueType(actionArgument{valueType: item.valueType, value: item.value}, step.vars, nil) != Nil
+			default:
+				last.tail = true
+			}
+		}
+	}
+	return true
 }
 
 // This conservative type witness follows existing declarations and canonical
@@ -406,20 +474,42 @@ func withLegacyScopedEnvironment(step legacyScopedStep, emit func()) {
 func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReference) {
 	previousTokens, previousAction := tokens, currentAction
 	defer func() { tokens, currentAction = previousTokens, previousAction }()
+	emitTimer := func(name, label string) error {
+		setCurrentAction(name, actions[name])
+		makeAction([]actionArgument{{valueType: RawString, value: label}}, &WFActionReference{})
+		return nil
+	}
+	emitBody := func() {
+		for _, step := range block.steps {
+			withLegacyScopedEnvironment(step, func() {
+				tokens = step.tokens
+				generateActions()
+			})
+		}
+	}
+	if block.resultType == Nil {
+		if reference != nil && (reference.UUID != "" || reference.CustomOutputName != "") {
+			exit("E_BLOCK_VOID_VALUE: a Void scoped body has no value to bind or consume")
+		}
+		err := backend.EmitScopedMeasureVoid(
+			block.label+":"+block.prefix,
+			emitTimer,
+			func() error { emitBody(); return nil },
+			func() error {
+				addStdAction("nothing", map[string]any{})
+				return nil
+			},
+		)
+		if err != nil {
+			exit(err.Error())
+		}
+		return
+	}
 	_, err := backend.EmitScopedMeasure(
 		block.label+":"+block.prefix,
-		func(name, label string) error {
-			setCurrentAction(name, actions[name])
-			makeAction([]actionArgument{{valueType: RawString, value: label}}, &WFActionReference{})
-			return nil
-		},
+		emitTimer,
 		func() (WFTextTokenAttachment, error) {
-			for _, step := range block.steps {
-				withLegacyScopedEnvironment(step, func() {
-					tokens = step.tokens
-					generateActions()
-				})
-			}
+			emitBody()
 			var result WFTextTokenAttachment
 			var resultErr error
 			withLegacyScopedEnvironment(block.resultStep, func() {

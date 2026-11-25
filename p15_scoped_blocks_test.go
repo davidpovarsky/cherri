@@ -190,8 +190,8 @@ func TestP15_MeasureFreezesCurrentDateBeforeStoppingTimer(t *testing.T) {
 
 func TestP15_MeasureRejectsUnprovenForms(t *testing.T) {
 	for _, test := range []struct{ source, diagnostic string }{
-		{`let result = measure("empty") {}`, "E_BLOCK_VALUE_REQUIRED"},
-		{`let result = measure("void") { wait(1) }`, "E_BLOCK_VALUE_REQUIRED"},
+		{`let result = measure("empty") {}`, "E_BLOCK_VOID_VALUE"},
+		{`let result = measure("void") { wait(1) }`, "E_BLOCK_VOID_VALUE"},
 		{`let label = "dynamic"; let result = measure(label) { 1 }`, "E_LITERAL_REQUIRED"},
 		{`let result = measure("missing") { none }`, "E_BLOCK_VALUE_REQUIRED"},
 		{`let result = measure("raw") { native.action("is.workflow.actions.gettext", parameters: {"WFTextActionText": "raw"}) }`, "E_BLOCK_RAW_NATIVE"},
