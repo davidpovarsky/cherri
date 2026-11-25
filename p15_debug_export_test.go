@@ -153,18 +153,39 @@ func TestP15DebugExportLiteralOptionsAndRelease(t *testing.T) {
 		for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
 			for _, bad := range []string{
 				"debugExport(\"xml\")\n",
-				"debugExport(\"json\", true)\n",
 				"debugExport(\"../escape.json\")\n",
 			} {
 				if _, err := compileBuildProfileFixture(t, bad, legacy, profile); err == nil {
 					t.Fatalf("legacy=%t profile=%s accepted invalid export: %q", legacy, profile, bad)
 				}
 			}
+			// This exact historical unsupported-date source is now an
+			// admitted opt-in. Keep it in both profiles and frontends.
+			dated, err := compileBuildProfileFixture(t, "debugExport(\"json\", true)\n", legacy, profile)
+			if err != nil {
+				t.Fatalf("admitted date source failed: legacy=%t profile=%s: %v", legacy, profile, err)
+			}
+			if profile == BuildProfileRelease {
+				checkDebugFallthroughSequence(t, dated, legacy)
+			} else {
+				last := -1
+				for i, action := range dated {
+					if action.WFWorkflowActionIdentifier == "is.workflow.actions.setitemname" {
+						last = i
+					}
+				}
+				if last < 0 {
+					t.Fatal("date source lost original export boundary")
+				}
+				if err := p15ExportMetadataGraphError(dated[:last+1], p15ExportMetadataOptions{dates: true, types: true, redact: true, format: "json"}); err != nil {
+					t.Fatal(err)
+				}
+			}
 			decl := "let"
 			if legacy {
 				decl = "const"
 			}
-			_, err := compileBuildProfileFixture(t, decl+" dynamic = text(\"json\")\ndebugExport(dynamic)\n", legacy, profile)
+			_, err = compileBuildProfileFixture(t, decl+" dynamic = text(\"json\")\ndebugExport(dynamic)\n", legacy, profile)
 			if err == nil {
 				t.Fatal("dynamic format accepted")
 			}
@@ -204,7 +225,7 @@ func TestP15DebugExportZeroOneThousandCompileBudget(t *testing.T) {
 
 func TestP15DebugExportRedactionRejectsNilAndDynamic(t *testing.T) {
 	for _, raw := range []any{nil, "false", 0, debugLogValueRef("runtimeFlag")} {
-		for _, key := range []string{"WFDebugExportRedact", "WFDebugExportTypes", "WFDebugExportDates"} {
+		for _, key := range []string{"WFDebugExportRedact", "WFDebugExportTypes", "WFDebugExportDates", "WFDebugExportLabels"} {
 			if _, err := parseDebugExportOptions(map[string]any{key: raw}); err == nil {
 				t.Fatalf("nonliteral option %s=%T accepted; it must not weaken default redaction", key, raw)
 			}

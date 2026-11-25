@@ -1,0 +1,151 @@
+[
+  {
+    "id": "is.workflow.actions.repeat.each",
+    "parameters": {
+      "GroupingIdentifier": "group_0",
+      "WFControlFlowMode": 0,
+      "WFInput": {
+        "Value": {
+          "Type": "Variable",
+          "VariableName": "__cherri_debug_log"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.getitemtype",
+    "parameters": {
+      "UUID": "producer_1",
+      "WFInput": {
+        "Value": {
+          "Type": "Variable",
+          "VariableName": "Repeat Item"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_2",
+      "WFBase64LineBreakMode": "None",
+      "WFEncodeMode": "Encode",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_1",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.gettext",
+    "parameters": {
+      "UUID": "producer_3",
+      "WFTextActionText": {
+        "Value": {
+          "attachmentsByRange": {
+            "{84, 1}": {
+              "OutputName": "producer_2",
+              "OutputUUID": "producer_2",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "{\"status\":\"REDACTED\",\"payload\":null,\"nativeType\":{\"encoding\":\"base64-utf8\",\"value\":\"￼\"}}"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.repeat.each",
+    "parameters": {
+      "GroupingIdentifier": "group_0",
+      "UUID": "producer_4",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "id": "is.workflow.actions.text.combine",
+    "parameters": {
+      "UUID": "producer_5",
+      "WFTextCustomSeparator": "\n",
+      "WFTextSeparator": "Custom",
+      "text": {
+        "Value": {
+          "OutputName": "Repeat Results",
+          "OutputUUID": "producer_4",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.gettext",
+    "parameters": {
+      "UUID": "producer_6",
+      "WFTextActionText": {
+        "Value": {
+          "attachmentsByRange": {
+            "{179, 1}": {
+              "OutputName": "producer_5",
+              "OutputUUID": "producer_5",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "Cherri Debug Export 1\nScope: run-local native items\nPayload policy: redacted\nDates: not collected\nLabels: not collected\nEntry encoding: JSON lines; Text payloads use base64-utf8\n\n￼"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_7",
+      "WFBase64LineBreakMode": "None",
+      "WFEncodeMode": "Encode",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_6",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_8",
+      "WFEncodeMode": "Decode",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_7",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.setitemname",
+    "parameters": {
+      "CustomOutputName": "binding_0",
+      "UUID": "producer_9",
+      "WFDontIncludeFileExtension": false,
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_8",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFName": "cherri-debug.txt"
+    }
+  }
+]

@@ -236,6 +236,13 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 			}
 			s.shortcut.WFWorkflowActions = withDates
 		}
+		if s.buildProfile != BuildProfileRelease && debugExportRequestsLabelStorage(macroName, params) {
+			withLabels, _, backfillErr := backfillDebugLogLabels(s.shortcut.WFWorkflowActions)
+			if backfillErr != nil {
+				return "", backfillErr
+			}
+			s.shortcut.WFWorkflowActions = withLabels
+		}
 		if s.buildProfile != BuildProfileRelease && debugMacroRequestsLabels(macroName, params) {
 			withLabels, _, backfillErr := backfillDebugLabelContext(s.shortcut.WFWorkflowActions)
 			if backfillErr != nil {

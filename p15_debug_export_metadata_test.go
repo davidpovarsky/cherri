@@ -123,7 +123,8 @@ func p15ExportMetadataGraphError(graph []ShortcutAction, o p15ExportMetadataOpti
 		id := strings.TrimPrefix(action.WFWorkflowActionIdentifier, "is.workflow.actions.")
 		switch id {
 		case "gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname",
-			"getvariable", "count", "setvariable", "getvalueforkey", "format.date", "number", "math", "nothing":
+			"getvariable", "count", "setvariable", "getvalueforkey", "format.date", "number", "math", "nothing",
+			"dictionary", "round", "getitemfromlist", "repeat.count", "appendvariable":
 		default:
 			return fmt.Errorf("unexpected export effect %s", id)
 		}
@@ -133,7 +134,7 @@ func p15ExportMetadataGraphError(graph []ShortcutAction, o p15ExportMetadataOpti
 			}
 			byID[output], byIndex[output] = action, i
 		}
-		if id == "setvariable" {
+		if id == "setvariable" || id == "appendvariable" {
 			name, _ := p["WFVariableName"].(string)
 			if !strings.HasPrefix(name, "__cherri_debug_export_") {
 				return fmt.Errorf("export changed raw/shared state %q", name)
@@ -291,6 +292,28 @@ func TestP15DebugExportMetadataSourceGraphs(t *testing.T) {
 							if original == "" || count < 1 {
 								t.Fatal("original native producer consumer lost")
 							}
+							if out := os.Getenv("CHERRI_EXPORT_METADATA_GRAPH_OUT"); out != "" {
+								artifact := map[string]any{
+									"id": t.Name(), "options": map[string]any{
+										"dates": o.dates, "labels": o.labels, "types": o.types, "redact": o.redact, "format": o.format, "legacy": legacy,
+									}, "actions": graph,
+								}
+								data, err := json.MarshalIndent(artifact, "", "  ")
+								if err != nil {
+									t.Fatal(err)
+								}
+								path := filepath.Join(out, strings.ReplaceAll(t.Name(), "/", "-")+".json")
+								f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+								if err != nil {
+									t.Fatal(err)
+								}
+								if _, err = f.Write(append(data, '\n')); err != nil {
+									t.Fatal(err)
+								}
+								if err = f.Close(); err != nil {
+									t.Fatal(err)
+								}
+							}
 						})
 					}
 				}
@@ -323,6 +346,17 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 				b, err := p15ExportMetadataCanonicalGraph(currentWire)
 				if err != nil {
 					t.Fatal(err)
+				}
+				baseline, err := os.ReadFile(filepath.Join("testdata", "p15-debug-export-metadata", "default", fmt.Sprintf("%s-redact_%t.json", format, redact)))
+				if err != nil {
+					t.Fatal(err)
+				}
+				actual, err := json.MarshalIndent(a, "", "  ")
+				if err != nil {
+					t.Fatal(err)
+				}
+				if string(append(actual, '\n')) != string(baseline) {
+					t.Fatal("default native graph differs from the actual pre-implementation source75c6 baseline")
 				}
 				if !reflect.DeepEqual(a, b) {
 					t.Fatalf("omitted metadata differs from explicit false flags: old=%#v; current=%#v", a, b)
@@ -533,4 +567,90 @@ func p15ExportMetadataCanonicalGraph(actions []ShortcutAction) (any, error) {
 		normalizeProducerName(action.WFWorkflowActionParameters, normalized[i].(map[string]any)["parameters"])
 	}
 	return canonical, nil
+}
+
+func TestP15DebugExportMetadataReleaseAndStorage(t *testing.T) {
+	for _, legacy := range []bool{false, true} {
+		t.Run(fmt.Sprintf("legacy_%t", legacy), func(t *testing.T) {
+			for _, format := range []string{"json", "text"} {
+				t.Run("release_"+format, func(t *testing.T) {
+					source := "text(\"kept-before\")\ndebugLog()\ndebugExport(" + strconv.Quote(format) + ", true, true, false, true)\ntext(\"kept-after\")\n"
+					got, err := compileBuildProfileFixture(t, source, legacy, BuildProfileRelease)
+					if err != nil {
+						t.Fatal(err)
+					}
+					want, err := compileBuildProfileFixture(t, "text(\"kept-before\")\ntext(\"kept-after\")\n", legacy, BuildProfileRelease)
+					if err != nil {
+						t.Fatal(err)
+					}
+					a, err := p15ExportMetadataCanonicalGraph(got)
+					if err != nil {
+						t.Fatal(err)
+					}
+					b, err := p15ExportMetadataCanonicalGraph(want)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if !reflect.DeepEqual(a, b) {
+						t.Fatal("Release metadata introduced helpers or changed authored effects")
+					}
+				})
+			}
+			t.Run("storage_only_backfill", func(t *testing.T) {
+				source := "debugClearLogs()\ntext(\"logged\")\ndebugLog()\ndebugShowLogs()\n" +
+					"debugExport(\"json\", false, false, false, true)\n" +
+					"debugExport(\"json\", false, false, false, true)\n"
+				actions, err := compileBuildProfileFixture(t, source, legacy, BuildProfileDebug)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(p15ActionsNamed(actions, "previewdocument")) != 1 {
+					t.Fatal("export label storage rewrote or duplicated an earlier preview")
+				}
+				clears := 0
+				for i, action := range actions {
+					p := action.WFWorkflowActionParameters
+					if action.WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" && p["WFVariableName"] == debugLabelVariableName {
+						clears++
+						if _, exists := p["WFInput"]; exists || i == 0 ||
+							actions[i-1].WFWorkflowActionIdentifier != "is.workflow.actions.nothing" {
+							t.Fatal("label storage backfill must preserve the exact zero-output clear")
+						}
+					}
+				}
+				if clears != 1 {
+					t.Fatalf("metadata storage clear was not idempotent: %d", clears)
+				}
+			})
+			t.Run("later_label_in_outer_loop", func(t *testing.T) {
+				begin := "repeat 2 {\n"
+				if legacy {
+					begin = "repeat outerIndex for 2 {\n"
+				}
+				source := "debugClearLogs()\n" + begin +
+					"text(\"before\")\ndebugLog()\ndebugExport(\"json\", true, true, false, true)\n" +
+					"text(\"after\")\ndebugLog(false, false, false, \"later label\")\n}\n"
+				actions, err := compileBuildProfileFixture(t, source, legacy, BuildProfileDebug)
+				if err != nil {
+					t.Fatal(err)
+				}
+				clearCount, labelAppends := 0, 0
+				for _, action := range actions {
+					p := action.WFWorkflowActionParameters
+					if p["WFVariableName"] != debugLabelVariableName {
+						continue
+					}
+					if action.WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" {
+						clearCount++
+					}
+					if action.WFWorkflowActionIdentifier == "is.workflow.actions.appendvariable" {
+						labelAppends++
+					}
+				}
+				if clearCount != 1 || labelAppends != 1 {
+					t.Fatal("future loop labels were cleared at export or lost their original append")
+				}
+			})
+		})
+	}
 }
