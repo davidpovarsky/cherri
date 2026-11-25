@@ -109,6 +109,26 @@ struct Control: Decodable { let raw: String?; let sanitized: String?; let summar
     bounded = function + "A" * 20000
     add(bounded, bounded[:16384], bounded[:16384])
 
+    # A maximal local-part run is scanned once; all prior email/secret
+    # detections remain, including sensitive data after the output length cap.
+    for email in ("a@example.invalid", "9a@sub.example.invalid", "prefix-a@example.invalid",
+                  "prefix+a.b@example.invalid", "@@a@b.invalid", "אבa@example.invalid",
+                  "a@example.invalid🙂", "a-b@1.example.invalid", ".a@b.invalid",
+                  "x/a@b.invalid", "A"*128 + "@example.invalid",
+                  "a..b@example.invalid", "++++@domain.invalid"):
+        add(function + email, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    for punctuation in "._%+-":
+        raw = function + "a" + punctuation + "z@example.invalid"
+        add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    for value in ("a@b.c", "a@b.22", "a@@b.invalid", "a @b.invalid",
+                  "a@b", "a_at_b.invalid", "a＠b.invalid", "not-an-email"):
+        raw = function + value
+        add(raw, raw, raw)
+    for secret in ("ghp_SYNTHETIC_CANARY", "canary@example.invalid", "/Users/SYNTHETIC",
+                   "BEGIN PRIVATE KEY", "Bearer SYNTHETIC_CANARY"):
+        raw = function + "A"*17000 + " " + secret
+        add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+
     if args.artifacts_dir:
         retained = Path(args.artifacts_dir)
         retained.mkdir(parents=False, exist_ok=False)

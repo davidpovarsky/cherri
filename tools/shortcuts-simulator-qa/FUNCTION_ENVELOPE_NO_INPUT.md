@@ -86,3 +86,19 @@ The general callback parsing and all existing XCTest bodies are unchanged.
 Actual standalone receiver build, one no-input launch, signed/import lineage,
 three CASE observations and independent trace recomputation remain separate
 required operations. A Foundation PASS grants no native or formal credit.
+
+### Full-input privacy scan
+
+The original 50 sanitizer controls reached the unchanged 30-second executable
+deadline. The prior email alternative retried its local-part scan at each
+character of a long run without an at-sign. The retained original executable
+took 0.082, 0.191 and 0.586 seconds for the same 1,000/2,000/4,000-character
+nonmatching-tail controls. This is component diagnosis, not Apple performance.
+
+The email alternative now begins only at the start of a maximal local-part
+character run. Any prior substring email match can extend to that same run
+start, so its presence remains detectable. The scanner still reads the full
+input before the output cap, and all other secret/PII alternatives are unchanged.
+All original 50 controls remain; the added boundary controls include adjacent
+local-part characters, Unicode boundaries, nonemails and secrets beyond 16 KiB.
+No timeout or output bound is increased.
