@@ -16,7 +16,7 @@ import sys
 import tempfile
 import time
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 UPSTREAM = ("bcc0095754e2cc0baaeb4d93dae172b8153b4716",
             "4fe9fbc8c742aaf01d6ec8193d9be708fb1de7b5",
             "https://github.com/electrikmilk/cherri.git")
@@ -160,24 +160,117 @@ def project_snapshot(source, jobs):
     return source, project, result
 
 
+def _owned_group_present(pgid):
+    try:
+        os.killpg(pgid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+
+
+def _finish_owned_group(process, pgid, grace=5):
+    """Drain the new session, including children surviving the direct parent."""
+    result = {"pgid": pgid, "signals": [], "groupGone": False}
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        process.poll()
+        if not _owned_group_present(pgid):
+            result["groupGone"] = True
+            return result
+        try:
+            os.killpg(pgid, sig)
+            result["signals"].append(int(sig))
+        except ProcessLookupError:
+            result["groupGone"] = True
+            return result
+        deadline = time.monotonic() + grace
+        while time.monotonic() < deadline:
+            process.poll()
+            if not _owned_group_present(pgid):
+                result["groupGone"] = True
+                return result
+            time.sleep(.02)
+    process.poll()
+    result["groupGone"] = not _owned_group_present(pgid)
+    return result
+
+
 def execute(argv, cwd, output, timeout=90):
     started = time.monotonic()
-    timed_out = False
-    with (output / "stdout.original.bin").open("xb") as stdout, (output / "stderr.original.bin").open("xb") as stderr:
-        process = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr,
-                                   start_new_session=True)
+    output = Path(output)
+    process = None
+    pgid = None
+    failure = None
+    previous_handlers = {}
+    cancellation = {"signal": None}
+    report = {"argv": [str(v) for v in argv], "exitCode": None, "timedOut": False,
+              "cancelled": False, "cancelSignal": None, "status": "FAILED"}
+
+    def request_cancel(signum, _frame):
+        # No exception in Popen's assignment window: the owned child always
+        # becomes available to the finally cleanup before cancellation acts.
+        if cancellation["signal"] is None:
+            cancellation["signal"] = signum
+
+    try:
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            previous_handlers[sig] = signal.getsignal(sig)
+            signal.signal(sig, request_cancel)
+        with (output / "stdout.original.bin").open("xb") as stdout, (output / "stderr.original.bin").open("xb") as stderr:
+            if cancellation["signal"] is None:
+                process = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL,
+                                           stdout=stdout, stderr=stderr, start_new_session=True)
+                actual_pgid, actual_sid = os.getpgid(process.pid), os.getsid(process.pid)
+                require(actual_pgid == process.pid and actual_sid == process.pid,
+                        "Child did not acquire its private process session")
+                pgid = process.pid
+                report.update({"pid": process.pid, "pgid": pgid, "sid": actual_sid})
+                while cancellation["signal"] is None:
+                    code = process.poll()
+                    if code is not None:
+                        report["exitCode"] = code
+                        break
+                    if time.monotonic() - started >= timeout:
+                        report["timedOut"] = True
+                        break
+                    time.sleep(.02)
+    except KeyboardInterrupt:
+        cancellation["signal"] = signal.SIGINT
+    except BaseException as error:
+        failure = error
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+    finally:
         try:
-            exit_code = process.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            timed_out = True
-            os.killpg(process.pid, signal.SIGTERM)
-            try:
-                exit_code = process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                exit_code = process.wait(timeout=5)
-    return {"argv": [str(v) for v in argv], "exitCode": exit_code, "timedOut": timed_out,
-            "elapsedSeconds": time.monotonic() - started}
+            if process is not None:
+                if pgid is not None:
+                    report["cleanup"] = _finish_owned_group(process, pgid)
+                    require(report["cleanup"]["groupGone"], "Owned compiler process group did not terminate")
+                else:
+                    # A failed session check never authorizes a group signal.
+                    process.kill()
+                    process.wait(timeout=5)
+                    report["cleanup"] = {"groupSignalAuthorized": False, "directChildReaped": True}
+                report["exitCode"] = process.wait(timeout=5)
+            else:
+                report["cleanup"] = {"childStarted": False, "groupGone": True}
+        except BaseException as error:
+            report["cleanupError"] = {"type": type(error).__name__, "message": str(error)}
+            if failure is None:
+                failure = error
+        finally:
+            for sig, handler in previous_handlers.items():
+                signal.signal(sig, handler)
+            report["cancelSignal"] = cancellation["signal"]
+            report["cancelled"] = cancellation["signal"] is not None
+            report["elapsedSeconds"] = time.monotonic() - started
+            if failure is None:
+                report["status"] = ("CANCELLED" if report["cancelled"] else
+                                    "TIMED_OUT" if report["timedOut"] else "COMPLETED")
+            with (output / "process.original.json").open("x") as stream:
+                json.dump(report, stream, indent=2)
+                stream.write("\n")
+    if failure is not None:
+        raise failure
+    return report
 
 
 def unsigned_actions(data):
@@ -223,7 +316,8 @@ def compile_source(root, manifest_sha, operation, requested):
               "nativeRuntimeCredit": False, "status": "FAILED"}
     try:
         report["process"] = execute(argv, stage, output)
-        require(not report["process"]["timedOut"] and report["process"]["exitCode"] == 0,
+        require(not report["process"]["cancelled"] and not report["process"]["timedOut"]
+                and report["process"]["exitCode"] == 0,
                 "Upstream compiler failed; original output is retained in " + str(output))
         for name, data in files.items():
             require(regular_bytes(project / name) == data, "Authored project changed during compilation")
