@@ -33,9 +33,16 @@ An explicitly set empty or missing record is a rejection, not the normal
 automatic-selection route.
 
 The create-only private receipt
-`owned-simulator-selection.original.json` retains the input hashes and either
-the exact selection or its rejection. Selection is not a native execution or
-runtime acceptance result. The public-artifact allowlist is unchanged.
+`owned-simulator-selection.original.json` retains the input hashes, byte counts,
+relative original paths and either the exact selection or its rejection. Its
+private, create-only sibling directory `owned-simulator-selection.original.json.inputs`
+holds the operator record and all three inventories byte-for-byte before any JSON
+is parsed. The originals survive the shell's later scratch-inventory cleanup;
+a malformed record still retains the other available inputs. Existing receipts
+or retained-input directories are never reused or overwritten.
+
+Selection is not a native execution or runtime acceptance result. The
+public-artifact allowlist is unchanged.
 
 For the current Cherri Apple lane the reviewed owner may bind only its existing
 D631D98E-2271-4948-B465-8EDBA9BD4D68 simulator. Other project devices remain

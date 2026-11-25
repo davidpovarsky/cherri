@@ -194,6 +194,83 @@ class OwnedSimulatorSelectionTests(unittest.TestCase):
         self.assertNotIn("selection", receipt)
         self.assertFalse(receipt["deviceMutationAttempted"])
 
+
+    def test_retained_inputs_survive_original_inventory_cleanup(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = fixtures()
+            names = ("record.json", "sim-runtimes.json", "sim-devicetypes.json", "sim-devices.json")
+            labels = ("ownerRecord", "runtimes", "deviceTypes", "devices")
+            originals = {}
+            for name, value in zip(names, values):
+                raw = (json.dumps(value, indent=2) + "\n").encode()
+                (root / name).write_bytes(raw)
+                originals[name] = raw
+            output = root / "selection.original.json"
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = p.main(["--record", str(root / "record.json"), "--inventory-root", str(root),
+                               "--output", str(output), "--source-sha", SOURCE, "--run-id", RUN,
+                               "--profile", "iphone-fallback"])
+            self.assertEqual(code, 0)
+            receipt = json.loads(output.read_text())
+            for name, label in zip(names, labels):
+                (root / name).unlink()
+                binding = receipt["inputBindings"][label]
+                self.assertIn("retainedOriginal", binding)
+                retained = root / binding["retainedOriginal"]
+                self.assertEqual(retained.read_bytes(), originals[name])
+                self.assertEqual(hashlib.sha256(retained.read_bytes()).hexdigest(), binding["sha256"])
+                self.assertEqual(len(retained.read_bytes()), binding["bytes"])
+            before = output.read_bytes()
+            with self.assertRaises(FileExistsError):
+                p.main(["--record", str(root / "missing"), "--inventory-root", str(root),
+                        "--output", str(output), "--source-sha", SOURCE, "--run-id", RUN,
+                        "--profile", "iphone-fallback"])
+            self.assertEqual(output.read_bytes(), before)
+
+
+    def test_rejected_record_retains_all_exact_inputs_before_parsing(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = fixtures()
+            names = ("record.json", "sim-runtimes.json", "sim-devicetypes.json", "sim-devices.json")
+            labels = ("ownerRecord", "runtimes", "deviceTypes", "devices")
+            originals = {name: (json.dumps(value, indent=2) + "\n").encode()
+                         for name, value in zip(names, values)}
+            originals["record.json"] = b'{"schema": malformed}\n'
+            for name, raw in originals.items():
+                (root / name).write_bytes(raw)
+            output = root / "selection.original.json"
+            with contextlib.redirect_stdout(io.StringIO()) as stdout, contextlib.redirect_stderr(io.StringIO()):
+                code = p.main(["--record", str(root / "record.json"), "--inventory-root", str(root),
+                               "--output", str(output), "--source-sha", SOURCE, "--run-id", RUN,
+                               "--profile", "iphone-fallback"])
+            self.assertEqual(code, 2)
+            self.assertEqual(stdout.getvalue(), "")
+            receipt = json.loads(output.read_text())
+            self.assertEqual(receipt["status"], "REJECTED")
+            self.assertEqual(set(receipt["inputBindings"]), set(labels))
+            for name, label in zip(names, labels):
+                binding = receipt["inputBindings"][label]
+                self.assertEqual((root / binding["retainedOriginal"]).read_bytes(), originals[name])
+            self.assertFalse(receipt["nativeExecution"])
+            self.assertFalse(receipt["deviceMutationAttempted"])
+
+    def test_existing_retained_input_directory_is_not_reused(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            output = root / "selection.original.json"
+            retained = root / "selection.original.json.inputs"
+            retained.mkdir()
+            witness = retained / "ownerRecord.json"
+            witness.write_bytes(b"original preserved\n")
+            with self.assertRaises(FileExistsError), contextlib.redirect_stdout(io.StringIO()):
+                p.main(["--record", str(root / "missing"), "--inventory-root", str(root),
+                        "--output", str(output), "--source-sha", SOURCE, "--run-id", RUN,
+                        "--profile", "iphone-fallback"])
+            self.assertEqual(witness.read_bytes(), b"original preserved\n")
+            self.assertFalse(output.exists())
+
     def test_default_selector_bytes_and_source_witnesses_are_preserved(self):
         shell = (ROOT / "scripts/ios27_shortcuts_simulator_qa.sh").read_text()
         start = shell.index('SIM_SELECTION="$(python3 - "$ARTIFACT_DIR" "$DEVICE_PROFILE"')

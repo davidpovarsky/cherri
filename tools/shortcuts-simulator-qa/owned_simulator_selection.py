@@ -35,14 +35,20 @@ def unique_json(raw):
     return json.loads(raw, object_pairs_hook=unique)
 
 
-def read_input(path, limit, bindings, label):
+def read_input(path, limit, bindings, label, retained_dir=None, parse_json=True):
     path = Path(path)
     require(path.is_file() and not path.is_symlink(), "INPUT_NOT_REGULAR")
     require(path.stat().st_size <= limit, "INPUT_TOO_LARGE")
     raw = path.read_bytes()
     require(len(raw) <= limit, "INPUT_TOO_LARGE")
     bindings[label] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
-    return unique_json(raw)
+    if retained_dir is not None:
+        require(label in ("ownerRecord", "runtimes", "deviceTypes", "devices"), "INPUT_LABEL")
+        retained = retained_dir / (label + ".json")
+        with retained.open("xb") as stream:
+            stream.write(raw)
+        bindings[label]["retainedOriginal"] = str(Path(retained_dir.name) / retained.name)
+    return unique_json(raw) if parse_json else raw
 
 
 def select_owned(record, runtimes, types, devices, source, run_id, profile):
@@ -103,6 +109,11 @@ def main(argv=None):
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--profile", required=True)
     args = parser.parse_args(argv)
+    output = Path(args.output)
+    if output.exists() or output.is_symlink():
+        raise FileExistsError(output)
+    retained_dir = output.with_name(output.name + ".inputs")
+    retained_dir.mkdir(mode=0o700, exist_ok=False)
     bindings = {}
     receipt = {"schema": SCHEMA, "sourceCommit": args.source_sha, "runId": args.run_id,
                "status": "REJECTED", "inputBindings": bindings,
@@ -113,19 +124,25 @@ def main(argv=None):
     try:
         root = Path(args.inventory_root)
         require(root.is_dir() and not root.is_symlink(), "INVENTORY_ROOT")
-        record = read_input(args.record, 65536, bindings, "ownerRecord")
-        runtimes = read_input(root / "sim-runtimes.json", 2 * 1024**2, bindings, "runtimes")
-        types = read_input(root / "sim-devicetypes.json", 2 * 1024**2, bindings, "deviceTypes")
-        devices = read_input(root / "sim-devices.json", 2 * 1024**2, bindings, "devices")
+        inputs = ((args.record, 65536, "ownerRecord"),
+                  (root / "sim-runtimes.json", 2 * 1024**2, "runtimes"),
+                  (root / "sim-devicetypes.json", 2 * 1024**2, "deviceTypes"),
+                  (root / "sim-devices.json", 2 * 1024**2, "devices"))
+        # Preserve the exact bounded bytes before parsing any input. The shell
+        # may later remove its inventory scratch files; these originals remain.
+        raw_inputs = {label: read_input(path, limit, bindings, label, retained_dir, False)
+                      for path, limit, label in inputs}
+        record, runtimes, types, devices = (
+            unique_json(raw_inputs[label]) for _, _, label in inputs)
         selection = select_owned(record, runtimes, types, devices,
                                  args.source_sha, args.run_id, args.profile)
         receipt.update(status="SELECTED", selection=selection)
         code = 0
     except (OSError, ValueError) as error:
         receipt["error"] = str(error) if isinstance(error, ValueError) else "OWNED_SIMULATOR_INPUT_IO"
-    # Even rejection retains the exact available input hashes. No output or old
+    # Even rejection retains the exact available input bytes and hashes. No old
     # receipt may be overwritten into an apparent newly selected destination.
-    with Path(args.output).open("x", encoding="utf-8") as stream:
+    with output.open("x", encoding="utf-8") as stream:
         json.dump(receipt, stream, indent=2, sort_keys=True)
         stream.write("\n")
     if code == 0:
