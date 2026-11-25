@@ -1,0 +1,9 @@
+let items=[none,false,0,"",[],{},null]
+let rows:List<List<Optional<Bool>>>=[[false,none],[],[true]]
+let json:JsonValue=null
+let joined={"items":items,"rows":rows,"json":json}
+let itemsAlias=items
+let rowsAlias=rows
+let jsonAlias=json
+let joinedAlias=joined
+return count(joinedAlias)
