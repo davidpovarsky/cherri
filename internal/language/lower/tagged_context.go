@@ -56,11 +56,20 @@ func taggedPayloadTarget(expected, actual types.Type) (types.Type, error) {
 	if !ok {
 		return expected, nil
 	}
+	observed := presentType(actual)
+	// An inferred union can contain several List/Map layouts. Preserve the
+	// exact authorial member before considering any allowed type widening;
+	// equality of outer Kind alone cannot select a recursive representation.
+	for _, member := range union.Members {
+		candidate := presentType(member)
+		if candidate != nil && observed != nil && candidate.Equals(observed) {
+			return member, nil
+		}
+	}
 	var selected types.Type
 	for _, member := range union.Members {
 		candidate := presentType(member)
-		observed := presentType(actual)
-		if candidate == nil || observed == nil || candidate.Kind() != observed.Kind() {
+		if candidate == nil || observed == nil || candidate.Kind() != observed.Kind() || !observed.AssignableTo(candidate) {
 			continue
 		}
 		if selected != nil && taggedStorageLayout(selected, false) != taggedStorageLayout(member, false) {

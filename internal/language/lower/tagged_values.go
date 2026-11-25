@@ -5,6 +5,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
+	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
@@ -399,9 +400,12 @@ func (l *Lowerer) validateTaggedNativeBoundary(name string, call *syntax.CallExp
 			}
 		}
 	}
-	if name == "count" && l.actions[name] == nil && call.PrimaryArg != nil && len(call.NamedArgs) == 0 {
-		if action, found := l.registry.LookupAction(name); found && action.AppleIdentifier == "is.workflow.actions.count" {
-			if _, list := presentType(l.transportType(call.PrimaryArg)).(types.ListType); list {
+	if name == "count" && l.actions[name] == nil && call.PrimaryArg != nil {
+		if action, found := l.registry.LookupAction(name); found && schema.LoopResultItemsCountConsumer(call, action) {
+			switch presentType(l.transportType(call.PrimaryArg)).(type) {
+			case types.ListType, types.MapType:
+				// Match the analyzer's exact registered Items Count gate.
+				// The existing outer native object and Count wire are unchanged.
 				return nil
 			}
 		}
