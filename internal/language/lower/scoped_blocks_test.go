@@ -30,8 +30,15 @@ let result = measure("scope") {
 	before := syntax.Format(program)
 	analyzer := analysis.NewAnalyzer(schema.DefaultRegistry())
 	analyzer.Analyze(program)
-	if len(analyzer.Diagnostics()) != 0 {
-		t.Fatal(analyzer.Diagnostics())
+	warnings := 0
+	for _, diagnostic := range analyzer.Diagnostics() {
+		if diagnostic.Severity != analysis.SeverityWarning || diagnostic.Code != "W_SHADOWING" {
+			t.Fatal(diagnostic)
+		}
+		warnings++
+	}
+	if warnings != 2 {
+		t.Fatalf("the two authored shadows must retain their warnings, got %d", warnings)
 	}
 	l := NewLowerer(schema.DefaultRegistry())
 	l.SetExprTypes(analyzer.ExprTypes())

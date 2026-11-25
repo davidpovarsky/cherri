@@ -306,8 +306,8 @@ func p15ScopedLexicalStorageGraph(actions []map[string]any, profile BuildProfile
 		if !found || at >= i || actions[at]["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
 			return fmt.Errorf("write source was not original Text")
 		}
-		value, okay := p15LiteralText(p15Param(actions[at])["WFTextActionText"])
-		if !okay {
+		value, readError := p15LiteralText(p15Param(actions[at])["WFTextActionText"])
+		if readError != nil {
 			return fmt.Errorf("write payload changed")
 		}
 		writes = append(writes, write{name, value, i})
