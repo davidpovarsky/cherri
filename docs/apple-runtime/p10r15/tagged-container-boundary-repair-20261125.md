@@ -15,12 +15,26 @@ The preceding failed qualification remains original. It exposed an incorrect ass
 
 The four exact historical internal JsonNull specimens have independently authored complete native-action graphs and causal graph mutations. The unused function-default specimen only proves that an uncalled declaration has no runtime effects; it is not evidence of executed defaults.
 
-## Pending internal Count proof
+## Qualified internal Count proof
 
 The additional test-only checkpoint preserves four exact historical specimens: overwritten nested List, ordinary binding inside the body, a nonfinal branch, and absence inside an array. Its complete graph model requires the old body effects, an explicitly cleared result collection, exactly one append for the normal final yield, the nested absence cell, and the final Count producer.
 
-These four proofs and 52 causal graph faults are newly authored and pending execution at this checkpoint. Five paired external-export specimens must retain precise rejection. No historical negative case is promoted by this checkpoint.
+The test-only source 1cc8ab11ee14d55d499a8381c51b641cdbe1bc59 passed all 68 exact named events in 42.154 seconds: four original graph specimens, 52 causal graph faults, five external boundary specimens, and their parent/group events. There were no failures, skips, timeouts, capacity aborts, or source changes. The four internal cases in the original F04 context test now invoke this qualified complete graph oracle. All original subtest IDs and six original source strings remain unchanged. The two external source cases retain exact rejection across analyzer, service, and compiler, including code, message, source span, and zero native output.
 
 ## Evidence limits
 
 The selected compiler and graph tests do not prove Apple runtime preservation of List/Map payloads. The dedicated qa-tagged-value-carrier-v2 engineering fixture still needs original signed/native execution and exact callback/trace intake. This report grants neither full T05/L01 acceptance nor final179 acceptance.
+
+## Count qualification and independent review
+
+Original qualification receipt:
+/mnt/development/projects/evidence/cherri-p10r15-ci-release-20261125/tagged-count-context-proof-qualification-01/receipt.original.json
+
+SHA-256: a9aa8037a9879cb9f6747c00c449fe572e008787a27223130ed095a1c56ba845
+
+Independent source/graph review:
+/mnt/development/projects/evidence/cherri-p10r15-final-completion-20261125/tagged-count-context-independent-review-02/review.original.json
+
+SHA-256: bdd66e4b3b227e004aa085adf1cc94f5388c184cb9f38adacce497f5dc82383d
+
+The first inventory-only review omitted the proof document and remains preserved as a failed review attempt. It did not change source or tests. The original F04 parent will be requalified with the other affected original boundaries after their precise diagnostic alignment.

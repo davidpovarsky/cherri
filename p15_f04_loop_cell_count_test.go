@@ -435,31 +435,29 @@ func TestP15F04CellPayloadContextBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, tc := range []struct{ name, source, code string }{
-		{"overwritten_nested_list", "return count(repeat 2 {yield [[\"discarded\"]]\nyield []})", analysis.CodeNestedNativeList},
-		{"ordinary_binding_in_body", "return count(repeat 2 {let payload=[[1]]\nyield payload})", analysis.CodeNestedNativeList},
-		{"ordinary_native_list", "return [[1],[]]", analysis.CodeNestedNativeList},
-		{"nonfinal_branch", "return count(repeat 2 {if 1==1 {yield [[1]]} else {yield []}\nyield []})", analysis.CodeNestedNativeList},
-		{"scope_restored_after_count", "count(repeat 2 {yield [[1]]})\nreturn [[2]]", analysis.CodeNestedNativeList},
-		{"absence_inside_array", "return count(repeat 2 {yield [[none]]})", analysis.CodeTargetValueShape},
+	for _, tc := range []struct{ name, source string }{
+		{"overwritten_nested_list", "return count(repeat 2 {yield [[\"discarded\"]]\nyield []})"},
+		{"ordinary_binding_in_body", "return count(repeat 2 {let payload=[[1]]\nyield payload})"},
+		{"ordinary_native_list", "return [[1],[]]"},
+		{"nonfinal_branch", "return count(repeat 2 {if 1==1 {yield [[1]]} else {yield []}\nyield []})"},
+		{"scope_restored_after_count", "count(repeat 2 {yield [[1]]})\nreturn [[2]]"},
+		{"absence_inside_array", "return count(repeat 2 {yield [[none]]})"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			found := false
-			for _, diagnostic := range p15TypeDiagnostics(t, tc.source) {
-				if diagnostic.Severity != analysis.SeverityError {
-					continue
+			switch tc.name {
+			case "overwritten_nested_list", "ordinary_binding_in_body", "nonfinal_branch", "absence_inside_array":
+				// The exact original sources now have independently qualified
+				// whole graphs, including the overwritten/nonfinal effects.
+				p15CheckTaggedCountContext(t, p15TaggedCountContextCase{tc.name, tc.source})
+			default:
+				target := "[[1],[]]"
+				if tc.name == "scope_restored_after_count" {
+					target = "[[2]]"
 				}
-				if diagnostic.Code != tc.code {
-					t.Fatalf("unrelated rejection: %+v", diagnostic)
-				}
-				found = true
-			}
-			if !found {
-				t.Fatalf("missing preserved boundary %s", tc.code)
-			}
-			data, err := CompileSourceToPlist("p15-f04-cell-context-boundary.cherri", tc.source)
-			if err == nil || len(data) != 0 || !strings.Contains(err.Error(), tc.code) {
-				t.Fatalf("boundary produced output or another failure: bytes=%d error=%v", len(data), err)
+				p15CheckTaggedBoundary(t, p15TaggedBoundaryCase{
+					tc.name, tc.source, target, analysis.CodeTargetValueShape,
+					"structured return requires an explicit external value codec",
+				})
 			}
 		})
 	}
