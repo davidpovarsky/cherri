@@ -37,6 +37,10 @@ func EmitScopedCache(config ScopedCacheConfig, prefix string, nextID func() stri
 		}
 		return b.produce("getvariable", map[string]any{"WFVariable": cacheReference(value)}), b.err
 	}
+	// Capture the actual native input before any cache helper. An omitted
+	// WFInput preserves the complete content sequence, including no content;
+	// it is not a fabricated Text, Dictionary or null payload.
+	b.add("setvariable", map[string]any{"WFVariableName": b.variable("input")})
 	b.zero = b.number(0)
 	b.one = b.number(1)
 	b.set("hit", b.zero)
@@ -57,6 +61,11 @@ func EmitScopedCache(config ScopedCacheConfig, prefix string, nextID func() stri
 		})
 	})
 	b.when(b.get("hit"), 4, 0, OperandNumber, func() {
+		if b.err != nil {
+			return
+		}
+		// Restore only on the lazy miss path, immediately before authored body actions.
+		b.produce("getvariable", map[string]any{"WFVariable": cacheVariable(b.variable("input"))})
 		if b.err != nil {
 			return
 		}

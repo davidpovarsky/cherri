@@ -157,7 +157,10 @@ class Graph:
     if r=="P15_CACHE_BODY_ONCE":self.effects+=1
    elif name=="getvariable":r=self.resolve(p["WFVariable"])
    elif name=="setvariable":
-    r=self.resolve(p["WFInput"]);self.variables[p["WFVariableName"]]=r
+    # Native Set Variable uses implicit Previous only when WFInput is absent.
+    # Preserve the complete value/no-content sequence; never coerce it to Text.
+    r=self.resolve(p["WFInput"]) if "WFInput" in p else self.last
+    self.variables[p["WFVariableName"]]=r
    elif name=="dictionary":r=self.resolve(p["WFItems"]);assert isinstance(r,dict)
    elif name=="getitemtype":r=native_kind(self.resolve(p["WFInput"]))
    elif name=="count":
