@@ -284,6 +284,9 @@ func validateCombinedValueBlockArtifacts(id, source string, artifacts []Evidence
 	return loopOutputWithinProcess(raw, receipt)
 }
 func validateCombinedValueBlockRecord(id string, record EvidenceRecord) error {
+	if id == "F04" && record.TestID == structuredValueScenarios["F04"].producer(record.Tier) && record.TestID != "" {
+		return validateStructuredValueRecord(id, record)
+	}
 	var scenario, ok = combinedValueBlockScenarios[id]
 	if !ok {
 		return nil

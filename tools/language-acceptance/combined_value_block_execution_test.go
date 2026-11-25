@@ -341,7 +341,7 @@ func TestCombinedValueBlockIncompleteF04Scope(t *testing.T) {
 	if mapErr != nil {
 		t.Fatal(mapErr)
 	}
-	if !reflect.DeepEqual(mapping.Mappings["F04"].TestIDs, combinedValueBlockScenarios["F04"].testIDs()) || len(mapping.Mappings["F04"].RequiredAssertions) != 0 {
+	if !reflect.DeepEqual(mapping.Mappings["F04"].TestIDs, structuredValueTestIDs("F04")) || len(mapping.Mappings["F04"].RequiredAssertions) != 0 {
 		t.Fatal("F04 inherited historical loop/runtime assertion")
 	}
 	for _, tier := range []string{"unit", "native-structure", "ios-runtime", "ios-ui"} {

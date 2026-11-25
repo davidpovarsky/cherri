@@ -168,6 +168,7 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
+	structuredValues             *structuredValueExecution
 	takeoverEvaluated            bool
 	baselineEvaluated            bool
 	artifactDir                  string
@@ -1115,6 +1116,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateStructuredValueRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if partialTypeProducer(reqID, rec.TestID) {
 				validationErrors = append(validationErrors, fmt.Sprintf("test_id %q is a partial producer and cannot satisfy the full %s contract", rec.TestID, reqID))
 			}
@@ -1266,17 +1270,6 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			res.Status = "FAILED"
 			res.Detail = "Evidence record reported failure"
 			validationErrors = append(validationErrors, fmt.Sprintf("requirement %s has failed evidence record", id))
-		} else if id == "T05" && incompleteLocalAssertions[id] != "" {
-			res.Passed = false
-			res.Status = "NOT_RUN"
-			res.ExecutedLevels = nil
-			res.Detail = "Formal scope UNVERIFIED: " + incompleteLocalAssertions[id]
-			if phase == "local" {
-				skipped++
-			} else {
-				failed++
-				validationErrors = append(validationErrors, "requirement T05 has incomplete JSON-null semantics")
-			}
 		} else if allTiersSatisfied {
 			passed++
 			res.Passed = true
@@ -1746,7 +1739,7 @@ func (r *Runner) runText() {
 
 // Group 8: Collections
 func (r *Runner) runCollections() {
-	r.runNestedCollectionObservation()
+	r.runStructuredValueRequirement("L01", "collections", "Nested lists/maps preserve shape, cardinality and element order", []string{"unit", "native"})
 
 	r.runIndexRequirement("L02")
 
@@ -1798,7 +1791,7 @@ func (r *Runner) runControl() {
 
 	r.runValueBranchRequirement()
 
-	r.runCombinedValueBlockRequirement("F04", "control", "Value loop collects one semantic element per iteration", []string{"unit", "native"})
+	r.runStructuredValueRequirement("F04", "control", "Value loop collects one semantic element per iteration", []string{"unit", "native"})
 
 	r.runLoopControlRequirement()
 }
@@ -1951,6 +1944,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runStructuredValueRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runPreviewEditRequirement(c) {
 			continue
 		}

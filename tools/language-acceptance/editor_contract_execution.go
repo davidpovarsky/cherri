@@ -74,9 +74,12 @@ func editorContractRun(root, source, id, prefix, directory string, command []str
 }
 
 func runExactSourceProcess(root, source, id, prefix, directory string, command []string, timeout time.Duration, events, sourcePaths []string) (editorProcessReceipt, []EvidenceArtifact, error) {
+	return runExactSourceProcessBounded(root, source, id, prefix, directory, command, timeout, events, sourcePaths, 128)
+}
+func runExactSourceProcessBounded(root, source, id, prefix, directory string, command []string, timeout time.Duration, events, sourcePaths []string, witnessLimit int) (editorProcessReceipt, []EvidenceArtifact, error) {
 	var receipt = editorProcessReceipt{FormatVersion: 1, Requirement: id, SourceCommit: source, SourceCleanBefore: true, Command: command, RequiredTests: events}
 	var err error
-	receipt.SourceFiles, err = localGateSourceFiles(root, source, sourcePaths)
+	receipt.SourceFiles, err = localGateSourceFilesBounded(root, source, sourcePaths, witnessLimit)
 	if err != nil {
 		return receipt, nil, err
 	}
@@ -157,6 +160,9 @@ func validateEditorContractProcess(id, source string, receipt editorProcessRecei
 }
 
 func validateExactSourceProcess(id, source string, receipt editorProcessReceipt, command []string, events []string, raw, stderr []byte, timeout time.Duration, sourcePaths []string) error {
+	return validateExactSourceProcessBounded(id, source, receipt, command, events, raw, stderr, timeout, sourcePaths, 128)
+}
+func validateExactSourceProcessBounded(id, source string, receipt editorProcessReceipt, command []string, events []string, raw, stderr []byte, timeout time.Duration, sourcePaths []string, witnessLimit int) error {
 	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != source ||
 		!receipt.SourceCleanBefore || !receipt.SourceCleanAfter ||
 		!reflect.DeepEqual(receipt.Command, command) || !reflect.DeepEqual(receipt.RequiredTests, events) || !reflect.DeepEqual(receipt.DiscoveredTests, events) ||
@@ -168,7 +174,7 @@ func validateExactSourceProcess(id, source string, receipt editorProcessReceipt,
 	if err := stateTiming(receipt.StartedUTC, receipt.FinishedUTC, receipt.ElapsedSeconds, timeout.Seconds()); err != nil {
 		return err
 	}
-	return localGateExactSourceFiles(source, receipt.SourceFiles, sourcePaths)
+	return localGateExactSourceFilesBounded(source, receipt.SourceFiles, sourcePaths, witnessLimit)
 }
 func editorContractSwiftFiles(kind string, exe bool) []string {
 	var stem, generated = "position-probe", "position-generated.swift"

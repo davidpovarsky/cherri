@@ -33,10 +33,10 @@ var typeProductionPaths = map[string][]string{
 	"T08": {"internal/language/analysis/analyzer.go", "internal/language/analysis/cardinality.go", "internal/language/service/service.go", "internal/language/service/call_result.go", "p15_cardinality_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 }
 
-// The actual bounded tests execute, but the full JSON-null contract is still
-// listed in incompleteLocalAssertions and cannot produce formal tier records.
+// The new dedicated cohort executes the complete original clause. The older
+// typeProductionTests/T05 inventory remains a rejected partial producer.
 func (r *Runner) runTypeOptionalPresenceRequirement() {
-	r.runTypeProduction("T05", "Optional presence differs from optional value and JSON null")
+	r.runStructuredValueRequirement("T05", "types", "Optional presence differs from optional value and JSON null", []string{"unit", "native"})
 }
 
 func (r *Runner) runTypeContentConversionRequirement() {

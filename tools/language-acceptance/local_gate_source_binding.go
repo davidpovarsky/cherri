@@ -20,7 +20,13 @@ var localGateSourceCache sync.Map
 // main-output dependencies. Bound the whole set before reading any blob bytes;
 // splitting the request must not multiply the existing resource limits.
 func localGateSourceFiles(repository, commit string, names []string) ([]editorSourceFile, error) {
-	if !documentationHash(commit, 40) || len(names) == 0 || len(names) > 128 {
+	return localGateSourceFilesBounded(repository, commit, names, 128)
+}
+
+// Only an explicit complete multi-scenario producer may opt into 256 witnesses.
+// The total 16MiB and per-object 4MiB preflight bounds remain unchanged.
+func localGateSourceFilesBounded(repository, commit string, names []string, witnessLimit int) ([]editorSourceFile, error) {
+	if (witnessLimit != 128 && witnessLimit != 256) || !documentationHash(commit, 40) || len(names) == 0 || len(names) > witnessLimit {
 		return nil, fmt.Errorf("invalid bounded local-gate source request")
 	}
 	root, err := filepath.Abs(repository)
@@ -52,7 +58,7 @@ func localGateSourceFiles(repository, commit string, names []string) ([]editorSo
 	if err := command.Run(); err != nil {
 		return nil, fmt.Errorf("bounded immutable source size preflight unavailable: %w", err)
 	}
-	if err := localGateSourceBudget(output.Bytes(), len(names)); err != nil {
+	if err := localGateSourceBudgetBounded(output.Bytes(), len(names), witnessLimit); err != nil {
 		return nil, err
 	}
 	var files []editorSourceFile
@@ -72,7 +78,11 @@ func localGateSourceFiles(repository, commit string, names []string) ([]editorSo
 }
 
 func localGateSourceBudget(raw []byte, required int) error {
-	if required < 1 || required > 128 || len(raw) == 0 || raw[len(raw)-1] != '\n' {
+	return localGateSourceBudgetBounded(raw, required, 128)
+}
+
+func localGateSourceBudgetBounded(raw []byte, required, witnessLimit int) error {
+	if (witnessLimit != 128 && witnessLimit != 256) || required < 1 || required > witnessLimit || len(raw) == 0 || raw[len(raw)-1] != '\n' {
 		return fmt.Errorf("invalid bounded local-gate size preflight")
 	}
 	lines := bytes.Split(raw[:len(raw)-1], []byte("\n"))
@@ -98,7 +108,10 @@ func localGateSourceBudget(raw []byte, required int) error {
 }
 
 func localGateExactSourceFiles(commit string, recorded []editorSourceFile, names []string) error {
-	immutable, err := localGateSourceFiles(resolveRepoRoot(), commit, names)
+	return localGateExactSourceFilesBounded(commit, recorded, names, 128)
+}
+func localGateExactSourceFilesBounded(commit string, recorded []editorSourceFile, names []string, witnessLimit int) error {
+	immutable, err := localGateSourceFilesBounded(resolveRepoRoot(), commit, names, witnessLimit)
 	if err != nil {
 		return err
 	}

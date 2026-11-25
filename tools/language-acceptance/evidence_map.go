@@ -34,6 +34,9 @@ type RequirementsEvidenceMapFile struct {
 }
 
 func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, reqAssertions map[string]string, reqUIAssertions map[string]string) {
+	if _, found := structuredValueScenarios[id]; found {
+		return
+	}
 	// The joined RP41 scenario still needs its own actual rendered UI proof.
 	// Historical generic E07 metadata cannot supply that external tier.
 	if id == "RP41" {
@@ -324,6 +327,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if _, found := structuredValueScenarios[id]; found {
+		return structuredValueTestIDs(id)
+	}
 	if id == textComparisonRequirement {
 		return textComparisonTestIDs()
 	}
@@ -547,6 +553,9 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 }
 
 func deriveAcceptanceFixtures(id, group string) []string {
+	if _, found := structuredValueScenarios[id]; found {
+		return append([]string(nil), structuredValueInventory.SourcePaths...)
+	}
 	if id == "B01" {
 		return append([]string{}, baselineSources...)
 	}
@@ -602,6 +611,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if _, found := structuredValueScenarios[id]; found {
+		return structuredValueTestIDs(id)
+	}
 	if id == "RP40" {
 		return []string{appIntegrationTestID}
 	}
@@ -711,6 +723,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if _, found := structuredValueScenarios[id]; found {
+		return append([]string(nil), structuredValueInventory.SourcePaths...)
+	}
 	if id == "RP40" {
 		return append([]string{}, appIntegrationSourcePaths...)
 	}
