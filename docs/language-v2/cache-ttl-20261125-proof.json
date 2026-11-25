@@ -1,0 +1,56 @@
+{
+  "schema": "cherri.cache-previous-qualification-intake/1",
+  "status": "PASS_BOUNDED_SCALAR_CACHE_SOURCE_AND_GRAPH_EVIDENCE",
+  "qualifiedSource": "319160836f8f0b69dfd8629e7afcc861172a7dbc",
+  "tree": "b0e9ffb142c4b6aed017669551999bf7c5c905c6",
+  "cleanSource": true,
+  "productionPins": {
+    "cache_blocks_legacy.go": "8220d96e1938ce8869ae86431352eb7caa1dd859a99171b0a062684b658fbcfa",
+    "internal/language/analysis/cache_blocks.go": "f18c0c4ae2ee87790469b6aa3a18d28af80bdb94eee002761d0b7fe2b1ac4f00",
+    "internal/language/analysis/scoped_blocks.go": "cd94496cbfbcecb123699907b33ab86f26083a7aa258c676ef6c6dbb7ff9195a",
+    "internal/language/backend/scoped_cache.go": "a342cc0534dbbe498dc197d2f31161425d46bbabe70b3e0eb4c874be66da0d02",
+    "internal/language/lower/cache_blocks.go": "552ea607d21ade7fffbf6a3bf97b091ddb32761006307e1325d6aae81d187861",
+    "internal/language/lower/scoped_blocks.go": "43e8370a25b6e5c434c1922ae1e8e7f3f9ff1b9f29115ffef93c2c9a205bbe93",
+    "internal/language/schema/cache.go": "73ead85632ede08a9830106f7e52a4664e43e34d8137d0ba149afc0a44e2cd9f",
+    "internal/language/schema/loop_result_locals.go": "3d90566a65765eef7de2775ff999b9d818ba69cb39c4645b06c62c9d3368a5e7",
+    "scoped_blocks_legacy.go": "98186c81bcce3c32daf09b09fb25f6c648eb850ed9bd94bda466782bdd148173"
+  },
+  "receiptPins": {
+    "explicit-input-intake-01/result.original.json": "ddafa15d4ee950c7570004e9f9e71500a91190e81af22e150895947b0e8496d3",
+    "previous-red-01/result.original.json": "04c7c74a6cbbfd4ee23d47fed718118e765f81e506d0e8dfab5932a6dfa9aab7",
+    "previous-red-legacy-replay-02/result.original.json": "f8d33b41ef51e4882f600e390536082829ae93ef376c6555c13aadf929c8b437",
+    "previous-red-legacy-replay-03/result.original.json": "e5e0f724c9116590d81d5b9d483c2cddf3663c5951fcefa1e033f7e2c7bb30f1",
+    "previous-green-02/result.original.json": "d11599ca0d9d050f98c8743514bee5882747b91bc58e3e47ff91248522e1defb",
+    "previous-model-qualification-01/result.original.json": "4996838886dbc9818e08c7b098d751bd32d2c6e4cd23bf7e1cc79650a0a53a95"
+  },
+  "goNamedTests": 227,
+  "goSingleRun": true,
+  "goFailures": 0,
+  "goSkips": 0,
+  "previousPairedSources": 40,
+  "previousOriginalSourcePairs": 80,
+  "originalCacheAndCaptureGraphSources": 44,
+  "modelScenarios": 1496,
+  "modelCausalFaults": 30,
+  "previousBaselineGraphFaults": 16,
+  "previousSnapshotGraphFaults": 24,
+  "independentReview": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-ci-release-20261125/cache-previous-independent-source-review-01/review.original.json",
+    "sha256": "0c2face2ed8dad28c887ee24fdbb2e2e427b0da8f740d0fff48b5481d4976af6"
+  },
+  "bindingFiles": {
+    "previous-source-pairs.original.json": "48a25c1b81fdf72f6d770497ea5ae6aa1e20839f6bff45a3ec2a35d5bc482d0c",
+    "cache-source-pairs.original.json": "40416124f910a87eaa4dedf352108d19ea8e66c3cc88adffad8b7b389946b3b7",
+    "model-graph-bindings.original.json": "8f8e33ece40b76411e467a368dd7901e6d06d684f30cf999d35380b1bc2643d8",
+    "model-fault-bindings.original.json": "3f2434c079c40b45c76c9b3d13229f8e73da75e907cf554f119a3cbe5a95fccc"
+  },
+  "failedAndBlockedAttemptsPreserved": true,
+  "nativeRuntimeExecuted": false,
+  "formalAcceptanceGranted": false,
+  "open": [
+    "Private tagged carrier guard must be integrated and separately qualified with the source observer; no new native conversion permission.",
+    "Native missing-key, scalar persistence, clock/TTL, whole-content Previous, cross-run and device-scope proof.",
+    "Complex/native persistence codecs, cancellation/catchability, concurrency/atomicity and physical-device requirements.",
+    "General Legacy compact-assignment parser limitation."
+  ]
+}
