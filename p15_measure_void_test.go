@@ -21,6 +21,7 @@ func p15MeasureVoidCases() []p15MeasureVoidCase {
 		shared("empty", ""),
 		shared("wait", "wait(1)\n"),
 		shared("two_effects", "wait(1)\nwait(2)\n"),
+		shared("body_nothing", "nothing()\nwait(1)\nnothing()\nwait(2)\n"),
 		shared("argument_effect", "setClipboard(text(\"CHERRI_VOID_ONCE\"))\nwait(1)\n"),
 		shared("value_then_void", "text(\"CHERRI_BODY_PRODUCER\")\nwait(3)\n"),
 		shared("stop_before_void_tail", "stop()\nwait(1)\n"),
@@ -28,8 +29,8 @@ func p15MeasureVoidCases() []p15MeasureVoidCase {
 		{name: "assignment_tail", v2: "var local = 1\nlocal = 2\n", legacy: "@local = 1\n@local = 2\n", flatV2: "var local = 1\nlocal = 2\n", flatLegacy: "@local = 1\n@local = 2\n", timers: 1},
 		{name: "if_tail", v2: "if true { wait(1) } else { wait(2) }\n", legacy: "if 1 == 1 {\nwait(1)\n} else {\nwait(2)\n}\n", flatV2: "if true { wait(1) } else { wait(2) }\n", flatLegacy: "if 1 == 1 {\nwait(1)\n} else {\nwait(2)\n}\n", timers: 1},
 		{name: "repeat_tail", v2: "repeat 2 { wait(1) }\n", legacy: "repeat index for 2 {\nwait(1)\n}\n", flatV2: "repeat 2 { wait(1) }\n", flatLegacy: "repeat index for 2 {\nwait(1)\n}\n", timers: 1},
-		{name: "nested_empty", v2: "measure(\"same\") {\n}\n", legacy: "measure(\"same\") {\n}\n", flatV2: "", flatLegacy: "", timers: 2},
-		{name: "nested_wait", v2: "measure(\"same\") {\nwait(4)\n}\n", legacy: "measure(\"same\") {\nwait(4)\n}\n", flatV2: "wait(4)\n", flatLegacy: "wait(4)\n", timers: 2},
+		{name: "nested_empty", v2: "measure(\"same\") {\n}\n", legacy: "measure(\"same\") {\n}\n", flatV2: "nothing()\n", flatLegacy: "nothing()\n", timers: 2},
+		{name: "nested_wait", v2: "measure(\"same\") {\nwait(4)\n}\n", legacy: "measure(\"same\") {\nwait(4)\n}\n", flatV2: "wait(4)\nnothing()\n", flatLegacy: "wait(4)\nnothing()\n", timers: 2},
 	}
 	return cases
 }
@@ -39,7 +40,7 @@ func p15MeasureVoidWrapped(body string) string {
 }
 
 func p15MeasureVoidFlat(body string) string {
-	return "text(\"CHERRI_BEFORE\")\n" + body + "text(\"CHERRI_AFTER\")\n"
+	return "text(\"CHERRI_BEFORE\")\n" + body + "nothing()\ntext(\"CHERRI_AFTER\")\n"
 }
 
 func p15MeasureVoidReference(value any) map[string]any {
@@ -271,6 +272,43 @@ func TestP15MeasureVoidRetainsExistingValueControl(t *testing.T) {
 					t.Fatalf("existing value body lost or repeated: %v", actual)
 				}
 			})
+		}
+	}
+}
+
+
+func TestP15MeasureVoidLoopBoundaryGraphs(t *testing.T) {
+	for _, count := range []int{0, 1, 3} {
+		for _, following := range []bool{false, true} {
+			for _, legacy := range []bool{false, true} {
+				for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
+					t.Run(fmt.Sprintf("n%d/following_%t/legacy_%t/%s", count, following, legacy, profile), func(t *testing.T) {
+						begin := fmt.Sprintf("repeat %d {\n", count)
+						if legacy {
+							begin = fmt.Sprintf("repeat index for %d {\n", count)
+						}
+						follow := ""
+						if following {
+							follow = "text(\"CHERRI_AFTER_VOID_IN_LOOP\")\n"
+						}
+						prefix := "text(\"CHERRI_LOOP_BEFORE\")\n" + begin
+						tail := follow + "}\ntext(\"CHERRI_LOOP_AFTER\")\n"
+						actualSource := prefix + "measure(\"loop\") {\nwait(1)\n}\n" + tail
+						ordinarySource := prefix + "wait(1)\nnothing()\n" + tail
+						ordinary, err := compileBuildProfileFixture(t, ordinarySource, legacy, profile)
+						if err != nil {
+							t.Fatalf("ordinary loop control: %v", err)
+						}
+						actual, err := compileBuildProfileFixture(t, actualSource, legacy, profile)
+						if err != nil {
+							t.Fatal(err)
+						}
+						if err = p15MeasureVoidGraphError(actual, ordinary, 1, profile); err != nil {
+							t.Fatal(err)
+						}
+					})
+				}
+			}
 		}
 	}
 }
