@@ -193,7 +193,7 @@ func TestP15RequireBooleanConditionGraphFaults(t *testing.T) {
 			if err = p15RequireConditionGraph(original, tc, legacy); err != nil {
 				t.Fatal(err)
 			}
-			for _, fault := range []string{"literal_value", "literal_kind", "duplicate_producer", "lost_snapshot", "duplicate_snapshot", "snapshot_variable", "truthiness", "opposite_predicate", "wrong_operand", "wrong_guard_source", "cancel_button", "message", "missing_stop", "wrong_group", "wrong_result_source", "consumer_bypass", "wrong_operand_wire", "private_option_leak"} {
+			for _, fault := range []string{"literal_value", "literal_kind", "duplicate_producer", "lost_snapshot", "duplicate_snapshot", "snapshot_variable", "truthiness", "opposite_predicate", "wrong_operand", "wrong_guard_source", "cancel_button", "message", "missing_stop", "wrong_group", "wrong_result_source", "consumer_bypass", "wrong_operand_wire", "private_option_leak", "assignment_wrapper_presence", "assignment_wrapper_value"} {
 				t.Run(fault, func(t *testing.T) {
 					bad := p15RequireCloneActions(t, original)
 					condition, alert, stop, snapshot, result, consumer := -1, -1, -1, -1, -1, -1
@@ -259,6 +259,14 @@ func TestP15RequireBooleanConditionGraphFaults(t *testing.T) {
 					case "wrong_operand_wire":
 						delete(bad[condition].WFWorkflowActionParameters, "WFNumberValue")
 						bad[condition].WFWorkflowActionParameters["WFConditionalActionString"] = "0"
+					case "assignment_wrapper_presence":
+						if legacy {
+							delete(bad[1].WFWorkflowActionParameters, "WFSerializationType")
+						} else {
+							bad[1].WFWorkflowActionParameters["WFSerializationType"] = "WFTextTokenAttachment"
+						}
+					case "assignment_wrapper_value":
+						bad[1].WFWorkflowActionParameters["WFSerializationType"] = "WFTextTokenString"
 					case "private_option_leak":
 						bad[condition].WFWorkflowActionParameters[requireConditionTypeKey] = "Bool"
 					}

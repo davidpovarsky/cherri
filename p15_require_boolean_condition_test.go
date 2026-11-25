@@ -141,7 +141,12 @@ func p15RequireConditionGraph(actions []ShortcutAction, tc p15RequireConditionCa
 		input = g.value("number", map[string]any{"WFNumberActionNumber": raw})
 	}
 	if tc.storage == "mutable" {
-		g.emit("setvariable", map[string]any{"WFVariableName": "flag", "WFInput": p15FunctionEdge(input)})
+		assignment := map[string]any{"WFVariableName": "flag", "WFInput": p15FunctionEdge(input)}
+		if legacy {
+			// Preserve the existing Legacy Set Variable serialization field.
+			assignment["WFSerializationType"] = "WFTextTokenAttachment"
+		}
+		g.emit("setvariable", assignment)
 		input = g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable("flag")})
 	}
 	guard := input
