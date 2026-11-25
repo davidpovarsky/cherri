@@ -18,10 +18,42 @@ class FullGoSuiteIntegrityTests(unittest.TestCase):
         self.assertEqual(plan[0]["packages"], [self.packages[0], self.packages[2]])
         self.assertEqual(plan[0]["timeout"], "20m")
         self.assertEqual(plan[1]["packages"], [suite.ACCEPTANCE_PACKAGE])
-        self.assertEqual(plan[1]["timeout"], "35m")
+        self.assertEqual(plan[1]["timeout"], "50m")
         for group in plan:
             parallel = ["-parallel=2"] if group is plan[0] else []
             self.assertEqual(group["argv"], ["go", "test", "-count=1", "-timeout=" + group["timeout"], *parallel, "-v", *group["packages"]])
+
+    def test_reject_changed_or_ambiguous_cumulative_budget(self):
+        for group_index, expected in ((0, "20m"), (1, "50m")):
+            for mutation in ("historical", "longer", "unbounded", "absent", "duplicate",
+                             "split_argument", "detached_metadata", "foreign_timeout_flag"):
+                with self.subTest(group=group_index, mutation=mutation):
+                    group = suite.execution_plan(self.packages)[group_index]
+                    index = next(i for i, arg in enumerate(group["argv"]) if arg.startswith("-timeout="))
+                    group["timeout"] = expected
+                    group["argv"][index] = "-timeout=" + expected
+                    if mutation == "historical":
+                        value = "15m" if group_index == 0 else "35m"
+                        group["timeout"] = value
+                        group["argv"][index] = "-timeout=" + value
+                    elif mutation == "longer":
+                        group["timeout"] = "90m"
+                        group["argv"][index] = "-timeout=90m"
+                    elif mutation == "unbounded":
+                        group["timeout"] = "0"
+                        group["argv"][index] = "-timeout=0"
+                    elif mutation == "absent":
+                        del group["argv"][index]
+                    elif mutation == "duplicate":
+                        group["argv"].insert(index, "-timeout=" + expected)
+                    elif mutation == "split_argument":
+                        group["argv"][index:index + 1] = ["-timeout", expected]
+                    elif mutation == "detached_metadata":
+                        group["timeout"] = "1m"
+                    elif mutation == "foreign_timeout_flag":
+                        group["argv"].insert(index, "-test.timeout=0")
+                    with self.assertRaisesRegex(ValueError, "cumulative package budget"):
+                        suite.execution_environment(group)
 
     def test_invocation_environments_are_owned_and_acceptance_marker_is_removed(self):
         for inherited in (None, "2", "99"):

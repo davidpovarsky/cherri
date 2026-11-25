@@ -102,6 +102,20 @@ def atomic_json(path, value):
             os.unlink(temporary)
 
 
+def posix_group_absent(group, deadline):
+    # Only ESRCH for this exact owned group proves kernel absence. Permission
+    # errors and a missing process-table row cannot stand in for that proof.
+    try:
+        os.killpg(group, 0)
+    except ProcessLookupError:
+        if time.monotonic() >= deadline:
+            raise ValueError("adapter process-group cleanup deadline expired")
+        return True
+    except OSError:
+        raise ValueError("adapter process-group state could not be observed") from None
+    return False
+
+
 def wait_for_posix_group_exit(group, deadline):
     # SIGKILL delivery is asynchronous. Waiting for the direct child does not
     # establish that its descendants released their resources.
@@ -109,17 +123,8 @@ def wait_for_posix_group_exit(group, deadline):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise ValueError("adapter process-group cleanup deadline expired")
-        # Absence of this exact owned group is already a conclusive kernel
-        # observation. Do not require an unrelated global process-table scan
-        # after the reaped direct child was the group's last member.
-        try:
-            os.killpg(group, 0)
-        except ProcessLookupError:
-            if time.monotonic() >= deadline:
-                raise ValueError("adapter process-group cleanup deadline expired")
+        if posix_group_absent(group, deadline):
             return
-        except OSError:
-            raise ValueError("adapter process-group state could not be observed") from None
         try:
             observed = subprocess.run(["ps", "-A", "-o", "pgid=,stat="],
                                       stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -127,10 +132,18 @@ def wait_for_posix_group_exit(group, deadline):
                                       env={"PATH": os.defpath, "LC_ALL": "C"},
                                       timeout=min(1.0, remaining), check=False)
         except (OSError, subprocess.TimeoutExpired, UnicodeError):
+            # The group can finish after the initial kernel probe while ps is
+            # starting or blocked. A fresh ESRCH within the original deadline
+            # is conclusive even when this independent snapshot is unavailable.
+            if posix_group_absent(group, deadline):
+                return
             raise ValueError("adapter process-group state could not be observed") from None
         if observed.returncode != 0 or not observed.stdout.strip() or len(observed.stdout) > MAX_ADAPTER_BYTES:
+            if posix_group_absent(group, deadline):
+                return
             raise ValueError("adapter process-group state could not be observed")
         active = False
+        owned_row = False
         for line in observed.stdout.splitlines():
             fields = line.split()
             if not fields or not re.fullmatch(r"[0-9]+", fields[0]):
@@ -140,12 +153,17 @@ def wait_for_posix_group_exit(group, deadline):
                 # Unrelated host processes may have platform-specific states
                 # or transient missing state fields; they cannot be survivors.
                 continue
+            owned_row = True
             if len(fields) != 2 or not re.fullmatch(r"[DIKPRSTUWXYZtx][<>AELNSVWXsl+]*", fields[1]):
                 raise ValueError("adapter process-group state was malformed")
             # Linux can report a zombie group leader with live threads as Zl.
             active = active or fields[1][0] != "Z" or "l" in fields[1]
         if time.monotonic() >= deadline:
             raise ValueError("adapter process-group cleanup deadline expired")
+        if not owned_row:
+            if posix_group_absent(group, deadline):
+                return
+            raise ValueError("adapter process-group state could not be observed")
         if not active:
             return
 
