@@ -14,7 +14,7 @@ identity, binary digest and execution receipt. It is not a reconstruction of
 the missing historical executable. The installed fork release remains a
 separate tree and retains its existing active tuple.
 
-## External CLI version 1.0.0
+## External CLI version 1.0.1
 
 The replacement implements the original Pack caller interface:
 
@@ -124,3 +124,69 @@ f1f4396d8e45479b323ad63247f49bd28f0e50a6cd79f1f435f3e392fcf4bec5.
 Build receipt pure-fresh-build-01/result.original.json has SHA256
 6269d703d441ef22f62dbb7ed3909271d6434b915553109439c5bf381099ff75.
 Source, documentation and go.sum bytes remained unchanged.
+
+## Process lifecycle version 1.0.1
+
+The external wrapper now handles SIGINT and SIGTERM while its child is running.
+Cancellation is recorded without throwing inside the child-spawn assignment
+window. The finally path drains only the new, verified child process group,
+including descendants left behind when the direct parent has already exited.
+It waits after TERM and escalates to KILL within a bounded cleanup interval.
+A create-only process receipt records cancellation, timeout, exit and cleanup.
+Cancelled work cannot be reported as a successful compilation.
+
+Actual POSIX controls reproduced four process leaks before the repair:
+SIGINT, SIGTERM, a surviving descendant after normal parent exit, and a surviving
+descendant after timeout terminated the parent. The RED receipt is
+pure-process-lifecycle-red-01/result.original.json, SHA256
+5008fadaac9ed59529e6c0b02e34b10d4a18c419d052846484ff325797bfdd9d.
+
+The first GREEN attempt passed seven cases, including all four reproduced
+leaks. Its eighth case encountered a test setup race while reading a newly
+created PID identity file. That failed attempt is preserved as
+pure-process-lifecycle-green-01/result.original.json, SHA256
+2ed2b48d6bd5f18c24024d45a8d25d04ea4f6343c88b9a6e268d9b988988cf11.
+The fixture now publishes the same PID/start/PGID/SID record by atomic rename.
+The exact remaining control and all 31 existing wrapper controls passed in
+pure-process-lifecycle-replay-01/result.original.json, SHA256
+a02d962383ddb1d06be004be7aa40284a8434cccfad709d1f50d4af828bf1517.
+The production service bytes are identical across these two qualifications
+(SHA256 f14022765a0ee23f98c98da66bad0717c466fe607ad4ae016275fd47cda3256a).
+This is a verified union of eight lifecycle identities, not one eight-case
+GREEN run. The unrelated control process remained alive until its own
+test-owned cleanup. No compiler build was repeated for this wrapper repair.
+
+## Actual Pure and explicit Pack replay
+
+The freshly built upstream binary compiled all 204 exact archived entry-call
+sources and all 21 original module-import sources. The new replay retained
+each authored source, unsigned Shortcut, process stream and original result.
+It passed ten operational controls, including the expected default-Pure
+rejection of a Pack-only call, acceptance through the explicit Pack route,
+and successful Pure compilation while the entire Pack was unavailable.
+Six causal native-graph corruptions were rejected. These are compilation and
+structure observations, not Apple execution results.
+
+Qualification receipt: pure-actual-qualification-01/result.original.json,
+SHA256 47f7acb4fb5cf4259f2c4c2a58dc058a588b1a2184a4e9f728522e59977d9ae0.
+The replay is deliberately not labelled as execution of the missing historical
+catalog producer. Its original archived calls and source templates are exact.
+
+The original public HubSign path produced a 21,929-byte AEA1 container from a
+public smoke fixture. Receipt pure-public-hubsign-01/result.original.json,
+SHA256 541685c510975848ffa2ace610e0eecd238c26b763f13d6cec66bb1d958bc9e8,
+binds the returned bytes. It grants neither cryptographic nor Apple runtime
+verification.
+
+The independent intake reconstructed all 225 expected sources directly from
+the archived records, reparsed every actual plist, checked every native action
+identifier/key set and process-stream hash, verified both ordinary upstream
+checkouts and Pack bytes, and joined the exact lifecycle identities.
+It preserved the earlier intake setup/status-oracle failures.
+Receipt pure-independent-intake-04/result.original.json, SHA256
+b4dc26752faa731c8885526f9758811a32c269adf633ec7f36321b2fbc3b8532.
+
+All receipt paths in this document are relative to
+/mnt/development/projects/evidence/cherri-p10r15-consumer-recovery-20261125.
+The qualified staged component still requires its recorded activation,
+rollback and reapply cycle before a live-installation claim.
