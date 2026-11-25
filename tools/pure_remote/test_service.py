@@ -279,9 +279,31 @@ class PureLauncherTests(unittest.TestCase):
             self.assertIn(b"code digest mismatch", rejected.stderr)
 
     def test_pack_launcher_keeps_original_flags_after_separator(self):
-        text = assemble.launcher("pack_adapter.py", "a" * 64, "b" * 64, True)
+        text = assemble.launcher("pack_adapter.py", "a" * 64, "b" * 64, True, service_sha="c" * 64)
         self.assertTrue(text.endswith('-- "$@"\n'))
         subprocess.run(["sh", "-n"], input=text.encode(), check=True)
+
+    def test_pack_dependency_is_verified_before_import(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "root"
+            (root / "bin").mkdir(parents=True)
+            (root / "lib").mkdir()
+            marker = root / "untrusted-import-side-effect"
+            original_service = (Path(__file__).parent / "service.py").read_bytes()
+            original_adapter = (Path(__file__).parent / "pack_adapter.py").read_bytes()
+            (root / "lib/pack_adapter.py").write_bytes(original_adapter)
+            (root / "lib/service.py").write_text(
+                "from pathlib import Path\nPath(" + repr(str(marker)) + ").write_text('executed')\n"
+            )
+            script = root / "bin/cherri-with-actions.sh"
+            script.write_text(assemble.launcher(
+                "pack_adapter.py", "a" * 64, service.digest(original_adapter), True,
+                service_sha=service.digest(original_service)))
+            script.chmod(0o700)
+            result = subprocess.run([str(script), "verify"], capture_output=True, timeout=10)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(marker.exists(), "service.py executed before its digest was checked")
+            self.assertIn(b"code digest mismatch", result.stderr)
 
 if __name__ == "__main__":
     unittest.main()

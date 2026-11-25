@@ -11,15 +11,25 @@ from service import (ContractError, DOCS, SCHEMA, UPSTREAM, VERSION, digest, git
                      regular_bytes, require, verify_checkout, verify_installation)
 
 
-def launcher(module, manifest_sha, module_sha, pack=False):
+def launcher(module, manifest_sha, module_sha, pack=False, service_sha=None):
     require(module in ("service.py", "pack_adapter.py"), "Unexpected launcher module")
-    for value in (manifest_sha, module_sha):
-        require(re.fullmatch("[0-9a-f]{64}", value) is not None, "Invalid launcher digest")
+    require(pack == (module == "pack_adapter.py"), "Launcher mode does not match its module")
+    hashes = [(module, module_sha)]
+    if pack:
+        hashes.insert(0, ("service.py", service_sha))
+    for value in (manifest_sha, *(value for _, value in hashes)):
+        require(isinstance(value, str) and re.fullmatch("[0-9a-f]{64}", value) is not None,
+                "Invalid launcher digest")
     tail = '-- "$@"' if pack else '"$@"'
+    checks = ""
+    for name, expected in hashes:
+        checks += ('ACTUAL=$(/usr/bin/sha256sum "$ROOT/lib/' + name +
+                   '" | /usr/bin/cut -d " " -f 1)\n'
+                   '[ "$ACTUAL" = "' + expected +
+                   '" ] || { echo "Pure CLI code digest mismatch" >&2; exit 1; }\n')
     return ('#!/bin/sh\nset -eu\numask 077\n'
-            'ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)\n'
-            'ACTUAL=$(/usr/bin/sha256sum "$ROOT/lib/' + module + '" | /usr/bin/cut -d " " -f 1)\n'
-            '[ "$ACTUAL" = "' + module_sha + '" ] || { echo "Pure CLI code digest mismatch" >&2; exit 1; }\n'
+            'ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)\n' +
+            checks +
             'export PYTHONDONTWRITEBYTECODE=1\n'
             'exec /usr/bin/python3 -B "$ROOT/lib/' + module + '" --root "$ROOT" --manifest-sha256 "' +
             manifest_sha + '" ' + tail + '\n')
@@ -72,7 +82,8 @@ def assemble(root, build_receipt, build_sha, controller):
                                ("cherri-with-actions.sh", "pack_adapter.py", True)):
         path = root / "bin" / name
         with path.open("x") as stream:
-            stream.write(launcher(module, pin, file_hashes["lib/" + module], pack))
+            stream.write(launcher(module, pin, file_hashes["lib/" + module], pack,
+                                  service_sha=file_hashes["lib/service.py"]))
         path.chmod(0o700)
     result = verify_installation(root, pin)
     result.update(status="ASSEMBLED_FRESH_PURE_CLI", manifestSHA256=pin,

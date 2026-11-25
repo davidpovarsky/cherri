@@ -109,3 +109,18 @@ binds 112 upstream source files, 87 original documentation files and all
 29 Pack checksum entries. This preparation executed no Go build and changed
 no live installation. Actual binary qualification and fresh deployment remain
 separate, subsequent steps.
+
+The independent review found that a Pack launch could import service.py before
+that dependency's digest was checked. A causal control reproduced its import
+side effect on the first launcher (red receipt 430ada258de9aa1332a3bbdc34fc3caa16b340ab696fa1e22a99ba95eb55c3cc).
+The revised launcher checks both installed Python modules before invoking
+Python. All 31 controls passed in pure-launcher-dependency-green-01, receipt
+b6580eeef847945dcb8d6a2da9262366a2cc9045a784e83e8939ae561570fe1d.
+
+The single new upstream build passed with Go 1.24.13 and embedded
+vcs.revision=bcc0095754e2cc0baaeb4d93dae172b8153b4716, vcs.modified=false.
+Its binary SHA256 is
+f1f4396d8e45479b323ad63247f49bd28f0e50a6cd79f1f435f3e392fcf4bec5.
+Build receipt pure-fresh-build-01/result.original.json has SHA256
+6269d703d441ef22f62dbb7ed3909271d6434b915553109439c5bf381099ff75.
+Source, documentation and go.sum bytes remained unchanged.
