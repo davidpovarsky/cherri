@@ -198,10 +198,23 @@ class PaginateGraphModel(GraphModel):
         rows = value["WFDictionaryFieldValueItems"]
         assert isinstance(rows, list)
 
+        def reference(ref):
+            assert isinstance(ref, dict) and set(ref) <= {"Type", "OutputUUID", "OutputName"}
+            assert ref.get("Type") == "ActionOutput"
+            assert isinstance(ref.get("OutputUUID"), str) and ref["OutputUUID"] in self.outputs
+            if "OutputName" in ref:
+                assert isinstance(ref["OutputName"], str) and ref["OutputName"]
+
         def text(field):
             if isinstance(field, str):
                 return field
             assert isinstance(field, dict) and set(field) == {"WFSerializationType", "Value"}
+            if field["WFSerializationType"] == "WFTextTokenAttachment":
+                # V2 direct dynamic leaves use the existing native attachment
+                # form; Legacy interpolation uses a Text token string below.
+                # Both must resolve a real preceding Text action output.
+                reference(field["Value"])
+                return as_text(self.value(field))
             assert field["WFSerializationType"] == "WFTextTokenString"
             payload = field["Value"]
             assert isinstance(payload, dict) and set(payload) <= {"string", "attachmentsByRange"}
@@ -210,11 +223,7 @@ class PaginateGraphModel(GraphModel):
             assert isinstance(refs, dict)
             assert len(refs) == payload["string"].count("\ufffc")
             for ref in refs.values():
-                assert isinstance(ref, dict) and set(ref) <= {"Type", "OutputUUID", "OutputName"}
-                assert ref.get("Type") == "ActionOutput"
-                assert isinstance(ref.get("OutputUUID"), str) and ref["OutputUUID"] in self.outputs
-                if "OutputName" in ref:
-                    assert isinstance(ref["OutputName"], str) and ref["OutputName"]
+                reference(ref)
             return as_text(self.value(field))
 
         headers = {}
