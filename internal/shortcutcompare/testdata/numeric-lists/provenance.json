@@ -1,0 +1,60 @@
+{
+  "source_sha": "754a4dc7ed2b4622f96e267193244db4ac63077f",
+  "compiler": {
+    "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/ci-parity-inventory/cherri-754a4dc7",
+    "sha256": "4f8240ed4fcaeae341e43981d90f2e14c2290741cbd919c17bc9b74c0d54e0c5",
+    "bytes": 24787086
+  },
+  "capture_receipt_sha256": "ebd65280fc2b8e02b2dc215b4b2bc2bcae79846e07b09814c8bca25db786c3f5",
+  "purpose": "Exact real compiler artifacts retained from the two strict CI parity failures; mutation tests operate on copies. No manually authored workflow plist.",
+  "artifacts": [
+    {
+      "fixture": "derive-uuids-arrays",
+      "lane": "legacy",
+      "file": "arrays-legacy.shortcut",
+      "sha256": "840f91f7ae8fc3acab124b4286b7f4b03880cc91d0690a03be153c0cad27f5e7",
+      "source": {
+        "path": "/mnt/development/projects/worktrees/cherri-differential-ci-parity-inventory-20261125/tests/derive-uuids-arrays.cherri",
+        "sha256": "28a372d7c59dacd2ea5c36f74410c26dbe6c420d2fa66e09d794471be09deb0d",
+        "bytes": 108
+      },
+      "action_count": 9
+    },
+    {
+      "fixture": "derive-uuids-arrays",
+      "lane": "v2",
+      "file": "arrays-v2.shortcut",
+      "sha256": "3f8503fd9450165f3c5219a61c7fc45b5537dd8c56ad7f82fc6c96eb88ea882e",
+      "source": {
+        "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/ci-parity-inventory/two-fixture-capture/derive-uuids-arrays_v2.cherri",
+        "sha256": "fc58cd376fdd0ff2eec092be33f0fd574f0c24b8a481814b5c00d6ec9d4aa44b",
+        "bytes": 152
+      },
+      "action_count": 5
+    },
+    {
+      "fixture": "derive-uuids-controls",
+      "lane": "legacy",
+      "file": "controls-legacy.shortcut",
+      "sha256": "25ef217f6f6b24b64de53f57a8c4f899caf78bb7aee074aa7a0d2a919111b280",
+      "source": {
+        "path": "/mnt/development/projects/worktrees/cherri-differential-ci-parity-inventory-20261125/tests/derive-uuids-controls.cherri",
+        "sha256": "fb6df6bcf7a661499b4457b4318ecf720484499c8386d9da2563d11503bc808c",
+        "bytes": 414
+      },
+      "action_count": 26
+    },
+    {
+      "fixture": "derive-uuids-controls",
+      "lane": "v2",
+      "file": "controls-v2.shortcut",
+      "sha256": "47febc7869d85fe05a4d1d8482bde170977173de23f60de5522e247891868ac6",
+      "source": {
+        "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/ci-parity-inventory/two-fixture-capture/derive-uuids-controls_v2.cherri",
+        "sha256": "2cb7b417be5a1fa251e02e8cca75ee23e86a7e3d8157da056732d06547a4ee71",
+        "bytes": 491
+      },
+      "action_count": 24
+    }
+  ]
+}
