@@ -3450,6 +3450,29 @@
       "reason": "New precise constructor validation exposed an existing public API defect: returning only the first semantic error concealed the independent enclosing Date comparison E_ARGUMENT_TYPE behind the qty unit E_LITERAL_REQUIRED. The unchanged T04/BRG33 original contract failed although analysis still carried both exact diagnostics. Two independently invalid declarations reproduced the same masking mechanism.",
       "evidence": "docs/language-v2/semantic-error-retention-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/go-events/{t04-red.json,semantic-errors-red.json,semantic-errors-green.json,brg33-green.json}. RED preserves the exact T04 failure and both general masking controls. GREEN passes unchanged T04 production/service, all four constructor tests, both new public compile/isolation controls, and the clean-source BRG33 producer with all 23 required tests discovered and 10 evidence-corruption negatives rejected.",
       "note": "Separate non-circular metadata anchors reachable root integration. Component implementation 4dcf92546ebc079d3d54f3724c9a082ac3573657 retains its own source-bound receipts. No analyzer diagnostic, original test expectation, action definition, native representation or successful compile semantics changed. Gate-only OutputType compatibility is documented separately and is not an action catalog change. No full-suite, native runtime or release acceptance is inferred."
+    },
+    {
+      "name": "Authored Text parameter carriers and exact native import intent",
+      "locations": [
+        "action.go",
+        "shortcutgen.go",
+        "text_parameter_codec.go",
+        "semantic_import_planner.go",
+        "import_fidelity.go",
+        "shared_codec.go",
+        "internal/language/backend/contracts.go",
+        "internal/language/ir/ir.go",
+        "internal/language/lower/lower.go",
+        "tools/language-schema/main.go",
+        "internal/language/schema/generated_registry.go",
+        "native_text_parameter_test.go",
+        "tools/language-schema/native_text_forms_test.go"
+      ],
+      "firstForkCommit": "b59c5b697ec4140ebb0f0eb465c540824a0df3f9",
+      "change": "Use the existing Text token-string encoder for ordinary authored references in both frontends, including neighboring Text/URL fields and dynamic split/join separators. Preserve actual imported bare Text attachments through the existing explicit rawRef/native.ref syntax and a compiler-only per-argument origin marker. Keep numeric image NumberString carriers, declared Variable/list inputs, quantity Magnitude and date policies independent. Derive accepted forms from the native parameter envelope rather than reference-content variableTypes; regenerate shared schema, codec fingerprint and action reference.",
+      "reason": "Differential native case33 passed with current original98d5191 but returned blank URL components from both fork frontends. The wrong WFTextTokenAttachment envelope was caused by a shared imported-shape allowlist overriding the default authored Text codec. Captured Apple VariableString state requires WFTextTokenString. Exact imported wire fidelity alone did not establish the correct authored default.",
+      "evidence": "docs/language-v2/native-text-reference-repair-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/url-text/handoff.json. Retained production/schema RED, 72 authored observations across18 slots/both frontends/both reference kinds, five causal corruptions, unchanged FID02/FID03, mixed imported envelopes and appended authored calls, numeric/quantity/date regressions, schema/reference verification. Independent read-only marker-boundary review found no blocking issue.",
+      "note": "Non-circular reachable root implementation anchor. Component3ec9e5ed12c0d7b6316e0a866e5e6be3a1de74bb retains its actual compiler and focused receipts. No marker is serialized into Apple parameters, no workflow-wide import override or semantic provenance metadata was introduced. Original/fork artifacts and PropertyUserInfo differences remain visible. Native repair acceptance and the complete final Go gate are recorded separately by the coordinating audit."
     }
   ]
 }

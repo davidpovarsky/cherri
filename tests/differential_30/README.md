@@ -102,8 +102,9 @@ importing and executing are owned by the native runtime harness.
 ## Known version boundaries retained as evidence
 
 - Current original 98d5191 uses bare constant loop bindings; frozen original
-  bcc00957 uses @ references. The fork's bare numeric repeat binding in
-  fixture 23 is rejected; the equivalent V2 loop compiles.
+  bcc00957 uses @ references. Baseline fork 6ce0a398 rejects the bare numeric
+  repeat binding in fixture 23. The repaired fork accepts both forms; the
+  original failure remains in the retained baseline receipt.
 - Original catalogs do not define getTimeBetweenDates used by fixture 31.
   That compile failure is retained and the workflow is not counted as an
   executed original runtime pass.
@@ -125,3 +126,23 @@ references, identity collisions, nested grouping, scalar type differences,
 metadata and display changes, explicit defaults, and action removal. They do
 not manufacture native workflow fixtures. They verify the comparison adapter;
 they are not a substitute for Apple runtime execution.
+
+## Explicit oracle correction and native evidence
+
+Case 35 originally expected the renamed Text item to retain its extension in
+its Name value. The pre-existing project contract states that Name returns the
+stem. The correction to `CHERRI_QA_35|qa:qa` is recorded in
+`oracle-corrections.json` and the associated audit; every original manifest and
+failed native verdict remains retained. No authored program changed.
+
+The statistics defect in case 15 is different: both original and baseline fork
+emitted `WFInput`, while the real Apple action consumes `Input`. The repaired
+compiler corrects the shared definition and the original independent expected
+output remains unchanged.
+
+Current native acceptance requires a fresh receiver process, exact installed
+executable-image verification, fixture and nonce identity, and the SHA-256 and
+byte count of the original UTF-8 output. Older single-line receipts retain their
+original contract and attribution; no missing digest is fabricated. Native
+results and exact compiler program bindings are reported separately from wire
+equality and from UI/import failures.

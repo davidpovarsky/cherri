@@ -1,5 +1,8 @@
 # Cherri P10R13 — Native Action Fidelity & Readability Promotion Matrix
 
+> **2026-11-25 authored Text clarification:** The FID-02/03 attachment examples below retain their imported-wire preservation contract. They do not prove a universal bare-attachment default for authored Text parameters. Current captured VariableString state and native differential case 33 require token strings for ordinary authored references; see [the shared carrier repair](../../language-v2/native-text-reference-repair-20261125.md). Explicit imported attachments remain exact through the existing native-reference source boundary.
+
+
 This document records the P10R13 native action promotion wave, root causes, implementation changes, and verified metrics across the 38-shortcut private corpus (`27,652` total actions across root and embedded subworkflows).
 
 > [!IMPORTANT]

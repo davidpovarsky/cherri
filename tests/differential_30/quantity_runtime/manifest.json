@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "suite_id": "cherri-differential-quantity-runtime-20261125",
+  "original_sha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+  "fork_baseline_sha": "4ca75e763204f0d4cdcb94442985e6dd776df844",
+  "runtime_contract": {
+    "capture": "x-callback result text",
+    "terminal": "output only",
+    "compare": "exact UTF-8 bytes with raw SHA256 and byte length; no normalization",
+    "synthetic_inputs": "embedded; no Shortcuts input",
+    "native_lanes": [
+      "original",
+      "fork_legacy",
+      "fork_v2"
+    ],
+    "calendar": "Gregorian",
+    "timezone_basis": "Fixed local noon, 2024-02-03 12:00:00, parsed and formatted in the same simulator local timezone; calendar days, no UTC conversion or current time",
+    "metadata_difference": "Only source workflow names O/L/V differ in legacy sources so all three imports coexist"
+  },
+  "fixtures": [
+    {
+      "id": "40_dynamic_quantity_dates",
+      "number": 40,
+      "title": "Dynamic date quantities with a saved mutable snapshot",
+      "families": [
+        "quantity",
+        "date",
+        "math",
+        "mutation",
+        "immutable capture"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "CHERRI_QA_Q40_O.cherri",
+        "fork_legacy": "CHERRI_QA_Q40_L.cherri",
+        "fork_v2": "CHERRI_QA_Q40_V.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_Q40_O",
+        "fork_legacy": "CHERRI_QA_Q40_L",
+        "fork_v2": "CHERRI_QA_Q40_V"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_40|2024-02-05:2024-02-06:2024-02-06:2024-02-08"
+      },
+      "oracle_reason": "Gregorian 2024-02-03 plus computed 1+1 days is Feb5; plus live3 before mutation is Feb6; captured3 still produces Feb6 after live days becomes5; plus live5 produces Feb8. Expected authored before compilation or native execution.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "Legacy explicitly materializes the saved numeric value with number(@days); V2 immutable let snapshots the mutable binding. Four quantity consumers must retain bare typed references. No timers or fork-only date difference action."
+    }
+  ]
+}

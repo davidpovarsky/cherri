@@ -1505,9 +1505,13 @@ func (ctx *semanticImportContext) renderParameterValuePair(p parameterDefinition
 		ser, _ := m["WFSerializationType"].(string)
 		switch ser {
 		case "WFTextTokenAttachment":
-			// String/RawString parameters in Cherri serialize references as WFTextTokenString unless attachment-capable.
-			if (p.validType == String || p.validType == RawString) && !isAttachmentCapableTextParam(ctx.currentSynthActionIdent, p.key) {
-				return semanticExprPair{}, false
+			if p.validType == String || p.validType == RawString {
+				if !isAttachmentCapableTextParam(ctx.currentSynthActionIdent, p.key) {
+					return semanticExprPair{}, false
+				}
+				if !isNumericOrTextImageParamKey(p.key) {
+					return ctx.renderExplicitTextAttachmentPair(m)
+				}
 			}
 			return ctx.renderSerializedAttachmentPair(m, false)
 		case "WFTextTokenString":
@@ -1670,6 +1674,16 @@ func (ctx *semanticImportContext) renderSerializedAttachmentPair(m map[string]an
 		return semanticExprPair{}, false
 	}
 	return ctx.renderAttachmentBodyPair(valMap, insideAssign)
+}
+
+// Imported bare Text attachments need explicit per-argument native intent.
+// Do not infer it from a workflow-wide provenance flag or ordinary variables.
+func (ctx *semanticImportContext) renderExplicitTextAttachmentPair(m map[string]any) (semanticExprPair, bool) {
+	value, ok := m["Value"].(map[string]any)
+	if !ok {
+		return semanticExprPair{}, false
+	}
+	return ctx.renderSymbolicRawRefPair(value, false)
 }
 
 func (ctx *semanticImportContext) nextRawRefName() string {
@@ -2165,6 +2179,10 @@ func (ctx *semanticImportContext) reverseTextPartsParam(rec NativeActionRecord, 
 		}
 		if s, isStr := rawCustom.(string); isStr && (s == " " || s == "\n" || (s == "" && callableName == "splitText")) {
 			return semanticExprPair{}, true, false
+		}
+		if attachment, ok := rawCustom.(map[string]any); ok && attachment["WFSerializationType"] == "WFTextTokenAttachment" {
+			ep, rendered := ctx.renderExplicitTextAttachmentPair(attachment)
+			return ep, true, rendered
 		}
 		ep, ok := ctx.renderAnyTextPair(rawCustom, true)
 		return ep, true, ok

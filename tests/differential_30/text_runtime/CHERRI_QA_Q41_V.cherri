@@ -1,0 +1,20 @@
+shortcut "CHERRI_QA_Q41_V" {}
+// Q41 expected output is committed before baseline or candidate compilation.
+var sample = "alpha,BETA"
+let separator = text(",")
+let parts = splitText(sample, separator: separator)
+let firstItem = getFirstItem(parts)
+let lastItem = getLastItem(parts)
+let first = f"{firstItem}"
+let last = f"{lastItem}"
+let upper = uppercase(first)
+let lower = lowercase(last)
+let title = capitalize(first)
+let glue = text("::")
+let joined = joinText(parts, glue: glue)
+var linkText = "https://example.org/path"
+let urls = getURLs(linkText)
+let firstURLItem = getFirstItem(urls)
+let firstURL = f"{firstURLItem}"
+let host = getURLDetail(firstURL, detail: "Host")
+output(f"CHERRI_QA_41|{upper}:{lower}:{title}:{joined}:{host}")

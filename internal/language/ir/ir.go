@@ -18,6 +18,8 @@ type NativeActionNode struct {
 
 // AttachmentToken represents an inline variable/action output attachment in text.
 type AttachmentToken struct {
+	// ExplicitNative is compiler-only origin for an explicit native.ref argument.
+	ExplicitNative  bool                     `json:"-" plist:"-"`
 	Type            string                   `json:"type"` // ActionOutput, Variable, ExtensionInput, etc.
 	OutputUUID      string                   `json:"outputUUID,omitempty"`
 	OutputName      string                   `json:"outputName,omitempty"`

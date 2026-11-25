@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "original_sha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+  "fork_sha": "4ca75e763204f0d4cdcb94442985e6dd776df844",
+  "runner_sha256": "f450d0c768748bdbb4f81029aa77d2c012b9186d7c29255e6847b301eec49344",
+  "manifest_sha256": "8547eb2f5c7df230f88fa9a38434487cdf9b5a743cc67857b9ccd2783b77bbd9",
+  "expected": "CHERRI_QA_40|2024-02-05:2024-02-06:2024-02-06:2024-02-08",
+  "expected_utf8_sha256": "d509ceed4e1a65059ab6da4006d3ff56c34d0ea83f2a64e2c9c619d4459f4f7c",
+  "compilation_count": 3,
+  "all_graphs_valid": true,
+  "all_quantity_contracts_pass": true,
+  "runtime_status": "NOT_RUN",
+  "evidence_root": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity-runtime",
+  "quantity_contract_sha256": "85b9f6ffb996806bc07dfca0c288ffcc43a4b80870b6a5a1753075fa2092556b",
+  "runtime_preparation_sha256": "003785b0c081ccf31270a09f291a658190ebd76eb0e369be31e8e44dc119ac87",
+  "binaries": {
+    "original": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/original/cherri-upstream-98d5191",
+      "sha256": "feda44491d942061ea70353d3120429c3fa5fa1604a2059fa03a24eca56d4ee5"
+    },
+    "fork_legacy": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/suite/final-integrated-4ca75e76/cherri-fork-4ca75e76",
+      "sha256": "cee636fb96ec91ccea6cebfe20bcee4f80642054985e08f661d3d8c6a6135e88"
+    },
+    "fork_v2": {
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/suite/final-integrated-4ca75e76/cherri-fork-4ca75e76",
+      "sha256": "cee636fb96ec91ccea6cebfe20bcee4f80642054985e08f661d3d8c6a6135e88"
+    }
+  },
+  "artifacts": [
+    {
+      "lane": "fork_legacy",
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity-runtime/compile/artifacts/fork_legacy/CHERRI_QA_Q40_L.shortcut",
+      "sha256": "9ba19c06f8e247cae1bd4dcc757589cd2f61c26ad0efa9048ba3679b206cd11a",
+      "source_sha256": "940eb799df2b3af61c82a17c5480cbf284aed6dba2aae32762b05a2d09844926"
+    },
+    {
+      "lane": "fork_v2",
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity-runtime/compile/artifacts/fork_v2/CHERRI_QA_Q40_V.shortcut",
+      "sha256": "f4414fb15766507a3a08bf6934b69cfb4ed3bbb085d70a2d8fa2707e7a3a3a03",
+      "source_sha256": "a8940cd91238833624cab2370aa0f1ebf5605ba0aa3db66a0a1568f2975deb20"
+    },
+    {
+      "lane": "original",
+      "path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity-runtime/compile/artifacts/original/CHERRI_QA_Q40_O.shortcut",
+      "sha256": "c887a3b789fbeab4517d15d9cc91cd1318441e2e23025929d62bc93e8f61b37e",
+      "source_sha256": "68767d00e5e9f6e400b14337877f55be2fdbe5aa93f8f7cdc83f325066473590"
+    }
+  ],
+  "comparisons": [
+    {
+      "right_lane": "fork_legacy",
+      "report": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity-runtime/compile/comparisons/40_dynamic_quantity_dates.original-vs-fork_legacy.json",
+      "strict_typed_equal_after_uuid_alpha": false,
+      "action_tree_equal_after_uuid_alpha": true,
+      "graphs_valid": true,
+      "raw_difference_count": 53,
+      "alpha_difference_count": 24,
+      "difference_categories": {
+        "workflow_metadata": 24
+      }
+    },
+    {
+      "right_lane": "fork_v2",
+      "report": "/mnt/development/projects/evidence/cherri-differential-30-20261125/quantity-runtime/compile/comparisons/40_dynamic_quantity_dates.original-vs-fork_v2.json",
+      "strict_typed_equal_after_uuid_alpha": false,
+      "action_tree_equal_after_uuid_alpha": false,
+      "graphs_valid": true,
+      "raw_difference_count": 62,
+      "alpha_difference_count": 62,
+      "difference_categories": {
+        "workflow_metadata": 24,
+        "structure_or_value": 36,
+        "display_candidate": 2
+      }
+    }
+  ]
+}

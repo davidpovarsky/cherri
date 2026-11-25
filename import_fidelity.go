@@ -1201,6 +1201,7 @@ func collectRawRefValue(value *any) {
 	rawMap := dictVal.(rawPlistDict).Data
 	_, hasExplicitOutName := rawMap["OutputName"]
 	desc := ReferenceDescriptor{
+		ExplicitNative:     true,
 		Kind:               rawMapString(rawMap, "Type"),
 		OutputUUID:         rawMapString(rawMap, "OutputUUID"),
 		OutputName:         rawMapString(rawMap, "OutputName"),
