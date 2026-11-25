@@ -325,7 +325,7 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 					t.Fatal(err)
 				}
 				if !reflect.DeepEqual(a, b) {
-					t.Fatal("omitted metadata differs from explicit false flags")
+					t.Fatalf("omitted metadata differs from explicit false flags: old=%#v; current=%#v", a, b)
 				}
 
 				for _, fault := range []string{"missing_producer", "empty_producer", "nonpreceding_producer", "duplicate_producer"} {
@@ -352,6 +352,69 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 						}
 						if _, err = p15ExportMetadataCanonicalGraph(p15ExportMetadataNativeWire(t, bad)); err == nil {
 							t.Fatalf("actual plist wire oracle accepted %s", fault)
+						}
+					})
+				}
+
+				// Arbitrary payload strings that happen to equal a producer UUID
+				// are never alpha-renamed by this graph identity comparison.
+				for _, fault := range []string{"uuid_literal_payload", "other_producer_output_name"} {
+					t.Run(fault, func(t *testing.T) {
+						changed := p15ExportMetadataNativeWire(t, old)
+						var actualIDs []string
+						for _, action := range changed {
+							if id, ok := action.WFWorkflowActionParameters["UUID"].(string); ok && id != "" && id != "EXACT-RESULT" {
+								actualIDs = append(actualIDs, id)
+							}
+						}
+						if len(actualIDs) < 2 {
+							t.Fatal("missing independently produced native UUIDs")
+						}
+						mutated := false
+						if fault == "uuid_literal_payload" {
+							for i := range changed {
+								if changed[i].WFWorkflowActionIdentifier == "is.workflow.actions.gettext" {
+									changed[i].WFWorkflowActionParameters["WFTextActionText"] = actualIDs[0]
+									mutated = true
+									break
+								}
+							}
+						} else {
+							var walk func(any)
+							walk = func(value any) {
+								switch v := value.(type) {
+								case map[string]any:
+									if !mutated && v["Type"] == "ActionOutput" && v["OutputName"] == v["OutputUUID"] {
+										other := actualIDs[0]
+										if other == v["OutputUUID"] {
+											other = actualIDs[1]
+										}
+										v["OutputName"] = other
+										mutated = true
+										return
+									}
+									for _, child := range v {
+										walk(child)
+									}
+								case []any:
+									for _, child := range v {
+										walk(child)
+									}
+								}
+							}
+							for _, action := range changed {
+								walk(action.WFWorkflowActionParameters)
+							}
+						}
+						if !mutated {
+							t.Fatalf("missing causal fault target: %s", fault)
+						}
+						got, err := p15ExportMetadataCanonicalGraph(changed)
+						if err != nil {
+							t.Fatal(err)
+						}
+						if reflect.DeepEqual(a, got) {
+							t.Fatalf("canonical comparison erased semantic mutation %s", fault)
 						}
 					})
 				}
@@ -432,5 +495,42 @@ func p15ExportMetadataCanonicalGraph(actions []ShortcutAction) (any, error) {
 			return nil, err
 		}
 	}
-	return p15MeasureVoidCanonicalGraph(actions)
+	canonical, err := p15MeasureVoidCanonicalGraph(actions)
+	if err != nil {
+		return nil, err
+	}
+	// The shared text codec defaults an unnamed ActionOutput's OutputName to
+	// that SAME producer UUID. Normalize only this verified reference field;
+	// UUID-shaped text payloads and names of other producers remain semantic.
+	var normalizeProducerName func(any, any)
+	normalizeProducerName = func(original, normalized any) {
+		switch src := original.(type) {
+		case map[string]any:
+			dst, ok := normalized.(map[string]any)
+			if !ok {
+				return
+			}
+			if src["Type"] == "ActionOutput" && src["OutputName"] == src["OutputUUID"] {
+				if id, ok := src["OutputUUID"].(string); ok && id != "" {
+					dst["OutputName"] = dst["OutputUUID"]
+				}
+			}
+			for key, child := range src {
+				normalizeProducerName(child, dst[key])
+			}
+		case []any:
+			dst, ok := normalized.([]any)
+			if !ok || len(dst) != len(src) {
+				return
+			}
+			for i, child := range src {
+				normalizeProducerName(child, dst[i])
+			}
+		}
+	}
+	normalized := canonical.([]any)
+	for i, action := range actions {
+		normalizeProducerName(action.WFWorkflowActionParameters, normalized[i].(map[string]any)["parameters"])
+	}
+	return canonical, nil
 }
