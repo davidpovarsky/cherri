@@ -42,7 +42,7 @@ func TestP15D01CanonicalDocsProduction(t *testing.T) {
 			t.Fatalf("actual generator did not execute %s", name)
 		}
 	}
-	t.Log("D01: all505 native definitions,15 separate macros, complete categories, typed defaults/primary optionality, full canonical artifact and8 real CLI drift rejections")
+	t.Log("D01: all505 native definitions,16 separate macros including cache, complete categories, typed defaults/primary optionality, full canonical artifact and8 real CLI drift rejections")
 }
 func p15DocsSearchFixture(t *testing.T, active bool) string {
 	t.Helper()

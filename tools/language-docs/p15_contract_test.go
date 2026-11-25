@@ -74,8 +74,17 @@ func TestP15D01AllGeneratedSignaturesAndCategories(t *testing.T) {
 	text := renderReference(reg)
 	all := append(reg.AllActions()[:0:0], reg.AllActions()...)
 	all = append(all, reg.CompilerMacros()...)
-	if len(reg.AllActions()) != 505 || len(reg.CompilerMacros()) != 15 {
-		t.Fatalf("catalog/control counts changed: %d native, %d macro", len(reg.AllActions()), len(reg.CompilerMacros()))
+	wantMacros := []string{
+		"cache", "debugAssert", "debugClearLogs", "debugExport", "debugExportTrace",
+		"debugFinish", "debugLog", "debugLogPrevious", "debugShowLogs", "debugStartTimer",
+		"debugStopTimer", "debugTrace", "debugTraceEvent", "measure", "paginate", "require",
+	}
+	var macroNames []string
+	for _, macro := range reg.CompilerMacros() {
+		macroNames = append(macroNames, macro.CallableName)
+	}
+	if len(reg.AllActions()) != 505 || strings.Join(macroNames, "\x00") != strings.Join(wantMacros, "\x00") {
+		t.Fatalf("catalog/control inventory changed: %d native, macros=%v", len(reg.AllActions()), macroNames)
 	}
 	if strings.Count(text, "\n### `") != len(all) {
 		t.Fatal("generated headings do not account for every native action and separate macro")
