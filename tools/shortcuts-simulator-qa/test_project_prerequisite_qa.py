@@ -641,7 +641,7 @@ class QAIntegrationTests(unittest.TestCase):
         prior = ast.parse((HERE / "test_project_prerequisite.py").read_bytes())
         observer = ast.parse((HERE / "test_project_prerequisite_observation.py").read_bytes())
         count = lambda tree: sum(isinstance(node, ast.FunctionDef) and node.name.startswith("test_") for node in ast.walk(tree))
-        self.assertEqual((count(prior), count(observer)), (8, 31))
+        self.assertEqual((count(prior), count(observer)), (8, 33))
 
 
 if __name__ == "__main__":

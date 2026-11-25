@@ -23,6 +23,7 @@ import time
 import zipfile
 
 import project_prerequisite as prerequisite
+from simulator_session_recovery import defer_cancellation_signals, report_rejection
 
 SCHEMA = "cherri-project-prerequisite-observation/1"
 QA_SCHEMA = "cherri-project-prerequisite-observation/3"
@@ -231,8 +232,9 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
     hashes = {name: hashlib.sha256() for name in stream_targets}
     try:
         try:
-            process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+            with defer_cancellation_signals():
+                process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
         except OSError:
             result = "LAUNCH_FAILED"
             return {"result": result, "exitCode": None,
@@ -1148,9 +1150,10 @@ def collect(repo, root, source, run_id, attempt, shell, github_output, *, starte
                         "QA_CONTEXT_CHANGED_AFTER_STAGE")
                 qa_record["matchedAfter"] = True
             reason = "NONE" if returncode == 0 else "PREREQUISITE_FAILED"
-    except (OSError, ValueError, UnicodeError, TypeError, KeyError):
-        # Raw exception messages may contain paths or service output; only this
-        # fixed diagnostic state is public. Existing originals remain private.
+    except (OSError, ValueError, UnicodeError, TypeError, KeyError) as error:
+        # Keep the failing source line even if strict sealing later rejects the
+        # packet. Messages, paths and original service streams stay private.
+        report_rejection(error, "PREREQUISITE", __file__)
         returncode = 70
         reason = "SOURCE_OR_CAPTURE_REJECTED" if source_record["sourceMatchedBefore"] else "SOURCE_REJECTED"
     stages = stage_summary(private, records)
@@ -1249,6 +1252,7 @@ def main():
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (Exception, ObservationExpired):
+    except (Exception, ObservationExpired) as error:
+        report_rejection(error, "COLLECTOR", __file__)
         print("PROJECT_PREREQUISITE_OBSERVATION_REJECTED")
         raise SystemExit(70)

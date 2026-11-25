@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Bounded simulator liveness probes; never an import/runtime acceptance oracle."""
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -9,6 +10,7 @@ import re
 import signal
 import subprocess
 import tempfile
+import threading
 import time
 
 MAX_BUDGET = 240
@@ -39,20 +41,81 @@ def receipt_json(text):
     return json.loads(text, object_pairs_hook=unique_object)
 
 
+def report_rejection(error, phase, source_file):
+    """Print a source location without exception text, paths or service output."""
+    require(phase in {"PREREQUISITE", "COLLECTOR"}, "REPORT_PHASE")
+    line = None
+    trace = error.__traceback__
+    while trace is not None:
+        code = trace.tb_frame.f_code
+        if code.co_filename == source_file and code.co_name != "require":
+            line = trace.tb_lineno
+        trace = trace.tb_next
+    kind = ("INTERRUPTED" if not isinstance(error, Exception) else
+            "REJECTED" if isinstance(error, ValueError) else
+            "OS_ERROR" if isinstance(error, OSError) else "EXCEPTION")
+    print(json.dumps({"diagnostic": "PROJECT_PREREQUISITE_OBSERVATION_REJECTED",
+                      "phase": phase, "sourceLine": line, "kind": kind},
+                     sort_keys=True))
+
+
+@contextlib.contextmanager
+def defer_cancellation_signals():
+    """Keep a spawned child owned before a Python cancellation handler raises.
+
+    Popen can receive a signal after creating the child but before returning its
+    handle. Deferring only the caller's callable cancellation handlers across
+    that assignment keeps cleanup possible. No blocked mask reaches the child;
+    its signal dispositions and process-group contract remain unchanged.
+    """
+    if threading.current_thread() is not threading.main_thread():
+        yield
+        return
+    kinds = [signal.SIGINT, signal.SIGTERM]
+    if hasattr(signal, "SIGALRM"):
+        kinds.append(signal.SIGALRM)
+    handlers = {kind: signal.getsignal(kind) for kind in kinds
+                if callable(signal.getsignal(kind))}
+    pending = {}
+
+    def defer(kind, frame):
+        pending.setdefault(kind, frame)
+
+    try:
+        for kind in handlers:
+            signal.signal(kind, defer)
+        yield
+    finally:
+        # Mask only while restoring handlers, after Popen has returned (or
+        # failed). A second cancellation cannot interrupt partial restoration.
+        mask = signal.pthread_sigmask(signal.SIG_BLOCK, handlers) if (
+            handlers and hasattr(signal, "pthread_sigmask")) else None
+        try:
+            for kind, handler in handlers.items():
+                signal.signal(kind, handler)
+        finally:
+            if mask is not None:
+                signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+        for kind, frame in pending.items():
+            handlers[kind](kind, frame)
+
+
 def run_process(command, timeout, *, output=None, error_output=None):
     """Same process-group kill strategy as the existing bounded Xcode runner."""
     started = time.monotonic()
     if timeout <= 0:
         return {"result": "DEADLINE_EXHAUSTED", "exitCode": None, "elapsedMs": 0}
+    process = None
     try:
-        process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-            stdout=output if output is not None else subprocess.DEVNULL,
-            stderr=error_output if error_output is not None else (subprocess.STDOUT if output is not None else subprocess.DEVNULL),
-            start_new_session=(os.name == "posix"))
-    except OSError:
-        return {"result": "LAUNCH_FAILED", "exitCode": None,
-                "elapsedMs": round((time.monotonic() - started) * 1000)}
-    try:
+        try:
+            with defer_cancellation_signals():
+                process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
+                    stdout=output if output is not None else subprocess.DEVNULL,
+                    stderr=error_output if error_output is not None else (subprocess.STDOUT if output is not None else subprocess.DEVNULL),
+                    start_new_session=(os.name == "posix"))
+        except OSError:
+            return {"result": "LAUNCH_FAILED", "exitCode": None,
+                    "elapsedMs": round((time.monotonic() - started) * 1000)}
         code = process.wait(timeout=timeout)
         result = "PASS" if code == 0 else "EXIT_NONZERO"
     except subprocess.TimeoutExpired:
@@ -69,6 +132,8 @@ def run_process(command, timeout, *, output=None, error_output=None):
         except subprocess.TimeoutExpired:
             pass
     except BaseException:
+        if process is None:
+            raise
         # A caller that records SIGINT/SIGTERM must not leave its independently
         # grouped child alive after retaining an interrupted acquisition.
         try:

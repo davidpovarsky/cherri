@@ -591,8 +591,15 @@ class AcquisitionTests(unittest.TestCase):
 
     @unittest.skipUnless(os.name=="posix","actual SIGTERM/process-group control requires POSIX")
     def test_actual_mid_child_sigterm_keeps_partial_receipt_and_kills_descendant(self):
-        # This runs on the native CI host; Windows runs the separate causal
-        # cancellation and actual subprocess timeout controls above.
+        self._actual_sigterm_keeps_receipt_and_kills_descendant(during_spawn=False)
+
+    @unittest.skipUnless(os.name=="posix","actual SIGTERM/process-group control requires POSIX")
+    def test_actual_sigterm_before_popen_returns_keeps_receipt_and_kills_descendant(self):
+        self._actual_sigterm_keeps_receipt_and_kills_descendant(during_spawn=True)
+
+    def _actual_sigterm_keeps_receipt_and_kills_descendant(self, *, during_spawn):
+        # Readiness and the post-cancellation write are causally separated. A
+        # busy host cannot create the forbidden file before we send SIGTERM.
         for p in (self.root/"builds").glob("qa-acquisition-*.json"):p.unlink()
         clock=lambda:time.monotonic_ns()
         terminal.checkpoint(self.root,self.expected,"COMPILED",self.gates,now_ns=clock)
@@ -600,35 +607,75 @@ class AcquisitionTests(unittest.TestCase):
         terminal.checkpoint(self.root,self.expected,"TEST02_COMPLETED",self.gates,device=UDID,code=0,now_ns=clock)
         binary=self.home/"bin";binary.mkdir()
         delayed=self.home/"forbidden-after-cancel"
+        ready=self.home/"descendant-ready.json"
+        release=self.home/"release-after-cancel"
+        child_code=("import json,os,pathlib,signal,time\n"
+            "assert signal.SIGTERM not in signal.pthread_sigmask(signal.SIG_BLOCK,set()), 'child inherited blocked cancellation'\n"
+            "pathlib.Path("+repr(str(ready))+").write_text(json.dumps({'pid':os.getpid(),'group':os.getpgrp()}))\n"
+            "while not pathlib.Path("+repr(str(release))+").exists(): time.sleep(.01)\n"
+            "pathlib.Path("+repr(str(delayed))+").write_text('late')\n"
+            "time.sleep(10)\n")
         fake=binary/"xcrun"
-        fake.write_text("#!"+sys.executable+"\nimport subprocess,sys,time\n"
+        fake.write_text("#!"+sys.executable+"\nimport pathlib,subprocess,sys,time\n"
+            "subprocess.Popen([sys.executable,'-c',"+repr(child_code)+"])\n"
             "print('CHILD_STARTED',flush=True)\n"
-            "subprocess.Popen([sys.executable,'-c',"+repr("import time,pathlib; time.sleep(2); pathlib.Path("+repr(str(delayed))+").write_text('late')")+"])\n"
+            "while not pathlib.Path("+repr(str(release))+").exists(): time.sleep(.01)\n"
             "time.sleep(10)\n")
         fake.chmod(0o755)
-        worker=("import json,signal,sys;import qa_terminal_receipts as q;"
-                "signal.signal(signal.SIGTERM,q._cancel);"
-                "code,value=q.collect(sys.argv[1],json.loads(sys.argv[2]),sys.argv[3],sys.argv[4]);"
-                "sys.exit(code)")
+        worker=("import json,os,pathlib,signal,sys,time\n"
+                "import qa_terminal_receipts as q\n"
+                "import simulator_session_recovery as recovery\n"
+                "signal.signal(signal.SIGTERM,q._cancel)\n")
+        if during_spawn:
+            # Execute a real child and deliver a real signal in the ownership
+            # gap: Popen has started the process but has not returned its handle.
+            worker+=("real_popen=recovery.subprocess.Popen\n"
+                "def interrupt_before_return(*args,**kwargs):\n"
+                " child=real_popen(*args,**kwargs)\n"
+                " deadline=time.monotonic()+5\n"
+                " while time.monotonic()<deadline and not pathlib.Path("+repr(str(ready))+").exists(): time.sleep(.01)\n"
+                " assert pathlib.Path("+repr(str(ready))+").exists(), 'descendant did not become ready'\n"
+                " os.kill(os.getpid(),signal.SIGTERM)\n"
+                " return child\n"
+                "recovery.subprocess.Popen=interrupt_before_return\n")
+        worker+=("code,value=q.collect(sys.argv[1],json.loads(sys.argv[2]),sys.argv[3],sys.argv[4])\n"
+                 "assert signal.getsignal(signal.SIGTERM) is q._cancel, 'signal handler was not restored'\n"
+                 "sys.exit(code)\n")
         env=dict(os.environ,PYTHONPATH=str(HERE),PATH=str(binary)+os.pathsep+os.environ["PATH"])
         process=subprocess.Popen([sys.executable,"-c",worker,str(self.root),
             json.dumps(self.expected),str(self.scratch),UDID],env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        owned=None
         try:
             raw=self.root/"builds/post-test-xcresult-part1.stdout"
             deadline=time.monotonic()+5
-            while time.monotonic()<deadline and (not raw.exists() or b"CHILD_STARTED" not in raw.read_bytes()):
+            while time.monotonic()<deadline and (not ready.exists() or not raw.exists() or b"CHILD_STARTED" not in raw.read_bytes()):
                 time.sleep(.01)
-            self.assertTrue(raw.exists() and b"CHILD_STARTED" in raw.read_bytes())
-            process.send_signal(signal.SIGTERM)
+            self.assertTrue(ready.exists() and raw.exists() and b"CHILD_STARTED" in raw.read_bytes())
+            owned=json.loads(ready.read_text())
+            if not during_spawn:process.send_signal(signal.SIGTERM)
             _,err=process.communicate(timeout=5)
             self.assertEqual(process.returncode,128+signal.SIGTERM,err.decode(errors="replace"))
             value=json.loads((self.root/"runtime/post-test-inspection.json").read_text())
             terminal.validate_inspection(value,self.root,self.expected)
             self.assertEqual(value["commands"][0]["result"],"CANCELLED")
-            time.sleep(2.1)
+            release.write_text("cancellation is already recorded")
+            deadline=time.monotonic()+3
+            state="RUNNING"
+            while time.monotonic()<deadline:
+                status=subprocess.run(["ps","-p",str(owned["pid"]),"-o","stat="],
+                    capture_output=True,text=True,timeout=1)
+                state=status.stdout.strip()
+                if not state or state.startswith("Z"):break
+                time.sleep(.01)
+            self.assertTrue(not state or state.startswith("Z"),"cancelled descendant is still live: "+state)
             self.assertFalse(delayed.exists())
         finally:
             if process.poll() is None:process.kill();process.wait(timeout=3)
+            if owned is None and ready.exists():owned=json.loads(ready.read_text())
+            if owned is not None:
+                try:os.killpg(owned["group"],signal.SIGKILL)
+                except ProcessLookupError:pass
+
 
 
 class PrivacyBoundaryTests(unittest.TestCase):
