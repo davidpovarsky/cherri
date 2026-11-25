@@ -38,6 +38,7 @@ type Symbol struct {
 	nativeListValue       bool
 	loopResultElement     types.Type // source-owned local cell sequence element
 	taggedTransport       types.Type // declaration-owned private runtime storage
+	invalidValue          bool       // this current producer already has a source error
 }
 
 // Scope represents a lexical scope.
@@ -786,6 +787,7 @@ func isConditionTypeAllowed(t types.Type) bool {
 func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 	switch s := stmt.(type) {
 	case *syntax.BindingStmt:
+		diagnosticStart := len(a.diagnostics)
 		var valType types.Type
 		if s.Value != nil {
 			restoreLocalCells := a.beginLocalLoopResultBinding(s)
@@ -838,6 +840,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			nativeReferenceTarget: s.Value != nil && !isVoidValue(valType),
 			optionalPresence:      a.exprPresence[s.Value],
 			knownAbsent:           a.exprAbsent[s.Value],
+			invalidValue:          a.hasErrorsSince(diagnosticStart) || invalidTaggedBindingSource(s.Value, scope),
 			Name:                  s.Name,
 			EnumType:              a.enumCatalog.TypeName(s.TypeExpr),
 			Type:                  declType,
@@ -922,6 +925,14 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 				sym.optionalPresence = true
 			}
 			sym.knownAbsent = false
+		}
+		// Keep the original producer error, but do not invent a later private
+		// transport boundary for a value that never became valid. A valid
+		// replacement restores ordinary boundary checking for this binding.
+		if s.Op == syntax.TokenAssign {
+			sym.invalidValue = a.hasErrorsSince(diagnosticStart) || invalidTaggedBindingSource(s.Value, scope)
+		} else if a.hasErrorsSince(diagnosticStart) || invalidTaggedBindingSource(s.Value, scope) {
+			sym.invalidValue = true
 		}
 		narrowAssignedValue(sym, valType)
 

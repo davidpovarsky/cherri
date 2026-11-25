@@ -32,6 +32,7 @@ type bindingFlowState struct {
 	readType         types.Type
 	optionalPresence bool
 	knownAbsent      bool
+	invalidValue     bool
 }
 type bindingFlow map[*Symbol]bindingFlowState
 
@@ -39,7 +40,7 @@ func captureBindingFlow(scope *Scope) bindingFlow {
 	result := bindingFlow{}
 	for current := scope; current != nil; current = current.parent {
 		for _, symbol := range current.symbols {
-			result[symbol] = bindingFlowState{symbol.Initialized, symbol.readType(), symbol.optionalPresence, symbol.knownAbsent}
+			result[symbol] = bindingFlowState{symbol.Initialized, symbol.readType(), symbol.optionalPresence, symbol.knownAbsent, symbol.invalidValue}
 		}
 	}
 	return result
@@ -50,6 +51,7 @@ func (state bindingFlow) restore() {
 		symbol.Initialized = value.initialized
 		symbol.optionalPresence = value.optionalPresence
 		symbol.knownAbsent = value.knownAbsent
+		symbol.invalidValue = value.invalidValue
 		symbol.flowType = nil
 		if value.readType != nil && symbol.Type != nil && !value.readType.Equals(symbol.Type) {
 			symbol.flowType = value.readType
@@ -71,16 +73,20 @@ func mergeBindingFlow(entry bindingFlow, paths ...bindingFlow) {
 			continue
 		}
 		initialized, sameType, presence, absent := first.initialized, true, first.optionalPresence, first.knownAbsent
+		invalid := first.invalidValue
 		for _, path := range paths[1:] {
 			value, found := path[symbol]
 			initialized = initialized && found && value.initialized
 			presence = presence && found && value.optionalPresence
 			absent = absent && found && value.knownAbsent
+			invalid = invalid && found && value.invalidValue
 			sameType = sameType && found && first.readType != nil && value.readType != nil && first.readType.Equals(value.readType)
 		}
 		symbol.Initialized = initialized
 		symbol.optionalPresence = initialized && presence
 		symbol.knownAbsent = initialized && absent
+		// A valid value on any continuing path still needs its boundary check.
+		symbol.invalidValue = invalid
 		symbol.flowType = nil
 		if initialized && sameType && first.readType != nil && symbol.Type != nil && !first.readType.Equals(symbol.Type) {
 			symbol.flowType = first.readType

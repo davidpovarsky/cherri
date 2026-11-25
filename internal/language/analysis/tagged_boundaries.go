@@ -12,12 +12,27 @@ import (
 // runtime storage that its declaration already selected. This fact mirrors the
 // lowerer's declaration-owned TaggedTransport; it is not a new type assertion.
 func (a *Analyzer) taggedExpressionType(expr syntax.Expression, scope *Scope) types.Type {
+	if invalidTaggedBindingSource(expr, scope) {
+		return nil
+	}
 	if name, ok := expr.(*syntax.IdentExpr); ok && scope != nil {
 		if symbol, found := scope.Lookup(name.Name); found && symbol.taggedTransport != nil {
 			return symbol.taggedTransport
 		}
 	}
 	return a.exprTypes[expr]
+}
+
+// The semantic type is retained for independent type checking. Only the
+// representation boundary is unavailable after this exact binding producer was
+// already rejected; an error elsewhere in the program does not suppress it.
+func invalidTaggedBindingSource(expr syntax.Expression, scope *Scope) bool {
+	name, ok := expr.(*syntax.IdentExpr)
+	if !ok || scope == nil {
+		return false
+	}
+	symbol, found := scope.Lookup(name.Name)
+	return found && symbol.invalidValue
 }
 
 func (a *Analyzer) hasErrorsSince(start int) bool {
