@@ -18,9 +18,11 @@ root = pathlib.Path(directory)
 def pin(name):
     raw = pathlib.Path('/proc/%d/stat' % os.getpid()).read_text()
     fields = raw[raw.rfind(')') + 2:].split()
-    (root / (name + '.json')).write_text(json.dumps({
+    pending = root / (name + '.pending')
+    pending.write_text(json.dumps({
         'pid': os.getpid(), 'pgid': os.getpgrp(), 'sid': os.getsid(0),
         'start': fields[19]}))
+    pending.replace(root / (name + '.json'))
 if mode == 'grandchild':
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
     pin('grandchild')
