@@ -37,6 +37,7 @@ type Symbol struct {
 	nativeAppendVariable  bool
 	nativeListValue       bool
 	loopResultElement     types.Type // source-owned local cell sequence element
+	taggedTransport       types.Type // declaration-owned private runtime storage
 }
 
 // Scope represents a lexical scope.
@@ -844,6 +845,11 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			Initialized:           s.Value != nil,
 			Span:                  s.Span,
 		}
+		if types.PrivateValueTransport(declType) {
+			symbol.taggedTransport = declType
+		} else if actual := a.taggedExpressionType(s.Value, scope); types.PrivateValueTransport(actual) {
+			symbol.taggedTransport = actual
+		}
 		if !s.Mutable {
 			symbol.dictionaryOrigin = a.dictionaryOrigins[s.Value]
 			symbol.nativeListValue = a.isNativeListElement(s.Value, valType, scope)
@@ -869,6 +875,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if s.Op != syntax.TokenAssign && !sym.Initialized {
 			a.error(CodeReadBeforeInit, s.Span, fmt.Sprintf("variable %q read before initialization by compound assignment", s.Name))
 		}
+		diagnosticStart := len(a.diagnostics)
 		restoreLocalCells := a.beginLocalLoopResultAssignment(s)
 		valType := a.analyzeEnumContext(s.Value, scope, sym.EnumType)
 		restoreLocalCells()
@@ -897,6 +904,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
 			}
 		}
+		if !a.hasErrorsSince(diagnosticStart) && sym.taggedTransport == nil && sym.loopResultElement == nil && types.PrivateValueTransport(a.taggedExpressionType(s.Value, scope)) {
+			a.error(CodeTargetValueShape, s.Span, "assignment cannot change a native storage slot into private cells without an explicit conversion")
+		}
 		sym.Initialized = true
 		if s.Op == syntax.TokenAssign {
 			if types.MayBeAbsent(sym.Type) && a.optionalAssignmentHasEvidence(valType, sym.Type, s.Value) {
@@ -919,6 +929,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		a.analyzeExpression(s.Expr, scope)
 
 	case *syntax.ReturnStmt:
+		diagnosticStart := len(a.diagnostics)
 		var retType types.Type = types.Void
 		if s.Value != nil {
 			enumName := ""
@@ -934,6 +945,13 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			} else if types.MayBeAbsent(expected) {
 				a.requireCompilerPresence(s.Value, "Optional result")
 			}
+		}
+		var expected types.Type
+		if a.currentFn != nil {
+			expected = a.resolveType(a.currentFn.ReturnType)
+		}
+		if s.Value != nil && !a.hasErrorsSince(diagnosticStart) && !types.PrivateValueTransport(expected) && types.PrivateValueTransport(a.taggedExpressionType(s.Value, scope)) {
+			a.error(CodeTargetValueShape, s.Value.NodeSpan(), "structured return requires an explicit external value codec")
 		}
 
 	case *syntax.YieldStmt:
@@ -1024,11 +1042,19 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 
 	case *syntax.MenuStmt:
 		if s.Prompt != nil {
+			start := len(a.diagnostics)
 			a.analyzeExpression(s.Prompt, scope)
+			if !a.hasErrorsSince(start) {
+				a.checkTaggedMenuValue(s.Prompt, scope)
+			}
 		}
 		for _, c := range s.Cases {
 			if c.Value != nil {
+				start := len(a.diagnostics)
 				a.analyzeExpression(c.Value, scope)
+				if !a.hasErrorsSince(start) {
+					a.checkTaggedMenuValue(c.Value, scope)
+				}
 			}
 		}
 		entry := captureBindingFlow(scope)
@@ -1153,6 +1179,7 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 		a.exprAbsent = make(map[syntax.Expression]bool)
 	}
 	delete(a.exprPresence, expr)
+	diagnosticStart := len(a.diagnostics)
 	t := a.analyzeExpressionInternal(expr, scope)
 	a.recordLocalLoopResult(expr, t, scope)
 	a.recordDictionaryProvenance(expr, scope)
@@ -1173,6 +1200,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	}
 	if a.exprTypes != nil {
 		a.exprTypes[expr] = t
+	}
+	if !a.hasErrorsSince(diagnosticStart) {
+		a.checkTaggedExpressionBoundary(expr, t, scope)
 	}
 	return t
 }

@@ -3646,6 +3646,15 @@ func (l *Lowerer) lowerMenu(stmt *syntax.MenuStmt) error {
 }
 
 func (l *Lowerer) lowerMenuWithOutput(stmt *syntax.MenuStmt, withOutput bool) (*ir.AttachmentToken, error) {
+	labels := []syntax.Expression{stmt.Prompt}
+	for _, item := range stmt.Cases {
+		labels = append(labels, item.Value)
+	}
+	for _, label := range labels {
+		if label != nil && types.PrivateValueTransport(l.transportType(label)) {
+			return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: menu label requires an explicit text/JSON codec at %s", label.NodeSpan())
+		}
+	}
 	bindingName := l.detachBindingName()
 	groupUUID := l.GenerateUUID()
 	var promptVal any
@@ -4924,6 +4933,10 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 		return backend.SemanticValue{Kind: backend.ValNil}
 	}
 	switch v := val.(type) {
+	case backend.SemanticValue:
+		// Contextual container recursion already owns this semantic kind.
+		// Passing it through RawNative would lose typed nested field values.
+		return v
 	case bool:
 		return backend.SemanticValue{Kind: backend.ValBool, BoolVal: v}
 	case int:

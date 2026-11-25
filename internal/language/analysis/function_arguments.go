@@ -60,6 +60,7 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 			return
 		}
 		param := fn.Parameters[parameterIndex]
+		diagnosticStart := len(a.diagnostics)
 		actual := a.analyzeEnumContext(argument, scope, a.enumCatalog.TypeName(param.TypeExpr))
 		if isVoidValue(actual) {
 			a.error(CodeArgumentType, argument.NodeSpan(), "Void cannot be passed as an argument value")
@@ -71,6 +72,10 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 				a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
 				return
 			}
+		}
+		if !a.hasErrorsSince(diagnosticStart) && types.PrivateValueTransport(a.taggedExpressionType(argument, scope)) && !types.PrivateValueTransport(a.resolveType(param.TypeExpr)) {
+			a.error(CodeTargetValueShape, argument.NodeSpan(), "function parameter cannot erase a structured representation")
+			return
 		}
 		// Optional parameters transport a compiler-owned value-presence carrier.
 		// Omission/default presence remains a separate outer-envelope decision.
