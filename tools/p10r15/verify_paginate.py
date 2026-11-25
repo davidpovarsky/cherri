@@ -32,7 +32,7 @@ ALLOWED = {
 }
 
 
-def extract_paginate_graph(actions, *, legacy):
+def extract_paginate_graph(actions, *, legacy, native_actions=ALLOWED):
     """Verify main completion separately from the macro's typed List result."""
     assert isinstance(actions, list) and actions, "empty pagination graph"
     if legacy:
@@ -50,7 +50,7 @@ def extract_paginate_graph(actions, *, legacy):
 
     # Nothing is not a macro effect. Reject it at every interior position and
     # keep the complete original actions for the independent lossless roundtrip.
-    allowed = {PREFIX + name for name in ALLOWED}
+    allowed = {PREFIX + name for name in native_actions}
     assert all(isinstance(action, dict)
                and action.get("WFWorkflowActionIdentifier") in allowed
                for action in graph), "unreviewed pagination action"
@@ -84,7 +84,7 @@ def extract_paginate_graph(actions, *, legacy):
     return graph, boundary
 
 
-def extract_header_paginate_graph(actions, *, legacy):
+def extract_header_paginate_graph(actions, *, legacy, native_actions=ALLOWED):
     """Keep the actual authored Text producer while verifying the same macro body."""
     assert isinstance(actions, list) and len(actions) > 1
     producer = actions[0]
@@ -96,7 +96,7 @@ def extract_header_paginate_graph(actions, *, legacy):
     assert isinstance(identity, str) and identity
     assert sum(action.get("WFWorkflowActionParameters", {}).get("UUID") == identity
                for action in actions) == 1, "authored header producer identity changed"
-    body, boundary = extract_paginate_graph(actions[1:], legacy=legacy)
+    body, boundary = extract_paginate_graph(actions[1:], legacy=legacy, native_actions=native_actions)
     return [producer, *body], boundary
 
 
@@ -173,6 +173,11 @@ class PageServer:
 
 
 class PaginateGraphModel(GraphModel):
+    native_actions = ALLOWED
+
+    def extension_action(self, ident, p):
+        raise AssertionError("unexpected control delimiter reached: " + ident)
+
     def __init__(self, server):
         super().__init__([])
         self.variables = {}
@@ -271,7 +276,7 @@ class PaginateGraphModel(GraphModel):
             a = actions[index]
             ident = a["WFWorkflowActionIdentifier"].removeprefix(PREFIX)
             p = a.get("WFWorkflowActionParameters", {})
-            assert ident in ALLOWED, "unexpected action in paginate graph: " + ident
+            assert ident in self.native_actions, "unexpected action in paginate graph: " + ident
             self.executed += 1
             assert self.executed <= 2_000_000, "model execution guard exceeded"
             if ident in {"conditional", "repeat.count", "repeat.each"} and p["WFControlFlowMode"] == 0:
@@ -390,7 +395,7 @@ class PaginateGraphModel(GraphModel):
                 assert self.alert is not None, "semantic stop lacks its fixed diagnostic"
                 raise GuardStop(self.alert)
             else:
-                raise AssertionError("unexpected control delimiter reached")
+                previous = self.extension_action(ident, p)
             if "UUID" in p:
                 self.outputs[p["UUID"]] = previous
             index += 1

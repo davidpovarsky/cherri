@@ -15,13 +15,19 @@ const PaginateMaxPages = 100
 const PaginateMaxItems = 10000
 
 type PaginateOptions struct {
-	StartURL       string
-	Origin         string
-	SiblingBaseURL string
-	ItemsKey       string
-	NextKey        string
-	MaxPages       int
-	MaxItems       int
+	StartURL         string
+	Origin           string
+	SiblingBaseURL   string
+	ItemsKey         string
+	NextKey          string
+	MaxPages         int
+	MaxItems         int
+	Mode             string
+	QueryKey         string
+	QueryPrefix      string
+	QuerySuffix      string
+	InitialMarker    string
+	HasInitialMarker bool
 }
 
 var paginateKeyPattern = regexp.MustCompile("^[A-Za-z_][A-Za-z0-9_-]{0,63}$")
@@ -90,6 +96,9 @@ func ResolvePaginateOptions(params map[string]any) (PaginateOptions, error) {
 			*option.target = int(number)
 		}
 	}
+	if err := resolvePaginateMode(&out, params, parsed); err != nil {
+		return out, err
+	}
 	return out, nil
 }
 
@@ -124,11 +133,13 @@ func init() {
 				WireKey: "WFHTTPHeaders", Codec: "dictionary", Optional: true, Literal: true,
 				AcceptedForms: []string{"literal"}, OmissionPolicy: OmitPolicyOmit, EvidenceStatus: EvidenceConfirmed,
 			},
+			literalText("mode", "Next marker mode (url, cursor, page, offset)", "WFPaginateMode", StringDefault("url"), true),
+			literalText("queryKey", "Query key replaced by cursor/page/offset marker", "WFPaginateQueryKey", nil, true),
 		},
 		OutputType: result, OutputTypeName: result.String(), RawOutputType: "array",
 		Docs: ActionDocs{
 			Title: "Paginate Bounded Dictionary Pages", Category: "web",
-			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. No Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. No Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
 			InsertionSnippet: "paginate(\"https://example.invalid/pages/one.json\")",
 		},
 		Builtin: true, EvidenceStatus: EvidenceInferred,
