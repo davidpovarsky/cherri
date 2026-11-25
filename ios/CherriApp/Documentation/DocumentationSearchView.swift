@@ -42,12 +42,17 @@ struct DocumentationSearchView: View {
                                                 .foregroundStyle(.secondary)
                                         }
                                     }
+                                    .accessibilityElement(children: .ignore)
+                                    .accessibilityLabel(Text(section.title + ", " + section.documentTitle))
                                     .accessibilityIdentifier("docsResult_" + section.id)
                                 }
                             } footer: {
                                 Text("Cherri \(index.languageVersion) documentation · Available offline")
                             }
                         }
+                        // A new query starts at its highest-ranked result, rather
+                        // than retaining a row anchor from the previous result set.
+                        .id(query)
                         .overlay {
                             if results.isEmpty {
                                 ContentUnavailableView.search(text: query)

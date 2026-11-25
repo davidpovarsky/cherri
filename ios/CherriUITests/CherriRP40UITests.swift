@@ -220,16 +220,24 @@ final class CherriRP40UITests: XCTestCase {
         try require(rename.waitForExistence(timeout: 5) && rename.isHittable,
                     "RP40 requires the real Rename action")
         rename.tap()
-        let alert = app.alerts.firstMatch
+        let alert = app.alerts["Rename Symbol"]
         try require(alert.waitForExistence(timeout: 5), "RP40 Rename dialog must appear")
-        let field = alert.textFields["renameTextField"]
-        try require(field.waitForExistence(timeout: 5) && field.isHittable,
-                    "RP40 requires the exact Rename text field")
+        // SwiftUI's native alert may expose the authored placeholder instead of
+        // its view identifier. Require one exact field in this named dialog.
+        let fields = alert.textFields.matching(NSPredicate(
+            format: "identifier == %@ OR placeholderValue == %@", "renameTextField", "New Name"))
+        try require(wait { fields.count == 1 && fields.element(boundBy: 0).isHittable },
+                    "RP40 requires one exact Rename text field")
+        let field = fields.element(boundBy: 0)
         field.tap()
         field.typeText("renamedValue")
-        let confirm = alert.buttons["confirmRenameButton"]
-        try require(confirm.waitForExistence(timeout: 5) && confirm.isHittable,
-                    "RP40 requires the exact Rename confirmation")
+        let confirmations = alert.buttons.matching(NSPredicate(
+            format: "identifier == %@ OR label == %@", "confirmRenameButton", "Rename"))
+        try require(wait {
+            confirmations.count == 1 && confirmations.element(boundBy: 0).isHittable
+                && confirmations.element(boundBy: 0).isEnabled
+        }, "RP40 requires one exact Rename confirmation")
+        let confirm = confirmations.element(boundBy: 0)
         confirm.tap()
         let renamed = "// RP40 value comment שלום 🌍\n"
             + "let renamedValue = text(\"RP40_VALUE\")\n"

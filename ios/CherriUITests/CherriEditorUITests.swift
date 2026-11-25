@@ -492,7 +492,11 @@ final class CherriEditorUITests: XCTestCase {
         let exactFirst = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             firstResult.exists && firstResult.isHittable && firstResult.label.hasPrefix("show")
         }, object: firstResult)
-        XCTAssertEqual(XCTWaiter.wait(for: [exactFirst], timeout: 5), .completed)
+        let exactResultObserved = XCTWaiter.wait(for: [exactFirst], timeout: 5)
+        XCTAssertEqual(exactResultObserved, .completed,
+                       "D03 first result: exists=\(firstResult.exists), "
+                       + "hittable=\(firstResult.exists && firstResult.isHittable), "
+                       + "exactTitlePrefix=\(firstResult.exists && firstResult.label.hasPrefix("show"))")
         firstResult.tap()
         let title = app.staticTexts["docsSectionTitle"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
@@ -817,7 +821,9 @@ final class CherriEditorUITests: XCTestCase {
     // E07 & RP41 & BRG28: Visual parameter editing and fallback rendering in preview canvas
     func testE07VisualParameterEditingCanvasUI() throws {
         let editor = ensureEditorReady()
-        setEditorContent(editor, "// Header comment preserved\nshow(\"CanvasPreviewFixture\")\n// Footer comment preserved\n")
+        let initialSource = "// Header comment preserved\nshow(\"CanvasPreviewFixture\")\n// Footer comment preserved\n"
+        let updatedSource = initialSource.replacingOccurrences(of: "CanvasPreviewFixture", with: "VisualParamUpdated")
+        setEditorContent(editor, initialSource)
 
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist")
@@ -849,6 +855,9 @@ final class CherriEditorUITests: XCTestCase {
 
         // Verify exact source change: parameter updated, unrelated comments preserved
         XCTAssertTrue(editor.waitForExistence(timeout: 5), "Editor must remain present")
+        expectedSyntheticSource = updatedSource
+        XCTAssertTrue(waitForEditorValue(editor) { $0.utf16.elementsEqual(updatedSource.utf16) },
+                      "Visual edit must preserve the exact source outside its parameter")
         let val = (editor.value as? String) ?? ""
         XCTAssertTrue(val.contains("VisualParamUpdated"), "Source code parameter must reflect visual edit")
         XCTAssertFalse(val.contains("CanvasPreviewFixture"), "Old parameter value must be replaced")
@@ -870,6 +879,8 @@ final class CherriEditorUITests: XCTestCase {
         if codeSegment.waitForExistence(timeout: 3) && codeSegment.isHittable {
             codeSegment.tap()
         }
+        XCTAssertTrue(waitForEditorValue(editor) { $0.utf16.elementsEqual(updatedSource.utf16) },
+                      "Rejected edit must preserve the exact source after returning to Code")
         let preservedVal = (editor.value as? String) ?? ""
         XCTAssertTrue(preservedVal.contains("VisualParamUpdated"), "Source must remain intact after rejected edit")
 
@@ -881,6 +892,8 @@ final class CherriEditorUITests: XCTestCase {
         if codeSegment.waitForExistence(timeout: 3) && codeSegment.isHittable {
             codeSegment.tap()
         }
+        XCTAssertTrue(waitForEditorValue(editor) { $0.utf16.elementsEqual(updatedSource.utf16) },
+                      "Reopened Code pane must expose the exact preserved source")
         let finalVal = (editor.value as? String) ?? ""
         XCTAssertTrue(finalVal.contains("VisualParamUpdated"), "Source must persist after reopening")
 
