@@ -71,9 +71,9 @@ func loopResultExplicitCoreDescriptor(action *ActionSchema) bool {
 	}
 	primary, identifier, wire, codec := "text", "gettext", "WFTextActionText", "text"
 	rawType, typeName := "text", "Text"
-	expectedType := types.Text
+	var expectedType types.Type = types.Text
 	outputName, rawOutput := "Text", "text"
-	expectedOutput := types.Text
+	var expectedOutput types.Type = types.Text
 	switch action.ID {
 	case "comment":
 		identifier, wire, codec = "comment", "WFCommentActionText", "token"
