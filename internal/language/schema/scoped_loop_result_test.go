@@ -138,3 +138,44 @@ func TestScopedMeasureExactLifecycleSchemaGuard(t *testing.T) {
 		})
 	}
 }
+
+func TestScopedMeasureLoopPlanVisitsOrdinaryNestedExpressions(t *testing.T) {
+	for name, expression := range map[string]string{
+		"count":  "count(measure(\"ordinary\"){[1,2]})",
+		"list":   "[measure(\"ordinary\"){1}]",
+		"binary": "measure(\"ordinary\"){1}+2",
+	} {
+		for _, mode := range []string{"ordinary", "with_loop"} {
+			t.Run(name+"/"+mode, func(t *testing.T) {
+				text := "let other=" + expression + "\nreturn 1"
+				if mode == "with_loop" {
+					text = "let values=repeat 2 {yield none}\nlet other=" + expression + "\nreturn count(values)"
+				}
+				program := scopedPlanProgram(t, text)
+				index := 0
+				if mode == "with_loop" {
+					index = 1
+				}
+				var call *syntax.CallExpr
+				switch e := program.Statements[index].(*syntax.BindingStmt).Value.(type) {
+				case *syntax.CallExpr:
+					call = e.PrimaryArg.(*syntax.CallExpr)
+				case *syntax.ListExpr:
+					call = e.Elements[0].(*syntax.CallExpr)
+				case *syntax.BinaryExpr:
+					call = e.Left.(*syntax.CallExpr)
+				default:
+					t.Fatal("fixture lost its nested expression")
+				}
+				plan := PlanLoopResultLocals(program, DefaultRegistry())
+				if mode == "ordinary" {
+					if plan != nil {
+						t.Fatal("ordinary values unexpectedly gained a cell plan")
+					}
+				} else if plan == nil || plan.ScopedBodies[call] != call.Block.Body {
+					t.Fatal("ordinary nested measure was omitted from the existing plan")
+				}
+			})
+		}
+	}
+}

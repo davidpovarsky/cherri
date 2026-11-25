@@ -1,12 +1,12 @@
 package lower
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -75,14 +75,46 @@ let result = measure("scope") {
 		mapValue.Entries[0].Value.(*syntax.IdentExpr).Name != "outside" {
 		t.Fatal("dictionary key/source reference changed")
 	}
-	found := false
+	var dictionary any
+	count := 0
 	for _, action := range l.workflow.Actions {
 		if action.AppleIdentifier == "is.workflow.actions.dictionary" {
-			found = strings.Contains(fmtScopedValue(action.Parameters), native)
+			dictionary = action.Parameters["WFItems"]
+			count++
 		}
 	}
-	if !found {
-		t.Fatal("Dictionary did not read its actual private native variable")
+	if count != 1 || !scopedDictionaryReferenceMatches(dictionary, native) {
+		t.Fatal("typed Dictionary lost its exact mutable source reference")
+	}
+	for _, fault := range []string{"wrong_variable", "wrong_reference_kind", "foreign_producer", "changed_key", "stringified_reference", "extra_scalar", "extra_entry"} {
+		t.Run(fault, func(t *testing.T) {
+			value := dictionary.(backend.SemanticValue)
+			value.DictVal = append([]backend.DictEntry(nil), value.DictVal...)
+			reference := *value.DictVal[0].Value.Ref
+			value.DictVal[0].Value.Ref = &reference
+			switch fault {
+			case "wrong_variable":
+				reference.ProducerName = "outside"
+			case "wrong_reference_kind":
+				reference.Kind = backend.RefActionResult
+			case "foreign_producer":
+				reference.ProducerID = "UNRELATED"
+			case "changed_key":
+				value.DictVal[0].Key = native
+			case "stringified_reference":
+				value.DictVal[0].Value = backend.SemanticValue{Kind: backend.ValString, StrVal: native}
+			case "extra_scalar":
+				value.StrVal = "UNRELATED"
+			case "extra_entry":
+				value.DictVal = append(value.DictVal, value.DictVal[0])
+			}
+			if scopedDictionaryReferenceMatches(value, native) {
+				t.Fatal("accepted " + fault)
+			}
+		})
+	}
+	if !scopedDictionaryReferenceMatches(dictionary, native) {
+		t.Fatal("causal mutation changed original evidence")
 	}
 	restore()
 	if !reflect.DeepEqual(l.bindings["outside"], outer) {
@@ -96,5 +128,12 @@ let result = measure("scope") {
 	}
 }
 
-// Keep graph inspection independent of the lowering encoder's map shape.
-func fmtScopedValue(value any) string { return fmt.Sprintf("%v", value) }
+func scopedDictionaryReferenceMatches(value any, native string) bool {
+	expected := backend.SemanticValue{Kind: backend.ValDict, DictVal: []backend.DictEntry{{
+		Key: "outside",
+		Value: backend.SemanticValue{Kind: backend.ValReference, Ref: &backend.Reference{
+			Kind: backend.RefMutableBinding, ProducerName: native,
+		}},
+	}}}
+	return reflect.DeepEqual(value, expected)
+}
