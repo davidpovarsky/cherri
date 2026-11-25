@@ -84,6 +84,22 @@ def extract_paginate_graph(actions, *, legacy):
     return graph, boundary
 
 
+def extract_header_paginate_graph(actions, *, legacy):
+    """Keep the actual authored Text producer while verifying the same macro body."""
+    assert isinstance(actions, list) and len(actions) > 1
+    producer = actions[0]
+    params = producer.get("WFWorkflowActionParameters", {})
+    assert producer.get("WFWorkflowActionIdentifier") == PREFIX + "gettext"
+    assert params.get("WFTextActionText") == "Bearer PAGINATE_SYNTHETIC_ONLY"
+    assert set(params) <= {"WFTextActionText", "UUID", "CustomOutputName"}
+    identity = params.get("UUID")
+    assert isinstance(identity, str) and identity
+    assert sum(action.get("WFWorkflowActionParameters", {}).get("UUID") == identity
+               for action in actions) == 1, "authored header producer identity changed"
+    body, boundary = extract_paginate_graph(actions[1:], legacy=legacy)
+    return [producer, *body], boundary
+
+
 class GuardStop(Exception):
     pass
 
@@ -124,12 +140,13 @@ def content_items(value):
 
 class PageServer:
     def __init__(self):
-        self.routes, self.requests = {}, []
+        self.routes, self.requests, self.request_headers = {}, [], []
         owner = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
                 owner.requests.append(self.path)
+                owner.request_headers.append({key.lower(): value for key, value in self.headers.items()})
                 status, body = owner.routes.get(self.path, (404, {"error": "synthetic missing page"}))
                 encoded = body.encode("utf-8") if isinstance(body, str) else json.dumps(body, ensure_ascii=False).encode("utf-8")
                 self.send_response(status)
@@ -170,6 +187,44 @@ class PaginateGraphModel(GraphModel):
             if not raw["Value"].get("attachmentsByRange"):
                 return Value("Text", raw["Value"]["string"])
         return super().value(raw)
+
+    def http_headers(self, raw):
+        # Only the native Text-valued HTTP dictionary used by these fixtures is
+        # modeled. Unknown wrappers/fields and unbound references fail closed.
+        assert isinstance(raw, dict) and set(raw) == {"WFSerializationType", "Value"}
+        assert raw["WFSerializationType"] == "WFDictionaryFieldValue"
+        value = raw["Value"]
+        assert isinstance(value, dict) and set(value) == {"WFDictionaryFieldValueItems"}
+        rows = value["WFDictionaryFieldValueItems"]
+        assert isinstance(rows, list)
+
+        def text(field):
+            if isinstance(field, str):
+                return field
+            assert isinstance(field, dict) and set(field) == {"WFSerializationType", "Value"}
+            assert field["WFSerializationType"] == "WFTextTokenString"
+            payload = field["Value"]
+            assert isinstance(payload, dict) and set(payload) <= {"string", "attachmentsByRange"}
+            assert isinstance(payload.get("string"), str)
+            refs = payload.get("attachmentsByRange", {})
+            assert isinstance(refs, dict)
+            assert len(refs) == payload["string"].count("\ufffc")
+            for ref in refs.values():
+                assert isinstance(ref, dict) and set(ref) <= {"Type", "OutputUUID", "OutputName"}
+                assert ref.get("Type") == "ActionOutput"
+                assert isinstance(ref.get("OutputUUID"), str) and ref["OutputUUID"] in self.outputs
+                if "OutputName" in ref:
+                    assert isinstance(ref["OutputName"], str) and ref["OutputName"]
+            return as_text(self.value(field))
+
+        headers = {}
+        for row in rows:
+            assert isinstance(row, dict) and set(row) == {"WFKey", "WFItemType", "WFValue"}
+            assert type(row["WFItemType"]) is int and row["WFItemType"] == 0
+            key = text(row["WFKey"])
+            assert key and key.lower() not in {prior.lower() for prior in headers}
+            headers[key] = text(row["WFValue"])
+        return headers
 
     def remember(self, value):
         if value.kind == "Dictionary":
@@ -273,13 +328,16 @@ class PaginateGraphModel(GraphModel):
                 assert p["WFHashType"] == "SHA256"
                 previous = Value("Text", hashlib.sha256(as_text(self.value(p["WFInput"])).encode("utf-8")).hexdigest())
             elif ident == "downloadurl":
-                assert p["WFHTTPMethod"] == "GET" and "WFHTTPHeaders" not in p and "WFHTTPBody" not in p
+                assert p["WFHTTPMethod"] == "GET"
+                assert set(p) <= {"WFURL", "WFHTTPMethod", "WFHTTPHeaders", "UUID", "CustomOutputName"}
+                headers = self.http_headers(p["WFHTTPHeaders"]) if "WFHTTPHeaders" in p else {}
                 url = as_text(self.value(p["WFURL"]))
                 # The oracle cannot contact an external endpoint, even after a
                 # causal mutation. This is a test boundary, not native behavior.
                 assert url.startswith(self.server.origin + "/"), "oracle forbids external network"
                 try:
-                    response = urllib.request.urlopen(url, timeout=5)
+                    request = urllib.request.Request(url, headers=headers, method="GET")
+                    response = urllib.request.urlopen(request, timeout=5)
                 except urllib.error.HTTPError as error:
                     response = error
                 with response:
@@ -355,8 +413,8 @@ def fingerprint():
     return digest.hexdigest()
 
 
-def inspect_graph(graph, server, routes, expected=None, requests=None, guard=None, body_error=False):
-    server.routes, server.requests = routes, []
+def inspect_graph(graph, server, routes, expected=None, requests=None, guard=None, body_error=False, *, headers=None):
+    server.routes, server.requests, server.request_headers = routes, [], []
     model = PaginateGraphModel(server)
     output = None
     observed_guard = None
@@ -374,6 +432,9 @@ def inspect_graph(graph, server, routes, expected=None, requests=None, guard=Non
         assert all(id(v) in model.source_dictionaries for v in output.data), "copied/coerced the original item reference"
         assert plain(output) == expected, "ordered typed values or cap changed"
     assert server.requests == requests, "unexpected native GET invocation sequence"
+    for observed in server.request_headers:
+        expected_headers = {} if headers is None else {key.lower(): value for key, value in headers.items()}
+        assert {key: observed[key] for key in ("authorization", "x-cherri-client") if key in observed} == expected_headers, "actual loopback request headers changed"
     return {"status": "PASS_MODEL", "requests": len(server.requests), "httpStatusesObservedByOracle": model.statuses,
             "returnedItems": None if output is None else len(output.data), "fixedGuard": observed_guard,
             "syntheticBodyDecodeFailure": body_error, "modelExecutedActions": model.executed}
@@ -430,6 +491,7 @@ def invoke_case(graph, server, case):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--report", default="docs/apple-runtime/p10r15/paginate-validation.json")
+    parser.add_argument("--output-dir", default="dist/p15-paginate", help="Isolated directory for original sources, compiler and unsigned roundtrip artifacts")
     args = parser.parse_args()
     destination = ROOT / args.report
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -437,7 +499,7 @@ def main():
     dirty = bool(checked(["git","status","--porcelain"],"source state").stdout.strip())
     before = fingerprint()
     destination.write_text('{"status":"RUNNING_SOURCE_VALIDATION","nativeExecuted":0}\n', encoding="utf-8")
-    output = ROOT/"dist/p15-paginate"
+    output = ROOT/args.output_dir
     output.mkdir(parents=True, exist_ok=True)
     exe = output/("cherri.exe" if os.name=="nt" else "cherri")
     started = time.monotonic()
@@ -451,20 +513,33 @@ def main():
         "item-cap": (3,2,"items","next"), "zero-pages": (0,6,"items","next"),
         "zero-items": (3,0,"items","next"), "custom": (3,6,"rows","after"),
         "thousand": (3,1000,"items","next"), "upper-limits": (100,10000,"items","next"),
+        "headers-literal": (3,6,"items","next"), "headers-dynamic": (3,6,"items","next"),
+        "headers-zero": (0,6,"items","next"),
     }
     with PageServer() as server:
         cases, item = scenarios(server.origin)
+        expected_headers = {"Authorization": "Bearer PAGINATE_SYNTHETIC_ONLY", "X-Cherri-Client": "Cherri-P15"}
         for legacy in (False,True):
             for profile in ("debug","release"):
                 for flavor, (pages,items,items_key,next_key) in flavors.items():
                     ident = f"{'legacy' if legacy else 'v2'}-{profile}-{flavor}"
                     source, target = output/(ident+".cherri"), output/(ident+".shortcut")
                     code = f'paginate("{server.origin}/entry.json", "{items_key}", "{next_key}", {pages}, {items})\n'
+                    if flavor.startswith("headers-"):
+                        auth = json.dumps(expected_headers["Authorization"])
+                        prelude = ""
+                        if flavor == "headers-dynamic":
+                            decl = "const" if legacy else "let"
+                            prelude = f'{decl} authorization = text({auth})\n'
+                            auth = '"{authorization}"' if legacy else "authorization"
+                        fields = '{"Authorization": ' + auth + ', "X-Cherri-Client": "Cherri-P15"}'
+                        code = prelude + f'paginate("{server.origin}/entry.json", "{items_key}", "{next_key}", {pages}, {items}, {fields})\n'
                     source.write_bytes(code.encode())
                     command = [exe,"compile",source,"-o",target,"--skip-sign","--no-ansi","--build-profile",profile]+(["--legacy"] if legacy else [])
                     checked(command,ident)
                     graph = plistlib.loads(target.read_bytes())["WFWorkflowActions"]
-                    macro_graph, main_boundary = extract_paginate_graph(graph, legacy=legacy)
+                    extractor = extract_header_paginate_graph if flavor == "headers-dynamic" else extract_paginate_graph
+                    macro_graph, main_boundary = extractor(graph, legacy=legacy)
                     imported, rebuilt = output/(ident+"-import.cherri"), output/(ident+"-rebuilt.shortcut")
                     checked([exe,"import",target,"--mode=v2","--lossless","-o",imported], ident+" lossless import")
                     checked([exe,"compile",imported,"-o",rebuilt,"--skip-sign","--no-ansi"], ident+" rebuild")
@@ -473,9 +548,12 @@ def main():
                     if flavor == "base":
                         for case_name, case in cases.items():
                             models[case_name] = invoke_case(macro_graph,server,case)
-                    elif flavor in {"zero-pages","zero-items"}:
+                    elif flavor in {"zero-pages","zero-items","headers-zero"}:
                         models["zero-network"] = inspect_graph(macro_graph,server,{"/entry.json":(200,{"items":[item]})},[],[])
                         assert len(macro_graph)==3 and len(graph)==(3 if legacy else 4)
+                    elif flavor in {"headers-literal", "headers-dynamic"}:
+                        route, expected, paths, _, _ = cases["three-pages-middle-empty"]
+                        models["exact-request-headers-three-pages"] = inspect_graph(macro_graph, server, route, expected, paths, headers=expected_headers)
                     elif flavor == "page-cap":
                         route = cases["three-pages-middle-empty"][0]
                         models["one-request"] = inspect_graph(macro_graph,server,route,[item,{"id":2}],["/entry.json"])
@@ -556,6 +634,44 @@ def main():
                 raise AssertionError("causal fault not rejected: "+name)
             invoke_case(base,server,cases[case_name])
             faults.append({"id":name,"negativeRejected":True,"restoredControl":"PASS"})
+        header_graph = graphs[(False, "debug", "headers-dynamic")]
+        route, expected, paths, _, _ = cases["three-pages-middle-empty"]
+        for fault in ("drop-headers", "wrong-wrapper", "drop-field", "duplicate-field", "changed-authored-value", "orphan-reference", "request-body"):
+            broken = copy.deepcopy(header_graph)
+            request = params(broken, "downloadurl")[0]
+            if fault == "drop-headers":
+                del request["WFHTTPHeaders"]
+            elif fault == "wrong-wrapper":
+                request["WFHTTPHeaders"]["WFSerializationType"] = "WFTextTokenAttachment"
+            elif fault in {"drop-field", "duplicate-field"}:
+                fields = request["WFHTTPHeaders"]["Value"]["WFDictionaryFieldValueItems"]
+                if fault == "drop-field":
+                    fields.pop()
+                else:
+                    fields.append(copy.deepcopy(fields[0]))
+            elif fault == "changed-authored-value":
+                broken[0]["WFWorkflowActionParameters"]["WFTextActionText"] = "OTHER_SYNTHETIC_VALUE"
+            elif fault == "orphan-reference":
+                def corrupt(value):
+                    if isinstance(value, dict):
+                        if value.get("Type") == "ActionOutput":
+                            value["OutputUUID"] = "MISSING_HEADER_PRODUCER"
+                        for child in value.values():
+                            corrupt(child)
+                    elif isinstance(value, list):
+                        for child in value:
+                            corrupt(child)
+                corrupt(request["WFHTTPHeaders"])
+            else:
+                request["WFRequestVariable"] = "UNRELATED_BODY"
+            try:
+                inspect_graph(broken, server, route, expected, paths, headers=expected_headers)
+            except (AssertionError, KeyError, TypeError, ValueError):
+                pass
+            else:
+                raise AssertionError("header causal fault not rejected: " + fault)
+            inspect_graph(header_graph, server, route, expected, paths, headers=expected_headers)
+            faults.append({"id": "headers-" + fault, "negativeRejected": True, "restoredControl": "PASS"})
     bad_sources={
         "file-scheme":'paginate("file:///private/example")',
         "userinfo":'paginate("https://user:pass@example.invalid/one")',
@@ -593,7 +709,8 @@ def main():
         "scope":["literal bounded GET body-next traversal","typed original Dictionary item references in order",
                  "maxPages native GET invocations; zero budgets emit no GET","maxItems bounded returned prefix",
                  "exact resolved URL spelling SHA256 cycle prevention","fixed diagnostics omit URLs/body/header data",
-                 "same-origin absolute next URL or simple sibling filename; no network auth/header API"],
+                 "same-origin absolute next URL or simple sibling filename",
+                  "optional native HTTP header dictionary, literal and authored dynamic Text leaves; actual loopback request observation"],
         "unsupported":["HTTP status success verification","Link headers/page/offset/cursor expression/trailing block API",
                        "retry/backoff/catch/cancellation/error classification","transport timeout/redirect cap",
                        "strict external JSON array-vs-scalar validation","unbounded/general authenticated pagination"],
