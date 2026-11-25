@@ -7,7 +7,7 @@ import (
 
 func p15CacheCapturedSource(legacy bool, ttl int) string {
 	if legacy {
-		return fmt.Sprintf("#define version 27\n@counter=0\nconst first=cache(\"P15_SCALAR_KEY\",%d){\n@counter=1\nconst counter=9\ntext(\"P15_CACHE_BODY_ONCE\")\nyield counter\n}\n@counter=2\nconst second=cache(\"P15_SCALAR_KEY\",%d){\n@counter=3\ntext(\"P15_CACHE_BODY_ONCE\")\nyield 9\n}\ngetVariable(@counter)\n", ttl, ttl)
+		return fmt.Sprintf("#define version 27\n@counter = 0\nconst first = cache(\"P15_SCALAR_KEY\",%d){\n@counter = 1\nconst counter = 9\ntext(\"P15_CACHE_BODY_ONCE\")\nyield counter\n}\n@counter = 2\nconst second = cache(\"P15_SCALAR_KEY\",%d){\n@counter = 3\ntext(\"P15_CACHE_BODY_ONCE\")\nyield 9\n}\ngetVariable(@counter)\n", ttl, ttl)
 	}
 	return fmt.Sprintf("shortcut \"cache captures\" {version:\"27\"}\nvar counter=0\nlet first=cache(key:\"P15_SCALAR_KEY\",ttl:%d){counter=1\nlet counter=9\ntext(\"P15_CACHE_BODY_ONCE\")\nyield counter}\ncounter=2\nlet second=cache(key:\"P15_SCALAR_KEY\",ttl:%d){counter=3\ntext(\"P15_CACHE_BODY_ONCE\")\nyield 9}\nreturn counter", ttl, ttl)
 }
