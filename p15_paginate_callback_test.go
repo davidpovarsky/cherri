@@ -265,7 +265,7 @@ func p15PageCallbackGraphError(actions []ShortcutAction, tc p15PageCallbackCase,
 		if end <= entry || end+2 >= len(actions) || !reflect.DeepEqual(g.regions[end], g.regions[entry]) {
 			return fmt.Errorf("body result escaped its lexical page region")
 		}
-		if actions[end+1].WFWorkflowActionIdentifier != "is.workflow.actions.wait" || fmt.Sprint(actions[end+1].WFWorkflowActionParameters["WFDelayTime"]) != "0" {
+		if actions[end+1].WFWorkflowActionIdentifier != "is.workflow.actions.delay" || fmt.Sprint(actions[end+1].WFWorkflowActionParameters["WFDelayTime"]) != "0" {
 			return fmt.Errorf("body Void effect changed")
 		}
 		if actions[end+2].WFWorkflowActionIdentifier != "is.workflow.actions.nothing" || len(actions[end+2].WFWorkflowActionParameters) != 0 {
