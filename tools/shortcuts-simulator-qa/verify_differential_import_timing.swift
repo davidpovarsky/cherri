@@ -195,15 +195,17 @@ enum QADifferentialImportTimingContracts {
             let state = policy.observeDispatch(try encoded(fields), now: at(now))
             return policy.libraryDecision(after: state, addTappedAt: at(add), now: at(now))
         }
+        // The oracle is the exact decoded UTC instant, not a second floating-point addition.
+        let delayedLibraryDeadline = formatter.date(from: "2026-11-25T16:49:07.639Z")!
         var libraryDelayed = QADifferentialImportTiming(searchStartedAt: at(0.098))
         require(try library(&libraryDelayed, pending, add: 2.912, now: 34.392)
                 == .inspect(deadline: at(60), canConfirm: false),
                 "library inspection at original failure time retains the pending60s delivery budget")
         require(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 38)
-                == .inspect(deadline: at(67.639), canConfirm: true),
+                == .inspect(deadline: delayedLibraryDeadline, canConfirm: true),
                 "actual37.639s delivery anchors full30s library observation")
         require(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 67.638)
-                == .inspect(deadline: at(67.639), canConfirm: true),
+                == .inspect(deadline: delayedLibraryDeadline, canConfirm: true),
                 "repeated library observations do not extend actual delivery deadline")
         require(!(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 67.639)).canConfirm,
                 "library confirmation is forbidden at the exact30s deadline")
