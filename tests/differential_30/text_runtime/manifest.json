@@ -53,7 +53,7 @@
         "terminal": "output",
         "external_side_effects": false
       },
-      "notes": "Mutable Text drives splitText and getURLs. Action outputs drive separator/glue, three change-case calls and host extraction. No openURL, expandURL, network, spellchecker or dialogs."
+      "notes": "Mutable Text drives splitText and getURLs. Action outputs drive separator/glue, three change-case calls and host extraction. No openURL, expandURL, network, spellchecker or dialogs. Upstream generic list-item results are explicitly materialized as Text in all three sources before Text consumers; oracle unchanged."
     }
   ]
 }

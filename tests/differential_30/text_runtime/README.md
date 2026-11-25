@@ -31,10 +31,10 @@ action.
 |---|---|
 | splitText text | Mutable Variable sample |
 | splitText separator | Text ActionOutput containing comma |
-| uppercase/lowercase/capitalize text | Get List Item ActionOutput |
+| uppercase/lowercase/capitalize text | Text ActionOutput preserving Get List Item |
 | joinText glue | Text ActionOutput containing double colon |
 | getURLs input | Mutable Variable linkText |
-| getURLDetail url | Get List Item ActionOutput containing the detected URL |
+| getURLDetail url | Text ActionOutput preserving the detected URL item |
 
 The primary joinText input is a list and must retain its attachment encoding.
 The other listed slots are declared Text and have Apple VariableString native
@@ -59,3 +59,28 @@ actual source/binary hashes. The native owner signs untouched compiler bytes,
 imports the three unique names and requires fresh callback identity, exact raw
 UTF-8 SHA-256, byte length and result summary. No native status is inferred from
 structural equality.
+
+## Common-language source revision
+
+Initial fixture/oracle commit `9e6de5f5c85ceac295c15c1ecef3603561102370`
+was preserved and compiled. Both fork frontends accepted it; pristine upstream
+98d5191 rejected the direct generic `getFirstItem()` result supplied to a Text
+parameter. Its actual diagnostic and exact source copies remain in the external
+`text-runtime/candidate-3ec9e5ed/` receipt.
+
+All three source lanes now insert explicit Text interpolation producers for the
+first item, last item and detected URL item before the corresponding Text
+consumers. This adapts the fixture to upstream's existing type contract while
+preserving every value and all eight targeted dynamic parameter slots. The
+independently committed 53-byte oracle is unchanged. The original and fork
+Legacy source bodies still differ only in their declared workflow name.
+
+`verify_contract.py` uses captured Apple VariableString/Variable state samples,
+checks each source producer or mutable initializer edge, checks the three Text
+materialization edges, and retains a separate attachment control for join's
+primary list input. It reads compiler-produced artifacts without modifying them:
+
+    python3 -B tests/differential_30/text_runtime/verify_contract.py RUN_DIR --out REPORT.json
+
+The earlier source and each later source revision use separate evidence output
+directories; no prior compiler failure or baseline is overwritten.

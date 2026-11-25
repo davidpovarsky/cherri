@@ -5,8 +5,10 @@
 @sample = "alpha,BETA"
 const separator = text(",")
 const parts = splitText(@sample, separator)
-const first = getFirstItem(parts)
-const last = getLastItem(parts)
+const firstItem = getFirstItem(parts)
+const lastItem = getLastItem(parts)
+const first = "{firstItem}"
+const last = "{lastItem}"
 const upper = uppercase(first)
 const lower = lowercase(last)
 const title = capitalize(first)
@@ -14,6 +16,7 @@ const glue = text("::")
 const joined = joinText(parts, glue)
 @linkText = "https://example.org/path"
 const urls = getURLs(@linkText)
-const firstURL = getFirstItem(urls)
+const firstURLItem = getFirstItem(urls)
+const firstURL = "{firstURLItem}"
 const host = getURLDetail(firstURL, "Host")
 output("CHERRI_QA_41|{upper}:{lower}:{title}:{joined}:{host}")
