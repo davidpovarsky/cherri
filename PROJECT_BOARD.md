@@ -345,3 +345,9 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 
 - K13 is already installed, so the original pre-K13 stage hashes and wrapper transforms cannot be applied directly to live scripts. The successor path pins the prior stage receipt, verifies all ten live protected/toolchain files and the active tuple, and reuses hash-bound original wrapper templates. It preserves all existing release gates and writes only an inactive candidate.
 - Actual 38-method Python baseline/containment/promotion suite and read-only installed K13 input replay passed. [Scope and original receipts](docs/language-v2/p15-remote-successor-stage-20261125.md). Final source/docs pins, 39 entrypoints, 58 signing faults and installed promotion remain separate.
+
+## 2026-11-25 — S627c / D16 consumer candidate
+
+- The candidate Skill pins compiler `627c3e7eb4a54a0364b5a5563db89291fa953b97` and Docs `428f067090bf54f4d2f214c36951689dd599d153` together. D16 CI [45532536498](https://github.com/davidpovarsky/cherrilang.org/actions/runs/45532536498) passed 40 executable/diagnostic examples, original reference generation/check and the built-site gates; 524 reference signatures/fragments remain explicitly unexecuted.
+- Skill guidance now states the bounded local List/Optional alias contract and unsupported joins. Immutable source hashes distinguish this delivery while existing language, schema and Skill versions remain stable.
+- The runtime pair, installed Skill and RemoteBuilder successor are still pending their actual source/package/39-entrypoint/58-signing qualification and rollout cycle at this source checkpoint. Documentation CI does not grant those results or full179 acceptance.

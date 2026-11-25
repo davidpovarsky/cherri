@@ -160,6 +160,19 @@ fail-closed whole-workflow verification with per-action/region `native.action` /
 `rawAction` fallback; `--fidelity=semantic` remains best-effort); a plist
 structure Cherri cannot represent must be reported, not silently dropped.
 
+## Local loop values and mutable aliases
+
+For a loop that yields nested Lists or Optional values, consult the pinned
+Language Guide before choosing a representation. The current V2 compiler admits
+a bounded local flow through immutable `let` producers, `count`, checked indexing
+and `for` consumers. A mutable alias needs an explicit exact `List<T>` type;
+straight-line reassignment must read an immutable producer or snapshot of the
+same type, with a supported consumer for every reaching version. Branch or loop
+writes, mutable right-hand-side aliases and arbitrary representation joins are
+still rejected. Do not widen to `AnyContent`, flatten a nested value, or replace
+absence with `false`, zero or empty text to suppress `E_TARGET_VALUE_SHAPE`.
+Successful compilation alone does not establish signed Apple runtime behavior.
+
 ## Debug logging and native object previews
 
 In the Cherri compiler, `debugLog()` (and `debugLogPrevious()`) captures the
