@@ -155,9 +155,11 @@ class ImportRestartTests(unittest.TestCase):
     def test_restart_is_explicit_and_targets_only_selected_shortcuts_app(self):
         result = self.run_case(restart=True)
         self.assertEqual(result["exit"], 0)
+        self.assertEqual(result["calls"][1][0], ["xcrun", "simctl", "launch", "--terminate-running-process",
+                                                "synthetic-simulator", "org.cherrilang.qa.Receiver"])
         operations = [argv[2] for argv, _ in result["calls"]]
-        self.assertEqual(operations, ["get_app_container", "openurl", "terminate", "openurl"])
-        self.assertEqual(result["calls"][2][0],
+        self.assertEqual(operations, ["install", "launch", "get_app_container", "openurl", "terminate", "openurl"])
+        self.assertEqual(result["calls"][4][0],
                          ["xcrun", "simctl", "terminate", "synthetic-simulator", "com.apple.shortcuts"])
         self.assertEqual(result["calls"][-1][1], 60)
         self.assertTrue(result["summary"]["restartShortcutsAfterImport"])
@@ -166,7 +168,7 @@ class ImportRestartTests(unittest.TestCase):
         self.assertEqual(len(result["restart_receipts"]), 1)
         self.assertEqual(result["restart_receipts"][0], result["rows"][0]["restartReceipt"])
 
-    def test_default_never_terminates_app(self):
+    def test_default_never_terminates_shortcuts_app(self):
         result = self.run_case()
         self.assertEqual(result["exit"], 0)
         self.assertNotIn("terminate", [argv[2] for argv, _ in result["calls"]])
@@ -176,14 +178,14 @@ class ImportRestartTests(unittest.TestCase):
     def test_unverified_import_never_terminates_or_runs(self):
         result = self.run_case(restart=True, import_outcome="IMPORT_NOT_FOUND")
         self.assertEqual(result["exit"], 1)
-        self.assertEqual([argv[2] for argv, _ in result["calls"]], ["get_app_container", "openurl"])
+        self.assertEqual([argv[2] for argv, _ in result["calls"]], ["install", "launch", "get_app_container", "openurl"])
         self.assertEqual(result["rows"][0]["status"], "IMPORT_FAILED")
         self.assertEqual(result["restart_receipts"], [])
 
     def test_failed_termination_is_retained_without_runtime_fallback(self):
         result = self.run_case(restart=True, restart_error=True)
         self.assertEqual(result["exit"], 1)
-        self.assertEqual([argv[2] for argv, _ in result["calls"]], ["get_app_container", "openurl", "terminate"])
+        self.assertEqual([argv[2] for argv, _ in result["calls"]], ["install", "launch", "get_app_container", "openurl", "terminate"])
         self.assertEqual(result["rows"][0]["status"], "SHORTCUTS_RESTART_FAILED")
         self.assertEqual(result["summary"]["fatal"], "synthetic termination failure")
         self.assertEqual(result["restart_receipts"][0]["outcome"], "FAILED")

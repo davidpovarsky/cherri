@@ -94,6 +94,19 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                                        env=env, start_new_session=True)
             atomic_json(directory / "process.json", {"pid": process.pid, "command": args})
             wait_file(directory / "ready.json", 120, process)
+            # Xcode may retain an older dependent app when its main debug stub
+            # is unchanged. Install this build explicitly before fresh launch.
+            receiver_app = derived / "Build/Products/Debug-iphonesimulator/CherriSimulatorQAReceiver.app"
+            install_command = ["xcrun", "simctl", "install", simulator, str(receiver_app)]
+            command(install_command, timeout=90)
+            atomic_json(directory / "receiver-install.json",
+                        {"command": install_command, "outcome": "INSTALLED"})
+            receiver_command = ["xcrun", "simctl", "launch", "--terminate-running-process",
+                                simulator, "org.cherrilang.qa.Receiver"]
+            receiver_launch = command(receiver_command, timeout=60)
+            atomic_json(directory / "receiver-launch.json",
+                        {"command": receiver_command, "outcome": "LAUNCHED_FRESH",
+                         "output": receiver_launch})
             container = Path(command(["xcrun", "simctl", "get_app_container",
                                       simulator, "org.cherrilang.qa.Receiver", "data"]))
             callbacks_path = container / "Documents/callback-events.json"
