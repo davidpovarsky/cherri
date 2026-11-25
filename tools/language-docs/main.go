@@ -170,7 +170,7 @@ func buildSignature(a *schema.ActionSchema) string {
 	}
 	block := ""
 	if a.ScopedBlock {
-		block = " { <#value#> }"
+		block = " { <#body#> }"
 	}
 	return fmt.Sprintf("%s(%s)%s%s", a.CallableName, strings.Join(parts, ", "), block, ret)
 }
@@ -201,13 +201,10 @@ func writeCompilerMacros(b *strings.Builder, reg *schema.Registry) {
 	b.WriteString("## Compiler macros\n\n")
 	fmt.Fprintf(b, "**Compiler Macro Fingerprint:** \x60%s\x60\n\n", reg.CompilerMacroFingerprint())
 	fmt.Fprintf(b, "**Compiler Macros:** %d\n\n", len(macros))
-	b.WriteString("These compiler expansions are listed separately from the native Apple catalog. Signatures below describe V2 named arguments; existing Legacy positional forms remain available unless a scoped block is required. A metadata entry does not certify Apple runtime behavior.\n\n")
+	b.WriteString("These compiler expansions are listed separately from the native Apple catalog. Signatures below describe V2 named arguments; Legacy uses its existing positional forms. Each scoped construct describes its supported dialects and body result below. A metadata entry does not certify Apple runtime behavior.\n\n")
 	b.WriteString("Build profile \x60--build-profile=debug|release\x60 defaults to debug. Release removes explicitly diagnostic expansions, preserves body effects and semantic guards, and rejects consumed diagnostic outputs.\n\n")
 	for _, m := range macros {
 		fmt.Fprintf(b, "### \x60%s\x60\n\n%s\n\n", m.CallableName, m.Docs.Description)
-		if m.ScopedBlock {
-			b.WriteString("**Dialect:** V2 scoped block. Legacy rejects this syntax with E_V2_SCOPED_BLOCK. The current block contract is one inline value with no block parameters.\n\n")
-		}
 		fmt.Fprintf(b, "\x60\x60\x60cherri\n%s\n\x60\x60\x60\n\n", buildSignature(m))
 		if len(m.Parameters) > 0 {
 			b.WriteString("| Parameter | Type | Optional | Literal required | Default |\n|---|---|---|---|---|\n")
