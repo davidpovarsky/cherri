@@ -144,7 +144,7 @@ func (b *scopedCacheEmitter) math(value *Reference, operation string, operand an
 }
 func (b *scopedCacheEmitter) when(value *Reference, code int, comparison any, kind ConditionOperandType, body func()) {
 	group := b.nextID()
-	b.add("conditional", BuildIfStartTyped(group, map[string]any{"Type": "Variable", "Variable": cacheReference(value)}, code, comparison, nil, kind, true))
+	b.add("conditional", BuildIfStartTyped(group, cacheReference(value), code, comparison, nil, kind, true))
 	body()
 	b.add("conditional", BuildIfEnd(group, ""))
 }
