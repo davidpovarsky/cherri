@@ -3,6 +3,8 @@ import copy
 import hashlib
 from pathlib import Path
 
+from native_comparison_graph import verify_equality_region
+
 FIXTURE_ID = "qa-native-boundary-diagnostic-v2"
 SAMPLE_ID = "qa-native-boundary-diagnostic"
 SOURCE_SHA256 = '30f7ea3431a917b4b8f73b200ef113fd833cd0e522f9932b1a714e53bfd4e8dd'
@@ -170,26 +172,26 @@ def verify_graph(fid, actions):
         require(len(rows) == 2, "exact conditional assignment pair " + variable)
         return rows
 
-    def flag(variable, source, rhs=None, rhs_source=None, numeric=False):
+    def flag(variable, source, rhs=None, rhs_source=None, numeric=False, dynamic=False):
         (first, init), (second, changed) = assignments(variable)
-        require(first > 0 and second == first + 3 and second + 1 < len(actions),
+        require(first > 0 and second >= first + 3 and second + 1 < len(actions),
                 "single comparison controls flag " + variable)
         for i, action, literal in ((first, init, "N"), (second, changed, "Y")):
             require(kind(actions[i - 1], "gettext") and p(actions[i - 1]).get("WFTextActionText") == literal,
                     "fail-closed flag literals")
             edge(p(action).get("WFInput"), actions[i - 1])
-        condition, end = actions[first + 1], actions[second + 1]
+        condition_index = second - 2
+        condition, end = actions[condition_index], actions[second + 1]
         require(kind(condition, "conditional") and p(condition).get("WFControlFlowMode") == 0
-                and p(condition).get("WFCondition") == 4 and kind(end, "conditional")
-                and p(end).get("WFControlFlowMode") == 2 and bool(p(condition).get("GroupingIdentifier"))
+                and kind(end, "conditional") and p(end).get("WFControlFlowMode") == 2
+                and bool(p(condition).get("GroupingIdentifier"))
                 and p(condition)["GroupingIdentifier"] == p(end).get("GroupingIdentifier"),
                 "exact equal comparison region")
-        edge(p(condition).get("WFInput", {}).get("Variable"), source, numeric=numeric)
-        if rhs_source is not None:
-            string_edges(p(condition).get("WFConditionalActionString"), "\ufffc", [rhs_source])
-        else:
-            require(p(condition).get("WFNumberValue" if numeric else "WFConditionalActionString") == rhs,
-                    "independent literal comparison")
+        require([i for i, action in enumerate(actions)
+                 if p(action).get("GroupingIdentifier") == p(condition)["GroupingIdentifier"]]
+                == [condition_index, second + 1], "flag has exactly one guarded arm")
+        verify_equality_region(actions, first + 1, condition_index, source, require=require,
+                               right=rhs, right_source=rhs_source, numeric=numeric, dynamic=dynamic)
     for _, variable, left, right, _ in TYPE_FLAGS:
         flag(variable, values[left], rhs_source=values[right])
 
@@ -265,8 +267,8 @@ def verify_graph(fid, actions):
         values["boundary" + name + "Length"] = length
         flag("boundary" + name + "Matches", raw, rhs=BINDING_BASE64)
     flag("boundaryNumIsOne", number, rhs=1, numeric=True)
-    flag("boundaryClipInitial", clip, rhs="clip_initial")
-    flag("boundaryAliasInitial", clip, rhs="clip_initial")
+    flag("boundaryClipInitial", clip, rhs="clip_initial", dynamic=True)
+    flag("boundaryAliasInitial", clip, rhs="clip_initial", dynamic=True)
 
     _, trace = named("boundaryTrace", "gettext")
     _, summary = named("boundarySummary", "gettext")
@@ -364,4 +366,95 @@ def verify_causal_mutations(actions):
             rejected.append(mutation)
         else:
             raise AssertionError("damaged causal graph accepted: " + mutation)
+    return rejected + verify_exact_comparison_mutations(actions)
+
+
+def verify_exact_comparison_mutations(actions):
+    """Exercise each causal dependency on the real compiler-emitted graph."""
+    cases = ("exact-left-source", "exact-right-source", "exact-prefix",
+             "exact-escape-find", "exact-escape-replacement", "exact-escape-regex",
+             "exact-escape-case", "exact-match-case", "exact-anchors",
+             "exact-match-source", "exact-quote-bypass", "exact-count-unit",
+             "exact-count-source", "exact-predicate", "exact-cardinality",
+             "exact-true-arm", "exact-false-arm", "exact-result-bypass",
+             "exact-outer-predicate", "exact-unreviewed-action", "exact-native-downgrade")
+    rejected = []
+    for case in cases:
+        graph = copy.deepcopy(actions)
+        def p(action):
+            return action.get("WFWorkflowActionParameters", {})
+        def named(name):
+            return next(p(action) for action in graph if p(action).get("CustomOutputName") == name)
+        def single_ref(value):
+            return next(iter(value["Value"]["attachmentsByRange"].values()))
+        first, second = [i for i, action in enumerate(graph)
+                         if p(action).get("WFVariableName") == "boundaryArtifactIsFile"]
+        left = named("_n03_exact_left")
+        right = named("_n03_exact_right")
+        quote = named("_n03_exact_quote")
+        match = named("_n03_exact_match")
+        count = named("_n03_exact_count")
+        outer = p(graph[second - 2])
+        test_i = next(i for i, action in enumerate(graph)
+                      if p(action).get("WFInput", {}).get("Variable", {}).get("Value", {}).get("OutputUUID")
+                      == count["UUID"])
+        test = p(graph[test_i])
+        if case == "exact-left-source":
+            single_ref(left["WFTextActionText"])["OutputUUID"] = named("boundaryTextType")["UUID"]
+        elif case == "exact-right-source":
+            single_ref(right["WFTextActionText"])["OutputUUID"] = named("boundaryArtifactType")["UUID"]
+        elif case == "exact-prefix":
+            left["WFTextActionText"]["Value"]["string"] = "!\ufffc"
+        elif case == "exact-escape-find":
+            quote["WFReplaceTextFind"] = "E"
+        elif case == "exact-escape-replacement":
+            quote["WFReplaceTextReplace"] = ""
+        elif case == "exact-escape-regex":
+            quote["WFReplaceTextRegularExpression"] = True
+        elif case == "exact-escape-case":
+            quote["WFReplaceTextCaseSensitive"] = False
+        elif case == "exact-match-case":
+            match["WFMatchTextCaseSensitive"] = False
+        elif case == "exact-anchors":
+            match["WFMatchTextPattern"]["Value"]["string"] = "\\Q\ufffc\\E"
+        elif case == "exact-match-source":
+            single_ref(match["text"])["OutputUUID"] = right["UUID"]
+        elif case == "exact-quote-bypass":
+            single_ref(match["WFMatchTextPattern"])["OutputUUID"] = right["UUID"]
+        elif case == "exact-count-unit":
+            count["WFCountType"] = "Characters"
+        elif case == "exact-count-source":
+            count["Input"]["Value"]["OutputUUID"] = left["UUID"]
+        elif case == "exact-predicate":
+            test["WFCondition"] = 5
+        elif case == "exact-cardinality":
+            test["WFNumberValue"] = 2
+        elif case == "exact-true-arm":
+            p(graph[test_i + 1])["WFNumberActionNumber"] = 0
+        elif case == "exact-false-arm":
+            p(graph[test_i + 3])["WFNumberActionNumber"] = 1
+        elif case == "exact-result-bypass":
+            outer["WFInput"]["Variable"]["Value"]["OutputUUID"] = count["UUID"]
+        elif case == "exact-outer-predicate":
+            outer["WFCondition"] = 5
+        elif case == "exact-unreviewed-action":
+            graph.insert(first + 1, {"WFWorkflowActionIdentifier": "is.workflow.actions.nothing",
+                                     "WFWorkflowActionParameters": {}})
+        elif case == "exact-native-downgrade":
+            outer.pop("WFNumberValue")
+            outer["WFConditionalActionString"] = {
+                "WFSerializationType": "WFTextTokenString",
+                "Value": {"string": "\ufffc", "attachmentsByRange": {
+                    "{0, 1}": {"Type": "ActionOutput", "OutputUUID": named("boundaryBinaryType")["UUID"]}}}}
+            outer["WFInput"]["Variable"]["Value"] = {
+                "Type": "ActionOutput", "OutputUUID": named("boundaryArtifactType")["UUID"]}
+            del graph[first + 1:second - 2]
+        try:
+            verify_graph(FIXTURE_ID, graph)
+        except ValueError as error:
+            if "NATIVE_BOUNDARY_GRAPH_CONTRACT" not in str(error):
+                raise
+            rejected.append(case)
+        else:
+            raise AssertionError("damaged exact comparison accepted: " + case)
     return rejected

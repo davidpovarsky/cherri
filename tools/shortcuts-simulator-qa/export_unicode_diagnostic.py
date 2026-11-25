@@ -5,6 +5,8 @@ The independent native result remains the exact callback oracle.
 """
 import base64
 
+from native_comparison_graph import verify_equality_region
+
 FIXTURE_ID = "qa-export-unicode-diagnostic-v2"
 ORIGINAL = 'quote " backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET'
 ORIGINAL_BASE64 = "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU"
@@ -182,29 +184,27 @@ def validate_export_unicode_graph(fid, actions):
         require(a.get("WFControlFlowMode") == 0 and b.get("WFControlFlowMode") == 2
                 and a.get("GroupingIdentifier") == b.get("GroupingIdentifier")
                 and bool(a.get("GroupingIdentifier")), "unmatched conditional boundaries")
+        require([i for i, action in enumerate(actions)
+                 if params(action).get("GroupingIdentifier") == a["GroupingIdentifier"]] == [start, end],
+                "conditional has exactly one guarded arm")
         return a
 
     for label, variable, source, condition, kind, expected in FLAGS:
         assignments = writes(variable)
         require(len(assignments) == 2, "independent flag assignments " + label)
         first, second = (i for i, _ in assignments)
-        require(second == first + 3, "independent flag control flow " + label)
+        require(first > 0 and second >= first + 3 and second + 1 < len(actions),
+                "independent flag control flow " + label)
         literal_input(params(actions[first]).get("WFInput"), "N")
         literal_input(params(actions[second]).get("WFInput"), "Y")
-        cp = closed_condition(first + 1, second + 1)
-        require(cp.get("WFCondition") == condition, "flag operator " + label)
+        closed_condition(second - 2, second + 1)
         coercion = "WFNumberContentItem" if kind == "number" else (
             "WFStringContentItem" if source in ("status", "payloadValue") else None)
-        ref(cp.get("WFInput"), source, coercion)
-        if kind == "ref":
-            tv = string_value(cp.get("WFConditionalActionString"))
-            require(tv.get("string") == "\ufffc" and set(tv.get("attachmentsByRange", {})) == {"{0, 1}"},
-                    "flag comparison token " + label)
-            ref({"WFSerializationType": "WFTextTokenAttachment",
-                 "Value": tv["attachmentsByRange"]["{0, 1}"]}, expected)
-        else:
-            key = "WFNumberValue" if kind == "number" else "WFConditionalActionString"
-            require(cp.get(key) == expected, "flag expected value " + label)
+        verify_equality_region(actions, first + 1, second - 2, named(source)[1],
+                               require=require, right=expected if kind != "ref" else None,
+                               right_source=named(expected)[1] if kind == "ref" else None,
+                               numeric=kind == "number", coercion=coercion, operator=condition,
+                               dynamic=source in ("status", "payloadValue", "originalAfter"))
 
     for label, variable, source in WITNESSES:
         rp = linked(variable + "Raw", "base64encode", source)
