@@ -571,6 +571,13 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.TestNames = append([]string{}, f01RequiredTests...)
 			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL" || res.Passed
 		}
+		if row.ID == "BRG28" {
+			row.TestNames = append([]string(nil), previewNativeMethods...)
+			row.ProductionPath = append([]string(nil), previewNativeSourcePaths...)
+			row.PositiveAndNegative = res.Passed && res.Status == "PASSED" &&
+				hasLevel(res.ExecutedLevels, "integration") && hasLevel(res.ExecutedLevels, "ios-ui") && hasLevel(res.ExecutedLevels, "benchmark")
+			row.Scope = "Dedicated source-bound seven-method native Swift/C ABI and WebKit cohort, with exact document/context and bounded source-edit observations plus all sixty measured small/large/embedded-asset compile samples. Generic E07, bridge-only, portable-model and related-ID evidence supplies no BRG28 tier. No Shortcut runtime, in-C interruption or physical iPad performance claim."
+		}
 		applyFinalProvenanceAudit(&row, runner)
 		applyOwnedBaselineAudit(&row, runner)
 		applyTakeoverAudit(&row, runner)

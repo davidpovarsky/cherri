@@ -37,6 +37,12 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	if _, found := structuredValueScenarios[id]; found {
 		return
 	}
+	if id == "BRG28" {
+		for key, value := range previewNativeUIAssertions(id) {
+			reqUIAssertions[key] = value
+		}
+		return
+	}
 	// The joined RP41 scenario still needs its own actual rendered UI proof.
 	// Historical generic E07 metadata cannot supply that external tier.
 	if id == "RP41" {
@@ -143,7 +149,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "E06":
 		reqUIAssertions["utf16_spans_exact"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE06BidirectionalHebrewEmojiUI", "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew")
-	case "E07", "RP41", "BRG28":
+	case "E07", "RP41":
 		reqUIAssertions["visual_source_edit_bounded"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE07VisualParameterEditingCanvasUI", "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection")
 	case "BRG25", "BRG27":
@@ -790,6 +796,9 @@ func deriveRepairFixtures(id string) []string {
 }
 
 func deriveGateTestIDs(id, proposedPrefix string) []string {
+	if id == "BRG28" {
+		return previewNativeTestIDs(id)
+	}
 	if scenario, found := joinedPublicScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -885,7 +894,7 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 			"github.com/electrikmilk/cherri:TestDecompileStateIsolation",
 			"github.com/electrikmilk/cherri:TestDecompIncludeStateIsolation",
 		)
-	case "BRG14", "BRG15", "BRG28":
+	case "BRG14", "BRG15":
 		return append(base,
 			"github.com/electrikmilk/cherri:TestDecomp",
 			"github.com/electrikmilk/cherri:TestDecompileTextPartsKeepsEmptyCustomSeparator",
@@ -907,6 +916,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 }
 
 func deriveGateFixtures(id string) []string {
+	if id == "BRG28" {
+		return append([]string(nil), previewNativeSourcePaths...)
+	}
 	if _, found := joinedPublicScenarios[id]; found {
 		paths := joinedPublicSourcePaths(id)
 		for _, path := range joinedNativeSourcePaths {

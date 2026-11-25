@@ -1040,6 +1040,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateJoinedPublicRecord(reqID, rec, manifest); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validatePreviewNativeRecord(reqID, rec, manifest); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validatePublicFrontendRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -2021,6 +2024,12 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if g.ID == "BRG28" {
+			r.results[g.ID] = CaseResult{ID: g.ID, Group: "recovery_gate", Requirement: g.Title,
+				TestLevel: strings.Join(g.MinimumEvidenceTiers, "+"), Status: "NOT_RUN",
+				Detail: "Requires the dedicated source-bound seven-method iOS Build cohort: native document/context transaction, actual WebKit field editing and all sixty compile measurements. Generic E07, local graph tests and labels do not execute these native tiers."}
+			continue
+		}
 		if r.runJoinedPublicRequirement(g) {
 			continue
 		}
