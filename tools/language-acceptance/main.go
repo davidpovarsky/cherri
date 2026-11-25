@@ -168,6 +168,7 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
+	takeoverEvaluated            bool
 	baselineEvaluated            bool
 	artifactDir                  string
 	reg                          *schema.Registry
@@ -1074,6 +1075,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			}
 
 			if err := validateFinalProvenanceRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+			if err := validateTakeoverRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
 			if err := validateOwnedBaselineRecord(reqID, rec); err != nil {
@@ -2018,6 +2022,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runTakeoverRequirement(g.ID, g.Title) {
+			continue
+		}
 		if r.runParameterFormsRequirement(g) {
 			continue
 		}

@@ -563,6 +563,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		}
 		applyFinalProvenanceAudit(&row, runner)
 		applyOwnedBaselineAudit(&row, runner)
+		applyTakeoverAudit(&row, runner)
 		applyCIIdentityAudit(&row, runner)
 		applyPublicationSecurityAudit(&row, runner)
 		rows = append(rows, row)
