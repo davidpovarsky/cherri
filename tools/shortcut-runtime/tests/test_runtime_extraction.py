@@ -1071,6 +1071,121 @@ pathlib.Path(out_file).write_text(json.dumps(data))
         self.assertEqual(d["codePath"], "unimplemented")
 
 
+
+class TestDispositionEvidenceBoundaries(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.ask_id = "is.workflow.actions.ask"
+        cls.builtin_capture = REPO_ROOT / "docs/apple-runtime/macos-27/builtin-actions.json"
+        cls.ask_definition = json.loads(cls.builtin_capture.read_text())[cls.ask_id]
+
+    def comparison(self, definition, action_id=None, key="urlAnswer", emitted=None):
+        action_id = action_id or self.ask_id
+        if emitted is None:
+            emitted = ["WFAskActionDefaultAnswerURL"]
+        catalog = {"actions": [{
+            "name": "prompt", "shortcutIdentifier": action_id,
+            "parameters": [], "emittedKeys": emitted,
+        }]}
+        encodings = {"actionParameters": {action_id: [{"key": key}]}}
+        result = run_comparison(
+            catalog, builtin_defs_path={action_id: definition},
+            parameter_encodings_path=encodings, return_dispositions=True,
+        )
+        self.assertEqual(len(result[5]), 1)
+        return result[5][0]
+
+    def test_statistics_requires_actual_input_key(self):
+        captured = json.loads((REPO_ROOT / "docs/apple-runtime/macos-27/parameter-encodings.json").read_text())
+        native_keys = {row["key"] for row in captured["actionParameters"]["is.workflow.actions.statistics"]}
+        self.assertIn("Input", native_keys)
+        for declared, expected in [
+            ({"Input"}, "EXPOSED_PARAMETER"),
+            ({"WFInput"}, "OPEN_USER_PARAMETER"),
+            (set(), "OPEN_USER_PARAMETER"),
+        ]:
+            with self.subTest(declared=sorted(declared)):
+                actual = classify_parameter_disposition(
+                    "is.workflow.actions.statistics", "Input", declared, set(), set()
+                )
+                self.assertEqual(actual["disposition"], expected)
+
+    def test_hidden_prompt_url_is_bound_to_captured_overrides(self):
+        overrides = self.ask_definition["ParameterOverrides"]
+        self.assertIs(overrides["urlAnswer"]["Hidden"], True)
+        self.assertEqual(overrides["defaultURLAnswer"]["Key"], "WFAskActionDefaultAnswerURL")
+        actual = self.comparison(self.ask_definition)
+        self.assertEqual(actual["disposition"], "INTENTIONALLY_UNREPRESENTABLE_UI_METADATA")
+        self.assertIn("Hidden", actual["rationale"])
+        self.assertIn("WFAskActionDefaultAnswerURL", actual["rationale"])
+
+    def test_hidden_prompt_url_rejects_missing_or_foreign_evidence(self):
+        for fault in [
+            "no_definition", "missing_hidden", "false_hidden", "text_hidden", "numeric_hidden",
+            "missing_public_mapping", "wrong_public_mapping", "missing_catalog_emission",
+            "foreign_action", "foreign_key",
+        ]:
+            with self.subTest(fault=fault):
+                definition = json.loads(json.dumps(self.ask_definition))
+                action_id, key, emitted = self.ask_id, "urlAnswer", ["WFAskActionDefaultAnswerURL"]
+                overrides = definition["ParameterOverrides"]
+                if fault == "no_definition":
+                    definition = {}
+                elif fault == "missing_hidden":
+                    del overrides["urlAnswer"]["Hidden"]
+                elif fault == "false_hidden":
+                    overrides["urlAnswer"]["Hidden"] = False
+                elif fault == "text_hidden":
+                    overrides["urlAnswer"]["Hidden"] = "true"
+                elif fault == "numeric_hidden":
+                    overrides["urlAnswer"]["Hidden"] = 1
+                elif fault == "missing_public_mapping":
+                    del overrides["defaultURLAnswer"]
+                elif fault == "wrong_public_mapping":
+                    overrides["defaultURLAnswer"]["Key"] = "UnrelatedURL"
+                elif fault == "missing_catalog_emission":
+                    emitted = []
+                elif fault == "foreign_action":
+                    action_id = "is.workflow.actions.unreviewed"
+                elif fault == "foreign_key":
+                    key = "unreviewedURLAnswer"
+                actual = self.comparison(definition, action_id, key, emitted)
+                self.assertEqual(actual["disposition"], "OPEN_USER_PARAMETER")
+
+    def test_comparison_cli_reads_captured_builtin_overrides(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as td:
+            root = pathlib.Path(td)
+            evidence = root / "captured"
+            evidence.mkdir()
+            (evidence / "builtin-actions.json").write_text(json.dumps({self.ask_id: self.ask_definition}))
+            # The normalized snapshot preserves action identity, but not every
+            # original native override; the canonical raw capture supplies it.
+            (evidence / "apple-runtime-snapshot.json").write_text(json.dumps({
+                "actions": {self.ask_id: {"sources": ["builtinDefinition"], "metadata": {}}}
+            }))
+            (evidence / "parameter-encodings.json").write_text(json.dumps({
+                "actionParameters": {self.ask_id: [{"key": "urlAnswer"}]}
+            }))
+            catalog = root / "catalog.json"
+            catalog.write_text(json.dumps({"actions": [{
+                "name": "prompt", "shortcutIdentifier": self.ask_id,
+                "parameters": [], "emittedKeys": ["WFAskActionDefaultAnswerURL"],
+            }]}))
+            output = root / "comparison"
+            command = [sys.executable, "-B", str(RUNTIME_TOOL_DIR / "compare_cherri.py"),
+                       "--cherri-actions", str(catalog), "--runtime-evidence-dir", str(evidence),
+                       "--out-dir", str(output)]
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            dispositions = json.loads((output / "parameter-dispositions.json").read_text())
+            self.assertEqual(dispositions[0]["disposition"], "INTENTIONALLY_UNREPRESENTABLE_UI_METADATA")
+            self.assertEqual(json.loads((output / "parameter-surface-gaps.json").read_text()), [])
+            for artifact in output.iterdir():
+                raw = artifact.read_bytes()
+                self.assertNotIn(b"\n", raw.replace(b"\r\n", b""), artifact.name)
+
+
 if __name__ == "__main__":
     unittest.main()
 

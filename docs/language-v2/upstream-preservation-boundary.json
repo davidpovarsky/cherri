@@ -9,7 +9,7 @@
   },
   "action_file_count": 25,
   "additional_preserved_file": "stdfunc.cherri",
-  "scope": "Current repository declaration boundary: all25 Legacy declaration files remain build-time inputs; inherited fork changes are explicitly distinguished from upstream equality. Since the user-specified continuation base, only two independently reviewed duplicate-parameter-label corrections differ; no syntax conversion or mechanical mass rewrite is admitted. Does not establish B01/BRG01, signing/privacy, native runtime or final release.",
+  "scope": "Current repository declaration boundary: all25 Legacy declaration files remain build-time inputs; inherited fork changes are explicitly distinguished from upstream equality. Since the user-specified continuation base, only two independently reviewed duplicate-parameter-label corrections and the reviewed native statistics input-key correction differ; all four historical baseline byte identities remain unchanged. No syntax conversion or mechanical mass rewrite is admitted. Does not establish B01/BRG01, signing/privacy, native runtime or final release.",
   "files": [
     {
       "path": "actions/a11y.cherri",
@@ -331,9 +331,15 @@
           "sha256": "c8bd38d21c92a22b9b0e544f3230aacc3333f7819db36f7c49dab8a15e034f92"
         }
       },
-      "continuation_class": "unchanged",
+      "continuation_class": "parameter-wire-key-correction",
       "upstream_identical": false,
-      "language_baseline_identical": false
+      "language_baseline_identical": false,
+      "reviewed_patch": {
+        "before": "action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')",
+        "after": "action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')",
+        "reason": "Correct the inherited native statistics input key using captured WorkflowKit metadata and independent differential native results in docs/apple-runtime/statistics-input-20261125/README.md. Preserve the operation enum, action identifier, source parameter labels, types, order and every other declaration byte."
+      },
+      "implementation_commit": "d8c2387db6f429c80d161000b19ce6ebb4194311"
     },
     {
       "path": "actions/media.cherri",

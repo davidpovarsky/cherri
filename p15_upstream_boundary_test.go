@@ -62,16 +62,38 @@ type p15U01Snapshot struct {
 	Status     []byte
 }
 
-// This independent allowlist is the reviewed two-token source correction,
-// not an automatically learned diff from the current checkout.
-func p15U01AllowedPatch(path string) (string, string, bool) {
+// These exact patches are independently reviewed source corrections, not a
+// diff learned from the current checkout. The later statistics correction is
+// also checked against the unchanged recorded_source bytes.
+type p15U01Correction struct {
+	Before               string
+	After                string
+	Class                string
+	ImplementationCommit string
+	AfterRecordedSource  bool
+}
+
+func p15U01AllowedPatch(path string) (p15U01Correction, bool) {
 	switch path {
 	case "actions/device.cherri":
-		return "text ?startTime: 'endTime'", "text ?endTime: 'endTime'", true
+		return p15U01Correction{
+			Before: "text ?startTime: 'endTime'", After: "text ?endTime: 'endTime'",
+			Class: "parameter-label-correction", ImplementationCommit: "dc86a87de5cd6b2f2e795236ac1fa25e28853ade",
+		}, true
 	case "actions/location.cherri":
-		return "text addressLine2: 'WFAddressLine1'", "text addressLine1: 'WFAddressLine1'", true
+		return p15U01Correction{
+			Before: "text addressLine2: 'WFAddressLine1'", After: "text addressLine1: 'WFAddressLine1'",
+			Class: "parameter-label-correction", ImplementationCommit: "dc86a87de5cd6b2f2e795236ac1fa25e28853ade",
+		}, true
+	case "actions/math.cherri":
+		return p15U01Correction{
+			Before: "action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')",
+			After:  "action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')",
+			Class:  "parameter-wire-key-correction", ImplementationCommit: "d8c2387db6f429c80d161000b19ce6ebb4194311",
+			AfterRecordedSource: true,
+		}, true
 	default:
-		return "", "", false
+		return p15U01Correction{}, false
 	}
 }
 
@@ -217,27 +239,34 @@ func p15U01Validate(manifest p15U01Manifest, snapshot p15U01Snapshot) error {
 			}
 		}
 		recorded := snapshot.Historical[p15U01Baselines["recorded_source"]+":"+file.Path]
-		if !bytes.Equal(current, recorded) {
+		var correction, corrected = p15U01AllowedPatch(file.Path)
+		var expectedRecorded = recorded
+		if corrected && correction.AfterRecordedSource {
+			if bytes.Count(recorded, []byte(correction.Before)) != 1 {
+				return fmt.Errorf("reviewed correction is not anchored in recorded source: %s", file.Path)
+			}
+			expectedRecorded = bytes.Replace(recorded, []byte(correction.Before), []byte(correction.After), 1)
+		}
+		if !bytes.Equal(current, expectedRecorded) {
 			return fmt.Errorf("current declaration has an unreviewed source change: %s", file.Path)
 		}
 		if file.UpstreamIdentical != bytes.Equal(current, snapshot.Historical[p15U01Baselines["upstream"]+":"+file.Path]) || file.LanguageIdentical != bytes.Equal(current, snapshot.Historical[p15U01Baselines["language"]+":"+file.Path]) {
 			return fmt.Errorf("historical equality classification is false: %s", file.Path)
 		}
 		before := snapshot.Historical[p15U01Baselines["continuation"]+":"+file.Path]
-		oldToken, newToken, corrected := p15U01AllowedPatch(file.Path)
 		if corrected {
 			changed++
-			if file.ContinuationClass != "parameter-label-correction" || file.ReviewedPatch == nil || file.ReviewedPatch.Before != oldToken || file.ReviewedPatch.After != newToken || file.ReviewedPatch.Reason == "" || file.ImplementationCommit != "dc86a87de5cd6b2f2e795236ac1fa25e28853ade" {
+			if file.ContinuationClass != correction.Class || file.ReviewedPatch == nil || file.ReviewedPatch.Before != correction.Before || file.ReviewedPatch.After != correction.After || file.ReviewedPatch.Reason == "" || file.ImplementationCommit != correction.ImplementationCommit {
 				return fmt.Errorf("unreviewed correction metadata: %s", file.Path)
 			}
-			if bytes.Count(before, []byte(oldToken)) != 1 || !bytes.Equal(bytes.Replace(before, []byte(oldToken), []byte(newToken), 1), current) {
-				return fmt.Errorf("correction altered bytes outside the approved parameter label: %s", file.Path)
+			if bytes.Count(before, []byte(correction.Before)) != 1 || !bytes.Equal(bytes.Replace(before, []byte(correction.Before), []byte(correction.After), 1), current) {
+				return fmt.Errorf("correction altered bytes outside the approved declaration patch: %s", file.Path)
 			}
 		} else if file.ContinuationClass != "unchanged" || file.ReviewedPatch != nil || file.ImplementationCommit != "" || !bytes.Equal(before, current) {
 			return fmt.Errorf("preserved declaration was changed or misclassified: %s", file.Path)
 		}
 	}
-	if changed != 2 {
+	if changed != 3 {
 		return fmt.Errorf("reviewed correction count changed")
 	}
 	for _, path := range snapshot.Inventory {
@@ -256,7 +285,7 @@ func TestP15U01ActualDeclarationBoundary(t *testing.T) {
 	// The complete allowed delta is independently compared by bytes above; this
 	// original Git diff is retained as an inspectable repository observation.
 	diff := p15U01Git(t, nil, "diff", "--numstat", p15U01Baselines["continuation"], snapshot.Head, "--", "actions", "stdfunc.cherri")
-	want := "1\t1\tactions/device.cherri\n1\t1\tactions/location.cherri\n"
+	want := "1\t1\tactions/device.cherri\n1\t1\tactions/location.cherri\n1\t1\tactions/math.cherri\n"
 	if string(diff) != want {
 		t.Fatalf("actual repository diff exceeds the reviewed boundary: %q", diff)
 	}
@@ -276,7 +305,7 @@ func TestP15U01DeclarationBoundaryControls(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"missing_current_file", "extra_current_file", "missing_manifest_file", "duplicate_manifest_file", "wrong_base", "wrong_baseline_digest", "wrong_baseline_size", "rewritten_unchanged_file", "forged_recorded_hash", "wrong_correction", "false_upstream_equality", "false_unchanged_class"} {
+	for _, fault := range []string{"missing_current_file", "extra_current_file", "missing_manifest_file", "duplicate_manifest_file", "wrong_base", "wrong_baseline_digest", "wrong_baseline_size", "rewritten_unchanged_file", "forged_recorded_hash", "wrong_correction", "false_upstream_equality", "false_unchanged_class", "statistics_reverted_input", "statistics_unrelated_math_key", "statistics_operation_drift", "statistics_action_identity", "statistics_wrong_correction", "statistics_wrong_implementation"} {
 		t.Run(fault, func(t *testing.T) {
 			var manifest p15U01Manifest
 			if err := json.Unmarshal(encoded, &manifest); err != nil {
@@ -284,9 +313,33 @@ func TestP15U01DeclarationBoundaryControls(t *testing.T) {
 			}
 			copy := snapshot
 			copy.Current = make(map[string][]byte)
+			copy.Tracked = make(map[string][]byte)
 			for path, data := range snapshot.Current {
 				copy.Current[path] = append([]byte{}, data...)
 			}
+			for path, data := range snapshot.Tracked {
+				copy.Tracked[path] = append([]byte{}, data...)
+			}
+			var replaceTracked = func(path, before, after string) {
+				var data = copy.Current[path]
+				if bytes.Count(data, []byte(before)) != 1 {
+					t.Fatal("causal source control requires one exact anchor", path, before)
+				}
+				var changed = bytes.Replace(data, []byte(before), []byte(after), 1)
+				copy.Current[path] = changed
+				copy.Tracked[path] = append([]byte{}, changed...)
+			}
+			var statisticsIndex = -1
+			for i := range manifest.Files {
+				if manifest.Files[i].Path == "actions/math.cherri" {
+					statisticsIndex = i
+				}
+			}
+			if statisticsIndex < 0 {
+				t.Fatal("missing reviewed statistics declaration")
+			}
+			var statistics, _ = p15U01AllowedPatch("actions/math.cherri")
+			var wantError string
 			index := -1
 			for i := range manifest.Files {
 				if manifest.Files[i].Path == "actions/device.cherri" {
@@ -329,9 +382,31 @@ func TestP15U01DeclarationBoundaryControls(t *testing.T) {
 				manifest.Files[index].UpstreamIdentical = !manifest.Files[index].UpstreamIdentical
 			case "false_unchanged_class":
 				manifest.Files[index].ContinuationClass = "unchanged"
+			case "statistics_reverted_input":
+				replaceTracked("actions/math.cherri", statistics.After, statistics.Before)
+				wantError = "current declaration has an unreviewed source change: actions/math.cherri"
+			case "statistics_unrelated_math_key":
+				replaceTracked("actions/math.cherri", "number operandOne: 'WFInput'", "number operandOne: 'Input'")
+				wantError = "current declaration has an unreviewed source change: actions/math.cherri"
+			case "statistics_operation_drift":
+				replaceTracked("actions/math.cherri", "\t'Average',\n", "\t'Average Changed',\n")
+				wantError = "current declaration has an unreviewed source change: actions/math.cherri"
+			case "statistics_action_identity":
+				replaceTracked("actions/math.cherri", "action 'statistics' statistic(", "action 'math' statistic(")
+				wantError = "current declaration has an unreviewed source change: actions/math.cherri"
+			case "statistics_wrong_correction":
+				manifest.Files[statisticsIndex].ReviewedPatch.After = statistics.Before
+				wantError = "unreviewed correction metadata: actions/math.cherri"
+			case "statistics_wrong_implementation":
+				manifest.Files[statisticsIndex].ImplementationCommit = p15U01Baselines["recorded_source"]
+				wantError = "unreviewed correction metadata: actions/math.cherri"
 			}
-			if p15U01Validate(manifest, copy) == nil {
+			var validationErr = p15U01Validate(manifest, copy)
+			if validationErr == nil {
 				t.Fatal("damaged repository boundary accepted", fault)
+			}
+			if wantError != "" && !strings.Contains(validationErr.Error(), wantError) {
+				t.Fatal("causal source control failed for an unrelated reason", fault, validationErr)
 			}
 		})
 	}

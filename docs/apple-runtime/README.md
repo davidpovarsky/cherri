@@ -207,6 +207,7 @@ docs/apple-runtime/
 
 ### 7.3 Canonical Reproduction Commands
 All derived artifacts are reproducible via local CLI tooling:
+The comparator uses the selected captured builtin definitions, including explicit native parameter overrides, alongside the current Cherri catalog. Its complete output set and digest manifest use the existing CRLF artifact format explicitly on every host. Pass `--cherri-actions` with an exact retained compiler catalog when reproducing a pinned source; regenerate the output set and manifest together.
 
 ```bash
 # 1. Normalize snapshot (merges raw shards, ToolKit, and App Intents)
@@ -217,7 +218,8 @@ python tools/shortcut-runtime/normalize_snapshot.py \
 
 # 2. Run Cherri vs. Apple runtime comparison
 python tools/shortcut-runtime/compare_cherri.py \
-  --runtime-evidence-dir docs/apple-runtime/macos-27
+  --runtime-evidence-dir docs/apple-runtime/macos-27 \
+  --out-dir docs/apple-runtime/macos-27
 
 # 3. Generate multi-axis P10 action ledger & coverage report
 python tools/shortcut-runtime/generate_p10_ledger.py \

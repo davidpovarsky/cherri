@@ -198,7 +198,8 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
                 cherri_declared_keys=cherri_declared_keys,
                 cherri_emitted_keys=cherri_emitted_keys,
                 cherri_static_keys=cherri_static_keys,
-                is_filter_action=is_filter_action
+                is_filter_action=is_filter_action,
+                native_action_definition=builtin_defs.get(ident)
             )
             action_dispositions.append(disp)
             all_dispositions.append(disp)
@@ -271,6 +272,13 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
     return summary, missing_builtins_list, missing_apple_intents_list, missing_apple_runnable_list, parameter_gaps
 
 
+def write_json_output(path, value, sort_keys=False):
+    # Preserve the checked-in artifact format on every host so manifest byte
+    # lengths and digests do not depend on the generator's operating system.
+    with pathlib.Path(path).open("w", encoding="utf-8", newline="\r\n") as stream:
+        json.dump(value, stream, indent=2, sort_keys=sort_keys)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Compares extracted Apple runtime surfaces against Cherri catalog")
     parser.add_argument("--cherri-actions", default=None, help="Path to cherri-actions.json (extracts live if omitted)")
@@ -310,6 +318,19 @@ def main():
     dyld_ids = args.dyld_ids
     app_intents = args.app_intents
     toolkit_registry = args.toolkit_registry
+
+    # The normalized snapshot can omit native ParameterOverrides. Retain the
+    # original captured definitions so dispositions can bind hidden fields to
+    # explicit Apple evidence instead of guessing from a parameter name.
+    if not builtin_defs:
+        for edir in evidence_candidates:
+            for name in ("builtin-actions.json.gz", "builtin-actions.json"):
+                candidate = edir / name
+                if candidate.exists():
+                    builtin_defs = str(candidate)
+                    break
+            if builtin_defs:
+                break
 
     snapshot_path = args.snapshot
     if not snapshot_path:
@@ -383,12 +404,12 @@ def main():
         return_dispositions=True
     )
 
-    (out_dir / "comparison-summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
-    (out_dir / "missing-builtins.json").write_text(json.dumps(missing_defs, indent=2), encoding="utf-8")
-    (out_dir / "missing-apple-app-intents.json").write_text(json.dumps(missing_intents, indent=2), encoding="utf-8")
-    (out_dir / "missing-toolkit-apple-actions.json").write_text(json.dumps(missing_runnable, indent=2), encoding="utf-8")
-    (out_dir / "parameter-surface-gaps.json").write_text(json.dumps(gaps, indent=2), encoding="utf-8")
-    (out_dir / "parameter-dispositions.json").write_text(json.dumps(dispositions, indent=2), encoding="utf-8")
+    write_json_output(out_dir / "comparison-summary.json", summary, sort_keys=True)
+    write_json_output(out_dir / "missing-builtins.json", missing_defs)
+    write_json_output(out_dir / "missing-apple-app-intents.json", missing_intents)
+    write_json_output(out_dir / "missing-toolkit-apple-actions.json", missing_runnable)
+    write_json_output(out_dir / "parameter-surface-gaps.json", gaps)
+    write_json_output(out_dir / "parameter-dispositions.json", dispositions)
 
     import hashlib
     derived_manifest = {
@@ -410,7 +431,7 @@ def main():
                 "bytes": p.stat().st_size,
                 "sha256": hashlib.sha256(p.read_bytes()).hexdigest()
             }
-    (out_dir / "derived-comparison-manifest.json").write_text(json.dumps(derived_manifest, indent=2, sort_keys=True), encoding="utf-8")
+    write_json_output(out_dir / "derived-comparison-manifest.json", derived_manifest, sort_keys=True)
 
     print("=== Cherri vs Apple Shortcuts Runtime Comparison ===")
     print(f"Cherri catalog: {summary['cherriActions']} actions ({summary['cherriUniqueIdentifiers']} unique identifiers)")
