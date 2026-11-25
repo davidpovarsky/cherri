@@ -64,7 +64,7 @@ func TestPublicFrontendProducerInventory(t *testing.T) {
 		t.Fatal("immutable full RP52 contract changed", row)
 	}
 	names := publicFrontendRequiredEvents()
-	if len(names) != 104 || len(publicFrontendProductionPaths) != 74 {
+	if len(names) != 131 || len(publicFrontendProductionPaths) != 74 {
 		t.Fatal("unreviewed RP52 event/source inventory", len(names), len(publicFrontendProductionPaths))
 	}
 	seen := map[string]bool{}
