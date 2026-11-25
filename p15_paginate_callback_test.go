@@ -468,10 +468,12 @@ func TestP15PaginatePageCallbackRejectsUnconsumedValues(t *testing.T) {
 		decl := "let"
 		assign := "page = {}"
 		immutable := "E_ASSIGN_IMMUTABLE"
+		escaped := "E_UNKNOWN_NAME"
 		if legacy {
 			decl = "const"
 			assign = "@page = {}"
-			immutable = "E_BLOCK_CONSTANT_ASSIGNMENT"
+			immutable = "Cannot redefine constant"
+			escaped = "undefined"
 		}
 		cases := []struct{ name, header, body, tail, diagnostic string }{
 			{"value_tail", "page in", "text(\"unconsumed\")", "", "E_PAGINATE_BODY_VOID"},
@@ -479,7 +481,7 @@ func TestP15PaginatePageCallbackRejectsUnconsumedValues(t *testing.T) {
 			{"return", "page in", "return page", "", "E_PAGINATE_BODY_VOID"},
 			{"parameter_write", "page in", assign + "\nwait(0)", "", immutable},
 			{"missing_parameter", "", "wait(0)", "", "E_PAGINATE_PARAMETER"},
-			{"parameter_escape", "page in", "wait(0)", "getVariable(page)", "undefined"},
+			{"parameter_escape", "page in", "wait(0)", "getVariable(page)", escaped},
 			{"typed_control_tail", "page in", "if 1 == 1 {\ntext(\"unconsumed\")\n} else {\ntext(\"other\")\n}", "", "E_PAGINATE_BODY_VOID"},
 			{"zero_still_checks", "page in", "yield page", "", "E_PAGINATE_BODY_VOID"},
 		}

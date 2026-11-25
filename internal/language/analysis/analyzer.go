@@ -94,6 +94,7 @@ type Analyzer struct {
 	loopResultLocalBody    *syntax.BlockStmt
 	loopResultLocalPlan    *schema.LoopResultLocalPlan
 	loopResultLocalValues  map[syntax.Expression]types.Type
+	loopResultEmptyTypes   map[*syntax.ListExpr]types.Type // one source-bound contextual replay only
 	topLevelVars           map[string]source.Span
 	yieldedTypes           []types.Type
 	importStack            []string
@@ -544,6 +545,17 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	for declaration, uses := range a.setupUses {
 		if uses == 0 {
 			a.warn(CodeUnusedSetup, declaration.Span, fmt.Sprintf("setup %q is unused and emits no import question", declaration.Name))
+		}
+	}
+	// A first pass can discover concrete types on later stored versions. Replay
+	// once with context only for proven authored empty literals. beginProgram
+	// resets symbols, registry, expression facts and diagnostics; no AST is copied
+	// or rewritten, and every original diagnostic is evaluated again.
+	if a.loopResultEmptyTypes == nil {
+		if inferred := a.inferLocalLoopEmptyLists(); len(inferred) != 0 {
+			a.loopResultEmptyTypes = inferred
+			defer func() { a.loopResultEmptyTypes = nil }()
+			a.Analyze(prog)
 		}
 	}
 }
@@ -1192,6 +1204,11 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	delete(a.exprPresence, expr)
 	diagnosticStart := len(a.diagnostics)
 	t := a.analyzeExpressionInternal(expr, scope)
+	if literal, emptyList := expr.(*syntax.ListExpr); emptyList && len(literal.Elements) == 0 {
+		if contextual := a.loopResultEmptyTypes[literal]; contextual != nil {
+			t = contextual
+		}
+	}
 	a.recordLocalLoopResult(expr, t, scope)
 	a.recordDictionaryProvenance(expr, scope)
 	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
