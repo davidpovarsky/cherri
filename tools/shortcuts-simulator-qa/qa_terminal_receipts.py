@@ -573,6 +573,8 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/owned_simulator_selection.py",
+    "tools/shortcuts-simulator-qa/test_owned_simulator_selection.py",
     "tools/shortcuts-simulator-qa/tagged_carrier_runtime.py",
     "tools/shortcuts-simulator-qa/test_tagged_carrier_runtime.py",
     "tools/shortcuts-simulator-qa/tagged_carrier_public_originals.py",

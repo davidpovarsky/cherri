@@ -1098,6 +1098,15 @@ xcrun simctl list runtimes -j > "$ARTIFACT_DIR/sim-runtimes.json" 2>/dev/null ||
 xcrun simctl list devicetypes -j > "$ARTIFACT_DIR/sim-devicetypes.json" 2>/dev/null || echo "{}" > "$ARTIFACT_DIR/sim-devicetypes.json"
 xcrun simctl list devices available -j > "$ARTIFACT_DIR/sim-devices.json" 2>/dev/null || echo "{}" > "$ARTIFACT_DIR/sim-devices.json"
 
+if [ "${QA_OWNED_SIMULATOR_SELECTION+x}" = x ]; then
+  if ! SIM_SELECTION="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/owned_simulator_selection.py" \
+    --record "$QA_OWNED_SIMULATOR_SELECTION" --inventory-root "$ARTIFACT_DIR" \
+    --output "$ARTIFACT_DIR/owned-simulator-selection.original.json" \
+    --source-sha "$SOURCE_SHA" --run-id "$RUN_ID" --profile "$DEVICE_PROFILE")"; then
+    echo "ERROR: explicit owned simulator selection was rejected before device mutation" >&2
+    exit 2
+  fi
+else
 SIM_SELECTION="$(python3 - "$ARTIFACT_DIR" "$DEVICE_PROFILE" <<'PY'
 import json
 import subprocess
@@ -1192,6 +1201,7 @@ print(json.dumps({
 }))
 PY
 )"
+fi
 
 echo "Simulator Selection: $SIM_SELECTION"
 UDID="$(echo "$SIM_SELECTION" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("udid",""))')"

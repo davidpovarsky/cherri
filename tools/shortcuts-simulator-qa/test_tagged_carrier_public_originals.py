@@ -284,7 +284,8 @@ class TaggedPublicOriginalControls(unittest.TestCase):
         self.assertEqual(verify().returncode, 0)
         for name in ("tagged_carrier_runtime.py", "tagged_carrier_graph.py",
                      "tagged_carrier_observation.py", "tagged_carrier_public_originals.py",
-                     "native_comparison_graph.py"):
+                     "native_comparison_graph.py", "owned_simulator_selection.py",
+                     "test_owned_simulator_selection.py"):
             with self.subTest(tampered=name):
                 target = temporary / "tools/shortcuts-simulator-qa" / name
                 raw = target.read_bytes()
