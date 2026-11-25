@@ -2789,3 +2789,13 @@ replay pairs from 24 separate processes for six array/control cases in both
 frontends, with valid graphs and zero raw differences. Macro UUID-valued display
 names remain visible differences between modes. [Root repair and evidence](deterministic-uuid-root-repair-20261125.md).
 Apple execution and integrated full-suite acceptance remain separate.
+
+
+## 2026-11-25 — Compiler differential root repair and bounded qualification
+
+- [x] Author 41 workflows/90 source files and compare the two fork frontends against pinned pristine/current and frozen original compilers. All82 fork artifacts compile with valid graphs; raw differences, original compile failures and original statistics runtime failure remain visible.
+- [x] Repair dynamic quantities, derived UUID generation, shared statistics/Text serialization, producer/constructor handling and semantic-error aggregation at their shared source boundaries, with original RED evidence and regression controls.
+- [x] Execute every package in the complete Go runner; preserve its actual two-failure result and separately qualify the genuine-Pack-history recovery and strict RP52 inventory correction. Neither supplemental success rewrites the full-run receipt.
+- [x] Qualify native main37 cases plus Q40 in each fork lane. Retain every Q41 attempt and evidence-strength limitation in the final native ledger; timer cases remain structure-only. The new dispatch/Add timing harness passes24 host controls,50 actual Swift controls and Xcode build-for-testing, independently of subsequent native observations.
+
+This is a source-bound finite audit at2add, with actual compiler build21ead and a verified compiler-input identity bridge. It does not close historical P10R15/179-ID release obligations or prove arbitrary-program correctness. [Source pins, causes, exact receipts and boundaries](compiler-differential-audit-20261125.md).
