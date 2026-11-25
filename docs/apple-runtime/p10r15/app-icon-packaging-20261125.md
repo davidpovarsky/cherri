@@ -33,3 +33,35 @@ Original commands, logs, receipt and output manifest are retained under
 and the matching Mac `packaging-icon-probe-02` directory. Full app archive
 validation is a separate follow-up. This evidence does not claim distribution
 signing, TestFlight upload, physical-device validation, or full acceptance.
+
+## Exact-source archive follow-up
+
+Source `b2121e866df812351e9a0c054a1087230360d1a0` was archived on the existing
+Scaleway Mac with the existing generated documentation, WebPreview and CABI
+dependencies. Actual Release archive exit 0 took 22.955 seconds.
+`assetutil --info` verified four icon renditions including the 1024 × 1024
+App Store rendition. Both iPhone and iPad icon plist entries were present,
+`org.cherrilang.Cherri` was retained, and the checkout remained clean.
+The original archive contains 16 files / 109909827 bytes and remains unsigned.
+
+- Archive: `/Users/m1/builds/cherri-app-icon-release01/Cherri.xcarchive`
+- Receipt SHA-256: b696f6d0b7c3e2d3517750004082925b23feef1904ff074f22c868445ed9a9bd
+- Archive manifest SHA-256: b76ed86522556b0fd3688983e09dd1aa6bc06c8fe2341018eab25e499d849dab
+
+## PoC runtime inventory provenance
+
+The existing PoC printed runtime inventory through a pipeline without retaining
+the actual simctl process exit separately. The workflow now invokes
+`runtime_poc_preflight.py` once before its unchanged single PoC execution.
+The collector reuses the existing bounded process-group capture, retains raw
+stdout/stderr and actual argv, return code, timing and cleanup fields, and binds
+the clean Git HEAD/tree before and after to the GitHub source/run context.
+It records the actual platform; local validation is explicitly labelled local
+and never invents a GitHub run. Late, overflowing, incomplete, nonzero,
+wrong-platform, source-drift and missing-iOS27 observations cannot be READY.
+
+The inventory is a separate original artifact. It does not run Shortcuts, sign
+anything, publish runtime acceptance, or change the existing PoC fixture and
+signing provenance checks. Twelve new negative-control tests and the existing
+17 privacy / 8 orchestration tests passed. Native inventory validation is kept
+as a separate source-bound process receipt.

@@ -92,6 +92,10 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
+      - name: Record bounded native runtime inventory
+        id: runtime_preflight
+        run: python3 tools/shortcuts-simulator-qa/runtime_poc_preflight.py --repo . --output native-runtime-preflight
+
       - name: Run iOS 27 Shortcuts Runtime PoC
         env:
           CHERRI_ALLOW_EXTERNAL_SIGNING: ${{ inputs.allow_public_fixture_hubsign == true && '1' || '0' }}
@@ -112,6 +116,15 @@ jobs:
         run: |
           python3 tools/shortcuts-simulator-qa/runtime_poc_publication.py stage \
             --repo . --root artifacts --output poc-public
+
+      - name: Upload original native runtime inventory
+        if: always() && steps.runtime_preflight.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios27-runtime-preflight
+          path: native-runtime-preflight/
+          retention-days: 7
+          if-no-files-found: error
 
       - name: Upload PoC Artifacts
         if: always() && steps.publication.outcome == 'success'
