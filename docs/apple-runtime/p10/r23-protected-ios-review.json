@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "baseline": "76d722502e20db977e84a095444d0172442655b8",
+  "reviewedCommit": "6dca0432e5887221ff0e4a27c70ed16025b24a8f",
+  "reason": "Owner-requested P15 iOS fixes and acceptance tests intentionally evolved the protected parallel work. Retain the original baseline and every original XCTest; freeze the reviewed result instead of rejecting its authorized integration.",
+  "reviewEvidence": "docs/apple-runtime/p10/r23-protected-ios-review.md",
+  "files": [
+    {
+      "path": "ios/CherriUITests/CherriEditorUITests.swift",
+      "baseline": {
+        "blob": "1cb31feeb7e641e27f58d52e7e6822c11258c9a0",
+        "sha256": "d5ef275d13efd5873cd2cfaca040592d6c8ffdfe26eec291344e0b47c3290f89",
+        "tests": [
+          "testBRG27EditorRealWorldWorkflowUI",
+          "testE01CompletionDisplayAndInsertionUI",
+          "testE02DiagnosticsRenderingAndNavigationUI",
+          "testE03EditorActionsHoverRenameUI",
+          "testE05EditorResponsivenessStaleEditsUI",
+          "testE06BidirectionalHebrewEmojiUI",
+          "testE07VisualParameterEditingCanvasUI",
+          "testNegativeMissingUIElementFailsClosed",
+          "testNegativeSyntaxErrorRejectsCompilationFailsClosed"
+        ]
+      },
+      "reviewed": {
+        "blob": "33028f1f8b53b3855382a1ab6042a2c59402f687",
+        "sha256": "9c1d5b1d3cded108be2decd85131716da143a6e5ed3fe404966c6285684ad4c8",
+        "tests": [
+          "testBRG27EditorRealWorldWorkflowUI",
+          "testD03CurrentDocumentationSearchUI",
+          "testE01CompletionDisplayAndInsertionUI",
+          "testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+          "testE02DiagnosticsRenderingAndNavigationUI",
+          "testE03EditorActionsHoverRenameUI",
+          "testE05EditorResponsivenessStaleEditsUI",
+          "testE06BidirectionalHebrewEmojiUI",
+          "testE07VisualParameterEditingCanvasUI",
+          "testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+          "testNegativeMissingUIElementFailsClosed",
+          "testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+          "testTypedSourceAndResetPreserveExactUTF16"
+        ]
+      }
+    },
+    {
+      "path": "ios/CherriApp/Views/CodeEditorView.swift",
+      "baseline": {
+        "blob": null,
+        "sha256": null,
+        "tests": []
+      },
+      "reviewed": {
+        "blob": null,
+        "sha256": null,
+        "tests": []
+      }
+    }
+  ]
+}

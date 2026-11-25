@@ -35,6 +35,8 @@ DEPENDENCY_GLOBS = [
     "tools/language-schema/*.go",
     "tools/p10r3/generate_catalog_and_pack_ledgers.py",
     "tools/p10r3/run_release_gates.py",
+    "tools/p10r3/protected_ios.py",
+    "docs/apple-runtime/p10/r23-protected-ios-review.json",
     "actions/*.cherri",
     "actions_std.go",
     "actions_catalog.go",
