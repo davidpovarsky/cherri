@@ -120,6 +120,46 @@ class ObservationTests(unittest.TestCase):
         self.assertEqual(subject.sha(Path(subject.prerequisite.__file__).read_bytes()),
                          "6c0bed088dc53e73af138221ce72a6faff0dfa0bc0279cc254ae622dd54bd843")
 
+    def test_rejection_location_does_not_publish_private_exception_fields(self):
+        out = io.StringIO()
+        for error in (subject.Rejected("PRIVATE_TOKEN_PATH_SERVICE_OUTPUT"),
+                      OSError("PRIVATE_TOKEN_PATH_SERVICE_OUTPUT")):
+            with contextlib.redirect_stdout(out):
+                subject.report_rejection(error, "COLLECTOR", subject.__file__)
+        self.assertNotIn("PRIVATE_TOKEN", out.getvalue())
+        rows = [json.loads(line) for line in out.getvalue().splitlines()]
+        self.assertEqual([row["kind"] for row in rows], ["REJECTED", "OS_ERROR"])
+        for row in rows:
+            self.assertEqual(set(row), {"diagnostic", "phase", "sourceLine", "kind"})
+            self.assertIsNone(row["sourceLine"])
+            self.assertEqual(row["phase"], "COLLECTOR")
+
+    @unittest.skipUnless(os.name == "posix", "actual cancellation requires POSIX")
+    def test_actual_signal_before_popen_returns_reaps_owned_capture_child(self):
+        original = subject.subprocess.Popen
+        children = []
+        def cancelled(kind, frame):
+            raise subject.ObservationExpired("DIAGNOSTIC_DEADLINE_OR_INTERRUPTION")
+        previous = subject.signal.signal(subject.signal.SIGTERM, cancelled)
+        def interrupt_before_return(*args, **kwargs):
+            child = original(*args, **kwargs)
+            children.append(child)
+            os.kill(os.getpid(), subject.signal.SIGTERM)
+            return child
+        try:
+            with mock.patch.object(subject.subprocess, "Popen", interrupt_before_return):
+                with self.assertRaises(subject.ObservationExpired):
+                    self.actual_capture("import time;time.sleep(10)")
+            self.assertEqual(len(children), 1)
+            self.assertIsNotNone(children[0].poll(), "owned capture child survived cancellation")
+            self.assertIs(subject.signal.getsignal(subject.signal.SIGTERM), cancelled)
+        finally:
+            subject.signal.signal(subject.signal.SIGTERM, previous)
+            for child in children:
+                if child.poll() is None:
+                    os.killpg(child.pid, subject.signal.SIGKILL)
+                    child.wait(timeout=2)
+
     def test_actual_two_stream_capture_retains_exact_originals(self):
         result, detail, out, err = self.actual_capture(
             "import os;os.write(1,b'ORIGINAL_STDOUT\\x00\\xff');os.write(2,b'ORIGINAL_STDERR\\n')")
