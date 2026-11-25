@@ -305,7 +305,11 @@ func parsePreviewNativeLog(raw []byte) (map[string]any, error) {
 				}
 			} else {
 				if known {
-					if active != test || !started[test] || passed[test] || match[5] != "passed" {
+					expected := "CherriTests"
+					if test == previewNativeUI {
+						expected = "CherriUITests"
+					}
+					if target != expected || active != test || !started[test] || passed[test] || match[5] != "passed" {
 						return nil, fmt.Errorf("PREVIEW_CASE: exact passing terminal required")
 					}
 					passed[test] = true

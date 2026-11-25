@@ -199,7 +199,11 @@ func parseJoinedNativeLog(raw []byte, contract *joinedNativeContract, contractSH
 				}
 			} else {
 				if known {
-					if active != test || !started[test] || passed[test] || match[4] != "passed" {
+					target := "CherriUITests"
+					if profile.Producer == "ios-bridge" {
+						target = "CherriTests"
+					}
+					if parts[0] != target || active != test || !started[test] || passed[test] || match[4] != "passed" {
 						return nil, fmt.Errorf("JOINED_CASE: exact passing terminal required")
 					}
 					passed[test] = true
