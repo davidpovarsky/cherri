@@ -6,6 +6,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // The paired flag is compiler metadata. Emit it only for source bindings whose
@@ -85,6 +86,20 @@ func (l *Lowerer) prepareOptionalPresenceDemand(program *syntax.Program) {
 			}
 		case *syntax.AssignStmt:
 			depend(value.Name, value.Value)
+		case *syntax.ListExpr:
+			if types.TaggedListElements(l.transportType(value)) {
+				// Constructing an owned cell consumes independent presence,
+				// even when the enclosing collection is never used later.
+				for _, element := range value.Elements {
+					seed(element)
+				}
+			}
+		case *syntax.MapExpr:
+			if types.TaggedMapValues(l.transportType(value)) {
+				for _, entry := range value.Entries {
+					seed(entry.Value)
+				}
+			}
 		case *syntax.ReturnStmt:
 			// All authored returns are retained conservatively; only Optional
 			// bindings actually emit paired flags during lowering.
