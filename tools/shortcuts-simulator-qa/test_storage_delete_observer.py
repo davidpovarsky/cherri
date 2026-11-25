@@ -41,7 +41,12 @@ def import_receipts():
     receipt = {"id": "import-unique", "operation": "import", "outcome": "IMPORTED", "name": subject.FIXTURE,
                "identityVerified": True, "libraryIdentityVerified": True,
                "importTiming": {"contract": "dispatch-exit-anchored-add-v1", "dispatchState": "EXITED",
-                                "dispatchReceipt": "dispatch-import-unique.json"}}
+                                "dispatchReceipt": "dispatch-import-unique.json",
+                                "sheetContract": "requested-identity-and-add-v1", "sheetButtonExists": True,
+                                "sheetButtonHittable": True, "sheetIdentityMatched": True, "sheetCanTap": True,
+                                "addObservedUTC": "2026-11-25T00:00:01.000Z",
+                                "lastSheetCheckUTC": "2026-11-25T00:00:02.000Z",
+                                "sheetMatchedAfterCaptureUTC": "2026-11-25T00:00:02.001Z"}}
     return argv, dispatch, receipt
 
 
@@ -172,6 +177,61 @@ class StorageObserverControls(unittest.TestCase):
         marker = shell.index('      RUNTIME_EVAL="$(python3 - ')
         begin = shell.index("<<'PY'\n", marker) + len("<<'PY'\n")
         self.assertEqual(subject.sha(shell[begin:shell.index("\nPY\n", begin)].encode()), subject.RUNTIME_EVALUATOR_SHA256)
+
+    def test_fresh_sheet_witnesses_required(self):
+        for name, value in (("sheetContract", "old"), ("sheetButtonExists", False),
+                            ("sheetButtonHittable", False), ("sheetIdentityMatched", False),
+                            ("sheetCanTap", 1), ("sheetMatchedAfterCaptureUTC", None),
+                            ("lastSheetCheckUTC", "not-a-timeZ"),
+                            ("lastSheetCheckUTC", "2026-11-25T00:00:00.000Z"),
+                            ("sheetMatchedAfterCaptureUTC", "2026-11-25T00:00:01.999Z")):
+            with self.subTest(name=name, value=value):
+                argv, dispatch, receipt = import_receipts()
+                receipt["importTiming"][name] = value
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_exact_clean_build_metadata(self):
+        build, qualification = clean_build_metadata()
+        subject.validate_clean_build_metadata(build, qualification)
+
+    def test_unqualified_or_legacy_build_cannot_supply_new_harness(self):
+        mutations = (("schema", "other"), ("status", "SOURCE_UNVERIFIED"),
+                     ("builtHarnessCommit", "7d129d03c564a96bd6b97eeace8480b9bfa053e0"),
+                     ("builtHarnessTree", "0" * 40), ("error", {}), ("sourceGuardError", {}),
+                     ("sourceUnchanged", False), ("generatedProjectRetained", False),
+                     ("compilerBuilt", True), ("shortcutExecuted", True), ("testsExecuted", True))
+        for key, value in mutations:
+            with self.subTest(key=key):
+                build, qualification = clean_build_metadata()
+                build[key] = value
+                self.reject(subject.validate_clean_build_metadata, build, qualification)
+
+    def test_clean_qualification_requires_source_and_no_reexecution(self):
+        mutations = (("schema", "cherri-standalone-storage-harness-build-qualification/1"),
+                     ("status", "SOURCE_UNVERIFIED"), ("builtHarnessCommit", "0" * 40),
+                     ("builtHarnessTree", "0" * 40), ("sourceTrackedBytesUnchanged", False),
+                     ("sourceCleanAfterRetainedProjectRelocation", False),
+                     ("xcodeBuildReexecuted", True), ("compilerRebuilt", True), ("nativeInvocation", True))
+        for key, value in mutations:
+            with self.subTest(key=key):
+                build, qualification = clean_build_metadata()
+                qualification[key] = value
+                self.reject(subject.validate_clean_build_metadata, build, qualification)
+
+
+def clean_build_metadata():
+    # Synthetic metadata controls; full raw source/process/product joins are
+    # additionally required by verify_build before any native installation.
+    build = {"schema": "cherri-standalone-storage-harness-build/1", "status": "BUILD_VALIDATED",
+             "builtHarnessCommit": subject.BUILD, "builtHarnessTree": subject.BUILD_TREE,
+             "sourceUnchanged": True, "generatedProjectRetained": True,
+             "compilerBuilt": False, "shortcutExecuted": False, "testsExecuted": False}
+    qualification = {"schema": "cherri-standalone-storage-harness-build-qualification/2",
+                     "status": "BUILD_VALIDATED", "builtHarnessCommit": subject.BUILD,
+                     "builtHarnessTree": subject.BUILD_TREE, "sourceTrackedBytesUnchanged": True,
+                     "sourceCleanAfterRetainedProjectRelocation": True, "xcodeBuildReexecuted": False,
+                     "compilerRebuilt": False, "nativeInvocation": False}
+    return build, qualification
 
 
 if __name__ == "__main__":

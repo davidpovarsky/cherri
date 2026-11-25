@@ -5,6 +5,7 @@ This is an engineering observation, never final acceptance. The compiler,
 signature transport, built Receiver and current controller remain distinct.
 """
 import argparse
+import datetime
 import hashlib
 import json
 import os
@@ -21,8 +22,8 @@ import uuid
 import function_envelope_observer as native
 
 COMPILER = "899b8513f08e02ba38420b522806c58977049f57"
-BUILD = "7d129d03c564a96bd6b97eeace8480b9bfa053e0"
-BUILD_TREE = "443716db3c050af03886c9c9975cda1c2818d062"
+BUILD = "43b962d4dc07e9f8e94c8d4394af95abdf12ebe7"
+BUILD_TREE = "029ff3f51ce6cbaadb5fe41a29e12ccfee13b4b8"
 FIXTURE = "qa-storage-delete-v2"
 EXPECTED = "CHERRI_QA_STORAGE_DELETE_RESULT:BEFORE_OK:NO_VALUE_OK"
 INPUT = "CHERRI_QA_INPUT"
@@ -78,6 +79,17 @@ def validate_import(dispatch, receipt, argv, phase):
     require(isinstance(timing, dict) and timing.get("contract") == "dispatch-exit-anchored-add-v1"
             and timing.get("dispatchState") == "EXITED"
             and timing.get("dispatchReceipt") == "dispatch-" + phase + ".json", "IMPORT_TIMING")
+    require(timing.get("sheetContract") == "requested-identity-and-add-v1"
+            and all(timing.get(name) is True for name in ("sheetButtonExists", "sheetButtonHittable",
+                "sheetIdentityMatched", "sheetCanTap")), "IMPORT_SHEET_READINESS")
+    instants = []
+    for name in ("addObservedUTC", "lastSheetCheckUTC", "sheetMatchedAfterCaptureUTC"):
+        raw = timing.get(name)
+        require(isinstance(raw, str) and raw.endswith("Z"), "IMPORT_SHEET_CLOCK")
+        instant = datetime.datetime.fromisoformat(raw[:-1] + "+00:00")
+        require(instant.tzinfo is not None, "IMPORT_SHEET_CLOCK")
+        instants.append(instant)
+    require(instants[0] <= instants[1] <= instants[2], "IMPORT_SHEET_CLOCK_ORDER")
 
 
 def exact_storage_trace(callback, nonce):
@@ -136,27 +148,34 @@ def packet_inventory(root):
     return pins
 
 
-def verify_build(plan, repo, current_sources):
-    root = native.launch.owned_root(plan["buildRoot"])
-    qraw = read(root / "qualification-02/result.original.json")
-    require(sha(qraw) == plan["buildQualificationSHA256"], "BUILD_QUALIFICATION_HASH")
-    qualification = native.launch.strict_json(qraw)
-    require(qualification.get("schema") == "cherri-standalone-storage-harness-build-qualification/1"
+def validate_clean_build_metadata(build, qualification):
+    require(isinstance(build, dict) and isinstance(qualification, dict), "BUILD_METADATA_TYPES")
+    require(qualification.get("schema") == "cherri-standalone-storage-harness-build-qualification/2"
             and qualification.get("status") == "BUILD_VALIDATED"
             and qualification.get("builtHarnessCommit") == BUILD and qualification.get("builtHarnessTree") == BUILD_TREE
             and qualification.get("sourceTrackedBytesUnchanged") is True
             and qualification.get("sourceCleanAfterRetainedProjectRelocation") is True
             and qualification.get("xcodeBuildReexecuted") is False and qualification.get("compilerRebuilt") is False
             and qualification.get("nativeInvocation") is False, "BUILD_QUALIFICATION")
+    require(build.get("schema") == "cherri-standalone-storage-harness-build/1"
+            and build.get("status") == "BUILD_VALIDATED" and build.get("builtHarnessCommit") == BUILD
+            and build.get("builtHarnessTree") == BUILD_TREE and build.get("error") is None
+            and build.get("sourceGuardError") is None and build.get("sourceUnchanged") is True
+            and build.get("generatedProjectRetained") is True
+            and build.get("compilerBuilt") is False and build.get("shortcutExecuted") is False
+            and build.get("testsExecuted") is False, "BUILD_ORIGINAL_OUTCOME")
+
+
+def verify_build(plan, repo, current_sources):
+    root = native.launch.owned_root(plan["buildRoot"])
+    qraw = read(root / "qualification/result.original.json")
+    require(sha(qraw) == plan["buildQualificationSHA256"], "BUILD_QUALIFICATION_HASH")
+    qualification = native.launch.strict_json(qraw)
+    require(isinstance(qualification, dict), "BUILD_QUALIFICATION_TYPE")
     raw = read(root / "result.original.json")
     require(sha(raw) == qualification.get("originalOwnerResultSHA256"), "BUILD_RECEIPT_HASH")
     build = native.launch.strict_json(raw)
-    require(build.get("schema") == "cherri-standalone-storage-harness-build/1"
-            and build.get("status") == "SOURCE_UNVERIFIED" and build.get("builtHarnessCommit") == BUILD
-            and build.get("builtHarnessTree") == BUILD_TREE and build.get("error") is None
-            and build.get("sourceGuardError") == {"class": "AssertionError", "message": ""}
-            and build.get("compilerBuilt") is False and build.get("shortcutExecuted") is False
-            and build.get("testsExecuted") is False, "BUILD_ORIGINAL_OUTCOME")
+    validate_clean_build_metadata(build, qualification)
     for label in ("xcodegen", "xcodebuild", "codesign-verify-0", "codesign-verify-1"):
         rows = [row for row in build["processes"] if row.get("label") == label]
         require(len(rows) == 1, "BUILD_PROCESS_COUNT")
@@ -169,7 +188,7 @@ def verify_build(plan, repo, current_sources):
             stream = native.launch.regular(root / (label + "." + side + ".original"), native.MAX_ORIGINAL, empty=True)
             require(len(stream) == row["process"][side]["bytes"]
                     and sha(stream) == row["process"][side]["sha256"], "BUILD_PROCESS_STREAM")
-    before, after = read(root / "source-before.original.json"), read(root / "qualification-02/source.after.original.json")
+    before, after = read(root / "source-before.original.json"), read(root / "qualification/source.after.original.json")
     require(before == after and sha(before) == qualification["sourceBeforeSHA256"]
             and sha(after) == qualification["sourceAfterSHA256"], "BUILD_SOURCE_CHANGED")
     source = native.launch.strict_json(before)

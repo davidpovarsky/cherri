@@ -2,7 +2,7 @@
 
 `storage_delete_observer.py` is an engineering owner for the existing
 `qa-storage-delete-v2` fixture. It gives no final-candidate or formal179 credit.
-It does not compile, sign, change the fixture, change a simulator, or enroll a
+It does not compile, sign, change the fixture, erase or recreate a simulator, or enroll a
 new workflow. The selected existing device is `Cherri-P10R15-D03` only.
 
 ## Independent identities
@@ -10,7 +10,7 @@ new workflow. The selected existing device is `Cherri-P10R15-D03` only.
 * Compiler: `899b8513f08e02ba38420b522806c58977049f57`.
 * Unsigned original: `693ec6fff76b7d3fc6b169697d6451ebe2f22cca4001277d9392eb8f67b77e7f`,31 actions.
 * Existing signed original: `d5c74ee3f53521b042a3c3ec33cdb42e3c7330eb851cffaefd7e91d81cadaae7`.
-* Built Receiver/XCTest: `7d129d03c564a96bd6b97eeace8480b9bfa053e0`.
+* Required Receiver/XCTest build source: `43b962d4dc07e9f8e94c8d4394af95abdf12ebe7`.
 * Controller: the exact clean published source supplied in the plan, independently checked before and after execution.
 
 The fixed original input is `CHERRI_QA_INPUT`. The original Differential
@@ -34,11 +34,19 @@ Supply a closed `cherri-storage-native-observer-plan/1` JSON with `repo`, `root`
 `buildQualificationSHA256`, `runId`, `runAttempt:1`, `runNonce`, and `deviceUdid`.
 `root` must already contain the exact files in `PACKET_PINS`; all are public
 synthetic fixture/provenance originals. `buildRoot` must be an actual successful
-standalone7d build with retained original source, process streams and products.
-The qualification explicitly retains the original owner's `SOURCE_UNVERIFIED`
-result from the sole untracked generated Xcode project, then proves unchanged
-tracked bytes and products after retaining that project outside the source.
-It never rewrites that result or rebuilds the products.
+standalone43b build with retained original source, process streams and products.
+The version2 qualification at `qualification/result.original.json` must join an
+original `BUILD_VALIDATED` result, unchanged tracked bytes, exact retained
+generated project, actual successful build and signature verification processes,
+and unchanged products. It never rebuilds the products. The historical7d
+`SOURCE_UNVERIFIED` result and its separate qualification remain original evidence;
+they cannot satisfy this new build identity.
+
+The import receipt must prove the requested identity with a currently hittable
+Add button, including a fresh AX observation after screenshot capture. Its
+ordered source timestamps and original dispatch/library checks are mandatory.
+The original60s delivery and15s appearance windows remain unchanged; valid
+identified consent may precede delivery completion.
 
 Run once on the existing Mac with Python3.12:
 
