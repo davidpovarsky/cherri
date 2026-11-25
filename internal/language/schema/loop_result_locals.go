@@ -13,6 +13,7 @@ import (
 // carry the private sequence only to Items Count, index and for consumers.
 // Every other use makes this optional plan absent.
 type LoopResultLocalPlan struct {
+	ScopedBodies      map[*syntax.CallExpr]*syntax.BlockStmt
 	BindingValues     map[syntax.Expression]bool
 	AllowedValues     map[syntax.Expression]bool
 	Bodies            map[*syntax.BlockStmt]bool
@@ -44,6 +45,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 		}
 	}
 	var plan = &LoopResultLocalPlan{
+		ScopedBodies:      map[*syntax.CallExpr]*syntax.BlockStmt{},
 		BindingValues:     map[syntax.Expression]bool{},
 		AllowedValues:     map[syntax.Expression]bool{},
 		Bodies:            map[*syntax.BlockStmt]bool{},
@@ -189,14 +191,26 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			return nil, true
 		case *syntax.CallExpr:
 			name, okay := value.Callee.(*syntax.IdentExpr)
-			if !okay || name.Name != "count" {
+			if !okay {
 				return nil, false
 			}
 			if _, shadowed := scope.names[name.Name]; shadowed {
 				return nil, false
 			}
 			action, found := registry.LookupAction(name.Name)
-			if !found || !LoopResultItemsCountConsumer(value, action) || value.PrimaryArg == nil {
+			if found && name.Name == "measure" {
+				body := LoopResultScopedMeasureBody(value, action)
+				if body == nil {
+					return nil, false
+				}
+				plan.ScopedBodies[value] = body
+				// The original body executes once. Its lexical declarations
+				// stay local; actual writes to captured outer slots survive.
+				// The final body expression still follows the existing
+				// no-private-cell-escape rules enforced by statement().
+				return nil, block(body, scope, cellIteration)
+			}
+			if !found || name.Name != "count" || !LoopResultItemsCountConsumer(value, action) || value.PrimaryArg == nil {
 				return nil, false
 			}
 			origins, okay := expression(value.PrimaryArg, scope, true, cellIteration)

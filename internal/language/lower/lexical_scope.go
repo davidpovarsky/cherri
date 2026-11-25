@@ -7,6 +7,7 @@ import (
 )
 
 type lexicalLoweringState struct {
+	privatePrefix         string
 	scopes                []lexicalBindingScope
 	nameCounter           int
 	indexedActions        int
@@ -102,9 +103,23 @@ func (l *Lowerer) claimPendingImportedBinding(name string) bool {
 }
 
 func (l *Lowerer) freshLexicalName(name string) string {
+	return l.freshLexicalNameWithPrefix("__cherri_scope", name)
+}
+
+// Source declarations inside scoped constructs retain their distinct namespace;
+// internal cell/presence helpers keep their existing role-specific namespace.
+func (l *Lowerer) freshLexicalBindingName(name string) string {
+	prefix := l.lexical.privatePrefix
+	if prefix == "" {
+		prefix = "__cherri_scope"
+	}
+	return l.freshLexicalNameWithPrefix(prefix, name)
+}
+
+func (l *Lowerer) freshLexicalNameWithPrefix(prefix, name string) string {
 	for {
 		l.lexical.nameCounter++
-		candidate := fmt.Sprintf("__cherri_scope_%d_%s", l.lexical.nameCounter, name)
+		candidate := fmt.Sprintf("%s_%d_%s", prefix, l.lexical.nameCounter, name)
 		if _, found := l.bindings[candidate]; found {
 			continue
 		}
@@ -130,13 +145,13 @@ func (l *Lowerer) freshLexicalName(name string) string {
 }
 
 func (l *Lowerer) lowerLexicalBinding(binding *syntax.BindingStmt) error {
-	if l.claimPendingImportedBinding(binding.Name) {
+	if l.lexical.privatePrefix == "" && l.claimPendingImportedBinding(binding.Name) {
 		// This is the original pinned definition; existing native references
 		// intentionally remain usable across the native control region.
 		return l.lowerBinding(binding)
 	}
 	_, shadowed := l.bindings[binding.Name]
-	if !shadowed {
+	if !shadowed && l.lexical.privatePrefix == "" {
 		if err := l.lowerBinding(binding); err != nil {
 			return err
 		}
@@ -148,7 +163,7 @@ func (l *Lowerer) lowerLexicalBinding(binding *syntax.BindingStmt) error {
 	// Only the backend declaration name changes. The original structured RHS,
 	// source spans and expression-type/enum maps remain intact. Its references
 	// resolve before the new binding exists, including side effects in a body.
-	var localName = l.freshLexicalName(binding.Name)
+	var localName = l.freshLexicalBindingName(binding.Name)
 	if err := l.lowerBindingNamed(binding, localName); err != nil {
 		return err
 	}
@@ -161,14 +176,14 @@ func (l *Lowerer) lowerLexicalBinding(binding *syntax.BindingStmt) error {
 }
 
 func (l *Lowerer) lexicalLoopVariableName(name string) string {
-	if l.claimPendingImportedBinding(name) {
+	if l.lexical.privatePrefix == "" && l.claimPendingImportedBinding(name) {
 		return l.effectiveVariableName(name)
 	}
 	previous, existed := l.bindings[name]
 	l.rememberLexicalBinding(name, previous, existed)
 	delete(l.provenanceSymbols, name)
-	if existed {
-		return l.freshLexicalName(name)
+	if existed || l.lexical.privatePrefix != "" {
+		return l.freshLexicalBindingName(name)
 	}
 	return l.effectiveVariableName(name)
 }
