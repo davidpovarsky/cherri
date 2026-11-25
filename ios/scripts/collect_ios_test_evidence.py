@@ -15,6 +15,7 @@ import re
 
 import documentation_evidence as docs
 import joined_editor_evidence as joined
+import preview_native_evidence as preview
 
 # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
 # The BRG25 bridge probe and BRG27 single-document build remain diagnostics.
@@ -114,8 +115,8 @@ RP40_UI_SCOPE = (
 )
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|DocumentationIndexTests|CherriJoinedBridgeTests|CherriCompletionTextEditTests)|CherriUITests\.(?:CherriEditorUITests|CherriRP40UITests|CherriJoinedContractUITests)) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
-FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriRP40UITests|CherriEditorInputTests|CherriPreviewLifecycleTests|CherriJoinedBridgeTests|CherriJoinedContractUITests|CherriCompletionTextEditTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|DocumentationIndexTests|CherriJoinedBridgeTests|CherriCompletionTextEditTests|CherriPreviewDocumentContextTests)|CherriUITests\.(?:CherriEditorUITests|CherriRP40UITests|CherriJoinedContractUITests|CherriPreviewDocumentUITests)) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriRP40UITests|CherriEditorInputTests|CherriPreviewLifecycleTests|CherriJoinedBridgeTests|CherriJoinedContractUITests|CherriCompletionTextEditTests|CherriPreviewDocumentContextTests|CherriPreviewDocumentUITests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
 STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown", "completion-candidates"}
@@ -425,9 +426,15 @@ def bounded_log(raw_text):
     documentation_ui_events = 0
     rp40_ui_stage_index = 0
     joined_guard = joined.LogGuard(Path(__file__).resolve().parents[2])
+    preview_guard = preview.LogGuard(Path(__file__).resolve().parents[2])
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
         joined_line = joined_guard.observe(raw_line)
+        preview_line = preview_guard.observe(raw_line)
+        if preview_line is not None:
+            lines.append(preview_line)
+            if CASE_LINE.fullmatch(line) is None:
+                continue
         if joined_line is not None:
             lines.append(joined_line)
             # A rejection must never erase an original supported test terminal:
@@ -780,6 +787,11 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         run_id, joined_attempt, acceptance_eligible, diagnostic_only)
     for name, raw in joined_files.items():
         (output_dir / name).write_bytes(raw)
+    preview_summary, preview_files, preview_records = preview.collect(
+        Path(__file__).resolve().parents[2], log_bytes, test_results, impl_sha,
+        run_id, joined_attempt, acceptance_eligible, diagnostic_only)
+    for name, raw in preview_files.items():
+        (output_dir / name).write_bytes(raw)
 
     run_status = "PASSED" if eligible_run else ("FAILED" if xcode_exit not in (None, 0) else "NOT_RUN_OR_INCOMPLETE")
     diagnostic = {
@@ -792,6 +804,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "appIntegrationEvidence": app_integration,
         "appIntegrationUIEvidence": app_ui,
         "joinedEditorEvidence": joined_summary,
+        "previewNativeEvidence": preview_summary,
         "documentationUIStates": [json.loads(line[len(docs.UI_STATE_PREFIX):]) for line in log_text.splitlines() if line.startswith(docs.UI_STATE_PREFIX)],
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
         "startupTimingTraces": [json.loads(line[len(STARTUP_TIMING_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_TIMING_PREFIX)],
@@ -802,6 +815,12 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
                     "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},
     }
     (output_dir / "ios-test-diagnostics.json").write_text(json.dumps(diagnostic, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    for preview_record in preview_records:
+        preview_record["artifacts"].append({
+            "path": preview.ARTIFACT_BASE + "ios-test-diagnostics.json",
+            "sha256": preview.digest((output_dir / "ios-test-diagnostics.json").read_bytes()),
+            "run_id": run_id})
+        records.append(preview_record)
     for joined_record in joined_records:
         joined_record["artifacts"].append({
             "path": joined.ARTIFACT_BASE + "ios-test-diagnostics.json",
