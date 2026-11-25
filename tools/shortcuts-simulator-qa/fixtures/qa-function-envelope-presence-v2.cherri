@@ -1,0 +1,116 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Public engineering diagnostic for the existing v2 function envelope.
+// No runtime eligibility is inferred from compilation or rendered payload text.
+// native.ref("ShortcutInput") intentionally observes the raw child envelope;
+// system.input independently observes the restored authored caller input.
+
+function probeZero() -> Text {
+    let envelope = getDictionary(native.ref("ShortcutInput"))
+    let keys = getKeys(envelope)
+    var callerKey = 0
+    var argumentsKey = 0
+    var flagKey = 0
+    var valueKey = 0
+    var flag = "UNOBSERVED"
+    for key in keys {
+        let keyText = text(key)
+        if keyText == "_cherri_caller_input" { callerKey = 1 }
+        if keyText == "arguments" { argumentsKey = 1 }
+        if keyText == "has_arg_0" {
+            flagKey = 1
+            flag = text(getValue(envelope, "has_arg_0"))
+        }
+        if keyText == "arg_0" { valueKey = 1 }
+    }
+    var rawCount = "UNOBSERVED"
+    var rawType = "UNOBSERVED"
+    if callerKey == 1 {
+        let rawCaller = getValue(envelope, "_cherri_caller_input")
+        let observedRawCount = count(rawCaller)
+        rawCount = f"{observedRawCount}"
+        if observedRawCount > 0 { rawType = base64Encode(typeOf(rawCaller), lineBreakMode: "None") }
+    }
+    let savedCount = count(system.input)
+    var savedType = "UNOBSERVED"
+    if savedCount > 0 { savedType = base64Encode(typeOf(system.input), lineBreakMode: "None") }
+    let parameterObservation = "NO_PARAMETER"
+    return f"CASE=probeZero;KEY_COUNT={count(keys)};CALLER_KEY={callerKey};ARGUMENTS_KEY={argumentsKey};ARG_FLAG_KEY={flagKey};ARG_VALUE_KEY={valueKey};ARG_FLAG={flag};CALLER_FIELD_COUNT={rawCount};CALLER_SAVED_COUNT={savedCount};CALLER_FIELD_TYPE64={rawType};CALLER_SAVED_TYPE64={savedType};PARAMETER={parameterObservation}"
+}
+
+function probeDefault(value: Text = "DEFAULT") -> Text {
+    let envelope = getDictionary(native.ref("ShortcutInput"))
+    let keys = getKeys(envelope)
+    var callerKey = 0
+    var argumentsKey = 0
+    var flagKey = 0
+    var valueKey = 0
+    var flag = "UNOBSERVED"
+    for key in keys {
+        let keyText = text(key)
+        if keyText == "_cherri_caller_input" { callerKey = 1 }
+        if keyText == "arguments" { argumentsKey = 1 }
+        if keyText == "has_arg_0" {
+            flagKey = 1
+            flag = text(getValue(envelope, "has_arg_0"))
+        }
+        if keyText == "arg_0" { valueKey = 1 }
+    }
+    var rawCount = "UNOBSERVED"
+    var rawType = "UNOBSERVED"
+    if callerKey == 1 {
+        let rawCaller = getValue(envelope, "_cherri_caller_input")
+        let observedRawCount = count(rawCaller)
+        rawCount = f"{observedRawCount}"
+        if observedRawCount > 0 { rawType = base64Encode(typeOf(rawCaller), lineBreakMode: "None") }
+    }
+    let savedCount = count(system.input)
+    var savedType = "UNOBSERVED"
+    if savedCount > 0 { savedType = base64Encode(typeOf(system.input), lineBreakMode: "None") }
+    let parameterObservation = base64Encode(value, lineBreakMode: "None")
+    return f"CASE=probeDefault;KEY_COUNT={count(keys)};CALLER_KEY={callerKey};ARGUMENTS_KEY={argumentsKey};ARG_FLAG_KEY={flagKey};ARG_VALUE_KEY={valueKey};ARG_FLAG={flag};CALLER_FIELD_COUNT={rawCount};CALLER_SAVED_COUNT={savedCount};CALLER_FIELD_TYPE64={rawType};CALLER_SAVED_TYPE64={savedType};PARAMETER={parameterObservation}"
+}
+
+function probeOptional(value: Text? = "DEFAULT") -> Text {
+    let envelope = getDictionary(native.ref("ShortcutInput"))
+    let keys = getKeys(envelope)
+    var callerKey = 0
+    var argumentsKey = 0
+    var flagKey = 0
+    var valueKey = 0
+    var flag = "UNOBSERVED"
+    for key in keys {
+        let keyText = text(key)
+        if keyText == "_cherri_caller_input" { callerKey = 1 }
+        if keyText == "arguments" { argumentsKey = 1 }
+        if keyText == "has_arg_0" {
+            flagKey = 1
+            flag = text(getValue(envelope, "has_arg_0"))
+        }
+        if keyText == "arg_0" { valueKey = 1 }
+    }
+    var rawCount = "UNOBSERVED"
+    var rawType = "UNOBSERVED"
+    if callerKey == 1 {
+        let rawCaller = getValue(envelope, "_cherri_caller_input")
+        let observedRawCount = count(rawCaller)
+        rawCount = f"{observedRawCount}"
+        if observedRawCount > 0 { rawType = base64Encode(typeOf(rawCaller), lineBreakMode: "None") }
+    }
+    let savedCount = count(system.input)
+    var savedType = "UNOBSERVED"
+    if savedCount > 0 { savedType = base64Encode(typeOf(system.input), lineBreakMode: "None") }
+    var parameterObservation = "NONE"
+    if value != none { parameterObservation = base64Encode(value, lineBreakMode: "None") }
+    return f"CASE=probeOptional;KEY_COUNT={count(keys)};CALLER_KEY={callerKey};ARGUMENTS_KEY={argumentsKey};ARG_FLAG_KEY={flagKey};ARG_VALUE_KEY={valueKey};ARG_FLAG={flag};CALLER_FIELD_COUNT={rawCount};CALLER_SAVED_COUNT={savedCount};CALLER_FIELD_TYPE64={rawType};CALLER_SAVED_TYPE64={savedType};PARAMETER={parameterObservation}"
+}
+
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "function-envelope-presence")
+let zero = probeZero()
+comment("ANCHOR_CARD_15_MID_CENTER")
+let omitted = probeDefault()
+let suppliedNone = probeOptional(none)
+debugTraceEvent(stage: "after", label: "function-envelope-presence")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+let semantic = f"CHERRI_FUNCTION_ENVELOPE_PRESENCE_V1:\n{zero}\n{omitted}\n{suppliedNone}"
+return text(f"{semantic}\n{debugExportTrace(runId: "qa-function-envelope-presence-v2")}")
