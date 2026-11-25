@@ -2735,3 +2735,8 @@ Original paths below are relative to `/mnt/development/projects/evidence/cherri-
 ## 2026-11-25 — F04 mutable local alias implementation and parser repair
 
 Implemented the previously prepared bounded alias proposal on S6. Original qualification now passes 330/330 exact named tests (260 root, 44 lower, 26 schema), plus 49 syntax tests, with original failures retained and independent source review. Fixed adjacent generic-type assignment parsing rather than changing authored fixtures. Full F04, Apple runtime, AI01/RP50, coherent coverage refresh and final179 remain open. Current Anthropic count-only diagnostic still returns HTTP400 insufficient credit; no generation or purchase occurred. See [execution report](p15-f04-mutable-local-aliases-20261125.md) for commands, receipt and precise exclusions.
+
+
+## 2026-11-25: fresh S627c private-corpus S4 accepted
+
+All five original S4 parents executed and passed at compiler `627c3e7eb4a54a0364b5a5563db89291fa953b97`; the independent original intake accepted their source, corpus hashes, exact Go event streams, and summaries. The fixed 38-file cohort retains 27,652 actions (23,353 natural, 4,298 fallback, one invalid action, zero demotions; 137 third-party actions). The fresh Legacy/V2 wire and lifecycle reconciliation gates passed. See [the source-bound report](p15-private-corpus-s627c-five-parents-20261125.md) and Asana story `1220886760407730`. This does not close Apple runtime, AI evaluation, unsupported semantics, all179 acceptance, or release promotion.
