@@ -26,9 +26,7 @@ struct CherriPreviewEditTransaction {
                 editSource: { try await CherriCompiler.editPreviewSource(compiled: $0, actionIndex: $1, parameterKey: $2, newExpression: $3) },
                 decompile: { try await CherriCompiler.decompile(plist: $0, name: $1) },
                 compile: {
-                    try await CherriCompiler.compile(
-                        source: $0.source, name: $0.name, mode: $0.mode, buildProfile: $0.buildProfile
-                    )
+                    try await CherriCompiler.compile(request: $0)
                 }
             )
         }
@@ -68,10 +66,7 @@ struct CherriPreviewEditTransaction {
             source = updated
         }
         guard !Task.isCancelled, isCurrent() else { return false }
-        let request = CherriEditorBuildRequest(
-            source: source, mode: original.sourceRequest.mode,
-            name: original.sourceRequest.name, buildProfile: original.sourceRequest.buildProfile
-        )
+        let request = original.sourceRequest.replacingSource(source)
         let rebuilt = try await operations.compile(request)
         guard !Task.isCancelled, isCurrent() else { return false }
         guard rebuilt.sourceRequest == request, rebuilt.actualMode == original.actualMode else {

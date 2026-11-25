@@ -21,6 +21,12 @@ struct CherriDocument: FileDocument {
     private var editorActionSequence: UInt64 = 0
     let startupObservationID: String?
 
+    func compileContext(fileURL: URL?, assetRevision: UInt64) -> CherriDocumentCompileContext {
+        CherriDocumentCompileContext(uri: fileURL?.absoluteString ?? "",
+                                     documentID: editorDocumentID, revision: sourceRevision,
+                                     assetRevision: assetRevision)
+    }
+
     mutating func beginEditorAction() -> CherriEditorActionRequest {
         editorActionSequence &+= 1
         return CherriEditorActionRequest(

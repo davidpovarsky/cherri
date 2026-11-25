@@ -21,6 +21,8 @@ struct WorkspaceView: View {
     let fileURL: URL?
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var projectAssets = CherriProjectAssetObserver()
     @AppStorage("Cherri.livePreview") private var livePreview = true
 
     @State private var languageMode: CherriLanguageMode = .v2
@@ -77,6 +79,13 @@ struct WorkspaceView: View {
         }
         .onAppear {
             CherriStartupLifecycleObserver.shared?.record(.workspaceAppeared, documentID: document.startupObservationID)
+            projectAssets.activate(fileURL: fileURL)
+        }
+        .onDisappear { projectAssets.stop() }
+        .onChange(of: fileURL) { _, url in projectAssets.activate(fileURL: url) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background { projectAssets.stop() }
+            if phase == .active { projectAssets.activate(fileURL: fileURL) }
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -320,7 +329,10 @@ struct WorkspaceView: View {
     }
 
     private var currentBuildRequest: CherriEditorBuildRequest {
-        CherriEditorBuildRequest(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+        CherriEditorBuildRequest(
+            source: document.text, mode: languageMode.rawValue, name: fileDisplayName,
+            document: document.compileContext(fileURL: fileURL, assetRevision: projectAssets.revision)
+        )
     }
 
     @MainActor
@@ -350,9 +362,18 @@ struct WorkspaceView: View {
         guard !Task.isCancelled, !isApplyingPreviewEdit else { return }
         buildRequestGeneration += 1
         let generation = buildRequestGeneration
-        let request = CherriEditorBuildRequest(
-            source: document.text, mode: languageMode.rawValue, name: fileDisplayName
-        )
+        // Capture after the actual observer/cache boundary is ready. A document
+        // switch or cancellation during registration must not start an old build.
+        do {
+            try await projectAssets.prepare(fileURL: fileURL)
+        } catch {
+            guard !Task.isCancelled, generation == buildRequestGeneration else { return }
+            diagnostic = error as? CompilationDiagnostic
+                ?? CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+            return
+        }
+        guard !Task.isCancelled, generation == buildRequestGeneration else { return }
+        let request = currentBuildRequest
 
         // Only the current request owns publication and the busy indicator.
         // Manual builds use the same snapshot boundary as live preview.
@@ -367,15 +388,10 @@ struct WorkspaceView: View {
         }
 
         do {
-            let result = try await CherriCompiler.compile(
-                source: request.source,
-                name: request.name,
-                mode: request.mode,
-                signed: signed
-            )
+            let result = try await CherriCompiler.compile(request: request, signed: signed)
 
             guard !Task.isCancelled, generation == buildRequestGeneration,
-                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+                  request == currentBuildRequest
             else { return }
 
             compiled = result
@@ -387,18 +403,18 @@ struct WorkspaceView: View {
             await refreshActionCatalog()
 
             guard !Task.isCancelled, generation == buildRequestGeneration,
-                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+                  request == currentBuildRequest
             else { return }
             if let signedData = result.signedShortcut {
                 signedURL = try writeSignedShortcut(signedData, name: result.name)
             }
         } catch let compilerError as CompilationDiagnostic {
             guard !Task.isCancelled, generation == buildRequestGeneration,
-                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+                  request == currentBuildRequest
             else { return }
             let analysis = try? await CherriCompiler.analyze(source: request.source)
             guard !Task.isCancelled, generation == buildRequestGeneration,
-                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+                  request == currentBuildRequest
             else { return }
 
             compiled = nil
@@ -427,7 +443,7 @@ struct WorkspaceView: View {
             signedURL = nil
         } catch {
             guard !Task.isCancelled, generation == buildRequestGeneration,
-                  request.matches(source: document.text, mode: languageMode.rawValue, name: fileDisplayName)
+                  request == currentBuildRequest
             else { return }
             let diag = CompilationDiagnostic(
                 message: error.localizedDescription,
