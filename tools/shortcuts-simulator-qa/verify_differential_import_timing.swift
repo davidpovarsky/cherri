@@ -187,6 +187,74 @@ enum QADifferentialImportTimingContracts {
         require(missingAfterSuccess.observeDispatch(nil, now: at(34)).failure != nil,
                 "missing receipt is rejected even after an earlier valid success")
 
+
+        // Library observation has its own unchanged30s budget after actual
+        // delivery. The Add timestamp is immutable; polling cannot renew it.
+        func library(_ policy: inout QADifferentialImportTiming, _ fields: [String: Any],
+                     add: TimeInterval, now: TimeInterval) throws -> QADifferentialImportTiming.LibraryDecision {
+            let state = policy.observeDispatch(try encoded(fields), now: at(now))
+            return policy.libraryDecision(after: state, addTappedAt: at(add), now: at(now))
+        }
+        // The oracle is the exact decoded UTC instant, not a second floating-point addition.
+        let delayedLibraryDeadline = formatter.date(from: "2026-11-25T16:49:07.639Z")!
+        var libraryDelayed = QADifferentialImportTiming(searchStartedAt: at(0.098))
+        require(try library(&libraryDelayed, pending, add: 2.912, now: 34.392)
+                == .inspect(deadline: at(60), canConfirm: false),
+                "library inspection at original failure time retains the pending60s delivery budget")
+        require(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 38)
+                == .inspect(deadline: delayedLibraryDeadline, canConfirm: true),
+                "actual37.639s delivery anchors full30s library observation")
+        require(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 67.638)
+                == .inspect(deadline: delayedLibraryDeadline, canConfirm: true),
+                "repeated library observations do not extend actual delivery deadline")
+        require(!(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 67.639)).canConfirm,
+                "library confirmation is forbidden at the exact30s deadline")
+        require(!(try library(&libraryDelayed, exited(37.639), add: 2.912, now: 90)).canConfirm,
+                "blocking library AX return cannot grant late success")
+
+        var libraryFast = QADifferentialImportTiming(searchStartedAt: at(1))
+        require(try library(&libraryFast, exited(2), add: 3, now: 4)
+                == .inspect(deadline: at(33), canConfirm: true),
+                "delivery before Add preserves exactly30s from immutable Add")
+        require(try library(&libraryFast, exited(2), add: 3, now: 20)
+                == .inspect(deadline: at(33), canConfirm: true),
+                "fast library deadline does not move on repeat reads")
+        require(!(try library(&libraryFast, exited(2), add: 3, now: 33)).canConfirm,
+                "fast library has no extension beyond original30s")
+
+        var libraryPending = QADifferentialImportTiming(searchStartedAt: at(1))
+        require(try library(&libraryPending, pending, add: 2, now: 59.999)
+                == .inspect(deadline: at(60), canConfirm: false),
+                "pending library inspection never permits import confirmation")
+        require(try library(&libraryPending, pending, add: 2, now: 60)
+                == .rejected("IMPORT_DISPATCH_DEADLINE_EXCEEDED"),
+                "library pending delivery keeps original host60s deadline")
+        require(!(try library(&libraryPending, exited(59), add: 2, now: 61)).canConfirm,
+                "expired library delivery cannot revive on a later receipt")
+
+        var libraryLatest = QADifferentialImportTiming(searchStartedAt: at(1))
+        require(try library(&libraryLatest, exited(60), add: 2, now: 60)
+                == .inspect(deadline: at(90), canConfirm: true),
+                "latest valid exit anchors only30s library budget")
+        require(!(try library(&libraryLatest, exited(60), add: 2, now: 90)).canConfirm,
+                "latest library deadline rejects the exact boundary")
+        require(libraryLatest.libraryDecision(after: .rejected("IMPORT_DISPATCH_EXIT_NONZERO"),
+                                              addTappedAt: at(2), now: at(61))
+                == .rejected("IMPORT_DISPATCH_EXIT_NONZERO"),
+                "library cannot mask a process failure")
+
+        for (name, add, now) in [
+            ("Add before actual search", at(0), at(2)),
+            ("clock before Add", at(3), at(2)),
+            ("nonfinite Add", Date(timeIntervalSince1970: .nan), at(2)),
+            ("nonfinite observation", at(2), Date(timeIntervalSince1970: .nan))
+        ] {
+            let policy = QADifferentialImportTiming(searchStartedAt: at(1))
+            require(policy.libraryDecision(after: .exited(at: at(1)),
+                                           addTappedAt: add, now: now)
+                    == .rejected("IMPORT_LIBRARY_CLOCK_INVALID"), name + " rejects library confirmation")
+        }
+
         let failures = checks.filter { $0["outcome"] as? String == "FAIL" }
         let output: [String: Any] = [
             "schemaVersion": 1, "contract": "dispatch-exit-anchored-add-v1",
@@ -194,7 +262,8 @@ enum QADifferentialImportTimingContracts {
             "checks": checks.count, "failures": failures.count, "results": checks,
             "appleRuntime": "NOT_RUN", "oldImplementationExecution": "NOT_RUN"
         ]
-        print(String(decoding: try JSONSerialization.data(withJSONObject: output, options: [.sortedKeys]), as: UTF8.self))
+        FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: output, options: [.sortedKeys]))
+        FileHandle.standardOutput.write(Data([0x0a]))
         if !failures.isEmpty {
             throw NSError(domain: "QADifferentialImportTimingContracts", code: 1,
                           userInfo: [NSLocalizedDescriptionKey: "\(failures.count) timing controls failed"])
