@@ -35,6 +35,30 @@ struct QADifferentialImportTiming {
     }
 
 
+
+    enum SheetDecision: Equatable {
+        case inspect(deadline: Date)
+        case consent(deadline: Date)
+        case rejected(String)
+
+        var failure: String? {
+            if case .rejected(let reason) = self { return reason }
+            return nil
+        }
+
+        var deadline: Date? {
+            switch self {
+            case .inspect(let deadline), .consent(let deadline): return deadline
+            case .rejected: return nil
+            }
+        }
+
+        var canTap: Bool {
+            if case .consent = self { return true }
+            return false
+        }
+    }
+
     enum LibraryDecision: Equatable {
         case inspect(deadline: Date, canConfirm: Bool)
         case rejected(String)
@@ -182,6 +206,25 @@ struct QADifferentialImportTiming {
         }
         guard now < deadline else { return .rejected("IMPORT_BUTTON_MISSING") }
         return .search(deadline: deadline)
+    }
+
+
+    func sheetDecision(after dispatch: DispatchState, now: Date,
+                       buttonExists: Bool, buttonHittable: Bool,
+                       identityMatches: Bool) -> SheetDecision {
+        // A prior sheet can expose Add while delivery of this command is still
+        // pending. Reuse the original clock; readiness never renews its deadline.
+        switch addDecision(after: dispatch, now: now) {
+        case .rejected(let reason): return .rejected(reason)
+        case .search(let deadline):
+            guard buttonExists && buttonHittable && identityMatches else {
+                return .inspect(deadline: deadline)
+            }
+            // Identified consent may be necessary before openurl can exit.
+            // Import success still requires the independent completed dispatch
+            // and exact native library item in libraryDecision.
+            return .consent(deadline: deadline)
+        }
     }
 
     func libraryDecision(after dispatch: DispatchState, addTappedAt: Date,

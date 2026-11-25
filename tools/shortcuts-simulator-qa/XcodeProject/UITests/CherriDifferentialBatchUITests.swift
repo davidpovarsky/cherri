@@ -100,23 +100,52 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             return receipt(["outcome": outcome, "name": name])
         }
 
+        func checkSheet(found: Bool, hittable: Bool,
+                        identity: Bool) -> QADifferentialImportTiming.SheetDecision {
+            let dispatch = observeDispatch()
+            let now = Date()
+            let decision = timing.sheetDecision(after: dispatch, now: now,
+                buttonExists: found, buttonHittable: hittable, identityMatches: identity)
+            timingReceipt["sheetContract"] = "requested-identity-and-add-v1"
+            timingReceipt["lastSheetCheckUTC"] = formatter.string(from: now)
+            timingReceipt["sheetButtonExists"] = found
+            timingReceipt["sheetButtonHittable"] = hittable
+            timingReceipt["sheetIdentityMatched"] = identity
+            timingReceipt["sheetCanTap"] = decision.canTap
+            if let deadline = decision.deadline {
+                timingReceipt["currentSearchDeadlineUTC"] = formatter.string(from: deadline)
+            }
+            return decision
+        }
         // AX calls can outlive their nominal wait. Read the actual process
         // receipt and the clock again after each call, before using its result.
+        // A stale Add button alone never ends this search or authorizes a tap.
+        var identity = false
         while true {
             if let failure = checkAdd().failure { return stop(failure) }
             let found = button.exists
-            let decision = checkAdd()
+            if let failure = checkAdd().failure { return stop(failure) }
+            var hittable = false
+            identity = false
+            if found {
+                hittable = button.isHittable
+                if let failure = checkAdd().failure { return stop(failure) }
+                let snapshot = try shortcuts.snapshot()
+                if let failure = checkAdd().failure { return stop(failure) }
+                identity = hasName(snapshot, name: name)
+            }
+            var decision = checkSheet(found: found, hittable: hittable, identity: identity)
             if let failure = decision.failure { return stop(failure) }
-            if found { break }
+            if decision.canTap {
+                timingReceipt["addObservedUTC"] = formatter.string(from: Date())
+                capture(command.id + "-import")
+                decision = checkSheet(found: found, hittable: hittable, identity: identity)
+                if let failure = decision.failure { return stop(failure) }
+                if decision.canTap { break }
+            }
             let remaining = decision.deadline!.timeIntervalSinceNow
             Thread.sleep(forTimeInterval: max(0, min(0.2, remaining)))
         }
-        timingReceipt["addObservedUTC"] = formatter.string(from: Date())
-        capture(command.id + "-import")
-        if let failure = checkAdd().failure { return stop(failure) }
-        let snapshot = try shortcuts.snapshot()
-        if let failure = checkAdd().failure { return stop(failure) }
-        let identity = hasName(snapshot, name: name)
         XCTAssertTrue(identity, "Signed import sheet must identify " + name)
         guard identity else {
             return receipt(["outcome": "IMPORT_IDENTITY_MISMATCH", "name": name])

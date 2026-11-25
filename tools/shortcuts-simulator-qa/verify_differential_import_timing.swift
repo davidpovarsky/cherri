@@ -255,6 +255,99 @@ enum QADifferentialImportTimingContracts {
                     == .rejected("IMPORT_LIBRARY_CLOCK_INVALID"), name + " rejects library confirmation")
         }
 
+
+        // The actual storage import failed on a prior sheet's Add button while
+        // this dispatch was PENDING. These fixed observations exercise the
+        // production readiness policy without claiming native UI execution.
+        func sheet(_ policy: inout QADifferentialImportTiming, _ fields: [String: Any],
+                   now: TimeInterval, exists: Bool = true, hittable: Bool = true,
+                   identity: Bool) throws -> QADifferentialImportTiming.SheetDecision {
+            let state = policy.observeDispatch(try encoded(fields), now: at(now))
+            return policy.sheetDecision(after: state, now: at(now),
+                buttonExists: exists, buttonHittable: hittable, identityMatches: identity)
+        }
+
+        let storageAppearanceDeadline = formatter.date(from: "2026-11-25T16:48:16.940Z")!
+        var staleThenCurrent = QADifferentialImportTiming(searchStartedAt: at(0.09))
+        require(try sheet(&staleThenCurrent, pending, now: 0.323, identity: false)
+                == .inspect(deadline: at(60)),
+                "stale Add during pending delivery cannot fail or authorize a tap")
+        require(try sheet(&staleThenCurrent, pending, now: 0.900, identity: true)
+                == .consent(deadline: at(60)),
+                "new requested sheet may authorize identified consent before delivery exits")
+        require(try sheet(&staleThenCurrent, exited(1.940), now: 2, identity: true)
+                == .consent(deadline: storageAppearanceDeadline),
+                "same requested sheet after actual exit keeps its original15s deadline")
+        require(!(try sheet(&staleThenCurrent, exited(1.940), now: 2.1,
+                             exists: false, identity: true)).canTap,
+                "a disappearing Add cannot inherit readiness from a preceding matching frame")
+        require(!(try sheet(&staleThenCurrent, exited(1.940), now: 2.2,
+                             hittable: false, identity: true)).canTap,
+                "a nonhittable Add cannot authorize consent even with a matching name")
+        require(!(try sheet(&staleThenCurrent, exited(1.940), now: 2.3,
+                             identity: false)).canTap,
+                "a subsequent wrong sheet cannot inherit the previous matched identity")
+
+        var staleOnly = QADifferentialImportTiming(searchStartedAt: at(1))
+        require(try sheet(&staleOnly, pending, now: 59.999, identity: false)
+                == .inspect(deadline: at(60)),
+                "stale Add alone consumes only the original pending budget and never taps")
+        require(try sheet(&staleOnly, pending, now: 60, identity: false)
+                == .rejected("IMPORT_DISPATCH_DEADLINE_EXCEEDED"),
+                "stale Add alone is rejected at the original delivery deadline")
+        require(!(try sheet(&staleOnly, exited(59), now: 61, identity: true)).canTap,
+                "a matched sheet cannot revive an expired delivery")
+
+        var wrongAfterExit = QADifferentialImportTiming(searchStartedAt: at(1))
+        require(try sheet(&wrongAfterExit, exited(2), now: 3, identity: false)
+                == .inspect(deadline: at(17)),
+                "wrong identity after exit remains unready during the original appearance window")
+        require(try sheet(&wrongAfterExit, exited(2), now: 16.999, identity: false)
+                == .inspect(deadline: at(17)),
+                "repeated wrong identities never move the appearance deadline")
+        require(try sheet(&wrongAfterExit, exited(2), now: 17, identity: false)
+                == .rejected("IMPORT_BUTTON_MISSING"),
+                "persistently wrong identity fails closed without a tap at the original deadline")
+
+        var blockedAX = QADifferentialImportTiming(searchStartedAt: at(1))
+        require(!(try sheet(&blockedAX, exited(2), now: 17, identity: true)).canTap,
+                "a matching AX result returned after its deadline cannot authorize a tap")
+        var fastSheet = QADifferentialImportTiming(searchStartedAt: at(2))
+        require(try sheet(&fastSheet, exited(1), now: 3, identity: true)
+                == .consent(deadline: at(17)),
+                "fast identified delivery retains the original search-start anchor")
+
+        for (name, changes) in [
+            ("canceled delivery", ["outcome": "TIMED_OUT", "timedOut": true] as [String: Any]),
+            ("nonzero delivery", ["outcome": "EXIT_NONZERO", "exitCode": 7, "processReturncode": 7]),
+            ("failed delivery", ["outcome": "FAILED"])
+        ] {
+            var fields = exited(2)
+            changes.forEach { fields[$0.key] = $0.value }
+            var policy = QADifferentialImportTiming(searchStartedAt: at(1))
+            require(!(try sheet(&policy, fields, now: 3, identity: true)).canTap,
+                    name + " cannot be hidden by a matching sheet")
+        }
+        for (name, command) in [
+            ("file path", ["xcrun", "simctl", "openurl", "owned-simulator", "file:///qa/other.shortcut"]),
+            ("device", ["xcrun", "simctl", "openurl", "other-simulator", "file:///qa/exact.shortcut"])
+        ] {
+            var policy = QADifferentialImportTiming(searchStartedAt: at(1))
+            _ = try sheet(&policy, pending, now: 2, identity: false)
+            var changed = pending
+            changed["command"] = command
+            require(try sheet(&policy, changed, now: 3, identity: true)
+                    == .rejected("IMPORT_DISPATCH_RECEIPT_CHANGED"),
+                    "changed delivery " + name + " cannot borrow a matching sheet")
+        }
+        var canceledAfterMatch = QADifferentialImportTiming(searchStartedAt: at(1))
+        _ = try sheet(&canceledAfterMatch, pending, now: 2, identity: true)
+        var canceled = pending
+        canceled["outcome"] = "TIMED_OUT"
+        canceled["timedOut"] = true
+        require(!(try sheet(&canceledAfterMatch, canceled, now: 3, identity: true)).canTap,
+                "rechecking cancellation after a matching screenshot prevents consent")
+
         let failures = checks.filter { $0["outcome"] as? String == "FAIL" }
         let output: [String: Any] = [
             "schemaVersion": 1, "contract": "dispatch-exit-anchored-add-v1",
