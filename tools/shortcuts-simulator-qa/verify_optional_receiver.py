@@ -5,6 +5,7 @@ normal trace separation, and existing private-data rejection before the new exac
 diagnostic prefix is accepted. This does not typecheck SwiftUI or run a Simulator.
 """
 import argparse
+import contextlib
 import json
 import os
 from pathlib import Path
@@ -17,6 +18,7 @@ from optional_forwarding_diagnostic import EXPECTED_OUTPUT, PREFIX
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--swiftc", default="swiftc")
+    parser.add_argument("--artifacts-dir", help="Retain exact generated policy, controls and executable in a fresh directory")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     source = (root / "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift").read_text(encoding="utf-8")
@@ -89,7 +91,13 @@ struct Control: Decodable { let raw: String?; let sanitized: String?; let summar
     bounded = tagged + "A" * 20000
     add(bounded, bounded[:16384], bounded[:16384])
 
-    with tempfile.TemporaryDirectory(prefix="optional-receiver-policy-") as directory:
+    if args.artifacts_dir:
+        retained = Path(args.artifacts_dir)
+        retained.mkdir(parents=False, exist_ok=False)
+        directory_context = contextlib.nullcontext(str(retained))
+    else:
+        directory_context = tempfile.TemporaryDirectory(prefix="optional-receiver-policy-")
+    with directory_context as directory:
         temp = Path(directory)
         code, cases = temp / "ReceiverPolicy.swift", temp / "controls.json"
         executable = temp / ("verify-receiver.exe" if os.name == "nt" else "verify-receiver")
