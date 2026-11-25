@@ -121,7 +121,7 @@ func p15RequireConditionGraph(actions []ShortcutAction, tc p15RequireConditionCa
 			return fmt.Errorf("REQUIRE_CONDITION_GRAPH: Boolean literal changed")
 		}
 	case int, int64, uint64, float64:
-		if p15Int(v) != want {
+		if fmt.Sprint(v) != fmt.Sprint(want) {
 			return fmt.Errorf("REQUIRE_CONDITION_GRAPH: Boolean numeric value changed")
 		}
 	default:
