@@ -71,6 +71,24 @@ struct Control: Decodable { let raw: String?; let sanitized: String?; let summar
         add(raw, redacted, redacted)
         raw = prefix + "canary@example.invalid"
         add(raw, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    # The tagged engineering fixture has its own exact versioned public prefix.
+    # Contrary observations must remain readable; this policy never asserts them.
+    tagged = "CHERRI_TAGGED_VALUE_CARRIER_V1:"
+    for value in ("PRESENT:TYPE_MATCH", "ABSENT:TYPE_DIFFERENT"):
+        raw = tagged + value
+        add(raw, raw, raw)
+        add(raw + "\n" + trace, raw + "\n" + trace, raw, trace)
+    for raw in (tagged.replace("_V1:", "_V2:") + "PUBLIC",
+                tagged.removesuffix(":") + "PUBLIC",
+                "private-prefix " + tagged + "PUBLIC"):
+        redacted = "[REDACTED_NON_ALLOWLISTED_LEN_" + str(len(raw)) + "]"
+        add(raw, redacted, redacted)
+    for secret in ("ghp_SYNTHETIC_CANARY", "canary@example.invalid",
+                   "/Users/SYNTHETIC", "BEGIN PRIVATE KEY"):
+        add(tagged + secret, "[REDACTED_SECRET_OR_PII]", "[REDACTED_SECRET_OR_PII]")
+    bounded = tagged + "A" * 20000
+    add(bounded, bounded[:16384], bounded[:16384])
+
     with tempfile.TemporaryDirectory(prefix="optional-receiver-policy-") as directory:
         temp = Path(directory)
         code, cases = temp / "ReceiverPolicy.swift", temp / "controls.json"
