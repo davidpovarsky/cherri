@@ -356,16 +356,13 @@ func TestP15L01NestedDictionaryShape(t *testing.T) {
 }
 
 func TestP15L01UnverifiedNativeNestedLiteralFailsClosed(t *testing.T) {
-	for _, source := range []string{
-		"let data=[[],[1,2],[[3],[]]]\ngetVariable(data)",
-		"var data=[[1,2]]\ngetVariable(data)",
-		"var data=[]\ndata=[[]]\ngetVariable(data)",
-		"return [[1,2]]",
+	for _, tc := range []p15TaggedBoundaryCase{
+		{"immutable", "let data=[[],[1,2],[[3],[]]]\ngetVariable(data)", "data", analysis.CodeTargetValueShape, "getVariable requires an explicit native/JSON conversion for structured values"},
+		{"mutable", "var data=[[1,2]]\ngetVariable(data)", "data", analysis.CodeTargetValueShape, "getVariable requires an explicit native/JSON conversion for structured values"},
+		{"assignment", "var data=[]\ndata=[[]]\ngetVariable(data)", "data=[[]]", analysis.CodeTargetValueShape, "assignment cannot change a native storage slot into private cells without an explicit conversion"},
+		{"return", "return [[1,2]]", "[[1,2]]", analysis.CodeTargetValueShape, "structured return requires an explicit external value codec"},
 	} {
-		data, err := CompileSourceToPlist("p15-nested-native-list.cherri", source)
-		if err == nil || len(data) != 0 || !strings.Contains(err.Error(), "E_NESTED_NATIVE_LIST") {
-			t.Fatalf("unverified nested arrays reached native text rows: bytes=%d error=%v", len(data), err)
-		}
+		p15CheckTaggedBoundary(t, tc)
 	}
 	// Existing Dictionary array fields have an independently typed container
 	// codec. This positive control does not certify native List<List> runtime.

@@ -38,3 +38,16 @@ Independent source/graph review:
 SHA-256: bdd66e4b3b227e004aa085adf1cc94f5388c184cb9f38adacce497f5dc82383d
 
 The first inventory-only review omitted the proof document and remains preserved as a failed review attempt. It did not change source or tests. The original F04 parent will be requalified with the other affected original boundaries after their precise diagnostic alignment.
+
+## Preserved original boundary inventory
+
+Only the independently reviewed four internal JsonNull specimens (binding, uncalled default, internal function return, and value construction after a raw action) now require their complete qualified internal action graphs. All nine original external-consumption specimens remain negative with precise consumer code, message and source span across analysis, service and compilation. Raw metadata and encoded plist-null rejection controls remain unchanged.
+
+The original List analysis, public CLI, mobile, inferred-shape and Dictionary/function source strings are unchanged. Their unsupported external consumers retain rejection with no output; public failed compilation still preserves an existing destination. Diagnostic expectations now name the actual consumer boundary after internal cell construction became supported. Existing positive container graphs and all diagnostic corruption cases remain in the inventory.
+
+Independent JsonNull review:
+/mnt/development/projects/evidence/cherri-p10r15-final-completion-20261125/tagged-null-context-independent-review-02/review.original.json
+
+SHA-256: 7d7826942ad72356592604d84bc105c3e42781af9f5bf57549877d669184d4d6
+
+The combined original families still require requalification on this test-alignment checkpoint. The old Optional-vs-JsonNull guard diagnostic contract is intentionally unchanged pending that actual observation; its non-narrowing behavior must remain enforced.

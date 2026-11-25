@@ -37,46 +37,17 @@ func p15NativeListAnalysisCases() []p15NativeListAnalysisCase {
 	}
 }
 
-// The known limitation is already enforced by the native List lowerer. These
-// controls require the same precise target diagnosis before checked emission
-// and in the live service. They do not assert native List<List> impossibility.
+// The original negative specimens retain their native consumer boundaries.
+// Internal cell construction is allowed; exact code, message and source span
+// must agree before checked emission and in the live service.
 func p15NativeListAnalysisError(diagnostics []analysis.Diagnostic, tc p15NativeListAnalysisCase) error {
-	var errors []analysis.Diagnostic
-	for _, d := range diagnostics {
-		if d.Severity == analysis.SeverityError {
-			errors = append(errors, d)
-		}
-	}
-	if len(errors) != len(tc.targets) {
-		return fmt.Errorf("target diagnostics: got %d, want %d: %+v", len(errors), len(tc.targets), errors)
-	}
-	used := map[int]bool{}
-	for _, target := range tc.targets {
-		start := strings.LastIndex(tc.source, target)
-		if start < 0 {
-			return fmt.Errorf("oracle target absent: %q", target)
-		}
-		found := -1
-		for index, d := range errors {
-			if d.Code == "E_NESTED_NATIVE_LIST" && d.Span.Start.ByteOffset == start && d.Span.End.ByteOffset == start+len(target) &&
-				strings.Contains(d.Message, "nested List-valued element") && strings.Contains(d.Message, "native content-row encoding") {
-				if found >= 0 || used[index] {
-					return fmt.Errorf("duplicate target diagnostic")
-				}
-				found = index
-			}
-		}
-		if found < 0 {
-			return fmt.Errorf("missing exact nested List diagnostic for %q: %+v", target, errors)
-		}
-		used[found] = true
-	}
-	return nil
+	return p15TaggedExactBoundary(diagnostics, p15TaggedListBoundaryCase(tc))
 }
 
 func TestP15L01NativeListAnalysisMatchesCompile(t *testing.T) {
 	for _, tc := range p15NativeListAnalysisCases() {
 		t.Run(tc.name, func(t *testing.T) {
+			expected := p15TaggedListBoundaryCase(tc)
 			diagnostics := p15TypeDiagnostics(t, tc.source)
 			if err := p15NativeListAnalysisError(diagnostics, tc); err != nil {
 				t.Error("analysis:", err)
@@ -112,7 +83,7 @@ func TestP15L01NativeListAnalysisMatchesCompile(t *testing.T) {
 				t.Error("service:", err)
 			}
 			raw, err := CompileSourceToPlist("p15-nested-list-target.cherri", tc.source)
-			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), "E_NESTED_NATIVE_LIST") {
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), expected.code) || !strings.Contains(err.Error(), expected.message) {
 				t.Errorf("native compile boundary mismatch: bytes=%d error=%v", len(raw), err)
 			}
 			svc.ChangeDocument(uri, 2, "return {\"rows\":[[],[1,2],[[3],[]]]}")
@@ -141,6 +112,7 @@ func TestP15L01NativeListPublicCheckAndCompile(t *testing.T) {
 	dir := t.TempDir()
 	for index, tc := range p15NativeListAnalysisCases() {
 		t.Run(tc.name, func(t *testing.T) {
+			expected := p15TaggedListBoundaryCase(tc)
 			path := filepath.Join(dir, fmt.Sprintf("case-%d.cherri", index))
 			if err := os.WriteFile(path, []byte(tc.source), 0600); err != nil {
 				t.Fatal(err)
@@ -156,13 +128,13 @@ func TestP15L01NativeListPublicCheckAndCompile(t *testing.T) {
 					errors = append(errors, d)
 				}
 			}
-			if checkErr == nil || result.Valid || len(errors) != len(tc.targets) {
+			if checkErr == nil || result.Valid || len(errors) != 1 {
 				t.Errorf("public check accepted backend-unsupported List: exit=%v response=%+v", checkErr, result)
 			}
-			for _, target := range tc.targets {
+			for _, target := range []string{expected.target} {
 				matches := 0
 				for _, d := range errors {
-					if d.Code == "E_NESTED_NATIVE_LIST" && d.Range == p15NativeListTargetRange(tc, target) {
+					if d.Code == expected.code && d.Range == p15NativeListTargetRange(tc, target) && strings.Contains(d.Message, expected.message) {
 						matches++
 					}
 				}
@@ -177,7 +149,7 @@ func TestP15L01NativeListPublicCheckAndCompile(t *testing.T) {
 			}
 			_, compileStderr, compileErr := p15RunCLI(t, binary, dir, nil, "compile", path, "--skip-sign", "--output="+destination)
 			after, readErr := os.ReadFile(destination)
-			if compileErr == nil || !strings.Contains(string(compileStderr), "E_NESTED_NATIVE_LIST") || readErr != nil || string(after) != string(original) {
+			if compileErr == nil || (!strings.Contains(string(compileStderr), expected.code) || !strings.Contains(string(compileStderr), expected.message)) || readErr != nil || string(after) != string(original) {
 				t.Fatalf("actual failed compile changed destination or diagnostic: error=%v stderr=%s read=%v bytes=%q", compileErr, compileStderr, readErr, after)
 			}
 		})
