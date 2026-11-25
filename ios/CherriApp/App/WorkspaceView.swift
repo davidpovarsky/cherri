@@ -362,21 +362,8 @@ struct WorkspaceView: View {
         guard !Task.isCancelled, !isApplyingPreviewEdit else { return }
         buildRequestGeneration += 1
         let generation = buildRequestGeneration
-        // Capture after the actual observer/cache boundary is ready. A document
-        // switch or cancellation during registration must not start an old build.
-        do {
-            try await projectAssets.prepare(fileURL: fileURL)
-        } catch {
-            guard !Task.isCancelled, generation == buildRequestGeneration else { return }
-            diagnostic = error as? CompilationDiagnostic
-                ?? CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
-            return
-        }
-        guard !Task.isCancelled, generation == buildRequestGeneration else { return }
-        let request = currentBuildRequest
-
-        // Only the current request owns publication and the busy indicator.
-        // Manual builds use the same snapshot boundary as live preview.
+        // The same generation owns busy state during project preparation and
+        // native compilation; an older operation cannot clear a newer one.
         isSigning = signed
         isCompiling = !signed
         lastBuildOutcome = ""
@@ -386,6 +373,29 @@ struct WorkspaceView: View {
                 isCompiling = false
             }
         }
+
+        // Capture after the actual observer/cache boundary is ready. A document
+        // switch or cancellation during registration must not start an old build.
+        do {
+            try await projectAssets.prepare(fileURL: fileURL)
+        } catch is CancellationError {
+            // A changed document/observer generation is stale work, not a
+            // compiler failure for whichever document is now selected.
+            return
+        } catch {
+            guard !Task.isCancelled, generation == buildRequestGeneration else { return }
+            let failure = error as? CompilationDiagnostic
+                ?? CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+            compiled = nil
+            signedURL = nil
+            publishedBuildRequest = currentBuildRequest
+            lastBuildOutcome = signed ? "Signing failed" : "Build failed"
+            diagnostic = failure
+            diagnostics = [failure]
+            return
+        }
+        guard !Task.isCancelled, generation == buildRequestGeneration else { return }
+        let request = currentBuildRequest
 
         do {
             let result = try await CherriCompiler.compile(request: request, signed: signed)
