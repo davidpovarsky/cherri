@@ -869,7 +869,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if s.Op != syntax.TokenAssign && !sym.Initialized {
 			a.error(CodeReadBeforeInit, s.Span, fmt.Sprintf("variable %q read before initialization by compound assignment", s.Name))
 		}
+		restoreLocalCells := a.beginLocalLoopResultAssignment(s)
 		valType := a.analyzeEnumContext(s.Value, scope, sym.EnumType)
+		restoreLocalCells()
 		a.validateLocalLoopResultAssignment(s, sym, scope)
 		// Compound assignment reads both operands. A declared Optional target
 		// does not turn absence into a Number/List value; only a checked flow

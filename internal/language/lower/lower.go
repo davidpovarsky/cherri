@@ -2011,6 +2011,11 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	if err := l.validateLocalLoopResultAssignment(a); err != nil {
 		return err
 	}
+	_, restoreLocalCells, err := l.beginLocalLoopResultValue(a.Value)
+	if err != nil {
+		return err
+	}
+	defer restoreLocalCells()
 	val, err := l.lowerRuntimeLiteral(a.Value)
 	if err != nil {
 		return err

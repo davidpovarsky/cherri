@@ -9,15 +9,17 @@ import (
 
 // LoopResultLocalPlan is source-owned admission for one finite local consumer
 // slice. It is keyed by actual AST identities, never a carrier marker or span.
-// Immutable aliases and explicitly typed mutable aliases in structured flow
+// Immutable and mutable bindings of source-owned values in structured flow
 // carry the private sequence only to Items Count, index and for consumers.
 // Every other use makes this optional plan absent.
 type LoopResultLocalPlan struct {
-	BindingValues   map[syntax.Expression]bool
-	AllowedValues   map[syntax.Expression]bool
-	Bodies          map[*syntax.BlockStmt]bool
-	MutableBindings map[*syntax.BindingStmt]bool
-	Assignments     map[*syntax.AssignStmt]*syntax.BindingStmt
+	BindingValues     map[syntax.Expression]bool
+	AllowedValues     map[syntax.Expression]bool
+	Bodies            map[*syntax.BlockStmt]bool
+	MutableBindings   map[*syntax.BindingStmt]bool
+	Assignments       map[*syntax.AssignStmt]*syntax.BindingStmt
+	BindingSources    map[*syntax.BindingStmt]LoopResultBindingSource
+	AssignmentSources map[*syntax.AssignStmt]LoopResultAssignmentSource
 }
 
 // PlanLoopResultLocals deliberately admits a closed, explicit-input program.
@@ -42,11 +44,13 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 		}
 	}
 	var plan = &LoopResultLocalPlan{
-		BindingValues:   map[syntax.Expression]bool{},
-		AllowedValues:   map[syntax.Expression]bool{},
-		Bodies:          map[*syntax.BlockStmt]bool{},
-		MutableBindings: map[*syntax.BindingStmt]bool{},
-		Assignments:     map[*syntax.AssignStmt]*syntax.BindingStmt{},
+		BindingValues:     map[syntax.Expression]bool{},
+		AllowedValues:     map[syntax.Expression]bool{},
+		Bodies:            map[*syntax.BlockStmt]bool{},
+		MutableBindings:   map[*syntax.BindingStmt]bool{},
+		Assignments:       map[*syntax.AssignStmt]*syntax.BindingStmt{},
+		BindingSources:    map[*syntax.BindingStmt]LoopResultBindingSource{},
+		AssignmentSources: map[*syntax.AssignStmt]LoopResultAssignmentSource{},
 	}
 	var bindingOrigins = map[syntax.Expression]loopResultOriginSet{}
 	var assignmentOrigins = map[*syntax.AssignStmt]loopResultOriginSet{}
@@ -252,21 +256,24 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			if !okay {
 				return false
 			}
-			if value.Mutable && len(origins) != 0 {
-				name, identifier := value.Value.(*syntax.IdentExpr)
-				if value.TypeExpr == nil || !identifier {
-					return false
-				}
-				var rhs = scope.names[name.Name]
-				if rhs.declaration == nil || rhs.declaration.Mutable || len(rhs.origins) == 0 {
-					return false
-				}
-				plan.MutableBindings[value] = true
-			}
-			scope.declare(value, origins)
 			if len(origins) != 0 {
+				var source *syntax.BindingStmt
+				if name, identifier := value.Value.(*syntax.IdentExpr); identifier {
+					source = scope.names[name.Name].declaration
+					if source == nil {
+						return false
+					}
+				}
+				plan.BindingSources[value] = LoopResultBindingSource{
+					Name: value.Name, Value: value.Value, Annotation: value.TypeExpr,
+					Mutable: value.Mutable, Source: source, Body: LoopResultLocalBody(value.Value),
+				}
+				if value.Mutable {
+					plan.MutableBindings[value] = true
+				}
 				bindingOrigins[value.Value] = mergeLoopResultOrigins(bindingOrigins[value.Value], origins)
 			}
+			scope.declare(value, origins)
 			return true
 		case *syntax.AssignStmt:
 			var target = scope.names[value.Name]
@@ -274,21 +281,25 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 				origins, okay := expression(value.Value, scope, false, cellIteration)
 				return okay && len(origins) == 0
 			}
-			name, identifier := value.Value.(*syntax.IdentExpr)
-			if value.Op != syntax.TokenAssign || !identifier ||
+			if value.Op != syntax.TokenAssign ||
 				target.declaration == nil || !plan.MutableBindings[target.declaration] {
-				return false
-			}
-			var rhs = scope.names[name.Name]
-			if rhs.declaration == nil || rhs.declaration.Mutable || len(rhs.origins) == 0 {
 				return false
 			}
 			origins, okay := expression(value.Value, scope, true, cellIteration)
 			if !okay || len(origins) == 0 {
 				return false
 			}
+			var source *syntax.BindingStmt
+			if name, identifier := value.Value.(*syntax.IdentExpr); identifier {
+				source = scope.names[name.Name].declaration
+				if source == nil {
+					return false
+				}
+			}
 			plan.Assignments[value] = target.declaration
+			plan.AssignmentSources[value] = LoopResultAssignmentSource{Value: value.Value, Source: source, Body: LoopResultLocalBody(value.Value)}
 			assignmentOrigins[value] = mergeLoopResultOrigins(assignmentOrigins[value], origins)
+			bindingOrigins[value.Value] = mergeLoopResultOrigins(bindingOrigins[value.Value], origins)
 			scope.values[target.declaration] = origins
 			return true
 		case *syntax.ExprStmt:

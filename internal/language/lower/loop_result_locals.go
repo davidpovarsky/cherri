@@ -9,66 +9,83 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
+func (l *Lowerer) localLoopResultProducerElement(expression syntax.Expression) types.Type {
+	if l.loopResultLocalPlan == nil || !l.loopResultLocalPlan.BindingValues[expression] {
+		return nil
+	}
+	var result, okay = l.exprTypes[expression].(types.ListType)
+	if !okay || !l.loopResultNeedsCells(expression) {
+		return nil
+	}
+	var body = schema.LoopResultLocalBody(expression)
+	if body == nil || !l.loopResultLocalPlan.Bodies[body] ||
+		!schema.LoopResultLocalPayloadsSupported(body, l.exprTypes) {
+		return nil
+	}
+	return result.Element
+}
+
 func (l *Lowerer) localLoopResultElement(expression syntax.Expression) types.Type {
 	if name, okay := expression.(*syntax.IdentExpr); okay {
 		return l.bindings[name.Name].LoopResultElement
 	}
-	return nil
+	return l.localLoopResultProducerElement(expression)
+}
+
+// A declaration and a whole assignment enter the same actual producer frame.
+// Neither creates a synthetic binding or substitutes a reaching-origin value.
+func (l *Lowerer) beginLocalLoopResultValue(expression syntax.Expression) (types.Type, func(), error) {
+	var nothing = func() {}
+	var element = l.localLoopResultElement(expression)
+	if element == nil {
+		return nil, nothing, nil
+	}
+	if _, identifier := expression.(*syntax.IdentExpr); identifier {
+		return element, nothing, nil
+	}
+	var body = schema.LoopResultLocalBody(expression)
+	var leaves = map[*syntax.YieldStmt]bool{}
+	if err := collectLoopResultYields(body, leaves); err != nil {
+		return nil, nothing, err
+	}
+	if len(leaves) == 0 {
+		return nil, nothing, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require a normal final result")
+	}
+	var frame = &loopResultFrame{accumulator: l.freshLexicalName("loopResults_" + l.GenerateUUID())}
+	var oldFrames, oldYields = l.loopResultFrames, l.loopResultYields
+	l.loopResultFrames = make(map[syntax.Expression]*loopResultFrame, len(oldFrames)+1)
+	for source, old := range oldFrames {
+		l.loopResultFrames[source] = old
+	}
+	l.loopResultFrames[expression] = frame
+	l.loopResultYields = make(map[*syntax.YieldStmt]*loopResultFrame, len(oldYields)+len(leaves))
+	for yield, old := range oldYields {
+		l.loopResultYields[yield] = old
+	}
+	for yield := range leaves {
+		l.loopResultYields[yield] = frame
+	}
+	return element, func() { l.loopResultFrames, l.loopResultYields = oldFrames, oldYields }, nil
 }
 
 func (l *Lowerer) beginLocalLoopResultBinding(binding *syntax.BindingStmt) (types.Type, func(), error) {
-	nothing := func() {}
-	if l.loopResultLocalPlan == nil || !l.loopResultLocalPlan.BindingValues[binding.Value] {
+	var nothing = func() {}
+	var element = l.localLoopResultElement(binding.Value)
+	if element == nil {
 		return nil, nothing, nil
 	}
-	element := l.localLoopResultElement(binding.Value)
-	if element == nil {
-		result, okay := l.exprTypes[binding.Value].(types.ListType)
-		if !okay || !l.loopResultNeedsCells(binding.Value) {
-			return nil, nothing, nil
-		}
-		body := schema.LoopResultLocalBody(binding.Value)
-		if body == nil || !l.loopResultLocalPlan.Bodies[body] ||
-			!schema.LoopResultLocalPayloadsSupported(body, l.exprTypes) {
-			return nil, nothing, nil
-		}
-		element = result.Element
-		leaves := map[*syntax.YieldStmt]bool{}
-		if err := collectLoopResultYields(body, leaves); err != nil {
-			return nil, nothing, err
-		}
-		if len(leaves) == 0 {
-			return nil, nothing, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require a normal final result")
-		}
-		frame := &loopResultFrame{accumulator: l.freshLexicalName("loopResults_" + l.GenerateUUID())}
-		oldFrames, oldYields := l.loopResultFrames, l.loopResultYields
-		l.loopResultFrames = make(map[syntax.Expression]*loopResultFrame, len(oldFrames)+1)
-		for expression, old := range oldFrames {
-			l.loopResultFrames[expression] = old
-		}
-		l.loopResultFrames[binding.Value] = frame
-		l.loopResultYields = make(map[*syntax.YieldStmt]*loopResultFrame, len(oldYields)+len(leaves))
-		for yield, old := range oldYields {
-			l.loopResultYields[yield] = old
-		}
-		for yield := range leaves {
-			l.loopResultYields[yield] = frame
-		}
-		nothing = func() { l.loopResultFrames, l.loopResultYields = oldFrames, oldYields }
+	var valid = l.loopResultLocalPlan != nil && l.loopResultLocalPlan.BindingValueSourceMatches(binding) &&
+		(!binding.Mutable || l.loopResultLocalPlan.MutableBindings[binding])
+	if name, identifier := binding.Value.(*syntax.IdentExpr); identifier {
+		var rhs, found = l.bindings[name.Name]
+		valid = valid && found && rhs.LoopResultElement != nil &&
+			rhs.IsVariable == l.loopResultLocalPlan.BindingSources[binding].Source.Mutable &&
+			element.Equals(rhs.LoopResultElement) && rhs.Type != nil && types.NewList(element).Equals(rhs.Type)
 	}
-	mutableAllowed := !binding.Mutable
-	if binding.Mutable && binding.TypeExpr != nil && l.loopResultLocalPlan.MutableBindings[binding] {
-		if name, okay := binding.Value.(*syntax.IdentExpr); okay {
-			rhs, found := l.bindings[name.Name]
-			mutableAllowed = found && !rhs.IsVariable && rhs.LoopResultElement != nil &&
-				element.Equals(rhs.LoopResultElement)
-		}
+	if !valid || l.exprTypes[binding.Value] == nil || !types.NewList(element).Equals(l.exprTypes[binding.Value]) || binding.TypeExpr != nil && !types.NewList(element).Equals(l.resolveTypeAnnotation(binding.TypeExpr)) {
+		return nil, nothing, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require their enrolled source and exact inferred or declared List type at %s", binding.Span)
 	}
-	if !mutableAllowed || binding.TypeExpr != nil && !types.NewList(element).Equals(l.resolveTypeAnnotation(binding.TypeExpr)) {
-		nothing()
-		return nil, func() {}, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require an exact List binding; mutable aliases require explicit type and source-owned enrollment at %s", binding.Span)
-	}
-	return element, nothing, nil
+	return l.beginLocalLoopResultValue(binding.Value)
 }
 
 func (l *Lowerer) localLoopResultIndexHasPresence(expression syntax.Expression) bool {
@@ -166,31 +183,24 @@ func (l *Lowerer) lowerLocalLoopResultIndex(index *syntax.IndexExpr, target, ord
 // Validate before lowering the RHS or entering ordinary assignment. The actual
 // binding token supplies the value; the plan's origins never replace that read.
 func (l *Lowerer) validateLocalLoopResultAssignment(assignment *syntax.AssignStmt) error {
-	target := l.bindings[assignment.Name]
-	element := l.localLoopResultElement(assignment.Value)
+	var target = l.bindings[assignment.Name]
+	var element = l.localLoopResultElement(assignment.Value)
 	if target.LoopResultElement == nil && element == nil {
 		return nil
 	}
-	var enrolled *syntax.BindingStmt
-	if l.loopResultLocalPlan != nil {
-		enrolled = l.loopResultLocalPlan.Assignments[assignment]
+	var valid = l.loopResultLocalPlan != nil && l.loopResultLocalPlan.AssignmentSourceMatches(assignment)
+	if name, identifier := assignment.Value.(*syntax.IdentExpr); identifier {
+		var rhs, found = l.bindings[name.Name]
+		valid = valid && found && rhs.LoopResultElement != nil &&
+			rhs.IsVariable == l.loopResultLocalPlan.AssignmentSources[assignment].Source.Mutable &&
+			element != nil && rhs.LoopResultElement.Equals(element) &&
+			rhs.Type != nil && types.NewList(element).Equals(rhs.Type)
 	}
-	name, identifier := assignment.Value.(*syntax.IdentExpr)
-	var rhs BindingRef
-	if identifier {
-		rhs = l.bindings[name.Name]
-	}
-	if enrolled == nil || !enrolled.Mutable || !l.loopResultLocalPlan.MutableBindings[enrolled] ||
-		!l.loopResultLocalPlan.AllowedValues[assignment.Value] ||
-		enrolled.Name != assignment.Name || enrolled.TypeExpr == nil ||
-		assignment.Op != syntax.TokenAssign || !target.IsVariable ||
-		!identifier || rhs.IsVariable || rhs.LoopResultElement == nil ||
-		target.LoopResultElement == nil || element == nil ||
-		!target.LoopResultElement.Equals(element) || !rhs.LoopResultElement.Equals(element) ||
-		target.Type == nil || !types.NewList(element).Equals(target.Type) ||
-		rhs.Type == nil || !target.Type.Equals(rhs.Type) ||
+	if !valid || !target.IsVariable || target.LoopResultElement == nil || element == nil ||
+		!target.LoopResultElement.Equals(element) || target.Type == nil ||
+		!types.NewList(element).Equals(target.Type) ||
 		l.exprTypes[assignment.Value] == nil || !target.Type.Equals(l.exprTypes[assignment.Value]) {
-		return fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop-result assignment requires its enrolled exact List alias and immutable source-owned identifier at %s", assignment.Span)
+		return fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop-result assignment requires its enrolled source and an exact List representation at %s", assignment.Span)
 	}
 	return nil
 }

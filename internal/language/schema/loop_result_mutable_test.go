@@ -75,33 +75,34 @@ func TestLoopResultMutableAliasPlanReachingOrigins(t *testing.T) {
 }
 
 // Retain the original qualification IDs and all eighteen authored sources.
-// Seven former scope limits now have explicit positive admission expectations;
-// the eleven representation/enrollment boundaries keep their original rejection.
+// Twelve former scope/storage limits now have positive admission expectations;
+// the six representation/enrollment boundaries keep their original rejection.
 func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 	demanded := mutableLoopPlanProducers + "count(first)\ncount(next)\n"
 	initialized := demanded + mutableLoopPlanBinding
 	cases := []struct {
-		name, text string
-		admitted   bool
+		name, text      string
+		admitted        bool
+		mutableBindings int
 	}{
-		{"inferred_mutable_alias", demanded + "var current=first\nreturn count(current)", false},
-		{"direct_mutable_producer", demanded + "var current:List<List<Number>>=repeat 1 {yield [1,2]}\nreturn count(current)", false},
-		{"uninitialized_alias", demanded + "var current:List<List<Number>>\ncurrent=first\nreturn count(current)", false},
-		{"mutable_rhs_initializer", initialized + "var other:List<List<Number>>=current\nreturn count(other)+count(current)", false},
-		{"mutable_rhs_assignment", initialized + "var other:List<List<Number>>=next\ncurrent=other\nreturn count(other)+count(current)", false},
-		{"compound_assignment", initialized + "current+=next\nreturn count(current)", false},
-		{"nonidentifier_rhs", initialized + "current=repeat 1 {yield [1,2]}\nreturn count(current)", false},
-		{"ordinary_list_rhs", initialized + "let ordinary=[[1,2]]\ncurrent=ordinary\nreturn count(current)", false},
-		{"if_write", initialized + "if true {current=next}\nreturn count(current)", true},
-		{"else_write", initialized + "if true {let scalar=0} else {current=next}\nreturn count(current)", true},
-		{"menu_write", initialized + "menu(\"Pick\") {case \"A\" {current=next} case \"B\" {let scalar=0}}\nreturn count(current)", true},
-		{"repeat_write", initialized + "repeat 1 {current=next}\nreturn count(current)", true},
-		{"for_write", initialized + "for item in [1] {current=next}\nreturn count(current)", true},
-		{"block_write", initialized + "{current=next}\nreturn count(current)", true},
-		{"nested_mutable_binding", demanded + "if true {var current:List<List<Number>>=first\ncount(current)}\nreturn count(next)", true},
-		{"unread_overwritten_initializer", mutableLoopPlanProducers + mutableLoopPlanBinding + "current=next\nreturn count(current)", false},
-		{"unread_assigned_version", mutableLoopPlanProducers + mutableLoopPlanBinding + "let old=current\ncurrent=next\nreturn count(old)", false},
-		{"other_origin_demand_is_insufficient", mutableLoopPlanProducers + "let other=repeat 1 {yield [7,8]}\n" + mutableLoopPlanBinding + "current=next\nreturn count(other)+count(current)", false},
+		{"inferred_mutable_alias", demanded + "var current=first\nreturn count(current)", true, 1},
+		{"direct_mutable_producer", demanded + "var current:List<List<Number>>=repeat 1 {yield [1,2]}\nreturn count(current)", true, 1},
+		{"uninitialized_alias", demanded + "var current:List<List<Number>>\ncurrent=first\nreturn count(current)", false, 0},
+		{"mutable_rhs_initializer", initialized + "var other:List<List<Number>>=current\nreturn count(other)+count(current)", true, 2},
+		{"mutable_rhs_assignment", initialized + "var other:List<List<Number>>=next\ncurrent=other\nreturn count(other)+count(current)", true, 2},
+		{"compound_assignment", initialized + "current+=next\nreturn count(current)", false, 0},
+		{"nonidentifier_rhs", initialized + "current=repeat 1 {yield [1,2]}\nreturn count(current)", true, 1},
+		{"ordinary_list_rhs", initialized + "let ordinary=[[1,2]]\ncurrent=ordinary\nreturn count(current)", false, 0},
+		{"if_write", initialized + "if true {current=next}\nreturn count(current)", true, 1},
+		{"else_write", initialized + "if true {let scalar=0} else {current=next}\nreturn count(current)", true, 1},
+		{"menu_write", initialized + "menu(\"Pick\") {case \"A\" {current=next} case \"B\" {let scalar=0}}\nreturn count(current)", true, 1},
+		{"repeat_write", initialized + "repeat 1 {current=next}\nreturn count(current)", true, 1},
+		{"for_write", initialized + "for item in [1] {current=next}\nreturn count(current)", true, 1},
+		{"block_write", initialized + "{current=next}\nreturn count(current)", true, 1},
+		{"nested_mutable_binding", demanded + "if true {var current:List<List<Number>>=first\ncount(current)}\nreturn count(next)", true, 1},
+		{"unread_overwritten_initializer", mutableLoopPlanProducers + mutableLoopPlanBinding + "current=next\nreturn count(current)", false, 0},
+		{"unread_assigned_version", mutableLoopPlanProducers + mutableLoopPlanBinding + "let old=current\ncurrent=next\nreturn count(old)", false, 0},
+		{"other_origin_demand_is_insufficient", mutableLoopPlanProducers + "let other=repeat 1 {yield [7,8]}\n" + mutableLoopPlanBinding + "current=next\nreturn count(other)+count(current)", false, 0},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -109,7 +110,7 @@ func TestLoopResultMutableAliasPlanKeepsClosedBoundaries(t *testing.T) {
 			before := syntax.Format(program)
 			var plan = PlanLoopResultLocals(program, DefaultRegistry())
 			if tc.admitted {
-				if plan == nil || len(plan.MutableBindings) != 1 {
+				if plan == nil || len(plan.MutableBindings) != tc.mutableBindings {
 					t.Fatal("exact source-owned structured mutable binding was not enrolled")
 				}
 				for assignment, binding := range plan.Assignments {
