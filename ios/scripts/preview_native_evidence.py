@@ -260,7 +260,8 @@ class LogGuard:
                     self.started.add(test)
             else:
                 if test in METHODS:
-                    if self.active != test or test not in self.started or test in self.passed or status != "passed":
+                    expected = "CherriUITests" if test == UI else "CherriTests"
+                    if target != expected or self.active != test or test not in self.started or test in self.passed or status != "passed":
                         self.active = None
                         return self.reject("CASE_TERMINAL")
                     self.passed.add(test)

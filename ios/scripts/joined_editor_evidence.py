@@ -182,7 +182,8 @@ class LogGuard:
                     self.events[test] = []
             else:
                 if test in PROFILES:
-                    if self.active != test or test not in self.started or status != "passed" or test in self.passed:
+                    expected_target = "CherriTests" if PROFILES[test]["producer"] == "ios-bridge" else "CherriUITests"
+                    if target != expected_target or self.active != test or test not in self.started or status != "passed" or test in self.passed:
                         # A failed test still ends its actual ownership interval.
                         # Keep the rejection while allowing later cases to retain
                         # their independent original diagnostic boundaries.
