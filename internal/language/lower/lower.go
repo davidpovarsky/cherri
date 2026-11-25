@@ -65,6 +65,8 @@ func lookupContentItemClass(prop string) (string, bool) {
 type Lowerer struct {
 	mainOutputMode                 syntax.MainOutputMode
 	lastEmittedIdentifier          string
+	taggedNativeOutputs            map[string]bool
+	taggedNativeVariables          map[string]bool
 	registry                       *schema.Registry
 	session                        backend.Session
 	workflow                       *ir.NativeWorkflow
@@ -1319,7 +1321,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 		for idx, param := range fn.Parameters {
 			if l.optionalFunctionParameter(param.TypeExpr) {
-				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr)
+				value, presence, err := l.lowerOptionalParameter(fnDictUUID, idx, param.Name, param.DefaultExpr, l.resolveTypeAnnotation(param.TypeExpr))
 				if err != nil {
 					return nil, fmt.Errorf("function %s optional parameter %s: %w", fn.Name, param.Name, err)
 				}
@@ -1362,7 +1364,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 				l.emitIfElse(defGroupUUID)
 
-				defVal, err := l.lowerFunctionDefaultValue(param.DefaultExpr, false)
+				defVal, err := l.lowerFunctionDefaultValue(param.DefaultExpr, false, l.resolveTypeAnnotation(param.TypeExpr))
 				if err != nil {
 					return nil, fmt.Errorf("function %s default param %s: %w", fn.Name, param.Name, err)
 				}
@@ -1749,6 +1751,7 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 			binding := l.bindings[b.Name]
 			binding.TaggedTransport = bType
 			l.bindings[b.Name] = binding
+			l.rememberTaggedBinding(binding)
 		}
 		if b.Mutable {
 			node := &ir.NativeActionNode{
@@ -2030,6 +2033,7 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 			ref.PolymorphicLookup = true
 		}
 		l.bindings[b.Name] = ref
+		l.rememberTaggedBinding(ref)
 	}
 
 	return nil
@@ -3786,7 +3790,12 @@ func (l *Lowerer) lowerMenuWithOutput(stmt *syntax.MenuStmt, withOutput bool) (*
 	return nil, nil
 }
 
-func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
+func (l *Lowerer) lowerExpression(expr syntax.Expression) (value interface{}, err error) {
+	defer func() {
+		if err == nil && expr != nil {
+			l.rememberTaggedRuntimeValue(value, l.transportType(expr))
+		}
+	}()
 	if expr == nil {
 		return nil, nil
 	}
@@ -4394,6 +4403,19 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					return &ir.AttachmentToken{Type: "Clipboard"}, nil
 				}
 			}
+		}
+		if types.PrivateValueTransport(l.transportType(e.Target)) {
+			if _, coercion := lookupContentItemClass(e.Property); coercion {
+				return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: private structured values require an explicit content conversion at %s", e.Span)
+			}
+			if !types.TaggedMapValues(l.transportType(e.Target)) {
+				return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: private structured property requires a source-owned Dictionary cell layout at %s", e.Span)
+			}
+			target, err := l.lowerRuntimeLiteral(e.Target)
+			if err != nil {
+				return nil, err
+			}
+			return l.lowerTaggedMapAccess(e, e.Target, target, e.Property)
 		}
 		targetVal, err := l.lowerExpression(e.Target)
 		if err != nil {
@@ -5265,6 +5287,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if err := l.restoreNativeInputAfterLiteralCarriers(node); err != nil {
 			return nil, err
 		}
+		if err := l.validateTaggedImplicitNativeInput(node); err != nil {
+			return nil, err
+		}
 		l.emitAction(node)
 		if l.emitErr != nil {
 			return nil, l.emitErr
@@ -5672,6 +5697,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			Parameters:      params,
 		}
 		if err := l.restoreExactTextSnapshotForDeclaredAction(node); err != nil {
+			return nil, err
+		}
+		if err := l.validateTaggedImplicitNativeInput(node); err != nil {
 			return nil, err
 		}
 		l.emitAction(node)

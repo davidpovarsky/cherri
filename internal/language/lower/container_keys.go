@@ -12,7 +12,7 @@ import (
 // captured before its own value can write it; an earlier value must also be
 // captured before a later key can write it.
 func (l *Lowerer) lowerSemanticMap(expr *syntax.MapExpr) (backend.SemanticValue, error) {
-	if types.TaggedMapValues(l.transportType(expr)) {
+	if types.PrivateValueTransport(l.transportType(expr)) {
 		return l.lowerTaggedMapSemantic(expr)
 	}
 	expressions := make([]syntax.Expression, 0, len(expr.Entries)*2)
@@ -33,7 +33,7 @@ func (l *Lowerer) lowerSemanticMap(expr *syntax.MapExpr) (backend.SemanticValue,
 		if err := l.requirePresentTransport(entry.Value, "Dictionary value"); err != nil {
 			return backend.SemanticValue{}, err
 		}
-		value, err := l.lowerSemanticValue(entry.Value)
+		value, err := l.lowerTypedInlineValue(entry.Value, l.transportType(entry.Value))
 		if err != nil {
 			return backend.SemanticValue{}, err
 		}

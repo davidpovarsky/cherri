@@ -283,7 +283,7 @@ func (l *Lowerer) optionalCarrier(value, presence interface{}, presenceKey, valu
 	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: result, OutputName: "OptionalValue"}
 }
 
-func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name string, fallback syntax.Expression) (value, presence string, err error) {
+func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name string, fallback syntax.Expression, expected types.Type) (value, presence string, err error) {
 	valueKey := fmt.Sprintf("arg_%d", slot)
 	if fallback != nil {
 		supplied := l.optionalField(dictionary, fmt.Sprintf("has_arg_%d", slot), "")
@@ -291,7 +291,7 @@ func (l *Lowerer) lowerOptionalParameter(dictionary string, slot int, name strin
 		l.emitIfStart(group, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: supplied}, 4, "1", true)
 		l.optionalField(dictionary, valueKey, "")
 		l.emitIfElse(group)
-		defaultValue, err := l.lowerFunctionDefaultValue(fallback, true)
+		defaultValue, err := l.lowerFunctionDefaultValue(fallback, true, expected)
 		if err != nil {
 			return "", "", err
 		}

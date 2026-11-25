@@ -1270,6 +1270,15 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			a.error(CodeArgumentType, e.Target.NodeSpan(), "Void has no content view or property")
 			return types.Unknown
 		}
+		if types.PrivateValueTransport(targetType) {
+			_, coercion := schema.ContentItemClasses[strings.ToLower(e.Property)]
+			coercion = coercion || strings.EqualFold(e.Property, "boolean") || strings.EqualFold(e.Property, "string") || strings.EqualFold(e.Property, "vcard")
+			if dictionary, ok := targetType.(types.MapType); ok && types.TaggedMapValues(dictionary) && !coercion {
+				return types.NewOptional(dictionary.Value)
+			}
+			a.error(CodeTargetValueShape, e.Span, "private structured content requires an explicit conversion or Dictionary cell property")
+			return types.Unknown
+		}
 		if rec, ok := targetType.(types.RecordType); ok {
 			if f, exists := rec.Fields[e.Property]; exists {
 				return f.Type

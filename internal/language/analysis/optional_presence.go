@@ -24,6 +24,8 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
 		return a.exprPresence[expr]
 	case *syntax.IfStmt, *syntax.MenuStmt:
 		return a.controlValueHasPresence(expr)
+	case *syntax.MemberExpr:
+		return types.TaggedMapValues(a.exprTypes[node.Target])
 	case *syntax.IndexExpr:
 		if types.TaggedListElements(a.exprTypes[node.Target]) || types.TaggedMapValues(a.exprTypes[node.Target]) {
 			return true

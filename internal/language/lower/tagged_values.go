@@ -43,19 +43,24 @@ func (l *Lowerer) lowerTypedRuntimeValue(expr syntax.Expression, target types.Ty
 		return nil, nil
 	}
 	actual := l.transportType(expr)
-	if types.PrivateValueTransport(target) && !types.PrivateValueTransport(actual) {
-		if list, ok := expr.(*syntax.ListExpr); ok && types.TaggedListElements(target) {
-			return l.lowerTaggedList(list)
+	if types.PrivateValueTransport(target) {
+		switch literal := expr.(type) {
+		case *syntax.ListExpr:
+			if list, ok := presentType(target).(types.ListType); ok {
+				return l.lowerTypedList(literal, list, false)
+			}
+		case *syntax.MapExpr:
+			if dictionary, ok := presentType(target).(types.MapType); ok {
+				value, err := l.lowerTypedMapSemantic(literal, dictionary)
+				if err != nil {
+					return nil, err
+				}
+				return l.emitTaggedDictionary(value), nil
+			}
 		}
-		if dictionary, ok := expr.(*syntax.MapExpr); ok && types.TaggedMapValues(target) {
-			return l.lowerTaggedMap(dictionary)
+		if taggedStorageLayout(actual, false) != taggedStorageLayout(target, false) {
+			return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: conversion from %v to structured %v requires an explicit recursive value codec at %s", actual, target, expr.NodeSpan())
 		}
-		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: conversion from %v to private structured %v requires an explicit value codec at %s", actual, target, expr.NodeSpan())
-	}
-	if target != nil && types.PrivateValueTransport(target) &&
-		(types.TaggedListElements(target) != types.TaggedListElements(actual) ||
-			types.TaggedMapValues(target) != types.TaggedMapValues(actual)) {
-		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: incompatible private structured representations at %s", expr.NodeSpan())
 	}
 	return l.lowerRuntimeLiteral(expr)
 }
@@ -77,7 +82,9 @@ func (l *Lowerer) emitValueCell(kind string, value, presence any) *ir.Attachment
 		l.emitAction(&ir.NativeActionNode{NodeID: id,
 			AppleIdentifier: "is.workflow.actions.dictionary", OutputUUID: id,
 			OutputName: "ValueCell", Parameters: map[string]any{"WFItems": fields}})
-		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: id, OutputName: "ValueCell"}
+		result := &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: id, OutputName: "ValueCell"}
+		l.rememberTaggedRuntimeValue(result, types.JsonValue)
+		return result
 	}
 	if flag, known := presence.(string); known {
 		return emit(flag == "1")
@@ -125,6 +132,10 @@ func (l *Lowerer) lowerValueCell(expr syntax.Expression) (*ir.AttachmentToken, e
 	if err != nil {
 		return nil, err
 	}
+	return l.finishValueCell(expr, value)
+}
+
+func (l *Lowerer) finishValueCell(expr syntax.Expression, value any) (*ir.AttachmentToken, error) {
 	presence, err := l.optionalValuePresence(expr, value)
 	if err != nil {
 		return nil, err
@@ -151,44 +162,19 @@ func (l *Lowerer) lowerValueCell(expr syntax.Expression) (*ir.AttachmentToken, e
 }
 
 func (l *Lowerer) lowerTaggedList(expr *syntax.ListExpr) (any, error) {
-	items := make([]any, 0, len(expr.Elements))
-	// Each cell consumes its payload now, before any later authored element
-	// can mutate an alias. Deferred references never cross that source point.
-	for _, element := range expr.Elements {
-		cell, err := l.lowerValueCell(element)
-		if err != nil {
-			return nil, err
-		}
-		items = append(items, cell)
+	target, ok := presentType(l.transportType(expr)).(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: List cell storage has no analyzed type")
 	}
-	return items, nil
+	return l.lowerTypedList(expr, target, false)
 }
 
 func (l *Lowerer) lowerTaggedMapSemantic(expr *syntax.MapExpr) (backend.SemanticValue, error) {
-	entries := make([]backend.DictEntry, 0, len(expr.Entries))
-	expressions := make([]syntax.Expression, 0, len(expr.Entries)*2)
-	for _, entry := range expr.Entries {
-		expressions = append(expressions, entry.Key, entry.Value)
+	target, ok := presentType(l.transportType(expr)).(types.MapType)
+	if !ok {
+		return backend.SemanticValue{}, fmt.Errorf("E_TARGET_VALUE_SHAPE: Dictionary cell storage has no analyzed type")
 	}
-	laterWrites := l.semanticSiblingWrites(expressions)
-	for index, entry := range expr.Entries {
-		if err := l.requirePresentTransport(entry.Key, "Dictionary key"); err != nil {
-			return backend.SemanticValue{}, err
-		}
-		key, err := l.lowerSemanticMapKey(entry.Key)
-		if err != nil {
-			return backend.SemanticValue{}, err
-		}
-		// A value expression may mutate its own computed key.
-		key = l.captureCallSemanticValue(key, laterWrites[index*2])
-		cell, err := l.lowerValueCell(entry.Value)
-		if err != nil {
-			return backend.SemanticValue{}, err
-		}
-		entries = append(entries, backend.DictEntry{Key: key.StrVal, KeySegments: key.Segments,
-			Value: l.toSemanticValue(cell)})
-	}
-	return backend.SemanticValue{Kind: backend.ValDict, DictVal: entries}, nil
+	return l.lowerTypedMapSemantic(expr, target)
 }
 
 func (l *Lowerer) lowerTaggedMap(expr *syntax.MapExpr) (*ir.AttachmentToken, error) {
@@ -196,16 +182,25 @@ func (l *Lowerer) lowerTaggedMap(expr *syntax.MapExpr) (*ir.AttachmentToken, err
 	if err != nil {
 		return nil, err
 	}
+	return l.emitTaggedDictionary(value), nil
+}
+
+func (l *Lowerer) emitTaggedDictionary(value backend.SemanticValue) *ir.AttachmentToken {
 	id := l.GenerateUUID()
 	l.emitAction(&ir.NativeActionNode{NodeID: id, AppleIdentifier: "is.workflow.actions.dictionary",
 		OutputUUID: id, OutputName: "Dictionary", Parameters: map[string]any{"WFItems": value}})
-	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: id, OutputName: "Dictionary"}, nil
+	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: id, OutputName: "Dictionary"}
 }
 
 func (l *Lowerer) taggedIndexHasPresence(expr syntax.Expression) bool {
-	index, ok := expr.(*syntax.IndexExpr)
-	return ok && (types.TaggedListElements(l.transportType(index.Target)) ||
-		types.TaggedMapValues(l.transportType(index.Target)))
+	switch node := expr.(type) {
+	case *syntax.IndexExpr:
+		return types.TaggedListElements(l.transportType(node.Target)) || types.TaggedMapValues(l.transportType(node.Target))
+	case *syntax.MemberExpr:
+		_, coercion := lookupContentItemClass(node.Property)
+		return !coercion && types.TaggedMapValues(l.transportType(node.Target))
+	}
+	return false
 }
 
 func (l *Lowerer) decodeValueCell(cell string, element types.Type) (value, presence string) {
@@ -281,7 +276,11 @@ func (l *Lowerer) taggedDictionaryKeyPresence(input *ir.AttachmentToken, key any
 }
 
 func (l *Lowerer) lowerTaggedMapIndex(index *syntax.IndexExpr, target, key any) (*ir.AttachmentToken, error) {
-	dictionary, okay := presentType(l.transportType(index.Target)).(types.MapType)
+	return l.lowerTaggedMapAccess(index, index.Target, target, key)
+}
+
+func (l *Lowerer) lowerTaggedMapAccess(source, targetSource syntax.Expression, target, key any) (*ir.AttachmentToken, error) {
+	dictionary, okay := presentType(l.transportType(targetSource)).(types.MapType)
 	if !okay || !types.TaggedMapValues(dictionary) {
 		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Dictionary cell lookup lacks source-owned storage")
 	}
@@ -303,7 +302,7 @@ func (l *Lowerer) lowerTaggedMapIndex(index *syntax.IndexExpr, target, key any) 
 	l.emitIfElse(group)
 	l.materializeYieldValue(nil)
 	l.emitIfEnd(group, result, "")
-	l.rememberCellIndexPresence(index, presenceToken)
+	l.rememberCellIndexPresence(source, presenceToken)
 	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: result}, nil
 }
 
@@ -393,6 +392,13 @@ func (l *Lowerer) validateTaggedNativeBoundary(name string, call *syntax.CallExp
 		return nil
 	}
 	// Provenance is never a file-wide permission for new authored cells.
+	if (name == "debugLog" || name == "debugLogPrevious") && l.actions[name] == nil {
+		if l.resolvedCallConsumesRuntimeArguments(backend.ResolvedCall{DefinitionID: name}) {
+			if err := l.validateTaggedImplicitNativeInput(&ir.NativeActionNode{Parameters: map[string]any{}}); err != nil {
+				return err
+			}
+		}
+	}
 	if name == "count" && l.actions[name] == nil && call.PrimaryArg != nil && len(call.NamedArgs) == 0 {
 		if action, found := l.registry.LookupAction(name); found && action.AppleIdentifier == "is.workflow.actions.count" {
 			if _, list := presentType(l.transportType(call.PrimaryArg)).(types.ListType); list {
@@ -460,6 +466,21 @@ func (l *Lowerer) validateTaggedRawReference(expr syntax.Expression) error {
 
 func (l *Lowerer) validateTaggedOperator(expr syntax.Expression) error {
 	switch value := expr.(type) {
+	case *syntax.IfStmt, *syntax.MenuStmt:
+		if types.ContainsJSONValue(l.transportType(expr)) {
+			leaves := map[*syntax.YieldStmt]bool{}
+			if err := collectOptionalJoinYields(expr, leaves); err != nil {
+				return err
+			}
+			for leaf := range leaves {
+				if literal, ok := leaf.Value.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
+					continue
+				}
+				if !types.ContainsJSONValue(l.transportType(leaf.Value)) {
+					return fmt.Errorf("E_TARGET_VALUE_SHAPE: mixed JSON/native control values require a uniform value codec at %s", leaf.Value.NodeSpan())
+				}
+			}
+		}
 	case *syntax.BinaryExpr:
 		if types.PrivateValueTransport(l.transportType(value.Left)) || types.PrivateValueTransport(l.transportType(value.Right)) {
 			return fmt.Errorf("E_TARGET_VALUE_SHAPE: this structured operator requires an explicit value operation at %s", value.Span)
