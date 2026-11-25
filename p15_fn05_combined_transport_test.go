@@ -65,8 +65,12 @@ func TestP15FN05CombinedStructuredTransportUnit(t *testing.T) {
 			if err := p15OptionalTransportDiagnostic(diagnostics, tc); err != nil {
 				t.Fatal(err)
 			}
+			expected, updated := p15OptionalTransportConsumerBoundary(tc)
+			if !updated {
+				t.Fatal("missing independently declared function transport boundary")
+			}
 			var raw, err = CompileSourceToPlist("p15-fn05-limitation.cherri", tc.source)
-			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) || !strings.Contains(err.Error(), tc.context) {
+			if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), expected.code) || !strings.Contains(err.Error(), expected.message) {
 				t.Fatalf("nested absence lost precise fail-closed limitation: bytes=%d error=%v", len(raw), err)
 			}
 			for _, fault := range []string{"code", "start", "end", "context", "severity", "missing", "extra"} {
@@ -96,18 +100,19 @@ func TestP15FN05CombinedStructuredTransportUnit(t *testing.T) {
 		})
 	}
 	t.Run("nested_native_list_limitation", func(t *testing.T) {
-		// This is the exact previously drafted unsupported source, now explicitly
-		// classified as a known target limitation rather than a positive List row.
-		var tc = p15NativeListAnalysisCase{name: "function_nested_list", source: "function echo(value:List<AnyContent>)->List<AnyContent>{return value}\nlet result=echo([0,false,\"\",[],{},[1,2]])\nreturn result\n", targets: []string{"[]", "[1,2]"}}
+		// The authored source and all causal controls are retained. Its nested
+		// value is lossless internally; this ordinary AnyContent parameter cannot
+		// erase that private representation without an explicit conversion.
+		var tc = p15TaggedBoundaryCase{name: "function_nested_list", source: "function echo(value:List<AnyContent>)->List<AnyContent>{return value}\nlet result=echo([0,false,\"\",[],{},[1,2]])\nreturn result\n", target: "[0,false,\"\",[],{},[1,2]]", code: analysis.CodeTargetValueShape, message: "function parameter cannot erase a structured representation"}
 		var diagnostics = p15TypeDiagnostics(t, tc.source)
-		if len(diagnostics) != 2 {
+		if len(diagnostics) != 1 {
 			t.Fatalf("exact nested List limitation count: %#v", diagnostics)
 		}
-		if err := p15NativeListAnalysisError(diagnostics, tc); err != nil {
+		if err := p15TaggedExactBoundary(diagnostics, tc); err != nil {
 			t.Fatal(err)
 		}
 		var raw, err = CompileSourceToPlist("p15-fn05-nested-list-limitation.cherri", tc.source)
-		if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), "E_NESTED_NATIVE_LIST") {
+		if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), tc.code) || !strings.Contains(err.Error(), tc.message) {
 			t.Fatalf("nested List lost explicit fail-closed limitation: bytes=%d error=%v", len(raw), err)
 		}
 		for _, fault := range []string{"code", "start", "end", "context", "severity", "missing", "extra"} {
@@ -125,11 +130,11 @@ func TestP15FN05CombinedStructuredTransportUnit(t *testing.T) {
 				case "severity":
 					changed[0].Severity = analysis.SeverityWarning
 				case "missing":
-					changed = changed[:1]
+					changed = nil
 				case "extra":
 					changed = append(changed, changed[0])
 				}
-				if p15NativeListAnalysisError(changed, tc) == nil {
+				if p15TaggedExactBoundary(changed, tc) == nil {
 					t.Fatal("damaged precise nested List limitation accepted")
 				}
 			})

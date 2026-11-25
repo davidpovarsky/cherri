@@ -122,6 +122,10 @@ func p15OptionalDictionaryBoundaryError(diagnostics []analysis.Diagnostic, tc p1
 func TestP15OptionalDictionaryRejectsUnprovenOrigins(t *testing.T) {
 	for _, tc := range p15OptionalDictionaryNegatives() {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.name == "optional_entry" {
+				p15CheckOriginalOwnedOptionalSelection(t, tc)
+				return
+			}
 			if err := p15OptionalDictionaryBoundaryError(p15TypeDiagnostics(t, tc.source), tc); err != nil {
 				t.Fatal(err)
 			}

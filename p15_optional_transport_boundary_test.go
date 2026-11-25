@@ -35,7 +35,44 @@ func p15OptionalTransportCases() []p15OptionalTransportCase {
 		{"after_effect", "text(\"BEFORE_UNSUPPORTED_OPTIONAL\")\nlet value={\"present\":none}\ngetVariable(value)", "none", "Dictionary value"},
 	}
 }
+
+// Construction of an owned structured value is now supported. Keep each
+// original specimen, but assert its precise native-consumer/type-erasure
+// boundary instead of rejecting the earlier lossless construction.
+func p15OptionalTransportConsumerBoundary(tc p15OptionalTransportCase) (p15TaggedBoundaryCase, bool) {
+	expected := p15TaggedBoundaryCase{name: tc.name, source: tc.source, code: analysis.CodeTargetValueShape}
+	switch tc.name {
+	case "map_literal", "map_nested", "list_literal", "map_array", "map_bound", "list_bound",
+		"map_inferred_absence", "list_inferred_absence", "map_value_branch", "map_bound_branch", "after_effect":
+		expected.target = "value"
+		expected.message = "getVariable requires an explicit native/JSON conversion for structured values"
+	case "list_nested_none":
+		expected.target = "[false,none,\"\"]"
+		expected.code = analysis.CodeArgumentType
+		expected.message = "argument for value expects List<AnyContent>, got List<Bool | Unknown? | Text>"
+	case "map_nested_none":
+		expected.target = "{\"present\":none,\"empty\":\"\"}"
+		expected.code = analysis.CodeArgumentType
+		expected.message = "argument for value expects Map<Text, AnyContent>, got Map<Text, Unknown? | Text>"
+	case "original_json_nil", "original_json_none":
+		start := strings.Index(tc.source, "body: {")
+		end := strings.Index(tc.source, ",\n\theaders:")
+		if start < 0 || end <= start {
+			return expected, true // the exact-boundary oracle rejects an empty target
+		}
+		expected.target = tc.source[start+len("body: ") : end]
+		expected.message = "jsonRequest requires an explicit native/JSON conversion for structured values"
+	default:
+		return expected, false
+	}
+	return expected, true
+}
+
 func p15OptionalTransportDiagnostic(diagnostics []analysis.Diagnostic, tc p15OptionalTransportCase) error {
+	if expected, updated := p15OptionalTransportConsumerBoundary(tc); updated {
+		return p15TaggedExactBoundary(diagnostics, expected)
+	}
+
 	var errors []analysis.Diagnostic
 	for _, d := range diagnostics {
 		if d.Severity == analysis.SeverityError {

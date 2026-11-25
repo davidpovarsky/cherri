@@ -161,6 +161,10 @@ func p15OptionalIndexBoundaryError(diags []analysis.Diagnostic, tc p15OptionalIn
 func TestP15OptionalStaticIndexRejectsUnprovenPresence(t *testing.T) {
 	for _, tc := range p15OptionalIndexNegatives() {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.name == "optional_element" || tc.name == "optional_result_element" {
+				p15CheckOriginalOwnedOptionalSelection(t, tc)
+				return
+			}
 			diagnostics := p15TypeDiagnostics(t, tc.source)
 			if err := p15OptionalIndexBoundaryError(diagnostics, tc); err != nil {
 				t.Fatal(err)
