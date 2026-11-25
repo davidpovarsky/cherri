@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"sort"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 )
@@ -24,7 +25,23 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 	controlPositions := map[string][]int{}
 	controlKinds := map[string]string{}
 	controlStack := []string{}
+	type nativeScope struct {
+		group  string
+		branch int
+	}
+	controlBranches := map[string]int{}
+	scopes := make([][]nativeScope, len(actions))
+	variableWrites := map[string][]int{}
 	for i, action := range actions {
+		for _, group := range controlStack {
+			scopes[i] = append(scopes[i], nativeScope{group, controlBranches[group]})
+		}
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" ||
+			action.WFWorkflowActionIdentifier == "is.workflow.actions.appendvariable" {
+			if name, okay := action.WFWorkflowActionParameters["WFVariableName"].(string); okay && name != "" {
+				variableWrites[name] = append(variableWrites[name], i)
+			}
+		}
 		if id, ok := action.WFWorkflowActionParameters["UUID"].(string); ok && id != "" {
 			if _, duplicate := positions[id]; duplicate {
 				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: ambiguous native output identity at private-input boundary")
@@ -66,6 +83,9 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 			default:
 				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native control mode is invalid")
 			}
+			if mode == "1" {
+				controlBranches[group]++
+			}
 			controlPositions[group] = append(controlPositions[group], i)
 		}
 	}
@@ -86,7 +106,61 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 	memo := map[int]observation{}
 	var producer func(int) (bool, error)
 	var output func(string) (bool, error)
-	var visit func(reflect.Value, int) (bool, error)
+	var visit func(reflect.Value, int, int) (bool, error)
+	var variable func(string, int) (bool, error)
+	type variableRead struct {
+		name   string
+		before int
+	}
+	variableMemo := map[variableRead]observation{}
+	variableActive := map[variableRead]bool{}
+	variable = func(name string, before int) (private bool, err error) {
+		if name == "" || before < 0 || before >= len(actions) {
+			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: invalid native variable snapshot")
+		}
+		read := variableRead{name, before}
+		if saved, found := variableMemo[read]; found {
+			return saved.private, saved.err
+		}
+		if variableActive[read] {
+			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: cyclic native variable snapshot")
+		}
+		variableActive[read] = true
+		defer func() {
+			delete(variableActive, read)
+			variableMemo[read] = observation{private, err}
+		}()
+		writes := variableWrites[name]
+		if len(writes) == 0 {
+			return variables[name], nil
+		}
+		// A native GetVariable observes its value at that action, not the
+		// final value of a source binding or a later helper's assignment.
+		for i := sort.SearchInts(writes, before) - 1; i >= 0; i-- {
+			index := writes[i]
+			writer, reader := scopes[index], scopes[before]
+			dominates := len(writer) <= len(reader)
+			exclusive := false
+			for j := 0; j < len(writer) && j < len(reader); j++ {
+				if writer[j] == reader[j] {
+					continue
+				}
+				// Different alternatives of the same control cannot both
+				// execute on this read's path. Sequential controls can.
+				exclusive = writer[j].group == reader[j].group
+				dominates = false
+				break
+			}
+			if exclusive {
+				continue
+			}
+			if !dominates {
+				return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: conditional native variable write has no unique snapshot")
+			}
+			return producer(index)
+		}
+		return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native variable read precedes its established snapshot")
+	}
 	output = func(id string) (bool, error) {
 		if outputs[id] {
 			return true, nil
@@ -101,7 +175,7 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 		}
 		return false, nil
 	}
-	visit = func(value reflect.Value, depth int) (bool, error) {
+	visit = func(value reflect.Value, depth, before int) (bool, error) {
 		if depth > 128 {
 			return false, fmt.Errorf("E_TARGET_VALUE_SHAPE: native input reference nesting exceeds the bounded observer")
 		}
@@ -124,7 +198,7 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 				case backend.RefActionResult, backend.RefLoopResult:
 					return output(reference.ProducerID)
 				case backend.RefMutableBinding:
-					return variables[reference.ProducerName], nil
+					return variable(reference.ProducerName, before)
 				}
 			}
 		}
@@ -144,13 +218,13 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 				if name == "" {
 					name, _ = nativeResultString(value.MapIndex(key("OutputName")))
 				}
-				if variables[name] {
-					return true, nil
+				if private, err := variable(name, before); private || err != nil {
+					return private, err
 				}
 			}
 			iter := value.MapRange()
 			for iter.Next() {
-				found, err := visit(iter.Value(), depth+1)
+				found, err := visit(iter.Value(), depth+1, before)
 				if found || err != nil {
 					return found, err
 				}
@@ -169,22 +243,22 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 				if name == "" {
 					name, _ = nativeResultString(value.FieldByName("OutputName"))
 				}
-				if variables[name] {
-					return true, nil
+				if private, err := variable(name, before); private || err != nil {
+					return private, err
 				}
 			}
 			for i := 0; i < value.NumField(); i++ {
 				if !value.Field(i).CanInterface() {
 					continue
 				}
-				found, err := visit(value.Field(i), depth+1)
+				found, err := visit(value.Field(i), depth+1, before)
 				if found || err != nil {
 					return found, err
 				}
 			}
 		case reflect.Array, reflect.Slice:
 			for i := 0; i < value.Len(); i++ {
-				found, err := visit(value.Index(i), depth+1)
+				found, err := visit(value.Index(i), depth+1, before)
 				if found || err != nil {
 					return found, err
 				}
@@ -225,7 +299,7 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 			if saved.reference == nil {
 				return false, nil
 			}
-			return visit(reflect.ValueOf(saved.reference), 0)
+			return visit(reflect.ValueOf(saved.reference), 0, index)
 		}
 		switch action.WFWorkflowActionIdentifier {
 		case "is.workflow.actions.nothing":
@@ -238,15 +312,31 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 			}
 			return producer(index - 1)
 		case "is.workflow.actions.getvariable":
-			return visit(reflect.ValueOf(parameters["WFVariable"]), 0)
+			return visit(reflect.ValueOf(parameters["WFVariable"]), 0, index)
 		case "is.workflow.actions.setvariable", "is.workflow.actions.appendvariable":
-			name, _ := parameters["WFVariableName"].(string)
-			if variables[name] {
-				return true, nil
+			// Omitted WFInput captures the actual preceding native content;
+			// an explicitly empty input remains an explicit clear.
+			var inputPrivate bool
+			var inputError error
+			if input, supplied := parameters["WFInput"]; supplied {
+				inputPrivate, inputError = visit(reflect.ValueOf(input), 0, index)
+			} else if index > 0 {
+				inputPrivate, inputError = producer(index - 1)
 			}
-			return visit(reflect.ValueOf(parameters["WFInput"]), 0)
+			if inputError != nil {
+				return false, inputError
+			}
+			if action.WFWorkflowActionIdentifier == "is.workflow.actions.appendvariable" {
+				name, _ := parameters["WFVariableName"].(string)
+				previous, failure := variable(name, index)
+				if failure != nil {
+					return false, failure
+				}
+				return previous || inputPrivate, nil
+			}
+			return inputPrivate, nil
 		case "is.workflow.actions.list", "is.workflow.actions.dictionary":
-			return visit(reflect.ValueOf(parameters["WFItems"]), 0)
+			return visit(reflect.ValueOf(parameters["WFItems"]), 0, index)
 		case "is.workflow.actions.conditional", "is.workflow.actions.choosefrommenu",
 			"is.workflow.actions.repeat.count", "is.workflow.actions.repeat.each":
 			group, _ := parameters["GroupingIdentifier"].(string)
@@ -255,7 +345,7 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 				// its input kind without inventing a result UUID for the opener.
 				start := controlPositions[group][0]
 				if input, supplied := actions[start].WFWorkflowActionParameters["WFInput"]; supplied {
-					return visit(reflect.ValueOf(input), 0)
+					return visit(reflect.ValueOf(input), 0, start)
 				}
 				if action.WFWorkflowActionIdentifier == "is.workflow.actions.repeat.count" {
 					if start == 0 {
@@ -294,7 +384,7 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 					terminal--
 				}
 				if terminal <= begin {
-					return visit(reflect.ValueOf(actions[start].WFWorkflowActionParameters["WFInput"]), 0)
+					return visit(reflect.ValueOf(actions[start].WFWorkflowActionParameters["WFInput"]), 0, start)
 				}
 				return producer(terminal)
 			}
@@ -310,7 +400,7 @@ func (s *CanonicalBackendSession) CurrentNativeInputUsesPrivateValue(outputs, va
 					}
 				}
 				if len(boundaries) == 2 {
-					return visit(reflect.ValueOf(actions[start].WFWorkflowActionParameters["WFInput"]), 0)
+					return visit(reflect.ValueOf(actions[start].WFWorkflowActionParameters["WFInput"]), 0, start)
 				}
 			case "is.workflow.actions.choosefrommenu":
 				if len(boundaries) < 3 {
