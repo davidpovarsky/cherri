@@ -58,7 +58,7 @@ class PhaseTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        self.root = Path(self.temporary.name).resolve(strict=True)
         self.repo = self.root / "repo"
         self.repo.mkdir()
 
@@ -194,6 +194,37 @@ class PhaseTests(unittest.TestCase):
 
     def test_failed_open_original_is_retained_in_sealed_packet(self):
         self.assert_failed_prepare_packet("launch")
+
+    def test_temporary_parent_alias_is_resolved_before_sealing(self):
+        physical = self.root / "physical"
+        physical.mkdir()
+        alias = self.root / "temp-alias"
+        alias.symlink_to(physical, target_is_directory=True)
+        original_factory = tempfile.TemporaryDirectory
+        with mock.patch.object(tempfile, "TemporaryDirectory",
+                               side_effect=lambda: original_factory(dir=alias)):
+            nested = PhaseTests(
+                "test_sealed_packet_uses_existing_recipient_and_public_has_no_raw_device")
+            try:
+                nested.setUp()
+                nested.test_sealed_packet_uses_existing_recipient_and_public_has_no_raw_device()
+                self.assertEqual(nested.root, nested.root.resolve(strict=True))
+            finally:
+                nested.doCleanups()
+
+    def test_untrusted_recipient_ancestor_alias_remains_rejected(self):
+        alias = self.root / "untrusted-alias"
+        alias.symlink_to(self.root, target_is_directory=True)
+        recipient = self.repo / boundary.RECIPIENT
+        recipient.parent.mkdir(parents=True)
+        recipient.write_bytes((Path(__file__).resolve().parents[2] /
+                               boundary.RECIPIENT).read_bytes())
+        phase = boundary.Boundary(alias / "repo", self.root / "packet", UDID, IDENTITY,
+                                  runner=Runner(), prepare=prepared)
+        self.assertTrue(phase.run_session())
+        with self.assertRaisesRegex(boundary.observation.Rejected, "ANCESTOR_NOT_DIRECTORY"):
+            phase.seal()
+        self.assertEqual(list(phase.public.iterdir()), [])
 
     def test_identity_types_and_phase_are_not_coerced(self):
         for key, value in (("runAttempt", True), ("runId", 123), ("phase", "any-command"),
