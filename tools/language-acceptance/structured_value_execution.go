@@ -45,7 +45,7 @@ var structuredValueInventory = func() structuredValueInventoryFile {
 }()
 
 // This digest enrolls the reviewed cohort, original 330 identities and sources.
-const structuredValueInventorySHA256 = "STRUCTURED_INVENTORY_DIGEST"
+const structuredValueInventorySHA256 = "e13092e2a74d0a41d050d3191e7d1439156c2e27b11785e45b053529c3e2674c"
 const structuredValueCohortID = "structured-values-T05-L01-F04-RP20"
 const structuredValueCohortPrefix = "structured-values-cohort"
 

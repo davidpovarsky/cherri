@@ -337,5 +337,34 @@ func TestStructuredValueActualProductionEvidence(t *testing.T) {
 			t.Fatal("unexecuted requirement inherited success", row.ID)
 		}
 	}
+	if r.artifactDir != "" {
+		retained, err := stateEvidenceDirectory(r, "structured-values-intake-")
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, original := range []struct {
+			name  string
+			value any
+		}{
+			{"evidence-manifest.original.json", manifest},
+			{"intake-report.original.json", report},
+			{"execution-audit.original.json", json.RawMessage(raw)},
+		} {
+			encoded, err := json.MarshalIndent(original.value, "", "  ")
+			if err != nil {
+				t.Fatal(err)
+			}
+			f, err := os.OpenFile(filepath.Join(retained, original.name), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, writeErr := f.Write(append(encoded, '\n'))
+			closeErr := f.Close()
+			if writeErr != nil || closeErr != nil {
+				t.Fatalf("retain original intake: write=%v close=%v", writeErr, closeErr)
+			}
+		}
+		t.Logf("STRUCTURED_VALUE_COHORT_ORIGINAL_INTAKE path=%s", retained)
+	}
 	t.Logf("STRUCTURED_VALUE_COHORT_ACTUAL source=%s requirements=4 records=8 root_original=260 internal_original=70 named=%d closure_complete=false", r.implSHA, len(structuredValueInventory.Events))
 }
