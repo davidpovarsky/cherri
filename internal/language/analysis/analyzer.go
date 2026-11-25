@@ -94,6 +94,7 @@ type Analyzer struct {
 	loopResultLocalBody    *syntax.BlockStmt
 	loopResultLocalPlan    *schema.LoopResultLocalPlan
 	loopResultLocalValues  map[syntax.Expression]types.Type
+	loopResultEmptyTypes   map[*syntax.ListExpr]types.Type // one source-bound contextual replay only
 	topLevelVars           map[string]source.Span
 	yieldedTypes           []types.Type
 	importStack            []string
@@ -544,6 +545,17 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	for declaration, uses := range a.setupUses {
 		if uses == 0 {
 			a.warn(CodeUnusedSetup, declaration.Span, fmt.Sprintf("setup %q is unused and emits no import question", declaration.Name))
+		}
+	}
+	// A first pass can discover concrete types on later stored versions. Replay
+	// once with context only for proven authored empty literals. beginProgram
+	// resets symbols, registry, expression facts and diagnostics; no AST is copied
+	// or rewritten, and every original diagnostic is evaluated again.
+	if a.loopResultEmptyTypes == nil {
+		if inferred := a.inferLocalLoopEmptyLists(); len(inferred) != 0 {
+			a.loopResultEmptyTypes = inferred
+			defer func() { a.loopResultEmptyTypes = nil }()
+			a.Analyze(prog)
 		}
 	}
 }
@@ -1192,6 +1204,11 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	delete(a.exprPresence, expr)
 	diagnosticStart := len(a.diagnostics)
 	t := a.analyzeExpressionInternal(expr, scope)
+	if literal, emptyList := expr.(*syntax.ListExpr); emptyList && len(literal.Elements) == 0 {
+		if contextual := a.loopResultEmptyTypes[literal]; contextual != nil {
+			t = contextual
+		}
+	}
 	a.recordLocalLoopResult(expr, t, scope)
 	a.recordDictionaryProvenance(expr, scope)
 	a.exprPresence[expr] = a.expressionHasPresence(expr, t, scope)
@@ -1581,11 +1598,17 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return a.analyzeScopedBlockCall(call, scope)
 	}
 	if name, ok := call.Callee.(*syntax.IdentExpr); ok {
-		if action, found := a.registry.LookupAction(name.Name); found && action.ScopedBlock && !a.userFunctions[name.Name] {
+		if action, found := a.registry.LookupAction(name.Name); found && action.ScopedBlock && !action.ScopedBlockOptional && !a.userFunctions[name.Name] {
 			a.error("E_BLOCK_REQUIRED", call.Span, "this compiler construct requires a trailing scoped block on the same line")
 			return types.Unknown
 		}
 	}
+	return a.analyzeCallArguments(call, scope)
+}
+
+// Bind the original call identity for both ordinary calls and compiler-owned
+// inline callbacks. A copied call would lose source-owned type/provenance facts.
+func (a *Analyzer) analyzeCallArguments(call *syntax.CallExpr, scope *Scope) types.Type {
 	var callName string
 	switch c := call.Callee.(type) {
 	case *syntax.IdentExpr:

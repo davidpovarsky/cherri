@@ -400,10 +400,12 @@ func (e *CallExpr) expressionNode()       {}
 
 // ScopedBlock is an inline lexical body, not a first-class function or a
 // Shortcut invocation. Its final expression (or final yield) supplies its value.
-// Block parameters and escaping closures are deliberately not supported yet.
+// Parameters belong to the owning compiler construct; these bodies are not
+// escaping closures. Actual declaration identities survive analysis/lowering.
 type ScopedBlock struct {
-	Span source.Span
-	Body *BlockStmt
+	Span       source.Span
+	Body       *BlockStmt
+	Parameters []*ParameterDecl
 }
 
 func (b *ScopedBlock) NodeSpan() source.Span { return b.Span }

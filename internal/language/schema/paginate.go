@@ -119,7 +119,7 @@ func init() {
 	}
 	result := types.NewList(types.NewMap(types.Text, types.AnyContent))
 	compilerMacroSchemas["paginate"] = &ActionSchema{
-		ID: "paginate", CallableName: "paginate", Module: "web", CompilerConstruct: true,
+		ID: "paginate", CallableName: "paginate", Module: "web", CompilerConstruct: true, ScopedBlock: true, ScopedBlockOptional: true,
 		AppleIdentifier: "is.workflow.actions.getvariable", PrimaryParameterID: "startURL",
 		Parameters: []ParameterSchema{
 			literalText("startURL", "Initial HTTP(S) URL", "WFPaginateStartURL", nil, false),
@@ -139,7 +139,7 @@ func init() {
 		OutputType: result, OutputTypeName: result.String(), RawOutputType: "array",
 		Docs: ActionDocs{
 			Title: "Paginate Bounded Dictionary Pages", Category: "web",
-			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. No Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. An optional { page in ... } body receives the immutable native page Dictionary once per validated page, preserves lexical captured writes and must be Void; either zero cap skips it. Typed item selectors/returned items, Link parsing, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.",
 			InsertionSnippet: "paginate(\"https://example.invalid/pages/one.json\")",
 		},
 		Builtin: true, EvidenceStatus: EvidenceInferred,

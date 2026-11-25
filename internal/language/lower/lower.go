@@ -5058,10 +5058,16 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		return l.lowerScopedBlockCall(call)
 	}
 	if name, ok := call.Callee.(*syntax.IdentExpr); ok {
-		if action, found := l.registry.LookupAction(name.Name); found && action.ScopedBlock && l.functions[name.Name] == nil {
+		if action, found := l.registry.LookupAction(name.Name); found && action.ScopedBlock && !action.ScopedBlockOptional && l.functions[name.Name] == nil {
 			return nil, fmt.Errorf("E_BLOCK_REQUIRED at %s: %s requires a trailing scoped block", call.Span, name.Name)
 		}
 	}
+	return l.lowerCallArguments(call, nil)
+}
+
+// Keep argument evaluation and canonical binding shared with ordinary calls.
+// The optional compiler callback carries the original call/body identities.
+func (l *Lowerer) lowerCallArguments(call *syntax.CallExpr, pageCallback *backend.ScopedPageCallback) (interface{}, error) {
 	var actionName string
 	switch c := call.Callee.(type) {
 	case *syntax.IdentExpr:
@@ -5979,8 +5985,18 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if l.emitErr != nil {
 			return nil, l.emitErr
 		}
-		outUUID, err := l.session.EmitResolvedCall(resolvedCall)
-		if err != nil {
+		var outUUID string
+		var emitError error
+		if pageCallback != nil {
+			pagination, okay := l.session.(backend.ScopedPaginationSession)
+			if !okay {
+				return nil, fmt.Errorf("E_PAGINATE_BACKEND: canonical page callback backend is required")
+			}
+			outUUID, emitError = pagination.EmitScopedPaginateCall(resolvedCall, *pageCallback)
+		} else {
+			outUUID, emitError = l.session.EmitResolvedCall(resolvedCall)
+		}
+		if err := emitError; err != nil {
 			return nil, err
 		}
 		l.lastEmittedIdentifier = resolvedCall.AppleIdentifier

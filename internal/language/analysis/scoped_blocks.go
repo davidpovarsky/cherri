@@ -18,6 +18,13 @@ func (a *Analyzer) analyzeScopedBlockCall(call *syntax.CallExpr, scope *Scope) t
 		a.error("E_BLOCK_UNSUPPORTED", call.Span, "this call does not accept a scoped block; use for/yield to collect Repeat Results")
 		return types.Unknown
 	}
+	if name.Name == "paginate" {
+		return a.analyzePaginateBlock(call, scope, contract)
+	}
+	if call.Block != nil && len(call.Block.Parameters) != 0 {
+		a.error("E_BLOCK_PARAMETERS", call.Span, "this scoped construct does not accept block parameters")
+		return types.Unknown
+	}
 	if name.Name == "cache" {
 		return a.analyzeCacheBlock(call, scope, contract)
 	}
@@ -51,7 +58,10 @@ func (a *Analyzer) analyzeScopedBlockCall(call *syntax.CallExpr, scope *Scope) t
 }
 
 func (a *Analyzer) analyzeScopedValueBody(body *syntax.BlockStmt, scope *Scope) types.Type {
-	blockScope := NewScope(scope)
+	return a.analyzeScopedValueBodyInScope(body, NewScope(scope))
+}
+
+func (a *Analyzer) analyzeScopedValueBodyInScope(body *syntax.BlockStmt, blockScope *Scope) types.Type {
 	previousValueBlock, previousYields := a.inValueBlk, a.yieldedTypes
 	a.inValueBlk, a.yieldedTypes = true, nil
 	defer func() { a.inValueBlk, a.yieldedTypes = previousValueBlock, previousYields }()

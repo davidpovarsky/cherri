@@ -1,0 +1,378 @@
+{
+  "schema": "cherri.original-macro-obligations/1",
+  "preparedAt": "2026-11-25T17:02:51.213752+00:00",
+  "reviewedSource": "4f1bb436dec91a051eacf40f5987ad57634c2173",
+  "reviewedTree": "d0904403a6c9eb4a84b99cb43a0942fee0d736e3",
+  "masterTask": "1220544599390563",
+  "contractSnapshot": {
+    "path": "/mnt/development/projects/evidence/cherri-p10r15-paginate-callback-20261125/source-preparation-01/asana-macro-original-tasks.selected-fields.json",
+    "sha256": "b2e2850395419f7fe7c96fbf8da122f3c207fd2098c52e94c6490c2efb9c04dd"
+  },
+  "purpose": "Original completion obligations separate from implementation milestones; not generated acceptance results.",
+  "formalAcceptanceGranted": false,
+  "nativeExecutionPerformedByInventory": false,
+  "entries": [
+    {
+      "id": "require",
+      "task": "1220544599477512",
+      "qualified": "Selected typed presence/type/non-empty guards and original producer forwarding exist in both frontends; require remains semantic in Release.",
+      "sourceWork": [
+        "Qualify and, where failing, repair the complete false/zero/null/empty/native-object matrix on the joined source.",
+        "Preserve one evaluation, exact original object/reference and explicit failure diagnostics across nested controls and mutable inputs; do not treat private carrier containers as ordinary native values."
+      ],
+      "native": [
+        "Reproduce and resolve the original require-zero RNE/BNE counterexample. The later explicit Number pilot did not obtain a correlated callback and did not repair that evidence.",
+        "Prove success/failure, Alert/Stop, cancellation and typed File/Dictionary/List behavior on the release candidate and physical iPad where required."
+      ],
+      "observations": [
+        "44386191992: RNE/BNE were Y instead of N.",
+        "44408371761: FAIL_RUNTIME_PRESERVED; no correlated shortcut callback, not a numeric result."
+      ],
+      "taskName": "[P0][MACROS][OPEN] Cherri — require() — אימות תנאי/טיפוס/ערך והפסקה עם אבחון ברור",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: require(condition,message:\"...\") and/or require(value,type:\"dictionary\",nonEmpty:true,message:\"Missing response\"). Differentiate from existing debugAssert: typed validation and return SAME original typed value on success, explicit stop/error on failure; if redundant to existing macro/native action choose extension rather than duplicate.\nWHERE: shared macro module or debugAssert; actions/basic.cherri getType and native condition/Stop shortcut; Legacy/V2 output graph.\nTEST: true/false, number 0, Bool false, null, empty text/list/dict, wrong type, dictionary, file, escaped message, nested If/Repeat, no double evaluation, native producer/consumer link and minimal action count. Runtime error path on real iPad.\nDONE: strict fail-closed check, typed passthrough and meaningful diagnostics.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544599477512",
+      "originalNotesSHA256": "a2a62f6c8d5d9a1f9762dc4c33abd89509cc463c0b54ce23faf9ff90611032bf",
+      "componentCommits": [
+        {
+          "reference": "2504d8d",
+          "resolved": "2504d8d162e12cbc905f76085a4b9a0aa082abfc"
+        },
+        {
+          "reference": "e9fea23",
+          "resolved": "e9fea2354d2bfc7244c728e0985e30e4e88b74b6"
+        },
+        {
+          "reference": "4367786",
+          "resolved": "4367786d980b7137c1143f3a94f44d7f3a8bbc92"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "label",
+      "task": "1220544718902445",
+      "qualified": "Per-entry sidecar metadata and six declared modes have component compiler/graph qualification; unlabeled plain logging retains its single append and raw object/UUID.",
+      "sourceWork": [
+        "Retain all six flag modes, mutually exclusive preview options, per-entry range association, immediate item Creation Date and original downstream object/reference.",
+        "Complete any source failures exposed by native File/class/cardinality/display acceptance; no coercion or synthetic object replacement as a workaround."
+      ],
+      "native": [
+        "Complete all six modes in Legacy and V2 on the final source, including multiple differently labeled native types, empty/Unicode labels, date and visual display.",
+        "A separate Date diagnostic is not the full label matrix. Preserve all failed/cancelled jobs and require original output type/value/cardinality and File bytes."
+      ],
+      "observations": [
+        "44672249369: original 12-job matrix ended 10 FAILED, 2 CANCELLED.",
+        "44705639934: separate Date diagnostic 27/27; bounded evidence only."
+      ],
+      "taskName": "[P0][MACROS][OPEN] Cherri — debugLog(label:) — תווית לפלטים בלי להמיר אובייקטים",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nPURPOSE: extend existing debugLog(label:\"API Response\", withDates:true, showLogs:true). Existing six flag modes must continue unchanged: plain logging = one native appendvariable; withDates captures Creation Date immediately after producer even without display; showLogs typed Quick Look / Repeat Item->Set Name->Quick Look; showLogsAsText explicitly formats text.\nDESIGN: label per entry, not one label for whole list; distinguish label+Creation Date on native display. Inspect user supplied native sample and current debugDatedNamedLogItem; preserve original types and original __cherri_debug_log. Determine how to associate labels without mismatched sidecar lists or synthetic conversions; if cannot keep native semantics, document constraint and provide safe alternative.\nWHERE: debug_stdlib.go macros/catalog, action.go legacy, language_backend_adapter.go V2, schema/regeneration and docs.\nTEST: multiple differently labeled items, dict/list/file/number/date, empty/unicode labels, withDates on/off, showLogs and showLogsAsText mutually exclusive, same UUID and output original unchanged, no additional operations when label omitted; iPad actual display.\nDONE: genuinely per-entry labels with type fidelity; baseline logging overhead preserved.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544718902445",
+      "originalNotesSHA256": "e31a6cb105f57ed29549e0b38e4f6cc13a4d74cfd2480ebb6fb86ac22a07ed06",
+      "componentCommits": [
+        {
+          "reference": "c4b6190be09b4a2f7dce166ffe0ab1d99302b074",
+          "resolved": "c4b6190be09b4a2f7dce166ffe0ab1d99302b074"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "export",
+      "task": "1220544665232213",
+      "qualified": "Default safe envelope/redaction, explicit Text-only Base64 payload, guarded item Creation Date and opt-in labels are implemented. Metadata component joined 222 distinct Go identities in two processes; independent 48-graph model covers 720 cases plus stress/fault controls.",
+      "sourceWork": [
+        "Complete the original structured dictionary/list/number/Bool/null/date payload support matrix or explicit per-item unsupported status; preserve type distinctions and original raw log.",
+        "Complete selective sensitive-field redaction and explicit binary/reference policy. Current all-payload redaction is a bounded default, not selective redaction.",
+        "Produce/verify the requested local returned File, filename/path/permissions, UTF-8 and JSON/text formats without implicit upload/share/sync; no File-class claim from Set Name/Text alone."
+      ],
+      "native": [
+        "Actual returned File, empty Text/cardinality, item Creation Date 0/1/many/type, label association, permissions and malformed/unserializable/native types.",
+        "1/1000-entry memory/action-count and physical iPad behavior; generated graph/model results do not establish Apple File/date behavior."
+      ],
+      "observations": [
+        "Existing native File counterevidence is not superseded by PoC/F01 or a signed header.",
+        "debugExportTrace is a separate QA envelope and cannot satisfy user-facing debugExport."
+      ],
+      "taskName": "[P0][MACROS][OPEN] Cherri — debugExport() — קובץ לוג JSON/TXT טיפוסי עם סינון מידע רגיש",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: debugExport(format:\"json\",includeDates:true,includeTypes:true,redactSensitive:true). Explicit local file output/returned file object, never implicit upload/share/sync or external server. Export accumulated __cherri_debug_log once, not per item.\nDEFINE: safe schema session/entries with label,date,type,normalized serializable payload,error; dictionary/list/date/number/Bool/null distinctions; for File/Image and other native objects, use metadata/reference/explicit opt-in to binary. Do not silently pretend lossy JSON conversion is lossless. Privacy: redact tokens, headers, Authorization, URL queries and sensitive contents by default. Correct UTF8/Hebrew/newlines, invalid/unserializable types have explicit error/status.\nWHERE: dedicated debug_export macro integrated with debug_stdlib.go and typed codec; Native file actions/temporary files and compiler registry.\nTEST: valid JSON parser roundtrip, JSON escaping, exports after clearing, 1/1000 entries, binary, malformed input, type matrix, file creation/permissions on iPad, no auto-share; benchmark memory and action count. Reuse benchmark task 1220486726941364.\nDONE: useful inspectable safe diagnostic artifact on iPad with no loss of main typed log.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232213",
+      "originalNotesSHA256": "c2a0df20c5a705caaf565e76e253d89c392c8edf470e1995f627ecf84fd35c59",
+      "componentCommits": [
+        {
+          "reference": "3d06ed0ec40a8826fd17582c752c9dbb567b6e45",
+          "resolved": "3d06ed0ec40a8826fd17582c752c9dbb567b6e45"
+        },
+        {
+          "reference": "fa2a204fd45ddcaaaf123ffe3ed20f9df6510f42",
+          "resolved": "fa2a204fd45ddcaaaf123ffe3ed20f9df6510f42"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "blocks",
+      "task": "1220544718901241",
+      "qualified": "Legacy and V2 share measure value/Void lifecycle, actual-AST lexical storage, captured writes, original loop-cell provenance and nested scoped bodies. Void and value-control boundaries remain explicit.",
+      "sourceWork": [
+        "Implement typed parameters and optional block syntax through the existing parsers/AST/IR, not text substitution or a second registry.",
+        "Preserve lexical scope/shadowing, actual body/call identity, source order and zero/once/multiple execution control; the queued page callback is one component.",
+        "Complete general callable/closure and control-result/early-yield/return semantics required by the original contract; reject unsupported result disposal precisely rather than claiming those forms."
+      ],
+      "native": [
+        "Full import/decompile/recompile region fidelity, original 38x2 corpus on final source, Unicode/braces/diagnostic spans.",
+        "Native typed Dictionary/List outputs, nested control/error/early exit/cancellation; no try/finally promise on an aborting native action."
+      ],
+      "observations": [
+        "Void qualification: 254 named PASS in one focused run.",
+        "Scoped value transport: 379 distinct PASS joined from preserved 364-pass/one-failure run plus narrow 15-pass replay; not one full run."
+      ],
+      "taskName": "[P1][MACROS][OPEN] Cherri — תשתית מאקרואים עם בלוק קוד וטיפוס החזרה — parser/AST/IR",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nMOTIVATION: measure and collect need block syntax with scoped arguments and return value. FIRST inspect existing Cherri for-loops, Repeat Results and P10R12 atomic control-region import; reuse existing AST/IR where possible rather than introduce separate parser.\nCONTRACT: typed params and optional block, lexical scope, variable shadow, single evaluation, last-expression return vs void, nested blocks, early exits/errors, source span diagnostics, side effects, import/decompile preservation and Legacy/V2 syntax compatibility. Example proposed measure(\"Fetch\"){jsonRequest(url)}; collect(items){item in getValue(item,\"name\")}; do not claim these expressions already parse.\nWHERE: internal/language/syntax,analysis,lower,ir,backend and parser.go / language_backend_adapter.go as needed; semantic_import_planner.go must preserve regions. No text substitution or duplicate registry.\nTEST: nested block/If/Repeat, empty/void body, typed dict/list result, error reporting, execution once, braces/Unicode, UUID/GroupingIdentifier, exact native plist and roundtrip 38x2 P10R12.\nDONE: reusable typed compiler infrastructure for all block macros, no per-feature parser duplication.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544718901241",
+      "originalNotesSHA256": "05a824c714965ae6ace801eb02a6c55bb3a98fa95e43b63bda45960e20be104c",
+      "componentCommits": [
+        {
+          "reference": "63ccc00efd29887ca2fae9a32cddf9a8080d780a",
+          "resolved": "63ccc00efd29887ca2fae9a32cddf9a8080d780a"
+        },
+        {
+          "reference": "2fea9fc55b86be6650f061997a3a850a7c1ae8a9",
+          "resolved": "2fea9fc55b86be6650f061997a3a850a7c1ae8a9"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "measure",
+      "task": "1220544665232149",
+      "qualified": "Body executes once in original order; typed producer is preserved; Void ends in an exact Nothing boundary; Debug timers only, Release keeps body effects. Both dialects and F04/T05 composition have bounded graph qualification.",
+      "sourceWork": [
+        "Keep exact original typed result and native Previous/result forwarding under all newly supported block constructs; do not re-evaluate requests.",
+        "Extend general block features through the shared foundation and keep timer labels hygienic under nesting/reentrancy."
+      ],
+      "native": [
+        "Final-source signed Debug/Release and nested/same-label measurements; wait(1) tolerance, timing precision/overhead and CurrentDate behavior.",
+        "Observe early abort/cancel explicitly; timer stop is not guaranteed after native Stop/failure. Physical iPad accuracy/performance remains independent."
+      ],
+      "observations": [
+        "44253540250 and 44253544008: historical signed Debug/Release body-result/trace scenarios; not final-source timing/abort coverage."
+      ],
+      "taskName": "[P1][MACROS][OPEN] Cherri — measure() — מדידת בלוק בלי איבוד תוצאת הפעולה",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: let r=measure(\"Fetch\"){jsonRequest(url)}. DEPENDS typed block infrastructure and existing debugStartTimer/debugStopTimer optimized CurrentDate. Emission: native start timestamp, body exactly once, stop timestamp and elapsed time logging, return original typed block value unchanged.\nDESIGN: labels/nested timing, same label reentrancy, performance overhead, seconds precision on iPad; ensure no redundant Get Current Date; no false promise of millisecond accuracy or try/finally on Shortcuts if errors abort.\nWHERE: shared block lowering + debug timer macro and CurrentDate WFTextTokenString/WFTextTokenAttachment context-specific serializer; Legacy/V2.\nTEST: wait(1) +/- tolerance, nested measurements, API result typed preservation, no reexecuted requests, debug stripped release, early abort documented, physical iPad timings.\nDONE: accurate enough elapsed diagnostics and same typed result.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232149",
+      "originalNotesSHA256": "0fa5de71d6bb7da629fcbc41c7eded9b2e2768bf2510e27feb2a7c107abe5a07",
+      "componentCommits": [
+        {
+          "reference": "63ccc00efd29887ca2fae9a32cddf9a8080d780a",
+          "resolved": "63ccc00efd29887ca2fae9a32cddf9a8080d780a"
+        },
+        {
+          "reference": "2fea9fc55b86be6650f061997a3a850a7c1ae8a9",
+          "resolved": "2fea9fc55b86be6650f061997a3a850a7c1ae8a9"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "collect",
+      "task": "1220544651247337",
+      "qualified": "The contract explicitly permits reusing optimal existing for/yield Repeat Results instead of adding a redundant collect alias. Earlier 0/1/100 graph benchmark used constant six actions and no Add-to-Variable accumulator.",
+      "sourceWork": [
+        "Qualify the final joined existing-loop implementation in both dialects for typed input construction, order, empty/null/mixed/nested shape and exact per-iteration result.",
+        "Keep input-construction costs separate from collection cost; avoid a new alias unless it offers the original measurable benefit.",
+        "Preserve one GroupingIdentifier and actual Repeat Results, no re-execution or accidental flattening."
+      ],
+      "native": [
+        "Complete all item/order/shape observations, nested List yields and mixed native types; physical memory/performance against native baseline.",
+        "Historical count/endpoints evidence does not prove every middle item, nested shape or final-source behavior."
+      ],
+      "observations": [
+        "44401917924: bounded simulator counts empty=0, single=1, many=100 and endpoints 0/99; separate from full collection acceptance."
+      ],
+      "taskName": "[P1][MACROS][OPEN] Cherri — collect() — Repeat Results במקום Add to Variable מיותר",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: let results=collect(items){item in getValue(item,\"name\")}. FIRST BENCHMARK whether existing Cherri for item in list already emits identical optimal native Repeat Results; if so optimize existing loop and document, do not add redundant syntax.\nDESIGN: Repeat Each start/end with one GroupingIdentifier, output Repeat Results, per-iteration last value, order/empty items/null handling, nested loop, type preserving result, no extra Add to Variable or re-execution.\nWHERE: existing loops/Repeat Results in compiler lower/IR, semantic_import_planner.go P10R12 region fidelity, shared macros.\nTEST: N=0,1,100; mixed typed dictionary/list/number, nested flatten vs preserve semantics, source action count vs baseline, memory/performance on iPad, UUID graph and roundtrip.\nDONE: measurable efficiency or formally documented decision to improve existing for-loop rather than redundant API.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544651247337",
+      "originalNotesSHA256": "7325ec21f337ceafe9a0c6121ad57a3a1e696391f25c04bfa030769159326b22",
+      "componentCommits": [
+        {
+          "reference": "7266d49",
+          "resolved": "7266d49dac331f3b2237a19186e5a8a46425d743"
+        },
+        {
+          "reference": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+          "resolved": "a04c6feede79358ee642a1ae27f0a0da8f995ad7"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "cache",
+      "task": "1220544665232085",
+      "qualified": "Shared scalar Text/Number/Bool TTL cache, seven-field/versioned archive, namespace/scope, typed guards, stale/corrupt/clock-backwards handling, TTL0, lazy miss and sensitivity opt-in exist. Previous is captured before helpers and restored only immediately before miss body. Full-content native execution remains unproven.",
+      "sourceWork": [
+        "Complete the requested dictionary/list/date/File/Optional/JsonNull persistence support through proven serialization/reconstruction; existing tagged in-memory cells are not a qualified persistence codec.",
+        "Preserve lazy body/captured writes, exact empty/false/zero, invalidation, explicit scope isolation and safe key/TTL/version behavior.",
+        "Specify concurrency/atomicity limits honestly and implement any available guarantees without introducing a duplicate storage backend."
+      ],
+      "native": [
+        "Original qa-storage-delete missing-key path, fresh miss/hit/expiry across runs/restart, global/local isolation, clock and permissions.",
+        "Prove scalar archive reconstruction, empty Text/false/zero, native Previous sequence, corruption/IO errors and physical iPad background/persistence.",
+        "Store Text cross-run evidence alone does not establish cache miss, TTL or general typed roundtrip."
+      ],
+      "observations": [
+        "Current cache Previous qualification: 227/227 named PASS in one run; actual 44 graphs, 1496 independent model cases and 30 causal faults.",
+        "44428362458: historical storage hit/cross-run only; original qa-storage-delete native PASS not found in the reviewed inventory."
+      ],
+      "taskName": "[P1][MACROS][OPEN] Cherri — cache() — TTL + iOS 27 Stored Content עם roundtrip טיפוסים",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: cache(key:\"api:item\",ttl:300,global:false){jsonRequest(url)}. DEPENDENCY: existing Storage functions storeValue/getStoredValue/deleteStoredValue in actions/storage.cherri, and open actual persistence proof task 1219814215189434. Do not claim done before iPad readback across runs.\nDESIGN: envelope value/typeTag/created/expires/version and safe encode/decode; explicit support matrix dictionary/list/date/files, no silent downcast to text; TTL seconds/clock drift, key namespace and global/shortcut-local separation, corrupted/stale values, concurrency, version gate iOS27+, lazy evaluate body only once on miss; no cache of secrets without opt-in.\nWHERE: storage action declarations + common typed codec, macro expansion/block IR, generated schema and docs.\nTEST: fresh hit/miss/expiry, ttl=0/negative, nested JSON, null/false, multiple runs, global isolation, corrupted payload, atomicity limitations, physical iPad persistence and error cases.\nDONE: working cache with evidence, no duplicate storage backend.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232085",
+      "originalNotesSHA256": "6ae48db4781982d4d279a55e3e29818657ec695509a12851727b35af83336bcb",
+      "componentCommits": [
+        {
+          "reference": "9394d380238116acf057ecf7862b54f922325271",
+          "resolved": "9394d380238116acf057ecf7862b54f922325271"
+        },
+        {
+          "reference": "319160836f8f0b69dfd8629e7afcc861172a7dbc",
+          "resolved": "319160836f8f0b69dfd8629e7afcc861172a7dbc"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "retry",
+      "task": "1220544651247273",
+      "qualified": "Capability probes distinguish HTTP body continuation from transport failure; there is no accepted generic retry implementation or native error/status contract.",
+      "sourceWork": [
+        "Audit actual catalog/native response/status/error facilities before selecting a supported recoverable operation contract.",
+        "Implement bounded attempts, exponential backoff/jitter/max wait, exact successful result preservation and once-per-attempt source effects only for observable retryable outcomes.",
+        "Default GET-only; require explicit idempotency guarantees for mutations. Distinguish 408/429/5xx, nonretryable 4xx, permission, cancellation and transport failures.",
+        "Retain an explicit technical boundary where native failures terminate the shortcut; do not relabel Alert+Stop as catch or infer retry from repeated transport requests."
+      ],
+      "native": [
+        "Controlled 500→500→200, 404, 429, timeout/closed transport, attempts cap, timing, final failure/cancel/idempotence on signed and physical native execution."
+      ],
+      "observations": [
+        "44344880086: HTTP500 body then continuation, not status-as-value or retry.",
+        "44345197107: HTTP429 body then continuation, not catchability.",
+        "44345223487: transport -1005, three closed GETs and no continuation; FAIL_RUNTIME preserved.",
+        "44345179210: HTTP404 BLOCKED_IMPORT/NOT_RUN."
+      ],
+      "taskName": "[P2][MACROS][OPEN] Cherri — retry() — כשלי HTTP ניתנים לזיהוי ו־backoff מוגבל",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: retry(attempts:3,backoff:\"exponential\"){jsonRequest(url)}. FIRST FEASIBILITY: prove Shortcuts errors/status can be caught or inspected; many native action failures terminate the shortcut, so do not pretend arbitrary retry works. If infeasible, narrow to explicit retryable response codes or mark blocked.\nDEPENDENCIES: dynamic jsonRequest HTTP correctness task 1219800356179243 & acceptance task 1219800511200890; typed block infrastructure; idempotence. Default GET-only, POST/PATCH only explicit safe idempotency guarantee; bounded retries/exponential delay/jitter/max wait, handle 408/429/5xx vs nonretryable 4xx, cancel and final failure.\nWHERE: actions/web.cherri HTTP contract and compiler macro shared block; no secret leakage in logs.\nTEST: deterministic local mocked 500->500->200, 404, 429, failed network if catchable, 3 attempts cap, no duplicate request from compiler, timing and iPad actual error behavior.\nDONE: real controlled runtime proof or documented technical blocker.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544651247273",
+      "originalNotesSHA256": "616311022f6a728e1a1208ed112c665532ed2592c84d00bf6c87699a776be22f",
+      "componentCommits": [
+        {
+          "reference": "43218aa",
+          "resolved": "43218aa9dc830a79cbef0f786caa13d234d80a3a"
+        },
+        {
+          "reference": "8dbb3662ab9eecce87e98e64c829bf4a82298ea7",
+          "resolved": null
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "paginate",
+      "task": "1220544665232021",
+      "qualified": "Bounded GET/typed Dictionary accumulation, literal/dynamic-value headers, caps/origin/cycles plus url/cursor/page/offset modes are source-qualified. Modes: 198 distinct IDs joined from 158 prior PASS and focused 40 PASS, not one GREEN165. Modes CLI/model producer is queued.",
+      "sourceWork": [
+        "Add shared immutable typed page callback with Void lifecycle, lexical scope, captured writes, one invocation per validated page, no body at zero caps and explicit rejection of unused results.",
+        "Complete typed item selector/result shapes required by the original contract; current selected Dictionary list does not establish every nested/mixed output shape.",
+        "Audit and implement Link/response-header/status support where actual native facilities allow; keep response headers distinct from supported request headers.",
+        "Complete page failure atomicity, redirect/privacy limits, rate limits/recovery/retry/cancellation with an observable native contract; no generic catch claim."
+      ],
+      "native": [
+        "Final-source controlled three pages, empty page, absent/empty/cycle marker, all caps, malformed body, 404/429, secret headers, exact item order/types and no extra network requests.",
+        "Native URL encoder/decoder, numeric round/type checks and final signed/physical callback/result behavior; loopback model is not Apple runtime."
+      ],
+      "observations": [
+        "Header producer: actual 44 CLI compiles, 44 exact roundtrips, 156 model cases, 44 CLI negatives, 14 causal faults; nativeExecuted=0.",
+        "Current modes source and replay originals are retained, including the first 165-case run's 7 failures and the corrected header-origin oracle."
+      ],
+      "taskName": "[P2][MACROS][OPEN] Cherri — paginate() — דפדוף API עם maxPages ומניעת לולאה אינסופית",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nAPI PROPOSAL: paginate(startURL:url,maxPages:20){page in ...}. DEPENDS on reliable JSON/HTTP response, collect/loops and possibly retry. Must not assume one universal pagination format: configurable Link header/cursor/page/offset and item selector.\nDESIGN: append typed results in order, preserve dictionary/list original type, stop on absent/empty next marker, repeated URL/cursor cycle detection, maxPages/maxItems, empty/malformed JSON, 429/errors, secret headers, no uncontrolled network requests; no lossy text conversion.\nWHERE: actions/web.cherri and shared typed compiler Loop/IR, schema, docs.\nTEST: controlled 3-page success, one empty page, cursor cycle, caps, malformed body, 404/429, item type preservation, no skipped/repeated pages, independent plist oracle and iPad.\nDONE: bounded valid API sample with cancellation/error behavior and no extra work vs native manual implementation.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544665232021",
+      "originalNotesSHA256": "46a7f74757313281034c6707e1e525a102a039c02caf76537b50b152eb98b3ec",
+      "componentCommits": [
+        {
+          "reference": "287be1329cd9449e1b1f722f85121a2f3e98381f",
+          "resolved": "287be1329cd9449e1b1f722f85121a2f3e98381f"
+        },
+        {
+          "reference": "13011a5cbe9b33973d35af188e01c0cd68b9dd67",
+          "resolved": "13011a5cbe9b33973d35af188e01c0cd68b9dd67"
+        },
+        {
+          "reference": "b9825ce6efc6c6cd0c9c492fed4b11200d2b6749",
+          "resolved": "b9825ce6efc6c6cd0c9c492fed4b11200d2b6749"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "profiles",
+      "task": "1220544607463126",
+      "qualified": "Compile-time CLI/mobile Debug/Release exists; selected joined graphs preserve semantic require and all normal producers/side effects while removing diagnostic instrumentation. measure Void/value and export defaults have component coverage.",
+      "sourceWork": [
+        "Complete the original nested/type/side-effect matrix on the final joined source and all newly added macros; reject dynamic/ambiguous elimination.",
+        "Preserve result edges, semantic validations, assignments, native control groups and clean state across sequential builds; do not eliminate producers used by removed diagnostics.",
+        "Propagate actual profile choice through consumers and expose only supported options."
+      ],
+      "native": [
+        "Final-source signed result/effect equivalence and debug behavior for Legacy/V2; absence of diagnostics alone is insufficient.",
+        "Current app/bridge and physical iPad profile behavior plus final exact-source CI/consumer tuple."
+      ],
+      "observations": [
+        "The original build-profiles native and consumer gates remain independent of local zero-instrumentation graphs."
+      ],
+      "taskName": "[P1][MACROS][OPEN] Cherri — DEBUG/RELEASE — הסרת לוגים בזמן קומפילציה ולא בזמן ריצה",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nGOAL: compile-time DEBUG flag/build profile. Example proposed debugLog(label:\"Fetch\",enabled:DEBUG); DEBUG=false eliminates ALL purely diagnostic actions (date detector/preview/timer instrumentation) while preserving original normal producer and any side effect; DEBUG=true leaves identical debug behavior.\nCRITICAL: do not strip network requests, underlying result producers, assignments, non-debug output, required security checks/require, or code with side effects. Compile-time constant only; reject ambiguous dynamic elimination. Preserve native UUID/OutputName links, typed outputs, conditional groups, import fidelity, clean state across sequential builds.\nWHERE: compiler config/CLI, parser/typed IR/lower/macros, debug_stdlib.go, state reset, Legacy/V2, schema.\nTEST: compare same fixture DEBUG=true vs false including side-effectful API, nested loops, required validations, exact action graph zero diagnostics when false, root result identical; CI, iPad smoke, documented build profiles.\nDONE: deterministic zero-overhead release with no semantic drift.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544607463126",
+      "originalNotesSHA256": "60d0aa6f49ae2d709c624d77b4cdec19f2f21f3380536998e2ed408af101bf45",
+      "componentCommits": [
+        {
+          "reference": "63ccc00efd29887ca2fae9a32cddf9a8080d780a",
+          "resolved": "63ccc00efd29887ca2fae9a32cddf9a8080d780a"
+        },
+        {
+          "reference": "3d06ed0ec40a8826fd17582c752c9dbb567b6e45",
+          "resolved": "3d06ed0ec40a8826fd17582c752c9dbb567b6e45"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    },
+    {
+      "id": "qa",
+      "task": "1220544718902349",
+      "qualified": "Feature-specific causal compiler/native-structure tests and component original receipts exist. Documentation D16 and the installed K18 tuple are historical component milestones, not the successor final release.",
+      "sourceWork": [
+        "Regenerate canonical registry/catalog/docs from final compiler definitions; do not maintain a parallel action database.",
+        "Finish exact final-source unit/integration/full Go/CI and independent plist graph/roundtrip/privacy/action-count gates for every original child.",
+        "Update real docs site, inline help, Skill, iOS palette/preview/bridge and RemoteBuilder from a single pinned final tuple.",
+        "Run successor original 39 entrypoint/58 signing gates, packaging/usage/live install/rollback/reapply/post-signing/Pure/D03, final source equivalence and final179 intake."
+      ],
+      "native": [
+        "Per-feature signed actual execution and physical iPad where specified; AEA1/signing and receiver self-tests are not runtime.",
+        "Benchmark task, storage proof, existing Debug QA and importer masters remain original authorities; no duplicate tasks or blanket macro PASS."
+      ],
+      "observations": [
+        "RemoteBuilder successor baseline source repair: 36 Python parents passed; no successor live tuple staged/applied yet.",
+        "RemoteBuilder task 1219604454669950 reopened for the authorized final 39/58/rollback/reapply work."
+      ],
+      "taskName": "[P1][MACROS][OPEN] Cherri — QA/Docs/Skill/iOS Bridge/CI — שער קבלה למאקרואים",
+      "originalContract": "2026-11-15 PLANNED/OPEN — NOT IMPLEMENTED. Parent 1220544599390563. Implement only after checking actual latest P10R12-or-newer worktree and selective debug merge task 1220477976237632. Shared compiler semantics, Legacy+V2, real Apple WF parameters/UUID/typed values, independently verified plist and iPadOS 27, full test/CI, docs/Skill/bridge. Suggested source code snippets below are design proposals, not already supported.\n\nPER-FEATURE GATE: first write spec and coverage matrix for parameters/defaults/versions, native action IDs/keys, compile-time vs runtime, typed output and variable identity, complexity/action count, failure modes and privacy. Existing Debug QA task 1220470826453090, P10R12 importer master 1220500901333356, Storage task 1219814215189434 and benchmark 1220486726941364 must be referenced, not duplicated.\nALL FEATURES: positive/negative compiler tests Legacy/V2, exact independent native plistlib oracle, UUID/OutputName/GroupingIdentifier graph, side effects once, import/decompile/recompile strict fidelity and edit isolation, go test ./..., CI, physical iPadOS 27 test for signed AEA1 and actual native execution. Report structural PASS separate from real runtime.\nPROMOTION: regenerate current internal/language/schema/generated_registry.go from canonical definitions (never paste stale generated registry), update docs/apple-runtime, inline help, skills/cherri-shortcuts/SKILL.md & reference docs, iOS app/Bridge/action palette/preview and Remote Builder when supported; no shadow Swift action DB. No signed files, private API responses, tokens or backup logs committed. Clean targeted patch/commit, merge only with explicit approval.\nDONE: validated release gates and reproducible evidence recorded for each child; not blanket \"all green\" when full suite/iPad unverified.\n",
+      "taskURL": "https://app.asana.com/1/1219597879016953/project/1219603572114432/task/1220544718902349",
+      "originalNotesSHA256": "9fb6971829ac2c74e58406d3a912cdf2d6a8bf9ea69154f04cc994bc2f7db361",
+      "componentCommits": [
+        {
+          "reference": "a458cc160a0a392712d73bb513df56de57562929",
+          "resolved": "a458cc160a0a392712d73bb513df56de57562929"
+        }
+      ],
+      "originalTaskCompletedAtCapture": false
+    }
+  ]
+}

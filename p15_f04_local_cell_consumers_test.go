@@ -10,9 +10,9 @@ import (
 )
 
 type p15F04LocalCellCase struct {
-	name, producer, value, consumer, ordinal string
-	iterations                               int
-	optional, dynamic, historical            bool
+	name, producer, value, consumer, ordinal      string
+	iterations                                    int
+	optional, dynamic, historical, canonicalDelay bool
 }
 
 func p15F04LocalCellCases() []p15F04LocalCellCase {
@@ -249,6 +249,10 @@ func p15F04LocalCellGraphError(actual []map[string]any, tc p15F04LocalCellCase) 
 	p15DiscoveryLoopEnd(g, kind, loop, false)
 	trace.mark(g, "collection_read")
 	collection := g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable(accumulator)})
+	if tc.canonicalDelay {
+		trace.mark(g, "explicit_delay")
+		g.emit("delay", map[string]any{"WFDelayTime": 0})
+	}
 	switch tc.consumer {
 	case "count":
 		trace.mark(g, "count_consumer")
@@ -506,6 +510,12 @@ func TestP15F04LocalCellUnsupportedInterfaces(t *testing.T) {
 			// graphs and eight causal mutations each; other rejections remain.
 			if tc.name == "dynamic_list_payload" || tc.name == "nested_list_payload" {
 				p15CheckTaggedLoopPayload(t, tc.source, tc.name == "nested_list_payload")
+				return
+			}
+			// Keep this exact original source and ID: canonical explicit
+			// numeric Delay is now admitted, with the full cell/count graph.
+			if tc.name == "unselected_action_after_cells" {
+				p15F04CheckPromotedCanonicalDelay(t, tc.source)
 				return
 			}
 			found := false

@@ -14,6 +14,7 @@ import (
 // Every other use makes this optional plan absent.
 type LoopResultLocalPlan struct {
 	ScopedBodies      map[*syntax.CallExpr]*syntax.BlockStmt
+	PageCallbacks     map[*syntax.CallExpr]PageCallbackSource
 	BindingValues     map[syntax.Expression]bool
 	AllowedValues     map[syntax.Expression]bool
 	Bodies            map[*syntax.BlockStmt]bool
@@ -46,6 +47,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 	}
 	var plan = &LoopResultLocalPlan{
 		ScopedBodies:      map[*syntax.CallExpr]*syntax.BlockStmt{},
+		PageCallbacks:     map[*syntax.CallExpr]PageCallbackSource{},
 		BindingValues:     map[syntax.Expression]bool{},
 		AllowedValues:     map[syntax.Expression]bool{},
 		Bodies:            map[*syntax.BlockStmt]bool{},
@@ -198,6 +200,42 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 				return nil, false
 			}
 			action, found := registry.LookupAction(name.Name)
+			if found && name.Name == "paginate" {
+				body := LoopResultScopedPaginateBody(value, action)
+				if body == nil {
+					return nil, false
+				}
+				if _, okay := expression(value.PrimaryArg, scope, false, cellIteration); !okay {
+					return nil, false
+				}
+				for _, argument := range value.NamedArgs {
+					if _, okay := expression(argument.Value, scope, false, cellIteration); !okay {
+						return nil, false
+					}
+				}
+				parameter := PaginatePageParameter(value)
+				plan.ScopedBodies[value] = body
+				plan.PageCallbacks[value] = PageCallbackSource{Block: value.Block, Body: body, Parameter: parameter, Name: parameter.Name}
+				// The page binding is local and immutable; captured mutable
+				// declarations join zero pages and every actual page backedge.
+				entry, head := scope.clone(), scope.clone()
+				head.names[parameter.Name] = loopResultLocalBinding{}
+				for {
+					iteration := head.clone()
+					if !block(body, iteration, cellIteration) {
+						return nil, false
+					}
+					if !head.join(entry, iteration) {
+						break
+					}
+				}
+				scope.takeWrites(head)
+				return nil, true
+			}
+			if found && LoopResultExplicitDelay(value, action) {
+				_, okay := expression(value.PrimaryArg, scope, false, cellIteration)
+				return nil, okay
+			}
 			if found && name.Name == "measure" {
 				body := LoopResultScopedMeasureBody(value, action)
 				if body == nil {

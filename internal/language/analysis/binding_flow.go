@@ -255,7 +255,13 @@ func OuterAssignedNames(node syntax.Node) map[string]bool {
 				walk(argument.Value, locals)
 			}
 			if value.Block != nil {
-				walk(value.Block.Body, maps.Clone(locals))
+				bodyLocals := maps.Clone(locals)
+				for _, parameter := range value.Block.Parameters {
+					if parameter != nil {
+						bodyLocals[parameter.Name] = true
+					}
+				}
+				walk(value.Block.Body, bodyLocals)
 			}
 		case *syntax.UnaryExpr:
 			walk(value.Operand, locals)
