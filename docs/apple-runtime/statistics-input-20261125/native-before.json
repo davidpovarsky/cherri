@@ -1,0 +1,104 @@
+[
+  {
+    "lane": "original",
+    "source_path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/statistics/native-before/original.results.json",
+    "source_sha256": "ee271d166683fc0325e4a01f2abc2348998c6ed02e08c61e06f764afd68c3ed6",
+    "row": {
+      "id": "15_numeric_list_statistics",
+      "lane": "original",
+      "name": "CHERRI_QA_D30_O_15",
+      "signedSHA256": "8e8899999cddc926bfaf4e687bab6da6b62e800c09e1004b492b310c026c60a1",
+      "expected": "CHERRI_QA_15|15:5",
+      "startedUTC": "2026-11-25T12:59:54Z",
+      "importReceipt": {
+        "id": "import-cf8b9147a46144f8b158095adb71de11",
+        "identityVerified": true,
+        "name": "CHERRI_QA_D30_O_15",
+        "operation": "import",
+        "outcome": "IMPORTED",
+        "timestamp": "2026-11-25T13:00:19Z"
+      },
+      "nonce": "diff-b8a59aad2ccc4133a7d0b9eafe50df0b",
+      "runtimeUIReceipt": {
+        "consentTaps": [
+          "Always Allow"
+        ],
+        "id": "runtime-61575b74301447f494c0e6828485bf09",
+        "operation": "runtime",
+        "outcome": "CALLBACK_OBSERVED_BY_HOST",
+        "timestamp": "2026-11-25T13:00:28Z"
+      },
+      "callback": {
+        "eventSource": "shortcuts-x-callback",
+        "expectedShortcutName": "CHERRI_QA_D30_O_15",
+        "fixtureId": "15_numeric_list_statistics",
+        "host": "success",
+        "receiverSelfTest": false,
+        "resultShape": {
+          "collectorMarkerCount": 0,
+          "inlineMarkerCount": 0,
+          "nonemptyLineCount": 2,
+          "sentinelLineCount": 0,
+          "utf8ByteCount": 15
+        },
+        "resultSummary": "CHERRI_QA_15|\n:",
+        "runId": "diff-b8a59aad2ccc4133a7d0b9eafe50df0b",
+        "schemaVersion": "1.4",
+        "status": "SUCCESS",
+        "timestampISO8601": "2026-11-25T13:00:27.029Z"
+      },
+      "status": "OUTPUT_MISMATCH"
+    }
+  },
+  {
+    "lane": "v2",
+    "source_path": "/mnt/development/projects/evidence/cherri-differential-30-20261125/statistics/native-before/v2.results.json",
+    "source_sha256": "939a19acd39906994a44a34b63a928bdadf498172c3341438fdb4bf6069411d0",
+    "row": {
+      "id": "15_numeric_list_statistics",
+      "lane": "fork_v2",
+      "name": "CHERRI_QA_D30_V_15",
+      "signedSHA256": "e2667005e242d6ac39446dcfd392385e9be5e3326eee88c887e883e3cb48a0a2",
+      "expected": "CHERRI_QA_15|15:5",
+      "startedUTC": "2026-11-25T13:00:27Z",
+      "importReceipt": {
+        "id": "import-860a5a500bd441b7ac328a247c9809fd",
+        "identityVerified": true,
+        "name": "CHERRI_QA_D30_V_15",
+        "operation": "import",
+        "outcome": "IMPORTED",
+        "timestamp": "2026-11-25T13:00:43Z"
+      },
+      "nonce": "diff-23fe63ca45f94f9a9a2ec9eca745b700",
+      "runtimeUIReceipt": {
+        "consentTaps": [
+          "Always Allow"
+        ],
+        "id": "runtime-67b8b093667240adbcf100270f7c8abe",
+        "operation": "runtime",
+        "outcome": "CALLBACK_OBSERVED_BY_HOST",
+        "timestamp": "2026-11-25T13:00:51Z"
+      },
+      "callback": {
+        "eventSource": "shortcuts-x-callback",
+        "expectedShortcutName": "CHERRI_QA_D30_V_15",
+        "fixtureId": "15_numeric_list_statistics",
+        "host": "success",
+        "receiverSelfTest": false,
+        "resultShape": {
+          "collectorMarkerCount": 0,
+          "inlineMarkerCount": 0,
+          "nonemptyLineCount": 2,
+          "sentinelLineCount": 0,
+          "utf8ByteCount": 15
+        },
+        "resultSummary": "CHERRI_QA_15|\n:",
+        "runId": "diff-23fe63ca45f94f9a9a2ec9eca745b700",
+        "schemaVersion": "1.4",
+        "status": "SUCCESS",
+        "timestampISO8601": "2026-11-25T13:00:49.505Z"
+      },
+      "status": "OUTPUT_MISMATCH"
+    }
+  }
+]

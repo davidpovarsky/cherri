@@ -431,12 +431,12 @@ statistic("` + op + `", input: nums)
 
 			params := statAct["WFWorkflowActionParameters"].(map[string]any)
 
-			// Must emit WFInput, NEVER Input
-			if params["WFInput"] == nil {
-				t.Fatalf("CRITICAL: statistic missing WFInput wire key for operation %s", op)
+			// Apple WorkflowKit consumes Input; WFInput silently loses this input.
+			if params["Input"] == nil {
+				t.Fatalf("CRITICAL: statistic missing Input wire key for operation %s", op)
 			}
-			if params["Input"] != nil {
-				t.Fatalf("CRITICAL: statistic emitted deprecated Input key instead of WFInput for %s", op)
+			if params["WFInput"] != nil {
+				t.Fatalf("CRITICAL: statistic emitted unsupported WFInput key instead of Input for %s", op)
 			}
 			if params["WFStatisticsOperation"] != op {
 				t.Errorf("expected WFStatisticsOperation %q, got %v", op, params["WFStatisticsOperation"])
@@ -496,11 +496,11 @@ statistic('` + op + `', @nums)
 			}
 
 			params := statAct["WFWorkflowActionParameters"].(map[string]any)
-			if params["WFInput"] == nil {
-				t.Fatalf("legacy: statistic missing WFInput wire key for operation %s", op)
+			if params["Input"] == nil {
+				t.Fatalf("legacy: statistic missing Input wire key for operation %s", op)
 			}
-			if params["Input"] != nil {
-				t.Fatalf("legacy: statistic emitted Input key instead of WFInput for %s", op)
+			if params["WFInput"] != nil {
+				t.Fatalf("legacy: statistic emitted WFInput key instead of Input for %s", op)
 			}
 		})
 	}

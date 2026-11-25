@@ -85,8 +85,9 @@ run("General Context Server", input: payload)
 	}
 }
 
-// 2. Task 1219750250211915: statistic action must emit WFInput, not Input
-func TestP10_StatisticActionEmitsWFInputNotInput(t *testing.T) {
+// Apple WorkflowKit defines statistics input as Input. Native fixture 15 showed
+// that the inherited WFInput spelling silently returns empty statistics.
+func TestP10_StatisticActionEmitsInputNotWFInput(t *testing.T) {
 	v2Code := `let nums = [1, 2, 3]
 statistic("Sum", input: nums)
 `
@@ -109,11 +110,11 @@ statistic("Sum", input: nums)
 	}
 
 	params := statAct.WFWorkflowActionParameters
-	if params["WFInput"] == nil {
-		t.Errorf("CRITICAL: statistic action missing WFInput wire key; params: %v", params)
+	if params["Input"] == nil {
+		t.Errorf("CRITICAL: statistic action missing Input wire key; params: %v", params)
 	}
-	if params["Input"] != nil {
-		t.Errorf("CRITICAL: statistic action incorrectly emitted 'Input' wire key instead of 'WFInput'")
+	if params["WFInput"] != nil {
+		t.Errorf("CRITICAL: statistic action incorrectly emitted 'WFInput' wire key instead of 'Input'")
 	}
 	if params["WFStatisticsOperation"] != "Sum" {
 		t.Errorf("expected WFStatisticsOperation == 'Sum', got %v", params["WFStatisticsOperation"])
