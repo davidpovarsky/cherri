@@ -286,7 +286,8 @@ class TaggedPublicOriginalControls(unittest.TestCase):
                      "tagged_carrier_observation.py", "tagged_carrier_public_originals.py",
                      "native_comparison_graph.py", "owned_simulator_selection.py",
                      "test_owned_simulator_selection.py", "optional_forwarding_diagnostic.py",
-                     "verify_optional_receiver.py"):
+                     "verify_optional_receiver.py", "verify_primary_no_input.py",
+                     "verify_primary_no_input.swift", "XcodeProject/Shared/PrimaryNoInputLaunch.swift"):
             with self.subTest(tampered=name):
                 target = temporary / "tools/shortcuts-simulator-qa" / name
                 raw = target.read_bytes()
