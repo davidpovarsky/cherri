@@ -1,7 +1,11 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -20,6 +24,20 @@ func p15CompleteCompile(t *testing.T, source string, profile BuildProfile) []map
 	raw, err := CompileSourceToPlistWithOptions("p15-complete-structured.cherri", source, CompileOptions{BuildProfile: profile})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if directory := os.Getenv("CHERRI_STRUCTURED_VALUE_ARTIFACTS"); directory != "" {
+		caseDir, e := os.MkdirTemp(directory, "native-")
+		if e != nil {
+			t.Fatal(e)
+		}
+		if e = os.WriteFile(filepath.Join(caseDir, "source.cherri"), []byte(source), 0600); e != nil {
+			t.Fatal(e)
+		}
+		if e = os.WriteFile(filepath.Join(caseDir, "actual.shortcut"), raw, 0600); e != nil {
+			t.Fatal(e)
+		}
+		digest := sha256.Sum256(raw)
+		t.Logf("STRUCTURED_NATIVE_ARTIFACT profile=%s sha256=%s path=%s", profile, hex.EncodeToString(digest[:]), filepath.Join(caseDir, "actual.shortcut"))
 	}
 	var document map[string]any
 	if _, err = plist.Unmarshal(raw, &document); err != nil {
