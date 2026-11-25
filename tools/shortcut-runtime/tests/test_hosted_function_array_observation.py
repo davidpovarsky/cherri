@@ -56,6 +56,16 @@ class HostedFixedObservationTests(unittest.TestCase):
         self.assertEqual((plan["wholeOwnerSeconds"], plan["perChildSeconds"]), (90, 8))
         self.assertEqual(len(plan["sourceFiles"]), 24)
         self.assertEqual(plan["sourceFiles"][hosted.PROBE]["sha256"], "007c093c60b30a3cb6963404786982c6f07733b826baa1a142167c3afbd0f156")
+        actual = ROOT / hosted.PROBE
+        if not actual.is_file():
+            actual = HERE.parent.parent / "function-array-probe/observe_function_dictionary_array.py"
+        self.assertEqual(hosted.sha(actual.read_bytes()), plan["sourceFiles"][hosted.PROBE]["sha256"])
+        # Match the real importlib path. Import only; never call original main().
+        original_spec = importlib.util.spec_from_file_location("cherri_original_probe_import_only", actual)
+        original = importlib.util.module_from_spec(original_spec)
+        original_spec.loader.exec_module(original)
+        self.assertEqual((original.TOTAL_SECONDS, original.CHILD_SECONDS), (90, 8))
+        self.assertEqual(tuple(original.CASE_IDS), hosted.CASE_IDS)
 
     def test_rejects_source_prelude_case_and_budget_changes(self):
         changes = {"sourceSha": "1" * 40, "sourceTree": "2" * 40, "preludeSha256": "3" * 64,
@@ -174,7 +184,13 @@ class HostedFixedObservationTests(unittest.TestCase):
             self.assertEqual(hosted.invoke_original(root, root / "prelude", out, receipt), 7)
             self.assertIs(sys.argv, prior)
             self.assertEqual(receipt["producerInvocation"]["exitCode"], 7)
-            self.assertEqual(receipt["producerInvocation"]["argv"][4:6], ["--source-sha", hosted.PROBE_SHA])
+            invoked = receipt["producerInvocation"]
+            self.assertNotIn("argv", invoked)
+            self.assertEqual(invoked["actualControllerProcess"]["originalArgv"], sys.orig_argv)
+            self.assertEqual(invoked["actualControllerProcess"]["pid"], os.getpid())
+            self.assertEqual(invoked["actualControllerProcess"]["pgid"], os.getpgrp())
+            self.assertEqual(invoked["effectiveProducerSysArgv"][1:3], ["--source-sha", hosted.PROBE_SHA])
+            self.assertNotEqual(invoked["effectiveProducerSysArgv"], invoked["actualControllerProcess"]["originalArgv"])
             self.assertEqual(len(list(out.glob("producer-intent.original.json"))), 1)
             self.assertIn(hosted.PROBE_SHA, (out / "producer.stdout.original").read_text())
 

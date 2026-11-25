@@ -123,8 +123,12 @@ def invoke_original(probe_root, prelude, output, receipt):
         raise ValueError("ORIGINAL_PROTOCOL")
     argv = [str(probe_root / PROBE), "--source-sha", PROBE_SHA,
             "--prelude", str(prelude), "--output", str(output / "observation")]
-    receipt["producerInvocation"] = {"method": "unchanged main on main thread", "argv": [sys.executable, "-I", "-B", *argv],
-                                     "pid": os.getpid(), "startedAt": utc(), "wholeOwnerSeconds": 90, "perChildSeconds": 8}
+    receipt["producerInvocation"] = {
+        "method": "unchanged main on main thread; no producer subprocess",
+        "actualControllerProcess": {"originalArgv": list(sys.orig_argv), "executable": sys.executable,
+                                    "pid": os.getpid(), "pgid": os.getpgrp()},
+        "effectiveProducerSysArgv": list(argv), "producerModulePath": str(probe_root / PROBE),
+        "startedAt": utc(), "wholeOwnerSeconds": 90, "perChildSeconds": 8}
     write_new(output / "producer-intent.original.json", receipt["producerInvocation"])
     prior = sys.argv
     started = time.monotonic()
