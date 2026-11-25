@@ -158,7 +158,7 @@ func p15ExportMetadataGraphError(graph []ShortcutAction, o p15ExportMetadataOpti
 		content.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
 		return fmt.Errorf("existing materialization identity changed")
 	}
-	if _, err := p15MeasureVoidCanonicalGraph(graph); err != nil {
+	if _, err := p15ExportMetadataCanonicalGraph(graph); err != nil {
 		return err
 	}
 
@@ -316,17 +316,46 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 				}
 				oldWire := p15ExportMetadataNativeWire(t, old)
 				currentWire := p15ExportMetadataNativeWire(t, current)
-				a, err := p15MeasureVoidCanonicalGraph(oldWire)
+				a, err := p15ExportMetadataCanonicalGraph(oldWire)
 				if err != nil {
 					t.Fatal(err)
 				}
-				b, err := p15MeasureVoidCanonicalGraph(currentWire)
+				b, err := p15ExportMetadataCanonicalGraph(currentWire)
 				if err != nil {
 					t.Fatal(err)
 				}
 				if !reflect.DeepEqual(a, b) {
 					t.Fatal("omitted metadata differs from explicit false flags")
 				}
+
+				for _, fault := range []string{"missing_producer", "empty_producer", "nonpreceding_producer", "duplicate_producer"} {
+					t.Run(fault, func(t *testing.T) {
+						bad, err := buildDebugExportActions(params, "EXACT-RESULT", "Exact Result")
+						if err != nil {
+							t.Fatal(err)
+						}
+						last := len(bad) - 1
+						switch fault {
+						case "missing_producer":
+							bad[last].WFWorkflowActionParameters["WFInput"] = debugOutputRef("NONEXISTENT")
+						case "empty_producer":
+							bad[last].WFWorkflowActionParameters["WFInput"] = debugOutputRef("")
+						case "nonpreceding_producer":
+							bad[last].WFWorkflowActionParameters["WFInput"] = debugOutputRef("EXACT-RESULT")
+						case "duplicate_producer":
+							for i := 0; i < last; i++ {
+								if id, ok := bad[i].WFWorkflowActionParameters["UUID"].(string); ok && id != "" {
+									bad[last].WFWorkflowActionParameters["UUID"] = id
+									break
+								}
+							}
+						}
+						if _, err = p15ExportMetadataCanonicalGraph(p15ExportMetadataNativeWire(t, bad)); err == nil {
+							t.Fatalf("actual plist wire oracle accepted %s", fault)
+						}
+					})
+				}
+
 				if out := os.Getenv("CHERRI_EXPORT_METADATA_DEFAULT_GOLDEN_OUT"); out != "" {
 					data, err := json.MarshalIndent(a, "", "  ")
 					if err != nil {
@@ -371,4 +400,37 @@ func p15ExportMetadataNativeWire(t *testing.T, actions []ShortcutAction) []Short
 		wire[i] = ShortcutAction{WFWorkflowActionIdentifier: id, WFWorkflowActionParameters: params}
 	}
 	return wire
+}
+
+func p15ExportMetadataCanonicalGraph(actions []ShortcutAction) (any, error) {
+	var visit func(any) error
+	visit = func(value any) error {
+		switch v := value.(type) {
+		case map[string]any:
+			if v["Type"] == "ActionOutput" {
+				id, ok := v["OutputUUID"].(string)
+				if !ok || id == "" {
+					return fmt.Errorf("native ActionOutput has no producer UUID")
+				}
+			}
+			for _, child := range v {
+				if err := visit(child); err != nil {
+					return err
+				}
+			}
+		case []any:
+			for _, child := range v {
+				if err := visit(child); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+	for _, action := range actions {
+		if err := visit(action.WFWorkflowActionParameters); err != nil {
+			return nil, err
+		}
+	}
+	return p15MeasureVoidCanonicalGraph(actions)
 }
