@@ -1,6 +1,6 @@
 {
-  "schema": "cherri-f04-declaration-storage-verification/1",
-  "status": "PASS_FOCUSED_GREEN_ORIGINAL330_PENDING",
+  "schema": "cherri-f04-declaration-storage-verification/2",
+  "status": "PASS_FOCUSED_GREEN_AND_CURRENT_ORIGINAL330",
   "sourceParent": "1b86daa05c50794fc86d0a5e810468bd6ddef534",
   "qualifiedGoInputsSHA256": "cd4d3af468ac0a3b1d105fd3d6de33b4dee287a6e52faf7a1e68d5ac0425f323",
   "qualifiedGoInputCount": 831,
@@ -43,6 +43,48 @@
   ],
   "nativeRuntimeExecuted": false,
   "formal179Acceptance": false,
-  "original330ForThisSource": "NOT_YET_EXECUTED",
-  "frozenReleaseOrLiveInstallationChanged": false
+  "original330ForThisSource": {
+    "status": "PASS_CURRENT_ORIGINAL_330_IDENTITIES",
+    "source": "23c990afae5ce876f4c0a9260342f448c709f14d",
+    "receipt": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/regression-original330-05/result.original.json",
+    "sha256": "df42a11c6a347182efe1a97e268fd195925258f0a85ed24af8c4e78318a5f771",
+    "expectedNamed": 330,
+    "actualNamed": 330,
+    "rootNamedPassed": 260,
+    "internalNamedPassed": 70,
+    "exactOriginalIdentities": true,
+    "failed": 0,
+    "skipped": 0,
+    "unchangedGoInputCount": 831,
+    "sourceFilesBeforeSHA256": "faf3128b6fd36f2040a5ab6cc3a3893d441f2e62f21f289d4e3cc5b4559507f6",
+    "sourceFilesAfterSHA256": "faf3128b6fd36f2040a5ab6cc3a3893d441f2e62f21f289d4e3cc5b4559507f6",
+    "originalRecipeSHA256": "663f0e3876f9d2247c8b9a8b53688a3e8df2e7ccd8d81c4a113fe6dc35e594de",
+    "minimumDevelopmentFreeBytes": 1410203648,
+    "minimumRootFreeBytes": 1809047552,
+    "admissionMinimumFreeBytes": 1073741824,
+    "stopMinimumFreeBytes": 805306368,
+    "capacityAborted": false,
+    "originalGoTimeoutSeconds": 180,
+    "originalOuterTimeoutSeconds": 240,
+    "steps": [
+      {
+        "label": "f04-mutable-root",
+        "durationSeconds": 11.016037464141846,
+        "stdoutSHA256": "486c6ab471379058f96b80cbc3a4803d3fdd6362072adc13e9ff762e760dba4a",
+        "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "referenceStdoutSHA256": "e39e1d3e9b16ae1e6d2a6a1e8f024828e731e6ad987cfaac8f84d3fabae57f25"
+      },
+      {
+        "label": "f04-mutable-internal",
+        "durationSeconds": 2.0048084259033203,
+        "stdoutSHA256": "f0860258d8e811518c1a880cb75c21f4318a64f3e0d0b2d956659a5b0d116031",
+        "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "referenceStdoutSHA256": "a386f8fa22e21388656527594a37ec07e35a43c833e8ca31bb79e09c3ab40618"
+      }
+    ]
+  },
+  "frozenReleaseOrLiveInstallationChanged": false,
+  "qualifiedCommittedSource": "23c990afae5ce876f4c0a9260342f448c709f14d",
+  "testCountsOverlap": true,
+  "expectationChangeMeaning": "same original full IDs and authored sources; sixteen schema flow/storage cases require positive AST enrollment while uninitialized_alias and ordinary_list_rhs still reject; two original root mutable_sequence/mutable_alias sources require full positive native graph assertions and causal graph faults. Earlier rejection expectations were explicitly changed as features were implemented; this is not unchanged historical rejection semantics."
 }

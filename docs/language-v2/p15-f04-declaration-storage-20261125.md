@@ -1,6 +1,6 @@
 # F04 declaration storage and cell append — 25 November 2026
 
-Status: focused GREEN passed. The original330 successor regression and final integration are still pending for this source.
+Status: focused GREEN and all 330 original test identities passed on source 23c990afae5ce876f4c0a9260342f448c709f14d. Final integration and runtime acceptance remain pending.
 
 A mutable cell-sequence declaration now owns one storage representation for its
 whole lifetime. The planner collects every initialized and assigned producer
@@ -20,6 +20,7 @@ after planning still rejects before any native RHS/store is emitted.
 
 - Before production edits, 46 new source cases failed with `E_TARGET_VALUE_SHAPE`; one existing control passed. There were no build/parser failures, timeouts or skips.
 - After the two schema production edits, 214 named tests across three packages passed with zero failures or skips.
+- The unchanged original two-command regression passed all 260 root and 70 internal test identities on the clean committed source, with zero failures or skips. The original Go 180-second and outer 240-second bounds remain. The 214 focused tests overlap this regression and are not an additional distinct acceptance count.
 - All 47 original new graph-source cases remain byte-identical to RED: SHA256 `c14cdafd1f2ae614739e8d9514d3ba86ddb154ac86cd3b898f5a79bf76afd61c`.
 - Coverage includes typed/inferred declarations, completely unread mutable chains, overwritten versions, branch/zero/repeated iterations, immutable and mutable RHS append, self-append, direct producer append, lexical shadowing, Optional false/zero/empty text, and RHS target writes.
 - Seven independent graph corruptions are rejected. Four additional operator/source identity corruptions reject before lowering; a healthy append emits exactly one native AppendVariable with the original target and source.
@@ -46,6 +47,6 @@ checks, not execution of Apple's Shortcuts runtime or formal179 acceptance.
 Ordinary/empty/uninitialized list transitions need the shared container
 representation being implemented in the T05/L01 lane. This change does not add
 a parallel codec or change cell markers, payload wire layout, function/import
-interfaces, or all nested/dynamic payloads. Final CI, original330, broader
-integrated regression and native acceptance remain separate gates. Frozen
+interfaces, or all nested/dynamic payloads. Final CI, broader integrated
+regression and native acceptance remain separate gates. Frozen
 S/K/D and the installed K18 release are unchanged.
