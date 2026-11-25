@@ -11,7 +11,7 @@ import (
 // of the inferred Bool-only literal. Every producer and edge is checked.
 func p15TaggedContextualGraph(actions []map[string]any, depth int, dictionary bool) error {
 	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
-	cell := p15TaggedCellGraph(g, "bool", p15FunctionArgument{true, 4, false})
+	cell := p15TaggedCellGraph(g, "bool", p15OptionalJoinValue("false"))
 	if dictionary {
 		array := p15F04ArrayValue(p15FunctionArgument{true, 0, p15FunctionEdge(cell)})
 		p15S01Dictionary(g, p15S01ContainerRow(p15FunctionText("slot"), array.kind, array.value))
@@ -117,7 +117,7 @@ func p15TaggedDefaultGraph(actions []map[string]any, dictionary bool) error {
 		return err
 	}
 	g := &p15FunctionGraph{actual: region, groups: map[string]bool{}}
-	cell := p15TaggedCellGraph(g, "bool", p15FunctionArgument{true, 4, false})
+	cell := p15TaggedCellGraph(g, "bool", p15OptionalJoinValue("false"))
 	if dictionary {
 		p15S01Dictionary(g, p15S01ContainerRow(p15FunctionText("flag"), 0, p15FunctionEdge(cell)))
 	} else {

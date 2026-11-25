@@ -19,11 +19,11 @@ func TestP15TaggedContextualGraphCorruptions(t *testing.T) {
 			if err := p15TaggedContextualGraph(actions, tc.depth, tc.dictionary); err != nil {
 				t.Fatal(err)
 			}
-			for _, fault := range []string{"kind", "presence", "false_value", "marker", "producer_identity", "omit_inner", "source_order", "extra_action"} {
+			for _, fault := range []string{"kind", "presence", "false_value", "wrapper_drop", "marker", "producer_identity", "omit_inner", "source_order", "extra_action"} {
 				t.Run(fault, func(t *testing.T) {
 					broken := p15TaggedClone(t, actions)
 					switch fault {
-					case "kind", "presence", "false_value", "marker":
+					case "kind", "presence", "false_value", "wrapper_drop", "marker":
 						fields, err := p15ContainerFields(p15Param(broken[0])["WFItems"])
 						if err != nil {
 							t.Fatal(err)
@@ -33,7 +33,15 @@ func TestP15TaggedContextualGraphCorruptions(t *testing.T) {
 						case "presence":
 							key, value = "has_value", p15FunctionText("0")
 						case "false_value":
-							key, value = "value", true
+							key = "value"
+							state, ok := fields[key]["WFValue"].(map[string]any)
+							if !ok {
+								t.Fatal("original Boolean state wrapper missing")
+							}
+							state["Value"] = true
+							value = state
+						case "wrapper_drop":
+							key, value = "value", false
 						case "marker":
 							key, value = "_cherri_value_cell_v1", p15FunctionText("unowned")
 						}
@@ -69,21 +77,30 @@ func TestP15TaggedDefaultGraphCorruptions(t *testing.T) {
 			if err := p15TaggedDefaultGraph(actions, tc.dictionary); err != nil {
 				t.Fatal(err)
 			}
-			for _, fault := range []string{"presence", "false_value", "kind", "producer_identity", "omitted_discriminator", "wrong_polarity", "wrong_group", "extra_fallback"} {
+			for _, fault := range []string{"presence", "false_value", "wrapper_drop", "kind", "producer_identity", "omitted_discriminator", "wrong_polarity", "wrong_group", "extra_fallback"} {
 				t.Run(fault, func(t *testing.T) {
 					broken := p15TaggedClone(t, actions)
 					region, err := p15TaggedDefaultRegion(broken)
 					if err != nil || len(region) != 2 {
 						t.Fatal("invalid original fallback", err)
 					}
-					if fault == "presence" || fault == "false_value" || fault == "kind" {
+					if fault == "presence" || fault == "false_value" || fault == "wrapper_drop" || fault == "kind" {
 						fields, err := p15ContainerFields(p15Param(region[0])["WFItems"])
 						if err != nil {
 							t.Fatal(err)
 						}
 						key, value := "has_value", any(p15FunctionText("0"))
 						if fault == "false_value" {
-							key, value = "value", true
+							key = "value"
+							state, ok := fields[key]["WFValue"].(map[string]any)
+							if !ok {
+								t.Fatal("original Boolean state wrapper missing")
+							}
+							state["Value"] = true
+							value = state
+						}
+						if fault == "wrapper_drop" {
+							key, value = "value", false
 						}
 						if fault == "kind" {
 							key, value = "kind", p15FunctionText("number")
