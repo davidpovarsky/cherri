@@ -10,7 +10,7 @@ import (
 func registerRequireMacro() {
 	actions["require"] = &actionDefinition{
 		identifier: "getvariable", outputType: Variable,
-		doc: selfDoc{title: "Require Typed Value", description: "Validate native content and return the original value without text or JSON conversion. Supported type guards: text, number, dictionary. nonEmpty checks characters, keys or content items.", category: "control"},
+		doc: selfDoc{title: "Require Condition or Typed Value", description: "Require a source-proved Boolean condition, or validate native content with a type or nonEmpty guard. Return the original value without text or JSON conversion. Supported type guards: text, number, dictionary. nonEmpty checks characters, keys or content items.", category: "control"},
 		parameters: []parameterDefinition{
 			{name: "value", key: "WFInput", validType: Variable},
 			{name: "type", key: "WFRequireType", validType: RawString, optional: true},
@@ -21,6 +21,7 @@ func registerRequireMacro() {
 			out := make(map[string]any)
 			if len(args) > 0 {
 				out[requireSourceTypeKey] = requireLegacySourceType(args[0])
+				out[requireConditionTypeKey] = requireLegacyConditionType(args[0])
 			}
 			keys := []string{"WFInput", "WFRequireType", "WFRequireNonEmpty", "WFAlertActionMessage"}
 			for i, key := range keys {
@@ -211,12 +212,13 @@ func buildRequireMacroActions(params map[string]any, resultUUID, resultName stri
 	if err != nil {
 		return nil, err
 	}
-	if kind == "" && !nonEmpty {
-		return nil, fmt.Errorf("require: specify a supported type guard or nonEmpty:true")
-	}
+	condition := kind == "" && !nonEmpty
 	raw, provided := params["WFInput"]
 	if !provided {
 		return nil, fmt.Errorf("require(value, ...) requires a value")
+	}
+	if condition && !requireConditionInputProved(params, raw) {
+		return nil, fmt.Errorf("require condition must be a source-proved Bool; other values need a supported type guard or nonEmpty:true")
 	}
 	msg := params["WFAlertActionMessage"]
 	if msg == nil {
@@ -232,6 +234,11 @@ func buildRequireMacroActions(params map[string]any, resultUUID, resultName stri
 	sourceCategory := requireSemanticCategory(sourceType)
 	if sourceCategory == "" {
 		sourceCategory = requireLiteralCategory(raw)
+	}
+	if condition {
+		// Bool values use the language\'s existing native 0/1 representation.
+		// Do not substitute presence, a text conversion or a second evaluation.
+		b.failIf(b.input, 4, 0, backend.OperandNumber)
 	}
 	if kind != "" {
 		// Get Type may itself yield a collection or no output. Require exactly

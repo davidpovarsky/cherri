@@ -34,6 +34,9 @@ func (a *Analyzer) requireOutputType(call *syntax.CallExpr) types.Type {
 	if t == nil {
 		return types.Unknown
 	}
+	if kind == "" && !nonEmpty && !types.Bool.Equals(t) {
+		a.error(CodeArgumentType, value.NodeSpan(), "require condition must be a source-proved Bool; other values need a supported type guard or nonEmpty:true")
+	}
 	if optional, ok := t.(types.OptionalType); ok && (kind != "" || nonEmpty) {
 		t = optional.Inner
 	}

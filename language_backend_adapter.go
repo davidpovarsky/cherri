@@ -235,6 +235,7 @@ func (s *CanonicalBackendSession) emitResolvedCallWithPageCallback(call backend.
 			for _, argument := range call.Arguments {
 				if argument.ParameterID == "WFInput" || (argument.ParameterID == "" && argument.Position == 0) {
 					params[requireSourceTypeKey] = argument.StaticType
+					params[requireConditionTypeKey] = argument.StaticType
 					break
 				}
 			}
