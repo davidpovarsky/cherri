@@ -3437,6 +3437,19 @@
       ],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "Complete V2 semantic compile error reporting",
+      "locations": [
+        "semantic_compile_errors.go",
+        "language_emit_adapter.go",
+        "semantic_compile_errors_test.go"
+      ],
+      "firstForkCommit": "4ca75e763204f0d4cdcb94442985e6dd776df844",
+      "change": "Preserve all analyzer error diagnostics, in their original order, in public V2 compile errors and the existing isolation error collector. Reuse one helper based on errors.Join; retain the previous single-error text and reject before native backend creation.",
+      "reason": "New precise constructor validation exposed an existing public API defect: returning only the first semantic error concealed the independent enclosing Date comparison E_ARGUMENT_TYPE behind the qty unit E_LITERAL_REQUIRED. The unchanged T04/BRG33 original contract failed although analysis still carried both exact diagnostics. Two independently invalid declarations reproduced the same masking mechanism.",
+      "evidence": "docs/language-v2/semantic-error-retention-20261125.md; Oracle evidence/cherri-differential-30-20261125/compatibility/go-events/{t04-red.json,semantic-errors-red.json,semantic-errors-green.json,brg33-green.json}. RED preserves the exact T04 failure and both general masking controls. GREEN passes unchanged T04 production/service, all four constructor tests, both new public compile/isolation controls, and the clean-source BRG33 producer with all 23 required tests discovered and 10 evidence-corruption negatives rejected.",
+      "note": "Separate non-circular metadata anchors reachable root integration. Component implementation 4dcf92546ebc079d3d54f3724c9a082ac3573657 retains its own source-bound receipts. No analyzer diagnostic, original test expectation, action definition, native representation or successful compile semantics changed. Gate-only OutputType compatibility is documented separately and is not an action catalog change. No full-suite, native runtime or release acceptance is inferred."
     }
   ]
 }
