@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run signed differential fixtures through real Shortcuts and the existing receiver."""
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -34,12 +35,73 @@ def wait_file(path, seconds, process):
         time.sleep(0.25)
     raise TimeoutError(path.name)
 
-def command(args, timeout=25):
-    result = subprocess.run(args, text=True, capture_output=True, timeout=timeout)
-    if result.returncode:
-        raise RuntimeError(json.dumps({"command": args, "exit": result.returncode,
-                                      "stderr": result.stderr[-1500:]}))
-    return result.stdout.strip()
+def command(args, timeout=25, *, on_started=None, receipt_path=None):
+    if on_started is None:
+        result = subprocess.run(args, text=True, capture_output=True, timeout=timeout)
+        if result.returncode:
+            raise RuntimeError(json.dumps({"command": args, "exit": result.returncode,
+                                          "stderr": result.stderr[-1500:]}))
+        return result.stdout.strip()
+    if receipt_path is None:
+        raise ValueError("Overlapping UI dispatch requires a retained process receipt")
+    started = time.monotonic()
+    stdout_path = receipt_path.with_suffix(".stdout.log")
+    stderr_path = receipt_path.with_suffix(".stderr.log")
+    receipt = {"schemaVersion": 1, "command": args, "timeoutSeconds": timeout,
+               "startedUTC": datetime.now(timezone.utc).isoformat(),
+               "outcome": "STARTING", "exitCode": None, "timedOut": False,
+               "stdoutPath": str(stdout_path), "stderrPath": str(stderr_path)}
+    process = None
+    failed = True
+    with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
+        try:
+            process = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=stdout,
+                                       stderr=stderr, start_new_session=True)
+            receipt.update({"pid": process.pid, "outcome": "LAUNCHED"})
+            atomic_json(receipt_path, receipt)
+            # Arm the existing helper after launch, before waiting for delivery.
+            # This is one dispatch; UI acknowledgment never substitutes for exit0.
+            on_started()
+            receipt["phasePublishedUTC"] = datetime.now(timezone.utc).isoformat()
+            atomic_json(receipt_path, receipt)
+            remaining = timeout - (time.monotonic() - started)
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(args, timeout)
+            code = process.wait(timeout=remaining)
+            if time.monotonic() - started > timeout:
+                raise subprocess.TimeoutExpired(args, timeout)
+            receipt.update({"exitCode": code, "exitObservedUTC": datetime.now(timezone.utc).isoformat(),
+                            "outcome": "EXITED" if code == 0 else "EXIT_NONZERO"})
+            if code:
+                raise RuntimeError(json.dumps({"command": args, "exit": code,
+                                              "stderr": stderr_path.read_text(errors="replace")[-1500:]}))
+            output = stdout_path.read_text(errors="replace").strip()
+            failed = False
+            return output
+        except subprocess.TimeoutExpired:
+            receipt.update({"outcome": "TIMED_OUT", "timedOut": True})
+            raise
+        except BaseException as exc:
+            if receipt["outcome"] not in {"EXIT_NONZERO", "TIMED_OUT"}:
+                receipt["outcome"] = "FAILED"
+            receipt["error"] = type(exc).__name__ + ": " + str(exc)
+            raise
+        finally:
+            try:
+                if process is not None and failed:
+                    # This group belongs only to this Popen(start_new_session).
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    process.wait(timeout=2)
+            finally:
+                if process is not None:
+                    receipt["processReturncode"] = process.poll()
+                    receipt["parentReaped"] = process.returncode is not None
+                receipt["completedUTC"] = datetime.now(timezone.utc).isoformat()
+                receipt["elapsedSeconds"] = round(time.monotonic() - started, 6)
+                atomic_json(receipt_path, receipt)
 
 def receiver_image_inventory(bundle):
     info_path = bundle / "Info.plist"
@@ -189,9 +251,12 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                        "restartShortcutsAfterImport": restart_shortcuts_after_import,
                        "startedUTC": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
                 import_id = "import-" + uuid.uuid4().hex
-                command(["xcrun", "simctl", "openurl", simulator, signed.as_uri()], timeout=60)
-                atomic_json(directory / "command.json",
-                            {"id": import_id, "operation": "import", "shortcutName": case["name"]})
+                import_phase = {"id": import_id, "operation": "import", "shortcutName": case["name"]}
+                import_dispatch = directory / ("dispatch-" + import_id + ".json")
+                command(["xcrun", "simctl", "openurl", simulator, signed.as_uri()], timeout=60,
+                        on_started=lambda: atomic_json(directory / "command.json", import_phase),
+                        receipt_path=import_dispatch)
+                row["importDispatchReceipt"] = load_json(import_dispatch)
                 receipt = wait_file(directory / ("ack-" + import_id + ".json"), 90, process)
                 row["importReceipt"] = receipt
                 if receipt["outcome"] != "IMPORTED":
@@ -233,10 +298,13 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                          "source": "shortcuts-x-callback"})
                 target = "shortcuts://x-callback-url/run-shortcut?" + urllib.parse.urlencode(query)
                 trigger = "cherriqa://trigger?" + urllib.parse.urlencode({"target": target})
-                command(["xcrun", "simctl", "openurl", simulator, trigger], timeout=60)
                 runtime_id = "runtime-" + uuid.uuid4().hex
-                atomic_json(directory / "command.json",
-                            {"id": runtime_id, "operation": "runtime", "shortcutName": case["name"]})
+                runtime_phase = {"id": runtime_id, "operation": "runtime", "shortcutName": case["name"]}
+                runtime_dispatch = directory / ("dispatch-" + runtime_id + ".json")
+                command(["xcrun", "simctl", "openurl", simulator, trigger], timeout=60,
+                        on_started=lambda: atomic_json(directory / "command.json", runtime_phase),
+                        receipt_path=runtime_dispatch)
+                row["runtimeDispatchReceipt"] = load_json(runtime_dispatch)
                 callback = None
                 end = time.monotonic() + 48
                 while time.monotonic() < end:
@@ -276,6 +344,7 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                "xctestExit": process.returncode if process else None,
                "manifestSHA256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
                "callbackContract": "raw-utf8-sha256-v1",
+               "urlDispatchContract": "launch-publish-bounded-join-v1",
                "receiverImageIdentity": (receiver_identity or {}).get("outcome", "NOT_VERIFIED"),
                "receiverImageIdentitySHA256": receiver_identity_sha256,
                "restartShortcutsAfterImport": restart_shortcuts_after_import,
