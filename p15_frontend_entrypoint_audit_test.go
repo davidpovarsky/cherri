@@ -28,6 +28,7 @@ func p15RP52CExportError(raw []byte) error {
 		"CherriCompileSignedMode":    {"C.GoString(mode)", "true", "compileForMobileMode"},
 		"CherriCompileProfile":       {"C.GoString(mode)", "false", "compileForMobileModeWithOptions"},
 		"CherriCompileSignedProfile": {"C.GoString(mode)", "true", "compileForMobileModeWithOptions"},
+		"CherriCompileDocument":      {"", "", "compileDocumentForMobile"},
 	}
 	expression := func(node ast.Node) string {
 		var out bytes.Buffer
@@ -48,6 +49,9 @@ func p15RP52CExportError(raw []byte) error {
 		}
 		seen[fn.Name.Name] = true
 		parameters := "source *C.char, requestedName *C.char"
+		if policy.core == "compileDocumentForMobile" {
+			parameters = "request *C.char"
+		}
 		if policy.mode == "C.GoString(mode)" {
 			parameters += ", mode *C.char"
 		}
@@ -81,6 +85,9 @@ func p15RP52CExportError(raw []byte) error {
 			return fmt.Errorf("source entry bypassed approved compile core")
 		}
 		want := []string{"C.GoString(source)", "C.GoString(requestedName)", policy.mode, policy.sign}
+		if policy.core == "compileDocumentForMobile" {
+			want = []string{"C.GoString(request)"}
+		}
 		if policy.core == "compileForMobileModeWithOptions" {
 			want = append(want, "CompileOptions{BuildProfile: BuildProfile(C.GoString(profile))}")
 		}
@@ -251,44 +258,119 @@ func p15RP52SwiftTokens(s string) ([]string, error) {
 	return tokens, nil
 }
 
-const p15RP52ApprovedSwiftCompile = "static func compile(source: String, name: String, mode: String = \"v2\", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {\ntry await Task.detached(priority: .userInitiated) {\ntry callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)\n}.value\n}"
+const p15RP52ApprovedSwiftCompile = `static func compile(source: String, name: String, mode: String = "v2", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
+        try await compile(request: CherriEditorBuildRequest(
+            source: source, mode: mode, name: name, buildProfile: buildProfile
+        ), signed: signed)
+    }`
+
+const p15RP52ApprovedSwiftRequestCompile = `static func compile(request: CherriEditorBuildRequest, signed: Bool = false) async throws -> CompiledShortcut {
+        try Task.checkCancellation()
+        // The selected file's existing security scope lives across the native
+        // call. This neither grants sibling access nor changes the resolver root.
+        let fileURL = request.document?.fileURL
+        let accessed = fileURL?.startAccessingSecurityScopedResource() ?? false
+        defer { if accessed { fileURL?.stopAccessingSecurityScopedResource() } }
+        let result = try await Task.detached(priority: .userInitiated) {
+            if request.document != nil {
+                return try callDocumentCompileBridge(request: request, signed: signed)
+            }
+            return try callCompileBridge(source: request.source, name: request.name,
+                                         mode: request.mode, signed: signed,
+                                         buildProfile: request.buildProfile)
+        }.value
+        // The C ABI is synchronous. Cancellation discards its completed result;
+        // it does not pretend to interrupt a Go call that is already executing.
+        try Task.checkCancellation()
+        return result
+    }`
+
 const p15RP52ApprovedSwiftBridge = `private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool, buildProfile: CherriBuildProfile) throws -> CompiledShortcut {
-    let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
-        name.withCString { namePointer in
-            mode.withCString { modePointer in
-                buildProfile.rawValue.withCString { profilePointer in
-                    let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
-                    let mutableName = UnsafeMutablePointer(mutating: namePointer)
-                    let mutableMode = UnsafeMutablePointer(mutating: modePointer)
-                    let mutableProfile = UnsafeMutablePointer(mutating: profilePointer)
-                    return signed
-                        ? CherriCompileSignedProfile(mutableSource, mutableName, mutableMode, mutableProfile)
-                        : CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            name.withCString { namePointer in
+                mode.withCString { modePointer in
+                    buildProfile.rawValue.withCString { profilePointer in
+                        let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
+                        let mutableName = UnsafeMutablePointer(mutating: namePointer)
+                        let mutableMode = UnsafeMutablePointer(mutating: modePointer)
+                        let mutableProfile = UnsafeMutablePointer(mutating: profilePointer)
+                        return signed
+                            ? CherriCompileSignedProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+                            : CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+                    }
                 }
             }
         }
-    }
 
-    let response = try decodeBridgeResponse(resultPointer)
+        let response = try decodeBridgeResponse(resultPointer)
+        return try compiledShortcut(response, request: CherriEditorBuildRequest(
+            source: source, mode: mode, name: name, buildProfile: buildProfile
+        ))
+    }`
 
-    guard let plistBase64 = response.plistBase64,
-          let plist = Data(base64Encoded: plistBase64) else {
-        throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
-    }
+const p15RP52ApprovedSwiftDocumentRequest = `private struct DocumentCompileRequest: Encodable {
+        let source: String
+        let name: String
+        let mode: String
+        let buildProfile: String
+        let signed: Bool
+        let document: CherriDocumentCompileContext
+    }`
 
-    guard let actualMode = response.mode, actualMode == "v2" || actualMode == "legacy" else {
-        throw CompilationDiagnostic(message: "Compiler response did not identify its selected language mode.", line: 1, column: 1)
-    }
-    let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
-    return CompiledShortcut(
-        name: response.name ?? name,
-        actualMode: actualMode,
-        plist: plist,
-        signedShortcut: signedData,
-        sourceRequest: CherriEditorBuildRequest(source: source, mode: mode, name: name, buildProfile: buildProfile),
-        previewSourceMap: response.previewSourceMap
-    )
-}`
+const p15RP52ApprovedSwiftDocumentBridge = `private static func callDocumentCompileBridge(request: CherriEditorBuildRequest, signed: Bool) throws -> CompiledShortcut {
+        guard let document = request.document else {
+            throw CompilationDiagnostic(message: "Document compilation requires a document context.", line: 1, column: 1)
+        }
+        let payload = DocumentCompileRequest(source: request.source, name: request.name,
+                                             mode: request.mode, buildProfile: request.buildProfile.rawValue,
+                                             signed: signed, document: document)
+        let json = String(decoding: try JSONEncoder().encode(payload), as: UTF8.self)
+        let pointer = json.withCString { CherriCompileDocument(UnsafeMutablePointer(mutating: $0)) }
+        return try compiledShortcut(decodeBridgeResponse(pointer), request: request)
+    }`
+
+const p15RP52ApprovedSwiftCompiledShortcut = `private static func compiledShortcut(_ response: CompilerBridgeResponse, request: CherriEditorBuildRequest) throws -> CompiledShortcut {
+        guard response.document == request.document,
+              response.previewSourceMap == nil || response.previewSourceMap?.document == request.document else {
+            throw CompilationDiagnostic(message: "Compiler response does not match the document and asset revisions.", line: 1, column: 1)
+        }
+        guard let plistBase64 = response.plistBase64,
+              let plist = Data(base64Encoded: plistBase64) else {
+            throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
+        }
+
+        guard let actualMode = response.mode, actualMode == "v2" || actualMode == "legacy" else {
+            throw CompilationDiagnostic(message: "Compiler response did not identify its selected language mode.", line: 1, column: 1)
+        }
+        let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
+        return CompiledShortcut(
+            name: response.name ?? request.name,
+            actualMode: actualMode,
+            plist: plist,
+            signedShortcut: signedData,
+            sourceRequest: request,
+            previewSourceMap: response.previewSourceMap
+        )
+    }`
+
+const p15RP52ApprovedSwiftDecode = `private static func decodeBridgeResponse(_ resultPointer: UnsafeMutablePointer<CChar>?) throws -> CompilerBridgeResponse {
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri compiler returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        let response = try JSONDecoder().decode(CompilerBridgeResponse.self, from: responseData)
+
+        guard response.ok else {
+            throw CompilationDiagnostic(
+                message: response.error ?? "Unknown Cherri compiler error.",
+                line: response.line ?? 1,
+                column: response.column ?? 1
+            )
+        }
+        return response
+    }`
 
 func p15RP52SwiftEntryError(raw []byte) error {
 	tokens, err := p15RP52SwiftTokens(string(raw))
@@ -328,57 +410,62 @@ func p15RP52SwiftEntryError(raw []byte) error {
 	if depth != 0 || declarations != 1 {
 		return fmt.Errorf("missing unique top-level Swift compiler declaration")
 	}
-	wanted, err := p15RP52SwiftTokens(p15RP52ApprovedSwiftCompile)
-	if err != nil {
-		return err
+	// These are reviewed literal declarations, not expectations read from the
+	// candidate. Together they cover old source API -> request dispatch -> both
+	// actual C entry points -> common failure/context/mode decoding.
+	approved := map[string]string{
+		"compile:source":            p15RP52ApprovedSwiftCompile,
+		"compile:request":           p15RP52ApprovedSwiftRequestCompile,
+		"callCompileBridge":         p15RP52ApprovedSwiftBridge,
+		"DocumentCompileRequest":    p15RP52ApprovedSwiftDocumentRequest,
+		"callDocumentCompileBridge": p15RP52ApprovedSwiftDocumentBridge,
+		"compiledShortcut":          p15RP52ApprovedSwiftCompiledShortcut,
+		"decodeBridgeResponse":      p15RP52ApprovedSwiftDecode,
 	}
-	bridge, err := p15RP52SwiftTokens(p15RP52ApprovedSwiftBridge)
-	if err != nil {
-		return err
+	wanted := map[string][]string{}
+	for name, declaration := range approved {
+		wanted[name], err = p15RP52SwiftTokens(declaration)
+		if err != nil {
+			return err
+		}
 	}
-	enums, entries, bridges := 0, 0, 0
+	seen := map[string]int{}
+	enums := 0
 	for i := 0; i+2 < len(tokens); i++ {
 		if tokens[i] != "enum" || tokens[i+1] != "CherriCompiler" || tokens[i+2] != "{" {
 			continue
 		}
 		enums++
-		depth := 1
+		depth, memberStart := 1, i+3
 		for j := i + 3; j < len(tokens) && depth > 0; j++ {
-			if depth == 1 && j+4 < len(tokens) && tokens[j] == "private" && tokens[j+1] == "static" && tokens[j+2] == "func" && tokens[j+3] == "callCompileBridge" && tokens[j+4] == "(" {
-				bridges++
-				opening := j
-				for opening < len(tokens) && tokens[opening] != "{" {
-					opening++
-				}
-				if opening == len(tokens) {
-					return fmt.Errorf("missing Swift bridge body")
-				}
-				end := opening + 1
-				bodyDepth := 1
-				for end < len(tokens) && bodyDepth > 0 {
-					if tokens[end] == "{" {
-						bodyDepth++
+			key := ""
+			if depth == 1 && j+2 < len(tokens) && tokens[j] == "func" {
+				name := tokens[j+1]
+				if name == "compile" {
+					if j+4 >= len(tokens) || tokens[j+2] != "(" {
+						return fmt.Errorf("invalid Swift compile declaration")
 					}
-					if tokens[end] == "}" {
-						bodyDepth--
+					key = "compile:" + tokens[j+3]
+					if _, ok := wanted[key]; !ok {
+						return fmt.Errorf("unreviewed Swift compile overload %s", key)
 					}
-					end++
-				}
-				if bodyDepth != 0 || !reflect.DeepEqual(tokens[j:end], bridge) {
-					return fmt.Errorf("Swift bridge changed source/mode/profile forwarding")
+				} else if _, ok := wanted[name]; ok {
+					key = name
 				}
 			}
-			if depth == 1 && j+3 < len(tokens) && tokens[j] == "static" && tokens[j+1] == "func" && tokens[j+2] == "compile" && tokens[j+3] == "(" {
-				entries++
+			if depth == 1 && j+1 < len(tokens) && tokens[j] == "struct" && tokens[j+1] == "DocumentCompileRequest" {
+				key = "DocumentCompileRequest"
+			}
+			if key != "" {
+				seen[key]++
 				opening := j
 				for opening < len(tokens) && tokens[opening] != "{" {
 					opening++
 				}
 				if opening == len(tokens) {
-					return fmt.Errorf("missing Swift entry body")
+					return fmt.Errorf("missing Swift route body %s", key)
 				}
-				end := opening + 1
-				bodyDepth := 1
+				end, bodyDepth := opening+1, 1
 				for end < len(tokens) && bodyDepth > 0 {
 					if tokens[end] == "{" {
 						bodyDepth++
@@ -388,8 +475,8 @@ func p15RP52SwiftEntryError(raw []byte) error {
 					}
 					end++
 				}
-				if bodyDepth != 0 || !reflect.DeepEqual(tokens[j:end], wanted) {
-					return fmt.Errorf("Swift default/forwarding entry differs from explicit V2 policy")
+				if bodyDepth != 0 || seen[key] != 1 || !reflect.DeepEqual(tokens[memberStart:end], wanted[key]) {
+					return fmt.Errorf("Swift route declaration changed forwarding/failure boundary: %s", key)
 				}
 			}
 			if tokens[j] == "{" {
@@ -397,14 +484,22 @@ func p15RP52SwiftEntryError(raw []byte) error {
 			}
 			if tokens[j] == "}" {
 				depth--
+				if depth == 1 {
+					memberStart = j + 1
+				}
 			}
 		}
 		if depth != 0 {
 			return fmt.Errorf("unterminated compiler enum")
 		}
 	}
-	if enums != 1 || entries != 1 || bridges != 1 {
-		return fmt.Errorf("Swift compile entry inventory differs: enums=%d entries=%d bridges=%d", enums, entries, bridges)
+	if enums != 1 || len(seen) != len(wanted) {
+		return fmt.Errorf("Swift compile route inventory incomplete: enums=%d declarations=%d", enums, len(seen))
+	}
+	for name := range wanted {
+		if seen[name] != 1 {
+			return fmt.Errorf("missing unique Swift route declaration %s", name)
+		}
 	}
 	return nil
 }
@@ -470,7 +565,7 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			case "legacy_default":
 				s = strings.Replace(s, "mode: String = \"v2\"", "mode: String = \"legacy\"", 1)
 			case "mode_literal":
-				s = strings.Replace(s, "name: name, mode: mode, signed: signed", "name: name, mode: \"auto\", signed: signed", 1)
+				s = strings.Replace(s, "source: source, mode: mode, name: name", "source: source, mode: \"auto\", name: name", 1)
 			case "comment_shadow":
 				s = "/* enum CherriCompiler { " + p15RP52ApprovedSwiftCompile + " } */\n" + strings.Replace(s, "mode: String = \"v2\"", "mode: String = \"auto\"", 1)
 			case "string_shadow":
@@ -480,9 +575,9 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			case "duplicate_enum":
 				s += "\nenum CherriCompiler { " + p15RP52ApprovedSwiftCompile + " }\n"
 			case "missing_bridge":
-				s = strings.Replace(s, "try callCompileBridge(source: source", "try bypassCompileBridge(source: source", 1)
+				s = strings.Replace(s, "return try callCompileBridge(source: request.source", "return try bypassCompileBridge(source: request.source", 1)
 			case "local_shadow":
-				s = strings.Replace(s, "try await Task.detached(priority: .userInitiated) {", "let mode = \"auto\"\n        return try await Task.detached(priority: .userInitiated) {", 1)
+				s = strings.Replace(s, "let result = try await Task.detached(priority: .userInitiated) {", "let request = CherriEditorBuildRequest(source: request.source, mode: \"auto\", name: request.name)\n        let result = try await Task.detached(priority: .userInitiated) {", 1)
 			case "unterminated_comment":
 				s += "\n/*"
 			case "bridge_mode_literal":
@@ -506,6 +601,61 @@ func TestP15RP52EntrypointSourceBoundaries(t *testing.T) {
 			}
 		})
 	}
+
+	// Each corruption changes the actual candidate's live route declaration.
+	// The literal approved chain cannot be supplied by a comment or nested decoy.
+	for _, fault := range []struct{ name, before, after string }{
+		{"request_mode_dropped", "mode: request.mode, signed: signed", "mode: \"auto\", signed: signed"},
+		{"request_source_dropped", "callCompileBridge(source: request.source", "callCompileBridge(source: \"fallback\""},
+		{"document_branch_dropped", "if request.document != nil {", "if false {"},
+		{"document_payload_mode_dropped", "mode: request.mode, buildProfile:", "mode: \"legacy\", buildProfile:"},
+		{"document_payload_profile_dropped", "buildProfile: request.buildProfile.rawValue", "buildProfile: \"debug\""},
+		{"document_payload_sign_dropped", "signed: signed, document: document", "signed: false, document: document"},
+		{"document_payload_context_dropped", "signed: signed, document: document", "signed: signed, document: request.document!"},
+		{"document_json_bridge_bypassed", "CherriCompileDocument(UnsafeMutablePointer(mutating: $0))", "CherriCompile(UnsafeMutablePointer(mutating: $0), nil)"},
+		{"response_document_relabel", "response.document == request.document", "response.document == response.document"},
+		{"response_map_context_dropped", "response.previewSourceMap == nil || response.previewSourceMap?.document == request.document", "true"},
+		{"response_source_request_relabel", "sourceRequest: request,", "sourceRequest: CherriEditorBuildRequest(source: \"\", mode: \"legacy\", name: \"\"),"},
+		{"response_mode_validation_dropped", "actualMode == \"v2\" || actualMode == \"legacy\"", "actualMode == actualMode"},
+		{"response_ok_validation_dropped", p15RP52ApprovedSwiftDecode, strings.Replace(p15RP52ApprovedSwiftDecode, "guard response.ok else {", "guard true else {", 1)},
+		{"response_memory_release_dropped", p15RP52ApprovedSwiftDecode, strings.Replace(p15RP52ApprovedSwiftDecode, "defer { CherriFree(resultPointer) }", "defer { _ = resultPointer }", 1)},
+		{"request_cancellation_check_dropped", "try Task.checkCancellation()", "_ = Task.isCancelled"},
+		{"request_security_scope_release_dropped", "defer { if accessed { fileURL?.stopAccessingSecurityScopedResource() } }", "defer { _ = accessed }"},
+		{"payload_field_shape_changed", p15RP52ApprovedSwiftDocumentRequest, strings.Replace(p15RP52ApprovedSwiftDocumentRequest, "let document: CherriDocumentCompileContext", "let document: CherriDocumentCompileContext?", 1)},
+		{"duplicate_request_entry", "enum CherriCompiler {", "enum CherriCompiler {\n" + p15RP52ApprovedSwiftRequestCompile},
+		{"duplicate_document_bridge", "enum CherriCompiler {", "enum CherriCompiler {\n" + p15RP52ApprovedSwiftDocumentBridge},
+		{"duplicate_response_decoder", "enum CherriCompiler {", "enum CherriCompiler {\n" + p15RP52ApprovedSwiftDecode},
+		{"duplicate_payload_struct", "enum CherriCompiler {", "enum CherriCompiler {\n" + p15RP52ApprovedSwiftDocumentRequest},
+		{"unknown_compile_overload", "enum CherriCompiler {", "enum CherriCompiler {\nstatic func compile(data: Data) async throws -> CompiledShortcut { fatalError() }\n"},
+	} {
+		t.Run("swift_"+fault.name, func(t *testing.T) {
+			corrupt := strings.Replace(string(swiftSource), fault.before, fault.after, 1)
+			if corrupt == string(swiftSource) {
+				t.Fatal("source corruption did not occur")
+			}
+			if p15RP52SwiftEntryError([]byte(corrupt)) == nil {
+				t.Fatal("Swift document route fault accepted", fault.name)
+			}
+		})
+	}
+	for _, fault := range []struct{ name, before, after string }{
+		{"document_request_dropped", "compileDocumentForMobile(C.GoString(request))", "compileDocumentForMobile(\"\")"},
+		{"document_core_bypassed", "compileDocumentForMobile(C.GoString(request))", "compileForMobile(C.GoString(request), \"\", false)"},
+		{"document_wrong_type", "func CherriCompileDocument(request *C.char)", "func CherriCompileDocument(request *C.int)"},
+		{"document_missing_export", "//export CherriCompileDocument", "// private document route"},
+		{"document_extra_dispatch", "return encodeMobileResponse(compileDocumentForMobile(C.GoString(request)))", "_ = detectLegacySource(C.GoString(request))\nreturn encodeMobileResponse(compileDocumentForMobile(C.GoString(request)))"},
+	} {
+		t.Run("go_"+fault.name, func(t *testing.T) {
+			corrupt := strings.Replace(string(goSource), fault.before, fault.after, 1)
+			if corrupt == string(goSource) {
+				t.Fatal("source corruption did not occur")
+			}
+			if p15RP52CExportError([]byte(corrupt)) == nil {
+				t.Fatal("C document route fault accepted", fault.name)
+			}
+		})
+	}
+
 	for _, prefix := range []struct{ name, value string }{
 		{"nested_comment", "/* outer /* enum CherriCompiler { invalid } */ end */\n"},
 		{"opaque_interpolation", "let note = \"\\(call(\"enum CherriCompiler { invalid }\"))\"\n"},
