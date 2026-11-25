@@ -10,6 +10,7 @@ import (
 
 type p15MeasureVoidCase struct {
 	name, v2, legacy, flatV2, flatLegacy string
+	legacyHeader string
 	timers int
 }
 
@@ -22,12 +23,12 @@ func p15MeasureVoidCases() []p15MeasureVoidCase {
 		shared("wait", "wait(1)\n"),
 		shared("two_effects", "wait(1)\nwait(2)\n"),
 		shared("body_nothing", "nothing()\nwait(1)\nnothing()\nwait(2)\n"),
-		shared("argument_effect", "setClipboard(text(\"CHERRI_VOID_ONCE\"))\nwait(1)\n"),
+		{name: "argument_effect", v2: "setClipboard(text(\"CHERRI_VOID_ONCE\"))\nwait(1)\n", legacy: "setClipboard(text(\"CHERRI_VOID_ONCE\"))\nwait(1)\n", flatV2: "setClipboard(text(\"CHERRI_VOID_ONCE\"))\nwait(1)\n", flatLegacy: "setClipboard(text(\"CHERRI_VOID_ONCE\"))\nwait(1)\n", legacyHeader: "#include 'actions/sharing'\n", timers: 1},
 		shared("value_then_void", "text(\"CHERRI_BODY_PRODUCER\")\nwait(3)\n"),
 		shared("stop_before_void_tail", "stop()\nwait(1)\n"),
 		{name: "binding_tail", v2: "let local = text(\"CHERRI_LOCAL\")\n", legacy: "const local = text(\"CHERRI_LOCAL\")\n", flatV2: "let local = text(\"CHERRI_LOCAL\")\n", flatLegacy: "const local = text(\"CHERRI_LOCAL\")\n", timers: 1},
 		{name: "assignment_tail", v2: "var local = 1\nlocal = 2\n", legacy: "@local = 1\n@local = 2\n", flatV2: "var local = 1\nlocal = 2\n", flatLegacy: "@local = 1\n@local = 2\n", timers: 1},
-		{name: "if_tail", v2: "if true { wait(1) } else { wait(2) }\n", legacy: "if 1 == 1 {\nwait(1)\n} else {\nwait(2)\n}\n", flatV2: "if true { wait(1) } else { wait(2) }\n", flatLegacy: "if 1 == 1 {\nwait(1)\n} else {\nwait(2)\n}\n", timers: 1},
+		{name: "if_tail", v2: "if true { wait(1) } else { wait(2) }\n", legacy: "const condition = 1\nif condition == 1 {\nwait(1)\n} else {\nwait(2)\n}\n", flatV2: "if true { wait(1) } else { wait(2) }\n", flatLegacy: "const condition = 1\nif condition == 1 {\nwait(1)\n} else {\nwait(2)\n}\n", timers: 1},
 		{name: "repeat_tail", v2: "repeat 2 { wait(1) }\n", legacy: "repeat index for 2 {\nwait(1)\n}\n", flatV2: "repeat 2 { wait(1) }\n", flatLegacy: "repeat index for 2 {\nwait(1)\n}\n", timers: 1},
 		{name: "nested_empty", v2: "measure(\"same\") {\n}\n", legacy: "measure(\"same\") {\n}\n", flatV2: "nothing()\n", flatLegacy: "nothing()\n", timers: 2},
 		{name: "nested_wait", v2: "measure(\"same\") {\nwait(4)\n}\n", legacy: "measure(\"same\") {\nwait(4)\n}\n", flatV2: "wait(4)\nnothing()\n", flatLegacy: "wait(4)\nnothing()\n", timers: 2},
@@ -237,15 +238,15 @@ func TestP15MeasureVoidNativeGraphs(t *testing.T) {
 		for _, legacy := range []bool{false, true} {
 			for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
 				t.Run(fmt.Sprintf("%s/legacy_%t/%s", test.name, legacy, profile), func(t *testing.T) {
-					body, flat := test.v2, test.flatV2
+					body, flat, header := test.v2, test.flatV2, ""
 					if legacy {
-						body, flat = test.legacy, test.flatLegacy
+						body, flat, header = test.legacy, test.flatLegacy, test.legacyHeader
 					}
-					ordinary, err := compileBuildProfileFixture(t, p15MeasureVoidFlat(flat), legacy, profile)
+					ordinary, err := compileBuildProfileFixture(t, header+p15MeasureVoidFlat(flat), legacy, profile)
 					if err != nil {
 						t.Fatalf("ordinary body control: %v", err)
 					}
-					actual, err := compileBuildProfileFixture(t, p15MeasureVoidWrapped(body), legacy, profile)
+					actual, err := compileBuildProfileFixture(t, header+p15MeasureVoidWrapped(body), legacy, profile)
 					if err != nil {
 						t.Fatal(err)
 					}
