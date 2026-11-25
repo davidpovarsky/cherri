@@ -1,6 +1,6 @@
 # F04 general mutable storage candidate — 25 November 2026
 
-Status: implementation checkpoint; the new implementation has **not yet passed GREEN qualification**.
+Status: focused qualification passed. Full F04, native runtime and final 179 acceptance remain open.
 
 This checkpoint follows the published structured-flow implementation at
 `ee25605af06be180e2a268d49da31a446b3d7690`. It extends the same source-owned local
@@ -47,10 +47,33 @@ controls require inference and mutable-source admissions to continue rejecting
 altered source identity, producer bodies, expression types and transport metadata
 before any native store is emitted.
 
-GREEN, the current original 330 identities, affected language packages and
-affected root regression still need execution on this candidate. The storage
-capacity admission remains in force; an exhausted shared filesystem is not a
-passing test result.
+## Actual qualification after the implementation checkpoint
+
+| Qualification | Actual result | Source binding |
+|---|---|---|
+| Focused native graphs and loop-result guards | 152 named tests, three packages, zero failures/skips | Clean implementation commit `82b8201dc3b38fd20a9ae8eafc5e50e540e20403` |
+| Original qualification identities | 260 root + 70 internal, all exact original package/test IDs | The same implementation plus only the two oracle files described below |
+| Full affected language packages | 269 named tests across analysis/lower/schema, zero failures/skips | The identical Go input manifest as the successful original330 run |
+
+The original330 run first exposed two additional historical rejection
+expectations: `TestP15F04LocalCellUnsupportedInterfaces/mutable_sequence` and
+`mutable_alias`. Their exact authored empty-list sources and full IDs remain.
+Each now verifies every native producer, cell, store and Count operation, and
+rejects five independent graph corruptions without adding/replacing qualification
+IDs. The other 16 root interface rejection sources remain unchanged.
+
+Original330 attempt02 remains a recorded failure (327 passed named events).
+Attempt03 also remains failed: a new test-only helper used the wrong Go argument
+type, so no root test ran. After correcting that helper, attempt04 passed all
+330 identities. No failed attempt was relabeled or overwritten.
+
+Machine-readable receipts, source hashes, source-overlay descriptions and
+remaining scope are in
+[evidence/p15-f04-general-mutable-20261125/verification.json](evidence/p15-f04-general-mutable-20261125/verification.json).
+The final proof checkpoint verifies that all Go inputs equal the actual
+qualified manifest. The earlier 1,943 Optional/lexical/Legacy result belongs
+to phase1 (`ee25605`) and is not a fresh phase2 result. Full final CI and native
+runtime remain separate gates.
 
 ## Remaining scope
 
