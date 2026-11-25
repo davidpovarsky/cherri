@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"howett.net/plist"
 )
 
 type p15ExportMetadataOptions struct {
@@ -312,8 +314,8 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				oldWire := p15MeasureVoidClone(t, old)
-				currentWire := p15MeasureVoidClone(t, current)
+				oldWire := p15ExportMetadataNativeWire(t, old)
+				currentWire := p15ExportMetadataNativeWire(t, current)
 				a, err := p15MeasureVoidCanonicalGraph(oldWire)
 				if err != nil {
 					t.Fatal(err)
@@ -345,4 +347,28 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 			})
 		}
 	}
+}
+
+func p15ExportMetadataNativeWire(t *testing.T, actions []ShortcutAction) []ShortcutAction {
+	t.Helper()
+	// Exercise the actual plist wire rules. JSON of the intermediate Go Value
+	// struct includes zero fields that plist intentionally omits.
+	data, err := plist.Marshal(actions, plist.XMLFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var raw []map[string]any
+	if _, err = plist.Unmarshal(data, &raw); err != nil {
+		t.Fatal(err)
+	}
+	wire := make([]ShortcutAction, len(raw))
+	for i, action := range raw {
+		id, ok := action["WFWorkflowActionIdentifier"].(string)
+		if !ok {
+			t.Fatalf("native action %d has no identifier", i)
+		}
+		params, _ := action["WFWorkflowActionParameters"].(map[string]any)
+		wire[i] = ShortcutAction{WFWorkflowActionIdentifier: id, WFWorkflowActionParameters: params}
+	}
+	return wire
 }
