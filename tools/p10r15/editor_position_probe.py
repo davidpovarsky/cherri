@@ -7,7 +7,7 @@ from pathlib import Path
 import shutil
 import sys
 
-from editor_publication_probe import invoke, successful, region
+from editor_publication_probe import invoke, successful, completion_types
 
 NAMES = ("start", "hebrew_end", "astral_end", "crlf_next_line", "woman_end",
          "zwj_end", "laptop_end", "combining_base", "combining_end",
@@ -42,7 +42,7 @@ def main():
            "tools/p10r15/editor_publication_probe.py","ios/CherriApp/Compiler/CherriCompiler.swift",
            "ios/CherriApp/Editor/CherriCompletionRequest.swift"]
     sources={name:(repo/name).read_bytes() for name in paths}
-    item=region(sources[paths[3]].decode("utf-8"),"struct CherriCompletionItem:","\nstruct CherriWirePosition:")
+    item=completion_types(sources[paths[3]].decode("utf-8"))
     generated=output/"position-generated.swift"
     generated.write_text("import Foundation\n"+item+"\n"+sources[paths[1]].decode("utf-8"),encoding="utf-8",newline="\n")
     binary=output/("position-probe.exe" if sys.platform=="win32" else "position-probe")

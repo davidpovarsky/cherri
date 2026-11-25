@@ -163,7 +163,10 @@ final class CherriJoinedContractUITests: XCTestCase {
     /// No source or title is logged. Only an observed empty editor permits typing
     /// the fixed synthetic fixture; a failed reset stops this test.
     private func replaceSource(_ editor: XCUIElement, _ source: String,
-                               generatingClosingParenthesis: Bool = false) throws {
+                               generatingClosingParenthesis: Bool = false,
+                               removingGeneratedClosingParenthesis: Bool = false) throws {
+        try require(!(generatingClosingParenthesis && removingGeneratedClosingParenthesis),
+                    "The authored fixture must select one keyboard closing behavior")
         let clear = app.buttons["clearEditorButton"]
         try require(clear.waitForExistence(timeout: 2) && clear.isHittable,
                     "Joined requires the existing Clear action")
@@ -187,6 +190,16 @@ final class CherriJoinedContractUITests: XCTestCase {
                 editor.typeText(String(source.dropLast()))
             } else {
                 editor.typeText(source)
+            }
+            if removingGeneratedClosingParenthesis {
+                // The malformed function intentionally omits ')'. Real typing
+                // leaves the protected auto-generated closer at the caret.
+                // Overtype it, verify unchanged bytes, then remove it with the
+                // real Delete key before testing the exact authored source.
+                try expectSource(editor, source + ")")
+                editor.typeText(")")
+                try expectSource(editor, source + ")")
+                editor.typeText(XCUIKeyboardKey.delete.rawValue)
             }
             try expectSource(editor, source)
         }
@@ -286,7 +299,8 @@ final class CherriJoinedContractUITests: XCTestCase {
         }
         for (id, token) in [("rejected-type", "type"), ("rejected-function", "malformed")] {
             let fixture = try contract.fixture(id)
-            try replaceSource(editor, fixture.source)
+            try replaceSource(editor, fixture.source,
+                              removingGeneratedClosingParenthesis: id == "rejected-function")
             try build(editor, source: fixture.source, succeeds: false)
             try exactDiagnostic(fixture)
             try require(!app.buttons["shareSignedShortcutButton"].exists,

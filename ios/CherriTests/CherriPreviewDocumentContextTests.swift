@@ -189,6 +189,13 @@ final class CherriPreviewDocumentContextTests: XCTestCase {
         let source = "embedFile(\"payload.dat\")\n"
         try Data(source.utf8).write(to: entry)
         try first.write(to: asset)
+        // Foundation's Date -> file-attribute setter can round subsecond
+        // timestamps. Establish a set-and-read filesystem baseline before the
+        // cache is populated; the final exact mtime equality remains required.
+        try FileManager.default.setAttributes(
+            [.modificationDate: Date(timeIntervalSince1970: 1_700_000_000)],
+            ofItemAtPath: asset.path
+        )
         let timestamp = try XCTUnwrap(try FileManager.default.attributesOfItem(atPath: asset.path)[.modificationDate] as? Date)
         let observer = CherriProjectAssetObserver()
         defer { observer.stop() }

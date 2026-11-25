@@ -5,7 +5,7 @@ import hashlib
 import json
 import subprocess
 from pathlib import Path
-from editor_publication_probe import region, successful, inspect_output
+from editor_publication_probe import region, successful, inspect_output, completion_types
 from editor_position_probe import inspect as inspect_position
 
 def digest(data):
@@ -36,6 +36,8 @@ def verify(repo, source, directory, kind, executed_repo, executed_directory):
             "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
             "ios/CherriApp/Compiler/CherriCompiler.swift",
             "tools/p10r15/editor_publication_probe.swift",
+            "tools/p10r15/editor_publication_probe.py",
+            "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
         }
         generated_name, binary_stem, execute_budget = "editor-publication-generated.swift", "editor-publication-probe", 45
         if receipt.get("realCompilerExecuted") is not False or receipt.get("scope") != "portable Swift control-flow only, controlled backend adapters":
@@ -68,14 +70,16 @@ def verify(repo, source, directory, kind, executed_repo, executed_directory):
         files[item["path"]] = matches[0]
     def text(name):
         return files[name].decode("utf-8", errors="strict")
-    item = region(text("ios/CherriApp/Compiler/CherriCompiler.swift"), "struct CherriCompletionItem:", "\nstruct CherriWirePosition:")
+    item = completion_types(text("ios/CherriApp/Compiler/CherriCompiler.swift"))
     if kind == "publication":
         build = region(text("ios/CherriApp/App/WorkspaceView.swift"), "    private func build(", "\n    @MainActor\n    private func refreshActionCatalog")
         completion = region(text("ios/CherriApp/Editor/CherriEditorView.swift"), "    private func refreshContextualCompletions(", "\n    private func refreshDiagnostic")
         template = text("tools/p10r15/editor_publication_probe.swift")
-        if template.count("__ACTUAL_BUILD_METHOD__") != 1 or template.count("__ACTUAL_COMPLETION_METHOD__") != 1:
+        if any(template.count(marker) != 1 for marker in ("__ACTUAL_BUILD_METHOD__", "__ACTUAL_COMPLETION_METHOD__", "__ACTUAL_BUILD_REQUEST__")):
             raise ValueError("ambiguous probe template")
         generated = template.replace("__ACTUAL_BUILD_METHOD__", build.replace("private func ", "func ", 1)).replace("__ACTUAL_COMPLETION_METHOD__", completion.replace("private func ", "func ", 1))
+        current_request = region(text("ios/CherriApp/App/WorkspaceView.swift"), "    private var currentBuildRequest:", "\n    @MainActor\n    private func formatSource")
+        generated = generated.replace("__ACTUAL_BUILD_REQUEST__", current_request.replace("private var ", "var ", 1))
         generated = ("import Foundation\n" + item + "\n" + generated).encode("utf-8")
     else:
         generated = ("import Foundation\n" + item + "\n" + text("tools/p10r15/editor_position_probe.swift")).encode("utf-8")
@@ -101,6 +105,7 @@ def verify(repo, source, directory, kind, executed_repo, executed_directory):
     expected = [command[0], "-parse-as-library", str(executed_directory / generated_name), str(executed_repo / "ios/CherriApp/Editor/CherriCompletionRequest.swift")]
     if kind == "publication":
         expected.append(str(executed_repo / "ios/CherriApp/Editor/CherriEditorBuildRequest.swift"))
+        expected.append(str(executed_repo / "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift"))
     expected += ["-o", str(executed_binary)]
     if command != expected or Path(command[0]).name.lower() not in {"swiftc", "swiftc.exe"} or receipt["execution"]["command"] != [str(executed_binary)] or not binary.is_file():
         raise ValueError("detached Swift compiler/executable command")

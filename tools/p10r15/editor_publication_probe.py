@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 
-CONTROL_NAMES = {
+ORIGINAL_CONTROL_NAMES = {
     "current_success", "late_success_after_newer", "late_analysis_after_newer",
     "late_generic_error_after_newer", "canonical_unicode_is_not_same_snapshot",
     "cancelled_same_source_does_not_publish", "old_completion_cannot_clear_new_busy",
@@ -31,6 +31,22 @@ CONTROL_NAMES = {
     "current_signed_adapter_publication",
     "unicode_snapshot_without_replacement", "unsigned_success_clears_previous_signed_url",
 }
+
+DOCUMENT_CONTROL_NAMES = {
+    "document_context_forwarded",
+    "document_uri_change_drops_result",
+    "document_identity_change_drops_result",
+    "document_revision_aba_drops_result",
+    "asset_revision_change_drops_result",
+    "preparation_owns_busy_indicator",
+    "preparation_failure_clears_old_artifacts",
+    "cancelled_preparation_does_not_publish",
+    "old_preparation_cannot_clear_new_busy",
+    "old_preparation_failure_cannot_replace_new_result",
+    "observer_cancellation_does_not_publish_diagnostic",
+    "observer_revision_captured_after_preparation",
+}
+CONTROL_NAMES = ORIGINAL_CONTROL_NAMES | DOCUMENT_CONTROL_NAMES
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -46,6 +62,15 @@ def region(text: str, start: str, end: str) -> str:
         raise ValueError("conditional method ownership is not reviewed")
     return result
 
+
+def completion_types(compiler_source: str) -> str:
+    """Keep the exact production completion item and its transitive wire types."""
+    return "\n\n".join((
+        region(compiler_source, "struct CherriCompletionItem:", "\nstruct CherriWirePosition:"),
+        region(compiler_source, "struct CherriWirePosition:", "\nstruct CherriWireDiagnostic:"),
+        region(compiler_source, "struct CherriTextEditItem:", "\nstruct CherriRenameResponse:"),
+    ))
+
 def generate(repo: Path) -> tuple[str, dict[str, bytes]]:
     paths = {
         "workspace": "ios/CherriApp/App/WorkspaceView.swift",
@@ -53,18 +78,22 @@ def generate(repo: Path) -> tuple[str, dict[str, bytes]]:
         "request": "ios/CherriApp/Editor/CherriCompletionRequest.swift",
         "compiler_types": "ios/CherriApp/Compiler/CherriCompiler.swift",
         "template": "tools/p10r15/editor_publication_probe.swift",
+        "producer": "tools/p10r15/editor_publication_probe.py",
+        "document_context": "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
     }
     files = {rel: (repo / rel).read_bytes() for rel in paths.values()}
     get = lambda name: files[paths[name]].decode("utf-8", errors="strict")
     build = region(get("workspace"), "    private func build(", "\n    @MainActor\n    private func refreshActionCatalog")
     completion = region(get("completion"), "    private func refreshContextualCompletions(", "\n    private func refreshDiagnostic")
-    item = region(get("compiler_types"), "struct CherriCompletionItem:", "\nstruct CherriWirePosition:")
+    item = completion_types(get("compiler_types"))
+    current_request = region(get("workspace"), "    private var currentBuildRequest:", "\n    @MainActor\n    private func formatSource")
     template = get("template")
-    for marker in ("__ACTUAL_BUILD_METHOD__", "__ACTUAL_COMPLETION_METHOD__"):
+    for marker in ("__ACTUAL_BUILD_METHOD__", "__ACTUAL_COMPLETION_METHOD__", "__ACTUAL_BUILD_REQUEST__"):
         if template.count(marker) != 1:
             raise ValueError("template must own exactly one method placeholder")
     generated = template.replace("__ACTUAL_BUILD_METHOD__", build.replace("private func ", "func ", 1))
     generated = generated.replace("__ACTUAL_COMPLETION_METHOD__", completion.replace("private func ", "func ", 1))
+    generated = generated.replace("__ACTUAL_BUILD_REQUEST__", current_request.replace("private var ", "var ", 1))
     generated = "import Foundation\n" + item + "\n" + generated
     owned = repo / "ios/CherriApp/Editor/CherriEditorBuildRequest.swift"
     if owned.exists():
@@ -145,6 +174,7 @@ def main() -> int:
     optional = "ios/CherriApp/Editor/CherriEditorBuildRequest.swift"
     if optional in files:
         command.append(str(repo / optional))
+    command.append(str(repo / "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift"))
     command += ["-o", str(binary)]
     compile_result = invoke(command, repo, output, "compile", 90)
     result = {
