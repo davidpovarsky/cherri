@@ -3,6 +3,8 @@ import copy
 import hashlib
 from pathlib import Path
 
+from native_comparison_graph import verify_equality_region
+
 FIXTURE_ID = "qa-f04-record-empty-v2"
 SAMPLE_ID = "qa-f04-record-empty"
 EXPECTED = "CHERRI_QA_F04_RECORD_EMPTY_RESULT:outer=2:scalars=2:tags=LEFT,RIGHT:keys=2,2:items=0,0:empty=0:dictionary=Y"
@@ -110,18 +112,23 @@ def verify_graph(fid, actions):
     writes=[(i,a) for i,a in enumerate(actions) if kind(a,"setvariable") and p(a).get("WFVariableName")=="recordsAreDictionaries"]
     require(len(writes)==2, "two type-parity writes")
     init_i,_=writes[0];pass_i,_=writes[1]
-    require(pass_i==init_i+4 and kind(actions[init_i-1],"gettext") and p(actions[init_i-1]).get("WFTextActionText")=="N"
+    require(init_i > 0 and pass_i > init_i + 3 and pass_i + 2 < len(actions)
+            and kind(actions[init_i-1],"gettext") and p(actions[init_i-1]).get("WFTextActionText")=="N"
             and kind(actions[pass_i-1],"gettext") and p(actions[pass_i-1]).get("WFTextActionText")=="Y", "fail-closed type parity")
     for i,a in writes: edge(p(a).get("WFInput"),actions[i-1])
-    for offset,name,close_i in ((1,"firstType",pass_i+2),(2,"lastType",pass_i+1)):
-        a=actions[init_i+offset];closing=actions[close_i]
-        require(kind(a,"conditional") and p(a).get("WFControlFlowMode")==0 and p(a).get("WFCondition")==4
-                and kind(closing,"conditional") and p(closing).get("WFControlFlowMode")==2
-                and p(a).get("GroupingIdentifier")==p(closing).get("GroupingIdentifier"), "nested type comparison")
-        edge(p(a).get("WFInput",{}).get("Variable"),producers[name])
-        v=p(a).get("WFConditionalActionString",{}).get("Value",{})
-        t=v.get("attachmentsByRange",{}).get("{0, 1}",{})
-        require(v.get("string")=="\ufffc" and t.get("Type")=="ActionOutput" and t.get("OutputUUID")==p(producers["witnessType"]).get("UUID"), "independent Dictionary type witness")
+    comparison_start = init_i + 1
+    for name, close_i in (("firstType",pass_i+2),("lastType",pass_i+1)):
+        closing=actions[close_i]
+        group=p(closing).get("GroupingIdentifier")
+        members=[(i,a) for i,a in enumerate(actions) if p(a).get("GroupingIdentifier")==group]
+        require(bool(group) and len(members)==2 and all(kind(a,"conditional") for _,a in members)
+                and [p(a).get("WFControlFlowMode") for _,a in members]==[0,2]
+                and members[-1][0]==close_i, "nested type comparison")
+        condition_i,_=members[0]
+        verify_equality_region(actions, comparison_start, condition_i, producers[name],
+                               require=require, right_source=producers["witnessType"])
+        comparison_start=condition_i+1
+    require(comparison_start==pass_i-1, "type parity assignments remain inside both comparisons")
     def text_edges(value, template, names):
         require(isinstance(value,dict) and value.get("WFSerializationType")=="WFTextTokenString", "dynamic text")
         v=value.get("Value",{});require(v.get("string")==template, "exact result template")
