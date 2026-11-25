@@ -1,0 +1,48 @@
+{
+  "schema": "cherri-f04-declaration-storage-verification/1",
+  "status": "PASS_FOCUSED_GREEN_ORIGINAL330_PENDING",
+  "sourceParent": "1b86daa05c50794fc86d0a5e810468bd6ddef534",
+  "qualifiedGoInputsSHA256": "cd4d3af468ac0a3b1d105fd3d6de33b4dee287a6e52faf7a1e68d5ac0425f323",
+  "qualifiedGoInputCount": 831,
+  "sourceOverlay": [
+    "internal/language/schema/loop_result_locals.go",
+    "internal/language/schema/loop_result_sources.go",
+    "internal/language/schema/loop_result_mutable_test.go",
+    "internal/language/lower/loop_result_storage_append_test.go",
+    "p15_f04_storage_append_test.go"
+  ],
+  "red": {
+    "newSourcesRejected": 46,
+    "existingControlPassed": 1,
+    "receipt": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/red-declaration-storage-01/result.original.json",
+    "sha256": "50f72e437867fbc9e4b03fc66cb814f64a2f5ec671c1cb3c8726984fdff48d94"
+  },
+  "green": {
+    "namedPassed": 214,
+    "packagesPassed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "receipt": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/green-declaration-storage-01/result.original.json",
+    "sha256": "725e6a73af008ef87b725ab5a4abacfb88c4994482d0f96bc3960e97f7b65558"
+  },
+  "nativeGraphCases": 47,
+  "nativeGraphFaults": 7,
+  "operatorFaults": 4,
+  "healthyNativeAppendBoundary": 1,
+  "root47SourceSHA256": "c14cdafd1f2ae614739e8d9514d3ba86ddb154ac86cd3b898f5a79bf76afd61c",
+  "additionalOriginalSchemaPromotions": [
+    "compound_assignment",
+    "unread_overwritten_initializer",
+    "unread_assigned_version",
+    "other_origin_demand_is_insufficient"
+  ],
+  "schemaPositiveCases": 16,
+  "schemaRemainingRejectedCases": [
+    "uninitialized_alias",
+    "ordinary_list_rhs"
+  ],
+  "nativeRuntimeExecuted": false,
+  "formal179Acceptance": false,
+  "original330ForThisSource": "NOT_YET_EXECUTED",
+  "frozenReleaseOrLiveInstallationChanged": false
+}

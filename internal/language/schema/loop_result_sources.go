@@ -18,6 +18,7 @@ type LoopResultAssignmentSource struct {
 	Value  syntax.Expression
 	Source *syntax.BindingStmt
 	Body   *syntax.BlockStmt
+	Op     syntax.TokenType
 }
 
 func (plan *LoopResultLocalPlan) BindingSourceMatches(binding *syntax.BindingStmt) bool {
@@ -50,7 +51,8 @@ func (plan *LoopResultLocalPlan) AssignmentSourceMatches(assignment *syntax.Assi
 	var source, found = plan.AssignmentSources[assignment]
 	if !found || !plan.BindingSourceMatches(target) || !target.Mutable ||
 		!plan.MutableBindings[target] || target.Name != assignment.Name ||
-		assignment.Op != syntax.TokenAssign || source.Value != assignment.Value ||
+		(assignment.Op != syntax.TokenAssign && assignment.Op != syntax.TokenPlusAssign) ||
+		source.Op != assignment.Op || source.Value != assignment.Value ||
 		!plan.BindingValues[assignment.Value] || !plan.AllowedValues[assignment.Value] {
 		return false
 	}
