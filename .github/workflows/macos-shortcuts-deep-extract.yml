@@ -7,6 +7,11 @@ on:
       - agent/cherri-p10-apple-actions-coverage
   workflow_dispatch:
     inputs:
+      function_dictionary_array_only:
+        description: Run only the fixed e0 function-array serialization observation; no runtime or release credit
+        required: false
+        default: false
+        type: boolean
       literal_object_character_only:
         description: Run only the synthetic S01 native serialization observer (no runtime or release credit)
         required: false
@@ -36,7 +41,7 @@ env:
 jobs:
   literal-object-character:
     name: S01 literal object character serialization observations
-    if: ${{ inputs.literal_object_character_only }}
+    if: ${{ inputs.literal_object_character_only && !inputs.function_dictionary_array_only }}
     runs-on: ${{ inputs.literal_observer_runner }}
     timeout-minutes: 10
     steps:
@@ -66,8 +71,54 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  function-dictionary-array:
+    name: Fixed e0 function Dictionary array observation
+    if: ${{ inputs.function_dictionary_array_only }}
+    runs-on: ${{ inputs.literal_observer_runner }}
+    timeout-minutes: 10
+    env:
+      CHERRI_FUNCTION_ARRAY_ONLY: ${{ inputs.function_dictionary_array_only }}
+      CHERRI_LITERAL_ONLY: ${{ inputs.literal_object_character_only }}
+      CHERRI_OBSERVER_RUNNER: ${{ inputs.literal_observer_runner }}
+    steps:
+      - name: Checkout observation controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: controller
+      - name: Checkout unchanged e0 probe source
+        uses: actions/checkout@v6
+        with:
+          ref: e0ee87ffa4eb289a8cc9927a86ec0b34a09e9c34
+          fetch-depth: 0
+          path: probe-source
+      - name: Checkout unchanged pinned public prelude
+        uses: actions/checkout@v6
+        with:
+          repository: frontboat/shortcutkit
+          ref: ee52c32937053268e4a035eba4b372fe77ec6411
+          fetch-depth: 1
+          path: shortcutkit
+      - name: Run exactly one fixed observation
+        timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          python3 -I -B controller/tools/shortcut-runtime/hosted_function_array_observation.py \
+            --probe "$GITHUB_WORKSPACE/probe-source" \
+            --prelude "$GITHUB_WORKSPACE/shortcutkit/tools/jxa-prelude.js" \
+            --output "$RUNNER_TEMP/function-array-native-observation"
+      - name: Retain all original observations including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-array-native-observation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/function-array-native-observation/
+          if-no-files-found: error
+          retention-days: 14
+
   preflight:
-    if: ${{ !inputs.literal_object_character_only }}
+    if: ${{ !inputs.literal_object_character_only && !inputs.function_dictionary_array_only }}
     name: Host preflight verification (macOS 27)
     runs-on: xcode-27
     timeout-minutes: 5
