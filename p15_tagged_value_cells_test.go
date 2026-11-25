@@ -172,3 +172,123 @@ func TestP15TaggedValueNativeBoundaries(t *testing.T) {
 		}
 	}
 }
+
+// The selected value is queried only after an exact key-enumeration guard.
+// No All Keys operation is ever applied to the possibly missing lookup result.
+func p15TaggedMapMissingGuard(actions []map[string]any) error {
+	allKeys, lookup := -1, -1
+	var mapID string
+	for i, action := range actions {
+		if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvalueforkey" {
+			continue
+		}
+		parameters := p15Param(action)
+		mode, _ := p15LiteralText(parameters["WFGetDictionaryValueType"])
+		if mode == "All Keys" {
+			if allKeys >= 0 {
+				return fmt.Errorf("duplicate key enumeration")
+			}
+			allKeys = i
+			outputs, variables := p15V02NativeReferences(parameters["WFInput"])
+			if len(outputs) != 1 || len(variables) != 0 {
+				return fmt.Errorf("key enumeration lost source Dictionary")
+			}
+			mapID = outputs[0]
+		}
+		key, _ := p15LiteralText(parameters["WFDictionaryKey"])
+		if key == "missing" {
+			lookup = i
+		}
+	}
+	if allKeys < 0 || lookup <= allKeys || mapID == "" {
+		return fmt.Errorf("lookup precedes source-key enumeration")
+	}
+	foundSource := false
+	for i := 0; i < allKeys; i++ {
+		if actions[i]["WFWorkflowActionIdentifier"] == "is.workflow.actions.dictionary" && p15Param(actions[i])["UUID"] == mapID {
+			foundSource = true
+		}
+	}
+	if !foundSource {
+		return fmt.Errorf("key enumeration input is not the original Dictionary")
+	}
+	outputs, variables := p15V02NativeReferences(p15Param(actions[lookup])["WFInput"])
+	if !reflect.DeepEqual(outputs, []string{mapID}) || len(variables) != 0 {
+		return fmt.Errorf("lookup reads a different Dictionary")
+	}
+	for start := lookup - 1; start > allKeys; start-- {
+		parameters := p15Param(actions[start])
+		if actions[start]["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" ||
+			p15Int(parameters["WFControlFlowMode"]) != 0 || p15Int(parameters["WFCondition"]) != 4 {
+			continue
+		}
+		outputs, variables = p15V02NativeReferences(parameters["WFInput"])
+		if len(outputs) != 0 || len(variables) != 1 || !strings.Contains(variables[0], "dictionaryKeyPresent_") {
+			continue
+		}
+		value, _ := p15LiteralText(parameters["WFConditionalActionString"])
+		if value != "1" {
+			return fmt.Errorf("key-presence polarity changed")
+		}
+		group := parameters["GroupingIdentifier"]
+		for end := start + 1; end < len(actions); end++ {
+			next := p15Param(actions[end])
+			if next["GroupingIdentifier"] == group && p15Int(next["WFControlFlowMode"]) != 0 {
+				if end <= lookup {
+					return fmt.Errorf("lookup escaped key-presence branch")
+				}
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("missing exact key-presence guard")
+}
+
+func TestP15TaggedMissingMapKeyGuard(t *testing.T) {
+	const source = "let values:Map<Text,Optional<Bool>>={\"present\":none}\nlet absent=values[\"missing\"]\nreturn absent==none"
+	actions := p15CompiledActions(t, source)
+	if err := p15TaggedMapMissingGuard(actions); err != nil {
+		t.Fatal(err)
+	}
+	for _, fault := range []string{"lookup_before_keys", "wrong_enumeration_source", "erase_guard", "opposite_guard"} {
+		t.Run(fault, func(t *testing.T) {
+			broken := p15TaggedClone(t, actions)
+			allKeys, lookup := -1, -1
+			for i, action := range broken {
+				if action["WFWorkflowActionIdentifier"] != "is.workflow.actions.getvalueforkey" {
+					continue
+				}
+				mode, _ := p15LiteralText(p15Param(action)["WFGetDictionaryValueType"])
+				if mode == "All Keys" {
+					allKeys = i
+				}
+				key, _ := p15LiteralText(p15Param(action)["WFDictionaryKey"])
+				if key == "missing" {
+					lookup = i
+				}
+			}
+			switch fault {
+			case "lookup_before_keys":
+				broken[lookup], broken[allKeys] = broken[allKeys], broken[lookup]
+			case "wrong_enumeration_source":
+				p15Param(broken[allKeys])["WFInput"] = map[string]any{"Type": "ActionOutput", "OutputUUID": "WRONG_OR_MISSING_CELL"}
+			case "erase_guard", "opposite_guard":
+				for i := allKeys + 1; i < lookup; i++ {
+					parameters := p15Param(broken[i])
+					_, variables := p15V02NativeReferences(parameters["WFInput"])
+					if len(variables) == 1 && strings.Contains(variables[0], "dictionaryKeyPresent_") &&
+						broken[i]["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" && p15Int(parameters["WFControlFlowMode"]) == 0 {
+						if fault == "erase_guard" {
+							parameters["WFControlFlowMode"] = uint64(1)
+						} else {
+							parameters["WFCondition"] = uint64(5)
+						}
+					}
+				}
+			}
+			if p15TaggedMapMissingGuard(broken) == nil {
+				t.Fatal("map oracle accepted " + fault)
+			}
+		})
+	}
+}

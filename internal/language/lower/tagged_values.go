@@ -236,27 +236,67 @@ func (l *Lowerer) rememberCellIndexPresence(index syntax.Expression, presence an
 	l.optionalExpressionPresence[index] = presence
 }
 
+// Keys are enumerated on the existing Dictionary, before asking for a value.
+// A missing key therefore never feeds Nothing into a Dictionary-only action.
+func (l *Lowerer) taggedDictionaryKeyPresence(input *ir.AttachmentToken, key any) (*ir.AttachmentToken, error) {
+	keyToken := l.materializeToAttachment(key)
+	if keyToken == nil {
+		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Dictionary key has no value")
+	}
+	// Capture the authored key once before the internal loop.
+	keyID := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{NodeID: keyID, AppleIdentifier: "is.workflow.actions.getvariable", OutputUUID: keyID, Parameters: map[string]any{"WFVariable": keyToken}})
+	keyToken = &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: keyID}
+	keys := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{NodeID: keys, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: keys,
+		Parameters: map[string]any{"WFInput": input, "WFGetDictionaryValueType": "All Keys"}})
+	presenceName := l.freshLexicalName("dictionaryKeyPresent_" + l.GenerateUUID())
+	presence := l.storeOptionalPresence(presenceName, "0")
+	loop := l.GenerateUUID()
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
+	l.emitRepeatEachStart(loop, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: keys})
+	item := "Repeat Item"
+	if l.repeatDepth > 1 {
+		item = fmt.Sprintf("Repeat Item %d", l.repeatDepth)
+	}
+	leftName, rightName := l.freshLexicalName("dictionaryActualKey_"+l.GenerateUUID()), l.freshLexicalName("dictionaryExpectedKey_"+l.GenerateUUID())
+	l.bindings[leftName] = BindingRef{IsVariable: true, VariableName: item, Type: types.Text}
+	l.bindings[rightName] = BindingRef{OutputUUID: keyID, Type: types.Text}
+	// Compiler-owned aliases point to the already evaluated authored key and
+	// current enumerated key. Reuse exact Text equality, including regex
+	// quoting, anchors, case, match count and Boolean polarity.
+	match, err := l.lowerExactTextComparison(&syntax.BinaryExpr{Left: &syntax.IdentExpr{Name: leftName}, Right: &syntax.IdentExpr{Name: rightName}, Op: syntax.TokenEqual})
+	delete(l.bindings, leftName)
+	delete(l.bindings, rightName)
+	if err != nil {
+		return nil, err
+	}
+	group := l.GenerateUUID()
+	l.emitIfStart(group, l.materializeToAttachment(match), 4, 1.0, true)
+	l.storeOptionalPresence(presenceName, "1")
+	l.emitIfEnd(group, "", "")
+	l.emitLoopEnd(loop, "", true)
+	return presence, nil
+}
+
 func (l *Lowerer) lowerTaggedMapIndex(index *syntax.IndexExpr, target, key any) (*ir.AttachmentToken, error) {
 	dictionary, okay := presentType(l.transportType(index.Target)).(types.MapType)
 	if !okay || !types.TaggedMapValues(dictionary) {
 		return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: Dictionary cell lookup lacks source-owned storage")
 	}
 	input := l.materializeToAttachment(target)
-	cell := l.GenerateUUID()
-	l.emitAction(&ir.NativeActionNode{NodeID: cell, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: cell,
-		Parameters: map[string]any{"WFInput": input, "WFDictionaryKey": key, "WFGetDictionaryValueType": "Value"}})
-	// A cell always has explicit metadata keys, even when its payload is None.
-	// Test only the existence of this source-owned cell, never payload truthiness.
-	keys := l.GenerateUUID()
-	l.emitAction(&ir.NativeActionNode{NodeID: keys, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: keys,
-		Parameters: map[string]any{"WFInput": &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: cell}, "WFGetDictionaryValueType": "All Keys"}})
-	count := l.GenerateUUID()
-	l.emitAction(&ir.NativeActionNode{NodeID: count, AppleIdentifier: "is.workflow.actions.count", OutputUUID: count,
-		Parameters: map[string]any{"Input": &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: keys}, "WFCountType": "Items"}})
+	keyPresence, err := l.taggedDictionaryKeyPresence(input, key)
+	if err != nil {
+		return nil, err
+	}
 	presenceName := l.freshLexicalName("cellPresence_" + l.GenerateUUID())
 	presenceToken := l.storeOptionalPresence(presenceName, "0")
 	group, result := l.GenerateUUID(), l.GenerateUUID()
-	l.emitIfStart(group, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: count}, 3, 1.0, true)
+	l.emitIfStart(group, keyPresence, 4, "1", true)
+	cell := l.GenerateUUID()
+	l.emitAction(&ir.NativeActionNode{NodeID: cell, AppleIdentifier: "is.workflow.actions.getvalueforkey", OutputUUID: cell,
+		Parameters: map[string]any{"WFInput": input, "WFDictionaryKey": key, "WFGetDictionaryValueType": "Value"}})
 	value, presence := l.decodeValueCell(cell, dictionary.Value)
 	l.storeOptionalPresence(presenceName, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: presence})
 	l.materializeYieldValue(&ir.AttachmentToken{Type: "ActionOutput", OutputUUID: value})
@@ -352,10 +392,7 @@ func (l *Lowerer) validateTaggedNativeBoundary(name string, call *syntax.CallExp
 	if l.functions[name] != nil {
 		return nil
 	}
-	// Exact imported native metadata retains its independent opaque route.
-	if l.hasImportProvenance {
-		return nil
-	}
+	// Provenance is never a file-wide permission for new authored cells.
 	if name == "count" && l.actions[name] == nil && call.PrimaryArg != nil && len(call.NamedArgs) == 0 {
 		if action, found := l.registry.LookupAction(name); found && action.AppleIdentifier == "is.workflow.actions.count" {
 			if _, list := presentType(l.transportType(call.PrimaryArg)).(types.ListType); list {

@@ -4053,6 +4053,12 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if types.PrivateValueTransport(l.transportType(e.Target)) {
+			targetVal, err = l.captureCallArgumentValue(e.Target, targetVal, l.semanticSiblingWrites([]syntax.Expression{e.Target, e.Index})[0])
+			if err != nil {
+				return nil, err
+			}
+		}
 		indexVal, err := l.lowerExpression(e.Index)
 		if err != nil {
 			return nil, err
