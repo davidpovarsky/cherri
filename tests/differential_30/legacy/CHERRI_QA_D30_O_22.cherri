@@ -1,0 +1,14 @@
+#define name CHERRI_QA_D30_O_22
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@sample = "pre-mid-end"
+@trace = ""
+if @sample beginsWith "pre" {
+    @trace = "{@trace}A"
+}
+if @sample contains "mid" {
+    @trace = "{@trace}B"
+}
+if @sample endsWith "end" {
+    @trace = "{@trace}C"
+}
+output("CHERRI_QA_22|{@trace}")

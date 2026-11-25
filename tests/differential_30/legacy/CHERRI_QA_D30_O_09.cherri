@@ -1,0 +1,8 @@
+#define name CHERRI_QA_D30_O_09
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@value = 10
+@value += 3
+@value *= 2
+@value -= 4
+@value /= 2
+output("CHERRI_QA_09|{@value}")

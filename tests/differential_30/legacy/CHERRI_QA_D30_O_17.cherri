@@ -1,0 +1,9 @@
+#define name CHERRI_QA_D30_O_17
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@payload = {"meta":{"author":"Ada","version":2},"tags":["one","two"]}
+const rawMeta = getValue(@payload, "meta")
+const meta = getDictionary(rawMeta)
+const author = getValue(meta, "author")
+const tags = getValue(@payload, "tags")
+const second = getListItem(tags, 2)
+output("CHERRI_QA_17|{author}:{second}")

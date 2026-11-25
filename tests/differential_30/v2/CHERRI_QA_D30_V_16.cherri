@@ -1,0 +1,13 @@
+shortcut "CHERRI_QA_D30_V_16" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let payload = {"name": "Orion", "count": 7, "enabled": true, "empty": ""}
+let label = getValue(payload, key: "name")
+let amount = getValue(payload, key: "count")
+let enabled = getValue(payload, key: "enabled")
+let empty = getValue(payload, key: "empty")
+var flag = "no"
+if enabled.number == 1 {
+    flag = "yes"
+}
+let emptyCount = count(empty, type: "Characters")
+output(f"CHERRI_QA_16|{label}:{amount}:{flag}:{emptyCount}")

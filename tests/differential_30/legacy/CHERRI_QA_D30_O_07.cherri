@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_07
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@sample = "hello world"
+const chars = count(@sample, "Characters")
+const words = count(@sample, "Words")
+output("CHERRI_QA_07|{chars}:{words}")

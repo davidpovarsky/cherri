@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_15" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let values: List<Number> = [3, 5, 7]
+let sum = statistic("Sum", input: values)
+let average = statistic("Average", input: values)
+output(f"CHERRI_QA_15|{sum}:{average}")

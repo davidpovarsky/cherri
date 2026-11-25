@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_02
+#include 'actions/text'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const upper = uppercase("alpha")
+const lower = lowercase("BETA")
+const title = capitalizeAll("red blue")
+output("CHERRI_QA_02|{upper}:{lower}:{title}")

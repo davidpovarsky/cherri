@@ -1,0 +1,8 @@
+shortcut "CHERRI_QA_D30_V_21" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let score = 17
+var verdict = "outside"
+if score >= 10 && score <= 20 {
+    verdict = "inside"
+}
+output(f"CHERRI_QA_21|{verdict}")

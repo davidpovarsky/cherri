@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_06
+#include 'actions/text'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const parts = splitText("red,green,blue", ",")
+const joined = joinText(parts, "/")
+const size = count(parts)
+output("CHERRI_QA_06|{joined}:{size}")

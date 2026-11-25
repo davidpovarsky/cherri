@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_35" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let body = "object body"
+let named = setName(body, name: "qa.txt")
+let directName = getName(named)
+let propertyName = named.Name
+output(f"CHERRI_QA_35|{directName}:{propertyName}")

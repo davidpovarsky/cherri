@@ -1,0 +1,9 @@
+shortcut "CHERRI_QA_D30_V_25" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+var trace = ""
+repeat 2 as i {
+    repeat 3 as j {
+        trace = f"{trace}{i + 1}{j + 1},"
+    }
+}
+output(f"CHERRI_QA_25|{trace}")

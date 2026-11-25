@@ -1,0 +1,5 @@
+shortcut "CHERRI_QA_D30_V_30" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let fixed = date("2024-02-03 12:00:00")
+let formatted = formatDate(fixed, dateFormat: "Custom", customDateFormat: "yyyy-MM-dd")
+output(f"CHERRI_QA_30|{formatted}")

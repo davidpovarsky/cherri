@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_29" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let results = repeat 3 as i {
+    yield f"x{i + 1}"
+}
+let joined = joinText(results, glue: ",")
+output(f"CHERRI_QA_29|{joined}")

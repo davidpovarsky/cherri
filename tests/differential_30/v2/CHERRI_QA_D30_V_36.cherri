@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_36" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let json = "{\"label\":\"coerced\",\"value\":9}"
+let label = getValue(json.dictionary, key: "label")
+let amount = getValue(json.dictionary, key: "value")
+output(f"CHERRI_QA_36|{label}:{amount}")

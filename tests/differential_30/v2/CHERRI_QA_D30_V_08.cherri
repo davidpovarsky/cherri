@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_08" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let raw = "42"
+let parsed = number(raw)
+let total = parsed + 5
+output(f"CHERRI_QA_08|{total}")

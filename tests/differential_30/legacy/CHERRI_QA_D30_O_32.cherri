@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_32
+#include 'actions/crypto'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@source = "Cherri_QA!"
+const encoded = base64Encode(@source)
+const decoded = base64Decode(encoded)
+output("CHERRI_QA_32|{encoded}:{decoded}")

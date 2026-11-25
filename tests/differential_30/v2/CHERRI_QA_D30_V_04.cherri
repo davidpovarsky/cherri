@@ -1,0 +1,4 @@
+shortcut "CHERRI_QA_D30_V_04" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let replaced = replaceText("[0-9]+", replacement: "#", subject: "sku=120;qty=3", regExp: true)
+output(f"CHERRI_QA_04|{replaced}")

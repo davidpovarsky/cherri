@@ -1,0 +1,11 @@
+shortcut "CHERRI_QA_D30_V_26" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let letters = ["A", "B"]
+let digits = ["1", "2"]
+var trace = ""
+for letter in letters {
+    for digit in digits {
+        trace = f"{trace}{letter}{digit};"
+    }
+}
+output(f"CHERRI_QA_26|{trace}")

@@ -1,0 +1,5 @@
+shortcut "CHERRI_QA_D30_V_03" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let first = replaceText("apple", replacement: "pear", subject: "apple-apple")
+let second = replaceText("a", replacement: "x", subject: "aAa", caseSensitive: false)
+output(f"CHERRI_QA_03|{first}:{second}")

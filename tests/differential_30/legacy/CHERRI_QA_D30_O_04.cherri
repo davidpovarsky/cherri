@@ -1,0 +1,5 @@
+#define name CHERRI_QA_D30_O_04
+#include 'actions/text'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const replaced = replaceText("[0-9]+", "#", "sku=120;qty=3", true, true)
+output("CHERRI_QA_04|{replaced}")

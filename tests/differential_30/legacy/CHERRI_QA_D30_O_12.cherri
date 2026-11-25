@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_12
+#include 'actions/math'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const root = calculate("√x", 81)
+const square = calculate("x^2", 4)
+const remainder = 10 % 3
+output("CHERRI_QA_12|{root}:{square}:{remainder}")

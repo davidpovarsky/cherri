@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_31" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let start = date("2024-02-03 12:00:00")
+let later = adjustDate(start, operation: "Add", unit: qty(2, "days"))
+let formatted = formatDate(later, dateFormat: "Custom", customDateFormat: "yyyy-MM-dd")
+let gap = getTimeBetweenDates(start, endDate: later, unit: "Days")
+output(f"CHERRI_QA_31|{formatted}:{gap}")

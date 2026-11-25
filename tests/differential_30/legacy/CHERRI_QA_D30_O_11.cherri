@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_11
+#include 'actions/math'
+// Synthetic fixture. Its independent expected output is in manifest.json.
+const nearest = round(3.7)
+const up = ceil(3.1)
+const down = floor(3.9)
+output("CHERRI_QA_11|{nearest}:{up}:{down}")

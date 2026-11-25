@@ -1,0 +1,7 @@
+shortcut "CHERRI_QA_D30_V_14" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let items = ["alpha", "beta", "gamma", "delta"]
+let second = items[1]
+let middle = getListItems(items, start: 2, end: 3)
+let joined = joinText(middle, glue: ",")
+output(f"CHERRI_QA_14|{second}:{joined}")

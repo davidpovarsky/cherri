@@ -1,0 +1,13 @@
+#define name CHERRI_QA_D30_O_16
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@payload = {"name":"Orion","count":7,"enabled":true,"empty":""}
+const label = getValue(@payload, "name")
+const amount = getValue(@payload, "count")
+const enabled = getValue(@payload, "enabled")
+const empty = getValue(@payload, "empty")
+@flag = "no"
+if enabled.number == 1 {
+    @flag = "yes"
+}
+const emptyCount = count(empty, "Characters")
+output("CHERRI_QA_16|{label}:{amount}:{@flag}:{emptyCount}")

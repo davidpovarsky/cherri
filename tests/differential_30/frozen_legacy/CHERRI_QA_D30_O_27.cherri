@@ -1,0 +1,11 @@
+#define name CHERRI_QA_D30_O_27
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@animals = ["ant","bee","cat"]
+@trace = ""
+for animal in @animals {
+    @word = "{@animal}"
+    if @word contains "a" {
+        @trace = "{@trace}<{@word}>"
+    }
+}
+output("CHERRI_QA_27|{@trace}")

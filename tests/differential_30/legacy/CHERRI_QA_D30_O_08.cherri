@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_08
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@raw = "42"
+const parsed = number(@raw)
+const total = parsed + 5
+output("CHERRI_QA_08|{total}")

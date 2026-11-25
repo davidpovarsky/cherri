@@ -1,0 +1,6 @@
+#define name CHERRI_QA_D30_O_10
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@n = 3
+const precedence = 5 + (2 * @n)
+const fraction = 5 / 2
+output("CHERRI_QA_10|{precedence}:{fraction}")

@@ -1,0 +1,5 @@
+shortcut "CHERRI_QA_D30_V_05" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let matches = matchText("[0-9]+", text: "id12 x7 end305")
+let joined = joinText(matches, glue: ",")
+output(f"CHERRI_QA_05|{joined}")

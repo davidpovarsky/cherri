@@ -1,0 +1,7 @@
+#define name CHERRI_QA_D30_O_23
+// Synthetic fixture. Its independent expected output is in manifest.json.
+@sum = 0
+repeat i for 5 {
+    @sum += @i
+}
+output("CHERRI_QA_23|{@sum}")

@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_12" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let root = calculate("√x", operandOne: 81)
+let square = calculate("x^2", operandOne: 4)
+let remainder = calculate("Modulus", operandOne: 10, operandTwo: 3)
+output(f"CHERRI_QA_12|{root}:{square}:{remainder}")

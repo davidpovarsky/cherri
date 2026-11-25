@@ -1,0 +1,1378 @@
+{
+  "schema_version": 1,
+  "suite_id": "cherri-differential-30-20261125",
+  "original_sha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+  "fork_baseline_sha": "6ce0a3981d2047ba5aec603f185e2d8f922fc0ee",
+  "runtime_contract": {
+    "capture": "x-callback result text",
+    "terminal": "output only",
+    "compare": "exact Unicode string, no trimming or normalization",
+    "synthetic_inputs": "embedded in each source; no Shortcuts input required",
+    "native_lanes": [
+      "original",
+      "fork_v2"
+    ],
+    "metadata_difference": "Shortcut names intentionally differ by O/V suffix for simultaneous imports."
+  },
+  "fixtures": [
+    {
+      "id": "01_unicode_interpolation",
+      "number": 1,
+      "title": "Unicode text and interpolation",
+      "families": [
+        "text",
+        "interpolation",
+        "unicode"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_01.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_01.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_01.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_01.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_01",
+        "fork_legacy": "CHERRI_QA_D30_O_01",
+        "fork_v2": "CHERRI_QA_D30_V_01",
+        "frozen_original": "CHERRI_QA_D30_O_01"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_01|café שלום 🚀:7"
+      },
+      "oracle_reason": "Literal Unicode text followed by a colon and integer seven.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "02_case_variants",
+      "number": 2,
+      "title": "Independent text case variants",
+      "families": [
+        "text",
+        "case"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_02.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_02.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_02.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_02.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_02",
+        "fork_legacy": "CHERRI_QA_D30_O_02",
+        "fork_v2": "CHERRI_QA_D30_V_02",
+        "frozen_original": "CHERRI_QA_D30_O_02"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_02|ALPHA:beta:Red Blue"
+      },
+      "oracle_reason": "ASCII upper/lower casing and capitalization of each word.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "03_literal_replace",
+      "number": 3,
+      "title": "Literal and case-insensitive replacement",
+      "families": [
+        "text",
+        "replacement"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_03.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_03.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_03.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_03.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_03",
+        "fork_legacy": "CHERRI_QA_D30_O_03",
+        "fork_v2": "CHERRI_QA_D30_V_03",
+        "frozen_original": "CHERRI_QA_D30_O_03"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_03|pear-pear:xxx"
+      },
+      "oracle_reason": "Both apple substrings change; all three a/A characters match case-insensitively.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "04_regex_replace",
+      "number": 4,
+      "title": "Regex replacement of numeric runs",
+      "families": [
+        "text",
+        "regex"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_04.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_04.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_04.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_04.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_04",
+        "fork_legacy": "CHERRI_QA_D30_O_04",
+        "fork_v2": "CHERRI_QA_D30_V_04",
+        "frozen_original": "CHERRI_QA_D30_O_04"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_04|sku=#;qty=#"
+      },
+      "oracle_reason": "Each maximal run of ASCII digits becomes one hash character.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "05_regex_matches",
+      "number": 5,
+      "title": "Regex match list and join",
+      "families": [
+        "text",
+        "regex",
+        "list"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_05.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_05.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_05.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_05.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_05",
+        "fork_legacy": "CHERRI_QA_D30_O_05",
+        "fork_v2": "CHERRI_QA_D30_V_05",
+        "frozen_original": "CHERRI_QA_D30_O_05"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_05|12,7,305"
+      },
+      "oracle_reason": "The ordered digit matches are 12, 7 and 305.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "06_split_join",
+      "number": 6,
+      "title": "Split, count and custom join",
+      "families": [
+        "text",
+        "list",
+        "count"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_06.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_06.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_06.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_06.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_06",
+        "fork_legacy": "CHERRI_QA_D30_O_06",
+        "fork_v2": "CHERRI_QA_D30_V_06",
+        "frozen_original": "CHERRI_QA_D30_O_06"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_06|red/green/blue:3"
+      },
+      "oracle_reason": "Three comma-delimited words, rejoined with slash.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "07_text_counts",
+      "number": 7,
+      "title": "Character and word count",
+      "families": [
+        "text",
+        "count"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_07.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_07.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_07.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_07.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_07",
+        "fork_legacy": "CHERRI_QA_D30_O_07",
+        "fork_v2": "CHERRI_QA_D30_V_07",
+        "frozen_original": "CHERRI_QA_D30_O_07"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_07|11:2"
+      },
+      "oracle_reason": "Eleven ASCII characters including one space; two words.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "08_number_coercion",
+      "number": 8,
+      "title": "Parse numeric text and add",
+      "families": [
+        "number",
+        "coercion",
+        "math"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_08.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_08.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_08.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_08.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_08",
+        "fork_legacy": "CHERRI_QA_D30_O_08",
+        "fork_v2": "CHERRI_QA_D30_V_08",
+        "frozen_original": "CHERRI_QA_D30_O_08"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_08|47"
+      },
+      "oracle_reason": "Decimal text 42 parsed as number, plus five.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "09_compound_arithmetic",
+      "number": 9,
+      "title": "Mutable arithmetic chain",
+      "families": [
+        "number",
+        "math",
+        "mutation"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_09.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_09.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_09.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_09.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_09",
+        "fork_legacy": "CHERRI_QA_D30_O_09",
+        "fork_v2": "CHERRI_QA_D30_V_09",
+        "frozen_original": "CHERRI_QA_D30_O_09"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_09|11"
+      },
+      "oracle_reason": "(((10+3)*2)-4)/2 = 11.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "10_expression_precedence",
+      "number": 10,
+      "title": "Nested expression and fractional division",
+      "families": [
+        "number",
+        "math",
+        "expression"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_10.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_10.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_10.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_10.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_10",
+        "fork_legacy": "CHERRI_QA_D30_O_10",
+        "fork_v2": "CHERRI_QA_D30_V_10",
+        "frozen_original": "CHERRI_QA_D30_O_10"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_10|11:2.5"
+      },
+      "oracle_reason": "Multiplication binds inside parentheses; mathematical division gives 2.5.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "11_rounding",
+      "number": 11,
+      "title": "Round, ceil and floor variants",
+      "families": [
+        "number",
+        "rounding"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_11.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_11.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_11.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_11.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_11",
+        "fork_legacy": "CHERRI_QA_D30_O_11",
+        "fork_v2": "CHERRI_QA_D30_V_11",
+        "frozen_original": "CHERRI_QA_D30_O_11"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_11|4:4:3"
+      },
+      "oracle_reason": "Nearest integer 4, upward integer 4, downward integer 3.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "12_scientific_math",
+      "number": 12,
+      "title": "Scientific math action variants",
+      "families": [
+        "number",
+        "math",
+        "variants"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_12.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_12.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_12.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_12.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_12",
+        "fork_legacy": "CHERRI_QA_D30_O_12",
+        "fork_v2": "CHERRI_QA_D30_V_12",
+        "frozen_original": "CHERRI_QA_D30_O_12"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_12|9:16:1"
+      },
+      "oracle_reason": "sqrt(81)=9; 4 squared=16; 10 mod 3=1.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "Current and frozen original use the documented % operator; V2 uses the named scientific Modulus action. The mathematical result is independently fixed at one."
+    },
+    {
+      "id": "13_list_endpoints",
+      "number": 13,
+      "title": "List endpoints and item count",
+      "families": [
+        "list",
+        "references"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_13.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_13.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_13.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_13.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_13",
+        "fork_legacy": "CHERRI_QA_D30_O_13",
+        "fork_v2": "CHERRI_QA_D30_V_13",
+        "frozen_original": "CHERRI_QA_D30_O_13"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_13|alpha:gamma:3"
+      },
+      "oracle_reason": "Ordered list endpoints alpha and gamma, length three.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "14_list_index_range",
+      "number": 14,
+      "title": "Indexed item and inclusive native range",
+      "families": [
+        "list",
+        "index"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_14.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_14.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_14.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_14.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_14",
+        "fork_legacy": "CHERRI_QA_D30_O_14",
+        "fork_v2": "CHERRI_QA_D30_V_14",
+        "frozen_original": "CHERRI_QA_D30_O_14"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_14|beta:beta,gamma"
+      },
+      "oracle_reason": "Legacy/native index 2 equals V2 index 1. Native inclusive range 2..3 is beta,gamma.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "Intentional V2 checked zero-based index lowering can add actions; this is not wire equality."
+    },
+    {
+      "id": "15_numeric_list_statistics",
+      "number": 15,
+      "title": "Typed numeric list statistics",
+      "families": [
+        "list",
+        "number",
+        "statistics"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_15.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_15.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_15.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_15.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_15",
+        "fork_legacy": "CHERRI_QA_D30_O_15",
+        "fork_v2": "CHERRI_QA_D30_V_15",
+        "frozen_original": "CHERRI_QA_D30_O_15"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_15|15:5"
+      },
+      "oracle_reason": "3+5+7=15; 15/3=5. Native numeric element types are retained in evidence.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "16_typed_dictionary",
+      "number": 16,
+      "title": "Dictionary preserves number, bool and empty text",
+      "families": [
+        "dictionary",
+        "typed_values",
+        "condition"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_16.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_16.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_16.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_16.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_16",
+        "fork_legacy": "CHERRI_QA_D30_O_16",
+        "fork_v2": "CHERRI_QA_D30_V_16",
+        "frozen_original": "CHERRI_QA_D30_O_16"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_16|Orion:7:yes:0"
+      },
+      "oracle_reason": "Known record literals: text Orion, integer 7, true selected as yes, empty text has zero characters.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "17_nested_dictionary_list",
+      "number": 17,
+      "title": "Nested dictionary and list extraction",
+      "families": [
+        "dictionary",
+        "list",
+        "coercion"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_17.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_17.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_17.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_17.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_17",
+        "fork_legacy": "CHERRI_QA_D30_O_17",
+        "fork_v2": "CHERRI_QA_D30_V_17",
+        "frozen_original": "CHERRI_QA_D30_O_17"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_17|Ada:two"
+      },
+      "oracle_reason": "meta.author is Ada; second tag is two.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "18_json_dictionary",
+      "number": 18,
+      "title": "JSON text to dictionary",
+      "families": [
+        "json",
+        "dictionary",
+        "typed_values"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_18.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_18.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_18.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_18.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_18",
+        "fork_legacy": "CHERRI_QA_D30_O_18",
+        "fork_v2": "CHERRI_QA_D30_V_18",
+        "frozen_original": "CHERRI_QA_D30_O_18"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_18|Oslo:12"
+      },
+      "oracle_reason": "The JSON object contains city Oslo and numeric n twelve.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "19_dictionary_update",
+      "number": 19,
+      "title": "Dictionary setValue and preserved earlier read",
+      "families": [
+        "dictionary",
+        "mutation",
+        "reference"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_19.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_19.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_19.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_19.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_19",
+        "fork_legacy": "CHERRI_QA_D30_O_19",
+        "fork_v2": "CHERRI_QA_D30_V_19",
+        "frozen_original": "CHERRI_QA_D30_O_19"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_19|before:after"
+      },
+      "oracle_reason": "The earlier read is before; the returned updated dictionary holds after.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "20_text_branch",
+      "number": 20,
+      "title": "Text equality if/else branch",
+      "families": [
+        "condition",
+        "text",
+        "mutation"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_20.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_20.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_20.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_20.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_20",
+        "fork_legacy": "CHERRI_QA_D30_O_20",
+        "fork_v2": "CHERRI_QA_D30_V_20",
+        "frozen_original": "CHERRI_QA_D30_O_20"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_20|matched"
+      },
+      "oracle_reason": "Identical lowercase ASCII text selects the then branch.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "21_numeric_conditions",
+      "number": 21,
+      "title": "Numeric inclusive bounds",
+      "families": [
+        "condition",
+        "number",
+        "logical"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_21.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_21.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_21.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_21.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_21",
+        "fork_legacy": "CHERRI_QA_D30_O_21",
+        "fork_v2": "CHERRI_QA_D30_V_21",
+        "frozen_original": "CHERRI_QA_D30_O_21"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_21|inside"
+      },
+      "oracle_reason": "Seventeen satisfies both inclusive bounds.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "22_text_predicates",
+      "number": 22,
+      "title": "Text begins, contains and ends predicates",
+      "families": [
+        "condition",
+        "text",
+        "logical"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_22.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_22.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_22.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_22.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_22",
+        "fork_legacy": "CHERRI_QA_D30_O_22",
+        "fork_v2": "CHERRI_QA_D30_V_22",
+        "frozen_original": "CHERRI_QA_D30_O_22"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_22|ABC"
+      },
+      "oracle_reason": "All three predicates are true and append in source order.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "23_repeat_sum",
+      "number": 23,
+      "title": "Repeat index and accumulation",
+      "families": [
+        "repeat",
+        "number",
+        "mutation"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_23.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_23.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_23.cherri",
+        "frozen_original": "frozen_legacy/CHERRI_QA_D30_O_23.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_23",
+        "fork_legacy": "CHERRI_QA_D30_O_23",
+        "fork_v2": "CHERRI_QA_D30_V_23",
+        "frozen_original": "CHERRI_QA_D30_O_23"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_23|15"
+      },
+      "oracle_reason": "Sum of one through five is fifteen.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "V2 zero-based repeat indices are deliberately offset by one for semantic equivalence. Current upstream uses constant loop bindings without @; frozen_original preserves prior @ syntax. The fork_legacy lane compiles the exact current original source to expose compatibility drift."
+    },
+    {
+      "id": "24_foreach_text",
+      "number": 24,
+      "title": "For-each ordered text accumulator",
+      "families": [
+        "foreach",
+        "list",
+        "text",
+        "mutation"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_24.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_24.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_24.cherri",
+        "frozen_original": "frozen_legacy/CHERRI_QA_D30_O_24.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_24",
+        "fork_legacy": "CHERRI_QA_D30_O_24",
+        "fork_v2": "CHERRI_QA_D30_V_24",
+        "frozen_original": "CHERRI_QA_D30_O_24"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_24|[red][green][blue]"
+      },
+      "oracle_reason": "Three source items append in original order.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": " Current upstream uses constant loop bindings without @; frozen_original preserves prior @ syntax. The fork_legacy lane compiles the exact current original source to expose compatibility drift."
+    },
+    {
+      "id": "25_nested_repeat",
+      "number": 25,
+      "title": "Nested repeat index capture",
+      "families": [
+        "repeat",
+        "nested_control",
+        "number",
+        "reference"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_25.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_25.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_25.cherri",
+        "frozen_original": "frozen_legacy/CHERRI_QA_D30_O_25.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_25",
+        "fork_legacy": "CHERRI_QA_D30_O_25",
+        "fork_v2": "CHERRI_QA_D30_V_25",
+        "frozen_original": "CHERRI_QA_D30_O_25"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_25|11,12,13,21,22,23,"
+      },
+      "oracle_reason": "Cartesian index pairs with outer 1..2 and inner 1..3; one comma per iteration.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "V2 zero-based indices are offset by one; outer binding must survive the inner loop. Current upstream uses constant loop bindings without @; frozen_original preserves prior @ syntax. The fork_legacy lane compiles the exact current original source to expose compatibility drift."
+    },
+    {
+      "id": "26_nested_foreach",
+      "number": 26,
+      "title": "Nested for-each outer-item capture",
+      "families": [
+        "foreach",
+        "nested_control",
+        "list",
+        "reference"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_26.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_26.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_26.cherri",
+        "frozen_original": "frozen_legacy/CHERRI_QA_D30_O_26.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_26",
+        "fork_legacy": "CHERRI_QA_D30_O_26",
+        "fork_v2": "CHERRI_QA_D30_V_26",
+        "frozen_original": "CHERRI_QA_D30_O_26"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_26|A1;A2;B1;B2;"
+      },
+      "oracle_reason": "Ordered Cartesian product of A/B with 1/2.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": " Current upstream uses constant loop bindings without @; frozen_original preserves prior @ syntax. The fork_legacy lane compiles the exact current original source to expose compatibility drift."
+    },
+    {
+      "id": "27_foreach_filter",
+      "number": 27,
+      "title": "Conditional inside for-each",
+      "families": [
+        "foreach",
+        "condition",
+        "text"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_27.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_27.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_27.cherri",
+        "frozen_original": "frozen_legacy/CHERRI_QA_D30_O_27.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_27",
+        "fork_legacy": "CHERRI_QA_D30_O_27",
+        "fork_v2": "CHERRI_QA_D30_V_27",
+        "frozen_original": "CHERRI_QA_D30_O_27"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_27|<ant><cat>"
+      },
+      "oracle_reason": "Only ant and cat contain lowercase a.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": " Current upstream uses constant loop bindings without @; frozen_original preserves prior @ syntax. The fork_legacy lane compiles the exact current original source to expose compatibility drift."
+    },
+    {
+      "id": "28_if_value",
+      "number": 28,
+      "title": "Value-producing if expression",
+      "families": [
+        "condition",
+        "value_block"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_28.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_28.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_28.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_28.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_28",
+        "fork_legacy": "CHERRI_QA_D30_O_28",
+        "fork_v2": "CHERRI_QA_D30_V_28",
+        "frozen_original": "CHERRI_QA_D30_O_28"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_28|high"
+      },
+      "oracle_reason": "Eight is greater than five, producing high.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "29_repeat_results",
+      "number": 29,
+      "title": "Value-producing repeat collection",
+      "families": [
+        "repeat",
+        "list",
+        "value_block"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_29.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_29.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_29.cherri",
+        "frozen_original": "frozen_legacy/CHERRI_QA_D30_O_29.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_29",
+        "fork_legacy": "CHERRI_QA_D30_O_29",
+        "fork_v2": "CHERRI_QA_D30_V_29",
+        "frozen_original": "CHERRI_QA_D30_O_29"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_29|x1,x2,x3"
+      },
+      "oracle_reason": "Each iteration produces one string; order is x1,x2,x3.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "Equivalent value loops use explicit yield in V2. Current upstream uses constant loop bindings without @; frozen_original preserves prior @ syntax. The fork_legacy lane compiles the exact current original source to expose compatibility drift."
+    },
+    {
+      "id": "30_fixed_date",
+      "number": 30,
+      "title": "Fixed date custom format",
+      "families": [
+        "date",
+        "format"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_30.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_30.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_30.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_30.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_30",
+        "fork_legacy": "CHERRI_QA_D30_O_30",
+        "fork_v2": "CHERRI_QA_D30_V_30",
+        "frozen_original": "CHERRI_QA_D30_O_30"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_30|2024-02-03"
+      },
+      "oracle_reason": "Explicit local noon on 3 February 2024 formatted with numeric date components.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "31_date_adjust_static_qty",
+      "number": 31,
+      "title": "Date arithmetic with static quantity",
+      "families": [
+        "date",
+        "quantity",
+        "math"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_31.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_31.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_31.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_31.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_31",
+        "fork_legacy": "CHERRI_QA_D30_O_31",
+        "fork_v2": "CHERRI_QA_D30_V_31",
+        "frozen_original": "CHERRI_QA_D30_O_31"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_31|2024-02-05:2"
+      },
+      "oracle_reason": "Add two calendar days to 3 February; date gap is exactly two days.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "getTimeBetweenDates is a fork action absent from both pristine original catalogs; original compile failure is retained as an unsupported-action difference, not marked native PASS."
+    },
+    {
+      "id": "32_base64_roundtrip",
+      "number": 32,
+      "title": "Base64 encode/decode",
+      "families": [
+        "encoding",
+        "base64",
+        "text"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_32.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_32.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_32.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_32.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_32",
+        "fork_legacy": "CHERRI_QA_D30_O_32",
+        "fork_v2": "CHERRI_QA_D30_V_32",
+        "frozen_original": "CHERRI_QA_D30_O_32"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_32|Q2hlcnJpX1FBIQ==:Cherri_QA!"
+      },
+      "oracle_reason": "RFC4648 Base64 of ASCII Cherri_QA! is Q2hlcnJpX1FBIQ==, and decoding restores the bytes.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "33_url_components",
+      "number": 33,
+      "title": "Pure URL component extraction",
+      "families": [
+        "url",
+        "property"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_33.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_33.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_33.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_33.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_33",
+        "fork_legacy": "CHERRI_QA_D30_O_33",
+        "fork_v2": "CHERRI_QA_D30_V_33",
+        "frozen_original": "CHERRI_QA_D30_O_33"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_33|https:example.org:/alpha/beta:mode=qa:section"
+      },
+      "oracle_reason": "RFC3986 components of the fixed synthetic URL. No network action is executed.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "34_url_encode_decode",
+      "number": 34,
+      "title": "URL encode and decode",
+      "families": [
+        "url",
+        "encoding"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_34.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_34.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_34.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_34.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_34",
+        "fork_legacy": "CHERRI_QA_D30_O_34",
+        "fork_v2": "CHERRI_QA_D30_V_34",
+        "frozen_original": "CHERRI_QA_D30_O_34"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_34|one%20two:one two"
+      },
+      "oracle_reason": "Percent encoding replaces ASCII space with %20; decoding is inverse.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "35_object_property",
+      "number": 35,
+      "title": "Named text object and property reference",
+      "families": [
+        "object",
+        "property",
+        "coercion"
+      ],
+      "complexity": "complex",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_35.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_35.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_35.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_35.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_35",
+        "fork_legacy": "CHERRI_QA_D30_O_35",
+        "fork_v2": "CHERRI_QA_D30_V_35",
+        "frozen_original": "CHERRI_QA_D30_O_35"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_35|qa.txt:qa.txt"
+      },
+      "oracle_reason": "setName assigns qa.txt; action and property-aggrandizement reads must agree.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "36_dictionary_coercion",
+      "number": 36,
+      "title": "Typed dictionary coercion reference",
+      "families": [
+        "dictionary",
+        "coercion",
+        "reference"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_36.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_36.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_36.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_36.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_36",
+        "fork_legacy": "CHERRI_QA_D30_O_36",
+        "fork_v2": "CHERRI_QA_D30_V_36",
+        "frozen_original": "CHERRI_QA_D30_O_36"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_36|coerced:9"
+      },
+      "oracle_reason": "Dictionary coercion reads label and integer from explicit JSON text.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": ""
+    },
+    {
+      "id": "37_immutable_capture",
+      "number": 37,
+      "title": "Immutable snapshot across mutable write",
+      "families": [
+        "binding",
+        "mutation",
+        "reference"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_37.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_37.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_37.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_37.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_37",
+        "fork_legacy": "CHERRI_QA_D30_O_37",
+        "fork_v2": "CHERRI_QA_D30_V_37",
+        "frozen_original": "CHERRI_QA_D30_O_37"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_37|before:after"
+      },
+      "oracle_reason": "The snapshot captures before; the later mutable state is after.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "Legacy explicit Text materialization provides the same snapshot contract as V2 immutable let."
+    },
+    {
+      "id": "38_timer_static_qty",
+      "number": 38,
+      "title": "Static timer quantity structural sentinel",
+      "families": [
+        "timer",
+        "quantity"
+      ],
+      "complexity": "simple",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_38.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_38.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_38.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_38.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_38",
+        "fork_legacy": "CHERRI_QA_D30_O_38",
+        "fork_v2": "CHERRI_QA_D30_V_38",
+        "frozen_original": "CHERRI_QA_D30_O_38"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_38|timer:2sec"
+      },
+      "oracle_reason": "Literal quantity magnitude is two seconds.",
+      "runtime": {
+        "enabled": false,
+        "terminal": "output",
+        "external_side_effects": true
+      },
+      "notes": "Structural only: do not execute Clock timer side effects; not counted toward native pure workflows."
+    },
+    {
+      "id": "39_timer_dynamic_qty",
+      "number": 39,
+      "title": "Dynamic action-output quantity structural sentinel",
+      "families": [
+        "timer",
+        "quantity",
+        "reference",
+        "math"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "legacy/CHERRI_QA_D30_O_39.cherri",
+        "fork_legacy": "legacy/CHERRI_QA_D30_O_39.cherri",
+        "fork_v2": "v2/CHERRI_QA_D30_V_39.cherri",
+        "frozen_original": "legacy/CHERRI_QA_D30_O_39.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_D30_O_39",
+        "fork_legacy": "CHERRI_QA_D30_O_39",
+        "fork_v2": "CHERRI_QA_D30_V_39",
+        "frozen_original": "CHERRI_QA_D30_O_39"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_39|timer:2sec"
+      },
+      "oracle_reason": "The quantity magnitude must reference the live math output two, never its printed Go struct.",
+      "runtime": {
+        "enabled": false,
+        "terminal": "output",
+        "external_side_effects": true
+      },
+      "notes": "Structural only; baseline broken output retained and separately compared with the repaired compiler."
+    }
+  ],
+  "frozen_original_sha": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+  "original_compatibility": "Latest upstream loop bindings became constants; exact same current source is supplied to fork_legacy, while frozen_original keeps its prior syntax in explicitly separate source files."
+}

@@ -1,0 +1,6 @@
+shortcut "CHERRI_QA_D30_V_10" {}
+// Synthetic fixture. Its independent expected output is in manifest.json.
+let n = 3
+let precedence = 5 + (2 * n)
+let fraction = 5 / 2
+output(f"CHERRI_QA_10|{precedence}:{fraction}")
