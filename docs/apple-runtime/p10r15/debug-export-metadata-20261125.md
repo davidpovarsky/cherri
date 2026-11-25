@@ -1,82 +1,81 @@
-# P15 debug export metadata: proposed scope and RED fixtures
+# P15 debug export metadata: source qualification and native gaps
 
-Base source: 63ccc00efd29887ca2fae9a32cddf9a8080d780a.
-Branch: agent/cherri-p10r15-macro-export-metadata-20261125.
+Implementation source: fa2a204fd45ddcaaaf123ffe3ed20f9df6510f42. Qualified test/model source: a921113944f7e23629eed6198aef52331cd5cac8. Branch: agent/cherri-p10r15-macro-export-metadata-20261125.
 
-This checkpoint adds only tests and this proposal. No export production code has changed, and the new tests have not run.
+This component implements guarded item Creation Date metadata and separately requested labels in both frontends. The qualification combines an original Go run and one narrow oracle replay with unchanged production inputs. It does not claim one all-green run, native Apple execution, a returned File, complete macro acceptance or 179-requirement acceptance.
 
-The original Asana requirement is 1220544665232213. The fetched task/comments are preserved under /mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/preparation-01/asana-export-contract.original.json, SHA256 c1ce96bcc294a751156d121e6f916e82296678b4478756aa000cdfbacc49ba37.
+The original requirement is Asana task 1220544665232213. Its fetched contract and comments remain in `/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/preparation-01/asana-export-contract.original.json`, SHA256 `c1ce96bcc294a751156d121e6f916e82296678b4478756aa000cdfbacc49ba37`.
 
-## Planned metadata contract
+## API and data contract
 
-- includeDates:true refers explicitly to the same native item's Creation Date property. It is not the time at which logging or export executes. Native cardinality/type guards must precede ISO8601 date formatting. ABSENT, AMBIGUOUS, and UNSUPPORTED_DATE_TYPE remain observable; no fallback time is invented.
-- Add an optional fifth literal flag includeLabels:false. It requests the existing compiler-owned label-range metadata without changing the original four-argument API or omitted metadata behavior.
-- Default redaction does not extract label values or read the label buffer. Explicit redactSensitive:false is required to export label content. Literal labels, including empty labels, Unicode, newlines, and braces, must remain data.
-- The unredacted label association follows the existing first/last native buffer ranges. Missing, ambiguous, and unsupported label metadata must remain explicit.
-- Both frontends use the same native expansion and shared text codec. Dynamic text is encoded as base64 UTF-8 before it enters JSON. The raw log, original producer UUIDs, and authored consumers are not replaced.
-- Default envelopes and graphs will be compared against actual pre-change graph receipts. Four original default controls are prepared to write exclusive canonical graph snapshots during RED; no golden is invented before execution.
-- The existing File materialization chain and strict native File oracle remain unchanged. Actual prior Apple evidence observed Dictionary for JSON decode/naming while an independent binary witness was File. No new File, date-runtime, or final acceptance claim is made.
+The original four arguments retain their defaults. A fifth literal Boolean is optional:
 
-The new matrix contains 48 requested metadata source cases (three date/label modes, two frontends, two formats, type metadata on/off, redaction on/off) plus four original-default controls. Each source case first compiles a corresponding old-API control, preserving its declarations and label literals. This separates an actual missing metadata feature from a broken source setup.
+`debugExport(format="json", includeDates=false, includeTypes=true, redactSensitive=true, includeLabels=false)`
 
-The initial graph oracle checks metadata fields, date origin/format/count/type observations, default label privacy, raw-state mutation prohibition, native references, and exact preservation of the original final materialization chain. Further branch/causal controls and independent bounded model checks are required before declaring the implementation qualified. Models will stop at the completed UTF-8 envelope and cannot reclassify the known native File boundary as successful.
+- `includeDates:true` reads the same native item's Creation Date property. It does not invent a log or export timestamp. Zero values produce `ABSENT`, multiple values produce `AMBIGUOUS`, and one value of a different native class produces `UNSUPPORTED_DATE_TYPE`. Count and class checks precede ISO8601 formatting. The Current Date witness establishes a class for comparison; it never becomes an entry's date.
+- Labels are read only when both `includeLabels:true` and `redactSensitive:false` are explicit. The redacted and omitted paths do not read the label buffer or its values. Empty labels, Unicode, quotes, newlines and braces remain data.
+- The label reader validates existing scalar `first`, `last` and `label` records once. It then merges N raw items and M ordered ranges in at most N+M cursor iterations. Gaps remain `ABSENT`; overlap or out-of-order ranges are `AMBIGUOUS`; malformed native classes, cardinalities, fractions and bounds are unsupported. Invalid metadata takes precedence over ambiguity.
+- Both frontends use the same expansion and canonical text codec. Dynamic text enters JSON only after base64 UTF-8 encoding. The original raw objects, label records and authored producer references are preserved.
+- Private rows start with Nothing followed by input-free Set Variable. Helper loops end with Nothing, preventing incidental values from becoming Repeat Results. The frontend hook only initializes existing label storage; it does not re-expand earlier preview fallbacks or run date detection before the absence guard.
+- Release removes the diagnostic macro. Legacy emits no action for the standalone source; V2 retains its exact parameter-free main Nothing boundary. Consuming the removed diagnostic result remains an error.
 
-## Initial actual RED and default-wire oracle correction
+The final Text → Base64 Encode → Decode → Set Name chain is unchanged. It expresses the intended local artifact boundary but does not prove its native File class.
 
-Original job job_e9794d283de4 completed33.45s on e1b9d0240a4d82a0b12ddeb2652cffa60f993bd5. All48 feature sources failed at the intended missing date/label API; every ordinary source control compiled first. The four default controls failed because JSON encoding of the intermediate Go Value struct included empty OutputUUID fields even on Variable tokens. Native plist uses omitempty tags. The strict reference oracle correctly rejected those intermediate fields; it has not been relaxed.
+## Preserved RED and default graphs
 
-The initial receipt remains UNEXPECTED_RED_RESULT: /mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/red-01/result.original.json SHA256033153857c4b76236776618a3e821bf6a03932ca6daa172270455d0986e66fa1. This correction passes only those four default controls through the actual plist serializer before inspection. The48 authored sources, their expectations and all production files are unchanged. A bounded four-control replay is pending; no golden graph has been invented.
+The 48 authored feature sources first failed on missing capability at `e1b9d0240a4d82a0b12ddeb2652cffa60f993bd5`: sixteen date cases were unsupported and thirty-two label cases exceeded the old argument signature. Every corresponding old-API source control compiled first. The initial receipt remains `UNEXPECTED_RED_RESULT` because four default comparisons also exposed an oracle serialization defect; it is not relabeled.
 
-## Producer-name comparison correction (unverified)
+The default oracle was corrected to inspect actual plist serialization. A second comparator defect came from the canonical codec's unnamed OutputName fallback. The export-only comparison normalizes that name only on a validated ActionOutput whose original name equals its own OutputUUID. Literal UUID-shaped payloads and another producer's name remain significant.
 
-The corrected native-plist replay `default-controls-03` remained a real FAIL: all four old-default graphs contained unnamed text-token references whose `OutputName` is set to the producer UUID by the canonical shared codec. The borrowed measure graph comparator normalized `OutputUUID` but retained that fallback `OutputName`, so independent builds compared unequal. Export production and all 48 semantic RED sources remained unchanged.
+Actual source `75c6eb49f6900a9d88098826ebca8ea4b8ee3d15` then passed four default controls and twenty-four causal reference/name corruptions. Their real graph snapshots are committed under `testdata/p15-debug-export-metadata/default/`; no golden was synthesized from the new implementation.
 
-The export-only oracle now normalizes the name only on an actual, independently validated `ActionOutput` node where the original `OutputName` equals that node's own `OutputUUID`. It first runs all original producer-order and duplicate checks. Eight further causal controls keep actual UUID-shaped text payloads and names of a different real producer semantically significant. Together with the original sixteen reference corruptions, the next four-default replay must pass all twenty-four faults and produce four real baseline graphs. No replay success is claimed by this source checkpoint.
+The source-bound baseline intake is [debug-export-metadata-baseline-20261125.json](debug-export-metadata-baseline-20261125.json). All earlier failed and capacity-blocked attempts remain preserved.
 
-## Implemented candidate; qualification pending
+## Actual source qualification
 
-The old production is now guarded by four real native-plist graph baselines
-from source75c6, produced by default-controls-06 after all24 causal controls
-passed. The original48 semantic RED sources are unchanged. The source-bound
-intake is debug-export-metadata-baseline-20261125.json; failed and capacity
-attempts remain preserved.
+The complete binding is [debug-export-metadata-qualification-20261125.json](debug-export-metadata-qualification-20261125.json), copied exactly from the original independent intake. The intake rehashes original streams, reports and 48 emitted graphs and verifies 969 source inputs.
 
-The candidate adds literal includeDates and optional fifth includeLabels
-(default false). Date output reads each native item's Creation Date; it does
-not substitute export time. Native count and type guards precede one ISO8601
-formatter. Absent, multiple and unsupported values have explicit statuses.
-The runtime Date witness establishes a class for comparison and never becomes
-an entry timestamp.
+| Evidence | Observed result |
+| --- | --- |
+| Original Go qualification on fa2a | 215 named PASS, one FAIL; preserved as a failed run |
+| Original metadata cohort | All 48 source configurations PASS, same identities as RED |
+| Original defaults and reference faults | Four defaults and 24 causal faults PASS |
+| Profile/storage behavior | Eight cases PASS, including existing effects and repeated export/label storage |
+| Narrow replay on a921 | Original failed parent and six added Release leak controls PASS; 22.608 seconds |
+| Independent model | 720 small cases over the actual 48 graphs PASS |
+| Model stress | Eight 1,000-item cases PASS, with one or 1,000 label ranges |
+| Causal model faults | Twelve corrupted graphs rejected and restored controls accepted |
 
-Labels remain redacted unless both includeLabels:true and
-redactSensitive:false are explicit. The redacted/omitted path does not read the
-label buffer. The opt-in path validates the original scalar first/last/label
-metadata once, then merges N items and M ordered ranges in at most N+M cursor
-iterations. Gaps are ABSENT, overlapping or out-of-order ranges are AMBIGUOUS,
-and bad native classes, cardinalities, fractions or bounds are unsupported.
-Private rows begin with Nothing and input-free Set Variable; helper loops end
-with Nothing. Original native log objects and label records are not rewritten.
+The original Go failure was the test helper comparing nil and empty Go slices for the correctly empty Legacy Release graph. The narrow correction validates the exact frontend-specific graph and rejects added Text, Quick Look and Nothing actions. Production Go files and every other test function remain identical to fa2a. The evidence join covers 222 distinct qualified Go test identities; it is not represented as a new full-suite execution.
 
-The two frontends request only existing storage-clear backfill for this
-export. They do not re-expand earlier preview fallback graphs, and they do not
-run detect.date before the absence guard. Source-owned literal labels and the
-existing label preview implementation retain their contracts.
+The first model attempt failed on `WFWorkflowActionParameters:null`, the actual Go JSON representation of parameter-free Nothing. The corrected decoder permits null only for that action and continues to require a map for every other action. The failed attempt remains retained.
 
-The exact historical debugExport("json", true) case is retained and promoted
-from an unsupported-date negative to an admitted source-graph check in both
-profiles and dialects. The original CLI producer keeps the four historical
-identities and reports them as admitted source-only cases. Invalid format,
-path, dynamic format and nil/nonliteral Boolean controls remain; the new label
-flag receives the same literal validation. This is a documented feature
-evolution, not a reinterpretation of old failed receipts.
+The exact historical `debugExport("json", true)` sources and CLI identities are retained as newly admitted source cases. Invalid formats, unsafe paths, dynamic formats and nil/nonliteral Boolean options remain rejected. The original CLI producer still requires execution on the next integrated compiler; changing an expected feature outcome does not establish that execution.
 
-The new independent bounded evaluator consumes the actual emitted graphs and
-stops at the completed Text envelope. It does not execute or model the
-Base64 Decode/Set Name native File-class boundary. It checks all48 source
-configurations, malformed/empty metadata, Unicode, source-item order and
-identity, explicit date statuses, label privacy, N+M action growth, and causal
-graph changes. Its source is tools/p10r15/verify_debug_export_metadata.py.
+## Independent model boundary
 
-This checkpoint has not run the new implementation. It grants no native
-Creation Date, empty-label, File-class, iPad, macro-wide or179 acceptance.
-Dedicated signed native evidence remains required after source qualification.
+`tools/p10r15/verify_debug_export_metadata.py` consumes the emitted native action graphs. It models only the path through the completed Text envelope and stops before Base64 Decode/Set Name. It preserves raw item order and identity, validates item-derived dates, verifies label privacy and malformed metadata statuses, and checks linear action growth.
+
+The twelve causal controls include replacing the source date with export time, dropping ISO8601 time, changing Base64 line breaks, writing the raw buffer, creating a synthetic row, stalling the range cursor, leaking helper output, changing a range boundary, substituting range data for label text, reading redacted metadata, changing the artifact name and changing the decode direction.
+
+The model explicitly reports `nativeRuntimeExecuted:false`, `materializationBoundaryExecuted:false` and `fileClassAccepted:false`. Native property absence/cardinality, empty Text preservation, Dictionary field classes, list and control-result behavior, ISO8601 formatting and UTF-8 Base64 require dedicated Apple observations.
+
+Independent source review found no blocking issue in the committed encoder, fifth flag, default path, storage-only hooks or range/privacy checks. The encoder is byte-identical to the reviewed proposal. [Original review](debug-export-metadata-independent-review-20261125.json), SHA256 8834d798d077d1743f6a56728572824397a686c6b29d35fcc5ef2c9a66cd5858, grants no native or formal acceptance.
+
+## Original receipts
+
+Paths are relative to `/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/`.
+
+| Receipt | SHA256 |
+| --- | --- |
+| `default-controls-06/result.original.json` | `f4112b3b726ecaa863a2059d0a356e5344b933bcf8bb26c3d1e5263a3b3d8e52` |
+| `green-01/result.original.json` | `1f9ddf4d1edfdb6e063f7606b90d6fe29151ba306ddc0d5e82e023acf5c065e6` |
+| `text-model-02/model.original.json` | `f211cf16ed02dc729e95c63efbec11ee4cc0f6ddc3cb3a79f6e5b7aaa4e7ecf8` |
+| `literal-options-replay-02/result.original.json` | `05036b9142def5e22df232a52845d64e0b7caf9b08f078f6e7ae10ac2d84981b` |
+| `qualification-intake-01/result.original.json` | `aad532f3a8af2ce1a2c52436a916fc0b14e553da2595cd8625dc6d87931c7e66` |
+
+## Remaining acceptance
+
+The prior Apple observation that JSON Decode/Set Name produced Dictionary while an independent binary witness produced File remains counterevidence. The new source and model do not reinterpret it.
+
+Dedicated signed Date/empty-label/range observations, actual File class and exact UTF-8 bytes, structured payload serialization beyond the existing explicit Text-only policy, physical iPad behavior, integrated CI and final consumer pins remain open. Source support for metadata does not close the complete debugExport task.
