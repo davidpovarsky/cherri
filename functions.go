@@ -32,10 +32,11 @@ var usingFunctions bool
 
 // function contains the collected declaration of a function.
 type function struct {
-	definition actionDefinition
-	body       string
-	used       bool
-	callCount  int // incremented each call to produce unique _cherri_call variable names
+	definition    actionDefinition
+	body          string
+	nativeOrigins []string
+	used          bool
+	callCount     int // incremented each call to produce unique _cherri_call variable names
 }
 
 // functions is a map of all the functions that have been defined.
@@ -60,6 +61,7 @@ func handleFunctions() {
 	usingFunctions = isUsingFunctions()
 	if usingFunctions {
 		var functionsHeader = generateFunctionsHeader()
+		nativeLegacyPrependLines([]string{functionsHeader}, nativeLegacyGeneratedHeaderOrigins(functionsHeader))
 		lines = append([]string{functionsHeader}, lines...)
 
 		resetParse()
@@ -104,7 +106,10 @@ func collectFunctionDefinition() {
 	advanceUntilExpect('{', 3)
 	advance()
 
-	var body = strings.TrimSpace(collectObject())
+	startLine := lineIdx
+	rawBody := collectObject()
+	var body = strings.TrimSpace(rawBody)
+	origins := nativeLegacyCaptureBodyOrigins(rawBody, startLine)
 
 	lineRef.replaceLines()
 
@@ -113,7 +118,8 @@ func collectFunctionDefinition() {
 			parameters: arguments,
 			outputType: outputType,
 		},
-		body: body,
+		body:          body,
+		nativeOrigins: origins,
 	}
 }
 
@@ -146,6 +152,7 @@ func checkFunctionUsage(content string) {
 }
 
 func generateFunctionsHeader() string {
+	nativeLegacyBeginGeneratedHeader()
 	var functionsHeader strings.Builder
 	functionsHeader.WriteString("if ShortcutInput {\n")
 	functionsHeader.WriteString("    const _cherri_empty_dictionary = {}\n")
@@ -188,6 +195,7 @@ func generateFunctions(functionsHeader *strings.Builder) {
 				tabLevel = 3
 			}
 
+			nativeLegacyRememberGeneratedBodyLine(functionsHeader.Len(), function.nativeOrigins, i)
 			functionsHeader.WriteString(fmt.Sprintf("%s\n", tabbedLine(line)))
 		}
 

@@ -2356,6 +2356,12 @@ var actions = map[string]*actionDefinition{
 			if args[0].valueType == Variable && reflect.TypeOf(file).Kind() != reflect.String {
 				parserError("File path must be a string literal")
 			}
+			if nativeLegacyDocument != nil {
+				if err := nativeLegacyPrepareEmbeddedAsset(file.(string)); err != nil {
+					parserError(fmt.Sprintf("[E_WORKSPACE_ACCESS] embedded local asset: %v", err))
+				}
+				return
+			}
 			if _, err := os.Stat(file.(string)); os.IsNotExist(err) {
 				parserError(fmt.Sprintf("File '%s' does not exist!", file))
 			}
@@ -2838,6 +2844,7 @@ func includeBasicStandardActions() {
 	if includedBasicStandardActions {
 		return
 	}
+	nativeLegacyPrependLines([]string{"#include 'actions/basic'\n"}, nil)
 	lines = append([]string{"#include 'actions/basic'\n"}, lines...)
 	resetParse()
 	includedBasicStandardActions = true
@@ -2851,6 +2858,7 @@ func includeStandardActions() {
 	for _, actionInclude := range actionIncludes {
 		standardIncludes = append(standardIncludes, fmt.Sprintf("#include 'actions/%s'\n", actionInclude))
 	}
+	nativeLegacyPrependLines(standardIncludes, nil)
 	lines = append(standardIncludes, lines...)
 	resetParse()
 	includedStandardActions = true
@@ -2891,6 +2899,7 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 		if parsing {
 			// Compilation path: preserve the caller's source lines and probe
 			// by prepending the candidate include.
+			nativeLegacyPrependLines([]string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}, nil)
 			lines = append([]string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}, lines...)
 		} else {
 			// Decompilation path: evaluate each candidate category in

@@ -22,15 +22,16 @@ import (
 // It never enters the Apple plist or the WebView edit message. The integrity
 // digest detects accidental mutation; it is not authentication of a C caller.
 type previewSourceMap struct {
-	Version         int                  `json:"version"`
-	Name            string               `json:"name"`
-	Mode            string               `json:"mode"`
-	BuildProfile    string               `json:"buildProfile"`
-	SourceSHA256    string               `json:"sourceSHA256"`
-	PlistSHA256     string               `json:"plistSHA256"`
-	ActionCount     int                  `json:"actionCount"`
-	Entries         []previewSourceEntry `json:"entries"`
-	IntegritySHA256 string               `json:"integritySHA256"`
+	Version         int                    `json:"version"`
+	Name            string                 `json:"name"`
+	Mode            string                 `json:"mode"`
+	BuildProfile    string                 `json:"buildProfile"`
+	SourceSHA256    string                 `json:"sourceSHA256"`
+	PlistSHA256     string                 `json:"plistSHA256"`
+	ActionCount     int                    `json:"actionCount"`
+	Entries         []previewSourceEntry   `json:"entries"`
+	IntegritySHA256 string                 `json:"integritySHA256"`
+	Document        *mobileDocumentContext `json:"document,omitempty"`
 }
 
 type previewSourceEntry struct {
@@ -211,15 +212,16 @@ func previewEditableScalar(value any) bool {
 }
 
 type previewSourceEditRequest struct {
-	Source           string            `json:"source"`
-	Name             string            `json:"name"`
-	Mode             string            `json:"mode"`
-	BuildProfile     string            `json:"buildProfile"`
-	PlistBase64      string            `json:"plistBase64"`
-	PreviewSourceMap *previewSourceMap `json:"previewSourceMap"`
-	ActionIndex      int               `json:"actionIndex"`
-	ParameterKey     string            `json:"parameterKey"`
-	NewExpression    string            `json:"newExpression"`
+	Source           string                 `json:"source"`
+	Name             string                 `json:"name"`
+	Mode             string                 `json:"mode"`
+	BuildProfile     string                 `json:"buildProfile"`
+	PlistBase64      string                 `json:"plistBase64"`
+	PreviewSourceMap *previewSourceMap      `json:"previewSourceMap"`
+	ActionIndex      int                    `json:"actionIndex"`
+	ParameterKey     string                 `json:"parameterKey"`
+	NewExpression    string                 `json:"newExpression"`
+	Document         *mobileDocumentContext `json:"document,omitempty"`
 }
 
 // editPreviewSourceForMobile is also the exact implementation behind the new
@@ -249,6 +251,12 @@ func applyPreviewSourceEdit(request previewSourceEditRequest) (string, error) {
 		request.Name != mapping.Name || request.BuildProfile != mapping.BuildProfile ||
 		(mapping.BuildProfile != string(BuildProfileDebug) && mapping.BuildProfile != string(BuildProfileRelease)) {
 		return request.Source, fmt.Errorf("native preview source map is missing or does not match name, mode and profile; source preserved")
+	}
+	if err := validateMobileDocumentContext(request.Document); err != nil {
+		return request.Source, err
+	}
+	if !reflect.DeepEqual(mapping.Document, request.Document) {
+		return request.Source, fmt.Errorf("native preview belongs to a different document or revision; source preserved")
 	}
 	if mapping.SourceSHA256 != previewBytesSHA([]byte(request.Source)) {
 		return request.Source, fmt.Errorf("native preview belongs to different source bytes; rebuild the preview before editing")

@@ -65,6 +65,26 @@ func CherriCompileSignedProfile(source *C.char, requestedName *C.char, mode *C.c
 	return encodeMobileResponse(compileForMobileModeWithOptions(C.GoString(source), C.GoString(requestedName), C.GoString(mode), true, CompileOptions{BuildProfile: BuildProfile(C.GoString(profile))}))
 }
 
+// CherriCompileDocument preserves the existing mode/profile routes and binds
+// optional editor URI/revisions to one actual compile response.
+//
+//export CherriCompileDocument
+func CherriCompileDocument(request *C.char) *C.char {
+	return encodeMobileResponse(compileDocumentForMobile(C.GoString(request)))
+}
+
+//export CherriAssetCacheState
+func CherriAssetCacheState() *C.char {
+	encoded, _ := json.Marshal(nativeAssetCacheSnapshot())
+	return C.CString(string(encoded))
+}
+
+//export CherriInvalidateAssetCache
+func CherriInvalidateAssetCache() *C.char {
+	encoded, _ := json.Marshal(invalidateNativeAssetCache())
+	return C.CString(string(encoded))
+}
+
 // CherriDecompilePlist decompiles Shortcut plist data using Cherri's decompiler.
 //
 //export CherriDecompilePlist

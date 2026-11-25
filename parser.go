@@ -40,6 +40,7 @@ var isFirstCommentAction = true
 // then reset the chars and lines, then reset the parser cursor position.
 // This is usually done when something modifies the contents of the file like functions or includes.
 func resetParse() {
+	nativeLegacyNormalizeLines()
 	contents = strings.ReplaceAll(strings.Join(lines, "\n"), "\r\n", "\n")
 	contents = strings.ReplaceAll(contents, "\r", "\n")
 	chars = []rune(contents)
@@ -77,6 +78,7 @@ func initParse() {
 	originalContents = contents
 	chars = []rune(contents)
 	lines = strings.Split(contents, "\n")
+	nativeLegacyInitializeLines()
 	idx = -1
 	advance()
 
@@ -122,7 +124,9 @@ func preParse() {
 	defineRawAction()
 	markBuiltins()
 
-	if pkg, found := loadPackage("info.plist"); found {
+	// Native document compilation has no authority to inspect/install a package
+	// from the host process cwd. Explicit includes use the selected workspace.
+	if pkg, found := loadPackageForLegacyEntry(); found {
 		currentPkg = pkg
 		if args.Using("debug") {
 			fmt.Println("current package:", currentPkg)

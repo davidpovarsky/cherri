@@ -30,10 +30,11 @@ var stdActions embed.FS
 
 // actionReference holds the state for a single action being parsed or generated.
 type actionReference struct {
-	definition    actionDefinition
-	identifier    string
-	arguments     []actionArgument
-	embeddedAsset *assets.Snapshot
+	definition     actionDefinition
+	identifier     string
+	arguments      []actionArgument
+	embeddedAsset  *assets.Snapshot
+	sourceDocument string
 }
 
 var currentAction actionReference
@@ -69,6 +70,8 @@ type action struct {
 	args []actionArgument
 	// block carries an already parsed inline body for compiler constructs.
 	block *legacyScopedBlock
+	// Exact authorized bytes captured while the source origin is still known.
+	embeddedAsset *assets.Snapshot
 }
 
 // checkFunc is a function that can be passed a collected actions arguments as a slice of actionArgument and the current action's definition.
@@ -232,6 +235,10 @@ var actionIndex int
 func setCurrentAction(identifier string, definition *actionDefinition) {
 	currentAction.identifier = identifier
 	currentAction.definition = *definition
+	if nativeLegacyDocument != nil {
+		currentAction.sourceDocument = nativeLegacyOriginAt(lineIdx)
+		currentAction.embeddedAsset = nil
+	}
 }
 
 func saveCurrentAction() {
@@ -1662,9 +1669,10 @@ func collectParameterDefinitions() (arguments []parameterDefinition) {
 
 func makeActionValue(identifier string, arguments []actionArgument) action {
 	return action{
-		ident: identifier,
-		def:   actions[identifier],
-		args:  arguments,
+		ident:         identifier,
+		def:           actions[identifier],
+		args:          arguments,
+		embeddedAsset: nativeLegacyCurrentAssetSnapshot(),
 	}
 }
 

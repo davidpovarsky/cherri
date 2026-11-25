@@ -9,6 +9,9 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+
+	"github.com/electrikmilk/cherri/internal/language/assets"
+	"github.com/electrikmilk/cherri/internal/language/workspace"
 )
 
 // mobileDocumentContext belongs to one editor snapshot. It is separate from
@@ -66,12 +69,23 @@ func compileDocumentForMobile(requestJSON string) mobileCompileResponse {
 		CompileOptions{BuildProfile: request.BuildProfile}, request.Document)
 }
 
-// This forwarding entry establishes the additive request shape for the causal
-// controls. The implementation is replaced only after preserving their RED
-// outcomes against the existing context-free mobile route.
-func compileForMobileDocumentWithOptions(src, name, mode string, sign bool, options CompileOptions, document *mobileDocumentContext) mobileCompileResponse {
-	if err := validateMobileDocumentContext(document); err != nil {
-		return mobileCompileResponse{OK: false, Error: err.Error(), Mode: mode}
+// The existing bounded cache is shared with language-service analysis.
+// Counters are process-wide observations, not attributed per-request deltas.
+func nativeAssetCacheSnapshot() assets.Metrics { return assets.Shared().Metrics() }
+
+func invalidateNativeAssetCache() assets.Metrics {
+	assets.Shared().Invalidate()
+	return assets.Shared().Metrics()
+}
+
+func nativeDocumentEntry(document *mobileDocumentContext, name string) string {
+	if document == nil {
+		return name + ".cherri"
 	}
-	return compileForMobileModeWithOptions(src, name, mode, sign, options)
+	if document.URI == "" {
+		// A source-only draft has identity, but no filesystem authority.
+		return "cherri-draft://" + document.DocumentID + "/" + name + ".cherri"
+	}
+	path, _ := workspace.FilePath(document.URI)
+	return path
 }
