@@ -76,6 +76,14 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 	actionsRaw = normalizeFunctionEnvelope(actionsRaw)
 	cloned["WFWorkflowActions"] = actionsRaw
 
+	// Retain typed Number producers while witnessing complete procedural lists.
+	var numericListsSafe bool
+	actionsRaw, numericListsSafe = foldNumericProceduralLists(cloned, actionsRaw, questionOrigins)
+	if !numericListsSafe {
+		return deepCloneMap(doc)
+	}
+	cloned["WFWorkflowActions"] = actionsRaw
+
 	// 1. Remove Legacy Cherri top-level WFSerializationType quirk from action parameters
 	for _, actRaw := range actionsRaw {
 		if actMap, ok := actRaw.(map[string]any); ok {
@@ -884,12 +892,7 @@ func foldProceduralLists(actions []any) []any {
 							"WFItemType": 0,
 							"WFValue":    textVal,
 						})
-					} else if pAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.number" {
-						numVal := pParams["WFNumberActionNumber"]
-						items = append(items, map[string]any{
-							"WFItemType": 0,
-							"WFValue":    numVal,
-						})
+
 					} else {
 						break
 					}
@@ -962,12 +965,7 @@ func foldProceduralLists(actions []any) []any {
 								"WFItemType": 0,
 								"WFValue":    textVal,
 							})
-						} else if pAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.number" {
-							numVal := pParams["WFNumberActionNumber"]
-							items = append(items, map[string]any{
-								"WFItemType": 0,
-								"WFValue":    numVal,
-							})
+
 						} else {
 							break
 						}
