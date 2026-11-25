@@ -1,0 +1,83 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Engineering observation of the compiler's source-owned tagged value carrier.
+// Type/count/index/key witnesses are required; rendering is not a value proof.
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "tagged-value-carrier")
+let original:List<Number>=[11,22]
+let originalType=typeOf(original)
+let originalType64=base64Encode(originalType,lineBreakMode:"None")
+let textWitness=text("TYPE_WITNESS")
+let textType=typeOf(textWitness)
+let textType64=base64Encode(textType,lineBreakMode:"None")
+let cells:List<List<Number>>=[original,[]]
+let outerCount=count(cells)
+var firstPresent="N"
+var firstCountText="-1"
+var firstFirst64="UNOBSERVED"
+var firstLast64="UNOBSERVED"
+var decodedType64="UNOBSERVED"
+let first=cells[0]
+if first!=none {
+    firstPresent="Y"
+    let firstCount=count(first)
+    firstCountText=getText(firstCount)
+    let decodedType=typeOf(first)
+    decodedType64=base64Encode(decodedType,lineBreakMode:"None")
+    if firstCount.number>0 {
+        let firstValue=getFirstItem(first)
+        let lastValue=getLastItem(first)
+        let firstText=getText(firstValue)
+        let lastText=getText(lastValue)
+        firstFirst64=base64Encode(firstText,lineBreakMode:"None")
+        firstLast64=base64Encode(lastText,lineBreakMode:"None")
+    }
+}
+var emptyPresent="N"
+var emptyCountText="-1"
+let empty=cells[1]
+if empty!=none {
+    emptyPresent="Y"
+    let emptyCount=count(empty)
+    emptyCountText=getText(emptyCount)
+}
+let originalMap:Map<Text,Text>={"alpha":"LEFT","beta":"RIGHT"}
+let originalMapType=typeOf(originalMap)
+let originalMapType64=base64Encode(originalMapType,lineBreakMode:"None")
+let mapCells:List<Optional<Map<Text,Text>>>=[originalMap,none]
+let mapOuterCount=count(mapCells)
+var mapPresent="N"
+var mapAbsent="N"
+var decodedMapType64="UNOBSERVED"
+var mapKeysText="-1"
+var mapAlpha64="UNOBSERVED"
+var mapBeta64="UNOBSERVED"
+let decodedMap=mapCells[0]
+if decodedMap!=none {
+    mapPresent="Y"
+    let decodedMapType=typeOf(decodedMap)
+    decodedMapType64=base64Encode(decodedMapType,lineBreakMode:"None")
+    // A wrong native type must remain observable without invoking a Dictionary
+    // operation on Text and losing the callback before the diagnostic returns.
+    if decodedMapType==originalMapType {
+        let mapKeys=getKeys(decodedMap)
+        let keyCount=count(mapKeys)
+        mapKeysText=getText(keyCount)
+        let alpha=getValue(decodedMap,"alpha")
+        let beta=getValue(decodedMap,"beta")
+        let alphaText=getText(alpha)
+        let betaText=getText(beta)
+        mapAlpha64=base64Encode(alphaText,lineBreakMode:"None")
+        mapBeta64=base64Encode(betaText,lineBreakMode:"None")
+    }
+}
+let absent=mapCells[1]
+if absent==none {
+    mapAbsent="Y"
+}
+let semanticResult=text(f"CHERRI_TAGGED_VALUE_CARRIER_V1:OUTER_COUNT={outerCount}:FIRST_PRESENT={firstPresent}:FIRST_COUNT={firstCountText}:FIRST_FIRST64={firstFirst64}:FIRST_LAST64={firstLast64}:EMPTY_PRESENT={emptyPresent}:EMPTY_COUNT={emptyCountText}:ORIGINAL_LIST_TYPE64={originalType64}:DECODED_LIST_TYPE64={decodedType64}:TEXT_TYPE64={textType64}:MAP_OUTER_COUNT={mapOuterCount}:MAP_PRESENT={mapPresent}:MAP_ABSENT={mapAbsent}:ORIGINAL_MAP_TYPE64={originalMapType64}:DECODED_MAP_TYPE64={decodedMapType64}:MAP_KEYS={mapKeysText}:MAP_ALPHA64={mapAlpha64}:MAP_BETA64={mapBeta64}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage:"after",label:"tagged-value-carrier")
+let traceEnvelope=debugExportTrace(runId:"qa-tagged-value-carrier-v2")
+let finalSummary=text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+return finalSummary

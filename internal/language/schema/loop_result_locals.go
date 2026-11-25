@@ -374,8 +374,8 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 }
 
 // The closed Count's exact no-implicit-action body restriction is reused.
-// The separate semantic payload check below keeps nested/dynamic List payload
-// decoding outside this first local consumer increment.
+// The semantic payload check separately requires a checked recursive container
+// shape; it cannot admit an opaque native value from a matching marker.
 func LoopResultLocalBody(expression syntax.Expression) *syntax.BlockStmt {
 	var body *syntax.BlockStmt
 	switch loop := expression.(type) {
@@ -411,44 +411,7 @@ func LoopResultLocalPayloadsSupported(body *syntax.BlockStmt, expressionTypes ma
 			}
 			return true
 		case *syntax.YieldStmt:
-			if literal, okay := node.Value.(*syntax.LiteralExpr); okay && literal.Type == syntax.TokenNone {
-				return true
-			}
-			t := expressionTypes[node.Value]
-			if t == nil {
-				return false
-			}
-			if optional, okay := t.(types.OptionalType); okay {
-				t = optional.Inner
-			}
-			switch t.Kind() {
-			case types.KindPrimitive:
-				return t.Equals(types.Text) || t.Equals(types.Number) || t.Equals(types.Bool)
-			case types.KindUnknown:
-				// Only an independently carried None can pass lowering's
-				// optionalValuePresence check; opaque Unknown stays rejected.
-				return types.MayBeAbsent(expressionTypes[node.Value])
-			case types.KindMap:
-				_, literal := node.Value.(*syntax.MapExpr)
-				return literal
-			case types.KindList:
-				literal, okay := node.Value.(*syntax.ListExpr)
-				if !okay {
-					return false
-				}
-				for _, element := range literal.Elements {
-					itemType := expressionTypes[element]
-					if itemType == nil || types.MayBeAbsent(itemType) {
-						return false
-					}
-					switch itemType.Kind() {
-					case types.KindPrimitive, types.KindMap:
-					default:
-						return false
-					}
-				}
-				return true
-			}
+			return loopResultLocalPayloadSupported(node.Value, expressionTypes)
 		}
 		return false
 	}

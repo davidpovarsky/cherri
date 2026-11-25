@@ -502,6 +502,12 @@ func TestP15F04LocalCellUnsupportedInterfaces(t *testing.T) {
 				p15F04CheckPromotedMutableInterface(t, tc.source, tc.name)
 				return
 			}
+			// These same historical sources now have complete independent
+			// graphs and eight causal mutations each; other rejections remain.
+			if tc.name == "dynamic_list_payload" || tc.name == "nested_list_payload" {
+				p15CheckTaggedLoopPayload(t, tc.source, tc.name == "nested_list_payload")
+				return
+			}
 			found := false
 			for _, diagnostic := range p15TypeDiagnostics(t, tc.source) {
 				if diagnostic.Severity != analysis.SeverityError {
