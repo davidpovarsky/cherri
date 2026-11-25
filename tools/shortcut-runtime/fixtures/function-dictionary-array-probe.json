@@ -1,0 +1,14 @@
+{
+  "schema": "cherri-function-array-native-probe-inputs/1",
+  "scope": "Compare exact Dictionary array value serialization depth; every outcome remains an observation.",
+  "nativeAcceptanceGranted": false,
+  "cases": [
+    {"id": "empty_wrapped_omitted", "arrayValue": {"WFSerializationType": "WFArrayParameterState"}},
+    {"id": "empty_wrapped_explicit", "arrayValue": {"WFSerializationType": "WFArrayParameterState", "Value": []}},
+    {"id": "empty_plain", "arrayValue": []},
+    {"id": "text_wrapped", "arrayValue": {"WFSerializationType": "WFArrayParameterState", "Value": [{"WFItemType": 0, "WFValue": {"WFSerializationType": "WFTextTokenString", "Value": {"string": ""}}}]}},
+    {"id": "text_plain", "arrayValue": [{"WFItemType": 0, "WFValue": {"WFSerializationType": "WFTextTokenString", "Value": {"string": ""}}}]},
+    {"id": "attachment_wrapped", "arrayValue": {"WFSerializationType": "WFArrayParameterState", "Value": [{"WFItemType": 0, "WFValue": {"WFSerializationType": "WFTextTokenAttachment", "Value": {"Type": "ActionOutput", "OutputUUID": "11111111-2222-4333-8444-555555555555", "OutputName": "SyntheticOptionalValue"}}}]}},
+    {"id": "attachment_plain", "arrayValue": [{"WFItemType": 0, "WFValue": {"WFSerializationType": "WFTextTokenAttachment", "Value": {"Type": "ActionOutput", "OutputUUID": "11111111-2222-4333-8444-555555555555", "OutputName": "SyntheticOptionalValue"}}}]}
+  ]
+}
