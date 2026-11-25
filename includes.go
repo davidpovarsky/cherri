@@ -95,7 +95,9 @@ func parseInclude() {
 
 	var includePath = collectIncludePath()
 
-	handlePackageIncludePath(&includePath)
+	if nativeLegacyDocument == nil {
+		handlePackageIncludePath(&includePath)
+	}
 
 	if slices.Contains(included, includePath) {
 		parserError(fmt.Sprintf("Path '%s' has already been included.", includePath))
@@ -103,6 +105,7 @@ func parseInclude() {
 
 	var includeFileBytes []byte
 	var includeReadErr error
+	includeOrigin := nativeGeneratedDocument
 	if startsWith("actions", includePath) && strings.Contains(includePath, "/") {
 		var actionCat = end(strings.Split(includePath, "/"))
 		includeFileBytes, includeReadErr = stdActions.ReadFile(fmt.Sprintf("actions/%s.cherri", actionCat))
@@ -111,6 +114,17 @@ func parseInclude() {
 		}
 	} else if includePath == "stdfunc" || includePath == "stdlib" {
 		includeFileBytes, includeReadErr = stdFuncs.ReadFile("stdfunc.cherri")
+	} else if nativeLegacyDocument != nil {
+		var relative string
+		includeFileBytes, relative, includeReadErr = nativeLegacyDocument.readInclude(nativeLegacyOriginAt(lineIdx), includePath)
+		if includeReadErr != nil {
+			parserError(fmt.Sprintf("[E_WORKSPACE_ACCESS] included source: %v", includeReadErr))
+		}
+		includePath = relative
+		includeOrigin = relative
+		if slices.Contains(included, includePath) {
+			parserError(fmt.Sprintf("Path '%s' has already been included.", includePath))
+		}
 	} else {
 		if !strings.Contains(includePath, "..") {
 			includePath = relativePath + includePath
@@ -134,6 +148,7 @@ func parseInclude() {
 		length: includeLinesCount,
 	})
 
+	nativeLegacyReplaceLineOrigins(lineIdx, nativeLegacyRepeatedOrigin(includeOrigin, includeLinesCount))
 	lines[lineIdx] = includeContents
 	included = append(included, includePath)
 }

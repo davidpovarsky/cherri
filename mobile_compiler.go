@@ -31,16 +31,17 @@ const (
 )
 
 type mobileCompileResponse struct {
-	OK               bool              `json:"ok"`
-	Name             string            `json:"name,omitempty"`
-	PlistBase64      string            `json:"plistBase64,omitempty"`
-	SignedBase64     string            `json:"signedBase64,omitempty"`
-	Source           string            `json:"source,omitempty"`
-	Error            string            `json:"error,omitempty"`
-	Line             int               `json:"line,omitempty"`
-	Column           int               `json:"column,omitempty"`
-	Mode             string            `json:"mode,omitempty"`
-	PreviewSourceMap *previewSourceMap `json:"previewSourceMap,omitempty"`
+	OK               bool                   `json:"ok"`
+	Name             string                 `json:"name,omitempty"`
+	PlistBase64      string                 `json:"plistBase64,omitempty"`
+	SignedBase64     string                 `json:"signedBase64,omitempty"`
+	Source           string                 `json:"source,omitempty"`
+	Error            string                 `json:"error,omitempty"`
+	Line             int                    `json:"line,omitempty"`
+	Column           int                    `json:"column,omitempty"`
+	Mode             string                 `json:"mode,omitempty"`
+	PreviewSourceMap *previewSourceMap      `json:"previewSourceMap,omitempty"`
+	Document         *mobileDocumentContext `json:"document,omitempty"`
 }
 
 type mobileActionParameter = catalogParameter
@@ -142,7 +143,19 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 	return compileForMobileModeWithOptions(src, requestedName, mode, sign, CompileOptions{})
 }
 
-func compileForMobileModeWithOptions(src string, requestedName string, mode string, sign bool, options CompileOptions) (response mobileCompileResponse) {
+func compileForMobileModeWithOptions(src string, requestedName string, mode string, sign bool, options CompileOptions) mobileCompileResponse {
+	return compileForMobileDocumentWithOptions(src, requestedName, mode, sign, options, nil)
+}
+
+func compileForMobileDocumentWithOptions(src string, requestedName string, mode string, sign bool, options CompileOptions, document *mobileDocumentContext) (response mobileCompileResponse) {
+	if err := validateMobileDocumentContext(document); err != nil {
+		return mobileCompileResponse{OK: false, Error: err.Error(), Mode: mode}
+	}
+	if document != nil {
+		snapshot := *document
+		document = &snapshot
+		defer func() { response.Document = document }()
+	}
 	var profile, profileErr = normalizeBuildProfile(options.BuildProfile)
 	if profileErr != nil {
 		return mobileCompileResponse{OK: false, Error: profileErr.Error(), Line: 1, Column: 1, Mode: mode}
@@ -184,6 +197,10 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 	inputPath = ""
 	outputPath = ""
 	name := normalizedMobileName(requestedName)
+	entry := nativeDocumentEntry(document, name)
+	if document != nil {
+		options.mobileWorkflowName = name
+	}
 
 	selectedMode := MobileCompileMode(strings.ToLower(strings.TrimSpace(mode)))
 	if selectedMode == "" {
@@ -205,8 +222,13 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 	if selectedMode == MobileCompileModeV2 {
 		var previewMap previewSourceMap
 		options.previewSourceMap = &previewMap
-		v2Bytes, err := compileSourceToPlistWithSession(name+".cherri", src, options, newCanonicalBackendSessionLocked)
+		v2Bytes, err := compileSourceToPlistWithSession(entry, src, options, newCanonicalBackendSessionLocked)
 		if err == nil {
+			if document != nil {
+				previewMap.Name = name
+				previewMap.Document = document
+				previewMap.IntegritySHA256 = previewMapIntegrity(previewMap)
+			}
 			response = mobileCompileResponse{
 				OK:               true,
 				Name:             name,
@@ -237,7 +259,7 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 		// Locate accurate line and column for diagnostics.
 		line := 1
 		col := 1
-		file := source.NewFile(source.DocumentID(name+".cherri"), name+".cherri", 1, src)
+		file := source.NewFile(source.DocumentID(entry), entry, 1, src)
 		p := syntax.NewParser(file)
 		prog := p.ParseProgram()
 		if len(p.Errors()) > 0 {
@@ -271,6 +293,15 @@ func compileForMobileModeWithOptions(src string, requestedName string, mode stri
 	outputPath = ""
 	workflowName = name
 	contents = src
+	if document != nil {
+		state := &nativeLegacyDocumentState{document: *document, cache: options.AssetCache}
+		if document.URI != "" {
+			state.entry = entry
+		}
+		previous := nativeLegacyDocument
+		nativeLegacyDocument = state
+		defer func() { state.close(); nativeLegacyDocument = previous }()
+	}
 
 	initParse()
 	generateShortcutWithProfile(profile)

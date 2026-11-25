@@ -134,6 +134,9 @@ func generateActions() {
 				exit(fmt.Sprintf("Undefined action '%s'", tokenAction.ident))
 			}
 			setCurrentAction(tokenAction.ident, actions[tokenAction.ident])
+			if nativeLegacyDocument != nil {
+				currentAction.embeddedAsset = tokenAction.embeddedAsset
+			}
 			if tokenAction.ident == "rawAction" && len(tokenAction.args) > 0 {
 				currentAction.definition.overrideIdentifier = getArgValue(tokenAction.args[0]).(string)
 			}
@@ -286,6 +289,9 @@ func makeVariableValue(reference *WFActionReference, valueType tokenType, value 
 			definition = actions[action.ident]
 		}
 		setCurrentAction(action.ident, definition)
+		if nativeLegacyDocument != nil {
+			currentAction.embeddedAsset = action.embeddedAsset
+		}
 		if action.ident == "rawAction" && len(action.args) > 0 {
 			if rawIdent, ok := getArgValue(action.args[0]).(string); ok {
 				currentAction.definition.overrideIdentifier = rawIdent

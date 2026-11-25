@@ -28,6 +28,8 @@ type CompileOptions struct {
 	RequireAuthoredWorkflow bool
 	// previewSourceMap is opt-in compiler-owned mobile provenance, never plist data.
 	previewSourceMap *previewSourceMap
+	// mobileWorkflowName separates display identity from rooted source location.
+	mobileWorkflowName string
 }
 
 var legacyActiveBuildProfile = BuildProfileDebug

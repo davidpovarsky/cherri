@@ -375,6 +375,9 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 
 	lowerer := lower.NewLowererWithSession(analyzer.Registry(), session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
+	if options.mobileWorkflowName != "" {
+		lowerer.WorkflowName = options.mobileWorkflowName
+	}
 	lowerer.SetBaseFilePath(filePath)
 	lowerer.SetModuleGraph(graph)
 	lowerer.SetModuleRegistries(analyzer.ModuleRegistries())

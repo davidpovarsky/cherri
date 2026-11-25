@@ -82,16 +82,24 @@ func collectCopy() {
 
 	advanceUntil('{')
 	advance()
+	startLine := lineIdx
 	var contents = collectObject()
+	origins := nativeLegacyCaptureBodyOrigins(contents, startLine)
 
 	lineRef.replaceLines()
 
 	pasteables[identifier] = strings.TrimSpace(contents)
+	if nativeLegacyDocument != nil {
+		nativeLegacyDocument.copies[identifier] = origins
+	}
 }
 
 func pasteCopy() {
 	var identifier = collectIdentifier()
 	if contents, found := pasteables[identifier]; found {
+		if nativeLegacyDocument != nil {
+			nativeLegacyReplaceLineOrigins(lineIdx, nativeLegacyDocument.copies[identifier])
+		}
 		lines[lineIdx] = contents
 	} else {
 		parserError(fmt.Sprintf("Unable to paste undefined copy '%s'", identifier))
