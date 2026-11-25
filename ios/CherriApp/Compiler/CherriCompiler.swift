@@ -78,6 +78,23 @@ struct CherriPreviewSourceMap: Codable, Sendable {
     let actionCount: Int
     let entries: [Entry]
     let integritySHA256: String
+    let document: CherriDocumentCompileContext?
+
+    init(version: Int, name: String, mode: String, buildProfile: String,
+         sourceSHA256: String, plistSHA256: String, actionCount: Int,
+         entries: [Entry], integritySHA256: String,
+         document: CherriDocumentCompileContext? = nil) {
+        self.version = version
+        self.name = name
+        self.mode = mode
+        self.buildProfile = buildProfile
+        self.sourceSHA256 = sourceSHA256
+        self.plistSHA256 = plistSHA256
+        self.actionCount = actionCount
+        self.entries = entries
+        self.integritySHA256 = integritySHA256
+        self.document = document
+    }
 
     func uniqueParameterIndex(actionIdentifier: String, wireKey: String) -> Int? {
         let matches = entries.filter { $0.actionIdentifier == actionIdentifier }.flatMap { entry in
@@ -94,6 +111,7 @@ private struct CherriPreviewSourceEditRequest: Encodable {
     let buildProfile: String
     let plistBase64: String
     let previewSourceMap: CherriPreviewSourceMap
+    let document: CherriDocumentCompileContext?
     let actionIndex: Int
     let parameterKey: String
     let newExpression: String
@@ -206,6 +224,7 @@ private struct CompilerBridgeResponse: Decodable {
     let plistBase64: String?
     let signedBase64: String?
     let previewSourceMap: CherriPreviewSourceMap?
+    let document: CherriDocumentCompileContext?
     let source: String?
     let error: String?
     let line: Int?
@@ -339,8 +358,41 @@ enum CherriBuildProfile: String, Sendable {
 
 enum CherriCompiler {
     static func compile(source: String, name: String, mode: String = "v2", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
-        try await Task.detached(priority: .userInitiated) {
-            try callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)
+        try await compile(request: CherriEditorBuildRequest(
+            source: source, mode: mode, name: name, buildProfile: buildProfile
+        ), signed: signed)
+    }
+
+    static func compile(request: CherriEditorBuildRequest, signed: Bool = false) async throws -> CompiledShortcut {
+        try Task.checkCancellation()
+        // The selected file's existing security scope lives across the native
+        // call. This neither grants sibling access nor changes the resolver root.
+        let fileURL = request.document?.fileURL
+        let accessed = fileURL?.startAccessingSecurityScopedResource() ?? false
+        defer { if accessed { fileURL?.stopAccessingSecurityScopedResource() } }
+        let result = try await Task.detached(priority: .userInitiated) {
+            if request.document != nil {
+                return try callDocumentCompileBridge(request: request, signed: signed)
+            }
+            return try callCompileBridge(source: request.source, name: request.name,
+                                         mode: request.mode, signed: signed,
+                                         buildProfile: request.buildProfile)
+        }.value
+        // The C ABI is synchronous. Cancellation discards its completed result;
+        // it does not pretend to interrupt a Go call that is already executing.
+        try Task.checkCancellation()
+        return result
+    }
+
+    static func assetCacheMetrics() async throws -> CherriAssetCacheMetrics {
+        try await Task.detached(priority: .utility) {
+            try decodeAssetCacheMetrics(CherriAssetCacheState())
+        }.value
+    }
+
+    static func invalidateAssetCache() async throws -> CherriAssetCacheMetrics {
+        try await Task.detached(priority: .utility) {
+            try decodeAssetCacheMetrics(CherriInvalidateAssetCache())
         }.value
     }
 
@@ -423,6 +475,7 @@ enum CherriCompiler {
             buildProfile: compiled.sourceRequest.buildProfile.rawValue,
             plistBase64: compiled.plist.base64EncodedString(),
             previewSourceMap: map,
+            document: compiled.sourceRequest.document,
             actionIndex: actionIndex,
             parameterKey: parameterKey,
             newExpression: newExpression
@@ -461,7 +514,45 @@ enum CherriCompiler {
         }
 
         let response = try decodeBridgeResponse(resultPointer)
+        return try compiledShortcut(response, request: CherriEditorBuildRequest(
+            source: source, mode: mode, name: name, buildProfile: buildProfile
+        ))
+    }
 
+    private struct DocumentCompileRequest: Encodable {
+        let source: String
+        let name: String
+        let mode: String
+        let buildProfile: String
+        let signed: Bool
+        let document: CherriDocumentCompileContext
+    }
+
+    private static func callDocumentCompileBridge(request: CherriEditorBuildRequest, signed: Bool) throws -> CompiledShortcut {
+        guard let document = request.document else {
+            throw CompilationDiagnostic(message: "Document compilation requires a document context.", line: 1, column: 1)
+        }
+        let payload = DocumentCompileRequest(source: request.source, name: request.name,
+                                             mode: request.mode, buildProfile: request.buildProfile.rawValue,
+                                             signed: signed, document: document)
+        let json = String(decoding: try JSONEncoder().encode(payload), as: UTF8.self)
+        let pointer = json.withCString { CherriCompileDocument(UnsafeMutablePointer(mutating: $0)) }
+        return try compiledShortcut(decodeBridgeResponse(pointer), request: request)
+    }
+
+    private static func decodeAssetCacheMetrics(_ pointer: UnsafeMutablePointer<CChar>?) throws -> CherriAssetCacheMetrics {
+        guard let pointer else {
+            throw CompilationDiagnostic(message: "Cherri asset cache returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(pointer) }
+        return try JSONDecoder().decode(CherriAssetCacheMetrics.self, from: Data(String(cString: pointer).utf8))
+    }
+
+    private static func compiledShortcut(_ response: CompilerBridgeResponse, request: CherriEditorBuildRequest) throws -> CompiledShortcut {
+        guard response.document == request.document,
+              response.previewSourceMap == nil || response.previewSourceMap?.document == request.document else {
+            throw CompilationDiagnostic(message: "Compiler response does not match the document and asset revisions.", line: 1, column: 1)
+        }
         guard let plistBase64 = response.plistBase64,
               let plist = Data(base64Encoded: plistBase64) else {
             throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
@@ -472,11 +563,11 @@ enum CherriCompiler {
         }
         let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
         return CompiledShortcut(
-            name: response.name ?? name,
+            name: response.name ?? request.name,
             actualMode: actualMode,
             plist: plist,
             signedShortcut: signedData,
-            sourceRequest: CherriEditorBuildRequest(source: source, mode: mode, name: name, buildProfile: buildProfile),
+            sourceRequest: request,
             previewSourceMap: response.previewSourceMap
         )
     }

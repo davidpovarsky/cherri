@@ -19,7 +19,9 @@ class EditorPublicationProbeIntakeTests(unittest.TestCase):
 
     def test_synthetic_complete_parser_control(self):
         controls, summary = probe.inspect_output("\n".join(json.dumps(row) for row in self.control_rows()).encode())
-        self.assertEqual(len(controls), 26)
+        self.assertEqual(len(probe.ORIGINAL_CONTROL_NAMES), 26)
+        self.assertEqual(len(probe.DOCUMENT_CONTROL_NAMES), 12)
+        self.assertEqual(len(controls), 38)
         self.assertEqual(summary["failed"], 0)
 
     def test_rejects_selection_scope_and_summary_mutations(self):
@@ -73,6 +75,40 @@ class EditorPublicationProbeIntakeTests(unittest.TestCase):
             result = probe.invoke([sys.executable, "-c", "import time; time.sleep(5)"], root, root, "child", 0.05)
             self.assertTrue(result["timed_out"], result)
             self.assertFalse(probe.successful(result), result)
+
+
+    def test_actual_generation_owns_request_context_and_wire_dependencies(self):
+        repo = Path(__file__).resolve().parents[2]
+        generated, files = probe.generate(repo)
+        self.assertEqual(set(files), {
+            "ios/CherriApp/App/WorkspaceView.swift",
+            "ios/CherriApp/Editor/CherriEditorView.swift",
+            "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+            "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+            "ios/CherriApp/Compiler/CherriCompiler.swift",
+            "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
+            "tools/p10r15/editor_publication_probe.py",
+            "tools/p10r15/editor_publication_probe.swift",
+        })
+        workspace = files["ios/CherriApp/App/WorkspaceView.swift"].decode()
+        request = probe.region(workspace, "    private var currentBuildRequest:",
+                               "\n    @MainActor\n    private func formatSource")
+        self.assertIn(request.replace("private var ", "var ", 1), generated)
+        compiler = files["ios/CherriApp/Compiler/CherriCompiler.swift"].decode()
+        self.assertIn(probe.completion_types(compiler), generated)
+        for name in ("CherriCompletionItem", "CherriWirePosition", "CherriWireRange", "CherriTextEditItem"):
+            self.assertEqual(generated.count("struct "+name+":"), 1)
+        self.assertNotIn("__ACTUAL_", generated)
+
+    def test_wire_dependency_ownership_rejects_missing_duplicate_and_conditional_regions(self):
+        repo = Path(__file__).resolve().parents[2]
+        original = (repo/"ios/CherriApp/Compiler/CherriCompiler.swift").read_text()
+        for marker in ("struct CherriCompletionItem:", "struct CherriWirePosition:", "struct CherriTextEditItem:"):
+            for changed in (original.replace(marker, "struct MissingDependency:", 1),
+                            original + "\n"+marker,
+                            original.replace(marker, marker+"\n#if false\n", 1)):
+                with self.subTest(marker=marker, changed=changed[-80:]), self.assertRaises(ValueError):
+                    probe.completion_types(changed)
 
 
 if __name__ == "__main__":

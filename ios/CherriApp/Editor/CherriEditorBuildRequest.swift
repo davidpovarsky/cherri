@@ -8,12 +8,15 @@ struct CherriEditorBuildRequest: Equatable, Sendable {
     let mode: String
     let name: String
     let buildProfile: CherriBuildProfile
+    let document: CherriDocumentCompileContext?
 
-    init(source: String, mode: String, name: String, buildProfile: CherriBuildProfile = .debug) {
+    init(source: String, mode: String, name: String, buildProfile: CherriBuildProfile = .debug,
+         document: CherriDocumentCompileContext? = nil) {
         self.source = source
         self.mode = mode
         self.name = name
         self.buildProfile = buildProfile
+        self.document = document
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -21,10 +24,20 @@ struct CherriEditorBuildRequest: Equatable, Sendable {
             && lhs.mode == rhs.mode
             && lhs.name.utf16.elementsEqual(rhs.name.utf16)
             && lhs.buildProfile == rhs.buildProfile
+            && lhs.document == rhs.document
     }
 
-    func matches(source: String, mode: String, name: String, buildProfile: CherriBuildProfile = .debug) -> Bool {
-        self == Self(source: source, mode: mode, name: name, buildProfile: buildProfile)
+    func matches(source: String, mode: String, name: String, buildProfile: CherriBuildProfile = .debug,
+                 document: CherriDocumentCompileContext? = nil) -> Bool {
+        self == Self(source: source, mode: mode, name: name, buildProfile: buildProfile, document: document)
+    }
+
+    /// A preview edit rebuilds before the document publishes its new text.
+    /// Predict exactly the same revision increment as CherriDocument.text.
+    func replacingSource(_ updated: String) -> Self {
+        let changed = !source.utf16.elementsEqual(updated.utf16)
+        return Self(source: updated, mode: mode, name: name, buildProfile: buildProfile,
+                    document: changed ? document?.advancingSourceRevision() : document)
     }
 }
 
