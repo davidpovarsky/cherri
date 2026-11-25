@@ -145,7 +145,8 @@ struct CherriEditorView: View {
                     }
                 }
             }
-            .accessibilityIdentifier("confirmRenameButton")
+            // Preserve the native alert action as one accessible control.
+            // Its Rename title is the semantic identity for UI automation.
             Button("Cancel", role: .cancel) {}
         }
     }

@@ -1,4 +1,5 @@
 import 'preview-shortcut/css';
+import { primitiveParameterPresentation, uniquePrimitiveContainer, prepareEditableScalar } from './primitive-parameter-editing.mjs';
 import { ShortcutPreview, registerActionMetadata } from 'preview-shortcut';
 
 type CherriPreviewWindow = Window & {
@@ -166,22 +167,20 @@ function bindPrimitiveActionParameters(card: HTMLElement, action: any, actionInd
   const used = new Set<HTMLElement>();
 
   for (const [key, value] of editableParameterEntries(action)) {
-    if (typeof value !== 'string' && typeof value !== 'number') {
+    const presentation = primitiveParameterPresentation(action.WFWorkflowActionIdentifier, key, value);
+    if (!presentation) {
       continue;
     }
-    if (typeof value === 'string' && (value.includes('<') || value.includes('>') || value.length === 0)) {
+    const container = uniquePrimitiveContainer(candidates, used, presentation);
+    if (!container) {
       continue;
     }
-
-    const rendered = String(value);
-    const matches = candidates.filter((element) => !used.has(element) && element.textContent === rendered);
-    if (matches.length !== 1) {
-      continue;
-    }
-
-    const element = matches[0];
-    used.add(element);
-    if (element.dataset.cherriEditBound === compilationID) { continue; }
+    used.add(container);
+    if (container.dataset.cherriEditBound === compilationID) { continue; }
+    const element = prepareEditableScalar(container, presentation);
+    if (!element) { continue; }
+    container.dataset.cherriEditBound = compilationID;
+    const rendered = presentation.raw;
     element.classList.add('cherri-editable-value');
     element.contentEditable = 'true';
     element.setAttribute('role', 'textbox');

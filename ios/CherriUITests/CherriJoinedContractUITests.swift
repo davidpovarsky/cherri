@@ -376,8 +376,24 @@ final class CherriJoinedContractUITests: XCTestCase {
                     "Exactly one real Rename field is required")
         fields.element(boundBy: 0).tap()
         fields.element(boundBy: 0).typeText("renamedValue")
-        let confirmations = alert.buttons.matching(NSPredicate(
-            format: "identifier == %@ OR label == %@", "confirmRenameButton", "Rename"))
+        try require(wait {
+            fields.count == 1 && (fields.element(boundBy: 0).value as? String) == "renamedValue"
+        }, "The actual Rename field must contain the exact requested identifier")
+        // This test launches in English. Match the semantic action inside the
+        // named native alert; an optional SwiftUI identifier must not also admit
+        // a different action. Keep original AX identities in the private bundle.
+        let nativeActions = alert.buttons.allElementsBoundByAccessibilityElement.prefix(8).map {
+            ["identifier": $0.identifier, "label": $0.label,
+             "enabled": $0.isEnabled, "hittable": $0.isHittable] as [String: Any]
+        }
+        let identity = XCTAttachment(
+            data: try JSONSerialization.data(withJSONObject: nativeActions, options: [.sortedKeys]),
+            uniformTypeIdentifier: "public.json"
+        )
+        identity.name = "Rename action identities for public synthetic fixture"
+        identity.lifetime = .keepAlways
+        add(identity)
+        let confirmations = alert.buttons.matching(NSPredicate(format: "label == %@", "Rename"))
         try require(wait {
             confirmations.count == 1 && confirmations.element(boundBy: 0).isHittable
                 && confirmations.element(boundBy: 0).isEnabled
