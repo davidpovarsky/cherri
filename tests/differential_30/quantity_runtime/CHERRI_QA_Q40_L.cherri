@@ -1,0 +1,17 @@
+#define name CHERRI_QA_Q40_L
+#include 'actions/calendar'
+// Supplemental Q40. Independent expected dates are fixed in manifest.json.
+const start = date("2024-02-03 12:00:00")
+const computedDays = 1 + 1
+const producedDate = adjustDate(start, "Add", qty(computedDays, "days"))
+@days = 3
+const beforeDate = adjustDate(start, "Add", qty(@days, "days"))
+const snapshot = number(@days)
+@days = 5
+const snapshotDate = adjustDate(start, "Add", qty(snapshot, "days"))
+const afterDate = adjustDate(start, "Add", qty(@days, "days"))
+const producedText = formatDate(producedDate, "Custom", "yyyy-MM-dd")
+const beforeText = formatDate(beforeDate, "Custom", "yyyy-MM-dd")
+const snapshotText = formatDate(snapshotDate, "Custom", "yyyy-MM-dd")
+const afterText = formatDate(afterDate, "Custom", "yyyy-MM-dd")
+output("CHERRI_QA_40|{producedText}:{beforeText}:{snapshotText}:{afterText}")

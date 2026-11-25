@@ -1,0 +1,16 @@
+shortcut "CHERRI_QA_Q40_V" {}
+// Supplemental Q40. Independent expected dates are fixed in manifest.json.
+let start = date("2024-02-03 12:00:00")
+let computedDays = 1 + 1
+let producedDate = adjustDate(start, operation: "Add", unit: qty(computedDays, "days"))
+var days = 3
+let beforeDate = adjustDate(start, operation: "Add", unit: qty(days, "days"))
+let snapshot = days
+days = 5
+let snapshotDate = adjustDate(start, operation: "Add", unit: qty(snapshot, "days"))
+let afterDate = adjustDate(start, operation: "Add", unit: qty(days, "days"))
+let producedText = formatDate(producedDate, dateFormat: "Custom", customDateFormat: "yyyy-MM-dd")
+let beforeText = formatDate(beforeDate, dateFormat: "Custom", customDateFormat: "yyyy-MM-dd")
+let snapshotText = formatDate(snapshotDate, dateFormat: "Custom", customDateFormat: "yyyy-MM-dd")
+let afterText = formatDate(afterDate, dateFormat: "Custom", customDateFormat: "yyyy-MM-dd")
+output(f"CHERRI_QA_40|{producedText}:{beforeText}:{snapshotText}:{afterText}")
