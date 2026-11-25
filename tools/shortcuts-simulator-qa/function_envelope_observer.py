@@ -329,6 +329,75 @@ def retain_failure_receiver(root, documents, destination):
     return value
 
 
+def execute_with_runtime_observer(repo, root, folder, phase, capacity_check):
+    """Invoke the reviewed owner in this main thread; no nested Python PGID."""
+    folder, root = Path(folder), Path(root)
+    stop = threading.Event()
+    state = {"schema": "cherri-function-runtime-journal-arming/1", "status": "WAITING",
+             "armCount": 0, "journalObserved": False, "incompleteReads": 0}
+    path = root / launch.RELATIVE / "process-started.original.json"
+    started = time.monotonic()
+    def watch():
+        deadline = time.monotonic() + 15
+        try:
+            while time.monotonic() < deadline and not stop.is_set():
+                if path.is_file():
+                    data = launch.regular(path, launch.MAX_JSON, empty=True)
+                    try:
+                        row = launch.strict_json(data)
+                    except json.JSONDecodeError:
+                        state["incompleteReads"] += 1
+                        stop.wait(.05)
+                        continue
+                    require(type(row.get("pid")) is int and row["pid"] > 0, "LAUNCH_JOURNAL_PID")
+                    state.update(journalObserved=True, journalSHA256=sha(data), processPID=row["pid"])
+                    if stop.is_set():
+                        state["status"] = "STOPPED"
+                        return
+                    differential.atomic_json(folder/"command.json", phase)
+                    state.update(status="PUBLISHED", armCount=1, publishedUTC=launch.now())
+                    return
+                stop.wait(.05)
+            state["status"] = "STOPPED" if stop.is_set() else "TIMEOUT"
+        except BaseException as exc:
+            state.update(status="FAIL", errorType=type(exc).__name__, error=str(exc)[:1024])
+    worker = threading.Thread(target=watch, daemon=True)
+    result, error = None, None
+    worker.start()
+    try:
+        capacity_check()
+        result = launch.execute(repo, root)
+    except BaseException as exc:
+        error = exc
+    finally:
+        # A very fast simctl return still allows the retained start journal to be observed.
+        if error is None:
+            worker.join(timeout=2)
+        stop.set()
+        worker.join(timeout=2)
+        state["workerStopped"] = not worker.is_alive()
+        state["elapsedSeconds"] = time.monotonic() - started
+        record(folder/"runtime-arm.original.json", dict(state))
+        call = {"schema": "cherri-function-direct-launch-call/1",
+                "callable": "function_envelope_launch.execute",
+                "nestedPythonProcess": False, "elapsedSeconds": time.monotonic() - started,
+                "reviewedChildBudgetSeconds": 25, "reviewedOwnerBudgetSeconds": 35,
+                "outerCallBudgetSeconds": 45,
+                "returnedStatus": result.get("status") if isinstance(result, dict) else None,
+                "errorType": type(error).__name__ if error is not None else None,
+                "error": str(error)[:1024] if error is not None else None,
+                "runtimeArmingSHA256": sha(read(folder/"runtime-arm.original.json")),
+                "nativeExecutionAuthenticated": False, "formalAcceptanceGranted": False}
+        record(folder/"runtime-owner-call.original.json", call)
+    if error is not None:
+        raise error
+    require(state["workerStopped"] and state["status"] == "PUBLISHED" and state["armCount"] == 1,
+            "RUNTIME_ARMING")
+    require(time.monotonic() - started < 45 and isinstance(result, dict) and result.get("status") == "PASS",
+            "DIRECT_LAUNCH_RESULT")
+    return result
+
+
 class NativeObservation:
     def __init__(self, plan):
         require(sys.platform == "darwin", "DARWIN_REQUIRED")
@@ -456,24 +525,14 @@ class NativeObservation:
                        self.plan["runId"], self.plan["runAttempt"], self.plan["runNonce"], DEVICE)
         runtime_id = "runtime-" + uuid.uuid4().hex
         phase = {"id": runtime_id, "operation": "runtime", "shortcutName": launch.WORKFLOW}
-        def arm_after_actual_start():
-            path = self.root / launch.RELATIVE / "process-started.original.json"
-            deadline = time.monotonic() + 15
-            while time.monotonic() < deadline:
-                if path.is_file():
-                    row = launch.strict_json(read(path))
-                    require(type(row.get("pid")) is int and row["pid"] > 0, "LAUNCH_JOURNAL_PID")
-                    self.summary["semanticLaunchJournalObserved"] = True
-                    differential.atomic_json(self.folder/"command.json", phase)
-                    return
-                self.check_capacity()
-                time.sleep(.1)
-            raise TimeoutError("FUNCTION_OBSERVER_LAUNCH_START_NOT_RETAINED")
         self.summary["launchOwnerStarted"] = True
-        differential.command([sys.executable, "-B", str(self.repo/"tools/shortcuts-simulator-qa/function_envelope_launch.py"),
-                              "launch", "--repo", str(self.repo), "--root", str(self.root)],
-                             timeout=45, on_started=arm_after_actual_start,
-                             receipt_path=self.folder/("dispatch-"+runtime_id+".json"))
+        self.summary["launchOwnerKind"] = "IN_PROCESS_REVIEWED_EXECUTE"
+        try:
+            execute_with_runtime_observer(self.repo, self.root, self.folder, phase, self.check_capacity)
+        finally:
+            arm = self.folder/"runtime-arm.original.json"
+            if arm.is_file():
+                self.summary["semanticLaunchJournalObserved"] = launch.strict_json(read(arm)).get("journalObserved") is True
         _, raw, _ = self.capture("receiver-data-container",
             ["/usr/bin/xcrun", "simctl", "get_app_container", DEVICE, launch.RECEIVER, "data"], 25)
         documents = launch.owned_root(Path(raw.decode().strip())/"Documents")
@@ -515,28 +574,57 @@ class NativeObservation:
     def finish(self):
         if self.xctest is None:
             return
+        pending_error = None
+        signals = []
+        try:
+            if self.xctest.poll() is None:
+                differential.atomic_json(self.folder/"command.json", {"id": "finish", "operation": "finish"})
+                try:
+                    self.xctest.wait(timeout=90)
+                except subprocess.TimeoutExpired:
+                    for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGKILL):
+                        if self.xctest.poll() is not None:
+                            break
+                        try:
+                            os.killpg(self.xctest.pid, sig)
+                            signals.append({"signal": int(sig), "sent": True})
+                        except ProcessLookupError:
+                            signals.append({"signal": int(sig), "sent": False, "absent": True})
+                        try:
+                            self.xctest.wait(timeout=15 if sig != signal.SIGKILL else 5)
+                        except subprocess.TimeoutExpired:
+                            pass
+        except BaseException as exc:
+            pending_error = exc
+        # Parent reaping never proves that its start_new_session group is empty.
+        before = capture.group_observation(self.xctest.pid)
+        cleanup = {"state": "NOT_NEEDED", "signalSent": False, "errno": None}
+        if before["present"] is not False:
+            cleanup = capture.kill_group(self.xctest)
         if self.xctest.poll() is None:
-            differential.atomic_json(self.folder/"command.json", {"id": "finish", "operation": "finish"})
             try:
-                self.xctest.wait(timeout=90)
+                self.xctest.wait(timeout=2)
             except subprocess.TimeoutExpired:
-                for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGKILL):
-                    if self.xctest.poll() is not None:
-                        break
-                    try:
-                        os.killpg(self.xctest.pid, sig)
-                    except ProcessLookupError:
-                        pass
-                    try:
-                        self.xctest.wait(timeout=15 if sig != signal.SIGKILL else 5)
-                    except subprocess.TimeoutExpired:
-                        pass
+                pass
+        after = capture.group_observation(self.xctest.pid)
+        deadline = time.monotonic() + 5
+        while after["present"] is True and time.monotonic() < deadline:
+            time.sleep(.05)
+            after = capture.group_observation(self.xctest.pid)
         self.test_log.close()
         record(self.folder/"xctest-process.finished.original.json",
                {"pid": self.xctest.pid, "exitCode": self.xctest.poll(),
-                "parentReaped": self.xctest.returncode is not None, "completedUTC": launch.now()})
+                "parentReaped": self.xctest.returncode is not None, "completedUTC": launch.now(),
+                "finishSignals": signals, "groupBeforeCleanup": before,
+                "ownedGroupCleanup": cleanup, "groupAfterCleanup": after,
+                "pendingError": type(pending_error).__name__ + ":" + str(pending_error)[:1024]
+                    if pending_error is not None else None})
         self.summary["xctestExit"] = self.xctest.poll()
         require(self.xctest.returncode is not None, "XCTEST_NOT_REAPED")
+        require(after["present"] is False, "XCTEST_OWNED_GROUP_NOT_ABSENT")
+        require(before["present"] is False, "XCTEST_OWNED_GROUP_REMAINED")
+        if pending_error is not None:
+            raise pending_error
 
     def preserve_partial_receiver(self):
         if not self.summary["launchOwnerStarted"]:
@@ -626,6 +714,9 @@ def main():
         raise TimeoutError("FUNCTION_OBSERVER_WHOLE_DEADLINE")
     def capacity(signum, frame):
         raise RuntimeError("FUNCTION_OBSERVER_CAPACITY_LIVE_FLOOR")
+    def terminated(signum, frame):
+        raise KeyboardInterrupt("FUNCTION_OBSERVER_TERMINATED")
+    signal.signal(signal.SIGTERM, terminated)
     signal.signal(signal.SIGALRM, deadline)
     signal.signal(signal.SIGUSR1, capacity)
     signal.alarm(OBSERVATION_SECONDS)

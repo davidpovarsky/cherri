@@ -60,8 +60,12 @@ import. This makes the subsequent environment contract enter a fresh process.
 The reviewed function launch adapter prepares and consumes one create-only
 attempt. Its exact primary URL has no input or text parameter. The consent
 observer is armed only after that inner launch process has retained its
-actual process-started journal. The observer never invokes the generic
-Differential runtime launcher, changes input or retries the semantic open.
+actual process-started journal. The reviewed launch owner runs directly on the main thread, retaining its own
+create-only claim and simctl process-group cleanup. A bounded read-only journal
+watcher publishes the consent command once and must stop before final evidence
+is closed. No intermediary Python process can be killed ahead of that cleanup.
+The observer never invokes the generic Differential runtime launcher, changes
+input or retries the semantic open.
 The Swift singleton refuses a second invocation and no scene.open fallback
 is allowed.
 
@@ -88,6 +92,11 @@ inventories, process streams/journals, import/UI receipts, XCTest log and
 xcresult. Failed launch paths retain bounded available Receiver originals,
 including an intent without completion. Missing originals remain explicit.
 
+XCTest parent exit is followed by an observation of its exact owned process
+group. Any surviving or unobservable group is retained, cleaned up within the
+bounded owner and rejected as authenticated execution. An absent group must be
+observed explicitly even after a zero-exit parent.
+
 After a cleanup failure, source and product snapshots are still attempted
 independently. A cleanup, source, product, process, callback or original-write
 failure cannot become authenticated execution. A successful engineering
@@ -97,8 +106,10 @@ formalAcceptanceGranted remains false.
 
 ## Offline qualification
 
-These tests use synthetic signing/build/process/UI fixtures; they do not
-execute simctl, Xcode, signing, or any native Shortcut.
+Signing, build and UI fixtures in these controls are synthetic. The cancellation
+control additionally starts a real owned POSIX child in place of simctl and
+verifies process-group disappearance, reaping, lock release and retained launch
+originals. No control executes simctl, Xcode, signing, or any native Shortcut.
 
 The first 20 parents and 87 subtests passed. Self-review then identified two
 receipt issues: the plan schema overwrote the result schema, and a cleanup
@@ -111,6 +122,19 @@ The complete repaired suite passed all 22 parents and 87 subtests, with no
 failures or skips and unchanged source:
 function-native-observer-controls-02/result.original.json,
 SHA256 0bf2cbb7a885eaea827b9558b351ad8706a0f22470a0e9656e54c2d8279afcc8.
+
+Independent review identified two further ownership boundaries: descendants
+can outlive an exited XCTest parent, and killing an intermediary Python owner
+could prevent the inner simctl owner's cleanup. Three actual causal controls
+failed before the repair (failure receipt SHA256
+5dbb3146705a321a5aca4e38adb381e1a8f7452559564e326cd6338579451ce2).
+The repaired Oracle suite passed all 29 parent tests and 87 subtests (116
+events), with no failures, errors or skips and unchanged source. The real POSIX
+control retained process-finished, result and source-after originals; its
+owned group was absent after return, with no remaining lock or late effect.
+Receipt: function-native-observer-cleanup-green-01/result.original.json,
+SHA256 3b0d582891a82ce5638e9c173621611ce1a0fcdea04f75d80b353d74f503d87f.
+This is cleanup qualification on Oracle, not native Shortcut execution.
 
 Those originals are under
 /mnt/development/projects/evidence/cherri-p10r15-apple-completion-20261125.

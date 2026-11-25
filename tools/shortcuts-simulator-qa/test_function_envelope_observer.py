@@ -7,6 +7,10 @@ import copy
 import hashlib
 import json
 import os
+import signal
+import shutil
+import sys
+import time
 from pathlib import Path
 import plistlib
 import tempfile
@@ -16,6 +20,7 @@ import unittest
 from unittest import mock
 
 import function_envelope_observer as observer
+from test_function_envelope_launch import SyntheticRun
 
 
 def raw(value):
@@ -237,6 +242,181 @@ class FunctionEnvelopeObserverTests(unittest.TestCase):
         ]:
             with self.subTest(observed=observed):
                 self.assertFalse(observer.termination_is_stopped(observed, stderr))
+
+    def completed_xctest(self):
+        obj = observer.NativeObservation.__new__(observer.NativeObservation)
+        obj.folder = self.base
+        obj.summary = {}
+        obj.xctest = mock.Mock()
+        obj.xctest.pid = 700001
+        obj.xctest.returncode = 0
+        obj.xctest.poll.return_value = 0
+        obj.xctest.wait.return_value = 0
+        obj.test_log = (self.base/"xctest.log").open("w")
+        return obj
+
+    def test_exited_xctest_parent_does_not_hide_surviving_owned_group(self):
+        obj = self.completed_xctest()
+        present = {"state": "PRESENT", "present": True, "errno": None}
+        absent = {"state": "ABSENT", "present": False, "errno": None}
+        sent = {"state": "SENT", "signalSent": True, "errno": None}
+        with mock.patch.object(observer.capture, "group_observation", side_effect=[present, absent]), \
+             mock.patch.object(observer.capture, "kill_group", return_value=sent) as killed:
+            with self.assertRaisesRegex(ValueError, "XCTEST_OWNED_GROUP_REMAINED"):
+                obj.finish()
+        killed.assert_called_once_with(obj.xctest)
+        result = json.loads((self.base/"xctest-process.finished.original.json").read_bytes())
+        self.assertTrue(result["groupBeforeCleanup"]["present"])
+        self.assertFalse(result["groupAfterCleanup"]["present"])
+        self.assertTrue(result["parentReaped"])
+
+    def test_exited_xctest_parent_with_absent_group_is_observed(self):
+        obj = self.completed_xctest()
+        absent = {"state": "ABSENT", "present": False, "errno": None}
+        with mock.patch.object(observer.capture, "group_observation", return_value=absent) as observed, \
+             mock.patch.object(observer.capture, "kill_group") as killed:
+            obj.finish()
+        self.assertEqual(observed.call_count, 2)
+        killed.assert_not_called()
+        result = json.loads((self.base/"xctest-process.finished.original.json").read_bytes())
+        self.assertFalse(result["groupBeforeCleanup"]["present"])
+        self.assertFalse(result["groupAfterCleanup"]["present"])
+
+    def test_exited_xctest_parent_with_unobservable_group_is_rejected(self):
+        obj = self.completed_xctest()
+        denied = {"state": "PERMISSION_DENIED", "present": None, "errno": 1}
+        failed = {"state": "PERMISSION_DENIED", "signalSent": False, "errno": 1}
+        with mock.patch.object(observer.capture, "group_observation", return_value=denied), \
+             mock.patch.object(observer.capture, "kill_group", return_value=failed):
+            with self.assertRaisesRegex(ValueError, "XCTEST_OWNED_GROUP"):
+                obj.finish()
+        result = json.loads((self.base/"xctest-process.finished.original.json").read_bytes())
+        self.assertIsNone(result["groupAfterCleanup"]["present"])
+
+    def runtime_owner_fixture(self):
+        root, folder = self.base/"runtime-artifacts", self.base/"observer"
+        (root/observer.launch.RELATIVE).mkdir(parents=True)
+        folder.mkdir()
+        phase = {"id": "runtime-one", "operation": "runtime", "shortcutName": observer.launch.WORKFLOW}
+        return root, folder, phase
+
+    def test_direct_launch_arms_once_from_actual_journal_and_has_no_nested_owner(self):
+        root, folder, phase = self.runtime_owner_fixture()
+        def execute(repo, artifacts):
+            put(root/observer.launch.RELATIVE/"process-started.original.json", raw({"pid": 4242}))
+            return {"status": "PASS"}
+        with mock.patch.object(observer.launch, "execute", side_effect=execute) as called, \
+             mock.patch.object(observer.differential, "command") as nested:
+            value = observer.execute_with_runtime_observer(self.base, root, folder, phase, lambda: None)
+        self.assertEqual(value["status"], "PASS")
+        called.assert_called_once_with(self.base, root)
+        nested.assert_not_called()
+        self.assertEqual(json.loads((folder/"command.json").read_bytes()), phase)
+        arm = json.loads((folder/"runtime-arm.original.json").read_bytes())
+        self.assertEqual(arm["armCount"], 1)
+        self.assertTrue(arm["workerStopped"])
+        self.assertTrue(arm["journalObserved"])
+        call = json.loads((folder/"runtime-owner-call.original.json").read_bytes())
+        self.assertFalse(call["nestedPythonProcess"])
+
+    def test_direct_launch_rejects_invalid_journal_without_runtime_command(self):
+        root, folder, phase = self.runtime_owner_fixture()
+        def execute(repo, artifacts):
+            put(root/observer.launch.RELATIVE/"process-started.original.json", raw({"pid": False}))
+            return {"status": "PASS"}
+        with mock.patch.object(observer.launch, "execute", side_effect=execute):
+            with self.assertRaisesRegex(ValueError, "RUNTIME_ARMING"):
+                observer.execute_with_runtime_observer(self.base, root, folder, phase, lambda: None)
+        self.assertFalse((folder/"command.json").exists())
+        arm = json.loads((folder/"runtime-arm.original.json").read_bytes())
+        self.assertEqual(arm["status"], "FAIL")
+        self.assertEqual(arm["armCount"], 0)
+        self.assertTrue(arm["workerStopped"])
+
+    def test_direct_launch_missing_journal_is_not_synthetic_ready(self):
+        root, folder, phase = self.runtime_owner_fixture()
+        with mock.patch.object(observer.launch, "execute", return_value={"status": "PASS"}) as called:
+            with self.assertRaisesRegex(ValueError, "RUNTIME_ARMING"):
+                observer.execute_with_runtime_observer(self.base, root, folder, phase, lambda: None)
+        called.assert_called_once()
+        self.assertFalse((folder/"command.json").exists())
+        arm = json.loads((folder/"runtime-arm.original.json").read_bytes())
+        self.assertEqual(arm["armCount"], 0)
+        self.assertFalse(arm["journalObserved"])
+        self.assertTrue(arm["workerStopped"])
+
+    def test_direct_owner_interrupt_reaps_real_owned_posix_child_and_keeps_originals(self):
+        import fcntl
+        self.assertEqual(os.name, "posix")
+        fixture = SyntheticRun()
+        self.addCleanup(fixture.close)
+        fixture.prepare()
+        folder = fixture.base/"observer"; folder.mkdir()
+        ready, lock_path = fixture.base/"child-ready", fixture.base/"child.lock"
+        late = fixture.base/"post-return-effect"
+        child = (
+            "import pathlib,fcntl,time\n"
+            "lock=open(" + repr(str(lock_path)) + ",'w')\n"
+            "fcntl.flock(lock.fileno(),fcntl.LOCK_EX)\n"
+            "pathlib.Path(" + repr(str(ready)) + ").write_text('ready')\n"
+            "time.sleep(60)\n"
+            "pathlib.Path(" + repr(str(late)) + ").write_text('unexpected')\n")
+        argv = [sys.executable, "-B", "-c", child]
+        stop = threading.Event()
+        interrupted = []
+        def cancel_when_child_ready():
+            deadline = time.monotonic()+5
+            while not stop.wait(.01) and time.monotonic()<deadline:
+                if ready.is_file():
+                    interrupted.append(True)
+                    os.kill(os.getpid(), signal.SIGINT)
+                    return
+        cancel = threading.Thread(target=cancel_when_child_ready, daemon=True)
+        phase = {"id": "runtime-cancellation-control", "operation": "runtime",
+                 "shortcutName": observer.launch.WORKFLOW}
+        control = {"schema": "cherri-function-direct-posix-cancellation-control/1",
+                   "status": "FAIL", "nativeExecution": False,
+                   "signingFixture": "synthetic AEA1 control; no Apple signature",
+                   "invokedProcess": "owned Python child replacing simctl only in this test"}
+        prior_handler = signal.signal(signal.SIGINT, signal.default_int_handler)
+        cancel.start()
+        try:
+            with mock.patch.object(observer.launch.sys, "platform", "darwin"), \
+                 mock.patch.object(observer.launch, "command_for", return_value=argv), \
+                 mock.patch.object(observer.differential, "command") as nested:
+                with self.assertRaises(KeyboardInterrupt):
+                    observer.execute_with_runtime_observer(fixture.repo, fixture.root, folder, phase, lambda: None)
+            nested.assert_not_called()
+            self.assertEqual(interrupted, [True])
+            target = fixture.root/observer.launch.RELATIVE
+            finished = json.loads((target/"process-finished.original.json").read_bytes())
+            result = json.loads((target/"result.original.json").read_bytes())
+            self.assertTrue(finished["cleanupParentReaped"])
+            self.assertFalse(finished["groupPresentAfterCleanup"])
+            self.assertEqual(result["errorType"], "KeyboardInterrupt")
+            self.assertEqual(result["status"], "FAIL")
+            self.assertTrue(result["sourceUnchanged"])
+            group = observer.capture.group_observation(finished["pid"])
+            self.assertFalse(group["present"])
+            with lock_path.open("a") as stream:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX|fcntl.LOCK_NB)
+                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            self.assertFalse(late.exists())
+            control.update(status="PASS", actualChildPID=finished["pid"], groupAfterReturn=group,
+                           actualParentReaped=True, originalFinishedRetained=True,
+                           originalResultRetained=True, sourceAfterRetained=True,
+                           descendantLockReleased=True, noPostReturnEffect=True)
+        finally:
+            stop.set();cancel.join(timeout=2);signal.signal(signal.SIGINT, prior_handler)
+            target_base = os.environ.get("CHERRI_FUNCTION_OBSERVER_CONTROL_ARTIFACTS")
+            if target_base:
+                destination = Path(target_base)/"direct-posix-cancellation"
+                destination.mkdir(parents=True,exist_ok=False)
+                source = fixture.root/observer.launch.RELATIVE
+                for name, directory in (("launch-originals",source),("outer-originals",folder)):
+                    if directory.is_dir():
+                        shutil.copytree(directory,destination/name)
+                (destination/"control.original.json").write_bytes(raw(control))
 
     def test_originals_are_create_only_and_symlink_safe(self):
         target = self.base / "original.json"
