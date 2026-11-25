@@ -34,7 +34,7 @@ The Skill manifest changes only `compilerCommit` and `macroFingerprint`. Its for
 
 ## Remaining source and release verification
 
-The original Linux run `45659698424` provides the RED evidence: strict Skill capability checks found the old macro fingerprint, and D01 still expected 15 macros. The exact inventory test now lists all 16 original names. Focused D01 and Skill K02–K05 qualification on the refreshed checkpoint remains to run; this generator result does not substitute for those tests.
+The original Linux run `45659698424` provides the RED evidence: strict Skill capability checks found the old macro fingerprint, and D01 still expected 15 macros. The exact inventory test now lists all 16 original names. The later focused qualification below executes D01 and the original local Skill K02–K05 parents on the refreshed checkpoint; the generation receipt alone does not substitute for those tests.
 
 The initial generated source exposed a separate canonical renderer defect: its common scoped-block paragraph said Legacy rejects scoped blocks and described only a value body. Checkpoint `36141680ed3e42529512b73d553c679e5e134466` retained that exact original output, including the defect. The canonical follow-up below corrects the renderer and registry descriptions; no generated Markdown is edited manually.
 
@@ -50,4 +50,19 @@ The original documentation generator ran on this clean source, followed by its o
 - Receipt SHA256: `f26b709f32c1da1d4a49f60b039f330159fadae5df75265977a708f1d548e570`
 - Exact generated reference SHA256: `0ceeff870174737de0d0bad90c3f26a1a09ab8d0bae2454893d132ee8c7acda7` (245,300 bytes)
 
-The entire native-action prefix and the other 14 macro sections are byte-identical to the initial producer output. The Skill manifest remains the exact intermediate proposal derived from the real `12f` compiler; this follow-up does not restamp a final compiler or docs release. D01 now selects the reviewed scoped-body contract parent and preserves all original eight CLI drift faults while adding two dialect/Void drift faults. Focused D01 and K02–K05 execution is still pending and will be recorded separately.
+The entire native-action prefix and the other 14 macro sections are byte-identical to the initial producer output. The Skill manifest remains the exact intermediate proposal derived from the real `12f` compiler; this follow-up does not restamp a final compiler or docs release. D01 now selects the reviewed scoped-body contract parent and preserves all original eight CLI drift faults while adding two dialect/Void drift faults. The focused D01 and local K02–K05 execution below records its own original streams and source guards.
+
+## Original D01 and local Skill qualification
+
+The clean published checkpoint `b2fc920239eda9b4da037755db066c2e7b201b44`, tree `7700ec8d2eb740151f45136028abbf5f12089c3b`, ran the exact 20 selected original D01/K02–K05 parent tests on Oracle/Linux arm64 with Go 1.24.13. The actual Go process exited zero after 266.75 seconds, with **91 named PASS events, zero failures and zero skips**. D01 exercised the canonical 505-native/16-macro reference and all ten CLI drift controls. The local Skill parents exercised pinned installation, cache/bundle selection, update rollback, offline behavior and existing-file/import/signing-policy protection.
+
+The owner receipt remains `FAILED`: its predeclared 69-event inventory omitted 22 existing nested native-graph controls invoked by `TestP15K05BuildPreservesExistingFiles/healthy_unsigned_control`. These are the 21 original causal graph corruptions plus the original consistent-UUID positive. The independent intake derived their exact names from the unchanged Go source, required each of the original 69 and all 22 additional names exactly once in the original JSON stream, and verified all 91 terminal events as PASS. It also rehashed every tracked physical source file and reconciled identical before/after source inventories. No test, fixture, failure receipt or original stream was rewritten, and no Go rerun was used to repair the inventory omission.
+
+- Preserved owner receipt: `/mnt/development/projects/evidence/cherri-p10r15-macro-fingerprint-refresh-20261125/focused-skill-01/result.original.json`
+- Owner SHA256: `21d89966376cbf69ee455d26f57c7012e616a95b184211980f435fac204fdfcb`
+- Original JSONL SHA256: `a6c10607f0ca9396ea6e0be10e583fd51b7539d0ccc1ad406187e153c0f9b8ee`
+- Independent intake: `/mnt/development/projects/evidence/cherri-p10r15-macro-fingerprint-refresh-20261125/focused-skill-independent-intake-01/result.original.json`
+- Intake SHA256: `ca534d984e07717a621a04077efd915e854ace826fe69cda1e2dc692016e76c9`
+- Source-derived full event inventory SHA256: `291055d6c7624cd94b04b1c9b7d6d843b9acc375695b4d2092c8bf9127057230`
+
+Live K05 signing was deliberately outside this local selection. This qualification grants no Apple runtime, signed shortcut, published-site, final-tuple, full K05 or 179-requirement acceptance credit. The historical D16/K18 installation remains unchanged.
