@@ -1,0 +1,44 @@
+{
+  "schema": "cherri.export-metadata-red-intake/1",
+  "status": "ACTUAL_48_SEMANTIC_RED_AND_4_DEFAULT_24_FAULT_CONTROLS_BOUND",
+  "originalRedReceipt": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/red-01/result.original.json",
+  "originalRedSHA256": "033153857c4b76236776618a3e821bf6a03932ca6daa172270455d0986e66fa1",
+  "defaultReceipt": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/default-controls-06/result.original.json",
+  "defaultReceiptSHA256": "f4112b3b726ecaa863a2059d0a356e5344b933bcf8bb26c3d1e5263a3b3d8e52",
+  "sourceBeforeImplementation": "75c6eb49f6900a9d88098826ebca8ea4b8ee3d15",
+  "original48SourcesUnchanged": {
+    "p15ExportMetadataOptionsSource": "52f32b8d62229db6798824b9fdbd540fbb1d4e1e826cde2b286abf99c277efc9",
+    "p15ExportMetadataFixture": "4105d605f2a02f5688c3d75543f3e189cce6bab9b0d395d2aa21daa25d469f92"
+  },
+  "defaultGraphs": {
+    "json-redact_false.json": {
+      "sha256": "d24728626fec2521600e33c9d1d0aadf5945b1c8cd33d92b33189388e567721d",
+      "bytes": 6611
+    },
+    "json-redact_true.json": {
+      "sha256": "4a16e830a8d22d22b62f8103ffb52d8dd328d487fac49e79e6f8bcaacae3f5f3",
+      "bytes": 3866
+    },
+    "text-redact_false.json": {
+      "sha256": "852d24f8b3249711875218ef43266e7c11b4f71fc9da90da1f3101f127c78d14",
+      "bytes": 6612
+    },
+    "text-redact_true.json": {
+      "sha256": "60ffcc6f53a733dfc23f828f12f179c308acf0672c17005dc432c913ef4d45a4",
+      "bytes": 3867
+    }
+  },
+  "allProductionGoInputsIdenticalAcrossRedAndDefaultProducer": true,
+  "testInputFileOnlyChanged": true,
+  "originalFailedAndCapacityAttemptsPreserved": [
+    "red-01",
+    "default-controls-02",
+    "default-controls-03",
+    "default-controls-04"
+  ],
+  "unusedPreparedOwners": [
+    "default-controls-05-owner.proposed.py"
+  ],
+  "nativeRuntimeExecuted": false,
+  "fileClassAccepted": false
+}

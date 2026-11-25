@@ -18,7 +18,7 @@ func registerDebugExportMacro() {
 		identifier: "setitemname", outputType: Variable,
 		doc: selfDoc{
 			title:       "Export Local Debug File",
-			description: "Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.",
+			description: "Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Opt-in dates read item Creation Date metadata; labels are separately opt-in and stay redacted by default. Native File-class acceptance remains open. Options are compile-time literals.",
 			category:    "debug",
 		},
 		parameters: []parameterDefinition{
@@ -26,14 +26,17 @@ func registerDebugExportMacro() {
 			{name: "includeDates", key: "WFDebugExportDates", validType: Bool, optional: true, defaultValue: false},
 			{name: "includeTypes", key: "WFDebugExportTypes", validType: Bool, optional: true, defaultValue: true},
 			{name: "redactSensitive", key: "WFDebugExportRedact", validType: Bool, optional: true, defaultValue: true},
+			{name: "includeLabels", key: "WFDebugExportLabels", validType: Bool, optional: true, defaultValue: false},
 		},
 	}
 }
 
 type debugExportOptions struct {
-	format       string
-	includeTypes bool
-	redact       bool
+	format        string
+	includeTypes  bool
+	redact        bool
+	includeDates  bool
+	includeLabels bool
 }
 
 func parseDebugExportOptions(params map[string]any) (debugExportOptions, error) {
@@ -52,6 +55,8 @@ func parseDebugExportOptions(params map[string]any) (debugExportOptions, error) 
 		key    string
 		target *bool
 	}{
+		{"WFDebugExportDates", &out.includeDates},
+		{"WFDebugExportLabels", &out.includeLabels},
 		{"WFDebugExportTypes", &out.includeTypes},
 		{"WFDebugExportRedact", &out.redact},
 	} {
@@ -63,18 +68,6 @@ func parseDebugExportOptions(params map[string]any) (debugExportOptions, error) 
 			return out, fmt.Errorf("DEBUG_EXPORT_LITERAL: %s must be a Boolean literal", item.key)
 		}
 		*item.target = value
-	}
-	if raw, exists := params["WFDebugExportDates"]; exists {
-		if _, ok := raw.(bool); !ok {
-			return out, fmt.Errorf("DEBUG_EXPORT_LITERAL: includeDates must be a Boolean literal")
-		}
-	}
-	dates, err := debugLiteralFlag(params, "WFDebugExportDates", "debugExport")
-	if err != nil {
-		return out, err
-	}
-	if dates {
-		return out, fmt.Errorf("DEBUG_EXPORT_DATES_UNSUPPORTED: per-entry dates have not been collected; includeDates must be false")
 	}
 	return out, nil
 }
@@ -126,7 +119,7 @@ func (b *debugExportExpansion) base64(input any) WFTextTokenAttachment {
 	})
 }
 
-func (b *debugExportExpansion) row(status string, typeValue, payload *WFTextTokenAttachment) {
+func (b *debugExportExpansion) row(status string, typeValue, payload *WFTextTokenAttachment, metadata ...any) WFTextTokenAttachment {
 	parts := []any{`{"status":"`, status, `","payload":`}
 	if payload == nil {
 		parts = append(parts, "null")
@@ -136,14 +129,18 @@ func (b *debugExportExpansion) row(status string, typeValue, payload *WFTextToke
 	if typeValue != nil {
 		parts = append(parts, `,"nativeType":{"encoding":"base64-utf8","value":"`, *typeValue, `"}`)
 	}
+	parts = append(parts, metadata...)
 	parts = append(parts, "}")
-	b.produce("gettext", map[string]any{"WFTextActionText": debugExportTextToken(parts...)})
+	return b.produce("gettext", map[string]any{"WFTextActionText": debugExportTextToken(parts...)})
 }
 
 func buildDebugExportActions(params map[string]any, resultUUID, resultName string) ([]ShortcutAction, error) {
 	options, err := parseDebugExportOptions(params)
 	if err != nil {
 		return nil, err
+	}
+	if options.includeDates || options.includeLabels {
+		return buildDebugExportMetadataActions(options, resultUUID, resultName), nil
 	}
 	b := &debugExportExpansion{}
 	var textWitness WFTextTokenAttachment

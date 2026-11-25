@@ -1,0 +1,44 @@
+{
+  "schema": "cherri-independent-source-review/1",
+  "reviewedUtc": "2026-11-25T11:03:44.402397+00:00",
+  "reviewer": "ci_release_gates",
+  "scope": "Committed opt-in debugExport dates/labels encoder, fifth option and existing storage-only hooks",
+  "sourceCommit": "fa2a204fd45ddcaaaf123ffe3ed20f9df6510f42",
+  "result": "NO_SOURCE_BLOCKER_FOUND",
+  "files": {
+    "debug_export_metadata.go": {
+      "sha256": "35530fe4dc7ca065bd537c3da7b70d1e65be59f37a80affd89330d42b3e76ab4",
+      "gitBlob": "0459151446bbfe76d1620a484e26a553002d51de"
+    },
+    "debug_export.go": {
+      "sha256": "935bf80c293f2c9926900d84b451d54ec0e3d8460360eb0c57559b281de12efe",
+      "gitBlob": "3108473ba64e1c10966708a28a2e5249050bbf3c"
+    },
+    "internal/language/schema/debug_export.go": {
+      "sha256": "15b0a936d49084cadc3112e3c216f5b9ba6e8b6c3eabaa51256e5ecaa7c601b3",
+      "gitBlob": "336db05538d5948c7226fb104cbdea9045a53e61"
+    },
+    "action.go": {
+      "sha256": "b56f425b754d120d13e19de80810a1ef90961e829de8e276f74239023e7fb059",
+      "gitBlob": "a7cad84c5c1b8e1a8da890b778ec0df226bc2a77"
+    },
+    "language_backend_adapter.go": {
+      "sha256": "3e2fc50db754cb6c7d20c609efab0009a8b7cbedb2c13a7a60c288c7588969d0",
+      "gitBlob": "f0e7085bfcecf230a81c6c343a6925e97099e4ab"
+    }
+  },
+  "proposalMetadataEncoderSha256": "35530fe4dc7ca065bd537c3da7b70d1e65be59f37a80affd89330d42b3e76ab4",
+  "actualEncoderByteIdenticalToProposal": true,
+  "findings": [
+    "Fifth includeLabels option defaults false in both Legacy registration and shared schema; existing JSON/types/redaction/dates defaults remain.",
+    "Metadata encoder is selected only by includeDates or includeLabels; ordinary default output path is retained.",
+    "Label opt-in with redaction disabled requests only log label storage through the existing backfill hook, without preview label context rewrites and without Release instrumentation.",
+    "Range association uses monotone item/label traversal with explicit kind, cardinality, integer, ordering, overlap and bounds checks.",
+    "Per-item Creation Date is read from the actual item; the current date is used only as a type witness, and unsupported or ambiguous metadata stays explicit.",
+    "Redacted labels are emitted without collecting their private values.",
+    "Native Creation Date behavior and actual File carrier remain external proof obligations; source/model tests do not supply Apple execution credit."
+  ],
+  "reviewerExecutedGo": false,
+  "reviewerExecutedAppleRuntime": false,
+  "formalAcceptanceGranted": false
+}
