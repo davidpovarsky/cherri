@@ -122,7 +122,9 @@ def classify_callback(callback, case, nonce):
     return "PASS"
 
 def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
-        restart_shortcuts_after_import=False):
+        restart_shortcuts_after_import=False, startup_timeout_seconds=120):
+    if type(startup_timeout_seconds) is not int or not 1 <= startup_timeout_seconds <= 600:
+        raise ValueError("XCTest startup timeout must be an integer from 1 to 600 seconds")
     manifest = load_json(manifest_path)
     assert isinstance(manifest, dict) and manifest["cases"]
     directory.mkdir(parents=True, exist_ok=False)
@@ -149,7 +151,7 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
             process = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT,
                                        env=env, start_new_session=True)
             atomic_json(directory / "process.json", {"pid": process.pid, "command": args})
-            wait_file(directory / "ready.json", 120, process)
+            wait_file(directory / "ready.json", startup_timeout_seconds, process)
             # Xcode may retain an older dependent app when its main debug stub
             # is unchanged. Install this build explicitly before fresh launch.
             receiver_app = derived / "Build/Products/Debug-iphonesimulator/CherriSimulatorQAReceiver.app"
@@ -276,7 +278,8 @@ def run(manifest_path, directory, simulator, harness, derived, xctestrun=None,
                "callbackContract": "raw-utf8-sha256-v1",
                "receiverImageIdentity": (receiver_identity or {}).get("outcome", "NOT_VERIFIED"),
                "receiverImageIdentitySHA256": receiver_identity_sha256,
-               "restartShortcutsAfterImport": restart_shortcuts_after_import}
+               "restartShortcutsAfterImport": restart_shortcuts_after_import,
+               "startupTimeoutSeconds": startup_timeout_seconds}
     for row in results:
         summary["counts"][row["status"]] = summary["counts"].get(row["status"], 0) + 1
     atomic_json(directory / "summary.json", summary)
@@ -291,8 +294,10 @@ if __name__ == "__main__":
     parser.add_argument("--harness", type=Path, required=True)
     parser.add_argument("--derived-data", type=Path, required=True)
     parser.add_argument("--xctestrun", type=Path)
+    parser.add_argument("--startup-timeout-seconds", type=int, default=120,
+                        help="Bounded XCTest startup wait, 1..600 seconds; default 120. Case acceptance is unchanged.")
     parser.add_argument("--restart-shortcuts-after-import", action="store_true",
                         help="Explicitly terminate Shortcuts on the selected simulator after each verified import.")
     options = parser.parse_args()
     raise SystemExit(run(options.manifest, options.out, options.simulator, options.harness, options.derived_data, options.xctestrun,
-                         options.restart_shortcuts_after_import))
+                         options.restart_shortcuts_after_import, options.startup_timeout_seconds))
