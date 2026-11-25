@@ -3332,6 +3332,27 @@
       "reason": "Original full F01 run45101081393 returned P15_NEGATED_IS_TRUE. A separately labelled R7 reconstruction and actual pre-fix regression exposed the missing inner helper RHS; the original native condition values were not retained.",
       "evidence": "docs/language-v2/evidence/p15-f01-boolean-helper-20261123: actual RED4parents and16subcases; pre-fix8-case exact natural import baseline; independently reviewed fix; focused GREEN19parents/110namedpasses,0fail/skip,23.319765s. Original stdout SHA25652e60bbb0349eab58138f97a2016e3dbd72c6a0fd2e762425536e91518a46148.",
       "note": "Separate non-circular provenance after immutable implementation. Native causality and repaired fullF01 remain pending actual Apple verification; no old R7 receipt is promoted to the new source and no formal or physical acceptance is granted."
+    },
+    {
+      "name": "V2 dynamic quantity reference transport",
+      "locations": [
+        "internal/language/backend/quantity.go",
+        "internal/language/lower/quantity.go",
+        "internal/language/lower/call_arguments.go",
+        "internal/language/lower/lower.go",
+        "language_quantity_adapter.go",
+        "language_backend_adapter.go",
+        "language_emit_adapter.go",
+        "language_value_adapter.go",
+        "quantity_reference_test.go",
+        "tests/qty-dynamic.cherri",
+        "tests/language-v2/v2-dynamic-quantity.cherri"
+      ],
+      "firstForkCommit": "52ffccd5683ba5dfb357745dbfe2f544c29e7bc7",
+      "change": "Retain evaluated quantity operands as semantic values until the existing canonical quantity builder serializes the bare native magnitude reference. Traverse the typed carrier for argument snapshots and date-condition conversion. Add generated Legacy/V2 checks for every catalog quantity parameter.",
+      "reason": "Fork V2 at 6ce0a398 stringified lowered reference carriers into Magnitude while returning success. Independent frozen original bcc0095754e2cc0baaeb4d93dae172b8153b4716 and current upstream 98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2 emit bare reference dictionaries. The original quantity builder and action definitions are reused unchanged.",
+      "evidence": "docs/language-v2/dynamic-quantity-reference-audit-20261125.md; docs/language-v2/evidence/dynamic-quantity-20261125/verification.json. Actual pre-fix failures retained; final Quantity|T04|TestP15C01ArgumentValueSnapshot and lower/backend/IR package tests passed. Both added Cherri fixtures compile. Generated coverage checks all four current qty parameters, including actual producer UUID and action order.",
+      "note": "Shared compiler repair for adjustDate.unit, makeSizedDiskImage.diskSize, seek.timeInterval and startTimer.duration; no native action/catalog contract was invented. This record grants no Apple runtime, broader corpus, release or project-wide acceptance. Separate non-circular metadata follows the immutable implementation."
     }
   ]
 }
