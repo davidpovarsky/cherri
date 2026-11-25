@@ -36,6 +36,18 @@ The Skill manifest changes only `compilerCommit` and `macroFingerprint`. Its for
 
 The original Linux run `45659698424` provides the RED evidence: strict Skill capability checks found the old macro fingerprint, and D01 still expected 15 macros. The exact inventory test now lists all 16 original names. Focused D01 and Skill K02–K05 qualification on the refreshed checkpoint remains to run; this generator result does not substitute for those tests.
 
-The generated source exposed a separate canonical renderer defect: its common scoped-block paragraph still says Legacy rejects scoped blocks and describes only a value body. The implemented and separately qualified Legacy `measure`/`cache` support and `measure` Void lifecycle require correcting that renderer, followed by actual regeneration. This checkpoint retains the exact generated output, including that known defect; it does not manually edit generated Markdown.
+The initial generated source exposed a separate canonical renderer defect: its common scoped-block paragraph said Legacy rejects scoped blocks and described only a value body. Checkpoint `36141680ed3e42529512b73d553c679e5e134466` retained that exact original output, including the defect. The canonical follow-up below corrects the renderer and registry descriptions; no generated Markdown is edited manually.
 
 The manifest's docs pin `428f067090bf54f4d2f214c36951689dd599d153` is retained as the historical D16 component. It is not evidence that the published site has this new contract. The live K18 installation is unchanged. Final documentation publication, consumer upgrade, 39/58 entry/signing gates and rollback/reapply must use the later coherent final tuple. Native runtime, File/Creation Date behavior and full 179 acceptance are outside this producer's evidence.
+
+## Canonical scoped-body documentation follow-up
+
+The canonical renderer and registry descriptions were corrected at `f9019b69937020b72d8d26eff935f71d5eac8e2b`, tree `e8a372a1cd6a2096f6838b3559671ed0ec0c8722`. `ScopedBlock` no longer implies V2-only support. Each macro's canonical description states its own dialect and result contract. `measure` documents Legacy and V2, exactly-once body evaluation in both profiles, its typed value form, its non-consumable Void form, Debug timer emission and the workflow-stop boundary. `cache` documents its supported scalar body and unchanged native acceptance boundary. The generic scoped signature uses a body placeholder.
+
+The original documentation generator ran on this clean source, followed by its original full-reference `--check`; both exited zero (3.93 seconds and 0.30 seconds). The supervisor retained exact command streams and full physical source inventories before and after. No compiler CLI was rebuilt for this editorial-only follow-up. The native and macro fingerprints remain unchanged.
+
+- Original generation receipt: `/mnt/development/projects/evidence/cherri-p10r15-macro-fingerprint-refresh-20261125/renderer-generation-01/result.original.json`
+- Receipt SHA256: `f26b709f32c1da1d4a49f60b039f330159fadae5df75265977a708f1d548e570`
+- Exact generated reference SHA256: `0ceeff870174737de0d0bad90c3f26a1a09ab8d0bae2454893d132ee8c7acda7` (245,300 bytes)
+
+The entire native-action prefix and the other 14 macro sections are byte-identical to the initial producer output. The Skill manifest remains the exact intermediate proposal derived from the real `12f` compiler; this follow-up does not restamp a final compiler or docs release. D01 now selects the reviewed scoped-body contract parent and preserves all original eight CLI drift faults while adding two dialect/Void drift faults. Focused D01 and K02–K05 execution is still pending and will be recorded separately.

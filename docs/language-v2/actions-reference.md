@@ -8568,18 +8568,16 @@ url(url: Text)
 
 **Compiler Macros:** 16
 
-These compiler expansions are listed separately from the native Apple catalog. Signatures below describe V2 named arguments; existing Legacy positional forms remain available unless a scoped block is required. A metadata entry does not certify Apple runtime behavior.
+These compiler expansions are listed separately from the native Apple catalog. Signatures below describe V2 named arguments; Legacy uses its existing positional forms. Each scoped construct describes its supported dialects and body result below. A metadata entry does not certify Apple runtime behavior.
 
 Build profile `--build-profile=debug|release` defaults to debug. Release removes explicitly diagnostic expansions, preserves body effects and semantic guards, and rejects consumed diagnostic outputs.
 
 ### `cache`
 
-Lazy iOS27 Stored Content cache for source-typed Text, Number and Bool. Literal key/ttl/scope; ttl0 bypasses storage. Versioned scalar envelope, post-body expiry, clock rollback and changed-policy misses. Sensitive values require explicit opt-in. Complex/native objects, atomic compare-and-set and recoverable native parser/storage errors are not supported; native cache acceptance remains pending.
-
-**Dialect:** V2 scoped block. Legacy rejects this syntax with E_V2_SCOPED_BLOCK. The current block contract is one inline value with no block parameters.
+Legacy and V2 scalar scoped block with no block parameters. Lazy iOS27 Stored Content cache for source-typed Text, Number and Bool. The body must return one supported scalar; Void and complex/native objects are rejected. Literal key/ttl/scope; ttl0 bypasses storage. Versioned scalar envelope, post-body expiry, clock rollback and changed-policy misses. Sensitive values require explicit opt-in. Complex/native objects, atomic compare-and-set and recoverable native parser/storage errors are not supported; native cache acceptance remains pending.
 
 ```cherri
-cache(key: Text, ttl: Number, global?: Bool, sensitive?: Bool, allowSensitive?: Bool) { <#value#> } -> AnyContent
+cache(key: Text, ttl: Number, global?: Bool, sensitive?: Bool, allowSensitive?: Bool) { <#body#> } -> AnyContent
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
@@ -8746,12 +8744,10 @@ debugTraceEvent(stage: text, label?: text = "") -> text
 
 ### `measure`
 
-V2 scoped value block. Evaluate once, log elapsed seconds through existing native timers, and return the original typed value. Runtime timing accuracy remains platform-dependent.
-
-**Dialect:** V2 scoped block. Legacy rejects this syntax with E_V2_SCOPED_BLOCK. The current block contract is one inline value with no block parameters.
+Legacy and V2 scoped block with no block parameters. Evaluate the body exactly once in Debug and Release. A value body returns its original typed value; a Void body has no result and cannot be bound or consumed. The signature below illustrates the value form. Debug records elapsed seconds; Release preserves body effects without timer actions. A workflow-stopping action can prevent the final timer action from running; this is not a finally or cancellation guarantee. Runtime timing accuracy remains platform-dependent.
 
 ```cherri
-measure(label: text) { <#value#> } -> AnyContent
+measure(label: text) { <#body#> } -> AnyContent
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
