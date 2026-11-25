@@ -166,14 +166,33 @@ func TestP15DebugExportLiteralOptionsAndRelease(t *testing.T) {
 				t.Fatalf("admitted date source failed: legacy=%t profile=%s: %v", legacy, profile, err)
 			}
 			if profile == BuildProfileRelease {
-				if legacy {
-					// Legacy has no synthetic main fallthrough action. Nil and
-					// empty Go slices are the same exact zero-action graph.
-					if len(dated) != 0 {
-						t.Fatalf("Release date export emitted %d actions: %#v", len(dated), dated)
+				validate := func(actions []ShortcutAction) error {
+					if legacy {
+						// Legacy has no synthetic main fallthrough action. Nil
+						// and empty slices are the same zero-action graph.
+						if len(actions) == 0 {
+							return nil
+						}
+					} else if len(actions) == 1 {
+						return debugMainVoidBoundaryError(actions)
 					}
-				} else {
-					checkDebugFallthroughSequence(t, dated, legacy)
+					return fmt.Errorf("Release export leaked actions: %#v", actions)
+				}
+				if err := validate(dated); err != nil {
+					t.Fatal(err)
+				}
+				for _, leak := range []string{"gettext", "quicklook", "nothing"} {
+					t.Run(fmt.Sprintf("release_legacy_%t/leaked_%s", legacy, leak), func(t *testing.T) {
+						mutated := append(append([]ShortcutAction(nil), dated...), ShortcutAction{
+							WFWorkflowActionIdentifier: "is.workflow.actions." + leak,
+						})
+						if err := validate(mutated); err == nil {
+							t.Fatalf("Release oracle accepted an additional %s action", leak)
+						}
+						if err := validate(dated); err != nil {
+							t.Fatalf("unchanged Release control no longer accepted: %v", err)
+						}
+					})
 				}
 			} else {
 				last := -1
