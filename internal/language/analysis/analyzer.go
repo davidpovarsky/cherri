@@ -833,7 +833,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 
 		symbol := &Symbol{
-			loopResultElement:     a.validateLocalLoopResultBinding(s, declType),
+			loopResultElement:     a.validateLocalLoopResultBinding(s, declType, scope),
 			nativeReferenceTarget: s.Value != nil && !isVoidValue(valType),
 			optionalPresence:      a.exprPresence[s.Value],
 			knownAbsent:           a.exprAbsent[s.Value],
@@ -870,6 +870,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			a.error(CodeReadBeforeInit, s.Span, fmt.Sprintf("variable %q read before initialization by compound assignment", s.Name))
 		}
 		valType := a.analyzeEnumContext(s.Value, scope, sym.EnumType)
+		a.validateLocalLoopResultAssignment(s, sym, scope)
 		// Compound assignment reads both operands. A declared Optional target
 		// does not turn absence into a Number/List value; only a checked flow
 		// narrowing (or a known-present initializer) permits that read.

@@ -56,9 +56,17 @@ func (l *Lowerer) beginLocalLoopResultBinding(binding *syntax.BindingStmt) (type
 		}
 		nothing = func() { l.loopResultFrames, l.loopResultYields = oldFrames, oldYields }
 	}
-	if binding.Mutable || binding.TypeExpr != nil && !types.NewList(element).Equals(l.resolveTypeAnnotation(binding.TypeExpr)) {
+	mutableAllowed := !binding.Mutable
+	if binding.Mutable && binding.TypeExpr != nil && l.loopResultLocalPlan.MutableBindings[binding] {
+		if name, okay := binding.Value.(*syntax.IdentExpr); okay {
+			rhs, found := l.bindings[name.Name]
+			mutableAllowed = found && !rhs.IsVariable && rhs.LoopResultElement != nil &&
+				element.Equals(rhs.LoopResultElement)
+		}
+	}
+	if !mutableAllowed || binding.TypeExpr != nil && !types.NewList(element).Equals(l.resolveTypeAnnotation(binding.TypeExpr)) {
 		nothing()
-		return nil, func() {}, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require an immutable exact List binding at %s", binding.Span)
+		return nil, func() {}, fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop cells require an exact List binding; mutable aliases require explicit type and source-owned enrollment at %s", binding.Span)
 	}
 	return element, nothing, nil
 }
@@ -153,4 +161,36 @@ func (l *Lowerer) lowerLocalLoopResultIndex(index *syntax.IndexExpr, target, ord
 	}
 	l.optionalExpressionPresence[index] = presenceToken
 	return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: result}, nil
+}
+
+// Validate before lowering the RHS or entering ordinary assignment. The actual
+// binding token supplies the value; the plan's origins never replace that read.
+func (l *Lowerer) validateLocalLoopResultAssignment(assignment *syntax.AssignStmt) error {
+	target := l.bindings[assignment.Name]
+	element := l.localLoopResultElement(assignment.Value)
+	if target.LoopResultElement == nil && element == nil {
+		return nil
+	}
+	var enrolled *syntax.BindingStmt
+	if l.loopResultLocalPlan != nil {
+		enrolled = l.loopResultLocalPlan.Assignments[assignment]
+	}
+	name, identifier := assignment.Value.(*syntax.IdentExpr)
+	var rhs BindingRef
+	if identifier {
+		rhs = l.bindings[name.Name]
+	}
+	if enrolled == nil || !enrolled.Mutable || !l.loopResultLocalPlan.MutableBindings[enrolled] ||
+		!l.loopResultLocalPlan.AllowedValues[assignment.Value] ||
+		enrolled.Name != assignment.Name || enrolled.TypeExpr == nil ||
+		assignment.Op != syntax.TokenAssign || !target.IsVariable ||
+		!identifier || rhs.IsVariable || rhs.LoopResultElement == nil ||
+		target.LoopResultElement == nil || element == nil ||
+		!target.LoopResultElement.Equals(element) || !rhs.LoopResultElement.Equals(element) ||
+		target.Type == nil || !types.NewList(element).Equals(target.Type) ||
+		rhs.Type == nil || !target.Type.Equals(rhs.Type) ||
+		l.exprTypes[assignment.Value] == nil || !target.Type.Equals(l.exprTypes[assignment.Value]) {
+		return fmt.Errorf("E_TARGET_VALUE_SHAPE: local loop-result assignment requires its enrolled exact List alias and immutable source-owned identifier at %s", assignment.Span)
+	}
+	return nil
 }

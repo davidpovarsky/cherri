@@ -92,6 +92,25 @@ func (p *Parser) expect(tt TokenType) (Token, bool) {
 	return p.curr, false
 }
 
+// expectTypeClose consumes a generic type's closing angle bracket. The lexer
+// correctly keeps >= together in expressions, but List<T>=value closes a type
+// and then assigns. Split only here so whitespace does not change typed bindings
+// or parameter defaults, while expression comparisons retain their operator.
+func (p *Parser) expectTypeClose() (Token, bool) {
+	if p.curr.Type != TokenGreaterEqual {
+		return p.expect(TokenGreater)
+	}
+	closing := p.curr
+	closing.Type = TokenGreater
+	closing.Text = ">"
+	closing.Span.End = p.file.PositionFromByteOffset(closing.Span.Start.ByteOffset + 1)
+	p.curr.Type = TokenAssign
+	p.curr.Text = "="
+	p.curr.Span.Start = closing.Span.End
+	p.curr.Leading = nil
+	return closing, true
+}
+
 func (p *Parser) match(tt TokenType) bool {
 	if p.curr.Type == tt {
 		p.advance()
@@ -822,13 +841,13 @@ func (p *Parser) parsePrimaryTypeAnnotation() TypeAnnotation {
 	if p.match(TokenLess) {
 		// Generic type: List<T> or Map<K, V>
 		var typeArgs []TypeAnnotation
-		for p.curr.Type != TokenGreater && p.curr.Type != TokenEOF {
+		for p.curr.Type != TokenGreater && p.curr.Type != TokenGreaterEqual && p.curr.Type != TokenEOF {
 			typeArgs = append(typeArgs, p.parseTypeAnnotation())
 			if !p.match(TokenComma) {
 				break
 			}
 		}
-		endTok, _ := p.expect(TokenGreater)
+		endTok, _ := p.expectTypeClose()
 		base = &GenericTypeAnnotation{
 			Span:     nameTok.Span.Merge(endTok.Span),
 			Name:     nameTok.Text,

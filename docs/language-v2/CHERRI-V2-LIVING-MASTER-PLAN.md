@@ -2731,3 +2731,7 @@ Original paths below are relative to `/mnt/development/projects/evidence/cherri-
 | `f04-mutable-local-alias-proposal-01/MANIFEST.json` | 10,466 | `41a8ea903b6d4e431cadc0c7efb10354c8141ea5f37251efee2b9be254475259` |
 | `f04-mutable-local-alias-environment-supplement-01/environment-correction.original.json` | 4,362 | `85969a49cd1c7a776259d0ba9a9c24fad1efcc14be8e2e1ca223ec88c04fcf12` |
 | `f04-mutable-local-alias-environment-supplement-01/MANIFEST.json` | 735 | `5284e57832a6310d443d6b650089e9627b6e614e5888f37dfbeb92c6e0a5bd00` |
+
+## 2026-11-25 — F04 mutable local alias implementation and parser repair
+
+Implemented the previously prepared bounded alias proposal on S6. Original qualification now passes 330/330 exact named tests (260 root, 44 lower, 26 schema), plus 49 syntax tests, with original failures retained and independent source review. Fixed adjacent generic-type assignment parsing rather than changing authored fixtures. Full F04, Apple runtime, AI01/RP50, coherent coverage refresh and final179 remain open. Current Anthropic count-only diagnostic still returns HTTP400 insufficient credit; no generation or purchase occurred. See [execution report](p15-f04-mutable-local-aliases-20261125.md) for commands, receipt and precise exclusions.

@@ -1998,6 +1998,9 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 }
 
 func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
+	if err := l.validateLocalLoopResultAssignment(a); err != nil {
+		return err
+	}
 	val, err := l.lowerRuntimeLiteral(a.Value)
 	if err != nil {
 		return err

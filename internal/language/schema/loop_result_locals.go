@@ -9,12 +9,15 @@ import (
 
 // LoopResultLocalPlan is source-owned admission for one finite local consumer
 // slice. It is keyed by actual AST identities, never a carrier marker or span.
-// Only immutable aliases, Items Count, index targets and for iterables can
-// carry the private sequence. Every other use makes this optional plan absent.
+// Immutable aliases and explicitly typed, straight-line mutable aliases may
+// carry the private sequence only to Items Count, index and for consumers.
+// Every other use makes this optional plan absent.
 type LoopResultLocalPlan struct {
-	BindingValues map[syntax.Expression]bool
-	AllowedValues map[syntax.Expression]bool
-	Bodies        map[*syntax.BlockStmt]bool
+	BindingValues   map[syntax.Expression]bool
+	AllowedValues   map[syntax.Expression]bool
+	Bodies          map[*syntax.BlockStmt]bool
+	MutableBindings map[*syntax.BindingStmt]bool
+	Assignments     map[*syntax.AssignStmt]*syntax.BindingStmt
 }
 
 // PlanLoopResultLocals deliberately admits a closed, explicit-input program.
@@ -39,13 +42,22 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 		}
 	}
 	plan := &LoopResultLocalPlan{
-		BindingValues: map[syntax.Expression]bool{},
-		AllowedValues: map[syntax.Expression]bool{},
-		Bodies:        map[*syntax.BlockStmt]bool{},
+		BindingValues:   map[syntax.Expression]bool{},
+		AllowedValues:   map[syntax.Expression]bool{},
+		Bodies:          map[*syntax.BlockStmt]bool{},
+		MutableBindings: map[*syntax.BindingStmt]bool{},
+		Assignments:     map[*syntax.AssignStmt]*syntax.BindingStmt{},
 	}
 	bindingOrigins := map[syntax.Expression]syntax.Expression{}
+	assignmentOrigins := map[*syntax.AssignStmt]syntax.Expression{}
 	consumedOrigins := map[syntax.Expression]bool{}
-	type environment map[string]syntax.Expression
+	// Each scope entry is a reaching definition, copied by value. An immutable
+	// snapshot must keep its old origin after the mutable name is reassigned.
+	type localBinding struct {
+		origin  syntax.Expression
+		binding *syntax.BindingStmt
+	}
+	type environment map[string]localBinding
 	copyEnvironment := func(source environment) environment {
 		target := environment{}
 		for name, origin := range source {
@@ -54,7 +66,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 		return target
 	}
 	var expression func(syntax.Expression, environment, bool, bool) (syntax.Expression, bool)
-	var statement func(syntax.Statement, environment, bool) bool
+	var statement func(syntax.Statement, environment, bool, bool) bool
 	var block func(*syntax.BlockStmt, environment, bool) bool
 	block = func(body *syntax.BlockStmt, scope environment, cellIteration bool) bool {
 		if body == nil {
@@ -62,7 +74,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 		}
 		local := copyEnvironment(scope)
 		for _, child := range body.Statements {
-			if !statement(child, local, cellIteration) {
+			if !statement(child, local, cellIteration, false) {
 				return false
 			}
 		}
@@ -75,7 +87,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			if _, okay := expression(value.Count, scope, false, cellIteration); !okay {
 				return false
 			}
-			local[value.IndexVar] = nil
+			local[value.IndexVar] = localBinding{}
 			return block(value.BodyBlock, local, cellIteration)
 		case *syntax.ForStmt:
 			origin, okay := expression(value.Iterable, scope, true, cellIteration)
@@ -85,7 +97,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			if origin != nil {
 				consumedOrigins[origin] = true
 			}
-			local[value.ItemVar], local[value.IndexVar] = nil, nil
+			local[value.ItemVar], local[value.IndexVar] = localBinding{}, localBinding{}
 			// The new slice uses the declared item, not raw RepeatItem aliases.
 			if origin != nil && (strings.HasPrefix(value.ItemVar, "RepeatItem") || value.ItemVar == "") {
 				return false
@@ -103,7 +115,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			if cellIteration && strings.HasPrefix(value.Name, "RepeatItem") {
 				return nil, false
 			}
-			origin := scope[value.Name]
+			origin := scope[value.Name].origin
 			if origin != nil {
 				if !allowCells {
 					return nil, false
@@ -189,7 +201,7 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 			return node, true
 		case *syntax.IfStmt:
 			_, okay := expression(value.Condition, scope, false, cellIteration)
-			return nil, okay && block(value.ThenBlock, scope, cellIteration) && (value.ElseBlock == nil || statement(value.ElseBlock, copyEnvironment(scope), cellIteration))
+			return nil, okay && block(value.ThenBlock, scope, cellIteration) && (value.ElseBlock == nil || statement(value.ElseBlock, copyEnvironment(scope), cellIteration, false))
 		case *syntax.MenuStmt:
 			if _, okay := expression(value.Prompt, scope, false, cellIteration); !okay {
 				return nil, false
@@ -203,21 +215,52 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 		}
 		return nil, false
 	}
-	statement = func(node syntax.Statement, scope environment, cellIteration bool) bool {
+	statement = func(node syntax.Statement, scope environment, cellIteration, topLevel bool) bool {
 		switch value := node.(type) {
 		case *syntax.BindingStmt:
 			origin, okay := expression(value.Value, scope, true, cellIteration)
-			if !okay || value.Mutable && origin != nil {
+			if !okay {
 				return false
 			}
-			scope[value.Name] = origin
+			if value.Mutable && origin != nil {
+				name, identifier := value.Value.(*syntax.IdentExpr)
+				if !topLevel || value.TypeExpr == nil || !identifier {
+					return false
+				}
+				rhs := scope[name.Name]
+				if rhs.binding == nil || rhs.binding.Mutable || rhs.origin == nil {
+					return false
+				}
+				plan.MutableBindings[value] = true
+			}
+			scope[value.Name] = localBinding{origin: origin, binding: value}
 			if origin != nil {
 				bindingOrigins[value.Value] = origin
 			}
 			return true
 		case *syntax.AssignStmt:
-			origin, okay := expression(value.Value, scope, false, cellIteration)
-			return okay && origin == nil && scope[value.Name] == nil
+			target := scope[value.Name]
+			if target.origin == nil {
+				origin, okay := expression(value.Value, scope, false, cellIteration)
+				return okay && origin == nil
+			}
+			name, identifier := value.Value.(*syntax.IdentExpr)
+			if !topLevel || value.Op != syntax.TokenAssign || !identifier ||
+				target.binding == nil || !plan.MutableBindings[target.binding] {
+				return false
+			}
+			rhs := scope[name.Name]
+			if rhs.binding == nil || rhs.binding.Mutable || rhs.origin == nil {
+				return false
+			}
+			origin, okay := expression(value.Value, scope, true, cellIteration)
+			if !okay || origin == nil {
+				return false
+			}
+			plan.Assignments[value] = target.binding
+			assignmentOrigins[value] = origin
+			scope[value.Name] = localBinding{origin: origin, binding: target.binding}
+			return true
 		case *syntax.ExprStmt:
 			_, okay := expression(value.Expr, scope, false, cellIteration)
 			return okay
@@ -239,7 +282,20 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 	}
 	scope := environment{}
 	for _, child := range program.Statements {
-		if !statement(child, scope, false) {
+		if !statement(child, scope, false, true) {
+			return nil
+		}
+	}
+	// Storage alone is not a consumer. Keep every assigned version tied to a
+	// real Count/index/for demand; an overwritten unread initializer is still
+	// outside this slice unless its producer has its own enrolled consumer.
+	for binding := range plan.MutableBindings {
+		if !consumedOrigins[bindingOrigins[binding.Value]] {
+			return nil
+		}
+	}
+	for _, origin := range assignmentOrigins {
+		if !consumedOrigins[origin] {
 			return nil
 		}
 	}

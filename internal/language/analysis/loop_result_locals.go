@@ -55,13 +55,52 @@ func (a *Analyzer) recordLocalLoopResult(expression syntax.Expression, t types.T
 	a.loopResultLocalValues[expression] = element
 }
 
-func (a *Analyzer) validateLocalLoopResultBinding(binding *syntax.BindingStmt, declared types.Type) types.Type {
+func (a *Analyzer) validateLocalLoopResultBinding(binding *syntax.BindingStmt, declared types.Type, scope *Scope) types.Type {
 	element := a.loopResultLocalValues[binding.Value]
 	if element == nil {
 		return nil
 	}
-	if binding.Mutable || declared == nil || !types.NewList(element).Equals(declared) {
-		a.error(CodeTargetValueShape, binding.Span, "local loop-result cells require an immutable exact List type; mutable/widened representation joins remain unsupported")
+	mutableAllowed := !binding.Mutable
+	if binding.Mutable && binding.TypeExpr != nil && a.loopResultLocalPlan != nil &&
+		a.loopResultLocalPlan.MutableBindings[binding] {
+		if name, okay := binding.Value.(*syntax.IdentExpr); okay {
+			rhs, found := scope.Lookup(name.Name)
+			mutableAllowed = found && !rhs.Mutable && rhs.loopResultElement != nil &&
+				element.Equals(rhs.loopResultElement)
+		}
+	}
+	if !mutableAllowed || declared == nil || !types.NewList(element).Equals(declared) {
+		a.error(CodeTargetValueShape, binding.Span, "local loop-result cells require an exact List binding; mutable aliases require explicit type and source-owned enrollment")
 	}
 	return element
+}
+
+// Cell metadata is preserved only across the exact admitted whole assignment.
+// Ordinary assignability does not prove a private representation's identity.
+func (a *Analyzer) validateLocalLoopResultAssignment(assignment *syntax.AssignStmt, target *Symbol, scope *Scope) {
+	element := a.loopResultLocalValues[assignment.Value]
+	if target.loopResultElement == nil && element == nil {
+		return
+	}
+	var enrolled *syntax.BindingStmt
+	if a.loopResultLocalPlan != nil {
+		enrolled = a.loopResultLocalPlan.Assignments[assignment]
+	}
+	name, identifier := assignment.Value.(*syntax.IdentExpr)
+	var rhs *Symbol
+	if identifier {
+		rhs, _ = scope.Lookup(name.Name)
+	}
+	if enrolled == nil || !enrolled.Mutable || !a.loopResultLocalPlan.MutableBindings[enrolled] ||
+		!a.loopResultLocalPlan.AllowedValues[assignment.Value] ||
+		enrolled.Name != assignment.Name || enrolled.TypeExpr == nil ||
+		assignment.Op != syntax.TokenAssign || !target.Mutable ||
+		rhs == nil || rhs.Mutable || rhs.loopResultElement == nil ||
+		target.loopResultElement == nil || element == nil ||
+		!target.loopResultElement.Equals(element) || !rhs.loopResultElement.Equals(element) ||
+		target.Type == nil || !types.NewList(element).Equals(target.Type) ||
+		rhs.Type == nil || !target.Type.Equals(rhs.Type) ||
+		a.exprTypes[assignment.Value] == nil || !target.Type.Equals(a.exprTypes[assignment.Value]) {
+		a.error(CodeTargetValueShape, assignment.Span, "local loop-result assignment requires its enrolled exact List alias and immutable source-owned identifier")
+	}
 }

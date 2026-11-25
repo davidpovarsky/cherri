@@ -125,6 +125,12 @@ func p15F04LocalPresenceBoolean(g *p15FunctionGraph, flag any, trace *p15F04Loca
 }
 
 func p15F04LocalIndexGraph(g *p15FunctionGraph, collection string, ordinal any, integral bool, trace *p15F04LocalTrace) (string, string) {
+	return p15F04LocalIndexInputGraph(g, p15FunctionEdge(collection), ordinal, integral, trace)
+}
+
+// The authored input may be an immutable producer edge or a mutable variable.
+// Keep the same complete bounds/presence decoder for both transports.
+func p15F04LocalIndexInputGraph(g *p15FunctionGraph, collection any, ordinal any, integral bool, trace *p15F04LocalTrace) (string, string) {
 	g.emit("nothing", nil)
 	valueName := p15F04PrivateName(g, "__cherri_scope_")
 	if !strings.Contains(valueName, "_loopIndexValue_") {
@@ -151,7 +157,7 @@ func p15F04LocalIndexGraph(g *p15FunctionGraph, collection string, ordinal any, 
 	}
 	trace.mark(g, "one_based")
 	one := g.value("math", map[string]any{"WFMathOperation": "+", "WFInput": ordinal, "WFMathOperand": 1})
-	count := g.value("count", map[string]any{"Input": p15FunctionEdge(collection), "WFCountType": "Items"})
+	count := g.value("count", map[string]any{"Input": collection, "WFCountType": "Items"})
 	difference := g.math("-", count, p15FunctionEdge(one))
 	trace.mark(g, "lower_guard")
 	lower := g.conditional(3, p15FunctionEdge(one), "WFNumberValue", 1)
@@ -159,7 +165,7 @@ func p15F04LocalIndexGraph(g *p15FunctionGraph, collection string, ordinal any, 
 	upper := g.conditional(3, p15FunctionEdge(difference), "WFNumberValue", 0)
 	trace.mark(g, "cell_lookup")
 	cell := g.value("getitemfromlist", map[string]any{
-		"WFInput": p15FunctionEdge(collection), "WFItemSpecifier": "Item At Index", "WFItemIndex": p15FunctionEdge(one),
+		"WFInput": collection, "WFItemSpecifier": "Item At Index", "WFItemIndex": p15FunctionEdge(one),
 	})
 	value, presence := p15F04LocalDecode(g, cell, trace)
 	trace.mark(g, "index_presence_store")
