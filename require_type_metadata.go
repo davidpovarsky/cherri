@@ -72,3 +72,70 @@ func requireLegacySourceType(arg actionArgument) string {
 	}
 	return ""
 }
+
+// A condition has a stricter proof than a content-category hint: Optional,
+// transformed references and unknown native content cannot acquire truthiness.
+const requireConditionTypeKey = "__CherriRequireConditionType"
+
+func requireLegacyConditionType(argument actionArgument) string {
+	if legacyScopedValueType(argument, variables, nil) == Bool {
+		return "Bool"
+	}
+	return ""
+}
+
+func requireConditionReference(raw any) bool {
+	valid := func(kind, output, name string, transformed bool) bool {
+		if transformed {
+			return false
+		}
+		return (kind == "ActionOutput" && output != "") || (kind == "Variable" && name != "")
+	}
+	switch value := raw.(type) {
+	case WFTextTokenAttachment:
+		return value.WFSerializationType == "WFTextTokenAttachment" &&
+			valid(value.Value.Type, value.Value.OutputUUID, value.Value.VariableName, len(value.Value.Aggrandizements) != 0)
+	case *WFTextTokenAttachment:
+		return value != nil && requireConditionReference(*value)
+	case map[string]any:
+		body, okay := value["Value"].(map[string]any)
+		if !okay || value["WFSerializationType"] != "WFTextTokenAttachment" {
+			return false
+		}
+		kind, _ := body["Type"].(string)
+		output, _ := body["OutputUUID"].(string)
+		name, _ := body["VariableName"].(string)
+		transformed := false
+		if transforms, found := body["Aggrandizements"]; found {
+			items, okay := transforms.([]any)
+			if !okay {
+				return false
+			}
+			transformed = len(items) != 0
+		}
+		return valid(kind, output, name, transformed)
+	default:
+		return false
+	}
+}
+
+func requireConditionInputProved(params map[string]any, raw any) bool {
+	hint, present := params[requireConditionTypeKey]
+	if !present {
+		hint, present = params[requireSourceTypeKey]
+	}
+	if present {
+		name, okay := hint.(string)
+		if !okay || (name != "Bool" && name != "Boolean") {
+			return false
+		}
+		if _, literal := raw.(bool); literal {
+			return true
+		}
+		return requireConditionReference(raw)
+	}
+	// Direct backend callers can prove an actual Boolean literal without a
+	// frontend hint. Native references require a source type witness.
+	_, literal := raw.(bool)
+	return literal
+}

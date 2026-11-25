@@ -13,7 +13,7 @@ func init() {
 			{ID: "message", Label: "message", DisplayName: "Failure Message", Type: types.Text, TypeName: "Text", RawType: "string", WireKey: "WFAlertActionMessage", Optional: true, Codec: "textToken", OmissionPolicy: OmitPolicyOmit, EvidenceStatus: EvidenceInferred},
 		},
 		OutputType: types.AnyContent, OutputTypeName: "AnyContent", RawOutputType: "variable",
-		Docs:    ActionDocs{Title: "Require Typed Value", Description: "Validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.", Category: "control", InsertionSnippet: "require(<#value#>, nonEmpty: true)"},
+		Docs:    ActionDocs{Title: "Require Condition or Typed Value", Description: "Require a source-proved Boolean condition, or validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.", Category: "control", InsertionSnippet: "require(<#value#>, nonEmpty: true)"},
 		Builtin: true, EvidenceStatus: EvidenceInferred,
 	}
 }

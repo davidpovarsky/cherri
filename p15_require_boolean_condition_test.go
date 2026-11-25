@@ -23,6 +23,7 @@ type p15RequireConditionCase struct {
 	storage  string
 	presence bool
 	number   bool
+	native   bool
 }
 
 func p15RequireConditionCases() []p15RequireConditionCase {
@@ -40,6 +41,9 @@ func p15RequireConditionSource(tc p15RequireConditionCase, legacy bool) string {
 	literal := fmt.Sprint(tc.value)
 	if tc.number {
 		literal = "0"
+	}
+	if tc.native {
+		literal = "connectedToCharger()"
 	}
 	argument, prefix := literal, ""
 	decl, mutable, variable := "let", "var flag", "flag"
@@ -59,6 +63,9 @@ func p15RequireConditionSource(tc p15RequireConditionCase, legacy bool) string {
 	}
 	if legacy {
 		call = fmt.Sprintf("require(%s, \"\", %t, %q)", argument, tc.presence, p15RequireConditionMessage)
+	}
+	if tc.native && legacy {
+		prefix = "#include 'actions/device'\n" + prefix
 	}
 	return prefix + decl + " checked = " + call + "\ngetVariable(checked)\n"
 }
@@ -108,26 +115,31 @@ func p15RequireConditionGraph(actions []ShortcutAction, tc p15RequireConditionCa
 	if len(actual) == 0 {
 		return fmt.Errorf("REQUIRE_CONDITION_GRAPH: empty native graph")
 	}
-	// Apple's Number field accepts a native numeric scalar or its literal
-	// NumberString spelling. Admit only this authored Boolean's exact 0/1.
-	want := 0
-	if tc.value {
-		want = 1
-	}
-	raw := p15Param(actual[0])["WFNumberActionNumber"]
-	switch v := raw.(type) {
-	case string:
-		if v != fmt.Sprint(want) {
-			return fmt.Errorf("REQUIRE_CONDITION_GRAPH: Boolean literal changed")
+	input := ""
+	if tc.native {
+		input = g.value("getbatterylevel", map[string]any{"Subject": "Is Connected to Charger"})
+	} else {
+		// Apple's Number field accepts a native numeric scalar or its literal
+		// NumberString spelling. Admit only this authored Boolean's exact 0/1.
+		want := 0
+		if tc.value {
+			want = 1
 		}
-	case int, int64, uint64, float64:
-		if fmt.Sprint(v) != fmt.Sprint(want) {
-			return fmt.Errorf("REQUIRE_CONDITION_GRAPH: Boolean numeric value changed")
+		raw := p15Param(actual[0])["WFNumberActionNumber"]
+		switch v := raw.(type) {
+		case string:
+			if v != fmt.Sprint(want) {
+				return fmt.Errorf("REQUIRE_CONDITION_GRAPH: Boolean literal changed")
+			}
+		case int, int64, uint64, float64:
+			if fmt.Sprint(v) != fmt.Sprint(want) {
+				return fmt.Errorf("REQUIRE_CONDITION_GRAPH: Boolean numeric value changed")
+			}
+		default:
+			return fmt.Errorf("REQUIRE_CONDITION_GRAPH: unexpected Number field representation %T", raw)
 		}
-	default:
-		return fmt.Errorf("REQUIRE_CONDITION_GRAPH: unexpected Number field representation %T", raw)
+		input = g.value("number", map[string]any{"WFNumberActionNumber": raw})
 	}
-	input := g.value("number", map[string]any{"WFNumberActionNumber": raw})
 	if tc.storage == "mutable" {
 		g.emit("setvariable", map[string]any{"WFVariableName": "flag", "WFInput": p15FunctionEdge(input)})
 		input = g.value("getvariable", map[string]any{"WFVariable": p15FunctionVariable("flag")})
