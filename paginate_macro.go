@@ -16,7 +16,7 @@ func registerPaginateMacro() {
 		identifier: "getvariable", outputType: Arr,
 		doc: selfDoc{
 			title: "Paginate Bounded Dictionary Pages", category: "web",
-			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.",
+			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin absolute next URL or simple sibling filename. No HTTP status verification, retry, transport timeout or trailing block. Native runtime acceptance remains required.",
 		},
 		parameters: []parameterDefinition{
 			{name: "startURL", key: "WFPaginateStartURL", validType: RawString},
@@ -24,10 +24,11 @@ func registerPaginateMacro() {
 			{name: "nextKey", key: "WFPaginateNextKey", validType: RawString, optional: true, defaultValue: "next"},
 			{name: "maxPages", key: "WFPaginateMaxPages", validType: Integer, optional: true, defaultValue: 20},
 			{name: "maxItems", key: "WFPaginateMaxItems", validType: Integer, optional: true, defaultValue: 1000},
+			{name: "headers", key: "WFHTTPHeaders", validType: Dict, optional: true, literal: true},
 		},
 		makeParams: func(args []actionArgument) map[string]any {
 			out := make(map[string]any)
-			keys := []string{"WFPaginateStartURL", "WFPaginateItemsKey", "WFPaginateNextKey", "WFPaginateMaxPages", "WFPaginateMaxItems"}
+			keys := []string{"WFPaginateStartURL", "WFPaginateItemsKey", "WFPaginateNextKey", "WFPaginateMaxPages", "WFPaginateMaxItems", "WFHTTPHeaders"}
 			for index, key := range keys {
 				if index >= len(args) {
 					break
@@ -224,7 +225,14 @@ func buildPaginateMacroActions(params map[string]any, resultUUID, resultName str
 
 	unvisited := b.begin(b.get("active"), 4, 1, backend.OperandNumber)
 	b.append("seen", currentHash)
-	response := b.produce("downloadurl", map[string]any{"WFURL": paginateText("", currentURL), "WFHTTPMethod": "GET"})
+	request := map[string]any{"WFURL": paginateText("", currentURL), "WFHTTPMethod": "GET"}
+	if headers, present := params["WFHTTPHeaders"]; present {
+		// The ordinary HTTP Dictionary codec has already encoded the literal
+		// outer container and its runtime leaf references. Forward that native
+		// value unchanged; never stringify, flatten or re-evaluate its leaves.
+		request["WFHTTPHeaders"] = headers
+	}
+	response := b.produce("downloadurl", request)
 	page := b.produce("detect.dictionary", map[string]any{"WFInput": response})
 	b.requireCategory(page, dictionaryType, "PAGINATE_PAGE_DICTIONARY_REQUIRED")
 
