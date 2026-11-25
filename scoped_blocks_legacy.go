@@ -22,6 +22,7 @@ type legacyScopedStep struct {
 }
 
 type legacyScopedBlock struct {
+	cache      *schema.CacheOptions
 	label      string
 	prefix     string
 	next       int
@@ -57,7 +58,7 @@ func legacyScopedBlockDiagnostic(name string) string {
 
 func legacyScopedBlockAvailable(name string) bool {
 	contract, found := schema.DefaultRegistry().LookupAction(name)
-	return found && contract.ScopedBlock && name == "measure"
+	return found && contract.ScopedBlock && (name == "measure" || name == "cache")
 }
 
 func legacyScopedMayShadow(name string, constant bool) bool {
@@ -134,18 +135,34 @@ func collectLegacyScopedBlockAction(name string) action {
 		parameters: []parameterDefinition{{name: "label", validType: String, literal: true}},
 		outputType: Variable,
 	}
+	if name == "cache" {
+		definition = legacyCacheDefinition()
+	}
 	advance() // '('
 	setCurrentAction(name, definition)
 	arguments := collectArguments()
 	currentAction.arguments = arguments
 	checkAction()
-	if len(arguments) != 1 || (arguments[0].valueType != String && arguments[0].valueType != RawString) {
-		parserError("E_BLOCK_LABEL: measure requires one non-empty literal label")
-	}
-	label, ok := arguments[0].value.(string)
-	if !ok || strings.TrimSpace(label) == "" ||
-		(arguments[0].valueType == String && checkInlineVarRegex.MatchString(label)) {
-		parserError("E_BLOCK_LABEL: measure requires a non-empty literal label; interpolated labels are unsupported")
+	var label string
+	var cacheOptions *schema.CacheOptions
+	if name == "cache" {
+		options, err := legacyCacheOptions(arguments)
+		if err != nil {
+			parserError(err.Error())
+		}
+		cacheOptions = &options
+		label = options.Key
+	} else {
+		if len(arguments) != 1 || (arguments[0].valueType != String && arguments[0].valueType != RawString) {
+			parserError("E_BLOCK_LABEL: measure requires one non-empty literal label")
+		}
+		var ok bool
+		label, ok = arguments[0].value.(string)
+		if !ok || strings.TrimSpace(label) == "" ||
+			(arguments[0].valueType == String && checkInlineVarRegex.MatchString(label)) {
+			parserError("E_BLOCK_LABEL: measure requires a non-empty literal label; interpolated labels are unsupported")
+		}
+
 	}
 	if char != ')' {
 		parserError("E_BLOCK_LABEL: expected the end of the measure label")
@@ -155,8 +172,8 @@ func collectLegacyScopedBlockAction(name string) action {
 	if char != '{' {
 		parserError("E_BLOCK_REQUIRED: measure requires a scoped body on the call's line")
 	}
-	salt := fmt.Sprintf("measure:%d:%d:%s", lineIdx, idx, label)
-	block := &legacyScopedBlock{label: label, prefix: "__cherri_block_" + strings.ReplaceAll(createUUID(&salt), "-", "")}
+	salt := fmt.Sprintf("%s:%d:%d:%s", name, lineIdx, idx, label)
+	block := &legacyScopedBlock{cache: cacheOptions, label: label, prefix: "__cherri_block_" + strings.ReplaceAll(createUUID(&salt), "-", "")}
 	advance()
 	previousTokens, previousVars, previousState := tokens, variables, legacyScopedParsing
 	tokens = nil
@@ -293,6 +310,9 @@ func collectLegacyScopedBlockAction(name string) action {
 		}
 	} else {
 		block.resultType = Nil
+	}
+	if cacheOptions != nil && legacyCacheKind(block.resultType) == "" {
+		parserError("E_CACHE_VALUE_TYPE: cache supports present Text, Number or Bool; complex and native objects require a qualified persistence codec")
 	}
 	definition.outputType = block.resultType
 	advance()
@@ -472,6 +492,10 @@ func withLegacyScopedEnvironment(step legacyScopedStep, emit func()) {
 }
 
 func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReference) {
+	if block.cache != nil {
+		emitLegacyCacheBlock(block, reference)
+		return
+	}
 	previousTokens, previousAction := tokens, currentAction
 	defer func() { tokens, currentAction = previousTokens, previousAction }()
 	emitTimer := func(name, label string) error {
@@ -508,34 +532,7 @@ func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReferenc
 	_, err := backend.EmitScopedMeasure(
 		block.label+":"+block.prefix,
 		emitTimer,
-		func() (WFTextTokenAttachment, error) {
-			emitBody()
-			var result WFTextTokenAttachment
-			var resultErr error
-			withLegacyScopedEnvironment(block.resultStep, func() {
-				if block.result.valueType == Variable {
-					value := variableValue(block.result.value.(varValue))
-					var ok bool
-					result, ok = value.(WFTextTokenAttachment)
-					if !ok {
-						resultErr = fmt.Errorf("E_BLOCK_REFERENCE: scoped result has no canonical native attachment")
-					}
-					return
-				}
-				name := block.prefix + "_result"
-				id := createUUIDReference(name)
-				if block.result.valueType == Arr {
-					variables[name] = varValue{variableType: "Variable", valueType: Arr}
-					makeVariableAction(&token{typeof: Variable, ident: name, valueType: Arr, value: block.result.value})
-					result = inputValue(name, "")
-					return
-				}
-				value := block.result.value
-				makeVariableValue(&WFActionReference{UUID: id, CustomOutputName: name}, block.result.valueType, &value)
-				result = inputValue(name, id)
-			})
-			return result, resultErr
-		},
+		func() (WFTextTokenAttachment, error) { return emitLegacyScopedBodyValue(block) },
 		func(value WFTextTokenAttachment) bool { return value.Value.Type == "ActionOutput" },
 		func(value WFTextTokenAttachment, final bool) (WFTextTokenAttachment, error) {
 			name := block.prefix + "_snapshot"
@@ -562,4 +559,38 @@ func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReferenc
 	if err != nil {
 		exit(err.Error())
 	}
+}
+
+func emitLegacyScopedBodyValue(block *legacyScopedBlock) (WFTextTokenAttachment, error) {
+	previousTokens, previousAction := tokens, currentAction
+	defer func() { tokens, currentAction = previousTokens, previousAction }()
+	for _, step := range block.steps {
+		withLegacyScopedEnvironment(step, func() { tokens = step.tokens; generateActions() })
+	}
+
+	var result WFTextTokenAttachment
+	var resultErr error
+	withLegacyScopedEnvironment(block.resultStep, func() {
+		if block.result.valueType == Variable {
+			value := variableValue(block.result.value.(varValue))
+			var ok bool
+			result, ok = value.(WFTextTokenAttachment)
+			if !ok {
+				resultErr = fmt.Errorf("E_BLOCK_REFERENCE: scoped result has no canonical native attachment")
+			}
+			return
+		}
+		name := block.prefix + "_result"
+		id := createUUIDReference(name)
+		if block.result.valueType == Arr {
+			variables[name] = varValue{variableType: "Variable", valueType: Arr}
+			makeVariableAction(&token{typeof: Variable, ident: name, valueType: Arr, value: block.result.value})
+			result = inputValue(name, "")
+			return
+		}
+		value := block.result.value
+		makeVariableValue(&WFActionReference{UUID: id, CustomOutputName: name}, block.result.valueType, &value)
+		result = inputValue(name, id)
+	})
+	return result, resultErr
 }

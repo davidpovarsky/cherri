@@ -15,6 +15,9 @@ import (
 // second native serializer or a Run Shortcut/function invocation for the body.
 func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, error) {
 	name, simple := call.Callee.(*syntax.IdentExpr)
+	if simple && name.Name == "cache" {
+		return l.lowerCacheBlock(call)
+	}
 	if !simple || name.Name != "measure" || l.functions[name.Name] != nil {
 		return nil, fmt.Errorf("E_BLOCK_UNSUPPORTED at %s: this call has no scoped block lowering contract", call.Span)
 	}
