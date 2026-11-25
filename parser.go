@@ -65,6 +65,7 @@ func (lineRef *lineReference) replaceLines() {
 }
 
 func initParse() {
+	configureGeneratedUUIDs(args.Using("derive-uuids"), func() string { return workflowName })
 	if args.Using("debug") {
 		fmt.Printf("Parsing %s...\n", filename)
 	}

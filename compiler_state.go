@@ -100,6 +100,7 @@ func resetCompilerState() {
 	questions = map[string]*question{}
 	menus = map[string][]varValue{}
 	uuids = map[string]string{}
+	resetGeneratedUUIDs()
 	functions = map[string]*function{}
 	usingFunctions = false
 	automationTriggers = []AutomationTrigger{}

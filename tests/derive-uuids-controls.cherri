@@ -1,0 +1,22 @@
+// compile-only: anonymous control starts have unique paired endings
+const source = text("uuid-source")
+if source == "uuid-source" {
+    repeat i for 2 {
+        if source != "never" {
+            text("nested")
+        }
+    }
+} else {
+    text("else")
+}
+@items = [1]
+for item in @items {
+    text("each")
+}
+menu "Choose" {
+    item "One":
+        text("one")
+    item "Two":
+        text("two")
+}
+output(source)

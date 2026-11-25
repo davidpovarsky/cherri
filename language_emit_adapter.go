@@ -373,12 +373,21 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 
 	session := newSession()
 	defer session.Close()
+	if options.DeriveUUIDs {
+		// Cold canonical initialization resets globals; finish it before the
+		// workflow's generated-identity sequence begins.
+		ensureCanonicalStandardActionsLocked()
+	}
 	session.buildProfile = profile
 	session.configureAssets(filePath, options.AssetCache)
 	session.configurePlatformVersions(analyzer.Registry(), analyzer.Targets(), analyzer.MinTargetVersionString(), analyzer.MaxTargetVersionString())
 
 	lowerer := lower.NewLowererWithSession(analyzer.Registry(), session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
+	configureGeneratedUUIDs(options.DeriveUUIDs, func() string { return lowerer.WorkflowName })
+	if options.DeriveUUIDs {
+		lowerer.SetUUIDGenerator(func() string { return strings.ToUpper(nextGeneratedUUID("v2-lowering")) })
+	}
 	lowerer.SetBaseFilePath(filePath)
 	lowerer.SetModuleGraph(graph)
 	lowerer.SetModuleRegistries(analyzer.ModuleRegistries())
@@ -421,7 +430,7 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	if profileErr != nil {
 		return profileErr
 	}
-	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile, RequireAuthoredWorkflow: args.Using("require-authored-workflow")})
+	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile, DeriveUUIDs: args.Using("derive-uuids"), RequireAuthoredWorkflow: args.Using("require-authored-workflow")})
 	if err != nil {
 		return err
 	}

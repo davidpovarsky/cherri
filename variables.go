@@ -265,16 +265,7 @@ func duplicateOutputName() string {
 }
 
 func createUUID(salt *string) string {
-	var deterministic = args.Using("derive-uuids")
-	if deterministic {
-		var seeds = [][]byte{
-			[]byte(workflowName),
-			[]byte(*salt),
-		}
-		return deterministicUUID(seeds...)
-	}
-
-	return uuid.New().String()
+	return nextGeneratedUUID(*salt)
 }
 
 // deterministicUUID returns a UUID derived from the given pieces.

@@ -1,0 +1,9 @@
+// compile-only: macro-generated native identities honor derive-uuids
+debugStartTimer("ids")
+const source = text("uuid-macro")
+const checked = require(source, "text", true)
+text(checked)
+debugLog()
+debugStopTimer("ids")
+const exported = debugExport()
+output(exported)

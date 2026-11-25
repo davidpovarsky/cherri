@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
-	"github.com/google/uuid"
 )
 
 const debugExportSchemaVersion = "cherri.debug-export/1"
@@ -89,7 +88,7 @@ func (b *debugExportExpansion) add(id string, params map[string]any) {
 }
 
 func (b *debugExportExpansion) produce(id string, params map[string]any) WFTextTokenAttachment {
-	out := strings.ToUpper(uuid.NewString())
+	out := strings.ToUpper(nextGeneratedUUID("debug-export"))
 	params["UUID"] = out
 	b.add(id, params)
 	return debugOutputRef(out)
@@ -151,7 +150,7 @@ func buildDebugExportActions(params map[string]any, resultUUID, resultName strin
 		sample := b.produce("gettext", map[string]any{"WFTextActionText": "Cherri export Text witness"})
 		textWitness = b.produce("getitemtype", map[string]any{"WFInput": sample})
 	}
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("debug-export"))
 	b.add("repeat.each", map[string]any{
 		"WFInput": debugLogValueRef(debugLogVariableName), "GroupingIdentifier": group, "WFControlFlowMode": 0,
 	})
@@ -168,7 +167,7 @@ func buildDebugExportActions(params map[string]any, resultUUID, resultName strin
 	if options.redact {
 		b.row("REDACTED", typeValue, nil)
 	} else {
-		conditional := strings.ToUpper(uuid.NewString())
+		conditional := strings.ToUpper(nextGeneratedUUID("debug-export"))
 		b.add("conditional", backend.BuildIfStartTyped(conditional,
 			map[string]any{"Type": "Variable", "Variable": actualType}, 4,
 			requireComparisonText(textWitness), nil, backend.OperandString, true))
@@ -176,9 +175,9 @@ func buildDebugExportActions(params map[string]any, resultUUID, resultName strin
 		b.row("TEXT_PAYLOAD_ENCODED", typeValue, &encoded)
 		b.add("conditional", BuildIfElse(conditional))
 		b.row("UNSUPPORTED_PAYLOAD_TYPE", typeValue, nil)
-		b.add("conditional", BuildIfEnd(conditional, strings.ToUpper(uuid.NewString())))
+		b.add("conditional", BuildIfEnd(conditional, strings.ToUpper(nextGeneratedUUID("debug-export"))))
 	}
-	rowsUUID := strings.ToUpper(uuid.NewString())
+	rowsUUID := strings.ToUpper(nextGeneratedUUID("debug-export"))
 	b.add("repeat.each", map[string]any{
 		"WFControlFlowMode": 2, "GroupingIdentifier": group, "UUID": rowsUUID,
 	})
@@ -211,7 +210,7 @@ func buildDebugExportActions(params map[string]any, resultUUID, resultName strin
 		"WFInput": encodedFile, "WFEncodeMode": "Decode",
 	})
 	if resultUUID == "" {
-		resultUUID = strings.ToUpper(uuid.NewString())
+		resultUUID = strings.ToUpper(nextGeneratedUUID("debug-export"))
 	}
 	extension := "json"
 	if options.format == "text" {

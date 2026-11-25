@@ -2773,3 +2773,19 @@ affected language packages passed; generated coverage includes every current
 quantity parameter (four) in both Legacy and V2. The new Cherri fixtures also
 compiled to dictionary magnitudes. Apple execution and the wider differential
 suite remain separate. See [the source audit and bounded evidence](dynamic-quantity-reference-audit-20261125.md).
+
+
+## 2026-11-25 — Deterministic UUID generation across both frontends
+
+The optional derived-ID path inherited collisions for repeated array elements
+and anonymous control blocks; V2 ignored the flag, and macro expansions retained
+independent random IDs. A per-compilation domain/workflow/occurrence sequence now
+serves frontend and canonical generation with explicit V2 options and reset
+boundaries. Imported explicit IDs remain exact; default IDs remain random v4.
+
+Actual RED failures are retained. Focused affected regressions and lower/backend
+packages passed. The unchanged differential comparator accepted all 12 exact
+replay pairs from 24 separate processes for six array/control cases in both
+frontends, with valid graphs and zero raw differences. Macro UUID-valued display
+names remain visible differences between modes. [Root repair and evidence](deterministic-uuid-root-repair-20261125.md).
+Apple execution and integrated full-suite acceptance remain separate.

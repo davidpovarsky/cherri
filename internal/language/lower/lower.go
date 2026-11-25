@@ -88,6 +88,7 @@ type Lowerer struct {
 	functionDispatchNames          map[*syntax.FunctionDecl]string
 	WorkflowName                   string
 	uuidCounter                    int
+	uuidGenerator                  func() string
 	autoNumberProducerCount        int
 	repeatDepth                    int
 	currentBindingName             string
@@ -211,6 +212,9 @@ func (l *Lowerer) GenerateUUID() string {
 		}
 	}
 	l.uuidCounter++
+	if l.uuidGenerator != nil {
+		return l.uuidGenerator()
+	}
 	b := make([]byte, 16)
 	_, _ = rand.Read(b)
 	b[6] = (b[6] & 0x0f) | 0x40 // version 4
