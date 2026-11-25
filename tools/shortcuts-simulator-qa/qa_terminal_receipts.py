@@ -573,6 +573,23 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/tagged_carrier_runtime.py",
+    "tools/shortcuts-simulator-qa/test_tagged_carrier_runtime.py",
+    "tools/shortcuts-simulator-qa/tagged_carrier_public_originals.py",
+    "tools/shortcuts-simulator-qa/test_tagged_carrier_public_originals.py",
+    "tools/shortcuts-simulator-qa/tagged_carrier_graph.py",
+    "tools/shortcuts-simulator-qa/test_tagged_carrier_graph.py",
+    "tools/shortcuts-simulator-qa/tagged_carrier_observation.py",
+    "tools/shortcuts-simulator-qa/test_tagged_carrier_observation.py",
+    "tools/shortcuts-simulator-qa/native_comparison_graph.py",
+    "tools/shortcuts-simulator-qa/nested_list_public_originals.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_publication.py",
+    "tools/shortcuts-simulator-qa/runtime_poc_device.py",
+    "tools/shortcuts-simulator-qa/test_runtime_callback_contract.py",
+    "tools/shortcuts-simulator-qa/fixtures/qa-tagged-value-carrier-v2.cherri",
+    "tools/shortcuts-simulator-qa/fixtures/qa-tagged-value-carrier-v2.expected.json",
+    "tools/shortcuts-simulator-qa/fixtures/qa-tagged-value-carrier-v2.enrollment.json",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
     "tools/shortcuts-simulator-qa/simulator_listapps_observation.py",
     "tools/shortcuts-simulator-qa/test_simulator_listapps_observation.py",
     "tools/shortcuts-simulator-qa/project_prerequisite_observation.py",

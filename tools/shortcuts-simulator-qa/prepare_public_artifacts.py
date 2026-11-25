@@ -21,6 +21,7 @@ ALLOWED = {
     "runtime/signing-provenance.json", "runtime/callback-events.json", "runtime/runtime-trace.jsonl",
     "runtime/http-probe-diagnostic.json", "runtime/simulator-session-recovery.json",
     "runtime/json-body-diagnostic.json", "runtime/nested-list-observation.json",
+    "runtime/tagged-carrier-observation.json",
     "runtime/debug-label-acceptance.json", "editor/debug-label-preview.json",
     "runtime/xcode-destination-readiness.json", "runtime/xcode-destination-command-diagnostic.json",
     "runtime/post-test-inspection.json", "runtime/terminal-acquisition.json",
@@ -267,6 +268,13 @@ def stage(root, output, trusted_sources):
                             json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8")))
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_HTTP_DIAGNOSTIC"})
+                        continue
+                if name == "runtime/tagged-carrier-observation.json":
+                    from tagged_carrier_runtime import validate_public_diagnostic
+                    try:
+                        validate_public_diagnostic(parsed, root)
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_TAGGED_CARRIER_OBSERVATION"})
                         continue
                 if name == "runtime/nested-list-observation.json":
                     from nested_list_runtime import validate_public_diagnostic
