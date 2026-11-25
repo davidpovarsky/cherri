@@ -190,8 +190,9 @@ class Boundary:
             # existing reviewed resolver, including its explicit headless case.
             result, self.prepare_receipt = self.prepare(
                 self.private, self.udid, min(15, self.remaining()), now=self.now)
-            require(result["result"] == "PASS", "SESSION_PREPARE")
+            # Persist the original resolver/open result even when preparation fails.
             (self.private / "prepare.original.json").write_bytes(encoded(self.prepare_receipt))
+            require(result["result"] == "PASS", "SESSION_PREPARE")
             state = self.state()
             self.boot_if_stopped(state)
             result, _ = self.run("bootstatus", ["xcrun", "simctl", "bootstatus", self.udid, "-b"])

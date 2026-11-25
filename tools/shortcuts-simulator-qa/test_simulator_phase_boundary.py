@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 from unittest import mock
 
 import simulator_phase_boundary as boundary
@@ -123,6 +124,76 @@ class PhaseTests(unittest.TestCase):
         self.assertFalse(phase.run_session())
         self.assertEqual(len(phase.states), 1)
         self.assertFalse(phase.boot_issued)
+
+    def assert_failed_prepare_packet(self, failing_stage):
+        tool = self.root / "Selected Xcode.app/Contents/Developer/usr/bin/simctl"
+        tool.parent.mkdir(parents=True)
+        tool.write_bytes(b"SYNTHETIC_ACTIVE_TOOL")
+        tool.chmod(0o700)
+        app = tool.parent.parent.parent / "Applications/Simulator.app"
+        app.mkdir(parents=True)
+        observed_argv = []
+        expected_exit = 61 if failing_stage == "resolve" else 73
+
+        def native_control(argv, allowance, *, output):
+            observed_argv.append(list(argv))
+            stage = "resolve" if argv == ["xcrun", "--find", "simctl"] else "launch"
+            failed = stage == failing_stage
+            raw = (b"original selected-tool failure\n" if failed else
+                   (str(tool) + "\n").encode())
+            output.write(raw)
+            return {"result": "EXIT_NONZERO" if failed else "PASS",
+                    "exitCode": expected_exit if failed else 0, "elapsedMs": 1}
+
+        def actual_prepare(root, udid, allowance, **kwargs):
+            return boundary.launch.prepare(root, udid, allowance,
+                                           runner=native_control, **kwargs)
+
+        runner = Runner()
+        phase = self.phase(runner, prepare=actual_prepare)
+        self.assertFalse(phase.run_session())
+        original = (phase.private / "prepare.original.json").read_bytes()
+        receipt = json.loads(original)
+        self.assertEqual(receipt, phase.prepare_receipt)
+        self.assertEqual(receipt["commands"][-1]["stage"], failing_stage)
+        self.assertEqual(receipt["commands"][-1]["result"], "EXIT_NONZERO")
+        self.assertEqual(receipt["commands"][-1]["exitCode"], expected_exit)
+        self.assertEqual(observed_argv[0], ["xcrun", "--find", "simctl"])
+        if failing_stage == "launch":
+            self.assertEqual(observed_argv[1],
+                             ["open", "-g", "-a", str(app), "--args",
+                              "-CurrentDeviceUDID", UDID])
+        self.assertFalse(phase.boot_issued)
+        self.assertFalse(any(command[1:3] in (["simctl", "bootstatus"],
+                                             ["simctl", "getenv"])
+                             for command in runner.commands))
+        recipient = self.repo / boundary.RECIPIENT
+        recipient.parent.mkdir(parents=True)
+        recipient.write_bytes((Path(__file__).resolve().parents[2] /
+                               boundary.RECIPIENT).read_bytes())
+        summary = phase.seal()
+        self.assertEqual(summary["status"], "BLOCKED")
+        self.assertFalse(summary["formalAcceptanceGranted"])
+        self.assertFalse(summary["shortcutExecuted"])
+        member = next(row for row in summary["members"]
+                      if row["name"] == "prepare.original.json")
+        self.assertEqual(member["bytes"], len(original))
+        self.assertEqual(member["sha256"], hashlib.sha256(original).hexdigest())
+        with zipfile.ZipFile(phase.private / "session-originals.zip") as archive:
+            self.assertEqual(archive.read("prepare.original.json"), original)
+            for command in receipt["commands"]:
+                stream = command["combinedOutput"]
+                raw = archive.read(stream["path"])
+                self.assertEqual(len(raw), stream["bytes"])
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), stream["sha256"])
+        cipher = (phase.public / "session-originals.zip.p7m").read_bytes()
+        self.assertEqual(summary["ciphertext"]["sha256"], hashlib.sha256(cipher).hexdigest())
+
+    def test_failed_resolver_original_is_retained_in_sealed_packet(self):
+        self.assert_failed_prepare_packet("resolve")
+
+    def test_failed_open_original_is_retained_in_sealed_packet(self):
+        self.assert_failed_prepare_packet("launch")
 
     def test_identity_types_and_phase_are_not_coerced(self):
         for key, value in (("runAttempt", True), ("runId", 123), ("phase", "any-command"),
