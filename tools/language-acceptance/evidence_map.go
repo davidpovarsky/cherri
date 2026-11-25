@@ -312,6 +312,10 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			Assertions:           assertions,
 			ResultReferences:     resultRefs,
 		}
+		if g.ID == "BRG01" {
+			mapping.RequiredAssertions = map[string]string{"scope": takeoverScope, "closure_complete": "false"}
+			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-takeover-preservation-BRG01"}
+		}
 		doc.Mappings[g.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
 	}
@@ -820,7 +824,7 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 	base := []string{"tools/language-acceptance:runGates"}
 	switch id {
 	case "BRG01":
-		return append(base, "scripts/verify-backend-recovery.sh")
+		return []string{takeoverTestID}
 	case "BRG02":
 		return append(base,
 			"github.com/electrikmilk/cherri/internal/shortcutcompare:TestAlphaRenamingPasses",
@@ -895,7 +899,9 @@ func deriveGateFixtures(id string) []string {
 		}
 		return paths
 	}
-
+	if id == "BRG01" {
+		return append([]string{}, takeoverSources...)
+	}
 	if id == "BRG11" {
 		return append([]string{}, parameterFormsProductionPaths...)
 	}
