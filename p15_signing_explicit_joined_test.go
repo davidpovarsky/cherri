@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -206,6 +207,9 @@ func p15BRG26StaleState(t *testing.T, mode string) (a, b []byte, directory, inpu
 	})
 	a = p15BRG26Unsigned(t, mode, "BRG26 A earlier", p15BRG26Earlier)
 	earlierShortcut := shortcut
+	if _, err := plist.Unmarshal(a, &earlierShortcut); err != nil {
+		t.Fatal("cannot restore the actual earlier A workflow", err)
+	}
 	b = p15BRG26Unsigned(t, mode, p15BRG26Name, p15BRG26Current)
 	if bytes.Equal(a, b) {
 		t.Fatal("independent A/B compilation produced equal bytes")
@@ -288,7 +292,7 @@ func TestBackendRecovery26ExplicitFileAfterSequentialCompilation(t *testing.T) {
 				after := p15DirectoryDigest(t, directory)
 				delete(before, filepath.Base(output))
 				delete(after, filepath.Base(output))
-				if fmt.Sprint(before) != fmt.Sprint(after) {
+				if !reflect.DeepEqual(before, after) {
 					t.Fatal("explicit signing changed A, the unsigned B artifact, or a sibling")
 				}
 				p15AssertNoSigningScratch(t, directory)
