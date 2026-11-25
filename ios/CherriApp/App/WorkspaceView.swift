@@ -34,6 +34,7 @@ struct WorkspaceView: View {
     @State private var buildRequestGeneration: UInt64 = 0
     @State private var isSigning = false
     @State private var lastBuildOutcome = ""
+    @State private var publishedBuildRequest: CherriEditorBuildRequest?
     @State private var isImporting = false
     @State private var isApplyingPreviewEdit = false
     @State private var previewEditGeneration = 0
@@ -164,6 +165,21 @@ struct WorkspaceView: View {
                 diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
             }
         }
+        .onChange(of: currentBuildRequest) { _, request in
+            // Results describe one exact UTF-16 source, mode and name even when
+            // live preview is disabled. A visual edit may already have published
+            // a rebuilt result for this new request; preserve that matching result.
+            if compiled?.sourceRequest != request {
+                compiled = nil
+                signedURL = nil
+            }
+            if publishedBuildRequest != request {
+                diagnostic = nil
+                diagnostics = []
+                lastBuildOutcome = ""
+                publishedBuildRequest = nil
+            }
+        }
         .task(id: CherriLivePreviewRequest(request: currentBuildRequest, isApplyingPreviewEdit: isApplyingPreviewEdit)) {
             guard livePreview, !isImporting, !isApplyingPreviewEdit else { return }
             // An empty document has no preview to render. Keep editor metadata
@@ -278,10 +294,10 @@ struct WorkspaceView: View {
                     .accessibilityIdentifier("diagnosticStatusText")
                     .accessibilityValue(lastBuildOutcome)
                     .lineLimit(2)
-            } else if compiled != nil {
+            } else if let compiled {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
-                Text("Compiled · \(actionCatalog.count) actions · Preview editable")
+                Text("Compiled · \(compiled.actualMode.uppercased()) · \(actionCatalog.count) actions · Preview editable")
                     .accessibilityIdentifier("compiledStatusText")
                     .accessibilityValue(lastBuildOutcome)
             } else {
@@ -363,6 +379,7 @@ struct WorkspaceView: View {
             else { return }
 
             compiled = result
+            publishedBuildRequest = request
             lastBuildOutcome = signed ? "Signing succeeded" : "Build succeeded"
             diagnostic = nil
             diagnostics = []
@@ -385,6 +402,7 @@ struct WorkspaceView: View {
             else { return }
 
             compiled = nil
+            publishedBuildRequest = request
             lastBuildOutcome = signed ? "Signing failed" : "Build failed"
             diagnostic = compilerError
             if let analysis, !analysis.valid && !analysis.diagnostics.isEmpty {
@@ -417,6 +435,7 @@ struct WorkspaceView: View {
                 column: 1
             )
             compiled = nil
+            publishedBuildRequest = request
             lastBuildOutcome = signed ? "Signing failed" : "Build failed"
             diagnostic = diag
             diagnostics = [diag]
