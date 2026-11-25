@@ -4987,59 +4987,16 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	}
 
 	if actionName == "color" {
-		var args []interface{}
-		if call.PrimaryArg != nil {
-			v, err := l.lowerExpression(call.PrimaryArg)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		for _, a := range call.NamedArgs {
-			v, err := l.lowerExpression(a.Value)
-			if err != nil {
-				return nil, err
-			}
-			args = append(args, v)
-		}
-		r := 0.0
-		g := 0.0
-		b := 0.0
-		alpha := 1.0
-		toFloat := func(val interface{}) float64 {
-			switch v := val.(type) {
-			case float64:
-				return v
-			case float32:
-				return float64(v)
-			case int:
-				return float64(v)
-			case int64:
-				return float64(v)
-			default:
-				var f float64
-				fmt.Sscanf(fmt.Sprintf("%v", val), "%f", &f)
-				return f
-			}
-		}
-		if len(args) > 0 {
-			r = toFloat(args[0])
-		}
-		if len(args) > 1 {
-			g = toFloat(args[1])
-		}
-		if len(args) > 2 {
-			b = toFloat(args[2])
-		}
-		if len(args) > 3 {
-			alpha = toFloat(args[3])
+		var components, diagnostics = analysis.ColorLiteralComponents(call)
+		if len(diagnostics) != 0 {
+			return nil, fmt.Errorf("%s", diagnostics[0].String())
 		}
 		return map[string]interface{}{
 			"WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
-			"redComponent":              r,
-			"greenComponent":            g,
-			"blueComponent":             b,
-			"alphaComponent":            alpha,
+			"redComponent":              components[0],
+			"greenComponent":            components[1],
+			"blueComponent":             components[2],
+			"alphaComponent":            components[3],
 		}, nil
 	}
 

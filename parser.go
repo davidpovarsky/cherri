@@ -517,7 +517,7 @@ func collectColorValue(value *any) {
 		},
 	}}
 
-	*value = collectArguments()
+	*value = collectValueConstructorArguments()
 
 	if char == ')' {
 		advance()
@@ -543,7 +543,7 @@ func collectQtyValue(value *any) {
 		},
 	}}
 
-	*value = collectArguments()
+	*value = collectValueConstructorArguments()
 
 	if char == ')' {
 		advance()
