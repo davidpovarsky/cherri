@@ -205,7 +205,7 @@ jobs:
           exit "$primary_status"
 
       - name: Run Go Simulator QA & Trace Oracle Unit Tests
-        run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug|TestP15RuntimeDiagnostic" .
+        run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug|TestP15RuntimeDiagnostic|TestP15Storage" .
 
       - name: Test AX Inspector and publication quarantine
         run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_*.py' -v
@@ -321,6 +321,28 @@ jobs:
         with:
           name: cherri-tagged-carrier-public-originals-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/cherri-tagged-carrier-public-originals/${{ github.run_id }}-${{ github.run_attempt }}/
+          retention-days: 7
+          if-no-files-found: error
+
+
+      - name: Retain exact originals for the public storage-delete diagnostic
+        id: storage_delete_public_originals
+        if: always() && steps.privacy_gate.outputs.passed == 'true' && inputs.sample_id == 'qa-storage-delete' && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
+        timeout-minutes: 1
+        run: |
+          python3 -B tools/shortcuts-simulator-qa/storage_public_originals.py \
+            --repo . --root "artifacts/cherri-ios27-simulator-qa/$GITHUB_RUN_ID" \
+            --public-root "artifacts/cherri-ios27-simulator-qa-public/$GITHUB_RUN_ID" \
+            --output "artifacts/cherri-storage-delete-public-originals/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+            --fixture qa-storage-delete-v2 --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Upload the fixed public storage-delete originals
+        if: always() && steps.storage_delete_public_originals.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-storage-delete-public-originals-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/cherri-storage-delete-public-originals/${{ github.run_id }}-${{ github.run_attempt }}/
           retention-days: 7
           if-no-files-found: error
 
