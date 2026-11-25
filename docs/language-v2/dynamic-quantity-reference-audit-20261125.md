@@ -186,3 +186,32 @@ These results establish compiler and native plist behavior. Apple native
 execution, the wider differential corpus, integration, and release acceptance
 are separate work owned by the coordinating task. No native runtime outcome is
 inferred from a successful Linux compile or from the Go regression tests.
+
+## Root fixture include contract follow-up
+
+The first integrated whole-Go run stopped in `TestCherriNoSign` at the added
+`tests/qty-dynamic.cherri`: its explicit `actions/calendar` include redeclared
+`eventDetail`. The root fixture runner already loads all standard categories,
+then preserves definition caches between fixtures while resetting parse scratch
+state. The technical reference explicitly requires root fixtures to rely on
+those injected definitions; explicit category includes belong in standalone
+compilation inputs.
+
+At frozen integration source `ca26086ba81ed7247b7b009aff2f59d5943dc9d6`, the
+focused command `go test -run '^TestCherriNoSign$' -count=1 -v .` reproduced exit1
+and the same duplicate-enumeration diagnostic. Removing only that redundant
+include makes the identical command pass and compile all52 root fixtures.
+The quantity fixture still contains the action-output, mutable-variable, and
+coerced-global quantity cases. No compiler state/reset behavior or semantic
+assertion was changed. The six newly added root fixtures were inspected; none
+of the three deterministic-UUID fixtures contains a category include, and all
+six compile in the successful run. Nested differential fixtures use their own
+standalone runner and retain their required includes.
+
+The original RED log, pre-fix fixture, GREEN log, source hashes, and command
+receipts are retained under
+`/mnt/development/projects/evidence/cherri-differential-30-20261125/fixture/`.
+The committed receipt is
+`evidence/dynamic-quantity-fixture-20261125/verification.json`.
+This focused unsigned-fixture proof is separate from the root-owned whole-Go
+rerun and from native signing/runtime acceptance.

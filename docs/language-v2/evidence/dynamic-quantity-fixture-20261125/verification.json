@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "base_sha": "ca26086ba81ed7247b7b009aff2f59d5943dc9d6",
+  "root_cause": "Root tests/*.cherri fixture explicitly included actions/calendar after TestCherri/NoSign preloaded standard actions and preserved enumeration definitions. The normal duplicate-enumeration diagnostic correctly rejected the redeclaration.",
+  "contract_sources": [
+    "docs/agent-technical-reference.md testing section: standard categories auto-injected; explicit includes needed for individual compilation only",
+    "cherri_test.go TestCherri: loadStandardActions plus scratch-state-only reset",
+    "actions_std.go loadStandardActions: include handling then clear inclusion scratch lists",
+    "parser.go collectEnumeration: reject duplicate declared name"
+  ],
+  "fix": "Remove only the redundant calendar include from tests/qty-dynamic.cherri. Preserve all3 dynamic quantity cases; no compiler or state code changes.",
+  "red": {
+    "base_sha": "ca26086ba81ed7247b7b009aff2f59d5943dc9d6",
+    "command": [
+      "go",
+      "test",
+      "-run",
+      "^TestCherriNoSign$",
+      "-count=1",
+      "-v",
+      "."
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 51.413,
+    "source_sha256": "b54f9cd60d1b262f3d0333ff0f429775b3a8832dabd37a2e456365423057e78a",
+    "log_sha256": "e39340eaaa3e1a708f7b551e652a10dee1cb59298276c659905492d586ea7ceb",
+    "scope": "Focused unsigned fixture runner; no full compiler gate or native execution"
+  },
+  "green": {
+    "base_sha": "ca26086ba81ed7247b7b009aff2f59d5943dc9d6",
+    "command": [
+      "go",
+      "test",
+      "-run",
+      "^TestCherriNoSign$",
+      "-count=1",
+      "-v",
+      "."
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.492,
+    "source_sha256": "3eb532d7d7a06b7b1d78310e0c63a1467a4fec12b5427b1337708eaa14e9b0ee",
+    "log_sha256": "c17ea2ab0d6d4c4afabf98a78b0dc45d4b38006430684e0d57bcf0b7f14cebf7",
+    "compiled_fixture_count": 52,
+    "compiled_fixtures": [
+      "tests/a11y.cherri",
+      "tests/ai.cherri",
+      "tests/arrays.cherri",
+      "tests/automations.cherri",
+      "tests/calendar.cherri",
+      "tests/conditionals.cherri",
+      "tests/control-flow-output.cherri",
+      "tests/copy-paste.cherri",
+      "tests/corpus-batch001.cherri",
+      "tests/crypto.cherri",
+      "tests/date-comparisons.cherri",
+      "tests/definitions.cherri",
+      "tests/derive-uuids-arrays.cherri",
+      "tests/derive-uuids-controls.cherri",
+      "tests/derive-uuids-macros.cherri",
+      "tests/dictionary.cherri",
+      "tests/empty-types.cherri",
+      "tests/enum.cherri",
+      "tests/functions.cherri",
+      "tests/getas-typecast.cherri",
+      "tests/globals.cherri",
+      "tests/hello-world.cherri",
+      "tests/images.cherri",
+      "tests/import-questions.cherri",
+      "tests/include-actions.cherri",
+      "tests/include.cherri",
+      "tests/includes.cherri",
+      "tests/loop-reference-compat.cherri",
+      "tests/math.cherri",
+      "tests/measurements.cherri",
+      "tests/menus.cherri",
+      "tests/nil.cherri",
+      "tests/numbers.cherri",
+      "tests/qty-color.cherri",
+      "tests/qty-dynamic.cherri",
+      "tests/raw-action-output-capture.cherri",
+      "tests/raw-action-variable-values.cherri",
+      "tests/raw-action.cherri",
+      "tests/repeats.cherri",
+      "tests/shortcuts.cherri",
+      "tests/smol.cherri",
+      "tests/split-screen.cherri",
+      "tests/standard.cherri",
+      "tests/storage.cherri",
+      "tests/text.cherri",
+      "tests/toggle-set.cherri",
+      "tests/types.cherri",
+      "tests/value-constructor-defaults.cherri",
+      "tests/variable-interpolation-utf16.cherri",
+      "tests/variables.cherri",
+      "tests/web.cherri",
+      "tests/zz-action-identifiers.cherri"
+    ],
+    "scope": "Focused unsigned fixture runner; no full compiler gate or native execution; production source and compiler state behavior unchanged"
+  },
+  "new_root_fixture_audit": [
+    {
+      "path": "tests/derive-uuids-arrays.cherri",
+      "baseline_explicit_includes": [],
+      "included_in_green_run": true
+    },
+    {
+      "path": "tests/derive-uuids-controls.cherri",
+      "baseline_explicit_includes": [],
+      "included_in_green_run": true
+    },
+    {
+      "path": "tests/derive-uuids-macros.cherri",
+      "baseline_explicit_includes": [],
+      "included_in_green_run": true
+    },
+    {
+      "path": "tests/loop-reference-compat.cherri",
+      "baseline_explicit_includes": [],
+      "included_in_green_run": true
+    },
+    {
+      "path": "tests/qty-dynamic.cherri",
+      "baseline_explicit_includes": [
+        "#include 'actions/calendar'"
+      ],
+      "included_in_green_run": true
+    },
+    {
+      "path": "tests/value-constructor-defaults.cherri",
+      "baseline_explicit_includes": [],
+      "included_in_green_run": true
+    }
+  ],
+  "full_gate": "NOT_RUN_BY_THIS_COMPONENT",
+  "native": "NOT_RUN"
+}
