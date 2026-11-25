@@ -11,7 +11,7 @@ import unittest
 
 from test_workflow_input_contract import bash_path
 import test_runtime_callback_contract as callback_contract
-from fixture_compile_contract import EXPECTED_REJECTIONS
+from fixture_compile_contract import EXPECTED_REJECTIONS, PRESERVED_F04_COMPILATIONS, verify_preserved_compilation_source
 import file_materialization_diagnostic as file_probe
 import n03_text_equality_diagnostic as n03_probe
 import tempfile
@@ -218,7 +218,20 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
         stop = self.script.index("\n]\n", start) + 2
         assignment = ast.parse(self.script[start:stop]).body[0]
         specs = ast.literal_eval(assignment.value)
-        self.assertEqual(set(EXPECTED_REJECTIONS), {"qa-f04-yield-list-v2", "qa-f04-yield-empty-list-v2"})
+        self.assertEqual(set(EXPECTED_REJECTIONS), {"qa-f04-private-output-v2", "qa-f04-private-interpolation-v2"})
+        self.assertEqual(set(PRESERVED_F04_COMPILATIONS), {"qa-f04-yield-list-v2", "qa-f04-yield-empty-list-v2"})
+        self.assertFalse(set(EXPECTED_REJECTIONS).intersection(PRESERVED_F04_COMPILATIONS))
+        self.assertIn("verify_preserved_compilation_source(fid, src_bytes)", self.script)
+        for fid in PRESERVED_F04_COMPILATIONS:
+            original = (self.root / "tools/shortcuts-simulator-qa/fixtures" / (fid + ".cherri")).read_bytes()
+            pinned = verify_preserved_compilation_source(fid, original)
+            self.assertEqual(pinned["compilerOutcome"], "COMPILE_REQUIRED")
+            self.assertEqual(pinned["appleRuntime"], "NOT_RUN")
+            self.assertFalse(pinned["formalF04Acceptance"])
+            with self.assertRaisesRegex(RuntimeError, "F04_PRESERVED_SOURCE_MISMATCH"):
+                verify_preserved_compilation_source(fid, original + b"// changed original\n")
+        for fid in EXPECTED_REJECTIONS:
+            self.assertIn((fid, fid + ".cherri", "v2"), specs)
         self.assertIn("verify_expected_rejection(fid,", self.script)
         self.assertIn('"fixtureRejections": fixture_rejections', self.script)
         for fid in CASES:

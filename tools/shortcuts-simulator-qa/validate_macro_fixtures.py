@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 from prepare_public_artifacts import PublicationBlocked, stage, trusted_fixture_sources
-from fixture_compile_contract import EXPECTED_REJECTIONS
+from fixture_compile_contract import EXPECTED_REJECTIONS, PRESERVED_F04_COMPILATIONS, verify_preserved_compilation_source
 from native_boundary_diagnostic import FIXTURE_ID as BOUNDARY_ID, verify_source as verify_boundary_source, verify_graph as verify_boundary_graph, verify_causal_mutations as verify_boundary_mutations
 from binding_defaults_probe import CASES as BINDING_CASES, verify_adapter_source, verify_adapter_graph
 from export_unicode_diagnostic import FIXTURE_ID as UNICODE_ID, validate_export_unicode_graph
@@ -56,6 +56,16 @@ assert manifest["compileAttempts"] == len(manifest["fixtures"]) + len(rejected)
 assert manifest["compiledArtifactCount"] == len(manifest["fixtures"])
 assert manifest["expectedDiagnosticRejectionCount"] == len(rejected)
 assert not set(rejected).intersection(entry["fixtureId"] for entry in manifest["fixtures"])
+compiled = {entry["fixtureId"]: entry for entry in manifest["fixtures"]}
+for fid, digest in PRESERVED_F04_COMPILATIONS.items():
+    entry = compiled[fid]
+    assert entry["sourceSha256"] == digest
+    assert entry["f04OriginalSource"] == verify_preserved_compilation_source(
+        fid, (repo / "tools/shortcuts-simulator-qa/fixtures" / (fid + ".cherri")).read_bytes())
+    raw = (directory / "builds" / (fid + ".shortcut")).read_bytes()
+    assert raw and entry["unsignedPlistSha256"] == hashlib.sha256(raw).hexdigest()
+    assert len(plistlib.loads(raw)["WFWorkflowActions"]) == entry["nativeActionCount"] > 0
+
 for fid, entry in rejected.items():
     assert entry["status"] == "BLOCKED_PLATFORM" and entry["appleRuntime"] == "NOT_RUN", fid
     assert entry["compileOutcome"] == "REJECTED_UNSUPPORTED_VALUE_SHAPE", fid
@@ -279,11 +289,11 @@ for name, code in (('ignored-release-profile', ignored_profile), ('missing-body'
     assert 'Release measure fixture retained diagnostics or lost/duplicated its native body' in result.stderr, result.stderr
     negatives[name] = {'exitCode': result.returncode, 'expectedRejectionVerified': True}
 
-# Execute the preserved F04 compile/check paths with damaged success evidence.
-# An unrelated error, success exit or stale artifact must never count as the
-# required fail-closed diagnostic.
+# Execute actual private-boundary compile/check rejections. The two original
+# nested/empty probes above now require real artifacts. Unrelated diagnostics,
+# a success exit or a stale artifact must never count as a boundary rejection.
 f04_only = program.replace("for fid, fname, dialect in fixture_specs:",
-    'for fid, fname, dialect in [spec for spec in fixture_specs if spec[0] == "qa-f04-yield-list-v2"]:')
+    'for fid, fname, dialect in [spec for spec in fixture_specs if spec[0] == "qa-f04-private-output-v2"]:')
 fault_anchor = "        rejection = verify_expected_rejection("
 rejection_negatives = {}
 for name, fault in (
@@ -304,7 +314,7 @@ target_start = script.index("<<'PY'\n", script.index(target_marker)) + len("<<'P
 target_end = script.index("\nPY\n", target_start)
 target_gate = script[target_start:target_end]
 target_results = {}
-for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [(BOUNDARY_ID, 0), (RECORD_EMPTY_ID, 0), (UNICODE_ID, 0), ("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
+for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [(fid, 0) for fid in PRESERVED_F04_COMPILATIONS] + [(BOUNDARY_ID, 0), (RECORD_EMPTY_ID, 0), (UNICODE_ID, 0), ("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
     result = subprocess.run([sys.executable, "-c", target_gate, str(directory / "compiler-manifest.json"), fid],
                             capture_output=True, text=True, timeout=10)
     assert result.returncode == expected_code, (fid, result.stderr)

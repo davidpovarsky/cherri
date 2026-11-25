@@ -700,7 +700,7 @@ from nested_list_runtime import prepared as verify_nested_list_prepared
 from tagged_carrier_runtime import prepared as verify_tagged_carrier_prepared
 from f04_record_empty_probe import verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph
 from native_boundary_diagnostic import verify_source as verify_boundary_source, verify_graph as verify_boundary_graph
-from fixture_compile_contract import EXPECTED_REJECTIONS, verify_expected_rejection
+from fixture_compile_contract import EXPECTED_REJECTIONS, verify_expected_rejection, verify_preserved_compilation_source
 from debug_label_acceptance import verify_source as verify_label_source, verify_graph as verify_label_graph, verify_causal_mutations as verify_label_mutations
 cherri_bin = os.path.join(artifact_dir, "builds", "cherri")
 fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtures")
@@ -787,6 +787,8 @@ fixture_specs = [
     ("qa-file-name-extension-v2", "qa-file-name-extension-v2.cherri", "v2"),
     ("qa-f04-yield-list-v2", "qa-f04-yield-list-v2.cherri", "v2"),
     ("qa-f04-yield-empty-list-v2", "qa-f04-yield-empty-list-v2.cherri", "v2"),
+    ("qa-f04-private-output-v2", "qa-f04-private-output-v2.cherri", "v2"),
+    ("qa-f04-private-interpolation-v2", "qa-f04-private-interpolation-v2.cherri", "v2"),
     ("qa-f04-record-empty-v2", "qa-f04-record-empty-v2.cherri", "v2"),
     ("qa-f01-ifresult-let-v2", "qa-f01-ifresult-let-v2.cherri", "v2"),
     ("qa-f01-ifresult-var-v2", "qa-f01-ifresult-var-v2.cherri", "v2"),
@@ -820,6 +822,7 @@ for fid, fname, dialect in fixture_specs:
         src_bytes = f.read()
     src_sha256 = hashlib.sha256(src_bytes).hexdigest()
     optional_forwarding_source = verify_optional_forwarding_source(root_dir, fid, src_bytes)
+    preserved_f04_source = verify_preserved_compilation_source(fid, src_bytes)
 
     build_src = os.path.join(builds_dir, fname)
     os.makedirs(os.path.dirname(build_src), exist_ok=True)
@@ -886,6 +889,7 @@ for fid, fname, dialect in fixture_specs:
         "fileMaterializationGraph": verify_file_materialization_graph(fid, actions),
         "bindingDefaultsSource": verify_adapter_source(root_dir, fid, src_bytes),
         "bindingDefaultsGraph": verify_adapter_graph(fid, actions),
+        "f04OriginalSource": preserved_f04_source,
         "recordEmptyFeasibilitySource": verify_record_empty_source(root_dir, fid, src_bytes),
         "recordEmptyFeasibilityGraph": verify_record_empty_graph(fid, actions),
         "nativeBoundarySource": verify_boundary_source(root_dir, fid, src_bytes),
