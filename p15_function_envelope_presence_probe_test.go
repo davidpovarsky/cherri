@@ -130,7 +130,7 @@ func TestP15FunctionEnvelopePresenceProbePreparation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := fmt.Sprintf("%x", sha256.Sum256(source)); got != "d309817c34294f105e70fd40c7e13e7de2ddc6b1f16d4738f744e450f4c6d242" {
+	if got := fmt.Sprintf("%x", sha256.Sum256(source)); got != "e3d9c1de1ef9ee78b8a11e73b3c296a746a30cf35b69f6a5fddf683f2318241a" {
 		t.Fatal("public diagnostic source changed", got)
 	}
 	raw, err := CompileSourceToPlist("CherriFunctionEnvelopePresenceProbe.cherri", string(source))

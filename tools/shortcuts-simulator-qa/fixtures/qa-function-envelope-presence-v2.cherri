@@ -27,7 +27,7 @@ function probeZero() -> Text {
     if callerKey == 1 {
         let rawCaller = getValue(envelope, "_cherri_caller_input")
         let observedRawCount = count(rawCaller)
-        rawCount = text(observedRawCount)
+        rawCount = f"{observedRawCount}"
         if observedRawCount > 0 { rawType = base64Encode(typeOf(rawCaller), lineBreakMode: "None") }
     }
     let savedCount = count(system.input)
@@ -60,7 +60,7 @@ function probeDefault(value: Text = "DEFAULT") -> Text {
     if callerKey == 1 {
         let rawCaller = getValue(envelope, "_cherri_caller_input")
         let observedRawCount = count(rawCaller)
-        rawCount = text(observedRawCount)
+        rawCount = f"{observedRawCount}"
         if observedRawCount > 0 { rawType = base64Encode(typeOf(rawCaller), lineBreakMode: "None") }
     }
     let savedCount = count(system.input)
@@ -93,7 +93,7 @@ function probeOptional(value: Text? = "DEFAULT") -> Text {
     if callerKey == 1 {
         let rawCaller = getValue(envelope, "_cherri_caller_input")
         let observedRawCount = count(rawCaller)
-        rawCount = text(observedRawCount)
+        rawCount = f"{observedRawCount}"
         if observedRawCount > 0 { rawType = base64Encode(typeOf(rawCaller), lineBreakMode: "None") }
     }
     let savedCount = count(system.input)
