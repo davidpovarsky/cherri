@@ -191,9 +191,21 @@ struct QADifferentialImportTiming {
               addTappedAt >= searchStartedAt, now >= addTappedAt else {
             return .rejected("IMPORT_LIBRARY_CLOCK_INVALID")
         }
-        if let failure = dispatch.failure { return .rejected(failure) }
-        // Behavior-preserving extraction of the existing UI clock for causal tests.
-        let deadline = addTappedAt.addingTimeInterval(30)
+        let deadline: Date
+        switch dispatch {
+        case .pending(let dispatchDeadline):
+            // Consent may precede completion of the original60s URL delivery.
+            // Pending delivery permits observation, never import confirmation.
+            guard now < dispatchDeadline else {
+                return .rejected("IMPORT_DISPATCH_DEADLINE_EXCEEDED")
+            }
+            deadline = dispatchDeadline
+        case .exited(let exit):
+            // Preserve the full30s library window after both Add and delivery.
+            // Neither repeated AX queries nor receipt reads reset this anchor.
+            deadline = max(addTappedAt, exit).addingTimeInterval(30)
+        case .rejected(let reason): return .rejected(reason)
+        }
         return .inspect(deadline: deadline,
                         canConfirm: dispatch.succeeded && now < deadline)
     }
