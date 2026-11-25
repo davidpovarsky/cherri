@@ -208,8 +208,20 @@ func TestLoopResultExplicitContextPlannerBoundaries(t *testing.T) {
 		{"call_inside_producer", "let values=repeat 2 {text(\"bound\")\nyield []}\nreturn count(values)"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			if plan := PlanLoopResultLocals(scopedPlanProgram(t, tc.source), DefaultRegistry()); plan != nil {
-				t.Fatal("shadow, private dataflow or closed producing-body boundary escaped")
+			program := scopedPlanProgram(t, tc.source)
+			plan := PlanLoopResultLocals(program, DefaultRegistry())
+			if tc.name == "call_inside_producer" {
+				binding := program.Statements[0].(*syntax.BindingStmt)
+				producer := binding.Value.(*syntax.RepeatStmt)
+				// A plan may track the value origin without authorizing its body.
+				// The body capability is the boundary used by analysis/lowering.
+				if LoopResultLocalBody(producer) != nil || (plan != nil && plan.Bodies[producer.BodyBlock]) {
+					t.Fatal("call-bearing producer gained private-cell body authority")
+				}
+				return
+			}
+			if plan != nil {
+				t.Fatal("shadow or private dataflow boundary escaped")
 			}
 		})
 	}

@@ -59,6 +59,7 @@ func TestP15F04ExplicitContextPrivateBoundary(t *testing.T) {
 		{"private_trace_label", body + "debugTraceEvent(stage:\"after\",label:values)\nreturn count(values)"},
 		{"omitted_previous_debug", body + "debugLog()\nreturn count(values)"},
 		{"omitted_previous_native", body + "native.action(\"is.workflow.actions.detect.text\", {})\nreturn count(values)"},
+		{"closed_producer_body", "let values=repeat 2 {text(\"bound\")\nyield []}\nreturn count(values)"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			raw, err := CompileSourceToPlist("private-context-"+tc.name+".cherri", tc.source)
