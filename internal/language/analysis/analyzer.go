@@ -1212,9 +1212,11 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			// an explicit None is different evidence and must retain its optional kind.
 			return types.OptionalType{Inner: types.Unknown}
 		case syntax.TokenNull:
-			// A raw escape does not create a plist-null representation. Reject
-			// explicit null before it can be omitted or coerced by serialization.
-			a.error(CodeNativeJSONNull, e.Span, "authored JSON null has no supported native value encoding; it cannot become none, empty text, or an omitted field")
+			// Authored null has a present private cell. A raw escape still cannot
+			// manufacture a plist-null node or silently omit a native field.
+			if a.rawNativeDataContext {
+				a.error(CodeNativeJSONNull, e.Span, "native metadata cannot encode JSON null; use an explicit JSON boundary")
+			}
 			return types.JsonNull
 		default:
 			return types.Unknown
@@ -1425,16 +1427,13 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 	case *syntax.ListExpr:
 		elements := make([]types.Type, 0, len(e.Elements))
-		for i, el := range e.Elements {
+		for _, el := range e.Elements {
 			elementType := a.analyzeExpression(el, scope)
 			if isVoidValue(elementType) {
 				a.error(CodeArgumentType, el.NodeSpan(), "Void cannot be stored as a list value")
-			} else {
-				a.requirePresentTransport(el, elementType, "List element")
-				if !a.inlineDictionaryArray && !a.rawNativeDataContext && a.isNativeListElement(el, elementType, scope) {
-					a.error(CodeNestedNativeList, el.NodeSpan(), fmt.Sprintf("nested List-valued element at item %d has no verified native content-row encoding; preserve nested arrays in Dictionary fields", i))
-				}
 			}
+			// Source-owned value cells retain Optional slots and nested Lists.
+			// Raw native metadata keeps its separate inline data route.
 			elements = append(elements, elementType)
 		}
 		return types.NewList(types.NewUnion(elements...))
@@ -1461,9 +1460,8 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			}
 			if isVoidValue(valueType) {
 				a.error(CodeArgumentType, entry.Value.NodeSpan(), "Void cannot be stored as a dictionary value")
-			} else {
-				a.requirePresentTransport(entry.Value, valueType, "Dictionary value")
 			}
+			// Dictionary values with absence/null use explicit value cells.
 			values = append(values, valueType)
 		}
 		return types.NewMap(types.Text, types.NewUnion(values...))

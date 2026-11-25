@@ -36,7 +36,7 @@ func DefinitelyPresent(value Type) bool {
 		return true
 	}
 	switch value.Kind() {
-	case KindUnknown, KindAnyContent, KindVoid, KindJsonNull:
+	case KindUnknown, KindAnyContent, KindVoid:
 		return false
 	}
 	return true

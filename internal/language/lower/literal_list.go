@@ -12,6 +12,9 @@ import (
 // field names in user data cannot turn an authored MapExpr into a serialized
 // List row or text token. Nested values use the existing semantic backend codec.
 func (l *Lowerer) lowerListDictionary(expr *syntax.MapExpr) (*ir.AttachmentToken, error) {
+	if types.TaggedMapValues(l.transportType(expr)) {
+		return l.lowerTaggedMap(expr)
+	}
 	value, err := l.lowerSemanticValue(expr)
 	if err != nil {
 		return nil, err
@@ -31,6 +34,9 @@ func (l *Lowerer) lowerListDictionary(expr *syntax.MapExpr) (*ir.AttachmentToken
 // are materialized as producers, so existing nested Dictionary codecs and exact
 // import payloads retain their own representation.
 func (l *Lowerer) lowerListExpression(expr *syntax.ListExpr, nativeItems bool) (interface{}, error) {
+	if nativeItems && types.TaggedListElements(l.transportType(expr)) {
+		return l.lowerTaggedList(expr)
+	}
 	list := make([]interface{}, len(expr.Elements))
 	laterWrites := l.semanticSiblingWrites(expr.Elements)
 	for i, element := range expr.Elements {

@@ -64,3 +64,28 @@ SHA256 `700ab089ac92878b6b1bf7e96857efd74ff640f101891d23dc80b5495305c6b2`.
 A bounded replay of only the three corrected function cases is pending;
 the twelve actual semantic failures and positive controls will not be rerun
 merely to reproduce unchanged results.
+
+## Initial implementation checkpoint
+
+The corrected three function fixtures were replayed at a102e130d9ca8fcfff79840a35f560027693768d.
+All three reached semantic analysis and reproduced the corresponding null,
+nested-List, and Optional-slot failures. Original receipt:
+json-list-corrected-function-red-01/receipt.original.json,
+SHA-256 83c7d94da11aa42fab20e36ac23af840713236cba698cbf94d0d8f8eae572dad.
+The previous parser failures remain preserved separately.
+
+The initial implementation is a source checkpoint, not a passing result.
+It adds source-owned value cells with kind, has_value, and an optional
+payload. JSON null is present with a distinct kind; None is absent. A List cell
+is one Dictionary so it cannot disappear merely because its payload is empty.
+Index and For consumers decode only checked structured sources. Ordinary
+native Dictionary arrays retain their existing inline codec; opaque native
+metadata never becomes compiler-owned by resembling cell keys.
+
+The first focused Go execution, complete graph controls, and real Apple runtime
+qualification are still pending at this checkpoint. Dynamic payload behavior
+must be verified on Apple; a successful local plist compilation is not that
+proof. Native/JSON conversion, structured operator cases not yet implemented,
+and extraction requiring a new representation conversion fail explicitly.
+The separate F04 source enrollment/stamps remain unchanged. Its dynamic yield
+payload helper integration is pending coordination with that lane.

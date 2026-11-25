@@ -163,7 +163,10 @@ func (jsonValueType) Name() string           { return "JsonValue" }
 func (jsonValueType) String() string         { return "JsonValue" }
 func (jsonValueType) Equals(other Type) bool { return other.Kind() == KindJsonValue }
 func (jsonValueType) AssignableTo(target Type) bool {
-	return target.Kind() == KindJsonValue || target.Kind() == KindUnknown || target.Kind() == KindAnyContent
+	if optional, ok := target.(OptionalType); ok {
+		return JsonValue.AssignableTo(optional.Inner)
+	}
+	return target.Kind() == KindJsonValue || target.Kind() == KindUnknown
 }
 
 var JsonValue = jsonValueType{}
@@ -175,6 +178,16 @@ func (jsonNullType) Name() string           { return "JsonNull" }
 func (jsonNullType) String() string         { return "JsonNull" }
 func (jsonNullType) Equals(other Type) bool { return other.Kind() == KindJsonNull }
 func (jsonNullType) AssignableTo(target Type) bool {
+	if optional, ok := target.(OptionalType); ok {
+		return JsonNull.AssignableTo(optional.Inner)
+	}
+	if union, ok := target.(UnionType); ok {
+		for _, member := range union.Members {
+			if JsonNull.AssignableTo(member) {
+				return true
+			}
+		}
+	}
 	return target.Kind() == KindJsonNull || target.Kind() == KindJsonValue || target.Kind() == KindUnknown
 }
 

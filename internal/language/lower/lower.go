@@ -41,6 +41,7 @@ type BindingRef struct {
 	OptionalPresence       interface{} // compiler-owned value presence, independent of argument omission
 	OptionalPresenceUnused bool        // exact source binding has no semantic presence consumer
 	LoopResultElement      types.Type  // source-owned local cell sequence; nil for ordinary values
+	TaggedTransport        types.Type  // source-owned structured value layout; nil for ordinary native values
 }
 
 func lookupContentItemClass(prop string) (string, bool) {
@@ -106,6 +107,7 @@ type Lowerer struct {
 	lexical                        lexicalLoweringState
 	provenanceVarNames             map[string]string
 	optionalFunctionReturn         bool
+	functionValueReturnType        types.Type
 	optionalExpressionPresence     map[syntax.Expression]interface{}
 	optionalPresenceDemand         map[*syntax.BindingStmt]bool
 	importedOptionalPresenceDemand map[string]bool
@@ -1420,6 +1422,8 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 		hasReturn := false
 		priorOptionalReturn := l.optionalFunctionReturn
+		priorValueReturn := l.functionValueReturnType
+		l.functionValueReturnType = l.resolveTypeAnnotation(fn.ReturnType)
 		l.optionalFunctionReturn = l.optionalFunctionParameter(fn.ReturnType)
 		for _, stmt := range fn.Body.Statements {
 			if _, ok := stmt.(*syntax.ReturnStmt); ok {
@@ -1427,10 +1431,12 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 			}
 			if err := l.lowerStatement(stmt); err != nil {
 				l.optionalFunctionReturn = priorOptionalReturn
+				l.functionValueReturnType = priorValueReturn
 				return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 			}
 		}
 		l.optionalFunctionReturn = priorOptionalReturn
+		l.functionValueReturnType = priorValueReturn
 
 		l.bindings = savedBindings
 
@@ -1572,7 +1578,10 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	case *syntax.ReturnStmt:
 		l.workflow.HasExplicitReturn = true
 		if s.Value != nil {
-			val, err := l.lowerRuntimeLiteral(s.Value)
+			if !types.PrivateValueTransport(l.functionValueReturnType) && types.PrivateValueTransport(l.transportType(s.Value)) {
+				return fmt.Errorf("E_TARGET_VALUE_SHAPE: structured return requires an explicit external value codec at %s", s.Value.NodeSpan())
+			}
+			val, err := l.lowerTypedRuntimeValue(s.Value, l.functionValueReturnType)
 			if err != nil {
 				return err
 			}
@@ -1731,6 +1740,11 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 			Type:                   bType,
 			OptionalPresenceUnused: !trackOptionalPresence,
 		}
+		if types.PrivateValueTransport(bType) {
+			binding := l.bindings[b.Name]
+			binding.TaggedTransport = bType
+			l.bindings[b.Name] = binding
+		}
 		if b.Mutable {
 			node := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
@@ -1747,7 +1761,11 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 	if !b.Mutable {
 		l.currentBindingName = b.Name
 	}
-	val, err := l.lowerRuntimeLiteral(b.Value)
+	var requestedTransport types.Type
+	if b.TypeExpr != nil {
+		requestedTransport = l.resolveTypeAnnotation(b.TypeExpr)
+	}
+	val, err := l.lowerTypedRuntimeValue(b.Value, requestedTransport)
 	l.currentBindingName = ""
 	if err != nil {
 		return err
@@ -1998,6 +2016,11 @@ func (l *Lowerer) lowerBindingNamed(source *syntax.BindingStmt, name string) err
 		ref.OptionalPresence = optionalPresence
 		ref.OptionalPresenceUnused = !trackOptionalPresence
 		ref.LoopResultElement = loopResultElement
+		if types.PrivateValueTransport(requestedTransport) {
+			ref.TaggedTransport = requestedTransport
+		} else if types.PrivateValueTransport(l.transportType(b.Value)) {
+			ref.TaggedTransport = l.transportType(b.Value)
+		}
 		if l.isPolymorphicContainerLookupExpr(b.Value) {
 			ref.PolymorphicLookup = true
 		}
@@ -2016,12 +2039,14 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		return err
 	}
 	defer restoreLocalCells()
-	val, err := l.lowerRuntimeLiteral(a.Value)
+	binding, isBound := l.bindings[a.Name]
+	if isBound && binding.TaggedTransport == nil && types.PrivateValueTransport(l.transportType(a.Value)) && binding.LoopResultElement == nil {
+		return fmt.Errorf("E_TARGET_VALUE_SHAPE: assignment cannot change a native storage slot into private cells without an explicit conversion at %s", a.Span)
+	}
+	val, err := l.lowerTypedRuntimeValue(a.Value, binding.TaggedTransport)
 	if err != nil {
 		return err
 	}
-
-	binding, isBound := l.bindings[a.Name]
 	// An imported native append may transport an opaque Optional reference
 	// without observing presence. It cannot establish the compiler-owned flag
 	// required by a later Optional consumer, including a previously tagged
@@ -3063,7 +3088,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 		op := binExpr.Op
 		clauses := flattenCompoundCondition(stmt.Condition, op)
 		var templates []any
-		canUseWFConditions := l.nativePredicateClauses(clauses, stmt.Modern || l.hasImportProvenance)
+		canUseWFConditions := l.nativePredicateClauses(clauses, stmt.Modern || l.hasImportProvenance) && !containsNullPredicate(stmt.Condition)
 		for _, c := range clauses {
 			if !canUseWFConditions {
 				break
@@ -3139,7 +3164,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 	}
 	if presenceCondition {
 		input, condCode, compareVal, opType = presenceInput, presenceCode, "0", backend.OperandString
-	} else if l.exactTextPredicate(stmt.Condition) {
+	} else if l.exactTextPredicate(stmt.Condition) || containsNullPredicate(stmt.Condition) {
 		value, err := l.lowerCallValue(stmt.Condition)
 		if err != nil {
 			return nil, err
@@ -3534,6 +3559,9 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 		prevItemBinding, hadItemBinding = l.bindings[stmt.ItemVar]
 		nativeName := l.lexicalLoopVariableName(stmt.ItemVar)
 		itemValue, itemPresence, itemType := l.localLoopResultForItem(stmt.Iterable, repeatItemName)
+		if value, presence, kind, tagged := l.taggedForItem(stmt.Iterable, repeatItemName); tagged {
+			itemValue, itemPresence, itemType = value, presence, kind
+		}
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
@@ -3764,11 +3792,17 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	if value, resolved := l.enumValues[expr]; resolved {
 		return value, nil
 	}
+	if value, matched, err := l.lowerNullComparison(expr); matched {
+		return value, err
+	}
 	if input, code, matched, err := l.lowerOptionalNoneCondition(expr); matched {
 		if err != nil {
 			return nil, err
 		}
 		return l.materializeOptionalPredicate(input, code), nil
+	}
+	if err := l.validateTaggedOperator(expr); err != nil {
+		return nil, err
 	}
 
 	switch e := expr.(type) {
@@ -3819,7 +3853,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		case syntax.TokenNone:
 			return nil, nil
 		case syntax.TokenNull:
-			return nil, fmt.Errorf("%s at %s: authored JSON null has no supported native value encoding", analysis.CodeNativeJSONNull, e.Span)
+			return l.emitValueCell("null", nil, "1"), nil
 		default:
 			return e.Value, nil
 		}
@@ -4010,6 +4044,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 
 	case *syntax.IndexExpr:
+		if _, nativeDictionary := presentType(l.transportType(e.Target)).(types.MapType); nativeDictionary && !types.TaggedMapValues(l.transportType(e.Target)) && types.TaggedListElements(l.exprTypes[e]) && !types.InlineDataNeedsCells(l.exprTypes[e]) {
+			return nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: nested native Dictionary array extraction requires an explicit structured conversion at %s", e.Span)
+		}
 		// An indexed literal is an authored runtime value. Reuse typed Dictionary
 		// materialization, including sibling captures and explicit empty fields.
 		targetVal, err := l.lowerRuntimeLiteral(e.Target)
@@ -4022,6 +4059,12 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 		if l.localLoopResultElement(e.Target) != nil {
 			return l.lowerLocalLoopResultIndex(e, targetVal, indexVal)
+		}
+		if types.TaggedListElements(l.transportType(e.Target)) {
+			return l.lowerTaggedListIndex(e, targetVal, indexVal)
+		}
+		if types.TaggedMapValues(l.transportType(e.Target)) {
+			return l.lowerTaggedMapIndex(e, targetVal, indexVal)
 		}
 		var targetType types.Type
 		if l.exprTypes != nil {
@@ -4755,6 +4798,13 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 		return l.lowerSemanticMap(m)
 	}
 	if list, ok := expr.(*syntax.ListExpr); ok {
+		if types.TaggedListElements(l.transportType(expr)) && types.InlineDataNeedsCells(l.transportType(expr)) {
+			value, err := l.lowerTaggedList(list)
+			if err != nil {
+				return backend.SemanticValue{}, err
+			}
+			return l.toSemanticValue(value), nil
+		}
 		laterWrites := l.semanticSiblingWrites(list.Elements)
 		items := make([]backend.SemanticValue, 0, len(list.Elements))
 		for index, el := range list.Elements {
@@ -4979,6 +5029,10 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		actionName = c.TypeName + "." + c.Member
 	default:
 		return nil, fmt.Errorf("complex callee not supported in lowering")
+	}
+
+	if err := l.validateTaggedNativeBoundary(actionName, call); err != nil {
+		return nil, err
 	}
 
 	// Built-in value constructors (qty, color)
