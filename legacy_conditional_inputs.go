@@ -50,3 +50,45 @@ func legacyConditionalReference(arguments []actionArgument) varValue {
 	}
 	return reference
 }
+
+// A comparison value may be an authored producer, just like an ordinary call
+// argument. Keep literal comparison fields in their original wire form; emit
+// action and arithmetic results once through the canonical constant path.
+func materializeLegacyConditionalOperand(argument actionArgument) actionArgument {
+	switch argument.valueType {
+	case Action:
+		return materializeLegacyActionArgument(argument)
+	case Expression:
+		return materializeLegacyConditionalInput(argument)
+	default:
+		return argument
+	}
+}
+
+// The ordinary assignment expression reader consumes to the end of its line.
+// A conditional expression instead ends at its matching closing parenthesis;
+// its comparison operator, next range bound and body remain in the caller.
+func collectLegacyConditionalValue(valueType *tokenType, value *any, until rune) {
+	if char != '(' {
+		collectValue(valueType, value, until)
+		return
+	}
+	*valueType = Expression
+	*value = ""
+	depth := 0
+	for {
+		if char == -1 || char == 1 || char == '\n' {
+			parserError("E_EXPRESSION_TERMINATOR: expected ')' after conditional arithmetic expression")
+		}
+		switch char {
+		case '(':
+			depth++
+		case ')':
+			depth--
+		}
+		collectExpressionValue(value)
+		if depth == 0 {
+			return
+		}
+	}
+}

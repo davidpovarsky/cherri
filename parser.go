@@ -1463,7 +1463,7 @@ func collectConditional() (conditional condition) {
 		}
 		var variableOneType tokenType
 		var variableOneValue any
-		collectValue(&variableOneType, &variableOneValue, ')')
+		collectLegacyConditionalValue(&variableOneType, &variableOneValue, ')')
 		for char == ' ' || char == '\t' {
 			advance()
 		}
@@ -1483,7 +1483,7 @@ func collectConditional() (conditional condition) {
 		}
 		var variableOneType tokenType
 		var variableOneValue any
-		collectValue(&variableOneType, &variableOneValue, ')')
+		collectLegacyConditionalValue(&variableOneType, &variableOneValue, ')')
 		for char == ' ' || char == '\t' {
 			advance()
 		}
@@ -1505,7 +1505,7 @@ func collectConditional() (conditional condition) {
 
 	var variableOneType tokenType
 	var variableOneValue any
-	collectValue(&variableOneType, &variableOneValue, ' ')
+	collectLegacyConditionalValue(&variableOneType, &variableOneValue, ' ')
 	conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 		valueType: variableOneType,
 		value:     variableOneValue,
@@ -1540,12 +1540,12 @@ func collectConditional() (conditional condition) {
 
 		var variableTwoType tokenType
 		var variableTwoValue any
+		tokenStart := len(tokens)
 		collectConditionalOperand(&variableTwoType, &variableTwoValue, ' ')
+		argument := materializeLegacyConditionalOperand(actionArgument{valueType: variableTwoType, value: variableTwoValue})
+		snapshotLegacyArgumentsBefore(conditional.arguments, tokenStart)
 		checkConditionalTypes(&collectConditionalToken, variableOneType, variableOneValue, variableTwoType)
-		conditional.arguments = append(conditional.arguments, actionArgument{
-			valueType: variableTwoType,
-			value:     variableTwoValue,
-		})
+		conditional.arguments = append(conditional.arguments, argument)
 
 		skipWhitespace()
 
@@ -1553,11 +1553,11 @@ func collectConditional() (conditional condition) {
 			var variableThreeType tokenType
 			var variableThreeValue any
 
+			tokenStart := len(tokens)
 			collectConditionalOperand(&variableThreeType, &variableThreeValue, '{')
-			conditional.arguments = append(conditional.arguments, actionArgument{
-				valueType: variableThreeType,
-				value:     variableThreeValue,
-			})
+			argument := materializeLegacyConditionalOperand(actionArgument{valueType: variableThreeType, value: variableThreeValue})
+			snapshotLegacyArgumentsBefore(conditional.arguments, tokenStart)
+			conditional.arguments = append(conditional.arguments, argument)
 			skipWhitespace()
 		}
 	}
@@ -1695,7 +1695,7 @@ func collectConditionalOperand(valType *tokenType, val *any, until rune) {
 		*val = legacyCondEnum(strVal)
 		return
 	}
-	collectValue(valType, val, until)
+	collectLegacyConditionalValue(valType, val, until)
 }
 
 func collectMenu(identifier string) {

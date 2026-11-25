@@ -318,8 +318,8 @@ var conditionFilterPrefixes = map[tokenType]int{
 }
 
 var allowedConditionalTypes = map[tokenType][]tokenType{
-	Is:             {String, Integer, Bool, Action, Date},
-	Not:            {String, Integer, Bool, Action, Date},
+	Is:             {String, Integer, Float, Bool, Action, Date},
+	Not:            {String, Integer, Float, Bool, Action, Date},
 	Any:            {},
 	Empty:          {},
 	Contains:       {String, Arr},
