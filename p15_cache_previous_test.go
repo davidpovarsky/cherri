@@ -28,6 +28,9 @@ func p15CachePreviousSource(tc p15CachePreviousCase, legacy bool, ttl int, cache
 	declaration, header, tail := "let", "shortcut \"cache previous\" { version:\"27\" }\n", "\nreturn result\n"
 	if legacy {
 		declaration, header, tail = "const", "#define version 27\n", "\ngetVariable(result)\n"
+		if tc.consumer == "date" {
+			header += "#include 'actions/calendar'\n"
+		}
 	}
 	body, result := "", "getTimeBetweenDates()"
 	if tc.consumer == "log" {
