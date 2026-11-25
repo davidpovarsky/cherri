@@ -18,6 +18,9 @@ func (a *Analyzer) analyzeScopedBlockCall(call *syntax.CallExpr, scope *Scope) t
 		a.error("E_BLOCK_UNSUPPORTED", call.Span, "this call does not accept a scoped block; use for/yield to collect Repeat Results")
 		return types.Unknown
 	}
+	if name.Name == "cache" {
+		return a.analyzeCacheBlock(call, scope, contract)
+	}
 	if name.Name != "measure" {
 		a.error("E_BLOCK_UNSUPPORTED", call.Span, "no lowering contract exists for this scoped block construct")
 		return types.Unknown
@@ -44,7 +47,10 @@ func (a *Analyzer) analyzeScopedBlockCall(call *syntax.CallExpr, scope *Scope) t
 		a.error("E_BLOCK_REQUIRED", call.Span, "measure requires a scoped body")
 		return types.Unknown
 	}
-	body := call.Block.Body
+	return a.analyzeScopedValueBody(call.Block.Body, scope)
+}
+
+func (a *Analyzer) analyzeScopedValueBody(body *syntax.BlockStmt, scope *Scope) types.Type {
 	blockScope := NewScope(scope)
 	previousValueBlock, previousYields := a.inValueBlk, a.yieldedTypes
 	a.inValueBlk, a.yieldedTypes = true, nil

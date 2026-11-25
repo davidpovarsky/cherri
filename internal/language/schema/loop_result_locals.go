@@ -210,6 +210,26 @@ func PlanLoopResultLocals(program *syntax.Program, registry *Registry) *LoopResu
 				// no-private-cell-escape rules enforced by statement().
 				return nil, block(body, scope, cellIteration)
 			}
+			if found && name.Name == "cache" {
+				body := LoopResultScopedCacheBody(value, action)
+				if body == nil {
+					return nil, false
+				}
+				plan.ScopedBodies[value] = body
+				// A hit leaves captured slots untouched; a miss executes this exact body
+				// once. Join both paths instead of treating lazy effects as unconditional.
+				entry, miss := scope.clone(), scope.clone()
+				if !block(body, miss, cellIteration) {
+					return nil, false
+				}
+				options, _ := CacheCallOptions(value)
+				if options.TTL == 0 {
+					scope.takeWrites(miss)
+				} else {
+					scope.join(entry, miss)
+				}
+				return nil, true
+			}
 			if !found || name.Name != "count" || !LoopResultItemsCountConsumer(value, action) || value.PrimaryArg == nil {
 				return nil, false
 			}
