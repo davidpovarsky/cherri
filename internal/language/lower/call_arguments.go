@@ -79,7 +79,7 @@ func (l *Lowerer) lowerProvidedFunctionValues(fn *syntax.FunctionDecl, call *syn
 		if slot < 0 {
 			return nil, fmt.Errorf("unbound function argument at %s", expr.NodeSpan())
 		}
-		value, presence, err := l.lowerFunctionArgumentValue(call, written-1, expr, l.optionalFunctionParameter(fn.Parameters[slot].TypeExpr))
+		value, presence, err := l.lowerFunctionArgumentValue(call, written-1, expr, l.optionalFunctionParameter(fn.Parameters[slot].TypeExpr), l.resolveTypeAnnotation(fn.Parameters[slot].TypeExpr))
 		if err != nil {
 			return nil, err
 		}
