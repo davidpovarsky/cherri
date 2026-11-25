@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "suite_id": "cherri-differential-text-runtime-20261125",
+  "original_sha": "98d5191ae121a6bcf663ed0e55495f4ee4c7a6e2",
+  "fork_baseline_sha": "4ca75e763204f0d4cdcb94442985e6dd776df844",
+  "runtime_contract": {
+    "capture": "x-callback result text",
+    "terminal": "output only",
+    "compare": "exact raw UTF-8 digest, byte length and result summary; no normalization",
+    "synthetic_inputs": "embedded; no Shortcuts input",
+    "native_lanes": [
+      "original",
+      "fork_legacy",
+      "fork_v2"
+    ],
+    "metadata_difference": "Only O/L/V declared workflow names differ in legacy sources",
+    "native_state_contract": "Authored Text slots use token strings for references; joinText primary list input remains an attachment",
+    "external_io": "None; getURLs detects a URL in supplied text and getURLDetail parses its host without opening or expanding it"
+  },
+  "fixtures": [
+    {
+      "id": "41_dynamic_text_states",
+      "number": 41,
+      "title": "Dynamic text, produced separators and URL parsing",
+      "families": [
+        "text",
+        "mutable reference",
+        "action-output reference",
+        "split",
+        "join",
+        "case",
+        "URL extraction"
+      ],
+      "complexity": "medium",
+      "sources": {
+        "original": "CHERRI_QA_Q41_O.cherri",
+        "fork_legacy": "CHERRI_QA_Q41_L.cherri",
+        "fork_v2": "CHERRI_QA_Q41_V.cherri"
+      },
+      "shortcut_names": {
+        "original": "CHERRI_QA_Q41_O",
+        "fork_legacy": "CHERRI_QA_Q41_L",
+        "fork_v2": "CHERRI_QA_Q41_V"
+      },
+      "input": null,
+      "expected": {
+        "type": "text",
+        "value": "CHERRI_QA_41|ALPHA:beta:Alpha:alpha::BETA:example.org"
+      },
+      "oracle_reason": "Splitting alpha,BETA by the runtime Text result comma gives alpha then BETA. Their case variants are ALPHA, beta, Alpha. Joining the unchanged list with runtime Text result double colon gives alpha::BETA. The sole literal URL has host example.org. This oracle is committed before any baseline/candidate compilation or native run.",
+      "runtime": {
+        "enabled": true,
+        "terminal": "output",
+        "external_side_effects": false
+      },
+      "notes": "Mutable Text drives splitText and getURLs. Action outputs drive separator/glue, three change-case calls and host extraction. No openURL, expandURL, network, spellchecker or dialogs."
+    }
+  ]
+}

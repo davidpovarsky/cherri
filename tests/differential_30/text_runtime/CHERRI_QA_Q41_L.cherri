@@ -1,0 +1,19 @@
+#define name CHERRI_QA_Q41_L
+#include 'actions/text'
+#include 'actions/web'
+// Q41 expected output is committed before baseline or candidate compilation.
+@sample = "alpha,BETA"
+const separator = text(",")
+const parts = splitText(@sample, separator)
+const first = getFirstItem(parts)
+const last = getLastItem(parts)
+const upper = uppercase(first)
+const lower = lowercase(last)
+const title = capitalize(first)
+const glue = text("::")
+const joined = joinText(parts, glue)
+@linkText = "https://example.org/path"
+const urls = getURLs(@linkText)
+const firstURL = getFirstItem(urls)
+const host = getURLDetail(firstURL, "Host")
+output("CHERRI_QA_41|{upper}:{lower}:{title}:{joined}:{host}")
