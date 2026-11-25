@@ -34,6 +34,9 @@ func p15PaginateHeadersFixture(legacy, dynamic, named bool, pages, items int, ca
 		args = fmt.Sprintf("%q, maxPages: %d, maxItems: %d, headers: %s", "https://example.invalid/pages/one.json", pages, items, headers)
 	}
 	if call == "downloadURL" {
+		if legacy {
+			prefix = "#include 'actions/web'\n" + prefix
+		}
 		args = fmt.Sprintf("%q, %s", "https://example.invalid/pages/one.json", headers)
 	}
 	return prefix + call + "(" + args + ")\n"
