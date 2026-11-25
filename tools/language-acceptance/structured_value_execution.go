@@ -163,10 +163,13 @@ func validateStructuredValueInventory() error {
 	return nil
 }
 func parseStructuredValueOutput(raw []byte, budget time.Duration) error {
+	if len(raw) == 0 || raw[len(raw)-1] != '\n' {
+		return fmt.Errorf("structured original Go stream is incomplete")
+	}
 	rows := map[string][]byte{}
-	for _, line := range bytes.Split(raw, []byte{'\n'}) {
-		if len(line) == 0 {
-			continue
+	for _, line := range bytes.Split(raw[:len(raw)-1], []byte{'\n'}) {
+		if len(bytes.TrimSpace(line)) == 0 {
+			return fmt.Errorf("structured original Go stream contains an empty event")
 		}
 		if _, err := decodeNativeEncodingObject(line); err != nil {
 			return fmt.Errorf("invalid structured original JSON: %w", err)

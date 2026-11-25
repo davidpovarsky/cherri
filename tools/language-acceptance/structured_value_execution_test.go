@@ -114,6 +114,24 @@ func structuredValueMutateEvents(t *testing.T, record *EvidenceRecord, fault, ta
 	prefix := structuredValueCohortPrefix
 	var changed []byte
 	editorContractMutateArtifact(t, record, prefix+"-go.jsonl", func(raw []byte) []byte {
+		switch fault {
+		case "interior_blank_line":
+			at := bytes.IndexByte(raw, '\n')
+			if at < 0 {
+				t.Fatal("actual Go event stream has no newline")
+			}
+			changed = append(append(append([]byte(nil), raw[:at+1]...), '\n'), raw[at+1:]...)
+			return changed
+		case "unterminated_stream":
+			if len(raw) == 0 || raw[len(raw)-1] != '\n' {
+				t.Fatal("actual Go event stream is already unterminated")
+			}
+			changed = append([]byte(nil), raw[:len(raw)-1]...)
+			return changed
+		case "second_trailing_newline":
+			changed = append(append([]byte(nil), raw...), '\n')
+			return changed
+		}
 		var b bytes.Buffer
 		mutated := false
 		for _, line := range bytes.Split(raw, []byte{'\n'}) {
@@ -214,7 +232,7 @@ func TestStructuredValueActualProductionEvidence(t *testing.T) {
 		if err := validateStructuredValueRecord(id, relocated); err != nil {
 			t.Fatal("byte-identical relocation rejected", err)
 		}
-		for _, fault := range []string{"wrong_tier", "wrong_requirement", "cross_tier_producer", "partial_command", "missing_artifact", "wrong_scope", "wrong_cohort", "dirty_source", "wrong_source_digest", "missing_source_file", "timed_out", "nonzero_exit", "missing_parent", "missing_child", "skipped_child", "wrong_package", "duplicate_event", "missing_internal_package"} {
+		for _, fault := range []string{"wrong_tier", "wrong_requirement", "cross_tier_producer", "partial_command", "missing_artifact", "wrong_scope", "wrong_cohort", "dirty_source", "wrong_source_digest", "missing_source_file", "timed_out", "nonzero_exit", "missing_parent", "missing_child", "skipped_child", "wrong_package", "duplicate_event", "missing_internal_package", "interior_blank_line", "unterminated_stream", "second_trailing_newline"} {
 			t.Run(id+"/"+fault, func(t *testing.T) {
 				broken := editorContractCopyRecord(t, record)
 				switch fault {
